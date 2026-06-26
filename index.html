@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
 <title>LatentPulse · Specimen Console</title>
-<link rel="icon" type="image/svg+xml" href="app/baseline/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="app/latentpulse/baseline/favicon.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -64,6 +64,7 @@
   }
 
   .brand {
+    position: relative;
     padding: 22px 22px 18px;
     border-bottom: 1px solid var(--hairline);
   }
@@ -84,6 +85,73 @@
     text-transform: uppercase;
     color: var(--muted);
   }
+
+  /* ---- app switcher: the rail-top app tier; opens a menu of apps ---- */
+  .app-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .app-switch:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+  .app-chev {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 auto;
+    color: var(--muted);
+    transition: transform var(--dur) ease, color var(--dur) ease;
+  }
+  .app-switch:hover .app-chev { color: var(--text); }
+  .app-switch[aria-expanded="true"] .app-chev { transform: rotate(180deg); color: var(--text); }
+
+  .app-menu {
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 14px;
+    right: 14px;
+    z-index: 20;
+    margin: 0;
+    padding: 5px;
+    list-style: none;
+    background: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+  }
+  .app-menu[hidden] { display: none; }
+  .app-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    padding: 8px 9px;
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    letter-spacing: -0.005em;
+    transition: background var(--dur) ease;
+  }
+  .app-item:hover { background: var(--tab-hover-bg); }
+  .app-item:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+  .app-check {
+    flex: 0 0 14px;
+    width: 14px;
+    color: var(--signal);
+    opacity: 0;
+  }
+  .app-item[aria-checked="true"] .app-check { opacity: 1; }
 
   /* ---- specimen tablist + version spine ---- */
   .specimens {
@@ -362,10 +430,16 @@
 <body>
   <aside class="rail">
     <div class="brand">
-      <div class="wordmark">LatentPulse</div>
+      <!-- app tier: the app switcher. Wordmark = active app (data-driven);
+           the menu lists apps; the version tabs below are this app's specimens. -->
+      <button type="button" class="app-switch" id="app-switch" aria-haspopup="menu" aria-expanded="false" aria-controls="app-menu">
+        <span class="wordmark" id="app-name">LatentPulse</span>
+        <svg class="app-chev" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="eyebrow">prototype console</div>
+      <ul class="app-menu" id="app-menu" role="menu" aria-label="Apps" hidden></ul>
     </div>
-    <nav class="specimens" role="tablist" aria-label="Prototype specimens" aria-orientation="vertical"></nav>
+    <nav class="specimens" role="tablist" aria-labelledby="app-name" aria-orientation="vertical"></nav>
   </aside>
 
   <main class="stage">
@@ -391,36 +465,47 @@
 <script>
   'use strict';
 
-  // Single source of truth — tabs, meta panel and iframes all derive from this.
-  // Order = version order, which is also tab order. Default active = first (baseline).
-  var SPECIMENS = [
-    {
-      slug: 'baseline',
-      version: 'v0.2.1',
-      ticket: 'LM-239',
-      desc: 'The baseline prototype in the project spec space — the current accepted alpha UI the two deltas build on (Claude Design v0.2.1, retrieved 2026-06-11).'
-    },
-    {
-      slug: 'lm-298-ux-consolidation',
-      version: 'v0.2.2',
-      ticket: 'LM-298',
-      desc: 'UX consolidation: account control to rail foot, top bar becomes the space header, one unified empty state, create→fund gains exit/back controls.'
-    },
-    {
-      slug: 'lm-270-mobile-width',
-      version: 'v0.2.3',
-      ticket: 'LM-270',
-      desc: 'Mobile-width pass: one shared content width, single rail toggle, slide+scrim motion, ≥44px tap targets, ≥16px inputs (kills iOS focus zoom).'
+  // Single source of truth — app-keyed so a second app is a clean data addition.
+  // Each app carries its label (the rail-top app node) + its ordered specimens.
+  // Specimen order = version order = tab order. Default active = first (baseline).
+  var APPS = {
+    latentpulse: {
+      label: 'LatentPulse',
+      specimens: [
+        {
+          slug: 'baseline',
+          version: 'v0.2.1',
+          ticket: 'LM-239',
+          desc: 'The baseline prototype in the project spec space — the current accepted alpha UI the two deltas build on (Claude Design v0.2.1, retrieved 2026-06-11).'
+        },
+        {
+          slug: 'lm-298-ux-consolidation',
+          version: 'v0.2.2',
+          ticket: 'LM-298',
+          desc: 'UX consolidation: account control to rail foot, top bar becomes the space header, one unified empty state, create→fund gains exit/back controls.'
+        },
+        {
+          slug: 'lm-270-mobile-width',
+          version: 'v0.2.3',
+          ticket: 'LM-270',
+          desc: 'Mobile-width pass: one shared content width, single rail toggle, slide+scrim motion, ≥44px tap targets, ≥16px inputs (kills iOS focus zoom).'
+        }
+      ]
     }
-  ];
+  };
 
-  function srcFor(slug) {
+  // Active app + its specimens are owned by renderApp() — re-runnable so the
+  // app switcher can repoint to another app (data-driven; one app today).
+  var ACTIVE_APP, APP, SPECIMENS;
+
+  function srcFor(app, slug) {
     // URL-encode the space in the filename so the http server resolves it.
-    return 'app/' + slug + '/LatentPulse%20Alpha.html';
+    return 'app/' + app + '/' + slug + '/LatentPulse%20Alpha.html';
   }
 
   var tablist = document.querySelector('.specimens');
   var framesEl = document.getElementById('frames');
+  var appNameEl = document.getElementById('app-name');
   var meta = {
     version: document.getElementById('m-version'),
     slug: document.getElementById('m-slug'),
@@ -431,42 +516,52 @@
   var tabs = [];
   var frames = [];
   var activeIndex = 0;
+  var focusIndex = 0;
 
-  SPECIMENS.forEach(function (spec, i) {
-    var tab = document.createElement('button');
-    tab.className = 'tab';
-    tab.type = 'button';
-    tab.id = 'tab-' + spec.slug;
-    tab.setAttribute('role', 'tab');
-    tab.setAttribute('aria-controls', 'panel-' + spec.slug);
-    tab.setAttribute('aria-selected', 'false');
-    tab.tabIndex = -1;
-    tab.innerHTML =
-      '<span class="dot-col" aria-hidden="true"><span class="dot"></span></span>' +
-      '<span class="tab-body">' +
-        '<span class="tab-label">' + spec.slug + '</span>' +
-        '<span class="tab-version">' + spec.version + '</span>' +
-      '</span>';
+  // Build (or rebuild) the version tabs + frames for the active app's specimens.
+  function buildSpecimens() {
+    tablist.innerHTML = '';
+    framesEl.innerHTML = '';
+    tabs.length = 0;
+    frames.length = 0;
 
-    tab.addEventListener('click', function () { activate(i, true); });
-    tablist.appendChild(tab);
-    tabs.push(tab);
+    SPECIMENS.forEach(function (spec, i) {
+      var tab = document.createElement('button');
+      tab.className = 'tab';
+      tab.type = 'button';
+      tab.id = 'tab-' + spec.slug;
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', 'panel-' + spec.slug);
+      tab.setAttribute('aria-selected', 'false');
+      tab.tabIndex = -1;
+      tab.innerHTML =
+        '<span class="dot-col" aria-hidden="true"><span class="dot"></span></span>' +
+        '<span class="tab-body">' +
+          '<span class="tab-label">' + spec.slug + '</span>' +
+          '<span class="tab-version">' + spec.version + '</span>' +
+        '</span>';
 
-    var frame = document.createElement('div');
-    frame.className = 'frame';
-    frame.id = 'panel-' + spec.slug;
-    frame.setAttribute('role', 'tabpanel');
-    frame.setAttribute('aria-labelledby', tab.id);
+      tab.addEventListener('click', function () { activate(i, true); });
+      tab.addEventListener('focus', function () { focusIndex = i; });
+      tablist.appendChild(tab);
+      tabs.push(tab);
 
-    var iframe = document.createElement('iframe');
-    iframe.title = spec.slug + ' (' + spec.version + ')';
-    iframe.loading = 'lazy';
-    // No sandbox attribute: trusted local content, and a bare sandbox would
-    // break the same-origin XHR babel-standalone uses to fetch app/*.jsx.
-    frame.appendChild(iframe);
-    framesEl.appendChild(frame);
-    frames.push({ wrap: frame, iframe: iframe, loaded: false });
-  });
+      var frame = document.createElement('div');
+      frame.className = 'frame';
+      frame.id = 'panel-' + spec.slug;
+      frame.setAttribute('role', 'tabpanel');
+      frame.setAttribute('aria-labelledby', tab.id);
+
+      var iframe = document.createElement('iframe');
+      iframe.title = spec.slug + ' (' + spec.version + ')';
+      iframe.loading = 'lazy';
+      // No sandbox attribute: trusted local content, and a bare sandbox would
+      // break the same-origin XHR babel-standalone uses to fetch app/*.jsx.
+      frame.appendChild(iframe);
+      framesEl.appendChild(frame);
+      frames.push({ wrap: frame, iframe: iframe, loaded: false });
+    });
+  }
 
   function activate(i, moveFocus) {
     activeIndex = i;
@@ -476,7 +571,7 @@
       tabs[j].tabIndex = selected ? 0 : -1;
       frames[j].wrap.classList.toggle('is-active', selected);
       if (selected && !frames[j].loaded) {
-        frames[j].iframe.src = srcFor(spec.slug);   // lazy: set src on first activation
+        frames[j].iframe.src = srcFor(ACTIVE_APP, spec.slug);   // lazy: set src on first activation
         frames[j].loaded = true;
       }
     });
@@ -488,8 +583,20 @@
     if (moveFocus) tabs[i].focus();
   }
 
-  // Keyboard: arrows move focus among tabs (roving tabindex); Enter/Space activates.
-  var focusIndex = 0;
+  // Render an app: set it active, label the rail node, (re)build its specimens.
+  function renderApp(appKey) {
+    ACTIVE_APP = appKey;
+    APP = APPS[appKey];
+    SPECIMENS = APP.specimens;
+    appNameEl.textContent = APP.label;
+    activeIndex = 0;
+    focusIndex = 0;
+    buildSpecimens();
+    activate(0, false);
+    updateAppMenu();
+  }
+
+  // Keyboard: arrows move focus among version tabs (roving tabindex); Enter/Space activates.
   function moveFocus(next) {
     var n = tabs.length;
     focusIndex = (next + n) % n;
@@ -526,9 +633,62 @@
     }
   });
 
-  // keep focusIndex synced when a tab is activated by click
-  tabs.forEach(function (t, j) {
-    t.addEventListener('focus', function () { focusIndex = j; });
+  // ---- app switcher: the rail-top app node opens a menu of apps ----
+  var appSwitch = document.getElementById('app-switch');
+  var appMenu = document.getElementById('app-menu');
+
+  function buildAppMenu() {
+    appMenu.innerHTML = '';
+    Object.keys(APPS).forEach(function (key) {
+      var li = document.createElement('li');
+      li.setAttribute('role', 'none');
+      var item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'app-item';
+      item.setAttribute('role', 'menuitemradio');
+      item.setAttribute('aria-checked', 'false');
+      item.dataset.app = key;
+      item.innerHTML =
+        '<span class="app-check" aria-hidden="true">✓</span>' +
+        '<span>' + APPS[key].label + '</span>';
+      item.addEventListener('click', function () {
+        closeAppMenu();
+        if (key !== ACTIVE_APP) renderApp(key);
+        appSwitch.focus();
+      });
+      li.appendChild(item);
+      appMenu.appendChild(li);
+    });
+  }
+
+  function updateAppMenu() {
+    appMenu.querySelectorAll('.app-item').forEach(function (it) {
+      it.setAttribute('aria-checked', it.dataset.app === ACTIVE_APP ? 'true' : 'false');
+    });
+  }
+
+  function onOutside(e) {
+    if (e.target !== appSwitch && !appSwitch.contains(e.target) && !appMenu.contains(e.target)) {
+      closeAppMenu();
+    }
+  }
+  function onMenuKey(e) {
+    if (e.key === 'Escape') { closeAppMenu(); appSwitch.focus(); }
+  }
+  function openAppMenu() {
+    appMenu.hidden = false;
+    appSwitch.setAttribute('aria-expanded', 'true');
+    document.addEventListener('mousedown', onOutside, true);
+    document.addEventListener('keydown', onMenuKey, true);
+  }
+  function closeAppMenu() {
+    appMenu.hidden = true;
+    appSwitch.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('mousedown', onOutside, true);
+    document.removeEventListener('keydown', onMenuKey, true);
+  }
+  appSwitch.addEventListener('click', function () {
+    if (appMenu.hidden) openAppMenu(); else closeAppMenu();
   });
 
   // Viewport toggle: Desktop fills the stage; Mobile clamps the active frame to
@@ -544,7 +704,9 @@
   vpDesktop.addEventListener('click', function () { setViewport(false); });
   vpMobile.addEventListener('click', function () { setViewport(true); });
 
-  activate(0, false);
+  // ---- boot ----
+  buildAppMenu();
+  renderApp(Object.keys(APPS)[0]);
 </script>
 </body>
 </html>
