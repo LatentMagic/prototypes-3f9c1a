@@ -1,0 +1,12 @@
+{
+  "name": "latentpulse-prototype-console",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Zero-dependency console for browsing LatentPulse Claude Design prototypes.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
