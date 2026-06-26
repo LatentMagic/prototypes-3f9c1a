@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
-<title>LatentPulse · Specimen Console</title>
+<title>Prototype Console</title>
 <link rel="icon" type="image/svg+xml" href="app/latentpulse/baseline/favicon.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -153,8 +153,8 @@
   }
   .app-item[aria-checked="true"] .app-check { opacity: 1; }
 
-  /* ---- specimen tablist + version spine ---- */
-  .specimens {
+  /* ---- prototype tablist + version spine ---- */
+  .prototypes {
     position: relative;
     padding: 14px 0 14px 0;
     overflow-y: auto;
@@ -379,7 +379,7 @@
     }
     .brand { padding: 16px 18px 14px; }
 
-    .specimens {
+    .prototypes {
       display: flex;
       flex-direction: row;
       padding: 0;
@@ -431,7 +431,7 @@
   <aside class="rail">
     <div class="brand">
       <!-- app tier: the app switcher. Wordmark = active app (data-driven);
-           the menu lists apps; the version tabs below are this app's specimens. -->
+           the menu lists apps; the version tabs below are this app's prototypes. -->
       <button type="button" class="app-switch" id="app-switch" aria-haspopup="menu" aria-expanded="false" aria-controls="app-menu">
         <span class="wordmark" id="app-name">LatentPulse</span>
         <svg class="app-chev" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -439,7 +439,7 @@
       <div class="eyebrow">prototype console</div>
       <ul class="app-menu" id="app-menu" role="menu" aria-label="Apps" hidden></ul>
     </div>
-    <nav class="specimens" role="tablist" aria-labelledby="app-name" aria-orientation="vertical"></nav>
+    <nav class="prototypes" role="tablist" aria-labelledby="app-name" aria-orientation="vertical"></nav>
   </aside>
 
   <main class="stage">
@@ -466,12 +466,12 @@
   'use strict';
 
   // Single source of truth — app-keyed so a second app is a clean data addition.
-  // Each app carries its label (the rail-top app node) + its ordered specimens.
-  // Specimen order = version order = tab order. Default active = first (baseline).
+  // Each app carries its label (the rail-top app node) + its ordered prototypes.
+  // Prototype order = version order = tab order. Default active = first (baseline).
   var APPS = {
     latentpulse: {
       label: 'LatentPulse',
-      specimens: [
+      prototypes: [
         {
           slug: 'baseline',
           version: 'v0.2.1',
@@ -494,16 +494,16 @@
     }
   };
 
-  // Active app + its specimens are owned by renderApp() — re-runnable so the
+  // Active app + its prototypes are owned by renderApp() — re-runnable so the
   // app switcher can repoint to another app (data-driven; one app today).
-  var ACTIVE_APP, APP, SPECIMENS;
+  var ACTIVE_APP, APP, PROTOTYPES;
 
   function srcFor(app, slug) {
     // URL-encode the space in the filename so the http server resolves it.
     return 'app/' + app + '/' + slug + '/LatentPulse%20Alpha.html';
   }
 
-  var tablist = document.querySelector('.specimens');
+  var tablist = document.querySelector('.prototypes');
   var framesEl = document.getElementById('frames');
   var appNameEl = document.getElementById('app-name');
   var meta = {
@@ -518,14 +518,14 @@
   var activeIndex = 0;
   var focusIndex = 0;
 
-  // Build (or rebuild) the version tabs + frames for the active app's specimens.
-  function buildSpecimens() {
+  // Build (or rebuild) the version tabs + frames for the active app's prototypes.
+  function buildPrototypes() {
     tablist.innerHTML = '';
     framesEl.innerHTML = '';
     tabs.length = 0;
     frames.length = 0;
 
-    SPECIMENS.forEach(function (spec, i) {
+    PROTOTYPES.forEach(function (spec, i) {
       var tab = document.createElement('button');
       tab.className = 'tab';
       tab.type = 'button';
@@ -565,7 +565,7 @@
 
   function activate(i, moveFocus) {
     activeIndex = i;
-    SPECIMENS.forEach(function (spec, j) {
+    PROTOTYPES.forEach(function (spec, j) {
       var selected = j === i;
       tabs[j].setAttribute('aria-selected', selected ? 'true' : 'false');
       tabs[j].tabIndex = selected ? 0 : -1;
@@ -575,7 +575,7 @@
         frames[j].loaded = true;
       }
     });
-    var spec = SPECIMENS[i];
+    var spec = PROTOTYPES[i];
     meta.version.textContent = spec.version;
     meta.slug.textContent = spec.slug;
     meta.ticket.textContent = spec.ticket;
@@ -583,15 +583,16 @@
     if (moveFocus) tabs[i].focus();
   }
 
-  // Render an app: set it active, label the rail node, (re)build its specimens.
+  // Render an app: set it active, label the rail node, (re)build its prototypes.
   function renderApp(appKey) {
     ACTIVE_APP = appKey;
     APP = APPS[appKey];
-    SPECIMENS = APP.specimens;
+    PROTOTYPES = APP.prototypes;
     appNameEl.textContent = APP.label;
+    document.title = APP.label + ' · Prototype Console';
     activeIndex = 0;
     focusIndex = 0;
-    buildSpecimens();
+    buildPrototypes();
     activate(0, false);
     updateAppMenu();
   }
