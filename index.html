@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>LatentPulse · Specimen Console</title>
-<link rel="icon" type="image/svg+xml" href="app/greenfield/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="app/baseline/favicon.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -250,6 +250,55 @@
 
   @keyframes frame-in { from { opacity: 0; } to { opacity: 1; } }
 
+  /* ---- viewport toggle (Desktop | Mobile) ---- */
+  .meta-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .viewport-toggle {
+    flex: 0 0 auto;
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: 7px;
+  }
+  .vp-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.005em;
+    padding: 5px 13px;
+    border-radius: 5px;
+    transition: background var(--dur) ease, color var(--dur) ease, box-shadow var(--dur) ease;
+  }
+  .vp-btn:hover { color: var(--text); }
+  .vp-btn[aria-pressed="true"] {
+    background: var(--tab-active-bg);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .vp-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+
+  /* mobile viewport: clamp the active frame to phone width, centered on the
+     graphite. An iframe is its own viewport, so narrowing it makes each
+     prototype's OWN responsive code reflow to mobile — prototypes untouched. */
+  .frames.vp-mobile { justify-content: center; }
+  .frames.vp-mobile .frame {
+    flex: 0 0 min(390px, 100%);
+    max-width: 390px;
+    margin-inline: auto;
+  }
+
   /* ============================================================= RESPONSIVE */
   @media (max-width: 640px) {
     body { flex-direction: column; }
@@ -320,12 +369,18 @@
 
   <main class="stage">
     <header class="meta">
-      <div class="meta-keys">
-        <span class="meta-pair"><span class="meta-k">VERSION</span><span class="meta-v" id="m-version"></span></span>
-        <span class="meta-sep" aria-hidden="true">·</span>
-        <span class="meta-pair"><span class="meta-k">SLUG</span><span class="meta-v" id="m-slug"></span></span>
-        <span class="meta-sep" aria-hidden="true">·</span>
-        <span class="meta-pair"><span class="meta-k">TICKET</span><span class="meta-v" id="m-ticket"></span></span>
+      <div class="meta-top">
+        <div class="meta-keys">
+          <span class="meta-pair"><span class="meta-k">VERSION</span><span class="meta-v" id="m-version"></span></span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span class="meta-pair"><span class="meta-k">SLUG</span><span class="meta-v" id="m-slug"></span></span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span class="meta-pair"><span class="meta-k">TICKET</span><span class="meta-v" id="m-ticket"></span></span>
+        </div>
+        <div class="viewport-toggle" role="group" aria-label="Viewport width">
+          <button type="button" class="vp-btn" id="vp-desktop" aria-pressed="true">Desktop</button>
+          <button type="button" class="vp-btn" id="vp-mobile" aria-pressed="false">Mobile</button>
+        </div>
       </div>
       <p class="meta-desc" id="m-desc"></p>
     </header>
@@ -336,13 +391,13 @@
   'use strict';
 
   // Single source of truth — tabs, meta panel and iframes all derive from this.
-  // Order = version order, which is also tab order. Default active = first (greenfield).
+  // Order = version order, which is also tab order. Default active = first (baseline).
   var SPECIMENS = [
     {
-      slug: 'greenfield',
+      slug: 'baseline',
       version: 'v0.2.1',
       ticket: 'LM-239',
-      desc: 'Baseline per-space feed prototype — the alpha UI as first exported (Claude Design, retrieved 2026-06-11).'
+      desc: 'The baseline prototype in the project spec space — the current accepted alpha UI the two deltas build on (Claude Design v0.2.1, retrieved 2026-06-11).'
     },
     {
       slug: 'lm-298-ux-consolidation',
@@ -474,6 +529,19 @@
   tabs.forEach(function (t, j) {
     t.addEventListener('focus', function () { focusIndex = j; });
   });
+
+  // Viewport toggle: Desktop fills the stage; Mobile clamps the active frame to
+  // phone width so each prototype's own responsive layout reflows. Global state —
+  // persists across tab switches.
+  var vpDesktop = document.getElementById('vp-desktop');
+  var vpMobile = document.getElementById('vp-mobile');
+  function setViewport(isMobile) {
+    framesEl.classList.toggle('vp-mobile', isMobile);
+    vpMobile.setAttribute('aria-pressed', isMobile ? 'true' : 'false');
+    vpDesktop.setAttribute('aria-pressed', isMobile ? 'false' : 'true');
+  }
+  vpDesktop.addEventListener('click', function () { setViewport(false); });
+  vpMobile.addEventListener('click', function () { setViewport(true); });
 
   activate(0, false);
 </script>
