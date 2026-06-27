@@ -13,6 +13,7 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 - One `<iframe>` per prototype, so each runs in its own document — full runtime isolation, no shared globals.
 - Each iframe's `src` is set lazily on first tab activation, then tabs toggle with `display`. State survives switching; prototypes don't recompile on every switch.
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
+- The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only — not to be confused with the `lm-270-mobile-width` prototype, which is verbatim prototype content.
 
 ## Why a server (not file://)
 
@@ -35,3 +36,5 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 ## Runtime dependency
 
 React, ReactDOM, and Babel load from unpkg; fonts from Google Fonts. **Offline, the prototypes render blank** — they need the CDN.
+
+The console shell uses no CDN, so it renders fully offline — only the prototype iframes go blank. A blank iframe in a CDN-blocked sandbox is therefore not a console bug, and console behaviour can still be validated offline by driving the shell with `playwright-core` against the pre-installed Chromium (`/opt/pw-browsers`).
