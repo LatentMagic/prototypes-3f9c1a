@@ -9,7 +9,7 @@ cd specs/projects/latent-pulse/prototype
 python3 -m http.server 8000
 ```
 
-Open <http://localhost:8000/LatentPulse%20Alpha.html>. Ctrl-C to stop the server.
+Open <http://localhost:8000/latentpulse.html>. Ctrl-C to stop the server.
 
 **Why a server is needed:** the page compiles its `.jsx` files in-browser via Babel-standalone, which fetches each one over `XMLHttpRequest`. Opening the file directly gives it the `file://` origin (`null`), and browsers block cross-origin requests from `file://` — every `.jsx` fetch fails with a CORS error and nothing renders. Serving over `http://` gives the page a real origin, so the fetches succeed.
 

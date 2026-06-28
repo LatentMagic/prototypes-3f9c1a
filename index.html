@@ -377,6 +377,139 @@
   .rail-close,
   .rail-meta { display: none; }
 
+  /* ============================================================= CHANGELOG */
+  /* Per-prototype "recent changes" — a reviewer-facing meta layer, never part of
+     a prototype. Carries the rail's version-spine motif: changes ride a timeline. */
+  .meta-actions {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .changes-btn {
+    appearance: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--hairline);
+    border-radius: 7px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.005em;
+    padding: 5px 12px;
+    transition: color var(--dur) ease, border-color var(--dur) ease;
+  }
+  .changes-btn[hidden] { display: none; }
+  .changes-btn:hover { color: var(--text); border-color: var(--muted); }
+  .changes-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+  .changes-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.22);
+  }
+
+  .cl-scrim {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(0, 0, 0, 0.5);
+    animation: cl-fade var(--dur) ease both;
+  }
+  .cl-scrim[hidden] { display: none; }
+  @keyframes cl-fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .cl-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 41;
+    width: min(420px, 100%);
+    display: flex; flex-direction: column;
+    background: var(--raised);
+    border-left: 1px solid var(--hairline);
+    box-shadow: -24px 0 60px rgba(0, 0, 0, 0.45);
+    animation: cl-slide var(--dur) ease both;
+  }
+  .cl-panel[hidden] { display: none; }
+  @keyframes cl-slide { from { transform: translateX(18px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .cl-head {
+    flex: 0 0 auto;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .cl-h {
+    margin: 0;
+    font-family: var(--font-display); font-weight: 600; font-size: 16px;
+    letter-spacing: -0.01em; color: var(--text); line-height: 1.2;
+  }
+  .cl-sub {
+    margin-top: 5px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .cl-close {
+    flex: 0 0 auto; appearance: none; cursor: pointer;
+    width: 30px; height: 30px; border-radius: 6px;
+    background: transparent; border: 1px solid var(--hairline); color: var(--muted);
+    font-size: 13px; line-height: 1;
+    transition: color var(--dur) ease, border-color var(--dur) ease;
+  }
+  .cl-close:hover { color: var(--text); border-color: var(--muted); }
+  .cl-close:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+
+  .cl-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 12px 20px 24px; }
+
+  /* entries ride a vertical spine — the rail's dot-on-a-line, carried over */
+  .cl-entry { position: relative; padding: 6px 0 20px 26px; }
+  .cl-entry:last-child { padding-bottom: 6px; }
+  .cl-entry:not(:last-child)::before {
+    content: ""; position: absolute; left: 4px; top: 8px; bottom: -6px;
+    width: 1px; background: var(--hairline);
+  }
+  .cl-node {
+    position: absolute; left: 0; top: 4px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(4, 120, 87, 0.25);
+  }
+  .cl-date {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+    color: var(--muted); margin-bottom: 7px;
+  }
+  .cl-entry-title {
+    margin: 0 0 11px;
+    font-family: var(--font-display); font-weight: 600; font-size: 14px;
+    letter-spacing: -0.005em; color: var(--text); line-height: 1.3;
+  }
+  .cl-items { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .cl-item {
+    position: relative; padding-left: 16px;
+    font-family: var(--font-sans); font-size: 12.5px; line-height: 1.5; color: var(--muted);
+  }
+  .cl-item::before {
+    content: ""; position: absolute; left: 2px; top: 8px;
+    width: 4px; height: 4px; border-radius: 50%; background: var(--muted); opacity: 0.7;
+  }
+  .cl-base {
+    margin-top: 13px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em;
+    color: var(--muted); opacity: 0.75;
+  }
+
+  /* mobile: the drawer becomes a bottom sheet */
+  @media (max-width: 640px) {
+    .cl-panel {
+      top: auto; left: 0; right: 0; width: 100%;
+      max-height: 82vh;
+      border-left: 0; border-top: 1px solid var(--hairline);
+      border-radius: 14px 14px 0 0;
+      box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.45);
+      animation: cl-slide-up var(--dur) ease both;
+    }
+    @keyframes cl-slide-up { from { transform: translateY(18px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  }
+
   /* ============================================================= RESPONSIVE */
   /* At phone width the whole console "config" (app switcher + version tabs +
      meta detail) collapses into a left off-canvas drawer — the rail — opened
@@ -569,15 +702,33 @@
           <span class="meta-sep" aria-hidden="true">·</span>
           <span class="meta-pair"><span class="meta-k">TICKET</span><span class="meta-v" id="m-ticket"></span></span>
         </div>
-        <div class="viewport-toggle" role="group" aria-label="Viewport width">
-          <button type="button" class="vp-btn" id="vp-desktop" aria-pressed="true">Desktop</button>
-          <button type="button" class="vp-btn" id="vp-mobile" aria-pressed="false">Mobile</button>
+        <div class="meta-actions">
+          <button type="button" class="changes-btn" id="changes-btn" hidden aria-haspopup="dialog" aria-controls="cl-panel">
+            <span class="changes-dot" aria-hidden="true"></span>Changes
+          </button>
+          <div class="viewport-toggle" role="group" aria-label="Viewport width">
+            <button type="button" class="vp-btn" id="vp-desktop" aria-pressed="true">Desktop</button>
+            <button type="button" class="vp-btn" id="vp-mobile" aria-pressed="false">Mobile</button>
+          </div>
         </div>
       </div>
       <p class="meta-desc" id="m-desc"></p>
     </header>
     <div class="frames" id="frames"></div>
   </main>
+
+  <!-- changelog: reviewer-facing "recent changes" drawer (meta, not a prototype) -->
+  <div class="cl-scrim" id="cl-scrim" hidden></div>
+  <aside class="cl-panel" id="cl-panel" role="dialog" aria-modal="true" aria-labelledby="cl-title" hidden>
+    <header class="cl-head">
+      <div>
+        <h2 class="cl-h" id="cl-title">Recent changes</h2>
+        <div class="cl-sub" id="cl-sub"></div>
+      </div>
+      <button type="button" class="cl-close" id="cl-close" aria-label="Close recent changes">✕</button>
+    </header>
+    <div class="cl-body" id="cl-body"></div>
+  </aside>
 
 <script>
   'use strict';
@@ -606,6 +757,24 @@
           version: 'v0.2.3',
           ticket: 'LM-270',
           desc: 'Mobile-width pass: one shared content width, single rail toggle, slide+scrim motion, ≥44px tap targets, ≥16px inputs (kills iOS focus zoom).'
+        },
+        {
+          slug: 'proposed',
+          version: '—',
+          ticket: 'BIZ-13',
+          desc: 'Proposed — the working prototype where in-flight v1-delta changes land on the current alpha line. Adds champion-gated self-serve: change-email, space rename, member removal.',
+          changelog: [
+            {
+              date: '2026-06-28',
+              title: 'Self-serve account & space management',
+              items: [
+                'Change email — verify the new address by code before it switches (Account settings).',
+                'Rename a space — inline, champion-only, on the Space settings surface.',
+                'Remove a member — champion-only, via a per-member menu; removed members keep their real name on links they added (former-member attribution is reserved for account deletion).'
+              ],
+              base: 'Built on the current alpha line.'
+            }
+          ]
         }
       ]
     }
@@ -616,8 +785,7 @@
   var ACTIVE_APP, APP, PROTOTYPES;
 
   function srcFor(app, slug) {
-    // URL-encode the space in the filename so the http server resolves it.
-    return 'app/' + app + '/' + slug + '/LatentPulse%20Alpha.html';
+    return 'app/' + app + '/' + slug + '/latentpulse.html';
   }
 
   var tablist = document.querySelector('.prototypes');
@@ -714,6 +882,7 @@
     railMeta.slug.textContent = spec.slug;
     railMeta.ticket.textContent = spec.ticket;
     railMeta.desc.textContent = spec.desc;
+    syncChangelog(spec);
     if (moveFocus) tabs[i].focus();
   }
 
@@ -876,6 +1045,62 @@
   });
   railClose.addEventListener('click', function () { closeDrawer(true); });
   scrim.addEventListener('click', function () { closeDrawer(false); });
+
+  // ---- changelog: per-prototype "recent changes" drawer ----
+  // Shown only for prototypes that declare a `changelog`. Entries ride the same
+  // version-spine motif as the rail. Reviewer-facing meta layer; never product.
+  var changesBtn = document.getElementById('changes-btn');
+  var clScrim = document.getElementById('cl-scrim');
+  var clPanel = document.getElementById('cl-panel');
+  var clBody = document.getElementById('cl-body');
+  var clSub = document.getElementById('cl-sub');
+  var clClose = document.getElementById('cl-close');
+  var clInvoker = null;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  // Reflect the active prototype's changelog onto the button + drawer body.
+  function syncChangelog(spec) {
+    var log = (spec && spec.changelog) || [];
+    changesBtn.hidden = log.length === 0;
+    if (log.length === 0) { closeChangelog(); return; }
+    clSub.textContent = spec.slug;
+    clBody.innerHTML = log.map(function (e) {
+      var items = (e.items || []).map(function (it) {
+        return '<li class="cl-item">' + esc(it) + '</li>';
+      }).join('');
+      return '<article class="cl-entry">' +
+        '<span class="cl-node" aria-hidden="true"></span>' +
+        (e.date ? '<div class="cl-date">' + esc(e.date) + '</div>' : '') +
+        '<h3 class="cl-entry-title">' + esc(e.title || '') + '</h3>' +
+        (items ? '<ul class="cl-items">' + items + '</ul>' : '') +
+        (e.base ? '<div class="cl-base">' + esc(e.base) + '</div>' : '') +
+        '</article>';
+    }).join('');
+  }
+
+  function onClKey(e) { if (e.key === 'Escape') closeChangelog(); }
+  function openChangelog() {
+    clInvoker = document.activeElement;
+    clScrim.hidden = false;
+    clPanel.hidden = false;
+    document.addEventListener('keydown', onClKey, true);
+    clClose.focus();
+  }
+  function closeChangelog() {
+    if (clPanel.hidden) return;
+    clPanel.hidden = true;
+    clScrim.hidden = true;
+    document.removeEventListener('keydown', onClKey, true);
+    if (clInvoker && clInvoker.focus) clInvoker.focus();
+  }
+  changesBtn.addEventListener('click', openChangelog);
+  clClose.addEventListener('click', closeChangelog);
+  clScrim.addEventListener('click', closeChangelog);
 
   // ---- boot ----
   buildAppMenu();

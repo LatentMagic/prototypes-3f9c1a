@@ -43,7 +43,7 @@ function send(res, status, body, headers) {
 
 const server = http.createServer((req, res) => {
   // Strip query/hash, then decode percent-escapes BEFORE the fs lookup so
-  // paths like /app/greenfield/LatentPulse%20Alpha.html resolve to the file.
+  // any percent-encoded path segment resolves to the real file on disk.
   let urlPath;
   try {
     urlPath = decodeURIComponent(req.url.split('?')[0].split('#')[0]);

@@ -17,7 +17,7 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 
 ## Why a server (not file://)
 
-Each prototype's `LatentPulse Alpha.html` loads `app/*.jsx` via babel-standalone, which **XHR-fetches** each module. Over `file://` that fetch fails on CORS, so the app never mounts. `server.js` serves everything over `http://` on one origin, which makes the fetch succeed.
+Each prototype's `latentpulse.html` loads `app/*.jsx` via babel-standalone, which **XHR-fetches** each module. Over `file://` that fetch fails on CORS, so the app never mounts. `server.js` serves everything over `http://` on one origin, which makes the fetch succeed.
 
 ## Run
 
@@ -30,7 +30,7 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 
 ## Add a prototype
 
-1. Copy its whole export dir into `app/<slug>/` verbatim (must contain `LatentPulse Alpha.html`, `tokens.css`, `favicon.svg`, and `app/` with the `.jsx` modules). Delete any stray `.playwright-mcp/`.
+1. Copy its whole export dir into `app/<slug>/` verbatim (must contain `latentpulse.html`, `tokens.css`, `favicon.svg`, and `app/` with the `.jsx` modules). Delete any stray `.playwright-mcp/`.
 2. Add one entry — `{ slug, version, ticket, desc }` — to the `SPECIMENS` array in `index.html`. Order is version order, which is also tab order.
 
 ## Runtime dependency
