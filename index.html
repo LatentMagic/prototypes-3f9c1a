@@ -411,6 +411,22 @@
     background: var(--signal);
     box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.22);
   }
+  /* mobile twin of .changes-btn — lives in the rail drawer's config foot
+     (.rail-meta), so it only surfaces at phone width where that foot is shown. */
+  .rail-changes-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-top: 14px;
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--text);
+    border: 1px solid var(--hairline); border-radius: var(--radius);
+    font-family: var(--font-display); font-weight: 500; font-size: 13px;
+    letter-spacing: -0.005em;
+    padding: 9px 14px; min-height: 44px;
+    transition: border-color var(--dur) ease, background var(--dur) ease;
+  }
+  .rail-changes-btn[hidden] { display: none; }
+  .rail-changes-btn:hover { border-color: var(--muted); background: var(--tab-hover-bg); }
+  .rail-changes-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 
   .cl-scrim {
     position: fixed; inset: 0; z-index: 40;
@@ -689,6 +705,9 @@
       <div class="rail-meta-row"><span class="meta-k">SLUG</span><span class="meta-v" id="rm-slug"></span></div>
       <div class="rail-meta-row"><span class="meta-k">TICKET</span><span class="meta-v" id="rm-ticket"></span></div>
       <p class="meta-desc" id="rm-desc"></p>
+      <button type="button" class="rail-changes-btn" id="changes-btn-m" hidden aria-haspopup="dialog" aria-controls="cl-panel">
+        <span class="changes-dot" aria-hidden="true"></span>Recent changes
+      </button>
     </div>
   </aside>
 
@@ -1055,6 +1074,7 @@
   var clBody = document.getElementById('cl-body');
   var clSub = document.getElementById('cl-sub');
   var clClose = document.getElementById('cl-close');
+  var changesBtnM = document.getElementById('changes-btn-m');   // mobile twin (rail-meta foot)
   var clInvoker = null;
 
   function esc(s) {
@@ -1067,6 +1087,7 @@
   function syncChangelog(spec) {
     var log = (spec && spec.changelog) || [];
     changesBtn.hidden = log.length === 0;
+    changesBtnM.hidden = log.length === 0;
     if (log.length === 0) { closeChangelog(); return; }
     clSub.textContent = spec.slug;
     clBody.innerHTML = log.map(function (e) {
@@ -1099,6 +1120,8 @@
     if (clInvoker && clInvoker.focus) clInvoker.focus();
   }
   changesBtn.addEventListener('click', openChangelog);
+  // mobile: close the config drawer first, then open the changelog over the stage
+  changesBtnM.addEventListener('click', function () { closeDrawer(false); openChangelog(); });
   clClose.addEventListener('click', closeChangelog);
   clScrim.addEventListener('click', closeChangelog);
 

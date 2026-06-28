@@ -240,7 +240,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
       <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)', marginBottom: 'var(--space-3)' }}>Members</div>
       <div style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-        borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: 'var(--space-6)',
+        borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-6)',
       }}>
         {space.members.map((m, i) => {
           const isYou = m.name === 'You';
