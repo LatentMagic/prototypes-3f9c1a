@@ -27,4 +27,4 @@ A server is needed (not `file://`) because each prototype loads its `app/*.jsx` 
 - **baseline** — `v0.2.1` (LM-239) — the accepted alpha prototype the two deltas build on.
 - **lm-298-ux-consolidation** — `v0.2.2` (LM-298) — UX consolidation pass.
 - **lm-270-mobile-width** — `v0.2.3` (LM-270) — mobile-width pass.
-- **proposed** — working prototype (BIZ-13) — where in-flight v1-delta changes land on the current line; design pending.
+- **proposed** — working prototype (BIZ-55) — where in-flight v1-delta changes land on the current line; design pending.
