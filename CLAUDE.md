@@ -13,7 +13,7 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 - One `<iframe>` per prototype, so each runs in its own document — full runtime isolation, no shared globals.
 - Each iframe's `src` is set lazily on first tab activation, then tabs toggle with `display`. State survives switching; prototypes don't recompile on every switch.
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
-- Each prototype is deep-linkable at `#<slug>` (e.g. `#proposed`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
+- Each prototype is deep-linkable at `#<slug>` (e.g. `#lm-367-369-champion-self-serve`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
 - The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only — not to be confused with the `lm-270-mobile-width` prototype, which is verbatim prototype content.
 
 ## Why a server (not file://)
