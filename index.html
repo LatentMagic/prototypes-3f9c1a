@@ -902,6 +902,10 @@
     railMeta.ticket.textContent = spec.ticket;
     railMeta.desc.textContent = spec.desc;
     syncChangelog(spec);
+    // keep the URL shareable: reflect the active slug in the hash (replaceState =
+    // no history spam, and no hashchange event so this never loops back on us).
+    var wantHash = '#' + spec.slug;
+    if (location.hash !== wantHash) history.replaceState(null, '', wantHash);
     if (moveFocus) tabs[i].focus();
   }
 
@@ -1125,9 +1129,37 @@
   clClose.addEventListener('click', closeChangelog);
   clScrim.addEventListener('click', closeChangelog);
 
+  // ---- deep-linking ----
+  // A prototype is shareable at #<slug>. activate() keeps the hash in sync; on
+  // load (and on back/forward) we resolve an incoming hash to its app + tab.
+  function findBySlug(slug) {
+    var keys = Object.keys(APPS);
+    for (var k = 0; k < keys.length; k++) {
+      var protos = APPS[keys[k]].prototypes;
+      for (var i = 0; i < protos.length; i++) {
+        if (protos[i].slug === slug) return { appKey: keys[k], index: i };
+      }
+    }
+    return null;
+  }
+  function slugFromHash() {
+    try { return decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); }
+    catch (e) { return ''; }
+  }
+  function selectSlug(slug) {
+    var t = findBySlug(slug);
+    if (!t) return false;                       // unknown slug → leave default
+    if (t.appKey !== ACTIVE_APP) renderApp(t.appKey);
+    activate(t.index, false);
+    return true;
+  }
+
   // ---- boot ----
   buildAppMenu();
+  var bootSlug = slugFromHash();                 // capture before renderApp rewrites the hash
   renderApp(Object.keys(APPS)[0]);
+  if (bootSlug) selectSlug(bootSlug);            // honour a shared #slug link
+  window.addEventListener('hashchange', function () { selectSlug(slugFromHash()); });
 </script>
 </body>
 </html>
