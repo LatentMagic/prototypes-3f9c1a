@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>LatentPulse</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  * { box-sizing: border-box; }
+  :root { --lp-vh: 100vh; }
+  html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); }
+  body { min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  #root { min-height: 100vh; }
+
+  /* ---- spinner ---- */
+  .lp-spin {
+    display: inline-block; border-style: solid; border-width: 2px;
+    border-radius: 50%; animation: lp-spin 700ms linear infinite; flex-shrink: 0;
+  }
+  @keyframes lp-spin { to { transform: rotate(360deg); } }
+  @keyframes lp-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes lp-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes lp-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+  /* ---- focus rings: first-class ---- */
+  button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: var(--ring-width) solid var(--color-accent);
+    outline-offset: var(--ring-offset);
+  }
+  input:focus-visible {
+    outline-offset: 0; border-color: var(--color-accent) !important;
+  }
+
+  /* ---- button hover/press (4% / 8% darken on accent) ---- */
+  .lp-btn-primary:hover:not(:disabled) { background: var(--color-accent-hover) !important; }
+  .lp-btn-primary:active:not(:disabled) { background: var(--color-accent-press) !important; }
+  .lp-btn-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+  .lp-btn-secondary:active:not(:disabled) { background: #E8E8E5 !important; }
+  .lp-btn-destructive:hover:not(:disabled) { background: var(--color-destructive-hover) !important; }
+  .lp-btn-destructive:active:not(:disabled) { background: var(--color-destructive-press) !important; }
+  .lp-btn-tertiary:hover { text-decoration: underline; }
+
+  /* ---- card actions: quiet, recessive ---- */
+  .lp-cardaction {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 10px; min-height: 44px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .lp-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .lp-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; }
+  .lp-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
+
+  /* ---- menus / links ---- */
+  .lp-menuitem:hover { background: var(--color-surface-sunken); }
+  .lp-topaction:hover { background: var(--color-surface-sunken); }
+  .lp-topaction:hover { color: var(--color-fg-1); }
+  .lp-railacct:hover { background: var(--color-surface); }
+  .lp-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ---- scenario launcher (prototype aid) ---- */
+  .lp-launcher-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
+  .lp-launcher-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--color-fg-1); color: #fff; border: 0; cursor: pointer;
+    padding: 9px 14px; border-radius: var(--radius-pill);
+    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
+    box-shadow: var(--shadow-overlay);
+  }
+  .lp-launcher-panel {
+    position: absolute; bottom: calc(100% + 8px); right: 0;
+    width: 248px; background: var(--color-surface);
+    border: 1px solid var(--color-border-1); border-radius: var(--radius-md);
+    box-shadow: var(--shadow-overlay); padding: 6px;
+    max-height: min(72vh, 560px); overflow-y: auto;
+  }
+  .lp-launcher-head {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    padding: 8px 12px 6px;
+  }
+  .lp-launcher-item {
+    display: block; width: 100%; text-align: left; background: transparent; border: 0; cursor: pointer;
+    padding: 9px 12px; border-radius: var(--radius-sm);
+    font-family: var(--font-sans); font-weight: 500; font-size: 13.5px; color: var(--color-fg-1);
+  }
+  .lp-launcher-item:hover { background: var(--color-surface-sunken); }
+  .lp-launcher-sep { height: 1px; background: var(--color-border-2); margin: 6px 8px; }
+
+  /* ---- mobile phone frame (forced-mobile posture) ---- */
+  .lp-stage {
+    min-height: 100vh; width: 100%;
+    background: #1c1c1a;
+    background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%);
+    display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  }
+  .lp-phone {
+    width: 402px; max-width: 100%;
+    height: min(872px, calc(100vh - 48px));
+    background: #050505; border-radius: 52px; padding: 11px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
+  }
+  .lp-phone-screen {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden;
+    background: var(--color-canvas);
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    transform: translateZ(0); /* containing block for position:fixed children */
+    --lp-vh: 100%;
+  }
+  .lp-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* ---- reaction-reveal (loop closure) ---- */
+  .lp-rxswitch-wrap { left: 16px; right: auto; bottom: 16px; }
+  .lp-rx-glyph, .lp-rx-phrase { transition: background var(--duration-base), border-color var(--duration-base); }
+  .lp-rx-glyph:hover, .lp-rx-phrase:hover { background: var(--color-surface-sunken) !important; border-color: var(--color-border-strong) !important; }
+  .lp-rx-glyph:active, .lp-rx-phrase:active { background: #E8E8E5 !important; }
+  @keyframes lp-rx-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .lp-rx-rise { opacity: 0; animation: lp-rx-rise 520ms var(--ease-quiet) forwards; }
+  @keyframes lp-rx-beat { 0%, 100% { transform: scale(1); } 42% { transform: scale(var(--peak, 1.3)); } }
+  .lp-rx-beat { animation: lp-rx-beat 1300ms var(--ease-quiet); animation-iteration-count: 3; }
+  @keyframes lp-rx-echo { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(var(--reach, 2)); opacity: 0; } }
+  .lp-rx-echo { position: absolute; border-radius: 50%; animation: lp-rx-echo 1900ms var(--ease-quiet) infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-rx-rise { animation-duration: 0ms; opacity: 1; }
+    .lp-rx-beat { animation: none; transform: scale(var(--peak, 1.3)); }
+    .lp-rx-echo { animation: none; opacity: 0.25; transform: scale(var(--reach, 1.8)); }
+  }
+
+  /* ---- entrance animations ----
+     Overlays rest at their visible end-state with NO entrance keyframe, so they
+     render correctly under prefers-reduced-motion AND under capture tools that
+     freeze CSS animations at frame 0. Motion lives in transitions (FAB, tabs,
+     buttons) which reveal from a real prior value and never hide content. */
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="app/reactions.jsx"></script>
+<script type="text/babel" src="app/shell.jsx"></script>
+<script type="text/babel" src="app/auth.jsx"></script>
+<script type="text/babel" src="app/spaces.jsx"></script>
+<script type="text/babel" src="app/subscriptions.jsx"></script>
+<script type="text/babel" src="app/tweaks-panel.jsx"></script>
+<script type="text/babel" src="app/lp-tweaks.jsx"></script>
+<script type="text/babel" src="app/main.jsx"></script>
+</body>
+</html>
