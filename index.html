@@ -779,7 +779,7 @@
         },
         {
           slug: 'lm-367-369-champion-self-serve',
-          version: '—',
+          version: 'v0.3.0',
           ticket: 'LM-367 · LM-369',
           desc: 'The working prototype where in-flight v1-delta changes land on the current alpha line. Adds self-serve account & space management: account-scoped change-email (LM-367); champion-gated space rename and member removal (LM-369).',
           changelog: [
@@ -792,12 +792,20 @@
                 'Remove a member — champion-only, via a per-member menu; removed members keep their real name on links they added (former-member attribution is reserved for account deletion).'
               ],
               base: 'Built on the current alpha line.'
+            },
+            {
+              date: '2026-07-05',
+              title: 'Member email visibility gated to owner/champion',
+              items: [
+                'Members surface — a member row shows its email address only for the viewer\'s own row, or when the viewer is champion; previously every member\'s email was visible to every viewer regardless of role (PII fix, flagged via LatentMagic/monorepo#395).'
+              ],
+              base: 'Built on the LM-367/LM-369 self-serve line.'
             }
           ]
         },
         {
           slug: 'biz-63-loop-closure',
-          version: '—',
+          version: 'exploration',
           ticket: 'BIZ-63',
           desc: 'Loop-closure reaction-reveal at mark-as-read — five switchable variants to try side by side (Map · Nine Glyphs · Lexicon · Pulse · Gathering), swapped from the in-prototype variant switcher. Active stays calm; the circle\'s earlier reactions reveal after your own mark-as-read, then live on the Read card.'
         }
