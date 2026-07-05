@@ -10,9 +10,11 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 // ---- Seed data — inhabited, role-staged, no Lorem Ipsum --------------------
 const M = (name, email) => ({ name, email });
 const IT = (url, attribution, read, reactions) => ({ id: 'seed-' + Math.random().toString(36).slice(2, 9), url, attribution, read: !!read, reactions: reactions || [] });
-// A circle member's multi-modal reaction — every variant reads the field it needs.
-// x/y: Agreed↔Challenged × Head↔Heart (0..1). Array order = order originally left.
-const RX = (name, x, y, glyph, phrase, intensity, when) => ({ name, x, y, glyph, phrase, intensity, when });
+// A circle member's reaction. Carries BOTH exploration models so every variant
+// has real data: round-1 fields (x/y on Agreed↔Challenged × Head↔Heart, glyph,
+// phrase) and round-2 fields (intensity = coarse felt "it landed" 0..1, payload
+// = one optional pick from RX_PAYLOADS). Array order = order originally left.
+const RX = (name, x, y, glyph, phrase, intensity, when, payload) => ({ name, x, y, glyph, phrase, intensity, when, payload: payload || null });
 
 function seedSpaces(userEmail) {
   return [
@@ -26,41 +28,44 @@ function seedSpaces(userEmail) {
         // Prior reactions already left by the circle — never shown on Active,
         // revealed only after YOU mark it read.
         IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
-          RX('Priya N.', 0.78, 0.35, '\uD83E\uDD2F', 'Changed my mind', 0.9, 'Mon'),
-          RX('Sam R.', 0.58, 0.6, '\uD83D\uDCA1', 'Needed this', 0.82, 'Tue'),
+          RX('Priya N.', 0.78, 0.35, '\uD83E\uDD2F', 'Changed my mind', 0.9, 'Mon', 'Changed my mind'),
+          RX('Sam R.', 0.58, 0.6, '\uD83D\uDCA1', 'Needed this', 0.82, 'Tue', 'Confirmed it'),
         ]),
+        // A plain landing (payload skipped) sits next to a full two-move one.
         IT('https://blog.rust-lang.org/2026/01/async-internals', 'Added by Priya N.', false, [
-          RX('Marcus T.', 0.3, 0.28, '\uD83D\uDD25', 'Read it twice', 0.65, 'Tue'),
-          RX('Sam R.', 0.52, 0.72, '\uD83E\uDD14', 'Still thinking about it', 0.5, 'Wed'),
+          RX('Marcus T.', 0.3, 0.28, '\uD83D\uDD25', 'Read it twice', 0.65, 'Tue', 'Going to use this'),
+          RX('Sam R.', 0.52, 0.72, '\uD83E\uDD14', 'Still thinking about it', 0.5, 'Wed', null),
         ]),
         // No prior reactions → the one card kept for the first-reader state.
         IT('https://martinfowler.com/articles/cd-pipeline.html', 'Added by Sam R.'),
+        // Dissent ("Pushed back") sits first-class beside agreement.
         IT('https://arxiv.org/abs/2503.04918', 'Added by Priya N.', false, [
-          RX('Sam R.', 0.32, 0.4, '\uD83E\uDDD8', 'Over my head', 0.3, 'Mon'),
-          RX('Marcus T.', 0.66, 0.24, '\u26A1', 'Knew it', 0.34, 'Tue'),
+          RX('Sam R.', 0.32, 0.4, '\uD83E\uDDD8', 'Over my head', 0.3, 'Mon', 'Pushed back'),
+          RX('Marcus T.', 0.66, 0.24, '\u26A1', 'Knew it', 0.34, 'Tue', 'Confirmed it'),
         ]),
         IT('https://www.youtube.com/watch?v=Kx7Bvksk_qg', 'Added by Marcus T.', false, [
-          RX('Priya N.', 0.5, 0.78, '\uD83D\uDE02', 'Made me smile', 0.6, 'Wed'),
-          RX('Sam R.', 0.7, 0.55, '\uD83C\uDF31', 'Passed it on', 0.5, 'Thu'),
+          RX('Priya N.', 0.5, 0.78, '\uD83D\uDE02', 'Made me smile', 0.6, 'Wed', 'Moved me'),
+          RX('Sam R.', 0.7, 0.55, '\uD83C\uDF31', 'Passed it on', 0.5, 'Thu', 'Going to use this'),
         ]),
         IT('https://danluu.com/percentile-latency/', 'Added by Sam R.', false, [
-          RX('Marcus T.', 0.24, 0.5, '\uD83D\uDD25', 'Read it twice', 0.9, 'Tue'),
-          RX('Priya N.', 0.42, 0.32, '\uD83D\uDCA1', 'Needed this', 0.8, 'Wed'),
-          RX('Sam R.', 0.6, 0.66, '\uD83E\uDD14', 'Still thinking about it', 0.78, 'Fri'),
+          RX('Marcus T.', 0.24, 0.5, '\uD83D\uDD25', 'Read it twice', 0.9, 'Tue', 'Changed my mind'),
+          RX('Priya N.', 0.42, 0.32, '\uD83D\uDCA1', 'Needed this', 0.8, 'Wed', 'Confirmed it'),
+          RX('Sam R.', 0.6, 0.66, '\uD83E\uDD14', 'Still thinking about it', 0.78, 'Fri', 'Pushed back'),
         ]),
         IT('https://sqlite.org/whentouse.html', 'Added by former member.', false, [
-          RX('Sam R.', 0.8, 0.3, '\uD83E\uDD2F', 'Changed my mind', 0.38, 'Mon'),
-          RX('Marcus T.', 0.55, 0.6, '\u2764\uFE0F', 'Hit home', 0.3, 'Wed'),
+          RX('Sam R.', 0.8, 0.3, '\uD83E\uDD2F', 'Changed my mind', 0.38, 'Mon', 'Confirmed it'),
+          RX('Marcus T.', 0.55, 0.6, '\u2764\uFE0F', 'Hit home', 0.3, 'Wed', null),
         ]),
-        // Already read — the permanent record for the Read-tab review state.
+        // Already read — the permanent record for the Read-tab review state
+        // (includes your own reaction).
         IT('https://go.dev/blog/pipelines', 'Added by Marcus T.', true, [
-          RX('Priya N.', 0.2, 0.8, '\uD83C\uDF31', 'Hit home', 0.85, 'Fri'),
-          RX('Sam R.', 0.85, 0.25, '\u26A1', 'Knew it', 0.72, 'Fri'),
-          RX('You', 0.45, 0.5, '\u2764\uFE0F', 'Made me smile', 0.9, 'Sat'),
+          RX('Priya N.', 0.2, 0.8, '\uD83C\uDF31', 'Hit home', 0.85, 'Fri', 'Moved me'),
+          RX('Sam R.', 0.85, 0.25, '\u26A1', 'Knew it', 0.72, 'Fri', 'Confirmed it'),
+          RX('You', 0.45, 0.5, '\u2764\uFE0F', 'Made me smile', 0.9, 'Sat', 'Going to use this'),
         ]),
         IT('https://jvns.ca/blog/2026/02/dns-resolvers/', 'Added by Priya N.', true, [
-          RX('Sam R.', 0.4, 0.3, '\uD83D\uDCA1', 'Needed this', 0.34, 'Wed'),
-          RX('Marcus T.', 0.7, 0.6, '\uD83E\uDD2F', 'Over my head', 0.3, 'Thu'),
+          RX('Sam R.', 0.4, 0.3, '\uD83D\uDCA1', 'Needed this', 0.34, 'Wed', 'Confirmed it'),
+          RX('Marcus T.', 0.7, 0.6, '\uD83E\uDD2F', 'Over my head', 0.06, 'Thu', null),
         ]),
         IT('https://www.kernel.org/doc/html/latest/process/submitting-patches.html', 'Added by Sam R.', true),
         IT('https://martinfowler.com/bliki/CircuitBreaker.html', 'Added by former member.', true),
@@ -111,7 +116,7 @@ const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email:
 const displayName = (first, last) => `${first} ${(last || ' ').trim()[0] || ''}.`.trim();
 
 // ---- Persistence -----------------------------------------------------------
-const SAVED = (() => { try { return JSON.parse(localStorage.getItem('lp_alpha_v6_state') || 'null'); } catch (e) { return null; } })();
+const SAVED = (() => { try { return JSON.parse(localStorage.getItem('lp_alpha_v9_state') || 'null'); } catch (e) { return null; } })();
 
 // ---- App -------------------------------------------------------------------
 const LPApp = () => {
@@ -143,11 +148,16 @@ const LPApp = () => {
   const [pendingEmail, setPendingEmail] = useState('you@example.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
   const [launcher, setLauncher] = useState(false);
-  // Reaction-reveal (loop closure) — five switchable variants (prototype chrome).
+  // Reaction-reveal (loop closure, round 2) — four tactile variants (chrome).
   const [reactFlow, setReactFlow] = useState(null);
-  const [rxVariant, setRxVariant] = useState(() => { try { return localStorage.getItem('lp_rx_variant') || 'map'; } catch (e) { return 'map'; } });
+  const RX_KEYS = (window.RX_VARIANTS || []).map(v => v.key);
+  const [rxVariant, setRxVariant] = useState(() => { try { const v = localStorage.getItem('lp_rx_variant_r2'); return RX_KEYS.includes(v) ? v : 'map'; } catch (e) { return 'map'; } });
   const [rxSwitch, setRxSwitch] = useState(false);
-  useEffect(() => { try { localStorage.setItem('lp_rx_variant', rxVariant); } catch (e) {} }, [rxVariant]);
+  // Names toggle — prototype chrome, global across variants. On = attributed,
+  // off = anonymous traces. Same data both ways; changes rendering only.
+  const [rxNames, setRxNames] = useState(() => { try { return localStorage.getItem('lp_rx_names') !== 'off'; } catch (e) { return true; } });
+  useEffect(() => { try { localStorage.setItem('lp_rx_variant_r2', rxVariant); } catch (e) {} }, [rxVariant]);
+  useEffect(() => { try { localStorage.setItem('lp_rx_names', rxNames ? 'on' : 'off'); } catch (e) {} }, [rxNames]);
   // draggable Scenarios launcher (prototype aid). null = default bottom-right.
   const [launchPos, setLaunchPos] = useState(() => {
     try { const v = JSON.parse(localStorage.getItem('lp_launcher_pos') || 'null'); return v && typeof v.x === 'number' ? v : null; } catch (e) { return null; }
@@ -209,7 +219,7 @@ const LPApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem('lp_alpha_v6_state', JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
+    try { localStorage.setItem('lp_alpha_v9_state', JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
   }, [route, user, spaces, currentId, tab]);
 
   const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);
@@ -303,7 +313,7 @@ const LPApp = () => {
 
   // ---- scenario launcher setups ----
   const reset = () => {
-    try { localStorage.removeItem('lp_alpha_v6_state'); } catch (e) {}
+    try { localStorage.removeItem('lp_alpha_v9_state'); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
   };
@@ -459,7 +469,7 @@ const LPApp = () => {
               : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {visible.map(item => (
-                    <FeedCard key={item.id} item={item} tab={tab} variant={rxVariant}
+                    <FeedCard key={item.id} item={item} tab={tab} variant={rxVariant} names={rxNames}
                       onOpen={openLink}
                       onMarkRead={(it) => setConfirm({ kind: 'mark-read', item: it })}
                       onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />
@@ -483,7 +493,7 @@ const LPApp = () => {
   // dialogs live above whichever screen
   const overlay = confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />;
   const reactOverlay = reactFlow && (
-    <ReactionFlow item={reactFlow.item} variant={rxVariant}
+    <ReactionFlow item={reactFlow.item} variant={rxVariant} names={rxNames}
       onMarkRead={(it, rx) => markRead(it, rx)} onClose={() => setReactFlow(null)} />
   );
   const appTree = <>{screen}{overlay}{reactOverlay}</>;
@@ -524,10 +534,10 @@ const LPApp = () => {
         </button>
       </div>
 
-      {/* Reaction-variant switcher — prototype chrome, sibling to Scenarios */}
+      {/* Reaction-variant switcher + Names toggle — prototype chrome, sibling to Scenarios */}
       <div className="lp-launcher-wrap lp-rxswitch-wrap">
         {rxSwitch && (
-          <div className="lp-launcher-panel" role="menu" style={{ left: 0, right: 'auto', bottom: 'calc(100% + 8px)', top: 'auto', width: 256 }}>
+          <div className="lp-launcher-panel" role="menu" style={{ left: 0, right: 'auto', bottom: 'calc(100% + 8px)', top: 'auto', width: 264 }}>
             <div className="lp-launcher-head">Reaction reveal — variant</div>
             {RX_VARIANTS.map((v) => {
               const on = v.key === rxVariant;
@@ -542,11 +552,32 @@ const LPApp = () => {
             })}
           </div>
         )}
-        <button className="lp-launcher-btn" onClick={() => setRxSwitch(v => !v)} aria-expanded={rxSwitch}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-accent)' }} />
-          Variant {RX_VARIANTS.find(v => v.key === rxVariant)?.n || 1}
-          <Icon name="chevron-down" size={14} style={{ transform: rxSwitch ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button className="lp-launcher-btn" onClick={() => setRxSwitch(v => !v)} aria-expanded={rxSwitch}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-accent)' }} />
+            Variant {RX_VARIANTS.find(v => v.key === rxVariant)?.n || 1}
+            <Icon name="chevron-down" size={14} style={{ transform: rxSwitch ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
+          </button>
+          <div role="group" aria-label="Names" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-fg-1)',
+            borderRadius: 'var(--radius-pill)', padding: '5px 7px 5px 11px', boxShadow: 'var(--shadow-overlay)',
+          }}>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: '#fff' }}>Names</span>
+            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.14)', borderRadius: 'var(--radius-pill)', padding: 2 }}>
+              {[['on', true], ['off', false]].map(([lab, val]) => {
+                const on = rxNames === val;
+                return (
+                  <button key={lab} onClick={() => setRxNames(val)} aria-pressed={on} style={{
+                    border: 0, cursor: 'pointer', padding: '3px 10px', borderRadius: 'var(--radius-pill)',
+                    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5,
+                    background: on ? '#fff' : 'transparent', color: on ? 'var(--color-fg-1)' : 'rgba(255,255,255,0.72)',
+                    transition: 'background 120ms, color 120ms',
+                  }}>{lab}</button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
       <LPTweaks tw={tw} setTweak={setTweak} />

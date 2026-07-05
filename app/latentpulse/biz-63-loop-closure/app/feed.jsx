@@ -7,7 +7,7 @@
 // ---- FeedCard --------------------------------------------------------------
 // Anatomy: URL line (mono) + attribution block (sans, co-equal weight). No
 // thumbnail, no title, no domain line, no badge. Actions are recessive.
-const FeedCard = ({ item, tab, variant, onOpen, onMarkRead, onDelete }) => {
+const FeedCard = ({ item, tab, variant, names, onOpen, onMarkRead, onDelete }) => {
   const former = /former member/i.test(item.attribution);
   // Display name parsed out of "Added by Sam R." for the avatar.
   const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
@@ -63,7 +63,7 @@ const FeedCard = ({ item, tab, variant, onOpen, onMarkRead, onDelete }) => {
       </div>
 
       {/* Read-tab permanent record — the circle's reactions. Never on Active. */}
-      {tab === 'read' && ReadReactions && <ReadReactions item={item} variant={variant} />}
+      {tab === 'read' && ReadReactions && <ReadReactions item={item} variant={variant} names={names} />}
     </article>
   );
 };
