@@ -253,7 +253,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
               <Avatar name={m.name} size={32} accent={isYou} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{m.name}{isYou && m.name !== 'You' ? ' (you)' : ''}</div>
-                {m.email && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
+                {m.email && (isYou || isChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
               </div>
               {memberIsChampion ? (
                 <span style={{

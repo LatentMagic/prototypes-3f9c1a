@@ -29,4 +29,4 @@ A server is needed (not `file://`) because each prototype loads its `app/*.jsx` 
 - **baseline** — `v0.2.1` (LM-239) — the accepted alpha prototype the two deltas build on.
 - **lm-298-ux-consolidation** — `v0.2.2` (LM-298) — UX consolidation pass.
 - **lm-270-mobile-width** — `v0.2.3` (LM-270) — mobile-width pass.
-- **lm-367-369-champion-self-serve** — working prototype — where in-flight v1-delta changes land on the current line; carries LM-367 (change email) + LM-369 (champion space controls). Design pending.
+- **lm-367-369-champion-self-serve** — working prototype — where in-flight v1-delta changes land on the current line; carries LM-367 (change email) + LM-369 (champion space controls) + a member-email visibility gate (champion/owner only, PII fix). Design pending.
