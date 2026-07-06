@@ -494,6 +494,7 @@ const LPApp = () => {
   const overlay = confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />;
   const reactOverlay = reactFlow && (
     <ReactionFlow item={reactFlow.item} variant={rxVariant} names={rxNames}
+      swellOpts={{ centerDot: tw.swellCenterDot, breath: tw.swellBreath, snap: tw.swellSnap }}
       onMarkRead={(it, rx) => markRead(it, rx)} onClose={() => setReactFlow(null)} />
   );
   const appTree = <>{screen}{overlay}{reactOverlay}</>;

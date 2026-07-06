@@ -3,7 +3,10 @@
 // ============================================================================
 const LP_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#047857",
-  "layout": "auto"
+  "layout": "auto",
+  "swellCenterDot": true,
+  "swellBreath": true,
+  "swellSnap": true
 }/*EDITMODE-END*/;
 
 const LPTweaks = ({ tw, setTweak }) => (
@@ -16,6 +19,13 @@ const LPTweaks = ({ tw, setTweak }) => (
     <TweakRadio label="Viewport" value={tw.layout}
       options={["auto", "desktop", "mobile"]}
       onChange={(v) => setTweak('layout', v)} />
+    <TweakSection label="The Swell — refinements" />
+    <TweakToggle label="Centre dot" value={tw.swellCenterDot}
+      onChange={(v) => setTweak('swellCenterDot', v)} />
+    <TweakToggle label="Breathing halo" value={tw.swellBreath}
+      onChange={(v) => setTweak('swellBreath', v)} />
+    <TweakToggle label="Magnetic snap (angle only)" value={tw.swellSnap}
+      onChange={(v) => setTweak('swellSnap', v)} />
   </TweaksPanel>
 );
 

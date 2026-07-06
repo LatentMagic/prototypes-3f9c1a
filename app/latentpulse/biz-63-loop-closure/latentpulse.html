@@ -51,6 +51,12 @@
   }
   .lp-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
   .lp-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; }
+  /* Swell reaction door — borderless at rest, sunken pill on hover/focus (the card's own hover language) */
+  .lp-swell-door:hover { background: var(--color-surface-sunken); }
+  .lp-swell-door:focus-visible { outline: none; background: var(--color-surface-sunken); box-shadow: 0 0 0 2px var(--color-accent-ring); }
+  /* Swell review-modal roster rows + scatter glyphs — hover/focus affordance */
+  .lp-swell-rrow:hover { background: var(--color-surface-sunken) !important; }
+  .lp-swell-rrow:focus-visible { box-shadow: 0 0 0 2px var(--color-accent-ring); }
   .lp-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
 
   /* ---- menus / links ---- */
@@ -132,10 +138,15 @@
   .lp-rx-beat { animation: lp-rx-beat 1300ms var(--ease-quiet); animation-iteration-count: 3; }
   @keyframes lp-rx-echo { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(var(--reach, 2)); opacity: 0; } }
   .lp-rx-echo { position: absolute; border-radius: 50%; animation: lp-rx-echo 1900ms var(--ease-quiet) infinite; }
+  /* Swell — breathing halo. A slow, fine tremor at high intensity (a held breath,
+     not a rattle). Amplitude rides in via --breath-peak (~1.0 = imperceptible). */
+  @keyframes lp-swell-breath { 0%, 100% { transform: scale(1); } 50% { transform: scale(var(--breath-peak, 1)); } }
+  .lp-swell-breath { animation: lp-swell-breath 1700ms ease-in-out infinite; will-change: transform; }
   @media (prefers-reduced-motion: reduce) {
     .lp-rx-rise { animation-duration: 0ms; opacity: 1; }
     .lp-rx-beat { animation: none; transform: scale(var(--peak, 1.3)); }
     .lp-rx-echo { animation: none; opacity: 0.25; transform: scale(var(--reach, 1.8)); }
+    .lp-swell-breath { animation: none; }
     .lp-rx-reveal-btn { transition: none !important; }
   }
 

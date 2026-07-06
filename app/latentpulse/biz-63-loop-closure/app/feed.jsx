@@ -32,13 +32,17 @@ const FeedCard = ({ item, tab, variant, names, onOpen, onMarkRead, onDelete }) =
         }}
       >{item.url}</a>
 
-      {/* Attribution block — co-equal with the URL, never a footer. */}
+      {/* Attribution block — co-equal with the URL, never a footer. On the Read
+          tab, The Swell's reaction door sits at the right edge here: added by
+          one, received by many. */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
         <Avatar name={former ? null : who} size={32} />
         <span style={{
           fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16,
           lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em',
+          flex: 1, minWidth: 0,
         }}>{item.attribution}</span>
+        {tab === 'read' && variant === 'swell' && SwellDoor && <SwellDoor item={item} names={names} />}
       </div>
 
       {/* Recessive actions — quiet, separated by a hairline. */}
