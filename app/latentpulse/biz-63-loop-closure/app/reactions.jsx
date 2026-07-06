@@ -1117,10 +1117,10 @@ const ReactionFlow = ({ item, variant, names, swellOpts, onMarkRead, onClose }) 
       style={{
         position: 'fixed', inset: 0, zIndex: 135,
         background: modal ? 'var(--color-scrim)' : 'rgba(10,10,10,0.22)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: tight ? 8 : 16,
+        display: 'flex', alignItems: variant === 'swell' ? 'flex-start' : 'center', justifyContent: 'center', padding: tight ? 8 : 16,
         transition: 'background 460ms var(--ease-quiet)',
       }} className="lp-anim-fade">
-      <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)', maxWidth: 420, width: variant === 'swell' ? (tight ? '100%' : 348) : (tight ? '100%' : 'auto'), minWidth: tight ? 0 : 288 }}>
+      <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)', maxWidth: 420, width: variant === 'swell' ? (tight ? '100%' : 348) : (tight ? '100%' : 'auto'), minWidth: tight ? 0 : 288, marginTop: variant === 'swell' ? (tight ? 14 : '5vh') : 0 }}>
         {step === 'input' && (
           <button type="button" onClick={onClose} aria-label="Close" className="lp-rx-close" style={{
             position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
@@ -1331,13 +1331,20 @@ const SwellReview = ({ all, names, interactive = true }) => {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
   const narrow = vw < 520;
   const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
-  const pad = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  // Match the reveal disc to the INPUT pad's VISIBLE disc (box - insets), NOT the
+  // outer footprint — so the circle is the exact same size across both screens.
+  const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  const pad = box - Math.round(box * 0.1389) * 2;
   return (
     <React.Fragment>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)', letterSpacing: '0.04em', marginBottom: 4 }}>the circle</div>
-      <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 16px', letterSpacing: '-0.01em' }}>How it landed</h2>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)', letterSpacing: '0.04em', marginBottom: 4, textAlign: 'center' }}>the circle</div>
+      <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em', textAlign: 'center' }}>How it landed</h2>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-        <SwellScatter all={all} names={names} size={pad} interactive={interactive} selected={interactive && names ? sel : null} onSelect={interactive && names ? (i) => setSel(i) : (() => {})} />
+        <div style={{ position: 'relative', width: box, height: box, flexShrink: 0, marginTop: narrow ? 7 : 27 }}>
+          <div style={{ position: 'absolute', inset: Math.round(box * 0.1389) }}>
+            <SwellScatter all={all} names={names} size={pad} interactive={interactive} selected={interactive && names ? sel : null} onSelect={interactive && names ? (i) => setSel(i) : (() => {})} />
+          </div>
+        </div>
         {names && all.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, width: '100%' }}>
             {all.map((r, i) => {
