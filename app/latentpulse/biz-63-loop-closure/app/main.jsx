@@ -471,7 +471,7 @@ const LPApp = () => {
                   {visible.map(item => (
                     <FeedCard key={item.id} item={item} tab={tab} variant={rxVariant} names={rxNames}
                       onOpen={openLink}
-                      onMarkRead={(it) => setConfirm({ kind: 'mark-read', item: it })}
+                      onMarkRead={(it) => rxVariant === 'swell' ? setReactFlow({ item: it }) : setConfirm({ kind: 'mark-read', item: it })}
                       onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />
                   ))}
                 </div>

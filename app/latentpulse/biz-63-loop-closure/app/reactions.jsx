@@ -29,8 +29,10 @@ const RX_VARIANTS = [
   { n: 7, key: 'trace', name: 'The Trace',      sub: 'Marginalia stroke' },
   { n: 8, key: 'dial',  name: 'The Dial',       sub: 'Watch-crown' },
   { n: 9, key: 'plain', name: 'The Plain Pair', sub: 'Control' },
+  // Round 2 addendum — the analogue-emoji fusion (Nine Glyphs × The Stick).
+  { n: 10, key: 'swell', name: 'The Swell', sub: 'Analogue emoji' },
 ];
-const RX_ROUND2 = ['stick', 'trace', 'dial', 'plain'];
+const RX_ROUND2 = ['stick', 'trace', 'dial', 'plain', 'swell'];
 
 // ---- round-1 vocabularies ----
 const RX_GLYPHS = ['\uD83D\uDCA1', '\uD83E\uDD2F', '\uD83D\uDD25', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83E\uDD14', '\uD83E\uDDD8', '\u26A1', '\uD83C\uDF31'];
@@ -280,6 +282,179 @@ const StickZoneLabels = ({ live }) => {
 };
 
 // ---------------------------------------------------------------------------
+// ROUND 2 addendum — The Swell (Nine Glyphs × The Stick).
+// Drag toward one of nine glyphs arranged radially; direction = which glyph,
+// distance = how hard it landed. Depth is surfaced WITHOUT transparency or
+// gradients — twice over: radial distance from centre AND the glyph's size
+// (it swells as it lands harder), with a soft accent halo for the pull.
+// ---------------------------------------------------------------------------
+const SWELL_MAX = 0.46;      // furthest a glyph sits from centre (fraction of pad)
+const SWELL_DEAD = 0.055;    // inside this = no glyph chosen yet
+const glyphAngle = (idx) => (-90 + idx * 40) * Math.PI / 180;   // 9 glyphs, 40° apart
+const glyphIndexOf = (g) => RX_GLYPHS.indexOf(g);
+const swellJitter = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.34; // stable per member
+// Where a glyph sits on the pad. A committed drag carries its own free nx/ny;
+// seed reactions are placed fluidly along their glyph's direction, distance by
+// intensity, with a stable per-member jitter → the circle reads as a constellation.
+const swellPos = (r) => {
+  if (r && r.nx != null) return { x: r.nx, y: r.ny };
+  const i = iv(r);
+  const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
+  const rr = idx >= 0 ? 0.17 + i * 0.27 : 0.05;
+  const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(r && r.name);
+  return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
+};
+// Nearest glyph for a free pull direction — one glyph, never a blend.
+const nearestGlyph = (dx, dy, dist) => {
+  if (dist < SWELL_DEAD) return null;
+  const ang = Math.atan2(dy, dx); let best = 0, bd = 9;
+  // robust angular distance (handles glyphAngle values beyond ±180°, e.g. ⚡/🌱)
+  for (let k = 0; k < 9; k++) { const d = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (d < bd) { bd = d; best = k; } }
+  return RX_GLYPHS[best];
+};
+const swellFontSize = (i, small, isMine) => small ? (10 + i * 6) : ((isMine ? 20 : 18) + i * 20);
+
+const SwellPad = ({ size, mine, others, names, live, onChange, onSubmit, interactive }) => {
+  const boxRef = rxRef(null);
+  const small = size <= 80;
+  const posToDraft = (clientX, clientY) => {
+    const b = boxRef.current.getBoundingClientRect();
+    let dx = (clientX - b.left) / b.width - 0.5, dy = (clientY - b.top) / b.height - 0.5;
+    let dist = Math.hypot(dx, dy);
+    if (dist > SWELL_MAX) { dx *= SWELL_MAX / dist; dy *= SWELL_MAX / dist; dist = SWELL_MAX; }
+    return { nx: 0.5 + dx, ny: 0.5 + dy, intensity: Math.min(1, dist / SWELL_MAX), glyph: nearestGlyph(dx, dy, dist) };
+  };
+  const onPointerDown = (e) => {
+    if (!interactive) return;
+    const el = e.currentTarget;
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    const move = (ev) => onChange(posToDraft(ev.clientX, ev.clientY));
+    move(e);
+    const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+  };
+  const onKeyDown = (e) => {
+    if (!interactive) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSubmit && onSubmit(); return; }
+    const cur = live || {}; let dx = (cur.nx != null ? cur.nx : 0.5) - 0.5, dy = (cur.ny != null ? cur.ny : 0.5) - 0.5;
+    let ang = Math.hypot(dx, dy) < 0.001 ? -Math.PI / 2 : Math.atan2(dy, dx);
+    let rad = Math.hypot(dx, dy);
+    if (e.key === 'ArrowUp') rad = Math.min(SWELL_MAX, rad + 0.06);
+    else if (e.key === 'ArrowDown') rad = Math.max(0, rad - 0.06);
+    else if (e.key === 'ArrowRight') ang += 2 * Math.PI / 9;
+    else if (e.key === 'ArrowLeft') ang -= 2 * Math.PI / 9;
+    else return;
+    e.preventDefault();
+    dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
+    onChange({ nx: 0.5 + dx, ny: 0.5 + dy, intensity: Math.min(1, rad / SWELL_MAX), glyph: nearestGlyph(dx, dy, rad) });
+  };
+  const emoji = (r, isMine, key) => {
+    const p = swellPos(r); const fs = swellFontSize(iv(r), small, isMine);
+    return (
+      <span key={key} title={small || !names ? undefined : (isMine ? 'You' : r.name)} style={{
+        position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
+        transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {isMine && !small && <span style={{ position: 'absolute', width: fs * 1.7, height: fs * 1.7, borderRadius: '50%', background: 'rgba(4,120,87,0.14)' }} />}
+        <span style={{ position: 'relative', fontSize: fs, lineHeight: 1 }}>{r.glyph}</span>
+      </span>
+    );
+  };
+  // live puck — a plain handle at your finger (the emoji you're choosing lives
+  // out at the rim, never under your finger). Halo deepens as you pull harder.
+  const livePuck = () => {
+    const lx = live && live.nx != null ? live.nx : 0.5, ly = live && live.ny != null ? live.ny : 0.5;
+    const t = live && live.intensity != null ? live.intensity : 0;
+    const k = size / 208;                                 // scale the puck with the pad
+    const puck = (17 + t * 40) * k, halo = (28 + t * 92) * k;
+    return (
+      <span style={{ position: 'absolute', left: (lx * 100) + '%', top: (ly * 100) + '%', transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+        <span style={{ position: 'absolute', width: halo, height: halo, borderRadius: '50%', background: 'rgba(4,120,87,' + (0.10 + t * 0.18) + ')' }} />
+        <span style={{ position: 'relative', width: puck, height: puck, borderRadius: '50%', background: 'var(--color-accent)', opacity: 0.72 + t * 0.28, border: '2px solid var(--color-surface)', boxShadow: '0 2px 8px rgba(4,120,87,' + (0.2 + t * 0.3) + ')' }} />
+      </span>
+    );
+  };
+  return (
+    <div ref={boxRef}
+      tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown} onPointerDown={onPointerDown}
+      role={interactive ? 'slider' : undefined} aria-label={interactive ? 'Drag toward a glyph to react' : undefined}
+      style={{
+        position: 'relative', width: size, height: size, flexShrink: 0,
+        background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+        borderRadius: '50%', touchAction: 'none', cursor: interactive ? 'grab' : 'default',
+        backgroundImage: 'radial-gradient(circle, var(--color-border-2) 1px, transparent 1px)',
+        backgroundSize: (size / 5) + 'px ' + (size / 5) + 'px', backgroundPosition: 'center',
+      }}>
+      {!small && !interactive && <span style={{ position: 'absolute', left: '50%', top: '50%', width: 4, height: 4, borderRadius: '50%', background: 'var(--color-border-strong)', transform: 'translate(-50%,-50%)' }} />}
+      {(others || []).map((r, i) => emoji(r, false, 'o' + i))}
+      {mine && emoji(mine, true, 'me')}
+      {interactive && livePuck()}
+    </div>
+  );
+};
+// The nine glyphs ring the pad like a dial. As you pull the puck toward one it
+// brightens; the further you pull (the harder it landed) the more it SWELLS.
+// Depth lives on the glyph itself, out at the rim — never hidden under your finger.
+const SwellPalette = ({ live, box }) => {
+  const active = live && live.glyph;
+  const t = live && live.intensity != null ? live.intensity : 0;
+  const base = box ? Math.max(22, Math.round(box * 0.082)) : 22;   // glyphs grow with the pad
+  return RX_GLYPHS.map((g, k) => {
+    const a = glyphAngle(k), rr = 0.45, on = active === g;
+    const scale = on ? (1 + t * 0.95) : 1;
+    return (
+      <span key={k} style={{
+        position: 'absolute', left: (50 + Math.cos(a) * rr * 100) + '%', top: (50 + Math.sin(a) * rr * 100) + '%',
+        transform: 'translate(-50%,-50%) scale(' + scale + ')', transformOrigin: 'center', pointerEvents: 'none',
+        fontSize: base, lineHeight: 1, opacity: on ? 1 : 0.3,
+        transition: 'opacity 120ms var(--ease-quiet), transform 90ms var(--ease-quiet)',
+        filter: on ? 'drop-shadow(0 3px 8px rgba(4,120,87,0.26))' : 'none',
+      }}>{g}</span>
+    );
+  });
+};
+// The circle's reactions as a tight cluster — each glyph SIZED by how hard it
+// landed (depth reads at a glance, no pad, no whitespace). `big` = ephemeral
+// reveal (glyph over name); compact = the permanent Read-card row. Yours is
+// marked with a soft accent halo; the names toggle governs attribution.
+const SwellCluster = ({ mine, others, names, big }) => {
+  const list = [...(others || []), ...(mine ? [{ ...mine, _mine: true }] : [])];
+  if (!list.length) return null;
+  if (big) {
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 22px', justifyContent: 'center', alignItems: 'flex-end', maxWidth: 340 }}>
+        {list.map((r, i) => {
+          const fs = 30 + iv(r) * 42, me = r._mine || r.name === 'You';
+          return (
+            <div key={i} className="lp-rx-rise" style={{ animationDelay: (i * 180) + 'ms', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9 }}>
+              <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                {me && <span style={{ position: 'absolute', width: fs * 1.6, height: fs * 1.6, borderRadius: '50%', background: 'rgba(4,120,87,0.13)' }} />}
+                <span style={{ position: 'relative', fontSize: fs, lineHeight: 1 }}>{r.glyph}</span>
+              </span>
+              {names && <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: me ? 'var(--color-accent)' : 'var(--color-fg-2)' }}>{who(r.name, names)}</span>}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'center' }}>
+      {list.map((r, i) => {
+        const fs = 17 + iv(r) * 15, me = r._mine || r.name === 'You';
+        return (
+          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: fs, lineHeight: 1 }}>{r.glyph}</span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: me ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>{who(r.name, names)}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
 // ROUND 2 — The Trace (stable stroke per member; longer = harder).
 // ---------------------------------------------------------------------------
 const tracePath = (seed, intensity, w, h, band) => {
@@ -399,12 +574,22 @@ const CaptionRow = ({ r, names, mine }) => (
 // INPUT STEP — variant-specific, always skippable.
 // ===========================================================================
 const RxActions = ({ onSkip, done }) => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: done ? 'space-between' : 'center', gap: 12, width: '100%', minWidth: 240 }}>
-    <button type="button" onClick={onSkip} className="lp-btn-tertiary" style={{
-      background: 'transparent', border: 0, cursor: 'pointer', padding: '10px 6px',
-      fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)',
-    }}>Skip</button>
-    {done && <Button variant="primary" onClick={done}>Leave reaction</Button>}
+  <div style={{ display: 'flex', alignItems: 'center', width: '100%', minWidth: 240 }}>
+    <div style={{ flex: '1 1 0', display: 'flex', justifyContent: 'center' }}>
+      <button type="button" onClick={onSkip} className="lp-btn-tertiary" style={{
+        background: 'transparent', border: 0, cursor: 'pointer', padding: '10px 6px',
+        fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)',
+      }}>Skip</button>
+    </div>
+    {/* width-animated wrapper: Skip re-centres in the shrinking space as this grows in. */}
+    <div className="lp-rx-reveal-btn" data-on={done ? '1' : '0'} style={{
+      overflow: 'hidden', flexShrink: 0, whiteSpace: 'nowrap',
+      width: done ? 160 : 0, opacity: done ? 1 : 0,
+      transition: 'width 360ms var(--ease-quiet), opacity 260ms var(--ease-quiet)',
+      pointerEvents: done ? 'auto' : 'none',
+    }}>
+      <Button variant="primary" onClick={done || undefined} style={{ width: 148 }}>Leave reaction</Button>
+    </div>
   </div>
 );
 const secondaryBtn = {
@@ -421,12 +606,22 @@ const PlainStepLabel = ({ n, optional, children }) => (
 );
 
 const RxInput = ({ variant, onCommit, onSkip }) => {
+  // responsive width (swell fills mobile; harmless for other variants)
+  const [vw, setVw] = rxState(typeof window !== 'undefined' ? window.innerWidth : 400);
+  rxEffect(() => {
+    const on = () => setVw(window.innerWidth);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
   // round-1 state
   const [placed, setPlaced] = rxState(null);
   const [held, setHeld] = rxState(0);
   const holdRef = rxRef({ raf: 0, start: 0 });
   // round-2 state
   const [draft, setDraft] = rxState({ intensity: null, payload: null });
+  const [swell, setSwell] = rxState({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
+  const swellTouched = swell.glyph != null;
+  const commitSwell = () => onCommit({ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny });
   const [stroke, setStroke] = rxState(null);
   const traceRef = rxRef(null);
   const touched = draft.intensity != null || draft.payload != null;
@@ -543,6 +738,27 @@ const RxInput = ({ variant, onCommit, onSkip }) => {
       </>
     );
   // ------------------------------ round 2 ------------------------------
+  } else if (variant === 'swell') {
+    // Fill the available modal width on mobile so the pad + glyphs are maximised,
+    // with the surrounding chrome trimmed to almost nothing.
+    const narrow = vw < 520;
+    const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);   // outer + modal paddings
+    const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+    const inset = Math.round(box * 0.1389);
+    const pad = box - inset * 2;
+    body = (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <div style={{ position: 'relative', width: box, height: box, margin: narrow ? '2px 0 0' : '10px 0 0' }}>
+          <div style={{ position: 'absolute', inset }}>
+            <SwellPad size={pad} live={swell} interactive
+              onChange={setSwell} onSubmit={() => { if (swellTouched) commitSwell(); }} />
+          </div>
+          <SwellPalette live={swell} box={box} />
+        </div>
+        <div style={{ height: narrow ? 10 : 16 }} />
+        <RxActions onSkip={onSkip} done={swellTouched ? commitSwell : null} />
+      </div>
+    );
   } else if (variant === 'stick') {
     body = (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -646,7 +862,7 @@ const RxInput = ({ variant, onCommit, onSkip }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>{round2 ? 'How did it land?' : 'How did it land for you?'}</h2>
-      {variant !== 'plain' && <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: '0 0 18px' }}>Optional — a note left for the circle.</p>}
+      {variant !== 'plain' && <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: variant === 'swell' && vw < 520 ? '0 0 6px' : '0 0 18px' }}>Optional — a note left for the circle.</p>}
       {variant === 'plain' && <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: '0 0 18px' }}>Leave the circle a quiet signal — or skip.</p>}
       {body}
     </div>
@@ -752,6 +968,13 @@ const RxReveal = ({ variant, mine, others, names, onDone }) => {
       </div>
     );
   // ------------------------------ round 2 ------------------------------
+  } else if (variant === 'swell') {
+    inner = (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+        <RxRevealLabel>How it landed</RxRevealLabel>
+        <SwellCluster mine={mine} others={others} names={names} big />
+      </div>
+    );
   } else if (variant === 'stick') {
     inner = (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
@@ -828,15 +1051,26 @@ const ReactionFlow = ({ item, variant, names, onMarkRead, onClose }) => {
   }, [step]);
 
   const modal = step === 'input';
+  const tight = variant === 'swell' && typeof window !== 'undefined' && window.innerWidth < 520;
   return (
     <div onClick={(e) => { if (e.target === e.currentTarget && step === 'reveal') onClose(); }}
       style={{
         position: 'fixed', inset: 0, zIndex: 135,
         background: modal ? 'var(--color-scrim)' : 'rgba(10,10,10,0.22)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: tight ? 8 : 16,
         transition: 'background 460ms var(--ease-quiet)',
       }} className="lp-anim-fade">
-      <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', boxShadow: 'var(--shadow-overlay)', maxWidth: 420, width: 'auto', minWidth: 288 }}>
+      <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)', maxWidth: 420, width: tight ? '100%' : 'auto', minWidth: tight ? 0 : 288 }}>
+        {step === 'input' && (
+          <button type="button" onClick={onClose} aria-label="Close" className="lp-rx-close" style={{
+            position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer',
+            color: 'var(--color-fg-3)',
+          }}>
+            <Icon name="x" size={18} />
+          </button>
+        )}
         {step === 'input'
           ? <RxInput variant={variant} onCommit={commit} onSkip={() => commit(null)} />
           : <RxReveal variant={variant} mine={mine} others={others} names={names} onDone={onClose} />}
@@ -929,6 +1163,11 @@ const ReadReactions = ({ item, variant, names }) => {
       </div>
     );
   // ------------------------------ round 2 ------------------------------
+  // ------------------------------ round 2 ------------------------------
+  } else if (variant === 'swell') {
+    body = (
+      <SwellCluster mine={mine} others={others} names={names} />
+    );
   } else if (variant === 'stick') {
     body = (<div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}><StickPad size={64} mine={mine} others={others} names={names} interactive={false} />{readList}</div>);
   } else if (variant === 'trace') {
