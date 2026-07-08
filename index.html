@@ -358,6 +358,54 @@
   }
   .vp-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
 
+  /* ---- layout toggles (desktop): collapse the rail / info bar to maximise stage ---- */
+  .view-toggles {
+    flex: 0 0 auto;
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: 7px;
+  }
+  .view-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 7px;
+    border-radius: 5px;
+    transition: background var(--dur) ease, color var(--dur) ease;
+  }
+  .view-btn:hover { color: var(--text); }
+  .view-btn svg { width: 15px; height: 15px; display: block; }
+  .view-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+  .view-btn[aria-pressed="true"] {
+    background: var(--tab-active-bg);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+
+  /* Collapse behaviour is desktop-only — mobile already drops the bar and drawers
+     the rail, so these rules are fenced above the 640px breakpoint to avoid leaking
+     a body.*-collapsed class into the mobile drawer's own width/transform. */
+  @media (min-width: 641px) {
+    .rail { transition: flex-basis .18s ease, width .18s ease; }
+    body.rail-collapsed .rail {
+      flex-basis: 0;
+      width: 0;
+      overflow: hidden;
+      border-right-color: transparent;
+    }
+    body.bar-collapsed .meta-keys,
+    body.bar-collapsed .meta-desc { display: none; }
+    body.bar-collapsed .meta { padding-top: 9px; padding-bottom: 9px; }
+  }
+
   /* mobile viewport: clamp the active frame to phone width, centered on the
      graphite. An iframe is its own viewport, so narrowing it makes each
      prototype's OWN responsive code reflow to mobile — prototypes untouched. */
@@ -722,6 +770,14 @@
           <span class="meta-pair"><span class="meta-k">TICKET</span><span class="meta-v" id="m-ticket"></span></span>
         </div>
         <div class="meta-actions">
+          <div class="view-toggles" role="group" aria-label="Layout">
+            <button type="button" class="view-btn" id="toggle-rail" aria-pressed="true" title="Hide sidebar" aria-label="Toggle sidebar">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><line x1="6" y1="2.5" x2="6" y2="13.5"/></svg>
+            </button>
+            <button type="button" class="view-btn" id="toggle-bar" aria-pressed="true" title="Collapse info bar" aria-label="Toggle info bar">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><line x1="1.5" y1="6" x2="14.5" y2="6"/></svg>
+            </button>
+          </div>
           <button type="button" class="changes-btn" id="changes-btn" hidden aria-haspopup="dialog" aria-controls="cl-panel">
             <span class="changes-dot" aria-hidden="true"></span>Changes
           </button>
@@ -1102,6 +1158,23 @@
   }
   vpDesktop.addEventListener('click', function () { setViewport(false); });
   vpMobile.addEventListener('click', function () { setViewport(true); });
+
+  // ---- layout toggles: collapse the rail / info bar to hand the stage more space.
+  // Both open by default; aria-pressed=true means the panel is shown. Desktop-only
+  // (the buttons live in .meta, which is display:none at mobile width). ----
+  var toggleRail = document.getElementById('toggle-rail');
+  var toggleBar = document.getElementById('toggle-bar');
+  function setPanel(btn, cls, show, titleShown, titleHidden) {
+    document.body.classList.toggle(cls, !show);
+    btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+    btn.title = show ? titleShown : titleHidden;
+  }
+  toggleRail.addEventListener('click', function () {
+    setPanel(toggleRail, 'rail-collapsed', document.body.classList.contains('rail-collapsed'), 'Hide sidebar', 'Show sidebar');
+  });
+  toggleBar.addEventListener('click', function () {
+    setPanel(toggleBar, 'bar-collapsed', document.body.classList.contains('bar-collapsed'), 'Collapse info bar', 'Show info bar');
+  });
 
   // ---- mobile drawer: the rail slides out to expose the console config ----
   // Mirrors the app-switcher's open/close shape. Only meaningful at mobile width
