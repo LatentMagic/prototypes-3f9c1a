@@ -10,6 +10,8 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 // ---- Seed data — inhabited, role-staged, no Lorem Ipsum --------------------
 const M = (name, email) => ({ name, email });
 const IT = (url, attribution, read, reactions) => ({ id: 'seed-' + Math.random().toString(36).slice(2, 9), url, attribution, read: !!read, reactions: reactions || [] });
+// The Swell vocabulary — the only five glyphs a reaction can carry.
+const HEART = '\u2764\uFE0F', FIRE = '\uD83D\uDD25', THUMB = '\uD83D\uDC4D', BULB = '\uD83D\uDCA1', LOL = '\uD83D\uDE02';
 
 function seedSpaces(userEmail) {
   return [
@@ -18,56 +20,64 @@ function seedSpaces(userEmail) {
       id: 'sp-backend',
       name: 'Backend Pod',
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
-      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com')],
+      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com')],
       items: [
         IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
-          { name: 'Priya N.', glyph: '\uD83E\uDD2F', intensity: 0.9 },
-          { name: 'Sam R.', glyph: '\uD83D\uDD25', intensity: 0.84 },
-          { name: 'Ada L.', glyph: '\uD83D\uDCA1', intensity: 0.55 },
-          { name: 'Dev K.', glyph: '\uD83D\uDD25', intensity: 0.38 },
-          { name: 'Lena P.', glyph: '\uD83E\uDD14', intensity: 0.32 },
+          { name: 'Priya N.', glyph: FIRE, intensity: 0.9 },
+          { name: 'Sam R.', glyph: FIRE, intensity: 0.84 },
+          { name: 'Dev K.', glyph: FIRE, intensity: 0.7 },
+          { name: 'Ada L.', glyph: BULB, intensity: 0.55 },
+          { name: 'Lena P.', glyph: THUMB, intensity: 0.4 },
+          { name: 'Nadia F.', skipped: true },
+          { name: 'Theo B.', skipped: true },
         ]),
         IT('https://blog.rust-lang.org/2026/01/async-internals', 'Added by Priya N.', false, [
-          { name: 'Marcus T.', glyph: '\uD83D\uDD25', intensity: 0.66 },
-          { name: 'Ada L.', glyph: '\u26A1', intensity: 0.72 },
-          { name: 'Sam R.', glyph: '\uD83E\uDD14', intensity: 0.5 },
+          { name: 'Marcus T.', glyph: FIRE, intensity: 0.66 },
+          { name: 'Ada L.', glyph: FIRE, intensity: 0.72 },
+          { name: 'Sam R.', glyph: BULB, intensity: 0.5 },
         ]),
         IT('https://martinfowler.com/articles/cd-pipeline.html', 'Added by Sam R.', false, [
-          { name: 'Priya N.', glyph: '\uD83D\uDCA1', intensity: 0.45 },
-          { name: 'Dev K.', glyph: '\uD83E\uDDD8', intensity: 0.3 },
+          { name: 'Priya N.', glyph: BULB, intensity: 0.45 },
+          { name: 'Dev K.', glyph: THUMB, intensity: 0.3 },
         ]),
         IT('https://arxiv.org/abs/2503.04918', 'Added by Priya N.', false, [
-          { name: 'Ada L.', glyph: '\uD83E\uDD2F', intensity: 0.82 },
-          { name: 'Marcus T.', glyph: '\uD83C\uDF31', intensity: 0.4 },
+          { name: 'Ada L.', glyph: LOL, intensity: 0.82 },
+          { name: 'Marcus T.', glyph: BULB, intensity: 0.4 },
         ]),
         IT('https://www.youtube.com/watch?v=Kx7Bvksk_qg', 'Added by Marcus T.', false, [
-          { name: 'Lena P.', glyph: '\u2764\uFE0F', intensity: 0.6 },
+          { name: 'Lena P.', glyph: HEART, intensity: 0.6 },
         ]),
         IT('https://danluu.com/percentile-latency/', 'Added by Sam R.', false, [
-          { name: 'Priya N.', glyph: '\u26A1', intensity: 0.74 },
-          { name: 'Marcus T.', glyph: '\uD83D\uDD25', intensity: 0.5 },
-          { name: 'Ada L.', glyph: '\uD83E\uDD14', intensity: 0.44 },
-          { name: 'Dev K.', glyph: '\uD83D\uDCA1', intensity: 0.6 },
-          { name: 'Lena P.', glyph: '\uD83E\uDD2F', intensity: 0.9 },
+          { name: 'Priya N.', glyph: THUMB, intensity: 0.74 },
+          { name: 'Marcus T.', glyph: THUMB, intensity: 0.5 },
+          { name: 'Dev K.', glyph: THUMB, intensity: 0.62 },
+          { name: 'Ada L.', glyph: BULB, intensity: 0.44 },
+          { name: 'Lena P.', glyph: FIRE, intensity: 0.9 },
+          { name: 'Nadia F.', skipped: true },
+          { name: 'Theo B.', skipped: true },
         ]),
         IT('https://sqlite.org/whentouse.html', 'Added by former member.'),
         IT('https://go.dev/blog/pipelines', 'Added by Marcus T.', true, [
-          { name: 'Priya N.', glyph: '\uD83D\uDD25', intensity: 0.72 },
-          { name: 'Ada L.', glyph: '\uD83E\uDD2F', intensity: 0.88 },
-          { name: 'Dev K.', glyph: '\uD83D\uDD25', intensity: 0.5 },
-          { name: 'Sam R.', glyph: '\uD83D\uDCA1', intensity: 0.4 },
-          { name: 'Lena P.', glyph: '\u2764\uFE0F', intensity: 0.34 },
-          { name: 'You', glyph: '\uD83E\uDD14', intensity: 0.55 },
+          { name: 'Priya N.', glyph: FIRE, intensity: 0.72 },
+          { name: 'Ada L.', glyph: FIRE, intensity: 0.88 },
+          { name: 'Dev K.', glyph: FIRE, intensity: 0.5 },
+          { name: 'Sam R.', glyph: BULB, intensity: 0.4 },
+          { name: 'Lena P.', glyph: HEART, intensity: 0.34 },
+          { name: 'You', glyph: THUMB, intensity: 0.55 },
         ]),
         IT('https://jvns.ca/blog/2026/02/dns-resolvers/', 'Added by Priya N.', true, [
-          { name: 'Marcus T.', glyph: '\uD83E\uDD2F', intensity: 0.86 },
-          { name: 'Ada L.', glyph: '\uD83D\uDCA1', intensity: 0.62 },
-          { name: 'You', glyph: '\uD83D\uDD25', intensity: 0.5 },
-          { name: 'Dev K.', glyph: '\uD83E\uDDD8', intensity: 0.28 },
+          { name: 'Marcus T.', glyph: LOL, intensity: 0.86 },
+          { name: 'Ada L.', glyph: BULB, intensity: 0.62 },
+          { name: 'You', glyph: FIRE, intensity: 0.5 },
+          { name: 'Dev K.', glyph: THUMB, intensity: 0.28 },
+          { name: 'Sam R.', skipped: true },
+          { name: 'Lena P.', skipped: true },
         ]),
         IT('https://www.kernel.org/doc/html/latest/process/submitting-patches.html', 'Added by Sam R.', true, [
-          { name: 'Priya N.', glyph: '\uD83E\uDDD8', intensity: 0.3 },
-          { name: 'Lena P.', glyph: '\u26A1', intensity: 0.66 },
+          { name: 'Priya N.', glyph: THUMB, intensity: 0.3 },
+          { name: 'Lena P.', glyph: FIRE, intensity: 0.66 },
+          { name: 'Ada L.', skipped: true },
+          { name: 'You', skipped: true },
         ]),
         IT('https://martinfowler.com/bliki/CircuitBreaker.html', 'Added by former member.', true),
       ],
@@ -83,8 +93,8 @@ function seedSpaces(userEmail) {
         IT('https://lithub.com/on-rereading-your-favorite-books/', 'Added by Priya N.'),
         IT('https://www.theparisreview.org/interviews/the-art-of-fiction', 'Added by Sam R.'),
         IT('https://www.gutenberg.org/files/2701/2701-h/2701-h.htm', 'Added by Joe M.', true, [
-          { name: 'Priya N.', glyph: '\u2764\uFE0F', intensity: 0.7 },
-          { name: 'You', glyph: '\uD83D\uDE02', intensity: 0.45 },
+          { name: 'Priya N.', glyph: HEART, intensity: 0.7 },
+          { name: 'You', glyph: LOL, intensity: 0.45 },
         ]),
       ],
     },
@@ -120,7 +130,7 @@ const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email:
 const displayName = (first, last) => `${first} ${(last || ' ').trim()[0] || ''}.`.trim();
 
 // ---- Persistence -----------------------------------------------------------
-const SAVED = (() => { try { return JSON.parse(localStorage.getItem('lp_alpha_v5_state') || 'null'); } catch (e) { return null; } })();
+const SAVED = (() => { try { return JSON.parse(localStorage.getItem('lp_alpha_v10_state') || 'null'); } catch (e) { return null; } })();
 
 // ---- App -------------------------------------------------------------------
 const LPApp = () => {
@@ -216,7 +226,7 @@ const LPApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem('lp_alpha_v5_state', JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
+    try { localStorage.setItem('lp_alpha_v10_state', JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
   }, [route, user, spaces, currentId, tab]);
 
   const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);
@@ -311,7 +321,7 @@ const LPApp = () => {
 
   // ---- scenario launcher setups ----
   const reset = () => {
-    try { localStorage.removeItem('lp_alpha_v2_state'); } catch (e) {}
+    try { localStorage.removeItem('lp_alpha_v10_state'); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
   };

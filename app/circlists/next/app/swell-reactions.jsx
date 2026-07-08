@@ -16,7 +16,7 @@
 // ---- DATA MODEL ------------------------------------------------------------
 // A reaction is: { name, glyph, intensity, nx, ny }
 //   name       string   — reactor's display name; the current user is "You".
-//   glyph      string   — one of RX_GLYPHS (the nine-glyph vocabulary).
+//   glyph      string   — one of RX_GLYPHS (the five-glyph vocabulary).
 //   intensity  0..1      — how hard it landed. Drives BOTH glyph size and how
 //                          far from centre it sits. 0.42 is the fallback.
 //   nx, ny     0..1      — OPTIONAL free position from a committed drag. If
@@ -24,6 +24,9 @@
 //                          (e.g. seed data), position is derived from glyph
 //                          direction + intensity + a stable per-name jitter, so
 //                          the circle still reads as a constellation.
+// A SKIP (read, no note) is a reaction with NO glyph: { name, skipped: true }.
+//   It lives in the roster ONLY — never on the disc — always last, shown as an
+//   empty ring. Same name, same weight as any reaction; only the mark differs.
 // An item is: { id, url, attribution, read, reactions: [reaction, ...] }
 // ============================================================================
 
@@ -35,20 +38,30 @@ const rxMine   = (item) => ((item && item.reactions) || []).find(r => r.name ===
 // Attribution wording. The current user is always "You"; everyone else by name.
 const who = (name) => (name === 'You' ? 'You' : name);
 const iv  = (r) => (r && r.intensity != null ? r.intensity : 0.42);
+// A skip = read, no note: a reaction carrying no glyph. Roster-only, never on the disc.
+const rxIsSkip = (r) => !r || !r.glyph;
 const rxHash = (s) => { let h = 2166136261; s = String(s); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
 // ---- vocabulary ------------------------------------------------------------
-// Nine glyphs, arranged radially 40° apart. This is the reaction alphabet.
+// Five glyphs, arranged radially, evenly spaced (360/N apart). This is the
+// whole reaction alphabet — heart, fire, thumbs-up, bulb, laugh.
 // (Emoji here are the reaction vocabulary being prototyped — deliberate, scoped
 // to this feature; not general product decoration.)
-const RX_GLYPHS = ['\uD83D\uDCA1', '\uD83E\uDD2F', '\uD83D\uDD25', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83E\uDD14', '\uD83E\uDDD8', '\u26A1', '\uD83C\uDF31'];
+const RX_GLYPHS = ['\u2764\uFE0F', '\uD83D\uDD25', '\uD83D\uDC4D', '\uD83D\uDCA1', '\uD83D\uDE02'];
+const RX_N = RX_GLYPHS.length;
 
 // ---- geometry --------------------------------------------------------------
 const SWELL_MAX  = 0.46;    // furthest a glyph sits from centre (fraction of pad)
 const SWELL_DEAD = 0.055;   // inside this = no glyph chosen yet
-const glyphAngle   = (idx) => (-90 + idx * 40) * Math.PI / 180;   // 9 glyphs, 40° apart
+const glyphAngle   = (idx) => (-90 + idx * (360 / RX_N)) * Math.PI / 180;   // radial dial, evenly spaced
 const glyphIndexOf = (g) => RX_GLYPHS.indexOf(g);
-const swellJitter  = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.34; // stable per member
+// Stable per-member angular jitter. Widened (was 0.34) so a CLUSTER of the same
+// glyph — common now the vocabulary is only five — fans out into an arc instead
+// of stacking. Each member keeps a fixed offset, well inside the glyph's sector.
+const swellJitter  = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.6;
+// Stable per-member radial nudge — pushes same-glyph, same-intensity reactions
+// off each other's exact radius so two never perfectly coincide.
+const swellJitterR = (name) => ((rxHash((name || '') + '~r') % 1000) / 1000 - 0.5) * 0.07;
 // Where a glyph sits on the pad. A committed drag carries its own free nx/ny;
 // otherwise placed along its glyph's direction, distance by intensity, with a
 // stable per-member jitter → the circle reads as a constellation.
@@ -56,7 +69,8 @@ const swellPos = (r) => {
   if (r && r.nx != null) return { x: r.nx, y: r.ny };
   const i = iv(r);
   const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
-  const rr = idx >= 0 ? 0.17 + i * 0.27 : 0.05;
+  let rr = idx >= 0 ? 0.17 + i * 0.27 : 0.05;
+  if (idx >= 0) rr = Math.max(0.12, Math.min(0.45, rr + swellJitterR(r && r.name)));
   const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(r && r.name);
   return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
 };
@@ -64,16 +78,83 @@ const swellPos = (r) => {
 const nearestGlyph = (dx, dy, dist) => {
   if (dist < SWELL_DEAD) return null;
   const ang = Math.atan2(dy, dx); let best = 0, bd = 9;
-  for (let k = 0; k < 9; k++) { const d = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (d < bd) { bd = d; best = k; } }
+  for (let k = 0; k < RX_N; k++) { const d = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (d < bd) { bd = d; best = k; } }
   return RX_GLYPHS[best];
 };
 const swellFontSize = (i, small, isMine) => small ? (10 + i * 6) : ((isMine ? 20 : 18) + i * 20);
+
+// Lay out a set of reactions for the review disc.
+//  - Each reaction starts at its glyph's direction (same emoji => same region),
+//    at a radius set by how deep it landed.
+//  - Same-glyph members are fanned SIDEWAYS by a CONSTANT gap per person, so a
+//    cluster of two and a cluster of three read at the same density; group size
+//    only changes how WIDE the huddle is, never how tightly it's packed. No one
+//    stacks radially (the tall-glyph overlap case).
+//  - A final collision pass nudges apart anything still too close, whatever the
+//    emoji or however it was placed. Gentle touch is fine; exact stacks are not.
+//  - A committed free-position drag (your own just-left reaction) is honoured.
+const SWELL_GAP = 0.115;   // sideways centre-to-centre spacing between huddle-mates
+const swellLayout = (list) => {
+  const arr = list || [];
+  const groups = {};
+  arr.forEach((r, i) => { if (r && r.nx != null) return; const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1; (groups[idx] = groups[idx] || []).push(i); });
+  const seen = {};
+  const pts = arr.map((r) => {
+    if (r && r.nx != null) return { x: r.nx, y: r.ny };
+    const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
+    const n = (groups[idx] || []).length;
+    const k = (seen[idx] = (seen[idx] == null ? 0 : seen[idx] + 1));
+    let rr = idx >= 0 ? 0.17 + iv(r) * 0.27 : 0.05;
+    if (idx >= 0) rr = Math.max(0.12, Math.min(0.45, rr + swellJitterR(r && r.name)));
+    const base = idx >= 0 ? glyphAngle(idx) : -Math.PI / 2;
+    // sideways offset = constant absolute gap, turned into an angle via the radius
+    // so the spacing looks the same at any depth or group size
+    const t = n > 1 ? (k - (n - 1) / 2) * SWELL_GAP : 0;
+    const a = base + t / Math.max(0.16, rr) + swellJitter(r && r.name) * 0.09;
+    return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
+  });
+  // Collision relaxation — a few deterministic passes that push any two glyphs
+  // apart until they stop stacking. Some touch is fine (a crowd should read as a
+  // crowd); this only kills the near-exact overlaps the fan can't reach — e.g. a
+  // free-placed reaction landing on top of a computed one, or two identical-depth
+  // siblings. Deeper glyphs claim a little more room. Everything stays in the disc.
+  const halfOf = (r) => 0.05 + iv(r) * 0.045;
+  for (let it = 0; it < 26; it++) {
+    let moved = false;
+    for (let a = 0; a < pts.length; a++) {
+      for (let b = a + 1; b < pts.length; b++) {
+        let dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y;
+        let d = Math.hypot(dx, dy);
+        if (d < 0.001) { const ang = a * 2.39996; dx = Math.cos(ang); dy = Math.sin(ang); d = 0.001; }  // exact overlap: split along a stable direction
+        const min = (halfOf(arr[a]) + halfOf(arr[b])) * 0.78;
+        if (d < min) {
+          const push = (min - d) / 2, ux = dx / d, uy = dy / d;
+          pts[a].x -= ux * push; pts[a].y -= uy * push;
+          pts[b].x += ux * push; pts[b].y += uy * push;
+          moved = true;
+        }
+      }
+    }
+    for (const p of pts) { const cx = p.x - 0.5, cy = p.y - 0.5, dd = Math.hypot(cx, cy); if (dd > 0.46) { p.x = 0.5 + cx * 0.46 / dd; p.y = 0.5 + cy * 0.46 / dd; } }
+    if (!moved) break;
+  }
+  return pts;
+};
 
 // ---- inline close glyph (no icon lib) --------------------------------------
 const CloseX = ({ size = 18 }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
     style={{ stroke: 'currentColor', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' }}>
     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+// ---- read-ring: the skip mark (read, no note). Empty circle, in-system line
+// language. Neutral by default; accent when it's your own row. Roster only. ---
+const ReadRing = ({ size = 16, me }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
+    style={{ stroke: me ? 'var(--color-accent)' : 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none' }}>
+    <circle cx="12" cy="12" r="8" />
   </svg>
 );
 
@@ -98,10 +179,10 @@ const RxActions = ({ onSkip, done }) => (
 // ============================================================================
 // SwellPad — the INTERACTIVE input surface (drag toward a glyph to react).
 // ----------------------------------------------------------------------------
-// Drag toward one of nine glyphs arranged radially; direction = which glyph,
+// Drag toward one of five glyphs arranged radially; direction = which glyph,
 // distance = how hard it landed. Depth is surfaced WITHOUT transparency or
 // gradients — twice over: radial distance from centre AND glyph size (it swells
-// as it lands harder), with a soft accent halo for the pull. The nine glyphs
+// as it lands harder), with a soft accent halo for the pull. The five glyphs
 // ring the pad (SwellPalette); the puck you drag is a plain handle, so the glyph
 // you're choosing is never hidden under your finger.
 // ============================================================================
@@ -122,7 +203,7 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
     if (dist < SWELL_DEAD) return d;
     const ang = Math.atan2(dy, dx);
     let ga = 0, bd = 9;
-    for (let k = 0; k < 9; k++) { const dd = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (dd < bd) { bd = dd; ga = glyphAngle(k); } }
+    for (let k = 0; k < RX_N; k++) { const dd = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (dd < bd) { bd = dd; ga = glyphAngle(k); } }
     const sx = Math.cos(ga) * dist, sy = Math.sin(ga) * dist;
     return { ...d, nx: 0.5 + sx, ny: 0.5 + sy, glyph: nearestGlyph(sx, sy, dist) };
   };
@@ -149,8 +230,8 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
     let rad = Math.hypot(dx, dy);
     if (e.key === 'ArrowUp') rad = Math.min(SWELL_MAX, rad + 0.06);
     else if (e.key === 'ArrowDown') rad = Math.max(0, rad - 0.06);
-    else if (e.key === 'ArrowRight') ang += 2 * Math.PI / 9;
-    else if (e.key === 'ArrowLeft') ang -= 2 * Math.PI / 9;
+    else if (e.key === 'ArrowRight') ang += 2 * Math.PI / RX_N;
+    else if (e.key === 'ArrowLeft') ang -= 2 * Math.PI / RX_N;
     else return;
     e.preventDefault();
     dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
@@ -204,7 +285,7 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
   );
 };
 
-// The nine glyphs ring the pad like a dial. As you pull the puck toward one it
+// The five glyphs ring the pad like a dial. As you pull the puck toward one it
 // brightens; the further you pull the more it SWELLS. Depth lives on the glyph
 // itself, out at the rim — never hidden under your finger.
 const SwellPalette = ({ live, box }) => {
@@ -238,6 +319,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
   const dot = size >= 240 ? 6 : 5;   // centre marker — SAME grey as the ring
   const canPick = interactive;
   const active = selected != null;
+  const pts = swellLayout(all);
   return (
     <div onClick={() => onSelect && onSelect(null)}
       style={{ position: 'relative', width: size, height: size, flexShrink: 0, borderRadius: '50%',
@@ -246,7 +328,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         backgroundSize: (size / 5) + 'px ' + (size / 5) + 'px', backgroundPosition: 'center' }}>
       <span style={{ position: 'absolute', left: '50%', top: '50%', width: dot, height: dot, borderRadius: '50%', background: 'var(--color-border-1)', transform: 'translate(-50%,-50%)' }} />
       {all.map((r, i) => {
-        const p = swellPos(r), fsz = swellFontSize(iv(r), false, r.name === 'You'), me = r.name === 'You';
+        const p = pts[i], fsz = swellFontSize(iv(r), false, r.name === 'You'), me = r.name === 'You';
         const on = selected === i, dim = active && !on;
         return (
           <div key={i} role={canPick ? 'button' : undefined} tabIndex={canPick ? 0 : undefined}
@@ -265,7 +347,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         );
       })}
       {canPick && active && (() => {
-        const r = all[selected], p = swellPos(r), me = r.name === 'You';
+        const r = all[selected], p = pts[selected], me = r.name === 'You';
         const below = p.y < 0.26, bg = me ? 'var(--color-accent)' : 'var(--color-fg-1)';
         return (
           <div style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%', zIndex: 5,
@@ -292,11 +374,21 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
 // ============================================================================
 const SwellReview = ({ all, interactive = true }) => {
   const [sel, setSel] = rxState(null);
+  // Reactions land on the disc + roster; skips are roster-only and always last.
+  // Both render in ONE continuous roster flow — a skip is set identically to a
+  // reaction (same weight, same wrap), it just carries a ring and comes last.
+  const list = all || [];
+  const reacted = list.filter(r => !rxIsSkip(r));
+  const skipped = list.filter(r => rxIsSkip(r));
   const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
   const narrow = vw < 520;
   const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
   const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
   const pad = box - Math.round(box * 0.1389) * 2;
+  const rowStyle = (accent, dim, on) => ({ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap',
+    color: accent ? 'var(--color-accent)' : 'var(--color-fg-1)',
+    background: on ? 'var(--color-surface-sunken)' : 'transparent', opacity: dim ? 0.4 : 1 });
   return (
     <React.Fragment>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)', letterSpacing: '0.04em', marginBottom: 4, textAlign: 'center' }}>the circle</div>
@@ -305,28 +397,33 @@ const SwellReview = ({ all, interactive = true }) => {
         {/* box+inset reserve the palette's former footprint so the disc holds its position between steps */}
         <div style={{ position: 'relative', width: box, height: box, flexShrink: 0, marginTop: narrow ? 7 : 27 }}>
           <div style={{ position: 'absolute', inset: Math.round(box * 0.1389) }}>
-            <SwellScatter all={all} size={pad} interactive={interactive} selected={interactive ? sel : null} onSelect={interactive ? (i) => setSel(i) : (() => {})} />
+            <SwellScatter all={reacted} size={pad} interactive={interactive} selected={interactive ? sel : null} onSelect={interactive ? (i) => setSel(i) : (() => {})} />
           </div>
         </div>
-        {all.length > 0 && (
+        {(reacted.length + skipped.length) > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, width: '100%' }}>
-            {all.map((r, i) => {
+            {reacted.map((r, i) => {
               const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
-              const rowStyle = { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
-                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap',
-                color: (me || on) ? 'var(--color-accent)' : 'var(--color-fg-1)',
-                background: on ? 'var(--color-surface-sunken)' : 'transparent', opacity: dim ? 0.4 : 1 };
               return interactive ? (
-                <button key={i} type="button" className="lp-swell-rrow"
+                <button key={'r' + i} type="button" className="lp-swell-rrow"
                   onClick={() => setSel(on ? null : i)}
-                  style={{ ...rowStyle, border: 0, cursor: 'pointer', outline: 'none',
+                  style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
                   <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
                   {who(r.name)}
                 </button>
               ) : (
-                <div key={i} style={rowStyle}>
+                <div key={'r' + i} style={rowStyle(me, dim, on)}>
                   <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+                  {who(r.name)}
+                </div>
+              );
+            })}
+            {skipped.map((r, i) => {
+              const me = r.name === 'You';
+              return (
+                <div key={'s' + i} style={rowStyle(me, sel != null, false)}>
+                  <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center' }}><ReadRing me={me} /></span>
                   {who(r.name)}
                 </div>
               );
@@ -451,15 +548,18 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const [swell, setSwell] = rxState({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
   const swellTouched = swell.glyph != null;
   const commitSwell = () => commit({ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny });
+  // Skip = read, no note. Still recorded (a glyphless reaction) so you appear in
+  // the roster as an empty ring; it just never lands on the disc.
+  const commitSkip = () => commit({ name: 'You', skipped: true });
 
   const commit = (rx) => {
     onMarkRead(item, rx); setMine(rx);
-    if (others.length === 0 && !rx) { onClose(); return; }   // first reader, skipped -> nothing to show
+    if (others.length === 0 && rxIsSkip(rx)) { onClose(); return; }   // first reader, no note -> nothing to reveal
     setStep('reveal');
   };
 
   rxEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commit(null); else onClose(); } };
+    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commitSkip(); else onClose(); } };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [step]);
@@ -513,7 +613,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
                   <SwellPalette live={swell} box={box} />
                 </div>
                 <div style={{ height: narrow ? 10 : 16 }} />
-                <RxActions onSkip={() => commit(null)} done={swellTouched ? commitSwell : null} />
+                <RxActions onSkip={commitSkip} done={swellTouched ? commitSwell : null} />
               </div>
             </div>
           ) : (
