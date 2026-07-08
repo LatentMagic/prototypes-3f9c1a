@@ -430,6 +430,8 @@
      a prototype. Carries the rail's version-spine motif: changes ride a timeline. */
   .meta-actions {
     flex: 0 0 auto;
+    margin-left: auto;   /* pin right regardless of siblings — actions never shift
+                            when .meta-keys is hidden on info-bar collapse */
     display: inline-flex;
     align-items: center;
     gap: 10px;
