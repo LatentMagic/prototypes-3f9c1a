@@ -23,9 +23,9 @@ Don't mint ticket-named slugs for the working line any more — changes accrete 
 
 Not every rail node is a prototype version. A **reference node** carries a `kind` (e.g. `kind: 'brand'`) — it sits at the top of the rail with its own amber accent, lifted off the version spine, and the default landing skips it so the console still opens on the working line. It's deep-linkable like any node (`#brand`).
 
-The Circlists brand pack is the first: `app/circlists/brand/circlists-brand.html`, a verbatim copy of the brand-pack export. Its source lives outside this repo and updates over time, so the copy is a point-in-time snapshot — **refresh it by re-copying the current export over `app/circlists/brand/circlists-brand.html`** (shell copy, never hand-edited).
+The Circlists brand pack is the first: `app/circlists/brand/` holds `circlists-brand.html` plus the lockup SVGs (`circlists-lockup.svg`, `circlists-lockup-reversed.svg`), all verbatim copies of the brand-pack export. Its source lives outside this repo and updates over time, so the copy is a point-in-time snapshot — **refresh it by re-copying the current export files over `app/circlists/brand/`** (shell copy, never hand-edited).
 
-The console's own favicon and rail lockup are the canonical Circlists mark + wordmark, inlined in `index.html` (a data-URI icon and `<symbol>` defs the lockup `<use>`-references). The shell owns its brand this way rather than borrowing from a prototype dir a re-export could change.
+The console's favicon is the canonical Circlists mark, inlined in `index.html` as a data-URI icon (the mark is small and stable). The rail title is the brand pack's **reversed** (light-on-dark) lockup — `app/circlists/brand/circlists-lockup-reversed.svg` — referenced by the active app's `logo`, so it refreshes with the rest of the brand pack. Both are brand assets the console owns, not borrowed from a prototype dir a re-export could change.
 
 ## How the console works
 
