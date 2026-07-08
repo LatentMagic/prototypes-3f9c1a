@@ -10,7 +10,7 @@ LatentMagic **Claude Design prototypes** — home for high-fidelity interactive 
 
 ## How it fills
 
-Populated by an overnight automation. Expect new prototypes to land without manual commits.
+Added by hand — copy a Claude Design export in, register its console entry, commit (see `CLAUDE.md`, "Add a prototype"). The working line accretes into the `next` prototype rather than minting a new slug per change.
 
 ## Running the console
 

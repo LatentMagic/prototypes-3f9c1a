@@ -8,6 +8,17 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 - `index.html` — the **Specimen Console** wrapper: a graphite shell with one tab per prototype.
 - `server.js` — zero-dependency Node static server.
 
+## The working line — `product` and `next`
+
+Two conceptual states, not a ticket-per-slug chain:
+
+- **`product`** — a mirror of what's shipped. Add this tab only when a side-by-side is actually wanted; nothing depends on it existing.
+- **`next`** — one accreting prototype holding everything ahead of product. Each new Claude Design export for the live line **replaces `app/circlists/next/` wholesale** (verbatim, never hand-edited) and gains a `changelog` entry.
+
+Don't mint ticket-named slugs for the working line any more — changes accrete into `next`. The older ticket slugs (`lm-298-…`, `lm-270-…`, `lm-367-369-…`) stay as legacy; leave them be.
+
+**Resolution ledger = commit history.** Keep commit messages feature-flavoured (`feat(latentpulse): <feature>`) when it's natural — they're a hint an agent reads later, not a contract to uphold. Resolving `next` into product is a later agent job: diff `next` against product, re-slice by feature from the code, and land one feature at a time. Nothing is pre-built for it now — the changelog is a human-facing convenience, not the ledger.
+
 ## How the console works
 
 - One `<iframe>` per prototype, so each runs in its own document — full runtime isolation, no shared globals.
@@ -34,6 +45,8 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 
 1. Copy its whole export dir into `app/<slug>/` verbatim (must contain `latentpulse.html`, `tokens.css`, `favicon.svg`, and `app/` with the `.jsx` modules). Delete any stray `.playwright-mcp/`.
 2. Add one entry — `{ slug, version, ticket, desc }` — to `APPS.<app>.prototypes` in `index.html`. Order is version order, which is also tab order.
+
+**Updating the working line** — a fresh export for the live line replaces `app/circlists/next/` in place. Don't add a new slug; keep the single `next` entry in `index.html` and append a `changelog` entry to it.
 
 ## Runtime dependency
 

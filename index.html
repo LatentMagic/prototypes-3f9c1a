@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Prototype Console</title>
-<link rel="icon" type="image/svg+xml" href="app/latentpulse/baseline/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="app/circlists/next/favicon.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -688,7 +688,7 @@
       <!-- app tier: the app switcher. Wordmark = active app (data-driven);
            the menu lists apps; the version tabs below are this app's prototypes. -->
       <button type="button" class="app-switch" id="app-switch" aria-haspopup="menu" aria-expanded="false" aria-controls="app-menu">
-        <span class="wordmark" id="app-name">LatentPulse</span>
+        <span class="wordmark" id="app-name">Circlists</span>
         <svg class="app-chev" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="eyebrow">prototype console</div>
@@ -756,8 +756,8 @@
   // Each app carries its label (the rail-top app node) + its ordered prototypes.
   // Prototype order = version order = tab order. Default active = first (baseline).
   var APPS = {
-    latentpulse: {
-      label: 'LatentPulse',
+    circlists: {
+      label: 'Circlists',
       prototypes: [
         {
           slug: 'baseline',
@@ -819,6 +819,52 @@
               base: 'Built on the nine-variant round-1/round-2 exploration line.'
             }
           ]
+        },
+        {
+          slug: 'next',
+          version: 'v1',
+          ticket: '—',
+          html: 'circlists.html',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, and a support-contact link in settings. Champion self-serve and change-email carry in from the shipped line.',
+          changelog: [
+            {
+              date: '2026-07-08',
+              title: 'Support contact in settings',
+              items: [
+                'A quiet support mailto (support@circlists.com) at the foot of Account settings and circle settings, driven by the shared operator-email constant that also feeds the dormant-circle contact links.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-08',
+              title: 'Pricing — £3 introductory rate',
+              items: [
+                'Circle funding drops from £9 to £3 a month, carried from the single price constant across every surface.',
+                '"Introductory rate" framing on the new-circle funding page — a light signal the price may rise later, not a locked-in discount; label only, not repeated on re-fund or billing.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-07',
+              title: 'Loop closure — The Swell reaction',
+              items: [
+                'The mark-as-read confirm modal is replaced by The Swell: finishing a link leaves the circle a reaction — a glyph and how hard it landed — and anyone can later re-open how the whole circle responded. Reading closes a loop instead of just filing the item away.',
+                'Communal reactions, individual read-state: the reaction lives on the Read-tab card for everyone; leaving one still only marks the item read in your own queue.',
+                'Rough by design, to be tuned over time.'
+              ],
+              base: 'Carries the BIZ-63 loop-closure exploration forward; Variant 10 (The Swell) picked as the v1 mechanism.'
+            },
+            {
+              date: '2026-07-07',
+              title: 'Rebrand — LatentPulse → Circlists',
+              items: [
+                'Product renamed LatentPulse → Circlists; the old name is retired. New brand mark: a concentric circle (green halo → white ring → green disc) replacing the "LP" box.',
+                'Group terminology changed in all user-facing copy: "space" → "circle" (Circles rail, New circle, Circle settings, funding, empty and dormant states, dialogs). Internal code identifiers unchanged.',
+                'Accent green #047857 and the rest of the visual system carried over unchanged; entry file is now circlists.html.'
+              ],
+              base: 'First Circlists-branded build; supersedes the LatentPulse working line.'
+            }
+          ]
         }
       ]
     }
@@ -828,8 +874,8 @@
   // app switcher can repoint to another app (data-driven; one app today).
   var ACTIVE_APP, APP, PROTOTYPES;
 
-  function srcFor(app, slug) {
-    return 'app/' + app + '/' + slug + '/latentpulse.html';
+  function srcFor(app, slug, html) {
+    return 'app/' + app + '/' + slug + '/' + (html || 'latentpulse.html');
   }
 
   var tablist = document.querySelector('.prototypes');
@@ -911,7 +957,7 @@
       tabs[j].tabIndex = selected ? 0 : -1;
       frames[j].wrap.classList.toggle('is-active', selected);
       if (selected && !frames[j].loaded) {
-        frames[j].iframe.src = srcFor(ACTIVE_APP, spec.slug);   // lazy: set src on first activation
+        frames[j].iframe.src = srcFor(ACTIVE_APP, spec.slug, spec.html);   // lazy: set src on first activation
         frames[j].loaded = true;
       }
     });

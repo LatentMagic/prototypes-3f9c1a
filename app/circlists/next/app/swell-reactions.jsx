@@ -1,0 +1,530 @@
+// ============================================================================
+// Circlists — The Swell. Loop-closure reaction mechanism.
+// ----------------------------------------------------------------------------
+// Adapted from the loop-closure packet (variant 10, "The Swell"). Self-contained
+// beyond React + the design tokens + swell.css. Exports on `window`:
+//   SwellReactionFlow  — the mark-as-read moment: react (or skip), then a
+//                        passive reveal of how the circle landed.
+//   SwellDoor          — the permanent affordance on a Read-tab card that opens
+//                        the review modal.
+//   SwellReviewModal   — the review modal itself (opened by SwellDoor).
+//
+// NAMES ARE ALWAYS ON. There is no names on/off concept — reactors are always
+// shown by name (the current user is always "You"). The packet's `names`
+// parameter has been removed entirely.
+//
+// ---- DATA MODEL ------------------------------------------------------------
+// A reaction is: { name, glyph, intensity, nx, ny }
+//   name       string   — reactor's display name; the current user is "You".
+//   glyph      string   — one of RX_GLYPHS (the nine-glyph vocabulary).
+//   intensity  0..1      — how hard it landed. Drives BOTH glyph size and how
+//                          far from centre it sits. 0.42 is the fallback.
+//   nx, ny     0..1      — OPTIONAL free position from a committed drag. If
+//                          present, the glyph sits exactly there. If absent
+//                          (e.g. seed data), position is derived from glyph
+//                          direction + intensity + a stable per-name jitter, so
+//                          the circle still reads as a constellation.
+// An item is: { id, url, attribution, read, reactions: [reaction, ...] }
+// ============================================================================
+
+const { useState: rxState, useEffect: rxEffect, useLayoutEffect: rxLayout, useRef: rxRef, useMemo: rxMemo } = React;
+
+// ---- data helpers ----------------------------------------------------------
+const rxOthers = (item) => ((item && item.reactions) || []).filter(r => r.name !== 'You');
+const rxMine   = (item) => ((item && item.reactions) || []).find(r => r.name === 'You') || null;
+// Attribution wording. The current user is always "You"; everyone else by name.
+const who = (name) => (name === 'You' ? 'You' : name);
+const iv  = (r) => (r && r.intensity != null ? r.intensity : 0.42);
+const rxHash = (s) => { let h = 2166136261; s = String(s); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+
+// ---- vocabulary ------------------------------------------------------------
+// Nine glyphs, arranged radially 40° apart. This is the reaction alphabet.
+// (Emoji here are the reaction vocabulary being prototyped — deliberate, scoped
+// to this feature; not general product decoration.)
+const RX_GLYPHS = ['\uD83D\uDCA1', '\uD83E\uDD2F', '\uD83D\uDD25', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83E\uDD14', '\uD83E\uDDD8', '\u26A1', '\uD83C\uDF31'];
+
+// ---- geometry --------------------------------------------------------------
+const SWELL_MAX  = 0.46;    // furthest a glyph sits from centre (fraction of pad)
+const SWELL_DEAD = 0.055;   // inside this = no glyph chosen yet
+const glyphAngle   = (idx) => (-90 + idx * 40) * Math.PI / 180;   // 9 glyphs, 40° apart
+const glyphIndexOf = (g) => RX_GLYPHS.indexOf(g);
+const swellJitter  = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.34; // stable per member
+// Where a glyph sits on the pad. A committed drag carries its own free nx/ny;
+// otherwise placed along its glyph's direction, distance by intensity, with a
+// stable per-member jitter → the circle reads as a constellation.
+const swellPos = (r) => {
+  if (r && r.nx != null) return { x: r.nx, y: r.ny };
+  const i = iv(r);
+  const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
+  const rr = idx >= 0 ? 0.17 + i * 0.27 : 0.05;
+  const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(r && r.name);
+  return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
+};
+// Nearest glyph for a free pull direction — one glyph, never a blend.
+const nearestGlyph = (dx, dy, dist) => {
+  if (dist < SWELL_DEAD) return null;
+  const ang = Math.atan2(dy, dx); let best = 0, bd = 9;
+  for (let k = 0; k < 9; k++) { const d = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (d < bd) { bd = d; best = k; } }
+  return RX_GLYPHS[best];
+};
+const swellFontSize = (i, small, isMine) => small ? (10 + i * 6) : ((isMine ? 20 : 18) + i * 20);
+
+// ---- inline close glyph (no icon lib) --------------------------------------
+const CloseX = ({ size = 18 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
+    style={{ stroke: 'currentColor', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' }}>
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+// ---- Skip / Done row -------------------------------------------------------
+const RxActions = ({ onSkip, done }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-3)', width: '100%' }}>
+    <button type="button" onClick={onSkip} className="lp-swell-skip"
+      style={{ background: 'transparent', border: 0, cursor: 'pointer', minHeight: 44, padding: '8px 12px',
+        fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-3)', borderRadius: 'var(--radius-md)' }}>
+      Skip
+    </button>
+    {done && (
+      <button type="button" onClick={done} className="lp-swell-done"
+        style={{ background: 'var(--color-accent)', border: 0, cursor: 'pointer', minHeight: 44, padding: '8px 20px',
+          fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-inverse, #fff)', borderRadius: 'var(--radius-md)' }}>
+        Done
+      </button>
+    )}
+  </div>
+);
+
+// ============================================================================
+// SwellPad — the INTERACTIVE input surface (drag toward a glyph to react).
+// ----------------------------------------------------------------------------
+// Drag toward one of nine glyphs arranged radially; direction = which glyph,
+// distance = how hard it landed. Depth is surfaced WITHOUT transparency or
+// gradients — twice over: radial distance from centre AND glyph size (it swells
+// as it lands harder), with a soft accent halo for the pull. The nine glyphs
+// ring the pad (SwellPalette); the puck you drag is a plain handle, so the glyph
+// you're choosing is never hidden under your finger.
+// ============================================================================
+const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, opts }) => {
+  const { centerDot = false, breath = false, snap = false } = opts || {};
+  const boxRef = rxRef(null);
+  const small = size <= 80;
+  const [settling, setSettling] = rxState(false);
+  const posToDraft = (clientX, clientY) => {
+    const b = boxRef.current.getBoundingClientRect();
+    let dx = (clientX - b.left) / b.width - 0.5, dy = (clientY - b.top) / b.height - 0.5;
+    let dist = Math.hypot(dx, dy);
+    if (dist > SWELL_MAX) { dx *= SWELL_MAX / dist; dy *= SWELL_MAX / dist; dist = SWELL_MAX; }
+    return { nx: 0.5 + dx, ny: 0.5 + dy, intensity: Math.min(1, dist / SWELL_MAX), glyph: nearestGlyph(dx, dy, dist) };
+  };
+  const snapDraft = (d) => {
+    const dx = d.nx - 0.5, dy = d.ny - 0.5, dist = Math.hypot(dx, dy);
+    if (dist < SWELL_DEAD) return d;
+    const ang = Math.atan2(dy, dx);
+    let ga = 0, bd = 9;
+    for (let k = 0; k < 9; k++) { const dd = Math.abs(Math.atan2(Math.sin(ang - glyphAngle(k)), Math.cos(ang - glyphAngle(k)))); if (dd < bd) { bd = dd; ga = glyphAngle(k); } }
+    const sx = Math.cos(ga) * dist, sy = Math.sin(ga) * dist;
+    return { ...d, nx: 0.5 + sx, ny: 0.5 + sy, glyph: nearestGlyph(sx, sy, dist) };
+  };
+  const onPointerDown = (e) => {
+    if (!interactive) return;
+    const el = e.currentTarget;
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    let last = null;
+    const move = (ev) => { setSettling(false); last = posToDraft(ev.clientX, ev.clientY); onChange(last); };
+    move(e);
+    const up = () => {
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      if (snap && last) { setSettling(true); onChange(snapDraft(last)); setTimeout(() => setSettling(false), 300); }
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+  };
+  const onKeyDown = (e) => {
+    if (!interactive) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSubmit && onSubmit(); return; }
+    const cur = live || {}; let dx = (cur.nx != null ? cur.nx : 0.5) - 0.5, dy = (cur.ny != null ? cur.ny : 0.5) - 0.5;
+    let ang = Math.hypot(dx, dy) < 0.001 ? -Math.PI / 2 : Math.atan2(dy, dx);
+    let rad = Math.hypot(dx, dy);
+    if (e.key === 'ArrowUp') rad = Math.min(SWELL_MAX, rad + 0.06);
+    else if (e.key === 'ArrowDown') rad = Math.max(0, rad - 0.06);
+    else if (e.key === 'ArrowRight') ang += 2 * Math.PI / 9;
+    else if (e.key === 'ArrowLeft') ang -= 2 * Math.PI / 9;
+    else return;
+    e.preventDefault();
+    dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
+    onChange({ nx: 0.5 + dx, ny: 0.5 + dy, intensity: Math.min(1, rad / SWELL_MAX), glyph: nearestGlyph(dx, dy, rad) });
+  };
+  const emoji = (r, isMine, key) => {
+    const p = swellPos(r); const fs = swellFontSize(iv(r), small, isMine);
+    return (
+      <span key={key} title={small ? undefined : (isMine ? 'You' : r.name)} style={{
+        position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
+        transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {isMine && !small && <span style={{ position: 'absolute', width: fs * 1.7, height: fs * 1.7, borderRadius: '50%', background: 'rgba(4,120,87,0.14)' }} />}
+        <span style={{ position: 'relative', fontSize: fs, lineHeight: 1 }}>{r.glyph}</span>
+      </span>
+    );
+  };
+  const livePuck = () => {
+    const lx = live && live.nx != null ? live.nx : 0.5, ly = live && live.ny != null ? live.ny : 0.5;
+    const t = live && live.intensity != null ? live.intensity : 0;
+    const k = size / 208;
+    const puck = (17 + t * 40) * k, halo = (28 + t * 62) * k;
+    const breathing = breath && t > 0.5;
+    const peak = 1 + Math.max(0, (t - 0.5) / 0.5) * 0.07;
+    return (
+      <span style={{ position: 'absolute', left: (lx * 100) + '%', top: (ly * 100) + '%', transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', transition: settling ? 'left 300ms var(--ease-quiet), top 300ms var(--ease-quiet)' : 'none' }}>
+        <span className={breathing ? 'lp-swell-breath' : undefined} style={{ position: 'absolute', width: halo, height: halo, borderRadius: '50%', background: 'rgba(4,120,87,' + (0.10 + t * 0.18) + ')', '--breath-peak': peak }} />
+        <span style={{ position: 'relative', width: puck, height: puck, borderRadius: '50%', background: 'var(--color-accent)', opacity: 0.72 + t * 0.28, border: '2px solid var(--color-surface)', boxShadow: '0 2px 8px rgba(4,120,87,' + (0.2 + t * 0.3) + ')' }} />
+      </span>
+    );
+  };
+  return (
+    <div ref={boxRef}
+      tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown} onPointerDown={onPointerDown}
+      role={interactive ? 'slider' : undefined} aria-label={interactive ? 'Drag toward a glyph to react' : undefined}
+      style={{
+        position: 'relative', width: size, height: size, flexShrink: 0,
+        background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+        borderRadius: '50%', touchAction: 'none', cursor: interactive ? 'grab' : 'default',
+        backgroundImage: 'radial-gradient(circle, var(--color-border-2) 1px, transparent 1px)',
+        backgroundSize: (size / 5) + 'px ' + (size / 5) + 'px', backgroundPosition: 'center',
+      }}>
+      {!small && !interactive && <span style={{ position: 'absolute', left: '50%', top: '50%', width: 4, height: 4, borderRadius: '50%', background: 'var(--color-border-strong)', transform: 'translate(-50%,-50%)' }} />}
+      {interactive && centerDot && (
+        <span aria-hidden="true" style={{ position: 'absolute', left: '50%', top: '50%', width: 5, height: 5, borderRadius: '50%', background: 'var(--color-border-1)', transform: 'translate(-50%,-50%)', pointerEvents: 'none', opacity: (live && live.intensity != null && live.intensity > 0.2) ? 1 : 0, transition: 'opacity 160ms var(--ease-quiet)' }} />
+      )}
+      {(others || []).map((r, i) => emoji(r, false, 'o' + i))}
+      {mine && emoji(mine, true, 'me')}
+      {interactive && livePuck()}
+    </div>
+  );
+};
+
+// The nine glyphs ring the pad like a dial. As you pull the puck toward one it
+// brightens; the further you pull the more it SWELLS. Depth lives on the glyph
+// itself, out at the rim — never hidden under your finger.
+const SwellPalette = ({ live, box }) => {
+  const active = live && live.glyph;
+  const t = live && live.intensity != null ? live.intensity : 0;
+  const base = box ? Math.max(22, Math.round(box * 0.082)) : 22;
+  return RX_GLYPHS.map((g, k) => {
+    const a = glyphAngle(k), rr = 0.45, on = active === g;
+    const scale = on ? (1 + t * 0.95) : 1;
+    return (
+      <span key={k} style={{
+        position: 'absolute', left: (50 + Math.cos(a) * rr * 100) + '%', top: (50 + Math.sin(a) * rr * 100) + '%',
+        transform: 'translate(-50%,-50%) scale(' + scale + ')', transformOrigin: 'center', pointerEvents: 'none',
+        fontSize: base, lineHeight: 1, opacity: on ? 1 : 0.3,
+        transition: 'opacity 120ms var(--ease-quiet), transform 90ms var(--ease-quiet)',
+        filter: on ? 'drop-shadow(0 3px 8px rgba(4,120,87,0.26))' : 'none',
+      }}>{g}</span>
+    );
+  });
+};
+
+// ============================================================================
+// SwellScatter — the STATIC review circle (used by reveal AND door modal).
+// ----------------------------------------------------------------------------
+// Its own renderer (not SwellPad) so it can own selection: tap a glyph to PIN
+// its name right on the circle; tap again (or empty space) to clear. Fully
+// bidirectional with the roster via a shared `selected` index. `interactive`
+// off (reveal) => no tap-to-name, no pin.
+// ============================================================================
+const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => {
+  const dot = size >= 240 ? 6 : 5;   // centre marker — SAME grey as the ring
+  const canPick = interactive;
+  const active = selected != null;
+  return (
+    <div onClick={() => onSelect && onSelect(null)}
+      style={{ position: 'relative', width: size, height: size, flexShrink: 0, borderRadius: '50%',
+        background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+        backgroundImage: 'radial-gradient(circle, var(--color-border-2) 1px, transparent 1px)',
+        backgroundSize: (size / 5) + 'px ' + (size / 5) + 'px', backgroundPosition: 'center' }}>
+      <span style={{ position: 'absolute', left: '50%', top: '50%', width: dot, height: dot, borderRadius: '50%', background: 'var(--color-border-1)', transform: 'translate(-50%,-50%)' }} />
+      {all.map((r, i) => {
+        const p = swellPos(r), fsz = swellFontSize(iv(r), false, r.name === 'You'), me = r.name === 'You';
+        const on = selected === i, dim = active && !on;
+        return (
+          <div key={i} role={canPick ? 'button' : undefined} tabIndex={canPick ? 0 : undefined}
+            aria-label={me ? 'You' : r.name}
+            onClick={canPick ? (e) => { e.stopPropagation(); onSelect(on ? null : i); } : undefined}
+            onKeyDown={canPick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(on ? null : i); } } : undefined}
+            style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
+              width: fsz, height: fsz, transform: 'translate(-50%,-50%) scale(' + (on ? 1.08 : 1) + ')',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%',
+              cursor: canPick ? 'pointer' : 'default', opacity: dim ? 0.34 : 1, outline: 'none',
+              transition: 'transform var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
+            {me && <span style={{ position: 'absolute', width: fsz * 1.7, height: fsz * 1.7, borderRadius: '50%', background: 'rgba(4,120,87,0.14)' }} />}
+            {on && <span style={{ position: 'absolute', inset: -7, borderRadius: '50%', border: '2px solid var(--color-accent)' }} />}
+            <span style={{ position: 'relative', fontSize: fsz, lineHeight: 1 }}>{r.glyph}</span>
+          </div>
+        );
+      })}
+      {canPick && active && (() => {
+        const r = all[selected], p = swellPos(r), me = r.name === 'You';
+        const below = p.y < 0.26, bg = me ? 'var(--color-accent)' : 'var(--color-fg-1)';
+        return (
+          <div style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%', zIndex: 5,
+            transform: below ? 'translate(-50%,16px)' : 'translate(-50%,calc(-100% - 16px))',
+            background: bg, color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5,
+            whiteSpace: 'nowrap', padding: '5px 10px', borderRadius: 'var(--radius-md)', pointerEvents: 'none',
+            boxShadow: '0 4px 12px rgba(10,10,10,0.16)' }}>
+            {who(r.name)}
+            <span style={{ position: 'absolute', left: '50%', [below ? 'top' : 'bottom']: -4, width: 8, height: 8, background: bg, transform: 'translateX(-50%) rotate(45deg)' }} />
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
+
+// ============================================================================
+// SwellReview — shared body: header + scatter + roster. Used by BOTH the reveal
+// and the door modal so the two surfaces are literally identical. Owns the
+// selection shared by scatter + roster. `interactive` off (reveal) => static.
+// The disc is sized to the INPUT pad's visible disc so it is the EXACT same
+// size across the input, the reveal, and the door modal — the circle never
+// resizes or jumps.
+// ============================================================================
+const SwellReview = ({ all, interactive = true }) => {
+  const [sel, setSel] = rxState(null);
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
+  const narrow = vw < 520;
+  const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
+  const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  const pad = box - Math.round(box * 0.1389) * 2;
+  return (
+    <React.Fragment>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)', letterSpacing: '0.04em', marginBottom: 4, textAlign: 'center' }}>the circle</div>
+      <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em', textAlign: 'center' }}>How it landed</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+        {/* box+inset reserve the palette's former footprint so the disc holds its position between steps */}
+        <div style={{ position: 'relative', width: box, height: box, flexShrink: 0, marginTop: narrow ? 7 : 27 }}>
+          <div style={{ position: 'absolute', inset: Math.round(box * 0.1389) }}>
+            <SwellScatter all={all} size={pad} interactive={interactive} selected={interactive ? sel : null} onSelect={interactive ? (i) => setSel(i) : (() => {})} />
+          </div>
+        </div>
+        {all.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, width: '100%' }}>
+            {all.map((r, i) => {
+              const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
+              const rowStyle = { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
+                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap',
+                color: (me || on) ? 'var(--color-accent)' : 'var(--color-fg-1)',
+                background: on ? 'var(--color-surface-sunken)' : 'transparent', opacity: dim ? 0.4 : 1 };
+              return interactive ? (
+                <button key={i} type="button" className="lp-swell-rrow"
+                  onClick={() => setSel(on ? null : i)}
+                  style={{ ...rowStyle, border: 0, cursor: 'pointer', outline: 'none',
+                    transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+                  {who(r.name)}
+                </button>
+              ) : (
+                <div key={i} style={rowStyle}>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+                  {who(r.name)}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </React.Fragment>
+  );
+};
+
+// ============================================================================
+// SwellReviewModal — opened by the door. Interactive, closable (x / Esc / scrim).
+// ============================================================================
+const SwellReviewModal = ({ item, onClose }) => {
+  const closeRef = rxRef(null);
+  rxEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    if (closeRef.current) closeRef.current.focus();
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  const all = (item.reactions || []);
+  const narrow = typeof window !== 'undefined' && window.innerWidth < 520;
+  return (
+    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="lp-anim-fade"
+      style={{ position: 'fixed', inset: 0, zIndex: 140, background: 'var(--color-scrim)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: narrow ? 8 : 16 }}>
+      <div role="dialog" aria-modal="true" aria-label="How the circle landed"
+        style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+          padding: narrow ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
+          width: narrow ? '100%' : 348, maxWidth: 420, minWidth: narrow ? 0 : 288,
+          maxHeight: '88vh', overflowY: 'auto' }}>
+        <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className="lp-rx-close"
+          style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
+          <CloseX />
+        </button>
+        <SwellReview all={all} />
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// SwellDoor — the permanent affordance on a Read-tab card.
+// ----------------------------------------------------------------------------
+// A borderless huddle of up to 3 DISTINCT glyphs (uniform 16px — NO intensity,
+// no dominant glyph) + a faint always-on "opens-a-view" cue (arrows-out, NOT a
+// caret, because it opens a modal not a dropdown). No box at rest; hover/focus
+// shows the card's own sunken pill. NO reactions => renders nothing.
+// Place it at the right edge of the attribution row: "added by one, received by
+// many." Depth/weight lives inside the modal, never in the door.
+// ============================================================================
+const swellDoorGlyphs = (all) => {
+  const seen = [];
+  for (const r of all) { if (r.glyph && !seen.includes(r.glyph)) seen.push(r.glyph); if (seen.length === 3) break; }
+  return seen;
+};
+
+const SwellDoor = ({ item }) => {
+  const [open, setOpen] = rxState(false);
+  const all = (item && item.reactions) || [];
+  if (all.length === 0) return null;              // no reactions -> no door
+  const glyphs = swellDoorGlyphs(all);
+  if (glyphs.length === 0) return null;
+  return (
+    <React.Fragment>
+      <button type="button" onClick={() => setOpen(true)} className="lp-swell-door"
+        aria-label="How the circle landed" aria-haspopup="dialog"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+          border: 0, background: 'transparent', padding: 8, margin: '-8px -8px -8px 0',
+          borderRadius: 'var(--radius-md)', flexShrink: 0, minHeight: 44,
+          transition: 'background var(--duration-fast) var(--ease-quiet)' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+          {glyphs.map((g, i) => (
+            <span key={i} style={{ fontSize: 16, lineHeight: 1, width: 17, height: 17, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: i === 0 ? 0 : -4 }}>{g}</span>
+          ))}
+        </span>
+        <svg viewBox="0 0 24 24" width={13} height={13} aria-hidden="true"
+          style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', opacity: 0.55, flexShrink: 0 }}>
+          <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+        </svg>
+      </button>
+      {open && <SwellReviewModal item={item} onClose={() => setOpen(false)} />}
+    </React.Fragment>
+  );
+};
+
+// ============================================================================
+// SwellReactionFlow — the mark-as-read MOMENT.
+// ----------------------------------------------------------------------------
+// Step 1 (input): drag on the SwellPad to leave a reaction, or Skip. Closable.
+// Step 2 (reveal): the SAME SwellReview surface, but PASSIVE — no close button,
+//   non-interactive (no tap-to-name), fades on its own after a short hold. Can
+//   still be dismissed early by clicking off (scrim) or Esc; there's just no x.
+// The circle is pixel-pinned across the two steps (same size + position):
+//   - the modal is TOP-ANCHORED (not vertically centred), so height changes grow
+//     downward and never re-centre/drag the circle;
+//   - the width is LOCKED across steps (no horizontal snap);
+//   - the reveal disc reserves the input pad's footprint and matches its header.
+// First reader who skips => just closes (no "first one here" line).
+//
+// Props: { item, swellOpts, onMarkRead(item, reaction|null), onClose }
+//   swellOpts (optional): { centerDot, breath, snap } — input pad flourishes.
+// ============================================================================
+const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
+  const [step, setStep] = rxState('input');
+  const [mine, setMine] = rxState(null);
+  const others = rxMemo(() => rxOthers(item), [item]);
+  const bodyRef = rxRef(null);
+  const [bodyH, setBodyH] = rxState('auto');
+  const [clip, setClip] = rxState(false);
+  const [fading, setFading] = rxState(false);
+  const [vw, setVw] = rxState(typeof window !== 'undefined' ? window.innerWidth : 400);
+  rxEffect(() => {
+    const on = () => setVw(window.innerWidth);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  const [swell, setSwell] = rxState({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
+  const swellTouched = swell.glyph != null;
+  const commitSwell = () => commit({ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny });
+
+  const commit = (rx) => {
+    onMarkRead(item, rx); setMine(rx);
+    if (others.length === 0 && !rx) { onClose(); return; }   // first reader, skipped -> nothing to show
+    setStep('reveal');
+  };
+
+  rxEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commit(null); else onClose(); } };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [step]);
+
+  // grow/shrink the panel height between steps (width is locked); clip only while easing
+  rxLayout(() => { const el = bodyRef.current; if (el) setBodyH(el.scrollHeight); }, [step]);
+  rxEffect(() => { setClip(true); const t = setTimeout(() => setClip(false), 340); return () => clearTimeout(t); }, [step]);
+
+  // the reveal is a passive glimpse: it fades on its own
+  rxEffect(() => {
+    if (step !== 'reveal') return;
+    const hold = Math.min(6000, 2600 + (others.length + (mine ? 1 : 0)) * 340);
+    const f = setTimeout(() => setFading(true), hold);
+    const d = setTimeout(onClose, hold + 480);
+    return () => { clearTimeout(f); clearTimeout(d); };
+  }, [step]);
+
+  const narrow = vw < 520;
+  const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
+  const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  const inset = Math.round(box * 0.1389);
+  const pad = box - inset * 2;
+  const tight = narrow;
+
+  return (
+    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="lp-anim-fade"
+      style={{ position: 'fixed', inset: 0, zIndex: 135, background: 'var(--color-scrim)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: tight ? 8 : 16 }}>
+      <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
+        maxWidth: 420, width: tight ? '100%' : 348, minWidth: tight ? 0 : 288, marginTop: tight ? 14 : '5vh' }}>
+        {step === 'input' && (
+          <button type="button" onClick={onClose} aria-label="Close" className="lp-rx-close"
+            style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
+            <CloseX />
+          </button>
+        )}
+        <div ref={bodyRef} style={{ height: bodyH === 'auto' ? 'auto' : bodyH, overflow: clip ? 'hidden' : 'visible', transition: 'height 300ms var(--ease-quiet)' }}>
+          {step === 'input' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>How did it land?</h2>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Optional — a note left for the circle.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <div style={{ position: 'relative', width: box, height: box, margin: narrow ? '2px 0 0' : '10px 0 0' }}>
+                  <div style={{ position: 'absolute', inset }}>
+                    <SwellPad size={pad} live={swell} interactive opts={swellOpts}
+                      onChange={setSwell} onSubmit={() => { if (swellTouched) commitSwell(); }} />
+                  </div>
+                  <SwellPalette live={swell} box={box} />
+                </div>
+                <div style={{ height: narrow ? 10 : 16 }} />
+                <RxActions onSkip={() => commit(null)} done={swellTouched ? commitSwell : null} />
+              </div>
+            </div>
+          ) : (
+            <div style={{ opacity: fading ? 0 : 1, transition: 'opacity 460ms var(--ease-quiet)' }}>
+              <SwellReview all={[...others, ...(mine ? [mine] : [])]} interactive={false} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { RX_GLYPHS, SwellDoor, SwellReviewModal, SwellReactionFlow });
