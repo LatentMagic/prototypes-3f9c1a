@@ -17,13 +17,13 @@ Two conceptual states, not a ticket-per-slug chain:
 
 Don't mint ticket-named slugs for the working line any more — changes accrete into `next`. The older ticket slugs (`lm-298-…`, `lm-270-…`, `lm-367-369-…`) stay as legacy; leave them be.
 
-**Resolution ledger = commit history.** Keep commit messages feature-flavoured (`feat(latentpulse): <feature>`) when it's natural — they're a hint an agent reads later, not a contract to uphold. Resolving `next` into product is a later agent job: diff `next` against product, re-slice by feature from the code, and land one feature at a time. Nothing is pre-built for it now — the changelog is a human-facing convenience, not the ledger.
+**Resolution ledger = commit history.** Keep commit messages feature-flavoured (`feat(circlists): <feature>`) when it's natural — they're a hint an agent reads later, not a contract to uphold. Resolving `next` into product is a later agent job: diff `next` against product, re-slice by feature from the code, and land one feature at a time. Nothing is pre-built for it now — the changelog is a human-facing convenience, not the ledger.
 
 ## Reference nodes (the brand pack)
 
 Not every rail node is a prototype version. A **reference node** carries a `kind` (e.g. `kind: 'brand'`) — it sits at the top of the rail with its own amber accent, lifted off the version spine, and the default landing skips it so the console still opens on the working line. It's deep-linkable like any node (`#brand`).
 
-The Circlists brand pack is the first: `app/circlists/brand/` holds `circlists-brand.html` plus the lockup SVGs (`circlists-lockup.svg`, `circlists-lockup-reversed.svg`), all verbatim copies of the brand-pack export. Its source lives outside this repo and updates over time, so the copy is a point-in-time snapshot — **refresh it by re-copying the current export files over `app/circlists/brand/`** (shell copy, never hand-edited).
+The Circlists brand pack is the first: `app/circlists/brand/` holds `circlists-brand.html` plus the lockup SVGs (`circlists-lockup.svg`, `circlists-lockup-reversed.svg`), all verbatim copies of the brand-pack export. Its source of truth is the company wiki — [circlists/brand](https://github.com/LatentMagic/wiki/tree/main/wiki/products/circlists/brand) (local: `../harness-intent-wiki/wiki/products/circlists/brand`) — which updates over time, so the copy is a point-in-time snapshot — **refresh it by re-copying the wiki's brand files over `app/circlists/brand/`** (shell copy, never hand-edited).
 
 The console's favicon is the canonical Circlists mark, inlined in `index.html` as a data-URI icon (the mark is small and stable). The rail title is the brand pack's **reversed** (light-on-dark) lockup — `app/circlists/brand/circlists-lockup-reversed.svg` — referenced by the active app's `logo`, so it refreshes with the rest of the brand pack. Both are brand assets the console owns, not borrowed from a prototype dir a re-export could change.
 
@@ -38,7 +38,7 @@ The console's favicon is the canonical Circlists mark, inlined in `index.html` a
 
 ## Why a server (not file://)
 
-Each prototype's `latentpulse.html` loads `app/*.jsx` via babel-standalone, which **XHR-fetches** each module. Over `file://` that fetch fails on CORS, so the app never mounts. `server.js` serves everything over `http://` on one origin, which makes the fetch succeed.
+Each prototype's entry HTML (`circlists.html` on the working line; `latentpulse.html` on the legacy slugs) loads `app/*.jsx` via babel-standalone, which **XHR-fetches** each module. Over `file://` that fetch fails on CORS, so the app never mounts. `server.js` serves everything over `http://` on one origin, which makes the fetch succeed.
 
 ## Run
 
@@ -51,10 +51,18 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 
 ## Add a prototype
 
-1. Copy its whole export dir into `app/<slug>/` verbatim (must contain `latentpulse.html`, `tokens.css`, `favicon.svg`, and `app/` with the `.jsx` modules). Delete any stray `.playwright-mcp/`.
+1. Copy its whole export dir into `app/<slug>/` verbatim — the entry HTML (`circlists.html`), `tokens.css`, `favicon.svg`, `app/` with the `.jsx` modules, **and any folder the app loads at runtime** (e.g. `brand/`, which holds the lockup/wordmark SVGs the app fetches via `<img>`). Delete only stray tooling (`.playwright-mcp/`, `.thumbnail`) — never strip a folder the browser fetches, or the assets 404.
 2. Add one entry — `{ slug, version, ticket, desc }` — to `APPS.<app>.prototypes` in `index.html`. Order is version order, which is also tab order.
 
-**Updating the working line** — a fresh export for the live line replaces `app/circlists/next/` in place. Don't add a new slug; keep the single `next` entry in `index.html` and append a `changelog` entry to it.
+**Updating the working line** — a fresh export for the live line replaces `app/circlists/next/` in place (same verbatim rule as step 1 — copy the whole export, including `brand/`). Don't add a new slug; keep the single `next` entry in `index.html` and append a `changelog` entry to it.
+
+## Deploy
+
+Published via **GitHub Pages** at https://latentmagic.github.io/prototypes-3f9c1a/. A push to `main` triggers the `pages-build-deployment` Actions job, which serves the repo as-is (no build step) in ~25s.
+
+- **Check status** — `gh api repos/LatentMagic/prototypes-3f9c1a/pages/builds/latest` (or `gh run list`).
+- **Stuck deploy** — usually a GitHub Actions incident ([githubstatus.com](https://www.githubstatus.com)), not the repo: the queued job just hasn't run. Wait it out; nothing to fix.
+- **Old version after it deployed** — browser cache. Hard-refresh (Cmd-Shift-R).
 
 ## Runtime dependency
 
