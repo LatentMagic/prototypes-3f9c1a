@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — Auth surfaces. No app shell. Centred card on neutral page.
+// Circlists — Auth surfaces. No app shell. Centred card on neutral page.
 // Sign-in, Sign-up, One-time-code, Google return, Password recovery.
 // ============================================================================
 
@@ -8,7 +8,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // ---- Shared frame ----------------------------------------------------------
 const AuthFrame = ({ title, subtitle, children, footer, onBack }) => (
   <div style={{
-    minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
+    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     padding: '32px 20px 48px',
   }}>
@@ -54,7 +54,7 @@ const TextLink = ({ children, onClick }) => (
     background: 'transparent', border: 0, padding: 0, cursor: 'pointer',
     fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent)',
     textDecoration: 'none',
-  }} className="lp-textlink">{children}</button>
+  }} className="circ-textlink">{children}</button>
 );
 
 const OrDivider = () => (
@@ -204,7 +204,7 @@ const GoogleReturn = ({ onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1500); return () => clearTimeout(t); }, [onDone]);
   return (
     <div style={{
-      minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
+      minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20,
     }}>
       <Wordmark size={22} />

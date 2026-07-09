@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — Spaces, Invitations, Account settings.
+// Circlists — Spaces, Invitations, Account settings.
 // CreateSpace (full page), InviteMember (+ space-full), InvalidInvite,
 // SpaceFull, AccountSettings.
 // ============================================================================
@@ -25,7 +25,7 @@ const ContentPage = ({ onBack, backLabel = 'Back', children, max = 'var(--max-fe
 // ---- Standalone calm full page (invalid invite / space full) ---------------
 const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
   <div style={{
-    minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
+    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
     padding: '40px 24px', textAlign: 'center',
   }}>
@@ -78,7 +78,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
     onCreate(name.trim());
   };
   return (
-    <div style={{ minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 24px' }}>
         <button onClick={onCancel} aria-label="Exit" style={{
           background: 'transparent', border: 0, padding: 8, margin: '-8px -8px -8px 0', cursor: 'pointer',
@@ -128,7 +128,7 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   return (
     <div role="alertdialog" aria-modal="true" aria-label={`Remove ${name}?`}
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
-      style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="lp-anim-fade">
+      style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
         <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>Remove {name}?</h2>
         <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>They lose access to this circle. Their links stay, with their name. You can re-invite them later.</p>
@@ -225,7 +225,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: 0,
           }}>{space.name}</h1>
           {isChampion && (
-            <button onClick={beginRename} aria-label="Rename circle" className="lp-cardaction lp-cardaction-icon"
+            <button onClick={beginRename} aria-label="Rename circle" className="circ-cardaction circ-cardaction-icon"
               style={{ minWidth: 40, minHeight: 40, color: 'var(--color-fg-3)' }}>
               <Icon name="edit" size={18} />
             </button>
@@ -264,7 +264,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                 <div data-kebab-root style={{ position: 'relative', flexShrink: 0 }}>
                   <button onClick={() => setMenuFor(menuFor === m.name ? null : m.name)}
                     aria-haspopup="menu" aria-expanded={menuFor === m.name} aria-label={`Manage ${m.name}`}
-                    className="lp-cardaction lp-cardaction-icon" style={{ minWidth: 44, minHeight: 44, color: 'var(--color-fg-2)' }}>
+                    className="circ-cardaction circ-cardaction-icon" style={{ minWidth: 44, minHeight: 44, color: 'var(--color-fg-2)' }}>
                     <Icon name="more-vertical" size={18} />
                   </button>
                   {menuFor === m.name && (
@@ -273,7 +273,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
                       borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
                     }}>
-                      <button role="menuitem" className="lp-menuitem" onClick={() => { setMenuFor(null); setRemoving(m); }}
+                      <button role="menuitem" className="circ-menuitem" onClick={() => { setMenuFor(null); setRemoving(m); }}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
                           background: 'transparent', border: 0, cursor: 'pointer', padding: '9px 10px', minHeight: 40,
                           borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
@@ -377,7 +377,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 // domain convention. Reads OPERATOR_EMAIL at render time (single source).
 const SupportLine = () => (
   <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, color: 'var(--color-fg-3)', margin: 'var(--space-6) 0 0' }}>
-    <a href={`mailto:${window.OPERATOR_EMAIL}`} className="lp-textlink" style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-fg-3)', textDecoration: 'none' }}>{window.OPERATOR_EMAIL}</a>
+    <a href={`mailto:${window.OPERATOR_EMAIL}`} className="circ-textlink" style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-fg-3)', textDecoration: 'none' }}>{window.OPERATOR_EMAIL}</a>
   </p>
 );
 
@@ -510,7 +510,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
 const NoSpaceHome = ({ onCreate }) => (
   <main style={{ flex: 1, width: '100%' }}>
     <div style={{
-      maxWidth: 480, margin: '0 auto', minHeight: 'calc(var(--lp-vh) - var(--top-bar-height))',
+      maxWidth: 480, margin: '0 auto', minHeight: 'calc(var(--circ-vh) - var(--top-bar-height))',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '48px 24px 96px', textAlign: 'center',
     }}>

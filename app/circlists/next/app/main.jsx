@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse v0.2.2 — root state machine (per-space billing).
+// Circlists v0.2.2 — root state machine (per-space billing).
 // The space is the billing unit: £3 / space / month (introductory rate), funded by one member —
 // the CHAMPION. Everyone they invite joins free. Creating a space IS funding it.
 // Access = the space is funded AND the viewer is a member. No front-door paywall.
@@ -22,6 +22,8 @@ function seedSpaces(userEmail) {
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
       members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com')],
       items: [
+        // No reactions yet — react/skip this one to see the "first one here" moment.
+        IT('https://firstonehere.com', 'Added by Sam R.', false, []),
         IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
           { name: 'Priya N.', glyph: FIRE, intensity: 0.9 },
           { name: 'Sam R.', glyph: FIRE, intensity: 0.84 },
@@ -127,14 +129,17 @@ function seedSpaces(userEmail) {
 }
 
 const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'you@example.com' };
-const displayName = (first, last) => `${first} ${(last || ' ').trim()[0] || ''}.`.trim();
 
 // ---- Persistence -----------------------------------------------------------
-const SAVED = (() => { try { return JSON.parse(localStorage.getItem('lp_alpha_v10_state') || 'null'); } catch (e) { return null; } })();
+// Key is versioned: bump the suffix whenever seed data changes so returning
+// sessions pick up the new seed instead of rehydrating stale state. (v2 adds
+// the reaction-less firstonehere.com item for testing the first-one-here moment.)
+const STATE_KEY = 'circ_state_v2';
+const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- App -------------------------------------------------------------------
-const LPApp = () => {
-  const [tw, setTweak] = useTweaks(LP_TWEAK_DEFAULTS);
+const CircApp = () => {
+  const [tw, setTweak] = useTweaks(CIRC_TWEAK_DEFAULTS);
   useEffect(() => { document.documentElement.style.setProperty('--color-accent', tw.accent); }, [tw.accent]);
 
   // viewport / layout posture
@@ -167,13 +172,13 @@ const LPApp = () => {
   const [launcher, setLauncher] = useState(false);
   // draggable Scenarios launcher (prototype aid). null = default bottom-right.
   const [launchPos, setLaunchPos] = useState(() => {
-    try { const v = JSON.parse(localStorage.getItem('lp_launcher_pos') || 'null'); return v && typeof v.x === 'number' ? v : null; } catch (e) { return null; }
+    try { const v = JSON.parse(localStorage.getItem('circ_launcher_pos') || 'null'); return v && typeof v.x === 'number' ? v : null; } catch (e) { return null; }
   });
   const launchDrag = useRef({ dragging: false, moved: false, dx: 0, dy: 0, last: null });
   const launchWrapRef = useRef(null);
   const onLaunchPointerDown = (e) => {
     if (e.button != null && e.button !== 0) return;
-    const wrap = e.currentTarget.closest('.lp-launcher-wrap');
+    const wrap = e.currentTarget.closest('.circ-launcher-wrap');
     const rect = wrap.getBoundingClientRect();
     const st = launchDrag.current;
     st.dragging = true; st.moved = false;
@@ -192,7 +197,7 @@ const LPApp = () => {
       st.dragging = false;
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
-      if (st.moved && st.last) { try { localStorage.setItem('lp_launcher_pos', JSON.stringify(st.last)); } catch (e) {} }
+      if (st.moved && st.last) { try { localStorage.setItem('circ_launcher_pos', JSON.stringify(st.last)); } catch (e) {} }
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
@@ -226,7 +231,7 @@ const LPApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem('lp_alpha_v10_state', JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
   }, [route, user, spaces, currentId, tab]);
 
   const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);
@@ -321,7 +326,7 @@ const LPApp = () => {
 
   // ---- scenario launcher setups ----
   const reset = () => {
-    try { localStorage.removeItem('lp_alpha_v10_state'); } catch (e) {}
+    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
   };
@@ -522,33 +527,33 @@ const LPApp = () => {
   return (
     <>
       {forcedMobile ? (
-        <div className="lp-stage">
-          <div className="lp-phone"><div className="lp-phone-screen">{appTree}</div></div>
+        <div className="circ-stage">
+          <div className="circ-phone"><div className="circ-phone-screen">{appTree}</div></div>
         </div>
       ) : appTree}
 
       {/* Scenario launcher — prototype aid, not part of the product */}
-      <div className="lp-launcher-wrap" ref={launchWrapRef} style={launchWrapStyle}>
+      <div className="circ-launcher-wrap" ref={launchWrapRef} style={launchWrapStyle}>
         {launcher && (
-          <div className="lp-launcher-panel" role="menu" style={launchPanelStyle}>
+          <div className="circ-launcher-panel" role="menu" style={launchPanelStyle}>
             {SCENARIOS.map((j, i) => j.h
-              ? <div key={'h' + i} className="lp-launcher-head" style={i ? { paddingTop: 12 } : null}>{j.h}</div>
-              : <button key={j.k} className="lp-launcher-item" onClick={() => { j.go(); setLauncher(false); }}>{j.k}</button>
+              ? <div key={'h' + i} className="circ-launcher-head" style={i ? { paddingTop: 12 } : null}>{j.h}</div>
+              : <button key={j.k} className="circ-launcher-item" onClick={() => { j.go(); setLauncher(false); }}>{j.k}</button>
             )}
-            <div className="lp-launcher-sep" />
-            <button className="lp-launcher-item" onClick={() => { reset(); setLauncher(false); }}>Reset to seeded data</button>
+            <div className="circ-launcher-sep" />
+            <button className="circ-launcher-item" onClick={() => { reset(); setLauncher(false); }}>Reset to seeded data</button>
           </div>
         )}
-        <button className="lp-launcher-btn" onPointerDown={onLaunchPointerDown} onClick={() => { if (launchDrag.current.moved) { launchDrag.current.moved = false; return; } setLauncher(v => !v); }} aria-expanded={launcher} style={{ cursor: 'grab', touchAction: 'none' }} title="Drag to move">
+        <button className="circ-launcher-btn" onPointerDown={onLaunchPointerDown} onClick={() => { if (launchDrag.current.moved) { launchDrag.current.moved = false; return; } setLauncher(v => !v); }} aria-expanded={launcher} style={{ cursor: 'grab', touchAction: 'none' }} title="Drag to move">
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-accent)' }} />
           Scenarios
           <Icon name="chevron-down" size={14} style={{ transform: launcher ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
         </button>
       </div>
 
-      <LPTweaks tw={tw} setTweak={setTweak} />
+      <CircTweaks tw={tw} setTweak={setTweak} />
     </>
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<LPApp />);
+ReactDOM.createRoot(document.getElementById('root')).render(<CircApp />);

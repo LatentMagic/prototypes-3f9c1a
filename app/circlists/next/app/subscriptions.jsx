@@ -1,10 +1,10 @@
 // ============================================================================
-// LatentPulse — Subscriptions (per-space model).
+// Circlists — Subscriptions (per-space model).
 // The space is the billing unit: £3 per space / month (introductory rate),
 // funded by one member — the champion. Everyone they invite joins free.
 // Creating a space IS funding it.
 //
-// LP-authored:  FundingPage (new + re-fund), SettingUp settle, DormantSpace.
+// Circlists-authored:  FundingPage (new + re-fund), SettingUp settle, DormantSpace.
 // Provider boundary (cool slate, simulated):  Checkout, ManageFunding deep-link.
 // Currency is £ throughout — never $, never per-seat.
 // ============================================================================
@@ -12,7 +12,7 @@
 const PRICE_PER_SPACE = 3;
 const OPERATOR_EMAIL = 'support@circlists.com';
 
-// ---- Funding page (LP-authored, full page) ---------------------------------
+// ---- Funding page (Circlists-authored, full page) --------------------------
 // One reusable page: fund a NEW space, or re-fund a DORMANT one. The re-fund
 // register acknowledges the returning champion — never new-customer pricing.
 const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }) => {
@@ -29,7 +29,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
         'Shared library, private reading state',
       ];
   return (
-    <div style={{ minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 24px' }}>
         {onCancel && (
           <button onClick={onCancel} aria-label="Exit" style={{
@@ -102,11 +102,11 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
 };
 
 // ---- Provider-hosted boundary chrome ---------------------------------------
-// A deliberately different register (cool slate) — "you have left LatentPulse
+// A deliberately different register (cool slate) — "you have left Circlists
 // and are on the payment provider."
 const ProviderShell = ({ children, merchant = 'Circlists' }) => (
   <div style={{
-    minHeight: 'var(--lp-vh)', background: '#0f172a',
+    minHeight: 'var(--circ-vh)', background: '#0f172a',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     padding: '32px 20px 48px', fontFamily: 'var(--font-sans)',
   }}>
@@ -229,7 +229,7 @@ const ManageFunding = ({ user, spaceName, intent = 'manage', onReturn, onCancelS
 const ProviderInterstitial = ({ label, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1100); return () => clearTimeout(t); }, [onDone]);
   return (
-    <div style={{ minHeight: 'var(--lp-vh)', background: '#0f172a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+    <div style={{ minHeight: 'var(--circ-vh)', background: '#0f172a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
       <Spinner size={20} />
       <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15, color: '#cbd5e1' }}>{label}</span>
     </div>
@@ -244,7 +244,7 @@ const SettingUp = ({ spaceName, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1900); return () => clearTimeout(t); }, [onDone]);
   return (
     <div style={{
-      minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
+      minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-5)',
       padding: '40px 24px', textAlign: 'center',
     }}>
@@ -273,7 +273,7 @@ const DormantSpace = ({ space, isChampion, championName, dormancy = 'terminal', 
   } else if (isChampion && suspended) {
     body = 'This circle is suspended. Get in touch and we\u2019ll help you sort it out.';
     action = (
-      <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Suspended circle: ' + (space ? space.name : ''))}`} className="lp-textlink" style={{
+      <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Suspended circle: ' + (space ? space.name : ''))}`} className="circ-textlink" style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
         fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-accent)',
       }}><Icon name="mail" size={17} color="var(--color-accent)" /> Get in touch</a>
@@ -281,7 +281,7 @@ const DormantSpace = ({ space, isChampion, championName, dormancy = 'terminal', 
   } else {
     body = `This circle is asleep. It\u2019s championed by ${championName || 'someone else'} — get in touch if you\u2019d like to take it on.`;
     action = (
-      <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Take over circle: ' + (space ? space.name : ''))}`} className="lp-textlink" style={{
+      <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Take over circle: ' + (space ? space.name : ''))}`} className="circ-textlink" style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
         fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-accent)',
       }}><Icon name="mail" size={17} color="var(--color-accent)" /> Get in touch about taking it on</a>
@@ -290,7 +290,7 @@ const DormantSpace = ({ space, isChampion, championName, dormancy = 'terminal', 
   return (
     <main style={{ flex: 1, width: '100%' }}>
       <div style={{
-        maxWidth: 520, margin: '0 auto', minHeight: 'calc(var(--lp-vh) - var(--top-bar-height))',
+        maxWidth: 520, margin: '0 auto', minHeight: 'calc(var(--circ-vh) - var(--top-bar-height))',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: '48px 24px 96px', textAlign: 'center',
       }}>

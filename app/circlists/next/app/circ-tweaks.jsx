@@ -1,12 +1,12 @@
 // ============================================================================
-// LatentPulse — Tweaks. Accent token-swap (locked fallbacks) + layout posture.
+// Circlists — Tweaks. Accent token-swap (locked fallbacks) + layout posture.
 // ============================================================================
-const LP_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+const CIRC_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#047857",
   "layout": "auto"
 }/*EDITMODE-END*/;
 
-const LPTweaks = ({ tw, setTweak }) => (
+const CircTweaks = ({ tw, setTweak }) => (
   <TweaksPanel>
     <TweakSection label="Brand accent" />
     <TweakColor label="Accent" value={tw.accent}
@@ -19,4 +19,4 @@ const LPTweaks = ({ tw, setTweak }) => (
   </TweaksPanel>
 );
 
-Object.assign(window, { LP_TWEAK_DEFAULTS, LPTweaks });
+Object.assign(window, { CIRC_TWEAK_DEFAULTS, CircTweaks });

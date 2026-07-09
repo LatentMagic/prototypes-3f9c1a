@@ -1,5 +1,5 @@
 /* ============================================================================
-   LatentPulse Design Tokens — Pulse Modernist
+   Circlists Design Tokens — Pulse Modernist
    ----------------------------------------------------------------------------
    The token layer. Every colour, type, spacing, radius, and shadow value lives
    here as a CSS custom property. Identity work happens by editing these values
@@ -21,6 +21,10 @@
   --color-accent-press:     #024F3A;  /* 8% darker  */
   --color-accent-ring:      rgba(4, 120, 87, 0.30);
   --color-accent-soft:      #ECFDF5;  /* Reserved — focus-ring bg only */
+
+  /* Sage — the mark's halo. Opaque brand colour (reads at 16px favicon on any
+     ground); NOT the accent, never a status or action colour. Brand mark only. */
+  --color-sage:             #8BBFAD;
 
   /* Approved fallbacks (use only if the primary feels wrong in composition) */
   --color-accent-warm:      #0D9488;  /* deep chromatic teal */

@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — App shell. Persistent chrome on every authenticated surface.
+// Circlists — App shell. Persistent chrome on every authenticated surface.
 // Desktop: left space-switcher rail. Mobile: switcher behind a menu trigger.
 // Top bar carries space name + invite + members + avatar→user menu.
 // ============================================================================
@@ -50,7 +50,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     </button>
     <div style={{ flex: 1 }} />
     <div style={{ position: 'relative', borderTop: '1px solid var(--color-border-2)', marginTop: 12, paddingTop: 8 }}>
-      <button onClick={() => setAcctOpen(v => !v)} aria-haspopup="menu" aria-expanded={acctOpen} className="lp-railacct" style={{
+      <button onClick={() => setAcctOpen(v => !v)} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer',
         background: 'transparent', border: 0, padding: '8px', borderRadius: 'var(--radius-md)', minHeight: 44,
       }}>
@@ -83,7 +83,7 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
     return () => { document.removeEventListener('mousedown', onDown); window.removeEventListener('keydown', onKey); };
   }, [onClose]);
   const Item = ({ icon, label, onClick, danger }) => (
-    <button onClick={() => { onClose(); onClick(); }} className="lp-menuitem" style={{
+    <button onClick={() => { onClose(); onClick(); }} className="circ-menuitem" style={{
       display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
       background: 'transparent', border: 0, cursor: 'pointer', minHeight: 44,
       padding: '11px 14px', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
@@ -100,7 +100,7 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
       ...(stretch ? { left: 0, right: 0 } : { right: anchorRight ? 0 : 'auto' }),
       minWidth: stretch ? 0 : 240, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
-    }} className="lp-anim-fade">
+    }} className="circ-anim-fade">
       <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid var(--color-border-2)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
         <Avatar name={user.name} size={34} accent />
         <div style={{ minWidth: 0 }}>
@@ -160,7 +160,7 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
       ) : <div style={{ flex: 1 }} />}
 
       {!topbarNav && space && showMembers && (
-        <button onClick={onMembers} className="lp-topaction" aria-label="Circle settings" style={{
+        <button onClick={onMembers} className="circ-topaction" aria-label="Circle settings" style={{
           display: 'inline-flex', alignItems: 'center', gap: 7, background: 'transparent',
           border: '1px solid var(--color-border-1)', cursor: 'pointer', padding: '8px 12px',
           borderRadius: 'var(--radius-md)', minHeight: 40,
@@ -252,12 +252,12 @@ const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true
     onManageAccount, onSignOut,
   };
   return (
-    <div style={{ display: 'flex', minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)' }}>
+    <div style={{ display: 'flex', minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)' }}>
       {!isMobile && (
         <aside style={{
           width: 'var(--rail-width)', flexShrink: 0, background: 'var(--color-surface-sunken)',
           borderRight: '1px solid var(--color-border-2)', padding: '20px 12px',
-          position: 'sticky', top: 0, height: 'var(--lp-vh)',
+          position: 'sticky', top: 0, height: 'var(--circ-vh)',
         }}>
           <RailBody {...rail} />
         </aside>

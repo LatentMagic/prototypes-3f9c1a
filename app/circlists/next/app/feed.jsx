@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — Feed. The product's heart.
+// Circlists — Feed. The product's heart.
 // FeedCard (URL + attribution ONLY), AddReveal (sheet/popover), EmptyState,
 // FeedLoading, ConfirmDialog (mark-read calm / delete destructive).
 // ============================================================================
@@ -12,7 +12,7 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
   // Display name parsed out of "Added by Sam R." for the avatar.
   const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
   return (
-    <article className="lp-card" style={{
+    <article className="circ-card" style={{
       background: 'var(--color-surface)',
       border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)',
@@ -23,7 +23,7 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
       <a
         href={item.url} target="_blank" rel="noopener noreferrer"
         onClick={() => onOpen && onOpen(item)}
-        className="lp-url"
+        className="circ-url"
         style={{
           fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 15,
           lineHeight: 1.5, color: 'var(--color-fg-1)',
@@ -51,16 +51,16 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
         gap: 'var(--space-2)', paddingTop: 'var(--space-3)',
         borderTop: '1px solid var(--color-border-2)',
       }}>
-        <button className="lp-cardaction" onClick={() => onOpen && onOpen(item)}>
+        <button className="circ-cardaction" onClick={() => onOpen && onOpen(item)}>
           <Icon name="external-link" size={16} /><span>Open</span>
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           {tab === 'active' && (
-            <button className="lp-cardaction" onClick={() => onMarkRead(item)}>
+            <button className="circ-cardaction" onClick={() => onMarkRead(item)}>
               <Icon name="check" size={16} /><span>Mark as read</span>
             </button>
           )}
-          <button className="lp-cardaction lp-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link">
+          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link">
             <Icon name="trash" size={16} />
           </button>
         </div>
@@ -265,7 +265,7 @@ const ConfirmDialog = ({ kind, onConfirm, onCancel }) => {
       style={{
         position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
-      }} className="lp-anim-fade">
+      }} className="circ-anim-fade">
       <div style={{
         background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
         padding: 'var(--space-6)', maxWidth: 400, width: '100%',

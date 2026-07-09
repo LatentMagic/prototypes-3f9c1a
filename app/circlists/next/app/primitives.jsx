@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — primitives. Icons (inline), Button, Field, Logo, Spinner.
+// Circlists — primitives. Icons (inline), Button, Field, Logo, Spinner.
 // Pulse Modernist: one accent, calm neutrals, weight-and-size hierarchy.
 // ============================================================================
 
@@ -55,7 +55,7 @@ const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth
 
 // ---- Spinner ---------------------------------------------------------------
 const Spinner = ({ size = 14, light = true }) => (
-  <span className="lp-spin" style={{
+  <span className="circ-spin" style={{
     width: size, height: size,
     borderColor: light ? 'rgba(255,255,255,0.4)' : 'rgba(10,10,10,0.18)',
     borderTopColor: light ? '#fff' : 'var(--color-fg-1)',
@@ -90,7 +90,7 @@ const Button = React.forwardRef((props, ref) => {
     destructive: { background: 'var(--color-destructive)', color: '#fff' },
     ghost: { background: 'transparent', color: 'var(--color-fg-2)', fontWeight: 500, border: '1px solid var(--color-border-1)' },
   };
-  const cls = 'lp-btn lp-btn-' + variant;
+  const cls = 'circ-btn circ-btn-' + variant;
   return (
     <button
       ref={ref} type={type} onClick={onClick} disabled={loading || disabled}
@@ -154,29 +154,31 @@ const Field = React.forwardRef(({ label, hint, error, mono = false, suffix, ...r
   );
 });
 
-// ---- Logo mark — the Circlists "circle" (concentric halo / white ring / disc)
+// ---- Logo mark — the Circlists "circle" (brand pack: sage halo / green disc /
+// thin white separator ring). Halo is OPAQUE sage so the mark reads at favicon
+// size on any ground. Disc stays var(--color-accent) so it tracks the accent Tweak.
 const LogoMark = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="Circlists"
     style={{ display: 'block', flexShrink: 0 }}>
-    <circle cx="24" cy="24" r="22.5" fill="var(--color-accent)" opacity="0.17"></circle>
-    <circle cx="24" cy="24" r="13.5" fill="var(--color-accent)" stroke="#ffffff" strokeWidth={3}></circle>
+    <circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle>
+    <circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle>
+    <circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" strokeWidth={1.35}></circle>
   </svg>
 );
 
-const Wordmark = ({ size = 16, mark = true }) => (
-  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-    {mark && <LogoMark size={Math.round(size * 1.5)} />}
-    <span style={{
-      fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: size,
-      letterSpacing: '-0.01em', color: 'var(--color-fg-1)', lineHeight: 1,
-    }}>
-      Circl<span style={{ position: 'relative' }}>{'\u0131'}<span style={{
-        position: 'absolute', left: '50%', top: '-0.02em', transform: 'translateX(-50%)',
-        width: '0.2em', height: '0.2em', borderRadius: '50%', background: 'var(--color-accent)',
-      }}></span></span>sts
-    </span>
-  </span>
-);
+// ---- Wordmark / lockup. These ship as finished vector assets in the brand pack
+// (outlined paths — font-independent, tittle baked in exactly). Render them
+// directly; nothing is re-derived. mark=true → lockup (mark + wordmark), else the
+// wordmark alone. Ink variants — every in-app placement is a light ground.
+// (`size` ≈ wordmark font-size; both assets share cap-height 1490 in their viewBox.)
+const Wordmark = ({ size = 16, mark = true }) => {
+  const cap = size * 0.727;
+  const height = Math.round(cap * (mark ? 2514.33 : 2212.05) / 1490);
+  return (
+    <img src={mark ? 'brand/circlists-lockup.svg' : 'brand/circlists-wordmark.svg'}
+      alt="Circlists" style={{ height, width: 'auto', display: 'block', flexShrink: 0 }} />
+  );
+};
 
 // ---- Avatar (initials) -----------------------------------------------------
 function initialsOf(name) {

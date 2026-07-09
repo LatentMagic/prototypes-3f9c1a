@@ -9,10 +9,6 @@
 //                        the review modal.
 //   SwellReviewModal   — the review modal itself (opened by SwellDoor).
 //
-// NAMES ARE ALWAYS ON. There is no names on/off concept — reactors are always
-// shown by name (the current user is always "You"). The packet's `names`
-// parameter has been removed entirely.
-//
 // ---- DATA MODEL ------------------------------------------------------------
 // A reaction is: { name, glyph, intensity, nx, ny }
 //   name       string   — reactor's display name; the current user is "You".
@@ -161,13 +157,13 @@ const ReadRing = ({ size = 16, me }) => (
 // ---- Skip / Done row -------------------------------------------------------
 const RxActions = ({ onSkip, done }) => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-3)', width: '100%' }}>
-    <button type="button" onClick={onSkip} className="lp-swell-skip"
+    <button type="button" onClick={onSkip} className="circ-swell-skip"
       style={{ background: 'transparent', border: 0, cursor: 'pointer', minHeight: 44, padding: '8px 12px',
         fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-3)', borderRadius: 'var(--radius-md)' }}>
       Skip
     </button>
     {done && (
-      <button type="button" onClick={done} className="lp-swell-done"
+      <button type="button" onClick={done} className="circ-swell-done"
         style={{ background: 'var(--color-accent)', border: 0, cursor: 'pointer', minHeight: 44, padding: '8px 20px',
           fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-inverse, #fff)', borderRadius: 'var(--radius-md)' }}>
         Done
@@ -258,7 +254,7 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
     const peak = 1 + Math.max(0, (t - 0.5) / 0.5) * 0.07;
     return (
       <span style={{ position: 'absolute', left: (lx * 100) + '%', top: (ly * 100) + '%', transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', transition: settling ? 'left 300ms var(--ease-quiet), top 300ms var(--ease-quiet)' : 'none' }}>
-        <span className={breathing ? 'lp-swell-breath' : undefined} style={{ position: 'absolute', width: halo, height: halo, borderRadius: '50%', background: 'rgba(4,120,87,' + (0.10 + t * 0.18) + ')', '--breath-peak': peak }} />
+        <span className={breathing ? 'circ-swell-breath' : undefined} style={{ position: 'absolute', width: halo, height: halo, borderRadius: '50%', background: 'rgba(4,120,87,' + (0.10 + t * 0.18) + ')', '--breath-peak': peak }} />
         <span style={{ position: 'relative', width: puck, height: puck, borderRadius: '50%', background: 'var(--color-accent)', opacity: 0.72 + t * 0.28, border: '2px solid var(--color-surface)', boxShadow: '0 2px 8px rgba(4,120,87,' + (0.2 + t * 0.3) + ')' }} />
       </span>
     );
@@ -372,7 +368,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
 // size across the input, the reveal, and the door modal — the circle never
 // resizes or jumps.
 // ============================================================================
-const SwellReview = ({ all, interactive = true }) => {
+const SwellReview = ({ all, interactive = true, firstHere = false }) => {
   const [sel, setSel] = rxState(null);
   // Reactions land on the disc + roster; skips are roster-only and always last.
   // Both render in ONE continuous roster flow — a skip is set identically to a
@@ -392,7 +388,7 @@ const SwellReview = ({ all, interactive = true }) => {
   return (
     <React.Fragment>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)', letterSpacing: '0.04em', marginBottom: 4, textAlign: 'center' }}>the circle</div>
-      <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em', textAlign: 'center' }}>How it landed</h2>
+      <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em', textAlign: 'center' }}>{firstHere ? 'You’re the first one here.' : 'How it landed'}</h2>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
         {/* box+inset reserve the palette's former footprint so the disc holds its position between steps */}
         <div style={{ position: 'relative', width: box, height: box, flexShrink: 0, marginTop: narrow ? 7 : 27 }}>
@@ -405,7 +401,7 @@ const SwellReview = ({ all, interactive = true }) => {
             {reacted.map((r, i) => {
               const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
               return interactive ? (
-                <button key={'r' + i} type="button" className="lp-swell-rrow"
+                <button key={'r' + i} type="button" className="circ-swell-rrow"
                   onClick={() => setSel(on ? null : i)}
                   style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
@@ -449,7 +445,7 @@ const SwellReviewModal = ({ item, onClose }) => {
   const all = (item.reactions || []);
   const narrow = typeof window !== 'undefined' && window.innerWidth < 520;
   return (
-    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="lp-anim-fade"
+    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="circ-anim-fade"
       style={{ position: 'fixed', inset: 0, zIndex: 140, background: 'var(--color-scrim)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: narrow ? 8 : 16 }}>
       <div role="dialog" aria-modal="true" aria-label="How the circle landed"
@@ -457,7 +453,7 @@ const SwellReviewModal = ({ item, onClose }) => {
           padding: narrow ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
           width: narrow ? '100%' : 348, maxWidth: 420, minWidth: narrow ? 0 : 288,
           maxHeight: '88vh', overflowY: 'auto' }}>
-        <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className="lp-rx-close"
+        <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className="circ-rx-close"
           style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
@@ -493,7 +489,7 @@ const SwellDoor = ({ item }) => {
   if (glyphs.length === 0) return null;
   return (
     <React.Fragment>
-      <button type="button" onClick={() => setOpen(true)} className="lp-swell-door"
+      <button type="button" onClick={() => setOpen(true)} className="circ-swell-door"
         aria-label="How the circle landed" aria-haspopup="dialog"
         style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer',
           border: 0, background: 'transparent', padding: 8, margin: '-8px -8px -8px 0',
@@ -526,7 +522,8 @@ const SwellDoor = ({ item }) => {
 //     downward and never re-centre/drag the circle;
 //   - the width is LOCKED across steps (no horizontal snap);
 //   - the reveal disc reserves the input pad's footprint and matches its header.
-// First reader who skips => just closes (no "first one here" line).
+// First reader (react OR skip) => reveal too, headed "You're the first one here.";
+//   a skip shows as an empty disc + your read-ring in the roster.
 //
 // Props: { item, swellOpts, onMarkRead(item, reaction|null), onClose }
 //   swellOpts (optional): { centerDot, breath, snap } — input pad flourishes.
@@ -554,8 +551,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
 
   const commit = (rx) => {
     onMarkRead(item, rx); setMine(rx);
-    if (others.length === 0 && rxIsSkip(rx)) { onClose(); return; }   // first reader, no note -> nothing to reveal
-    setStep('reveal');
+    setStep('reveal');   // always reveal — the first reader gets the first-one-here circle too, react or skip
   };
 
   rxEffect(() => {
@@ -571,7 +567,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   // the reveal is a passive glimpse: it fades on its own
   rxEffect(() => {
     if (step !== 'reveal') return;
-    const hold = Math.min(6000, 2600 + (others.length + (mine ? 1 : 0)) * 340);
+    const hold = 5000;
     const f = setTimeout(() => setFading(true), hold);
     const d = setTimeout(onClose, hold + 480);
     return () => { clearTimeout(f); clearTimeout(d); };
@@ -585,14 +581,14 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const tight = narrow;
 
   return (
-    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="lp-anim-fade"
+    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="circ-anim-fade"
       style={{ position: 'fixed', inset: 0, zIndex: 135, background: 'var(--color-scrim)',
         display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: tight ? 8 : 16 }}>
       <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
         padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
         maxWidth: 420, width: tight ? '100%' : 348, minWidth: tight ? 0 : 288, marginTop: tight ? 14 : '5vh' }}>
         {step === 'input' && (
-          <button type="button" onClick={onClose} aria-label="Close" className="lp-rx-close"
+          <button type="button" onClick={onClose} aria-label="Close" className="circ-rx-close"
             style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
@@ -618,7 +614,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
             </div>
           ) : (
             <div style={{ opacity: fading ? 0 : 1, transition: 'opacity 460ms var(--ease-quiet)' }}>
-              <SwellReview all={[...others, ...(mine ? [mine] : [])]} interactive={false} />
+              <SwellReview all={[...others, ...(mine ? [mine] : [])]} interactive={false} firstHere={others.length === 0} />
             </div>
           )}
         </div>
