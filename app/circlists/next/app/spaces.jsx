@@ -96,7 +96,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
             <p style={{
               fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
               color: 'var(--color-fg-2)', margin: '0 0 var(--space-8)',
-            }}>A circle is a shared queue for a small, trusted group. You’ll fund it as its champion — up to {SPACE_CAP} people join free.</p>
+            }}>A circle is a shared list for a small, trusted group. You’ll fund it as its champion — up to {SPACE_CAP} people join free.</p>
             <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
               value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>

@@ -79,7 +79,7 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
     if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
   };
   return (
-    <AuthFrame title="Sign in" subtitle="Pick up your queue where you left off."
+    <AuthFrame title="Sign in" subtitle="Pick up your list where you left off."
       footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink></span>}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"

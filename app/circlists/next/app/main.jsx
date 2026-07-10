@@ -20,10 +20,43 @@ function seedSpaces(userEmail) {
       id: 'sp-backend',
       name: 'Backend Pod',
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
-      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com')],
+      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com'), M('Owen D.', 'owen.d@example.com'), M('Freya S.', 'freya.s@example.com')],
       items: [
         // No reactions yet — react/skip this one to see the "first one here" moment.
         IT('https://firstonehere.com', 'Added by Sam R.', false, []),
+        // A few responded, a couple skipped — roster mixes reactions and read-rings.
+        IT('https://afewskipped.com', 'Added by Priya N.', false, [
+          { name: 'Marcus T.', glyph: FIRE, intensity: 0.6 },
+          { name: 'Ada L.', glyph: THUMB, intensity: 0.45 },
+          { name: 'Dev K.', glyph: BULB, intensity: 0.52 },
+          { name: 'Sam R.', skipped: true },
+          { name: 'Lena P.', skipped: true },
+        ]),
+        // Every other member has already responded — a cluster of hearts among the rest.
+        IT('https://heartsclustered.com', 'Added by Ada L.', false, [
+          { name: 'Sam R.', glyph: HEART, intensity: 0.5 },
+          { name: 'Priya N.', glyph: HEART, intensity: 0.62 },
+          { name: 'Marcus T.', glyph: HEART, intensity: 0.7 },
+          { name: 'Ada L.', glyph: HEART, intensity: 0.48 },
+          { name: 'Dev K.', glyph: HEART, intensity: 0.44 },
+          { name: 'Lena P.', glyph: HEART, intensity: 0.58 },
+          { name: 'Nadia F.', glyph: THUMB, intensity: 0.5 },
+          { name: 'Theo B.', glyph: BULB, intensity: 0.4 },
+        ]),
+        // Stress fixture — five hearts + five fires, adjacent sectors, even split.
+        // Purpose: see how two big same-glyph huddles behave shoulder-to-shoulder.
+        IT('https://heartsandfires.com', 'Added by Sam R.', false, [
+          { name: 'Sam R.', glyph: HEART, intensity: 0.44 },
+          { name: 'Priya N.', glyph: HEART, intensity: 0.56 },
+          { name: 'Marcus T.', glyph: HEART, intensity: 0.66 },
+          { name: 'Ada L.', glyph: HEART, intensity: 0.5 },
+          { name: 'Dev K.', glyph: HEART, intensity: 0.6 },
+          { name: 'Lena P.', glyph: FIRE, intensity: 0.46 },
+          { name: 'Nadia F.', glyph: FIRE, intensity: 0.58 },
+          { name: 'Theo B.', glyph: FIRE, intensity: 0.68 },
+          { name: 'Owen D.', glyph: FIRE, intensity: 0.52 },
+          { name: 'Freya S.', glyph: FIRE, intensity: 0.62 },
+        ]),
         IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
           { name: 'Priya N.', glyph: FIRE, intensity: 0.9 },
           { name: 'Sam R.', glyph: FIRE, intensity: 0.84 },
@@ -133,8 +166,12 @@ const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email:
 // ---- Persistence -----------------------------------------------------------
 // Key is versioned: bump the suffix whenever seed data changes so returning
 // sessions pick up the new seed instead of rehydrating stale state. (v2 adds
-// the reaction-less firstonehere.com item for testing the first-one-here moment.)
-const STATE_KEY = 'circ_state_v2';
+// the reaction-less firstonehere.com item for testing the first-one-here moment. v3
+// adds afewskipped.com (mixed reactions + skips) and heartsclustered.com (all
+// members responded, hearts clustered) — two more Swell demo fixtures. v4 adds
+// heartsandfires.com — five hearts + five fires, adjacent sectors, to stress the
+// two-big-huddles collision case.)
+const STATE_KEY = 'circ_state_v4';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- App -------------------------------------------------------------------

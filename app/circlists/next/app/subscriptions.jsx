@@ -24,9 +24,9 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
         'Picks up exactly where it left off',
       ]
     : [
-        'You\u2019re the champion — you fund the circle',
-        'Up to 10 members — everyone you invite joins free',
-        'Shared library, private reading state',
+        'You fund the circle as its champion',
+        'Up to 10 members, all invited free',
+        'Shared list, private read-state',
       ];
   return (
     <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
@@ -40,7 +40,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
         )}
       </header>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px 64px' }}>
-        <div style={{ maxWidth: 468, width: '100%', textAlign: 'center' }}>
+        <div style={{ maxWidth: 408, width: '100%', textAlign: 'center' }}>
           <div style={{
             fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
             textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 16,
@@ -58,24 +58,26 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
 
           <div style={{
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-            borderRadius: 'var(--radius-lg)', padding: 'var(--space-8)', textAlign: 'left',
+            borderRadius: 'var(--radius-lg)', padding: 'var(--space-8)', textAlign: 'center',
             boxShadow: 'var(--shadow-raised)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', gap: 10, marginBottom: refund ? 20 : 14 }}>
-              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 46, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)', whiteSpace: 'nowrap' }}>/ circle / month</span>
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 10, marginBottom: refund ? 20 : 24 }}>
+              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 48, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
+              {!refund && (
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
+                  letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
+                  border: '1px solid var(--color-accent)', marginLeft: 14,
+                  padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
+                }}>Founding rate</span>
+              )}
             </div>
-            {!refund && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 22 }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-accent)', flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, letterSpacing: '0.01em', color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>Introductory rate for early circles</span>
-              </div>
-            )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 28, width: 'fit-content', marginInline: 'auto' }}>
               {features.map((f) => (
-                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ marginTop: 1, color: 'var(--color-accent)', flexShrink: 0 }}><Icon name="check" size={18} /></span>
-                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>{f}</span>
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                  <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={20} /></span>
+                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 'var(--text-md)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' }}>{f}</span>
                 </div>
               ))}
             </div>

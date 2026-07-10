@@ -9,9 +9,10 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.recordingPen import DecomposingRecordingPen
 
-SRC = "/Users/josephmanghan/Repos/LatentMagic/businessops-coordination/public-sites/apps/latentpulse-marketing/dist/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2"
-BP = "/Users/josephmanghan/Repos/LatentMagic/businessops-coordination/latentmagic-business-ops/work/ops/biz-7-company-product-naming/_outputs/brand-pack"
-OUT = os.environ.get("WM_OUT", BP + "/circlists-wordmark.svg")
+HERE = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.join(HERE, os.pardir, "assets")               # shippable SVGs live in ../assets
+SRC = os.environ.get("WM_FONT", os.path.join(HERE, "inter-latin-wght-normal.woff2"))  # font vendored beside this script
+OUT = os.environ.get("WM_OUT", os.path.join(ASSETS, "circlists-wordmark.svg"))
 WORD = "Circlists"
 INK = os.environ.get("WM_INK", "#0A0A0A")
 GREEN = "#047857"

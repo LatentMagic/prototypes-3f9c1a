@@ -13,13 +13,14 @@ build_board.py imports compose() so the board and the shippable SVGs are ONE com
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.join(HERE, os.pardir, "assets")   # reads the mark/wordmark SVGs from, and writes the lockups to, ../assets
 CAP = 1490.0           # Inter cap-height, in the wordmark's font units
 MARK_CAP_RATIO = 1.5   # mark halo diameter as a multiple of cap-height (matches in-app)
 GAP_CAP_RATIO = 0.40   # gap (mark box edge -> wordmark) as a multiple of cap-height
 HALO_FRAC = 45.0 / 48.0  # halo diameter / mark viewBox
 
 def _load(fn):
-    s = open(os.path.join(HERE, fn)).read()
+    s = open(os.path.join(ASSETS, fn)).read()
     vb = re.search(r'viewBox="([^"]+)"', s).group(1)
     inner = re.sub(r'(?s)^.*?<svg[^>]*>', '', s, count=1)
     inner = re.sub(r'(?s)</svg>\s*$', '', inner)
@@ -57,5 +58,5 @@ if __name__ == '__main__':
     arg = sys.argv[1] if len(sys.argv) > 1 else 'both'
     for v in (['unreversed', 'reversed'] if arg == 'both' else [arg]):
         out = 'circlists-lockup-reversed.svg' if v == 'reversed' else 'circlists-lockup.svg'
-        open(os.path.join(HERE, out), 'w').write(svg(v))
+        open(os.path.join(ASSETS, out), 'w').write(svg(v))
         print("wrote", out)

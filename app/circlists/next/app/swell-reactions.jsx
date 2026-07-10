@@ -51,10 +51,10 @@ const SWELL_MAX  = 0.46;    // furthest a glyph sits from centre (fraction of pa
 const SWELL_DEAD = 0.055;   // inside this = no glyph chosen yet
 const glyphAngle   = (idx) => (-90 + idx * (360 / RX_N)) * Math.PI / 180;   // radial dial, evenly spaced
 const glyphIndexOf = (g) => RX_GLYPHS.indexOf(g);
-// Stable per-member angular jitter. Widened (was 0.34) so a CLUSTER of the same
-// glyph — common now the vocabulary is only five — fans out into an arc instead
-// of stacking. Each member keeps a fixed offset, well inside the glyph's sector.
-const swellJitter  = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.6;
+// Stable per-member angular jitter. Kept narrow so a CLUSTER of the same glyph
+// reads as a compact huddle, not a wide arc smeared across its sector. Each
+// member keeps a small fixed offset, well inside the glyph's direction.
+const swellJitter  = (name) => ((rxHash(name || '') % 1000) / 1000 - 0.5) * 0.32;
 // Stable per-member radial nudge — pushes same-glyph, same-intensity reactions
 // off each other's exact radius so two never perfectly coincide.
 const swellJitterR = (name) => ((rxHash((name || '') + '~r') % 1000) / 1000 - 0.5) * 0.07;
@@ -65,8 +65,8 @@ const swellPos = (r) => {
   if (r && r.nx != null) return { x: r.nx, y: r.ny };
   const i = iv(r);
   const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
-  let rr = idx >= 0 ? 0.17 + i * 0.27 : 0.05;
-  if (idx >= 0) rr = Math.max(0.12, Math.min(0.45, rr + swellJitterR(r && r.name)));
+  let rr = idx >= 0 ? 0.13 + i * 0.20 : 0.05;
+  if (idx >= 0) rr = Math.max(0.1, Math.min(0.34, rr + swellJitterR(r && r.name)));
   const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(r && r.name);
   return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
 };
@@ -80,34 +80,51 @@ const nearestGlyph = (dx, dy, dist) => {
 const swellFontSize = (i, small, isMine) => small ? (10 + i * 6) : ((isMine ? 20 : 18) + i * 20);
 
 // Lay out a set of reactions for the review disc.
-//  - Each reaction starts at its glyph's direction (same emoji => same region),
-//    at a radius set by how deep it landed.
-//  - Same-glyph members are fanned SIDEWAYS by a CONSTANT gap per person, so a
-//    cluster of two and a cluster of three read at the same density; group size
-//    only changes how WIDE the huddle is, never how tightly it's packed. No one
-//    stacks radially (the tall-glyph overlap case).
+//  - Each glyph group is anchored in its glyph's direction (same emoji => same
+//    region), at a radius set by the group's mean depth.
+//  - Members of a group PACK as a small 2-D blob around that anchor via a
+//    golden-angle (phyllotaxis) spiral, so the huddle grows in ALL directions —
+//    INWARD into the open centre as readily as outward — instead of bowing along
+//    the rim as a constant-radius arc (which could only ever push outward).
+//    Hotter reactions lean a touch further out, keeping the distance depth cue.
 //  - A final collision pass nudges apart anything still too close, whatever the
 //    emoji or however it was placed. Gentle touch is fine; exact stacks are not.
 //  - A committed free-position drag (your own just-left reaction) is honoured.
-const SWELL_GAP = 0.115;   // sideways centre-to-centre spacing between huddle-mates
+const SWELL_GAP = 0.075;   // sideways centre-to-centre spacing between huddle-mates
 const swellLayout = (list) => {
   const arr = list || [];
   const groups = {};
   arr.forEach((r, i) => { if (r && r.nx != null) return; const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1; (groups[idx] = groups[idx] || []).push(i); });
+  // Per-group anchor: a point in the glyph's direction at the group's MEAN depth.
+  // The huddle packs around this, so it can bulge inward past the anchor.
+  const anchor = {};
+  Object.keys(groups).forEach((key) => {
+    const idx = Number(key);
+    const ids = groups[idx];
+    const mean = ids.reduce((s, i) => s + iv(arr[i]), 0) / ids.length;
+    let rr = idx >= 0 ? 0.13 + mean * 0.20 : 0.05;
+    rr = Math.max(0.1, Math.min(0.34, rr));
+    anchor[idx] = { rr, mean };
+  });
   const seen = {};
   const pts = arr.map((r) => {
     if (r && r.nx != null) return { x: r.nx, y: r.ny };
     const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
     const n = (groups[idx] || []).length;
     const k = (seen[idx] = (seen[idx] == null ? 0 : seen[idx] + 1));
-    let rr = idx >= 0 ? 0.17 + iv(r) * 0.27 : 0.05;
-    if (idx >= 0) rr = Math.max(0.12, Math.min(0.45, rr + swellJitterR(r && r.name)));
     const base = idx >= 0 ? glyphAngle(idx) : -Math.PI / 2;
-    // sideways offset = constant absolute gap, turned into an angle via the radius
-    // so the spacing looks the same at any depth or group size
-    const t = n > 1 ? (k - (n - 1) / 2) * SWELL_GAP : 0;
-    const a = base + t / Math.max(0.16, rr) + swellJitter(r && r.name) * 0.09;
-    return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
+    const A = anchor[idx] || { rr: 0.13 + iv(r) * 0.20, mean: iv(r) };
+    const ax = 0.5 + Math.cos(base) * A.rr, ay = 0.5 + Math.sin(base) * A.rr;
+    if (n === 1) return { x: ax, y: ay };
+    // Golden-angle spiral around the anchor: throws members in every direction,
+    // filling inward and outward alike. Local frame = radial (outward) + tangent.
+    const ur = [Math.cos(base), Math.sin(base)];
+    const ut = [-Math.sin(base), Math.cos(base)];
+    const ang = k * 2.399963;
+    const pr = SWELL_GAP * 0.95 * Math.sqrt(k);
+    const tan = Math.cos(ang) * pr;
+    const rad = Math.sin(ang) * pr + (iv(r) - A.mean) * 0.16;   // hotter => a touch further out
+    return { x: ax + ut[0] * tan + ur[0] * rad, y: ay + ut[1] * tan + ur[1] * rad };
   });
   // Collision relaxation — a few deterministic passes that push any two glyphs
   // apart until they stop stacking. Some touch is fine (a crowd should read as a
@@ -122,7 +139,7 @@ const swellLayout = (list) => {
         let dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y;
         let d = Math.hypot(dx, dy);
         if (d < 0.001) { const ang = a * 2.39996; dx = Math.cos(ang); dy = Math.sin(ang); d = 0.001; }  // exact overlap: split along a stable direction
-        const min = (halfOf(arr[a]) + halfOf(arr[b])) * 0.78;
+        const min = (halfOf(arr[a]) + halfOf(arr[b])) * 0.62;
         if (d < min) {
           const push = (min - d) / 2, ux = dx / d, uy = dy / d;
           pts[a].x -= ux * push; pts[a].y -= uy * push;
@@ -379,10 +396,18 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 400;
   const narrow = vw < 520;
   const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
-  const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  // One rule for the disc size everywhere: a single cap, clamped down by whatever
+  // width is actually available. No per-breakpoint magic number — a larger mobile
+  // cap only inflated the empty circle where content is sparsest.
+  const box = Math.round(Math.max(248, Math.min(300, avail)));
   const pad = box - Math.round(box * 0.1389) * 2;
+  // Roster fill: a lone chip reads as a little lonely, so chips lift slightly at
+  // low counts and settle to base as the roster grows. Kept subtle — a gentle
+  // continuous factor into CSS clamp(), not the heavy bump of an earlier pass.
+  const rn = reacted.length + skipped.length;
+  const rf = 1 + 0.22 * Math.max(0, 1 - (rn - 1) / 3);
   const rowStyle = (accent, dim, on) => ({ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
-    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap',
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'clamp(14px, calc(14px * var(--rf, 1)), 18px)', whiteSpace: 'nowrap',
     color: accent ? 'var(--color-accent)' : 'var(--color-fg-1)',
     background: on ? 'var(--color-surface-sunken)' : 'transparent', opacity: dim ? 0.4 : 1 });
   return (
@@ -397,7 +422,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
           </div>
         </div>
         {(reacted.length + skipped.length) > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, width: '100%' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, width: '100%', '--rf': rf }}>
             {reacted.map((r, i) => {
               const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
               return interactive ? (
@@ -405,12 +430,12 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
                   onClick={() => setSel(on ? null : i)}
                   style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
-                  <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+                  <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
                   {who(r.name)}
                 </button>
               ) : (
                 <div key={'r' + i} style={rowStyle(me, dim, on)}>
-                  <span style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+                  <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
                   {who(r.name)}
                 </div>
               );
@@ -575,7 +600,9 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
 
   const narrow = vw < 520;
   const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
-  const box = Math.round(Math.max(248, Math.min(narrow ? 380 : 300, avail)));
+  // Same single disc-size rule as the reveal step — keeping these identical is the
+  // input→reveal pin. Change one, change both.
+  const box = Math.round(Math.max(248, Math.min(300, avail)));
   const inset = Math.round(box * 0.1389);
   const pad = box - inset * 2;
   const tight = narrow;

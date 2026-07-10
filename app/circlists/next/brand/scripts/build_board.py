@@ -13,19 +13,28 @@ here AND circlists-brand.md. The marks are not duplicated — they come from the
 
 One mark everywhere: the favicon is the mark itself (opaque sage halo → reads at 16px on
 any tab), so there is no separate card / tile asset to maintain."""
-import os, re, sys
+import os, re, sys, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.join(HERE, os.pardir, "assets")                   # SVGs + rasters live in ../assets
+BOARD_OUT = os.path.join(HERE, os.pardir, "circlists-brand.html")  # the board renders to the brand-dir top
 sys.path.insert(0, HERE)
 import build_lockup   # deterministic mark+wordmark composition (also emits circlists-lockup*.svg)
 
+# NOTE: run build_rasters.py first — the Rasters section inlines the PNG/ICO outputs from ../assets.
+
 def load(fn):
-    s = open(os.path.join(HERE, fn)).read()
+    s = open(os.path.join(ASSETS, fn)).read()
     vb = re.search(r'viewBox="([^"]+)"', s).group(1)
     inner = re.sub(r'(?s)^.*?<svg[^>]*>', '', s, count=1)
     inner = re.sub(r'(?s)</svg>\s*$', '', inner)
     inner = re.sub(r'(?s)<title>.*?</title>', '', inner)   # drop tooltips
     return vb, inner.strip()
+
+def datauri(fn, mime="image/png"):
+    """Inline a raster (from ../assets) as a base64 data URI so the board stays self-contained."""
+    with open(os.path.join(ASSETS, fn), "rb") as f:
+        return f"data:{mime};base64," + base64.b64encode(f.read()).decode()
 
 A = {k: load(f) for k, f in {
     'wm':    'circlists-wordmark.svg',
@@ -135,9 +144,30 @@ html = f"""<!doctype html>
 </section>
 
 <section>
+  <div class="label">Rasters — the mark for non-SVG surfaces (scripts/build_rasters.py)</div>
+  <div class="two">
+    <div class="panel light"><div class="rowb">
+      <figure><img src="{datauri('favicon-16.png')}" width="16" height="16"><figcaption>16 &middot; favicon</figcaption></figure>
+      <figure><img src="{datauri('favicon-32.png')}" width="32" height="32"><figcaption>32 &middot; favicon</figcaption></figure>
+      <figure><img src="{datauri('apple-touch-icon.png')}" width="60" height="60"><figcaption>180 &middot; apple-touch</figcaption></figure>
+      <figure><img src="{datauri('icon-512.png')}" width="96" height="96"><figcaption>512 &middot; PWA / avatar</figcaption></figure>
+    </div></div>
+    <div class="panel dark"><div class="rowb">
+      <figure><img src="{datauri('favicon-16.png')}" width="16" height="16"><figcaption>16</figcaption></figure>
+      <figure><img src="{datauri('favicon-32.png')}" width="32" height="32"><figcaption>32</figcaption></figure>
+      <figure><img src="{datauri('apple-touch-icon.png')}" width="60" height="60"><figcaption>180</figcaption></figure>
+      <figure><img src="{datauri('icon-512.png')}" width="96" height="96"><figcaption>512</figcaption></figure>
+    </div></div>
+  </div>
+  <p class="note"><b>favicon.ico</b> packs 16&middot;32&middot;48 for classic browser tabs; the PNGs cover modern
+  <b>&lt;link rel=icon&gt;</b>, iOS home-screen (180) and PWA (192/512). The 512 doubles as the raster mark for
+  avatars, email and social — anywhere SVG isn't accepted. All rendered from one source, <b>circlists-mark.svg</b>.</p>
+</section>
+
+<section>
   <div class="label">Palette</div>
   <div class="swatches">
-    <div class="sw"><div class="chip" style="background:#047857"></div><span class="mono">Pulse Green<br><b>#047857</b> · disc / brand</span></div>
+    <div class="sw"><div class="chip" style="background:#047857"></div><span class="mono">Emerald<br><b>#047857</b> · disc / brand</span></div>
     <div class="sw"><div class="chip" style="background:#8bbfad"></div><span class="mono">Sage<br><b>#8BBFAD</b> · the halo (opaque)</span></div>
     <div class="sw"><div class="chip" style="background:#0a0a0a"></div><span class="mono">Ink<br><b>#0A0A0A</b> · wordmark / text</span></div>
     <div class="sw"><div class="chip" style="background:#fafaf7"></div><span class="mono">Cream<br><b>#fafaf7</b> · page ground</span></div>
@@ -148,5 +178,5 @@ html = f"""<!doctype html>
 
 </body></html>
 """
-open(os.path.join(HERE, 'circlists-brand.html'), 'w').write(html)
+open(BOARD_OUT, 'w').write(html)
 print("wrote circlists-brand.html  (", len(html), "bytes )")

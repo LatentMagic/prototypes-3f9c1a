@@ -175,7 +175,7 @@ const Wordmark = ({ size = 16, mark = true }) => {
   const cap = size * 0.727;
   const height = Math.round(cap * (mark ? 2514.33 : 2212.05) / 1490);
   return (
-    <img src={mark ? 'brand/circlists-lockup.svg' : 'brand/circlists-wordmark.svg'}
+    <img src={mark ? 'brand/assets/circlists-lockup.svg' : 'brand/assets/circlists-wordmark.svg'}
       alt="Circlists" style={{ height, width: 'auto', display: 'block', flexShrink: 0 }} />
   );
 };

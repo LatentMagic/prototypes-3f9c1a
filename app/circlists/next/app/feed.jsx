@@ -88,7 +88,7 @@ const FeedLoading = () => (
 // (FAB / popover) already serves that.
 const EMPTY_COPY = {
   primary: 'Nothing here.',
-  supporting: 'Links shared in this circle land in everyone\u2019s queue, to read at your own pace.',
+  supporting: 'Links shared in this circle land in everyone\u2019s list, to read at your own pace.',
 };
 const EmptyState = () => {
   const c = EMPTY_COPY;
