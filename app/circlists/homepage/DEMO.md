@@ -16,9 +16,11 @@ The hero's "live demo" is a **live prototype of the app**, embedded — not scre
 
 The controller script + `.appdemo` CSS handle: lazy-load, the branded loading poster, the mobile "tap-shield", and reloading on breakpoint crossings.
 
-## The one gotcha
+## Gotchas (both about the iframe viewport)
 
-The app picks mobile-vs-desktop layout from the **iframe's own width** (breakpoint 1024px), *not* the device width. That's why we pass `?layout=` keyed to the real viewport — otherwise a landscape iframe (~1022px) always falls to mobile. Layout values: `auto` (mobile UI when narrow), `desktop`, `mobile` (dark phone bezel — unused).
+**1 — layout mode.** The app picks mobile-vs-desktop from the **iframe's own width** (breakpoint 1024px), *not* the device width. That's why we pass `?layout=` keyed to the real viewport — otherwise a landscape iframe (~1022px) always falls to mobile. Layout values: `auto` (mobile UI when narrow), `desktop`, `mobile` (dark phone bezel — unused).
+
+**2 — phone-only side whitespace.** Inside an iframe, **mobile** browsers resolve the framed page's `width=device-width` to the *device* width, not the iframe's box — so on a real phone the app lays out at full-phone width inside a narrower card and the browser letterboxes it (grey margins). Desktop devtools emulation doesn't do this, so it looks fine there — misleading. Fix (in the controller's `fitMobile()`): on mobile, render the app at a **fixed logical width (402px)** and `transform: scale()` the iframe to fill the card exactly — a device-mockup trick that ignores how the phone resolves the iframe viewport. Desktop keeps the plain `inset:0` fill.
 
 ## When a new app drop arrives
 

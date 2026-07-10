@@ -238,13 +238,46 @@
     setTimeout(function () { try { iframe.focus(); } catch (e) {} }, 0);
   }
 
+  /*  Mobile fit — the phone-only whitespace fix.
+      Inside an iframe, mobile browsers resolve the framed page's
+      `width=device-width` to the DEVICE width, not the iframe's box, so the app
+      lays out at full-phone width inside a narrower card and the browser
+      letterboxes it (the grey margins). We remove the guesswork: render the app
+      at a FIXED logical width and scale it with a transform to fill the card
+      exactly — same technique as a device mockup. Desktop keeps the plain
+      inset:0 fill (desktop browsers size the iframe viewport to its box). */
+  var DESIGN_W = 402; // the app's own designed phone width
+  function fitMobile() {
+    if (mqDesktop.matches) { iframe.style.cssText = ''; return; }
+    var w = frame.clientWidth, h = frame.clientHeight;
+    if (!w || !h) return;
+    var scale = w / DESIGN_W;
+    iframe.style.width  = DESIGN_W + 'px';
+    iframe.style.height = (h / scale) + 'px';
+    iframe.style.left = '0'; iframe.style.top = '0';
+    iframe.style.right = 'auto'; iframe.style.bottom = 'auto';
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.transform = 'scale(' + scale + ')';
+  }
+
   // Once the iframe has loaded: desktop with a real pointer goes live
   // immediately; touch/mobile shows the tap-shield first.
   iframe.addEventListener('load', function () {
     if (!started) return; // ignore the initial blank-src load
+    fitMobile();
     if (mqDesktop.matches && mqHover.matches) goLive();
     else setState('armed');
   });
+
+  // Re-fit on any viewport change (orientation, address-bar show/hide,
+  // window resize) — rAF-debounced so it's cheap.
+  var raf = null;
+  function scheduleFit() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function () { raf = null; fitMobile(); });
+  }
+  window.addEventListener('resize', scheduleFit);
+  window.addEventListener('orientationchange', scheduleFit);
 
   // Tapping the shield (in 'armed') arms interaction. Using click means a
   // scroll-swipe on the shield still scrolls the page — only a tap fires here.
@@ -262,7 +295,8 @@
   function onBreakpointFlip() {
     if (!started) return;
     setState('loading');
-    iframe.src = srcFor();
+    iframe.style.cssText = ''; // reset any mobile transform before reload
+    iframe.src = srcFor();     // load handler re-runs fitMobile()
   }
   if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onBreakpointFlip);
   else if (mqDesktop.addListener) mqDesktop.addListener(onBreakpointFlip); // older Safari
