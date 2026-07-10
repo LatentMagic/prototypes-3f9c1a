@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Circlists — Share with your circle. Consume at your pace.</title>
+<meta name="description" content="Drop a link. Everyone sees it. Read, watch or listen at your own pace — only your list changes." />
+<link rel="icon" href="assets/brand/favicon.ico" sizes="32x32" />
+<link rel="icon" href="assets/brand/circlists-mark.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="site.css" />
+</head>
+<body>
+
+<header class="site-header" data-screen-label="Header">
+  <div class="container">
+    <a href="index.html" class="wordmark" aria-label="Circlists — home">
+      <img class="wordmark__lockup" src="assets/brand/circlists-lockup.svg" alt="Circlists" />
+    </a>
+    <nav class="site-header__actions" aria-label="Account">
+      <a class="btn btn--quiet btn--sm" href="#">Sign in</a>
+      <a class="btn btn--primary btn--sm" href="#">Sign up</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" data-screen-label="Hero" aria-labelledby="hero-headline">
+    <div class="container">
+
+      <div class="hero__copy">
+        <h1 class="hero__headline" id="hero-headline">
+          Stay on the <em>pulse</em> with your circle.
+        </h1>
+
+        <p class="hero__sub">
+          Drop a link. Everyone sees it. Read, watch or listen at your own pace &mdash; only your list changes.
+        </p>
+
+      </div>
+
+      <!-- ========== LIVE APP DEMO ==========
+           The interactive prototype is a self-contained app living in
+           uploads/homepage-demo/. It is VENDORED: the site frames it, never
+           edits its internals. Everything below styles only the frame. -->
+      <div class="appdemo" data-screen-label="Live demo">
+        <div class="appdemo__hint" aria-hidden="true">
+          <span class="appdemo__hint-dot"></span>Live demo &mdash; try it.
+        </div>
+        <div class="appdemo__mat">
+          <div class="appdemo__frame" data-state="loading">
+            <iframe
+              class="appdemo__iframe"
+              title="Circlists — interactive product demo"
+              loading="lazy"></iframe>
+
+            <!-- Poster + tap-shield. Owned by the SITE. While loading it hides
+                 the app mount; on mobile it stays as a "tap to try" shield so a
+                 finger-swipe scrolls the page instead of getting trapped in the
+                 app. Tapping arms the iframe for interaction. -->
+            <div class="appdemo__shield" aria-hidden="true">
+              <div class="appdemo__poster">
+                <img class="appdemo__poster-logo" src="assets/brand/circlists-lockup.svg" alt="" />
+                <div class="appdemo__spinner" role="status" aria-label="Loading demo"></div>
+                <div class="appdemo__tap">
+                  <svg class="appdemo__tap-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M9 11V6a2 2 0 1 1 4 0v5m0 0V5a2 2 0 1 1 4 0v6m0 0V8a2 2 0 1 1 4 0v6a7 7 0 0 1-7 7h-2a6 6 0 0 1-5-2.7l-2.3-3.5a2 2 0 0 1 3.2-2.4L9 14"
+                      stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Tap to try the live demo
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ========== ARCHETYPES ========== -->
+  <section class="archetypes" data-screen-label="Who it's for" aria-labelledby="archetypes-heading">
+    <div class="container">
+      <h2 class="archetypes__heading" id="archetypes-heading">
+        For the people you <em>share</em> with.
+      </h2>
+
+      <ol class="archetype-list">
+        <li class="archetype">
+          <span class="archetype__num">01</span>
+          <span class="archetype__name">Engineering pods</span>
+        </li>
+        <li class="archetype">
+          <span class="archetype__num">02</span>
+          <span class="archetype__name">Book clubs</span>
+        </li>
+        <li class="archetype">
+          <span class="archetype__num">03</span>
+          <span class="archetype__name">Study cohorts</span>
+        </li>
+        <li class="archetype">
+          <span class="archetype__num">04</span>
+          <span class="archetype__name">Market-news circles</span>
+        </li>
+        <li class="archetype">
+          <span class="archetype__num">05</span>
+          <span class="archetype__name">Close friends, couples</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- ========== BILLING ========== -->
+  <section class="billing" data-screen-label="Pricing" aria-labelledby="billing-lead">
+    <div class="container">
+      <div class="billing__inner">
+        <p class="billing__lead" id="billing-lead">
+          You fund the circle.<br class="billing__lead-break"> Everyone you invite joins <em>free</em>.
+        </p>
+        <div class="billing__aside">
+          <p class="billing__price">
+            <span class="billing__figure"><span class="billing__amount">&pound;3</span><span class="billing__unit">per circle<br>/ month</span></span>
+            <span class="billing__pill">Founding rate</span>
+          </p>
+          <ul class="billing__checklist">
+            <li class="billing__check">
+              <svg class="billing__check-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              You fund the circle as its champion
+            </li>
+            <li class="billing__check">
+              <svg class="billing__check-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              Up to 10 members, all invited free
+            </li>
+            <li class="billing__check">
+              <svg class="billing__check-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              Shared list, private read-state
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== WHAT'S NEW ========== -->
+  <section class="whatsnew" data-screen-label="What's new" aria-labelledby="whatsnew-heading">
+    <div class="container">
+      <div class="changelog-panel">
+        <div class="changelog-panel__bar">
+          <h2 class="changelog-panel__title" id="whatsnew-heading">What&rsquo;s <em>new</em></h2>
+          <span class="changelog-panel__live">
+            <span class="changelog__dot" aria-hidden="true"></span>
+          </span>
+        </div>
+
+        <ol class="changelog">
+          <li class="changelog__entry changelog__entry--latest">
+            <p class="changelog__desc">
+              Read receipts you can switch off &mdash; finishing a piece marks it for you, without nudging anyone else in the circle.
+            </p>
+            <div class="changelog__meta">
+              <span class="changelog__date">Jun 2026</span>
+              <span class="changelog__version">v1.3</span>
+            </div>
+          </li>
+          <li class="changelog__entry">
+            <p class="changelog__desc">
+              Paste a YouTube or podcast link and it lands as a proper card, with the right kind of thumbnail.
+            </p>
+            <div class="changelog__meta">
+              <span class="changelog__date">May 2026</span>
+              <span class="changelog__version">v1.2</span>
+            </div>
+          </li>
+          <li class="changelog__entry">
+            <p class="changelog__desc">
+              Circles remember who added what, even after someone leaves &mdash; attribution stays with the link.
+            </p>
+            <div class="changelog__meta">
+              <span class="changelog__date">Apr 2026</span>
+              <span class="changelog__version">v1.1</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<footer class="site-footer" data-screen-label="Footer">
+  <div class="container">
+    <div class="footer__row">
+      <a href="index.html" class="wordmark" aria-label="Circlists">
+        <img class="wordmark__lockup wordmark__lockup--word" src="assets/brand/circlists-wordmark.svg" alt="Circlists" />
+      </a>
+      <div class="footer__links">
+        <a class="footer__email" href="mailto:support@circlists.com">support@circlists.com</a>
+        <a class="footer__link" href="privacy.html">Privacy</a>
+      </div>
+      <span class="footer__copyright">&copy; 2026 Harness Intent Ltd</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/*  Live-demo embed controller. Owns three things, all on the FRAME side —
+    the app in the iframe stays untouched:
+      1. Layout hint — desktop screens get the app's desktop UI, phones its
+         mobile UI, keyed off the REAL device width (not the iframe's).
+      2. Lazy load — the iframe src is only set when the frame nears the
+         viewport, and a branded poster covers it until it has loaded.
+      3. Tap-shield — on touch/mobile the loaded app stays behind a shield so a
+         swipe scrolls the PAGE; a tap arms the iframe for interaction.
+    State lives on .appdemo__frame[data-state]: loading → armed → live
+    (desktop skips 'armed' and goes straight to live on load).            */
+(function () {
+  var frame  = document.querySelector('.appdemo__frame');
+  var iframe = document.querySelector('.appdemo__iframe');
+  var shield = document.querySelector('.appdemo__shield');
+  if (!frame || !iframe) return;
+
+  var mqDesktop = window.matchMedia('(min-width: 768px)');
+  var mqHover   = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var started   = false; // has the iframe been given a src yet?
+
+  function srcFor() {
+    return 'demo-embed.html?layout=' + (mqDesktop.matches ? 'desktop' : 'auto');
+  }
+  function setState(s) { frame.setAttribute('data-state', s); }
+
+  // Reveal the app for interaction.
+  function goLive() {
+    setState('live');
+    setTimeout(function () { try { iframe.focus(); } catch (e) {} }, 0);
+  }
+
+  // Once the iframe has loaded: desktop with a real pointer goes live
+  // immediately; touch/mobile shows the tap-shield first.
+  iframe.addEventListener('load', function () {
+    if (!started) return; // ignore the initial blank-src load
+    if (mqDesktop.matches && mqHover.matches) goLive();
+    else setState('armed');
+  });
+
+  // Tapping the shield (in 'armed') arms interaction. Using click means a
+  // scroll-swipe on the shield still scrolls the page — only a tap fires here.
+  if (shield) {
+    shield.addEventListener('click', function () {
+      if (frame.getAttribute('data-state') === 'armed') goLive();
+    });
+  }
+
+  // Reload the app with the right layout only when the viewport CROSSES the
+  // desktop/mobile line — matchMedia's change event fires on the flip, not on
+  // every resize, so ordinary window-dragging never reloads. The app persists
+  // its own state to storage, so the reload keeps the user's place. Skipped
+  // until the demo has first loaded.
+  function onBreakpointFlip() {
+    if (!started) return;
+    setState('loading');
+    iframe.src = srcFor();
+  }
+  if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onBreakpointFlip);
+  else if (mqDesktop.addListener) mqDesktop.addListener(onBreakpointFlip); // older Safari
+
+  // Lazy load: only fetch the app when the frame is near the viewport.
+  function load() {
+    if (started) return;
+    started = true;
+    iframe.src = srcFor();
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { load(); io.disconnect(); }
+    }, { rootMargin: '300px' });
+    io.observe(frame);
+  } else {
+    load();
+  }
+})();
+</script>
+</body>
+</html>

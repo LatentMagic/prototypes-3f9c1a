@@ -26,7 +26,8 @@
     --muted:    #8A929B;
     --signal:   #047857;   /* Pulse Green — active dot + active-tab marker ONLY */
     --brand:    #C99A2E;   /* Amber — the Branding node ONLY; marks it as reference, not a version */
-    --demo:     #9B7DF0;   /* Violet — the Homepage-demo node ONLY; a stripped reference build, not a version */
+    --homepage: #7C3AED;   /* Strong violet — the Homepage node ONLY; the marketing page itself, a reference not a version */
+    --demo:     #B9A6F0;   /* Light violet — the Homepage-demo node ONLY; the build embedded INSIDE the homepage, a lighter shade to read as its subtype */
 
     --tab-active-bg: rgba(255, 255, 255, 0.035);
     --tab-hover-bg:  rgba(255, 255, 255, 0.02);
@@ -289,28 +290,55 @@
   }
   .tab--brand:focus-visible { outline-color: var(--brand); }
 
-  /* ---- Homepage-demo node: the same reference-node treatment as Branding, in
-     violet. A stripped live build for the marketing-site iframe, not a prototype
-     version — so it too lifts off the version spine, coloured throughout. */
-  .tab--demo {
-    background: rgba(155, 125, 240, 0.06);
+  /* ---- Homepage node: the marketing page itself, in strong violet. A reference
+     node like Branding — the public front page that embeds the Homepage-demo in an
+     iframe — so it lifts off the version spine, coloured throughout. Sits above the
+     Homepage-demo, which is its (lighter, italic) subtype. */
+  .tab--homepage {
+    background: rgba(124, 58, 237, 0.06);
     border-bottom: 1px solid var(--hairline);
   }
-  .tab--demo:hover { background: rgba(155, 125, 240, 0.10); }
+  .tab--homepage:hover { background: rgba(124, 58, 237, 0.10); }
+  .tab--homepage[aria-selected="false"] .tab-label,
+  .tab--homepage[aria-selected="true"]  .tab-label { color: var(--homepage); }
+  .tab--homepage .tab-version { color: rgba(124, 58, 237, 0.7); }
+  .tab--homepage .dot { background: var(--homepage); opacity: 0.9; }
+  .tab--homepage .dot-col::before { display: none; }   /* off the version ladder */
+  .tab--homepage + .tab .dot-col::before { top: 50%; } /* spine resumes at the next tab */
+  .tab--homepage[aria-selected="true"] {
+    background: rgba(124, 58, 237, 0.13);
+    box-shadow: inset 2px 0 0 0 var(--homepage);
+  }
+  .tab--homepage[aria-selected="true"] .dot {
+    background: var(--homepage);
+    opacity: 1;
+    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(124, 58, 237, 0.28);
+  }
+  .tab--homepage:focus-visible { outline-color: var(--homepage); }
+
+  /* ---- Homepage-demo node: the stripped live build embedded INSIDE the homepage.
+     Same reference-node treatment as Branding, but in a LIGHTER violet + an italic
+     label so it reads as the Homepage node's subtype, not a peer. Off the spine. */
+  .tab--demo {
+    background: rgba(185, 166, 240, 0.06);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .tab--demo:hover { background: rgba(185, 166, 240, 0.10); }
+  .tab--demo .tab-label { font-style: italic; }    /* subtype of the Homepage node */
   .tab--demo[aria-selected="false"] .tab-label,
   .tab--demo[aria-selected="true"]  .tab-label { color: var(--demo); }
-  .tab--demo .tab-version { color: rgba(155, 125, 240, 0.7); }
+  .tab--demo .tab-version { color: rgba(185, 166, 240, 0.7); }
   .tab--demo .dot { background: var(--demo); opacity: 0.9; }
   .tab--demo .dot-col::before { display: none; }   /* off the version ladder */
   .tab--demo + .tab .dot-col::before { top: 50%; } /* spine resumes at the next tab */
   .tab--demo[aria-selected="true"] {
-    background: rgba(155, 125, 240, 0.13);
+    background: rgba(185, 166, 240, 0.13);
     box-shadow: inset 2px 0 0 0 var(--demo);
   }
   .tab--demo[aria-selected="true"] .dot {
     background: var(--demo);
     opacity: 1;
-    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(155, 125, 240, 0.28);
+    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(185, 166, 240, 0.28);
   }
   .tab--demo:focus-visible { outline-color: var(--demo); }
 
@@ -896,6 +924,15 @@
           desc: 'The Circlists brand pack — mark, wordmark, colour, and type on one reference sheet. Not a prototype version: a living snapshot whose source moves and updates over time, so treat this as a point-in-time copy, not the canonical home.'
         },
         {
+          slug: 'homepage',
+          label: 'Homepage',
+          version: 'rebrand',
+          ticket: 'LM-163',
+          html: 'index.html',
+          kind: 'homepage',
+          desc: 'The Circlists public marketing homepage — the rebrand front page. A reference node, not a prototype version: hero, who-it\'s-for, pricing, and an interactable product demo embedded in an iframe (the Homepage-demo, lit with its sign-up gate) so a visitor can feel the app before signing up. Copied as a curated runtime subset of the Design export; the embedded demo lives self-contained at uploads/homepage-demo/.'
+        },
+        {
           slug: 'homepage-demo',
           label: 'Homepage Demo',
           version: 'preview',
@@ -1146,7 +1183,7 @@
   }
 
   // Render an app: set it active, label the rail node, (re)build its prototypes.
-  // Default landing skips reference nodes (brand pack, homepage demo) so the
+  // Default landing skips reference nodes (brand pack, homepage, homepage demo) so the
   // console opens on the working line, not a reference sheet — even though those
   // nodes sit top-of-rail.
   function defaultIndex() {
