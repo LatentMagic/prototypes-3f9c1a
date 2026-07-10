@@ -530,23 +530,24 @@ main {
   50% { opacity: 0.3; }
 }
 
-/* ---- Mobile: portrait phone-shaped card ------------------------------------
-   Below the desktop breakpoint the frame flips to a portrait phone ratio and
-   is height-capped BELOW the viewport, so the page still scrolls past it (and
-   the tap-shield keeps a swipe from getting trapped in the app). The narrow
-   card makes the app inside see a phone-width viewport → its mobile UI. */
+/* ---- Mobile: fill-width card -----------------------------------------------
+   A portrait phone RATIO here was a trap: aspect-ratio + a fixed height forces
+   width = height × ratio ≈ 260px, locking the card narrow no matter the screen
+   — which both dumped whitespace on the sides AND squeezed the app below the
+   width its own cards can wrap at. Instead the card fills the available width
+   (minimal mat padding) and only caps HEIGHT, so it stays short enough to
+   scroll past while giving the app a normal phone width to render its mobile
+   UI. The app scrolls internally past the cap. */
 @media (max-width: 767px) {
   .appdemo__mat {
-    padding: clamp(14px, 4%, 22px);
+    padding: var(--space-2);
   }
   .appdemo__frame {
-    aspect-ratio: 320 / 650;
-    width: auto;
-    height: min(74vh, 650px);
-    max-width: 100%;
-    margin-inline: auto;
+    aspect-ratio: auto;
+    width: 100%;
+    height: min(72vh, 620px);
   }
-  .appdemo__poster-logo { width: clamp(120px, 52%, 168px); }
+  .appdemo__poster-logo { width: clamp(120px, 44%, 168px); }
 }
 
 /* ============================================================================

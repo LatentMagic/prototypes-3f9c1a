@@ -20,7 +20,7 @@ One prototype export → the build → the packaged demo. Three parts:
 
 - **Source** — a working-line prototype export, dropped into `tools/homepage-demo/src/`.
 - **Build** — `tools/homepage-demo/build.mjs`: a script that runs **esbuild**. It deletes the files you list, bundles the rest into one `app.js`, and drops babel plus the per-module fetch the raw prototype does at runtime — so the result is iframe-ready. Detail and the current delete-list: [README.md](../../../tools/homepage-demo/README.md).
-- **Output** — the packaged demo at `app/circlists/homepage-demo/`, shown as a console node.
+- **Output** — the packaged demo at `app/circlists/homepage-demo/`, shown as a console node. It **declares its own embed contract**: the flags and layout modes a consumer sets on it, so embedding never means reverse-engineering minified source.
 
 You run the build. You do not write app code.
 
