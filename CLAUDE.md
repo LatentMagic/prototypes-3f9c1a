@@ -27,6 +27,8 @@ The Circlists brand pack is the first: `app/circlists/brand/` holds `circlists-b
 
 The console's favicon is the canonical Circlists mark, shipped from the brand pack as the standard icon set held at the repo root — `favicon.ico` (universal fallback), `circlists-mark.svg` (modern browsers), `apple-touch-icon.png` (iOS) — referenced by `index.html`. Root placement keeps them console-owned, not borrowed from a shell-copied prototype dir a re-export could change; refresh by re-copying from the wiki brand pack's `assets/`. The rail title is the brand pack's **reversed** (light-on-dark) lockup — `app/circlists/brand/circlists-lockup-reversed.svg` — referenced by the active app's `logo`, so it refreshes with the rest of the brand pack. Both are brand assets the console owns, not borrowed from a prototype dir a re-export could change.
 
+The **homepage-demo** node (`kind: 'demo'`, violet accent, `#homepage-demo`) is a second reference node — but a **built** one, the one exception to the copied-verbatim rule. It's the Circlists working line stripped to its gated core and bundled for embedding in the marketing site as an iframe. Build tooling + base live in [tools/homepage-demo/](tools/homepage-demo/); the served output is `app/circlists/homepage-demo/` (committed). Derivation is **delete-only** — see [README.md](tools/homepage-demo/README.md) for the delete-list rule and the rebuild command. GitHub Pages still serves the repo as-is: the build runs **locally** and its output is committed, so nothing builds on push.
+
 ## How the console works
 
 - One `<iframe>` per prototype, so each runs in its own document — full runtime isolation, no shared globals.

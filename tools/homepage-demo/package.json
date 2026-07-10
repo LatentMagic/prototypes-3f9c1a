@@ -1,0 +1,13 @@
+{
+  "name": "circlists-homepage-demo-build",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Builds the Circlists homepage-demo console node: strips the working line to its gated core and bundles it to one self-contained iframe payload.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}

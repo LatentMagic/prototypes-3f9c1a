@@ -1,0 +1,39 @@
+/* ==========================================================================
+   The Swell — hover / focus / animation classes for swell-reactions.jsx.
+   Load AFTER the design tokens (colors_and_type.css). Everything else the
+   mechanism needs is inline in the JSX; only pseudo-states and keyframes
+   (which can't be inlined) live here.
+   ========================================================================== */
+
+/* Reaction door — borderless at rest, sunken pill on hover/focus (the card's
+   own hover language). It must NOT look like a button until touched. */
+.circ-swell-door:hover { background: var(--color-surface-sunken); }
+.circ-swell-door:focus-visible { outline: none; background: var(--color-surface-sunken); box-shadow: 0 0 0 2px var(--color-accent-ring); }
+
+/* Review-modal roster rows (tap to pin a glyph's name). */
+.circ-swell-rrow:hover { background: var(--color-surface-sunken) !important; }
+.circ-swell-rrow:focus-visible { box-shadow: 0 0 0 2px var(--color-accent-ring); }
+
+/* Modal close (x). */
+.circ-rx-close { transition: background var(--duration-base), color var(--duration-base); }
+.circ-rx-close:hover { background: var(--color-surface-sunken) !important; color: var(--color-fg-1) !important; }
+.circ-rx-close:active { background: #E8E8E5 !important; }
+
+/* Input-step actions. */
+.circ-swell-skip:hover { color: var(--color-fg-1) !important; }
+.circ-swell-done:hover { background: var(--color-accent-hover) !important; }
+.circ-swell-done:active { background: var(--color-accent-press) !important; }
+
+/* Dialog / scrim fade-in. */
+@keyframes circ-anim-fade { from { opacity: 0; } to { opacity: 1; } }
+.circ-anim-fade { animation: circ-anim-fade var(--duration-base, 150ms) var(--ease-quiet) both; }
+
+/* Input pad's high-intensity "held breath" tremor (rides in via --breath-peak;
+   ~1.0 = imperceptible). Only applied by SwellPad when breath opt is on. */
+@keyframes circ-swell-breath { 0%, 100% { transform: scale(1); } 50% { transform: scale(var(--breath-peak, 1)); } }
+.circ-swell-breath { animation: circ-swell-breath 1700ms ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .circ-anim-fade { animation-duration: 0ms; }
+  .circ-swell-breath { animation: none; }
+}

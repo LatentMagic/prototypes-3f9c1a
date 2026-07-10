@@ -26,6 +26,7 @@
     --muted:    #8A929B;
     --signal:   #047857;   /* Pulse Green — active dot + active-tab marker ONLY */
     --brand:    #C99A2E;   /* Amber — the Branding node ONLY; marks it as reference, not a version */
+    --demo:     #9B7DF0;   /* Violet — the Homepage-demo node ONLY; a stripped reference build, not a version */
 
     --tab-active-bg: rgba(255, 255, 255, 0.035);
     --tab-hover-bg:  rgba(255, 255, 255, 0.02);
@@ -287,6 +288,31 @@
     box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(201, 154, 46, 0.28);
   }
   .tab--brand:focus-visible { outline-color: var(--brand); }
+
+  /* ---- Homepage-demo node: the same reference-node treatment as Branding, in
+     violet. A stripped live build for the marketing-site iframe, not a prototype
+     version — so it too lifts off the version spine, coloured throughout. */
+  .tab--demo {
+    background: rgba(155, 125, 240, 0.06);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .tab--demo:hover { background: rgba(155, 125, 240, 0.10); }
+  .tab--demo[aria-selected="false"] .tab-label,
+  .tab--demo[aria-selected="true"]  .tab-label { color: var(--demo); }
+  .tab--demo .tab-version { color: rgba(155, 125, 240, 0.7); }
+  .tab--demo .dot { background: var(--demo); opacity: 0.9; }
+  .tab--demo .dot-col::before { display: none; }   /* off the version ladder */
+  .tab--demo + .tab .dot-col::before { top: 50%; } /* spine resumes at the next tab */
+  .tab--demo[aria-selected="true"] {
+    background: rgba(155, 125, 240, 0.13);
+    box-shadow: inset 2px 0 0 0 var(--demo);
+  }
+  .tab--demo[aria-selected="true"] .dot {
+    background: var(--demo);
+    opacity: 1;
+    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(155, 125, 240, 0.28);
+  }
+  .tab--demo:focus-visible { outline-color: var(--demo); }
 
   /* ============================================================= STAGE */
   .stage {
@@ -870,6 +896,15 @@
           desc: 'The Circlists brand pack — mark, wordmark, colour, and type on one reference sheet. Not a prototype version: a living snapshot whose source moves and updates over time, so treat this as a point-in-time copy, not the canonical home.'
         },
         {
+          slug: 'homepage-demo',
+          label: 'Homepage Demo',
+          version: 'preview',
+          ticket: 'LM-163',
+          html: 'index.html',
+          kind: 'demo',
+          desc: 'The marketing-site product demo — a stripped, self-contained build of the working line, made to embed in the homepage as an iframe. Only the core loop is live (add a link, read it, react, see how the circle responded); New circle, circle settings, and the account control open a sign-up gate instead of routing on. Derived from the working line by deletion + a bundling step (no babel, no per-module fetch), rebuilt from tools/homepage-demo/. A point-in-time build, not the canonical app.'
+        },
+        {
           slug: 'baseline',
           version: 'v0.2.1',
           ticket: 'LM-239',
@@ -1041,7 +1076,7 @@
 
     PROTOTYPES.forEach(function (spec, i) {
       var tab = document.createElement('button');
-      tab.className = 'tab' + (spec.kind === 'brand' ? ' tab--brand' : '');
+      tab.className = 'tab' + (spec.kind ? ' tab--' + spec.kind : '');
       tab.type = 'button';
       tab.id = 'tab-' + spec.slug;
       tab.setAttribute('role', 'tab');
@@ -1111,11 +1146,12 @@
   }
 
   // Render an app: set it active, label the rail node, (re)build its prototypes.
-  // Default landing skips reference nodes (the brand pack) so the console opens
-  // on the working line, not the brand sheet — even though brand sits top-of-rail.
+  // Default landing skips reference nodes (brand pack, homepage demo) so the
+  // console opens on the working line, not a reference sheet — even though those
+  // nodes sit top-of-rail.
   function defaultIndex() {
     for (var i = 0; i < PROTOTYPES.length; i++) {
-      if (PROTOTYPES[i].kind !== 'brand') return i;
+      if (!PROTOTYPES[i].kind) return i;
     }
     return 0;
   }
