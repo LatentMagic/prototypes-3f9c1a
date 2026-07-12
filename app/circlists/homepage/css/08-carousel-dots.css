@@ -1,0 +1,73 @@
+/* ============================================================================
+   Carousel dots & controls
+   ============================================================================ */
+
+.carousel__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-5);
+  gap: var(--space-4);
+}
+@media (max-width: 640px) {
+  /* Stack the caption below the dots — side-by-side reads cramped on narrow screens */
+  .carousel__controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}
+
+.carousel__dots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.carousel__dot {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 12px 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+.carousel__dot::after {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--color-border-1);
+  transition: background-color var(--duration-base) var(--ease-quiet),
+              width var(--duration-base) var(--ease-quiet);
+}
+.carousel__dot[aria-current="true"]::after {
+  background: var(--color-accent);
+  width: 44px;
+}
+.carousel__dot:hover::after {
+  background: var(--color-fg-2);
+}
+.carousel__dot[aria-current="true"]:hover::after {
+  background: var(--color-accent);
+}
+.carousel__dot:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+.carousel__caption {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  color: var(--color-fg-2);
+  letter-spacing: var(--tracking-wide);
+}
+.carousel__caption-num {
+  color: var(--color-fg-3);
+  margin-right: var(--space-2);
+}

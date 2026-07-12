@@ -1,0 +1,252 @@
+/* ============================================================================
+   Config launcher — PROTOTYPE AID, not part of the product.
+   ----------------------------------------------------------------------------
+   A draggable "Config" button + modal, floating over the page, that forces
+   the live demo's viewport mode (auto / desktop / mobile) for review instead
+   of relying on the real window width. Mirrors the pattern already used
+   inside the vendored demo itself (see DEMO.md) — safe to remove entirely by
+   deleting this file's <link>, the markup block in index.html, and its
+   companion <script> block. Nothing else depends on it.
+   ============================================================================ */
+
+.config-launcher {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: 500;
+}
+
+.config-launcher__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-fg-1);
+  color: var(--color-fg-inverse);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: grab;
+  touch-action: none;
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  box-shadow: var(--shadow-overlay);
+}
+.config-launcher__btn:active { cursor: grabbing; }
+
+.config-launcher__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .config-launcher__dot { animation: config-launcher-pulse 2.4s var(--ease-quiet) infinite; }
+}
+@keyframes config-launcher-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.config-launcher__gear {
+  flex-shrink: 0;
+  color: var(--color-fg-inverse);
+  transition: color var(--duration-base);
+}
+.config-launcher__btn[aria-expanded="true"] .config-launcher__gear { color: var(--color-accent); }
+
+/* ---- scrim + modal ---- */
+.config-launcher__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 501;
+  background: var(--color-scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-quiet);
+}
+.config-launcher__scrim[data-shown="1"] { opacity: 1; }
+.config-launcher__scrim[hidden] { display: none; }
+
+.config-launcher__modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity var(--duration-slow) var(--ease-quiet),
+              transform var(--duration-slow) var(--ease-quiet);
+}
+.config-launcher__scrim[data-shown="1"] .config-launcher__modal {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.config-launcher__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  border-bottom: 1px solid var(--color-border-2);
+}
+.config-launcher__title {
+  font: var(--weight-bold) var(--text-2xl) / var(--leading-tight) var(--font-sans);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-1);
+}
+.config-launcher__subtitle {
+  margin-top: var(--space-1);
+  font: var(--weight-regular) var(--text-sm) / var(--leading-normal) var(--font-sans);
+  color: var(--color-fg-3);
+}
+.config-launcher__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-fg-3);
+  cursor: pointer;
+}
+.config-launcher__close:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+
+.config-launcher__body {
+  padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+.config-launcher__eyebrow {
+  font: var(--weight-medium) var(--text-xs) / 1 var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-fg-3);
+  margin-bottom: var(--space-4);
+}
+
+.config-launcher__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.config-launcher__row-label {
+  font: var(--weight-semibold) var(--text-md) / var(--leading-snug) var(--font-sans);
+  color: var(--color-fg-1);
+}
+.config-launcher__hint {
+  margin-top: var(--space-2);
+  font: var(--weight-regular) var(--text-sm) / var(--leading-normal) var(--font-sans);
+  color: var(--color-fg-3);
+}
+/* A second control row after a hint needs breathing room from it. */
+.config-launcher__hint + .config-launcher__row { margin-top: var(--space-5); }
+
+.config-launcher__seg {
+  display: inline-flex;
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.config-launcher__seg-btn {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 7px 14px;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  color: var(--color-fg-2);
+  transition: background var(--duration-base), color var(--duration-base);
+}
+.config-launcher__seg-btn:hover { color: var(--color-fg-1); }
+.config-launcher__seg-btn[aria-checked="true"] {
+  background: var(--color-accent);
+  color: var(--color-fg-inverse);
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 560px) {
+  .config-launcher__row { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+}
+
+/* ---- Full-site preview stage ----
+   A fixed dark stage holding a scaled iframe of THIS SAME page, pinned to a
+   genuine fixed logical size (see the DEVICE map in the script). Because the
+   iframe's box really is that size, every real @media breakpoint in the
+   other css/*.css partials fires exactly as it would on that real device —
+   no CSS trickery, no touching those partials. transform-origin is centered
+   so the parent's flex centering still holds true after scaling down. */
+.site-preview-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: #17171a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+.site-preview-stage[hidden] { display: none; }
+
+.site-preview-stage__label {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: rgba(250, 250, 247, 0.5);
+}
+
+.site-preview-stage__device {
+  flex-shrink: 0;
+  transform-origin: center center;
+  background: #050505;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.45);
+}
+.site-preview-stage__device[data-mode="mobile"] {
+  padding: 10px;
+  border-radius: 44px;
+}
+.site-preview-stage__device[data-mode="desktop"] {
+  padding: 0;
+  border-radius: var(--radius-md);
+}
+
+.site-preview-stage__screen {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-canvas);
+}
+.site-preview-stage__device[data-mode="mobile"] .site-preview-stage__screen { border-radius: 34px; }
+.site-preview-stage__device[data-mode="desktop"] .site-preview-stage__screen { border-radius: var(--radius-md); }
+
+.site-preview-stage__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* This page loaded inside the preview stage's own iframe: hide the launcher
+   and stage so the tool doesn't nest a copy of itself. */
+html[data-preview-frame="1"] .config-launcher,
+html[data-preview-frame="1"] .config-launcher__scrim,
+html[data-preview-frame="1"] .site-preview-stage {
+  display: none !important;
+}

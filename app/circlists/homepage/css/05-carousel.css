@@ -1,0 +1,123 @@
+/* ============================================================================
+   Carousel
+   ============================================================================ */
+
+.carousel {
+  position: relative;
+  width: 100%;
+}
+
+.carousel__viewport {
+  position: relative;
+  width: 100%;
+  /* Sunken mat the screenshot card floats on — restores breathing room */
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border-1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Carousel arrows — overlaid on the viewport */
+.carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-1);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--color-fg-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-raised);
+  transition: background-color var(--duration-base) var(--ease-quiet),
+              opacity var(--duration-base) var(--ease-quiet),
+              border-color var(--duration-base) var(--ease-quiet);
+}
+.carousel__arrow--prev { left: var(--space-3); }
+.carousel__arrow--next { right: var(--space-3); }
+@media (min-width: 768px) {
+  .carousel__arrow { width: 44px; height: 44px; }
+  .carousel__arrow--prev { left: var(--space-4); }
+  .carousel__arrow--next { right: var(--space-4); }
+}
+.carousel__arrow:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--color-fg-3);
+}
+.carousel__arrow:active {
+  background: rgba(255, 255, 255, 1);
+}
+.carousel__arrow:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+}
+.carousel__arrow[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Grid-stack all slides in one cell: height comes from the screenshot itself
+   (all four are identical dimensions), so the frame never jitters. */
+.carousel__track {
+  display: grid;
+}
+
+.carousel__slide {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3.5%, 40px);
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 520ms var(--ease-quiet);
+  pointer-events: none;
+}
+/* Incoming slide fades in ON TOP of a fully-opaque outgoing slide, so the two
+   near-identical screenshots never blend at partial opacity (no ghost/morph). */
+.carousel__slide--under {
+  opacity: 1;
+  z-index: 1;
+  transition: none;
+}
+.carousel__slide--active {
+  opacity: 1;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__slide { transition: none; }
+}
+
+/* Screenshot presented as a fixed-size card floating on the mat */
+.carousel__frame {
+  width: 100%;
+  aspect-ratio: 2156 / 1252;
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  overflow: hidden;
+}
+.carousel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+/* A distinct zoom level per state so the near-identical screenshots read as
+   separate frames (not one screen morphing) as they cross-fade. The card frame
+   stays constant; only the image scales within it. */
+#slide-2 .carousel__img { transform: scale(1.06); }
+#slide-3 .carousel__img { transform: scale(1.12); }
+#slide-4 .carousel__img { transform: scale(1.20); }

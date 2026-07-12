@@ -1,0 +1,156 @@
+/* ============================================================================
+   What's new — public release feed, given its own contained "module" register
+   so it reads as a live feed you're looking AT, not more marketing prose.
+   ============================================================================ */
+
+.whatsnew {
+  padding-block: var(--space-8) var(--space-8);
+}
+@media (min-width: 768px) {
+  .whatsnew { padding-block: var(--space-12) var(--space-12); }
+}
+
+.changelog-panel {
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-6) var(--space-2);
+}
+@media (min-width: 768px) {
+  .changelog-panel { padding: var(--space-4) var(--space-8) var(--space-3); }
+}
+
+.changelog-panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border-1);
+}
+
+.changelog-panel__title {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+  color: var(--color-fg-1);
+  margin: 0;
+}
+.changelog-panel__title em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.changelog-panel__live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-fg-3);
+  text-transform: lowercase;
+}
+
+/* Feed reads as a release timeline: a hairline trace runs down the left with a
+   node per entry (accent = latest), the copy fills the width, and the
+   date/version anchor the right edge so no row trails off into empty space. */
+.changelog {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 22px;
+  position: relative;
+}
+.changelog::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: var(--color-border-1);
+}
+
+.changelog__entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-8);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--color-border-2);
+}
+.changelog__entry:last-child {
+  border-bottom: 0;
+}
+.changelog__entry::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 20px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border-1);
+}
+.changelog__entry--latest::before {
+  background: var(--color-accent);
+}
+@media (max-width: 640px) {
+  .changelog__entry {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+}
+
+.changelog__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.changelog__date {
+  color: var(--color-fg-1);
+}
+.changelog__version {
+  color: var(--color-fg-3);
+}
+
+.changelog__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 var(--color-accent-ring);
+  animation: changelog-pulse 2.4s var(--ease-quiet) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .changelog__dot { animation: none; }
+}
+@keyframes changelog-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--color-accent-ring); }
+  70%  { box-shadow: 0 0 0 6px rgba(4, 120, 87, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(4, 120, 87, 0); }
+}
+
+.changelog__desc {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-fg-2);
+  margin: 0;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+.changelog__entry--latest .changelog__desc {
+  color: var(--color-fg-1);
+}

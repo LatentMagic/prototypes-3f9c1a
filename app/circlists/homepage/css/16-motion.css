@@ -1,0 +1,106 @@
+/* ============================================================================
+   Circlists mark — motion
+   The animated brand-mark treatments, wired into the marketing site. Source of
+   truth for the values: assets/brand/motion/circlists-motion.md — keep these
+   keyframes in sync with it rather than re-tuning ad hoc here. Geometry itself
+   is untouched brand-pack geometry; this file only adds motion on top.
+
+   Every instance is INLINE <svg>, never <img src="*.svg"> — browsers don't run
+   CSS animation inside img-referenced SVGs. Animations are gated behind
+   prefers-reduced-motion: no-preference; tokens.css's blanket reduced-motion
+   rule zeroes them regardless, as a second line of defence.
+   ============================================================================ */
+
+/* ---- Header lockup — idle breathing mark, header only ---------------------
+   Uses the mark's TRUE geometry (disc r14.25), not circlists-pulse.svg's
+   thinner-halo deviation (r15.2) — keeps the live header mark the exact size
+   of the static brand mark (no regression). See BRANDING.md "Motion". */
+.site-header .wordmark__lockup {
+  /* The mark has ~3% resting padding in its own box; breathing to +7.5% eats
+     nearly all of it. Safety margin so the peak of the breath is never
+     clipped — does not touch the generated SVG's geometry or viewBox. */
+  overflow: visible;
+}
+.site-header .cl-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .site-header .cl-halo { animation: lockup-breathe 3s linear infinite; }
+}
+@keyframes lockup-breathe {
+  0%   { transform: scale(1);       filter: brightness(1); }
+  6%   { transform: scale(1.0075);  filter: brightness(1.009); }
+  14%  { transform: scale(1.03);    filter: brightness(1.036); }
+  22%  { transform: scale(1.05625); filter: brightness(1.0675); }
+  30%  { transform: scale(1.07125); filter: brightness(1.0855); }
+  34%  { transform: scale(1.075);   filter: brightness(1.09); }
+  42%  { transform: scale(1.0705);  filter: brightness(1.0846); }
+  52%  { transform: scale(1.0585);  filter: brightness(1.0702); }
+  62%  { transform: scale(1.0435);  filter: brightness(1.0522); }
+  72%  { transform: scale(1.0285);  filter: brightness(1.0342); }
+  80%  { transform: scale(1.0165);  filter: brightness(1.0198); }
+  87%  { transform: scale(1.009);   filter: brightness(1.0108); }
+  93%  { transform: scale(1.00375); filter: brightness(1.0045); }
+  100% { transform: scale(1);       filter: brightness(1); }
+}
+
+/* ---- Live-dot — the ~11px "live signal" mark -------------------------------
+   One shared component for every "this is live" affordance: the demo hint and
+   the changelog's live indicator both use it — same mark, same size, on purpose. */
+.live-dot {
+  display: block;
+  flex-shrink: 0;
+}
+.live-dot .cl-reveal { transform-box: view-box; }
+/* Ring reveal: a sweeping sage band paints the halo into view around a
+   dead-still core, then rests off-frame until the next pass. Nothing scales,
+   so it never reads as a small pulse. The full static halo shows only under
+   reduced motion (below). */
+.live-dot .cl-halo-static { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .live-dot .cl-reveal { animation: livedot-reveal 3.8s cubic-bezier(0.45, 0, 0.15, 1) infinite; }
+}
+@keyframes livedot-reveal {
+  0%   { transform: translateX(0); }
+  64%  { transform: translateX(86px); }
+  100% { transform: translateX(86px); }
+}
+/* Freeze to the full mark — ring present, not the bare dot. */
+@media (prefers-reduced-motion: reduce) {
+  .live-dot .cl-reveal { display: none; }
+  .live-dot .cl-halo-static { display: block; }
+}
+
+/* ---- Loading spinner — replaces every "loading" affordance on the site ----
+   No text label by design — role="status" + aria-label carry the meaning for
+   assistive tech. The mark at rest "spins" rather than a generic ring, so
+   loading reads as the brand mark working, not borrowed UI chrome. */
+.loading-spinner {
+  display: block;
+  flex-shrink: 0;
+}
+.loading-spinner .cl-rotor {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* The full sage halo (cl-halo-static) is the reduced-motion RESTING state
+   only. During motion it is hidden, so the rotating sage arc reads against the
+   poster and the still green core — rather than sweeping invisibly across a
+   static disc of its own colour (the old "no spinner / clutter" read). */
+.loading-spinner .cl-halo-static { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .loading-spinner .cl-rotor { animation: spinner-rotate 1.37s linear infinite; }
+  .loading-spinner .cl-arc   { animation: spinner-arc-grow 1.79s linear infinite; }
+}
+/* Reduced motion: swap the moving arc for the full static halo. */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner .cl-halo-static { display: block; }
+  .loading-spinner .cl-rotor { display: none; }
+}
+@keyframes spinner-rotate { to { transform: rotate(360deg); } }
+@keyframes spinner-arc-grow {
+  0%   { stroke-dasharray: 12 108; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 78 42;  stroke-dashoffset: -22; }
+  100% { stroke-dasharray: 12 108; stroke-dashoffset: -120; }
+}

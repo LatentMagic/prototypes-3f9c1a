@@ -1,0 +1,58 @@
+/* ============================================================================
+   Header — wordmark only, static, generous breathing room
+   ============================================================================ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-page);
+  border-bottom: 1px solid var(--color-border-2);
+  padding-block: var(--space-4);
+}
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+/* Tighten the header on small screens so the wordmark and the two actions sit
+   comfortably on one row without the labels folding. */
+@media (max-width: 767px) {
+  .site-header .container { gap: var(--space-4); }
+  .site-header__actions { gap: var(--space-2); }
+  .site-header .btn--sm { padding-inline: var(--space-3); }
+}
+/* Header lockup reads as the app title — larger than the footer instance */
+.site-header .wordmark__lockup { height: 28px; }
+@media (min-width: 768px) {
+  .site-header .wordmark__lockup { height: 30px; }
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+/* Official brand assets — source of truth: assets/brand/ */
+.wordmark__lockup {
+  display: block;
+  height: 24px;         /* footer default; header overrides above */
+  width: auto;
+  flex-shrink: 0;
+}
+/* Footer renders the wordmark alone (no mark) — the mark's already carried by
+   the header lockup and the favicon, so it added nothing repeated down here. */
+.wordmark__lockup--word {
+  height: 20px;
+}
+.wordmark:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+  border-radius: var(--radius-sm);
+}

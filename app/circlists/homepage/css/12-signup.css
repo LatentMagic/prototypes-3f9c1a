@@ -1,0 +1,152 @@
+/* ============================================================================
+   Email capture — calm offer, not a waitlist
+   ============================================================================ */
+
+.signup {
+  padding-block: var(--space-4) var(--space-12);
+}
+@media (min-width: 768px) {
+  .signup { padding-block: var(--space-6) var(--space-16); }
+}
+
+.signup__inner {
+  max-width: 520px;
+}
+
+.signup__label {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-md);
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--color-fg-2);
+  margin: 0 0 var(--space-3) 0;
+  text-wrap: pretty;
+}
+
+.signup__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+@media (min-width: 640px) {
+  .signup__form {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+}
+
+.signup__input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-md);
+  line-height: 1;
+  color: var(--color-fg-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-1);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  min-height: 48px;
+  outline: none;
+  transition: border-color var(--duration-base) var(--ease-quiet),
+              box-shadow var(--duration-base) var(--ease-quiet);
+}
+.signup__input::placeholder {
+  color: var(--color-fg-3);
+}
+.signup__input:hover {
+  border-color: var(--color-fg-3);
+}
+.signup__input:focus,
+.signup__input:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-ring);
+  outline: none;
+}
+.signup__input[aria-invalid="true"] {
+  border-color: var(--color-fg-2);
+}
+
+.signup__btn {
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 14px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+  line-height: 1;
+  background: var(--color-accent);
+  color: var(--color-fg-inverse);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-quiet);
+}
+.signup__btn:hover { background: var(--color-accent-hover); }
+.signup__btn:active { background: var(--color-accent-press); }
+.signup__btn:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+}
+.signup__btn[disabled] {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.signup__spinner {
+  width: 14px;
+  height: 14px;
+  border: 1.6px solid rgba(255,255,255,0.4);
+  border-top-color: var(--color-fg-inverse);
+  border-radius: 50%;
+  animation: signup-spin 700ms linear infinite;
+  display: inline-block;
+}
+@keyframes signup-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .signup__spinner { animation: none; }
+}
+
+.signup__error {
+  display: none;
+  margin-top: var(--space-3);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-sm);
+  color: var(--color-fg-2);
+}
+.signup[data-state="error"] .signup__error { display: block; }
+
+.signup__success {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--color-fg-1);
+  letter-spacing: 0;
+}
+.signup__success::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-right: 10px;
+  vertical-align: middle;
+  transform: translateY(-1px);
+}
+
+.signup[data-state="success"] .signup__form,
+.signup[data-state="success"] .signup__label,
+.signup[data-state="success"] .signup__error { display: none; }
+.signup__success { display: none; }
+.signup[data-state="success"] .signup__success { display: block; }

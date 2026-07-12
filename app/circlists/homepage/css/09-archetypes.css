@@ -1,0 +1,119 @@
+/* ============================================================================
+   Archetypes section
+   ============================================================================ */
+
+.archetypes {
+  padding-block: var(--space-4) var(--space-4);
+}
+@media (min-width: 768px) {
+  .archetypes { padding-block: var(--space-6) var(--space-6); }
+}
+
+.archetypes__heading {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: clamp(28px, 4.4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-fg-1);
+  margin: 0 0 var(--space-8) 0;
+  max-width: 22ch;
+  text-wrap: pretty;
+}
+.archetypes__heading em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.archetype-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-2);
+}
+.archetype-list > li:last-child {
+  border-bottom: 0;
+}
+
+.archetype {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: var(--space-8);
+  padding-block: 18px;
+  border-bottom: 1px solid var(--color-border-2);
+  position: relative;
+  transition: padding-left var(--duration-slow) var(--ease-quiet);
+}
+.archetype::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transform: translateY(-0.5px);
+  transition: width var(--duration-slow) var(--ease-quiet);
+  pointer-events: none;
+}
+/* Hover affordance is desktop-only — on touch it sticks after a tap. Gate it to
+   hover-capable, fine pointers so touch devices never latch the hovered state. */
+@media (hover: hover) and (pointer: fine) {
+  .archetype:hover { padding-left: var(--space-4); }
+  .archetype:hover::after { width: var(--space-3); }
+  .archetype:hover .archetype__num { color: var(--color-accent); }
+}
+@media (max-width: 640px) {
+  .archetype {
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-5);
+    padding-block: 14px;
+  }
+}
+
+.archetype__num {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  color: var(--color-fg-3);
+  letter-spacing: var(--tracking-wide);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--duration-slow) var(--ease-quiet);
+}
+
+.archetype__name {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--color-fg-1);
+}
+.archetype__name em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.archetype__thread {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--color-fg-2);
+  text-align: right;
+  max-width: 40ch;
+}
+@media (max-width: 640px) {
+  .archetype__thread { text-align: left; }
+}
+
+.archetypes__closer {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-lg);
+  line-height: 1.45;
+  color: var(--color-fg-2);
+  margin: var(--space-10) 0 0 0;
+  max-width: 40ch;
+}
