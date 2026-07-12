@@ -199,21 +199,10 @@ const OtcEntry = ({ email, context = 'device', initialError = null, onVerify, on
   );
 };
 
-// ---- Google sign-in return -------------------------------------------------
+// ---- Google sign-in return — app-level loading state (see AppLoading) ------
 const GoogleReturn = ({ onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1500); return () => clearTimeout(t); }, [onDone]);
-  return (
-    <div style={{
-      minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20,
-    }}>
-      <Wordmark size={22} />
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-fg-2)' }}>
-        <Spinner size={18} light={false} />
-        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15 }}>Completing sign-in…</span>
-      </div>
-    </div>
-  );
+  return <AppLoading label="Completing sign-in" />;
 };
 
 // ---- Password recovery (3 sequential views) --------------------------------

@@ -42,9 +42,14 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px 64px' }}>
         <div style={{ maxWidth: 408, width: '100%', textAlign: 'center' }}>
           <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
             textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 16,
-          }}>{refund ? 'Returning champion' : 'New circle'}{spaceName ? <React.Fragment>{' \u00b7 '}<span style={{ fontWeight: 700 }}>{spaceName}</span></React.Fragment> : null}</div>
+          }}>
+            <span>{refund ? 'Returning champion' : 'New circle'}</span>
+            {spaceName && <MicroDot size={10} />}
+            {spaceName && <span style={{ fontWeight: 700 }}>{spaceName}</span>}
+          </div>
           <h1 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-3xl)', lineHeight: 1.15,
             letterSpacing: '-0.025em', color: 'var(--color-fg-1)', margin: '0 0 10px',
@@ -227,37 +232,21 @@ const ManageFunding = ({ user, spaceName, intent = 'manage', onReturn, onCancelS
   );
 };
 
-// ---- Brief interstitial when leaving to the provider -----------------------
+// ---- Leaving to the provider — app-level loading state (see AppLoading) ----
+// You're still in Circlists at this moment (the provider slate starts on the
+// actual Checkout/ManageFunding screens), so this is the plain app loading.
 const ProviderInterstitial = ({ label, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1100); return () => clearTimeout(t); }, [onDone]);
-  return (
-    <div style={{ minHeight: 'var(--circ-vh)', background: '#0f172a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-      <Spinner size={20} />
-      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15, color: '#cbd5e1' }}>{label}</span>
-    </div>
-  );
+  return <AppLoading label={label} />;
 };
 
-// ---- "Setting up your space" settle state (NEW) ----------------------------
-// Shown on return from a completed checkout while the space is provisioned —
+// ---- "Setting up your circle" settle state — app-level loading (AppLoading)-
+// Shown on return from a completed checkout while the circle is provisioned —
 // provisioning is asynchronous but GUARANTEED, so this always resolves into the
-// new space's empty Active tab. Distinct from the feed loading indicator.
+// new circle's empty Active tab. Same loading state as any other app-level load.
 const SettingUp = ({ spaceName, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1900); return () => clearTimeout(t); }, [onDone]);
-  return (
-    <div style={{
-      minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-5)',
-      padding: '40px 24px', textAlign: 'center',
-    }}>
-      <Wordmark size={22} />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', marginTop: 8 }}>
-        <Spinner size={22} light={false} />
-        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>Setting up your circle…</div>
-        {spaceName && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, color: 'var(--color-fg-2)' }}>{spaceName} will be ready in a moment.</div>}
-      </div>
-    </div>
-  );
+  return <AppLoading label="Setting up your circle" />;
 };
 
 // ---- Dormant-space state (NEW) ---------------------------------------------

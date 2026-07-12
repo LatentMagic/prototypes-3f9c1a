@@ -62,6 +62,24 @@ const Spinner = ({ size = 14, light = true }) => (
   }} aria-hidden="true" />
 );
 
+// ---- App-level loading — the ONE full-screen loading state -----------------
+// There are exactly two loading states in the product: this app-level one, and
+// the in-shell FeedLoading (spinner within the rail + tabs). Every full-view
+// transition that isn't the feed — auth return, circle provisioning, the billing
+// provider handoff — is the SAME state and renders this single component. The
+// flows differ (they resolve to different places); the loading treatment does
+// not. Caption-less brand mark on the app canvas; `label` is the accessible
+// announcement only (role="status"), never shown. NB: the provider slate
+// (#0f172a) belongs to the actual Checkout/billing screens, not to loading.
+const AppLoading = ({ label = 'Loading' }) => (
+  <div role="status" aria-label={label} style={{
+    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px',
+  }}>
+    <BrandSpinner size={100} />
+  </div>
+);
+
 // ---- Button ----------------------------------------------------------------
 // variants: primary (accent) | secondary (neutral) | tertiary (text) | destructive
 const Button = React.forwardRef((props, ref) => {
@@ -199,4 +217,4 @@ const Avatar = ({ name, size = 34, accent = false }) => (
   }}>{initialsOf(name)}</span>
 );
 
-Object.assign(window, { Icon, Spinner, Button, Field, LogoMark, Wordmark, Avatar, initialsOf });
+Object.assign(window, { Icon, Spinner, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf });

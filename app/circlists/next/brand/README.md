@@ -15,4 +15,5 @@ Entry point for the brand directory. What's here and how it fits.
 - **[circlists-brand.md](circlists-brand.md)** — the brand spec: palette, type, geometry. Source of truth for the values.
 - **[circlists-brand.html](circlists-brand.html)** — the visual board. Start here; it shows every asset in context.
 - **[assets/](assets/)** — the shippable output: the SVGs (mark, wordmark, lockup) plus the raster set (`favicon.ico`, PNGs).
+- **[motion/](motion/README.md)** — the mark in motion: pulse (idle breath), spinner (loading), micro (live-signal dot). Same geometry as `assets/`, animated on top.
 - **[scripts/](scripts/)** — the deterministic generators that build everything in `assets/`, and their vendored font input.

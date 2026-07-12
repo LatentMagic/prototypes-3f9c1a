@@ -71,14 +71,12 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
 
 // ---- Feed loading — a single quiet indicator (NOT a skeleton) --------------
 const FeedLoading = () => (
-  <div style={{
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    gap: 'var(--space-3)', padding: '88px 24px', color: 'var(--color-fg-3)',
-  }}>
-    <Spinner size={22} light={false} />
-    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-3)' }}>
-      Loading this circle…
-    </span>
+  <div role="status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    {/* No caption — the mark is the whole loading state (spec's calm floor).
+        Centred by the parent <main>. The SVG's aria-label="Loading" inside this
+        role="status" region carries the accessible announcement; no visible
+        text is needed for a11y. */}
+    <BrandSpinner size={100} />
   </div>
 );
 
@@ -87,11 +85,17 @@ const FeedLoading = () => (
 // separate fresh-space variant, no "add the first link" CTA — the Add affordance
 // (FAB / popover) already serves that.
 const EMPTY_COPY = {
-  primary: 'Nothing here.',
-  supporting: 'Links shared in this circle land in everyone\u2019s list, to read at your own pace.',
+  active: {
+    primary: 'Nothing here.',
+    supporting: 'Links shared in this circle land in everyone\u2019s list, to read at your own pace.',
+  },
+  read: {
+    primary: 'Nothing here.',
+    supporting: 'Links you mark as read land here, but stay in everyone else\u2019s list.',
+  },
 };
-const EmptyState = () => {
-  const c = EMPTY_COPY;
+const EmptyState = ({ tab }) => {
+  const c = EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
     <div style={{
       textAlign: 'center', minHeight: 320, padding: '72px 24px',

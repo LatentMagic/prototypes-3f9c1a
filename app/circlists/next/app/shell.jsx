@@ -6,12 +6,12 @@
 
 // ---- Rail contents (shared by desktop rail + mobile drawer) ----------------
 // The account control lives at the FOOT of the rail; its menu opens upward.
-const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut }) => {
+const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate }) => {
   const [acctOpen, setAcctOpen] = React.useState(false);
   return (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', padding: '4px 8px 20px' }}>
-      <Wordmark size={20} />
+      <PulseLockup size={20} />
     </div>
     <div style={{
       fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11,
@@ -50,7 +50,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     </button>
     <div style={{ flex: 1 }} />
     <div style={{ position: 'relative', borderTop: '1px solid var(--color-border-2)', marginTop: 12, paddingTop: 8 }}>
-      <button onClick={() => setAcctOpen(v => !v)} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
+      <button onClick={() => { if (onAccountGate) { onClose && onClose(); onAccountGate(); return; } setAcctOpen(v => !v); }} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer',
         background: 'transparent', border: 0, padding: '8px', borderRadius: 'var(--radius-md)', minHeight: 44,
       }}>
@@ -245,11 +245,11 @@ const MobileDrawer = ({ open, ...rail }) => {
 // ---- AppShell --------------------------------------------------------------
 const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true,
                     onSelectSpace, onCreateSpace, onMembers,
-                    onManageAccount, onSignOut, subView = null, children }) => {
+                    onManageAccount, onSignOut, onAccountGate, subView = null, children }) => {
   const [drawer, setDrawer] = React.useState(false);
   const rail = {
     spaces, currentId, onSelect: onSelectSpace, onCreate: onCreateSpace, user,
-    onManageAccount, onSignOut,
+    onManageAccount, onSignOut, onAccountGate,
   };
   return (
     <div style={{ display: 'flex', minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)' }}>

@@ -626,7 +626,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
           {step === 'input' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>How did it land?</h2>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Optional — a note left for the circle.</p>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Optional — your reaction for the circle.</p>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 <div style={{ position: 'relative', width: box, height: box, margin: narrow ? '2px 0 0' : '10px 0 0' }}>
                   <div style={{ position: 'absolute', inset }}>

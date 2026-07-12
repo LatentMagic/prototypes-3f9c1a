@@ -3,6 +3,35 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Brand motion system — 2026-07-12
+- The static mark gains three animated treatments, driven by the motion pack in
+  `brand/motion/` (`app/brand-motion.jsx`): **pulse** (idle breathing mark on the
+  rail), **spinner** (rotating/growing sage arc, the loading state — replaces the
+  plain CSS ring at 100px in both loading views), and **micro** (a ~10px live-signal
+  dot — a sage light-band sweeps the halo while the core holds still).
+- Placement is deliberately narrow: pulse on the rail lockup, spinner on the two
+  full-state loads, micro only on the funding-page eyebrow. All three freeze to the
+  static mark under `prefers-reduced-motion`.
+- Pulse depth and spin speed are exposed as live Tweaks (Brand motion).
+
+## Scenarios launcher reworked into a Config modal — 2026-07-12
+- The floating launcher (`app/config.jsx`, was `app/scenarios.jsx`) now opens a
+  centered modal instead of an anchored popover: a "Review settings" section
+  (viewport auto/desktop/mobile, preview gate on/off, reset seed data) sits above
+  the same grouped scenario list, reflowing into responsive columns.
+- Groundwork for adding more review controls over time without the list outgrowing
+  a popover.
+
+## Delete-only demo derivation + preview gate — 2026-07-10
+- The prototype is re-architected so a stripped homepage demo can be derived by
+  **deleting whole files only**, never editing a survivor: the Scenarios launcher
+  moves to its own file, tweak defaults are baked into the app, and `main.jsx` mounts
+  each dev aid / flow only when its module is present — so dropping auth, subscriptions,
+  scenarios, or tweaks removes it cleanly.
+- New **preview gate** (`app/gate.jsx`): New circle and the account control open a
+  "sign up to continue" overlay instead of dead-ending. Off by default; lit locally by
+  a Scenarios toggle or in the export by `window.CIRC_FORCE_GATE`.
+
 ## Brand pack adopted as source of truth — 2026-07-08
 - The formal Circlists brand pack lands in `brand/` as the single source of truth,
   retiring the vibe-coded brand doc (`docs/BRANDING.md` deleted; its references repointed).
