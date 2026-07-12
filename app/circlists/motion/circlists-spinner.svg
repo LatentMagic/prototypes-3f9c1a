@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100" height="100" role="img" aria-label="Circlists — loading">
+  <style>
+    /* Spinner — grow. Disc + white ring hold; a sage arc lengthens/shortens while
+       it rotates. rotor 1.369s, arc-grow 1.786s (1.4x default of the 1.917/2.5 reference), band 5.3. The full static halo is
+       the reduced-motion fallback only — hidden while animating. */
+    .cl-halo-static { display: none; }
+    .cl-rotor { transform-box: fill-box; transform-origin: center;
+                animation: cl-rotate 1.369s linear infinite; }
+    .cl-arc { animation: cl-grow 1.786s ease-in-out infinite; }
+    @keyframes cl-rotate { to { transform: rotate(360deg); } }
+    @keyframes cl-grow {
+      0%   { stroke-dasharray: 12 108; stroke-dashoffset: 0; }
+      50%  { stroke-dasharray: 78 42;  stroke-dashoffset: -22; }
+      100% { stroke-dasharray: 12 108; stroke-dashoffset: -120; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cl-rotor { display: none; }
+      .cl-halo-static { display: inline; }
+    }
+  </style>
+  <circle class="cl-halo-static" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle>
+  <g class="cl-rotor">
+    <circle class="cl-arc" cx="24" cy="24" r="19.05" fill="none" stroke="#8BBFAD" stroke-width="5.3" stroke-linecap="round" pathLength="120" stroke-dasharray="12 108"></circle>
+  </g>
+  <circle cx="24" cy="24" r="14.25" fill="#047857"></circle>
+  <circle cx="24" cy="24" r="14.925" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle>
+</svg>

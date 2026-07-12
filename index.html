@@ -26,6 +26,7 @@
     --muted:    #8A929B;
     --signal:   #047857;   /* Pulse Green — active dot + active-tab marker ONLY */
     --brand:    #C99A2E;   /* Amber — the Branding node ONLY; marks it as reference, not a version */
+    --motion:   #D4AE58;   /* Lighter amber — the Branding Motion node ONLY; a sibling reference to Branding, one shade up */
     --homepage: #7C3AED;   /* Strong violet — the Homepage node ONLY; the marketing page itself, a reference not a version */
     --demo:     #B9A6F0;   /* Light violet — the Homepage-demo node ONLY; the build embedded INSIDE the homepage, a lighter shade to read as its subtype */
 
@@ -289,6 +290,30 @@
     box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(201, 154, 46, 0.28);
   }
   .tab--brand:focus-visible { outline-color: var(--brand); }
+
+  /* ---- Branding Motion node: the mark in motion, a sibling reference to Branding —
+     one shade lighter so it reads as kin, not a duplicate. Same off-ladder treatment. */
+  .tab--motion {
+    background: rgba(212, 174, 88, 0.06);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .tab--motion:hover { background: rgba(212, 174, 88, 0.10); }
+  .tab--motion[aria-selected="false"] .tab-label,
+  .tab--motion[aria-selected="true"]  .tab-label { color: var(--motion); }
+  .tab--motion .tab-version { color: rgba(212, 174, 88, 0.7); }
+  .tab--motion .dot { background: var(--motion); opacity: 0.9; }
+  .tab--motion .dot-col::before { display: none; }   /* off the version ladder */
+  .tab--motion + .tab .dot-col::before { top: 50%; } /* spine now starts at the next tab */
+  .tab--motion[aria-selected="true"] {
+    background: rgba(212, 174, 88, 0.13);
+    box-shadow: inset 2px 0 0 0 var(--motion);
+  }
+  .tab--motion[aria-selected="true"] .dot {
+    background: var(--motion);
+    opacity: 1;
+    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(212, 174, 88, 0.28);
+  }
+  .tab--motion:focus-visible { outline-color: var(--motion); }
 
   /* ---- Homepage node: the marketing page itself, in strong violet. A reference
      node like Branding — the public front page that embeds the Homepage-demo in an
@@ -922,6 +947,15 @@
           html: 'circlists-brand.html',
           kind: 'brand',
           desc: 'The Circlists brand pack — mark, wordmark, colour, and type on one reference sheet. Not a prototype version: a living snapshot whose source moves and updates over time, so treat this as a point-in-time copy, not the canonical home.'
+        },
+        {
+          slug: 'motion',
+          label: 'Branding Motion',
+          version: '—',
+          ticket: 'LM-429',
+          html: 'circlists-motion.html',
+          kind: 'motion',
+          desc: 'The Circlists mark in motion — pulse (hero / marketing), spinner (loading), and micro (the ~10px live-signal dot), each a self-contained animated SVG with its reduced-motion fallback baked in. A reference sheet like Branding, not a prototype version: sourced from the wiki motion pack, this is a point-in-time copy.'
         },
         {
           slug: 'homepage',

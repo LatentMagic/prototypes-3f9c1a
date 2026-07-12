@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 52 52" width="52" height="52" role="img" aria-label="Circlists — live signal">
+  <style>
+    /* Micro — ring reveal. The core (green disc + white ring) is dead still; a soft
+       vertical band of sage light sweeps across the halo and paints the ring into
+       view, then rests off-frame (ring gone) until the next pass. 3.8s. No scale, no
+       breath — so it never reads as a tiny pulse. Recipe: a rendered, clipped rect
+       driven by an in-SVG CSS keyframe (masks / SMIL / page-level CSS do not tick). */
+    .cl-reveal { transform-box: view-box;
+                 animation: cl-reveal 3.8s cubic-bezier(0.45, 0, 0.15, 1) infinite; }
+    @keyframes cl-reveal {
+      0%   { transform: translateX(0); }
+      64%  { transform: translateX(86px); }
+      100% { transform: translateX(86px); }
+    }
+    .cl-halo-static { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .cl-reveal { display: none; }
+      .cl-halo-static { display: inline; }
+    }
+  </style>
+  <defs>
+    <clipPath id="cl-micro-halo"><circle cx="24" cy="24" r="22.5"></circle></clipPath>
+    <linearGradient id="cl-micro-band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8BBFAD" stop-opacity="0"></stop>
+      <stop offset="0.5" stop-color="#8BBFAD" stop-opacity="1"></stop>
+      <stop offset="1" stop-color="#8BBFAD" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+  <!-- reduced-motion fallback: the full sage ring, present -->
+  <circle class="cl-halo-static" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle>
+  <!-- the sweeping reveal: a sage band, clipped to the halo, drawn below the core -->
+  <g clip-path="url(#cl-micro-halo)">
+    <rect class="cl-reveal" x="-32" y="-10" width="26" height="68" fill="url(#cl-micro-band)"></rect>
+  </g>
+  <!-- constant core -->
+  <circle cx="24" cy="24" r="14.25" fill="#047857"></circle>
+  <circle cx="24" cy="24" r="14.925" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle>
+</svg>

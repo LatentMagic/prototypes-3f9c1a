@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Circlists — breathing mark">
+  <style>
+    /* Pulse — breath + tone. Halo breathes and lifts in light, in lockstep;
+       disc + ring hold still. amp 1.075, 3.0s, linear (the sampled curve IS the motion). */
+    .cl-halo { transform-box: fill-box; transform-origin: center;
+               animation: cl-breath 3s linear infinite, cl-tone 3s linear infinite; }
+    @keyframes cl-breath {
+      0%{transform:scale(1)}       6%{transform:scale(1.0075)}  14%{transform:scale(1.0300)}
+      22%{transform:scale(1.0563)} 30%{transform:scale(1.0713)} 34%{transform:scale(1.0750)}
+      42%{transform:scale(1.0705)} 52%{transform:scale(1.0585)} 62%{transform:scale(1.0435)}
+      72%{transform:scale(1.0285)} 80%{transform:scale(1.0165)} 87%{transform:scale(1.0090)}
+      93%{transform:scale(1.0038)} 100%{transform:scale(1)}
+    }
+    @keyframes cl-tone {
+      0%{filter:brightness(1)}      6%{filter:brightness(1.009)}  14%{filter:brightness(1.036)}
+      22%{filter:brightness(1.068)} 30%{filter:brightness(1.086)} 34%{filter:brightness(1.090)}
+      42%{filter:brightness(1.085)} 52%{filter:brightness(1.070)} 62%{filter:brightness(1.052)}
+      72%{filter:brightness(1.034)} 80%{filter:brightness(1.020)} 87%{filter:brightness(1.011)}
+      93%{filter:brightness(1.005)} 100%{filter:brightness(1)}
+    }
+    @media (prefers-reduced-motion: reduce) { .cl-halo { animation: none; } }
+  </style>
+  <circle class="cl-halo" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle>
+  <circle cx="24" cy="24" r="15.2" fill="#047857"></circle>
+  <circle cx="24" cy="24" r="15.875" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle>
+</svg>
