@@ -15,7 +15,7 @@ Two conceptual states, not a ticket-per-slug chain:
 - **`product`** — a mirror of what's shipped. Add this tab only when a side-by-side is actually wanted; nothing depends on it existing.
 - **`next`** — one accreting prototype holding everything ahead of product. Each new Claude Design export for the live line **replaces `app/circlists/next/` wholesale** (verbatim, never hand-edited) and gains a `changelog` entry.
 
-Don't mint ticket-named slugs for the working line any more — changes accrete into `next`. The older ticket slugs (`lm-298-…`, `lm-270-…`, `lm-367-369-…`) stay as legacy; leave them be.
+Don't mint ticket-named slugs for the working line any more — changes accrete into `next`. `main` is the current shipped snapshot (was `lm-367-369-champion-self-serve`; the older `baseline`/`lm-298-…`/`lm-270-…` chain it superseded is retired) — cut a new `main` from `next` when a line is drawn, rather than minting another ticket-named slug.
 
 **Resolution ledger = commit history.** Keep commit messages feature-flavoured (`feat(circlists): <feature>`) when it's natural — they're a hint an agent reads later, not a contract to uphold. Resolving `next` into product is a later agent job: diff `next` against product, re-slice by feature from the code, and land one feature at a time. Nothing is pre-built for it now — the changelog is a human-facing convenience, not the ledger.
 
@@ -39,8 +39,8 @@ The end-to-end process — deriving that node from one working-line prototype (r
 - Each iframe's `src` is set lazily on first tab activation, then tabs toggle with `display`. State survives switching; prototypes don't recompile on every switch.
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
 - Each prototype's optional `changelog` array (same object, in `index.html`) is its actual changelog — rendered in a "recent changes" drawer, per-slug. `README.md`'s one-line-per-prototype summary is documentation, not the changelog; don't confuse the two.
-- Each prototype is deep-linkable at `#<slug>` (e.g. `#lm-367-369-champion-self-serve`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
-- The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only — not to be confused with the `lm-270-mobile-width` prototype, which is verbatim prototype content.
+- Each prototype is deep-linkable at `#<slug>` (e.g. `#main`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
+- The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only, not any individual prototype's own layout handling.
 
 ## Why a server (not file://)
 

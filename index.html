@@ -976,28 +976,10 @@
           desc: 'The marketing-site product demo — a stripped, self-contained build of the working line, made to embed in the homepage as an iframe. Only the core loop is live (add a link, read it, react, see how the circle responded); New circle, circle settings, and the account control open a sign-up gate instead of routing on. Derived from the working line by deletion + a bundling step (no babel, no per-module fetch), rebuilt from tools/homepage-demo/. A point-in-time build, not the canonical app.'
         },
         {
-          slug: 'baseline',
-          version: 'v0.2.1',
-          ticket: 'LM-239',
-          desc: 'The baseline prototype in the project spec space — the current accepted alpha UI the two deltas build on (Claude Design v0.2.1, retrieved 2026-06-11).'
-        },
-        {
-          slug: 'lm-298-ux-consolidation',
-          version: 'v0.2.2',
-          ticket: 'LM-298',
-          desc: 'UX consolidation: account control to rail foot, top bar becomes the space header, one unified empty state, create→fund gains exit/back controls.'
-        },
-        {
-          slug: 'lm-270-mobile-width',
-          version: 'v0.2.3',
-          ticket: 'LM-270',
-          desc: 'Mobile-width pass: one shared content width, single rail toggle, slide+scrim motion, ≥44px tap targets, ≥16px inputs (kills iOS focus zoom).'
-        },
-        {
-          slug: 'lm-367-369-champion-self-serve',
+          slug: 'main',
           version: 'v0.3.0',
           ticket: 'LM-367 · LM-369',
-          desc: 'The working prototype where in-flight v1-delta changes land on the current alpha line. Adds self-serve account & space management: account-scoped change-email (LM-367); champion-gated space rename and member removal (LM-369).',
+          desc: 'The current shipped line — self-serve account & space management: account-scoped change-email (LM-367); champion-gated space rename and member removal (LM-369). Everything ahead of this accretes in `next`.',
           changelog: [
             {
               date: '2026-06-28',
@@ -1016,23 +998,6 @@
                 'Members surface — a member row shows its email address only for the viewer\'s own row, or when the viewer is champion; previously every member\'s email was visible to every viewer regardless of role (PII fix, flagged via LatentMagic/monorepo#395).'
               ],
               base: 'Built on the LM-367/LM-369 self-serve line.'
-            }
-          ]
-        },
-        {
-          slug: 'biz-63-loop-closure',
-          version: 'exploration',
-          ticket: 'BIZ-63',
-          desc: 'Loop-closure reaction-reveal at mark-as-read — ten switchable variants across two rounds to try side by side (Round 1 signal: Map · Nine Glyphs · Lexicon · Pulse · Gathering; Round 2 tactile: Stick · Trace · Dial · Plain Pair · Swell), swapped from the in-prototype variant switcher. Active stays calm; the circle\'s earlier reactions reveal after your own mark-as-read, then live on the Read card.',
-          changelog: [
-            {
-              date: '2026-07-06',
-              title: 'Tenth variant — The Swell (emoji × analogue stick)',
-              items: [
-                'The Swell — fuses Nine Glyphs\' emoji palette with The Stick\'s analogue drag: pull toward one of nine glyphs, pull distance sets how hard it lands, surfaced via radial distance and glyph size (no transparency or gradients), plus a soft accent halo on your own glyph. Names-toggle-aware. Current favorite under exploration for its tactile feel.',
-                'On this variant only, mark-as-read skips the confirm dialog and goes straight into the analogue-stick reaction; every other variant\'s confirm dialog is unchanged.'
-              ],
-              base: 'Built on the nine-variant round-1/round-2 exploration line.'
             }
           ]
         },

@@ -20,14 +20,10 @@ npm install && npm start
 
 Opens a zero-dependency static server at **http://localhost:4321** — the **Specimen Console**, a graphite shell with one tab per prototype. Each tab swaps the prototype shown in the stage; the rail's "version spine" tracks them as a commit-style timeline. A **Desktop · Mobile** toggle in the meta bar clamps the stage to phone width so each prototype reflows to its mobile layout.
 
-Each prototype is deep-linkable at `#<slug>` — e.g. `…/prototypes-3f9c1a/#lm-367-369-champion-self-serve` opens straight to that tab, and the URL tracks the active tab so it's always ready to copy and share.
+Each prototype is deep-linkable at `#<slug>` — e.g. `…/prototypes-3f9c1a/#main` opens straight to that tab, and the URL tracks the active tab so it's always ready to copy and share.
 
 A server is needed (not `file://`) because each prototype loads its `app/*.jsx` via babel-standalone, which XHR-fetches the modules — that fetch fails on CORS over `file://`.
 
 ### Prototypes
 
-- **baseline** — `v0.2.1` (LM-239) — the accepted alpha prototype the two deltas build on.
-- **lm-298-ux-consolidation** — `v0.2.2` (LM-298) — UX consolidation pass.
-- **lm-270-mobile-width** — `v0.2.3` (LM-270) — mobile-width pass.
-- **lm-367-369-champion-self-serve** — `v0.3.0` — where in-flight v1-delta changes land on the current line; carries LM-367 (change email) + LM-369 (champion space controls) + a member-email visibility gate (champion/owner only, PII fix). Design pending.
-- **biz-63-loop-closure** — `exploration` (BIZ-63) — five switchable variants for community loop-closure (reactions); under review, not committed to one direction — not held to the build-track rules the entries above are.
+- **main** — `v0.3.0` (LM-367 · LM-369) — the current shipped line; carries change email (LM-367), champion space controls (LM-369), and a member-email visibility gate (champion/owner only, PII fix). Everything ahead of this accretes in `next`.
