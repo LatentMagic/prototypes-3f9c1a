@@ -31,13 +31,17 @@ makes unreachable.
 
 | Dropped file | Why it's safe to drop |
 | --- | --- |
-| `scenarios.jsx` | Dev aid (scenario launcher). `main.jsx` guards on `window.ScenariosLauncher`. |
+| `config.jsx` | Dev aid (config launcher, was `scenarios.jsx`). `main.jsx` guards on `window.ConfigLauncher`. |
 | `circ-tweaks.jsx` | Dev aid (tweaks wiring). `main.jsx` guards on `window.CircTweaks`; look defaults are baked in. |
 | `tweaks-panel.jsx` | Dev aid (tweaks panel). `main.jsx` guards on `typeof useTweaks`. |
 | `auth.jsx` | Sign-in / up / one-time-code / recovery. The demo starts authenticated and never signs out — all auth routes are unreachable. |
 | `spaces.jsx` | Create-circle, **members / circle-settings**, and account surfaces. All three are gated → unreachable, so these components are never rendered. |
 
-**Kept:** `primitives` · `swell-reactions` · `feed` · `shell` · `subscriptions` · `gate` · `main`.
+**Kept:** `seed-data` · `primitives` · `brand-motion` · `swell-reactions` · `feed` · `shell` · `subscriptions` · `gate` · `main`.
+
+`seed-data.jsx` and `brand-motion.jsx` are always kept — `main.jsx` and `primitives.jsx`
+reference their exports (`window.CircSeed`, `BrandSpinner`, `PulseLockup`, ...)
+unconditionally, no presence guard.
 
 `subscriptions.jsx` stays because the seed carries a **dormant circle** (Weekend
 Reads); switching to it renders `DormantSpace`, which lives in that file. It is
@@ -56,6 +60,14 @@ reachable without passing a gate, so it cannot be dropped.
 - Moves React / ReactDOM to their **production** CDN builds (and drops the now-stale
   SRI hashes).
 - Lights the gate via the `window.CIRC_FORCE_GATE` flag in the embed.
+- Downlevels top-level `const`/`let` to `var` before compiling. Kept files are
+  concatenated into one scope, but some declare the same name twice by design —
+  e.g. `seed-data.jsx`'s `const M` and `main.jsx`'s `const { M } = window.CircSeed`,
+  a deliberate load-order safety pattern, harmless as separate `<script>` tags
+  where Babel Standalone hoists each to a real global. `var` redeclaration is
+  legal where `const` redeclaration is a syntax error; esbuild won't do this
+  lowering itself (any target), so `build.mjs` does it as a line-start-only text
+  pass before the transform.
 
 React / ReactDOM stay on the CDN; everything else is self-contained.
 

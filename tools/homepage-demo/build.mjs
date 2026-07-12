@@ -32,7 +32,7 @@ const OUT = path.join(__dirname, '..', '..', 'app', 'circlists', 'homepage-demo'
 // The derivation rule. Files present in the working line that the public demo
 // drops — every one is unreachable once the gate is lit, or a dev-only aid.
 const DELETE_LIST = new Set([
-  'scenarios.jsx',    // dev aid — the scenario launcher (window-guarded in main)
+  'config.jsx',       // dev aid — the config launcher, was scenarios.jsx (window-guarded in main)
   'circ-tweaks.jsx',  // dev aid — tweaks wiring (window-guarded in main)
   'tweaks-panel.jsx', // dev aid — tweaks panel UI (typeof-guarded in main)
   'auth.jsx',         // sign-in / up / otc / recovery — never authenticates in preview
@@ -53,7 +53,16 @@ async function main() {
   for (const f of kept) {
     parts.push(`// ==== app/${f} ====\n` + await readFile(path.join(SRC, 'app', f), 'utf8'));
   }
-  const concat = parts.join('\n;\n');
+  // In the raw prototype each kept file is its own <script type="text/babel">;
+  // Babel Standalone hoists that script's top-level const/let to real globals, so
+  // two scripts declaring the same top-level name (e.g. seed-data.jsx's `const M`
+  // and main.jsx's `const { M } = window.CircSeed`) never collide — var-style
+  // redeclaration is legal. Concatenating into one scope loses that isolation, and
+  // esbuild refuses to downlevel const/let itself (no target lowers it), so this
+  // line-start-only swap reproduces Babel's real behavior before compiling. Safe
+  // here because every file in this codebase declares top-level bindings at column
+  // 0 — nested/block-scoped const/let stay indented and untouched.
+  const concat = parts.join('\n;\n').replace(/^(?:const|let)\b/gm, 'var');
 
   // 3. One JSX→JS transform + minify → the single served bundle.
   const { code } = await esbuild.transform(concat, {

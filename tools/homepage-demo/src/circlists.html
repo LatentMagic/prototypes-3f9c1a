@@ -27,6 +27,70 @@
   @keyframes circ-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
   @keyframes circ-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
+  /* ---- brand motion: pulse (rail mark) / spinner (loading) / micro (live dot) ----
+     Reproduces brand/motion/circlists-motion.md's breath curve (linear, apex at
+     34%) sampled onto scale + brightness for pulse, onto scale only (two
+     amplitudes) for micro, plus the spinner's own rotor + arc timings. Classes
+     are scoped per-treatment (unlike the source .svg files) since more than one
+     can be mounted on this page at once.
+     Pulse SCALE depth is driven by --circ-pulse-amp (peak scale) so it can be
+     dialled live from the Tweaks panel; the spec's value is 1.065 (+6.5%), the
+     app default sits a touch deeper (see :root below). Each stop is
+     1 + (amp-1)*frac, frac from the spec's breath table. Brightness (tone) is
+     the spec's fixed curve and is not tied to the depth control. */
+  :root { --circ-pulse-amp: 1.075; --circ-spin-speed: 1.4; }
+  @keyframes circ-pulse-halo {
+    0%   { transform: scale(1);                                                  filter: brightness(1); }
+    6%   { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.10)); filter: brightness(1.009); }
+    14%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.40)); filter: brightness(1.036); }
+    22%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.75)); filter: brightness(1.0675); }
+    30%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.95)); filter: brightness(1.0755); }
+    34%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 1.00)); filter: brightness(1.09); }
+    42%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.94)); filter: brightness(1.0846); }
+    52%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.78)); filter: brightness(1.0702); }
+    62%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.58)); filter: brightness(1.0522); }
+    72%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.38)); filter: brightness(1.0342); }
+    80%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.22)); filter: brightness(1.0198); }
+    87%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.12)); filter: brightness(1.0108); }
+    93%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.05)); filter: brightness(1.0045); }
+    100% { transform: scale(1);                                                  filter: brightness(1); }
+  }
+  .circ-pulse-halo { animation: circ-pulse-halo 3000ms linear infinite; transform-box: fill-box; transform-origin: center; }
+
+  /* Micro — ~10px live-signal dot. The core (disc + ring) holds dead still; a
+     soft sage light-band sweeps across the halo (clipped to r22.5), painting a
+     ring of sage into view then resting off-frame for the rest of the cycle — a
+     sweep of light, not a breath (a scale won't read at this size). Band travels
+     translateX 0→86 (viewBox units) over the first 64% of a 3.8s cycle, then
+     holds. Spec: brand/motion/circlists-motion.md §Micro. */
+  @keyframes circ-micro-reveal {
+    0%   { transform: translateX(0); }
+    64%  { transform: translateX(86px); }
+    100% { transform: translateX(86px); }
+  }
+  .circ-micro-halo-static { display: none; }
+  .circ-micro-reveal { animation: circ-micro-reveal 3800ms cubic-bezier(0.45, 0, 0.15, 1) infinite; }
+
+  @keyframes circ-spinner-rotor { to { transform: rotate(360deg); } }
+  /* Rotation + arc-breathe pace scale together by --circ-spin-speed (a live
+     multiplier; 1 = the spec's tempo) so a quick load still reads as loading.
+     Spec base: rotor 1.917s, arc 2.5s. */
+  .circ-spinner-rotor { animation: circ-spinner-rotor calc(1917ms / var(--circ-spin-speed, 1.4)) linear infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes circ-spinner-arc {
+    0%   { stroke-dasharray: 12 108; stroke-dashoffset: 0; }
+    50%  { stroke-dasharray: 78 42;  stroke-dashoffset: -22; }
+    100% { stroke-dasharray: 12 108; stroke-dashoffset: -120; }
+  }
+  .circ-spinner-arc { animation: circ-spinner-arc calc(2500ms / var(--circ-spin-speed, 1.4)) linear infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .circ-pulse-halo, .circ-spinner-rotor { animation: none !important; }
+    .circ-spinner-arc { animation: none !important; stroke-dasharray: 120 0 !important; }
+    /* Micro settles to the full resting mark: hide the sweep, show the sage disc. */
+    .circ-micro-reveal { animation: none !important; display: none !important; }
+    .circ-micro-halo-static { display: block !important; }
+  }
+
   /* ---- focus rings: first-class ---- */
   button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
     outline: var(--ring-width) solid var(--color-accent);
@@ -64,34 +128,97 @@
   .circ-railacct:hover { background: var(--color-surface); }
   .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
 
-  /* ---- scenario launcher (prototype aid) ---- */
-  .circ-launcher-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
-  .circ-launcher-btn {
+  /* ---- config launcher (prototype aid) ---- */
+  .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
+  .circ-config-btn {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--color-fg-1); color: #fff; border: 0; cursor: pointer;
     padding: 9px 14px; border-radius: var(--radius-pill);
     font-family: var(--font-sans); font-weight: 600; font-size: 13px;
     box-shadow: var(--shadow-overlay);
   }
-  .circ-launcher-panel {
-    position: absolute; bottom: calc(100% + 8px); right: 0;
-    width: 248px; background: var(--color-surface);
-    border: 1px solid var(--color-border-1); border-radius: var(--radius-md);
-    box-shadow: var(--shadow-overlay); padding: 6px;
-    max-height: min(72vh, 560px); overflow-y: auto;
+
+  /* ---- config modal (prototype aid) ---- */
+  .circ-config-scrim {
+    position: fixed; inset: 0; z-index: 400;
+    background: var(--color-scrim);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    transition: opacity var(--duration-slow) ease-in-out;
   }
-  .circ-launcher-head {
+  .circ-config-modal {
+    width: min(760px, 100%); max-height: min(84vh, 720px);
+    display: flex; flex-direction: column;
+    background: var(--color-surface); border: 1px solid var(--color-border-1);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
+    transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
+  }
+  .circ-config-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    border-bottom: 1px solid var(--color-border-2); flex-shrink: 0;
+  }
+  .circ-config-title {
+    font-family: var(--font-sans); font-weight: 600; font-size: var(--text-xl);
+    letter-spacing: -0.01em; color: var(--color-fg-1);
+  }
+  .circ-config-subtitle {
+    font-family: var(--font-sans); font-weight: 400; font-size: var(--text-sm);
+    color: var(--color-fg-3); margin-top: 2px;
+  }
+  .circ-config-close {
+    background: transparent; border: 0; padding: 8px; margin: -8px; cursor: pointer;
+    color: var(--color-fg-2); border-radius: var(--radius-sm); display: inline-flex; flex-shrink: 0;
+  }
+  .circ-config-close:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-config-body { padding: var(--space-5); overflow-y: auto; }
+  .circ-config-eyebrow {
     font-family: var(--font-mono); font-weight: 500; font-size: 11px;
     letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
-    padding: 8px 12px 6px;
+    margin-bottom: var(--space-3);
   }
-  .circ-launcher-item {
+  .circ-config-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    min-height: 44px; padding: 6px 0;
+  }
+  .circ-config-row-label {
+    font-family: var(--font-sans); font-weight: 500; font-size: var(--text-sm); color: var(--color-fg-1);
+  }
+  .circ-config-hint {
+    font-family: var(--font-sans); font-weight: 400; font-size: 12.5px; line-height: 1.5;
+    color: var(--color-fg-3); margin: -2px 0 var(--space-3);
+  }
+  .circ-config-sep { height: 1px; background: var(--color-border-2); margin: var(--space-2) 0 var(--space-5); }
+  .circ-config-btn-secondary {
+    background: var(--color-surface); color: var(--color-fg-1); border: 1px solid var(--color-border-1);
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; cursor: pointer;
+    padding: 8px 14px; border-radius: var(--radius-md); min-height: 36px;
+  }
+  .circ-config-btn-secondary:hover { background: var(--color-surface-sunken); }
+  .circ-config-seg {
+    display: inline-flex; padding: 3px; gap: 2px;
+    background: var(--color-surface-sunken); border-radius: var(--radius-md); flex-shrink: 0;
+  }
+  .circ-config-seg-btn {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    padding: 7px 12px; min-height: 30px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .circ-config-seg-btn[data-active] { background: var(--color-accent); color: #fff; }
+  .circ-config-seg-btn:not([data-active]):hover { background: var(--color-border-2); }
+  .circ-config-groups { columns: 220px 2; column-gap: 24px; }
+  .circ-config-group { break-inside: avoid; margin-bottom: var(--space-4); }
+  .circ-config-group-title {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    padding: 4px 0 6px;
+  }
+  .circ-config-item {
     display: block; width: 100%; text-align: left; background: transparent; border: 0; cursor: pointer;
-    padding: 9px 12px; border-radius: var(--radius-sm);
+    padding: 9px 10px; border-radius: var(--radius-sm);
     font-family: var(--font-sans); font-weight: 500; font-size: 13.5px; color: var(--color-fg-1);
   }
-  .circ-launcher-item:hover { background: var(--color-surface-sunken); }
-  .circ-launcher-sep { height: 1px; background: var(--color-border-2); margin: 6px 8px; }
+  .circ-config-item:hover { background: var(--color-surface-sunken); }
 
   /* ---- mobile phone frame (forced-mobile posture) ---- */
   .circ-stage {
@@ -131,7 +258,9 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
+<script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
 <script type="text/babel" src="app/swell-reactions.jsx"></script>
 <script type="text/babel" src="app/feed.jsx"></script>
 <script type="text/babel" src="app/shell.jsx"></script>
@@ -140,7 +269,7 @@
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/tweaks-panel.jsx"></script>
 <script type="text/babel" src="app/circ-tweaks.jsx"></script>
-<script type="text/babel" src="app/scenarios.jsx"></script>
+<script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/gate.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>

@@ -11,7 +11,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
   return (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', padding: '4px 8px 20px' }}>
-      <Wordmark size={20} />
+      <PulseLockup size={20} />
     </div>
     <div style={{
       fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11,

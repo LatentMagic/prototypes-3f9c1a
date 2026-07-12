@@ -7,161 +7,8 @@
 // ============================================================================
 const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
-// ---- Seed data — inhabited, role-staged, no Lorem Ipsum --------------------
-const M = (name, email) => ({ name, email });
-const IT = (url, attribution, read, reactions) => ({ id: 'seed-' + Math.random().toString(36).slice(2, 9), url, attribution, read: !!read, reactions: reactions || [] });
-// The Swell vocabulary — the only five glyphs a reaction can carry.
-const HEART = '\u2764\uFE0F', FIRE = '\uD83D\uDD25', THUMB = '\uD83D\uDC4D', BULB = '\uD83D\uDCA1', LOL = '\uD83D\uDE02';
-
-function seedSpaces(userEmail) {
-  return [
-    {
-      // You champion it → Invite + Manage funding + "Championed by You".
-      id: 'sp-backend',
-      name: 'Backend Pod',
-      funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
-      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com'), M('Owen D.', 'owen.d@example.com'), M('Freya S.', 'freya.s@example.com')],
-      items: [
-        // No reactions yet — react/skip this one to see the "first one here" moment.
-        IT('https://firstonehere.com', 'Added by Sam R.', false, []),
-        // A few responded, a couple skipped — roster mixes reactions and read-rings.
-        IT('https://afewskipped.com', 'Added by Priya N.', false, [
-          { name: 'Marcus T.', glyph: FIRE, intensity: 0.6 },
-          { name: 'Ada L.', glyph: THUMB, intensity: 0.45 },
-          { name: 'Dev K.', glyph: BULB, intensity: 0.52 },
-          { name: 'Sam R.', skipped: true },
-          { name: 'Lena P.', skipped: true },
-        ]),
-        // Every other member has already responded — a cluster of hearts among the rest.
-        IT('https://heartsclustered.com', 'Added by Ada L.', false, [
-          { name: 'Sam R.', glyph: HEART, intensity: 0.5 },
-          { name: 'Priya N.', glyph: HEART, intensity: 0.62 },
-          { name: 'Marcus T.', glyph: HEART, intensity: 0.7 },
-          { name: 'Ada L.', glyph: HEART, intensity: 0.48 },
-          { name: 'Dev K.', glyph: HEART, intensity: 0.44 },
-          { name: 'Lena P.', glyph: HEART, intensity: 0.58 },
-          { name: 'Nadia F.', glyph: THUMB, intensity: 0.5 },
-          { name: 'Theo B.', glyph: BULB, intensity: 0.4 },
-        ]),
-        // Stress fixture — five hearts + five fires, adjacent sectors, even split.
-        // Purpose: see how two big same-glyph huddles behave shoulder-to-shoulder.
-        IT('https://heartsandfires.com', 'Added by Sam R.', false, [
-          { name: 'Sam R.', glyph: HEART, intensity: 0.44 },
-          { name: 'Priya N.', glyph: HEART, intensity: 0.56 },
-          { name: 'Marcus T.', glyph: HEART, intensity: 0.66 },
-          { name: 'Ada L.', glyph: HEART, intensity: 0.5 },
-          { name: 'Dev K.', glyph: HEART, intensity: 0.6 },
-          { name: 'Lena P.', glyph: FIRE, intensity: 0.46 },
-          { name: 'Nadia F.', glyph: FIRE, intensity: 0.58 },
-          { name: 'Theo B.', glyph: FIRE, intensity: 0.68 },
-          { name: 'Owen D.', glyph: FIRE, intensity: 0.52 },
-          { name: 'Freya S.', glyph: FIRE, intensity: 0.62 },
-        ]),
-        IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
-          { name: 'Priya N.', glyph: FIRE, intensity: 0.9 },
-          { name: 'Sam R.', glyph: FIRE, intensity: 0.84 },
-          { name: 'Dev K.', glyph: FIRE, intensity: 0.7 },
-          { name: 'Ada L.', glyph: BULB, intensity: 0.55 },
-          { name: 'Lena P.', glyph: THUMB, intensity: 0.4 },
-          { name: 'Nadia F.', skipped: true },
-          { name: 'Theo B.', skipped: true },
-        ]),
-        IT('https://blog.rust-lang.org/2026/01/async-internals', 'Added by Priya N.', false, [
-          { name: 'Marcus T.', glyph: FIRE, intensity: 0.66 },
-          { name: 'Ada L.', glyph: FIRE, intensity: 0.72 },
-          { name: 'Sam R.', glyph: BULB, intensity: 0.5 },
-        ]),
-        IT('https://martinfowler.com/articles/cd-pipeline.html', 'Added by Sam R.', false, [
-          { name: 'Priya N.', glyph: BULB, intensity: 0.45 },
-          { name: 'Dev K.', glyph: THUMB, intensity: 0.3 },
-        ]),
-        IT('https://arxiv.org/abs/2503.04918', 'Added by Priya N.', false, [
-          { name: 'Ada L.', glyph: LOL, intensity: 0.82 },
-          { name: 'Marcus T.', glyph: BULB, intensity: 0.4 },
-        ]),
-        IT('https://www.youtube.com/watch?v=Kx7Bvksk_qg', 'Added by Marcus T.', false, [
-          { name: 'Lena P.', glyph: HEART, intensity: 0.6 },
-        ]),
-        IT('https://danluu.com/percentile-latency/', 'Added by Sam R.', false, [
-          { name: 'Priya N.', glyph: THUMB, intensity: 0.74 },
-          { name: 'Marcus T.', glyph: THUMB, intensity: 0.5 },
-          { name: 'Dev K.', glyph: THUMB, intensity: 0.62 },
-          { name: 'Ada L.', glyph: BULB, intensity: 0.44 },
-          { name: 'Lena P.', glyph: FIRE, intensity: 0.9 },
-          { name: 'Nadia F.', skipped: true },
-          { name: 'Theo B.', skipped: true },
-        ]),
-        IT('https://sqlite.org/whentouse.html', 'Added by former member.'),
-        IT('https://go.dev/blog/pipelines', 'Added by Marcus T.', true, [
-          { name: 'Priya N.', glyph: FIRE, intensity: 0.72 },
-          { name: 'Ada L.', glyph: FIRE, intensity: 0.88 },
-          { name: 'Dev K.', glyph: FIRE, intensity: 0.5 },
-          { name: 'Sam R.', glyph: BULB, intensity: 0.4 },
-          { name: 'Lena P.', glyph: HEART, intensity: 0.34 },
-          { name: 'You', glyph: THUMB, intensity: 0.55 },
-        ]),
-        IT('https://jvns.ca/blog/2026/02/dns-resolvers/', 'Added by Priya N.', true, [
-          { name: 'Marcus T.', glyph: LOL, intensity: 0.86 },
-          { name: 'Ada L.', glyph: BULB, intensity: 0.62 },
-          { name: 'You', glyph: FIRE, intensity: 0.5 },
-          { name: 'Dev K.', glyph: THUMB, intensity: 0.28 },
-          { name: 'Sam R.', skipped: true },
-          { name: 'Lena P.', skipped: true },
-        ]),
-        IT('https://www.kernel.org/doc/html/latest/process/submitting-patches.html', 'Added by Sam R.', true, [
-          { name: 'Priya N.', glyph: THUMB, intensity: 0.3 },
-          { name: 'Lena P.', glyph: FIRE, intensity: 0.66 },
-          { name: 'Ada L.', skipped: true },
-          { name: 'You', skipped: true },
-        ]),
-        IT('https://martinfowler.com/bliki/CircuitBreaker.html', 'Added by former member.', true),
-      ],
-    },
-    {
-      // Championed by Joe M. — you're a plain member (non-champion view).
-      id: 'sp-book',
-      name: 'Tuesday Book Club',
-      funded: true, dormancy: null, champion: 'Joe M.', championEmail: 'joe.m@example.com',
-      members: [M('You', userEmail), M('Joe M.', 'joe.m@example.com'), M('Priya N.', 'priya.n@example.com'), M('Sam R.', 'sam.r@example.com')],
-      items: [
-        IT('https://www.newyorker.com/books/page-turner/the-quiet-novel-revival', 'Added by Joe M.'),
-        IT('https://lithub.com/on-rereading-your-favorite-books/', 'Added by Priya N.'),
-        IT('https://www.theparisreview.org/interviews/the-art-of-fiction', 'Added by Sam R.'),
-        IT('https://www.gutenberg.org/files/2701/2701-h/2701-h.htm', 'Added by Joe M.', true, [
-          { name: 'Priya N.', glyph: HEART, intensity: 0.7 },
-          { name: 'You', glyph: LOL, intensity: 0.45 },
-        ]),
-      ],
-    },
-    {
-      // Small two-person space — championed by Sam R. (non-champion view).
-      id: 'sp-sam',
-      name: 'Me & Sam',
-      funded: true, dormancy: null, champion: 'Sam R.', championEmail: 'sam.r@example.com',
-      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com')],
-      items: [
-        IT('https://www.gutenberg.org/files/1342/1342-h/1342-h.htm', 'Added by Sam R.'),
-        IT('https://longreads.com/2026/01/the-long-walk-home/', 'Added by You.'),
-      ],
-    },
-    {
-      // Dormant — championed by Priya N. Default lands on the non-champion
-      // take-over view; the launcher restages it for the champion views.
-      id: 'sp-weekend',
-      name: 'Weekend Reads',
-      funded: false, dormancy: 'terminal', champion: 'Priya N.', championEmail: 'priya.n@example.com',
-      members: [M('You', userEmail), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Sam R.', 'sam.r@example.com')],
-      items: [
-        IT('https://www.theatlantic.com/magazine/archive/the-art-of-the-slow-weekend', 'Added by Priya N.'),
-        IT('https://www.newyorker.com/culture/cultural-comment/the-case-for-doing-nothing', 'Added by Marcus T.'),
-        IT('https://longreads.com/2026/02/notes-on-walking/', 'Added by Priya N.'),
-        IT('https://aeon.co/essays/why-boredom-is-good-for-you', 'Added by Sam R.', true),
-      ],
-    },
-  ];
-}
-
-const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'you@example.com' };
+// ---- Seed fixtures + user default live in app/seed-data.jsx (loaded first) ----
+const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
 // ---- Persistence -----------------------------------------------------------
 // Key is versioned: bump the suffix whenever seed data changes so returning
@@ -178,13 +25,23 @@ const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) |
 // So the app renders at its intended look even when the Tweaks files
 // (circ-tweaks.jsx / tweaks-panel.jsx) are absent — the delete-only homepage-demo
 // derivation drops them. When those files are present they take over.
-const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto' };
+const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto', pulseDepth: 7.5, spinSpeed: 1.4 };
 const useTweaksSafe = (typeof useTweaks === 'function') ? useTweaks : (d) => [d, () => {}];
 
 // ---- App -------------------------------------------------------------------
 const CircApp = () => {
   const [tw, setTweak] = useTweaksSafe(window.CIRC_TWEAK_DEFAULTS || CIRC_TWEAK_FALLBACK);
   useEffect(() => { document.documentElement.style.setProperty('--color-accent', tw.accent); }, [tw.accent]);
+  // pulse breath depth (peak scale) — dialled live; percent → amp (1 + pct/100)
+  useEffect(() => {
+    const pct = typeof tw.pulseDepth === 'number' ? tw.pulseDepth : 7.5;
+    document.documentElement.style.setProperty('--circ-pulse-amp', String(1 + pct / 100));
+  }, [tw.pulseDepth]);
+  // spinner pace — dialled live; multiplier on the spec tempo (1 = spec)
+  useEffect(() => {
+    const s = typeof tw.spinSpeed === 'number' && tw.spinSpeed > 0 ? tw.spinSpeed : 1.4;
+    document.documentElement.style.setProperty('--circ-spin-speed', String(s));
+  }, [tw.spinSpeed]);
 
   // viewport / layout posture
   const [winW, setWinW] = useState(window.innerWidth);
@@ -198,9 +55,9 @@ const CircApp = () => {
 
   // ---- Deletable-aid / droppable-module handles ----
   // Read once per render from window so the app tolerates any of these files
-  // being absent (delete-only homepage-demo derivation): scenarios + tweaks are
+  // being absent (delete-only homepage-demo derivation): config + tweaks are
   // aids that can be deleted; gate is a module that can be dropped in.
-  const ScenariosLauncher = window.ScenariosLauncher;
+  const ConfigLauncher = window.ConfigLauncher;
   const CircTweaks = window.CircTweaks;
   const GateOverlay = window.GateOverlay;
 
@@ -211,7 +68,7 @@ const CircApp = () => {
   //
   // OFF by default so the working prototype behaves normally (New circle + account
   // run their real flows, every reload). Two ways to switch it on:
-  //   • locally: Scenarios → Preview gate — on  (session-only, not persisted)
+  //   • locally: Config → Preview gate → On  (session-only, not persisted)
   //   • in the exported homepage demo: set  window.CIRC_FORCE_GATE = true  in the
   //     embed. No file in this project is hand-edited to activate it.
   const gateModulePresent = !!GateOverlay;
@@ -229,6 +86,10 @@ const CircApp = () => {
 
   // ephemeral
   const [loadingFeed, setLoadingFeed] = useState(false);
+  // Review-only: freeze a loading interstitial so it can be vetted at rest.
+  // Auto-clears the moment the route leaves an interstitial (effect below), so
+  // it never leaks into a real auth / billing flow.
+  const [holdLoading, setHoldLoading] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [confirm, setConfirm] = useState(null);
   // The Swell: mark-as-read opens the reaction flow (no confirm modal). Holds
@@ -237,7 +98,7 @@ const CircApp = () => {
   const [otc, setOtc] = useState({ context: 'device', error: null });
   const [pendingEmail, setPendingEmail] = useState('you@example.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
-  // (Scenarios launcher state + drag now live in app/scenarios.jsx — a deletable aid.)
+  // (Config launcher state + drag now live in app/config.jsx — a deletable aid.)
   // funding flow: { mode: 'new' | 'refund', name, spaceId }
   const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', spaceId: null });
   const [manageIntent, setManageIntent] = useState('manage');
@@ -256,10 +117,15 @@ const CircApp = () => {
     try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
   }, [route, user, spaces, currentId, tab]);
 
-  const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);
-  const activeItems = space ? space.items.filter(i => !i.read) : [];
+  const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
   const isChampion = (s) => !!s && s.champion === 'You';
+
+  // Release a review-only loading hold as soon as we're off an interstitial.
+  const LOADING_ROUTES = ['google-return', 'manage-interstitial', 'setting-up'];
+  useEffect(() => {
+    if (holdLoading && !LOADING_ROUTES.includes(route)) setHoldLoading(false);
+  }, [route, holdLoading]);
 
   // feed-load demo: quiet indicator when entering a funded space
   const enterSpace = useCallback((id) => {
@@ -346,91 +212,18 @@ const CircApp = () => {
     }
   };
 
-  // ---- scenario launcher setups ----
-  const reset = () => {
-    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
-    const s = seedSpaces(DEFAULT_USER.email);
-    setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
-  };
-  const goSpace = (id, toRoute) => {
-    setUser(u => u && u.email ? u : DEFAULT_USER);
-    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
-    setCurrentId(id); setTab('active');
-    if (toRoute) setRoute(toRoute); else enterSpace(id);
-  };
-
-  // restage the dormant Weekend Reads to demo a given role/dormancy, then enter it
-  const stageDormant = (cfg) => {
-    setSpaces(prev => prev.map(s => s.id === 'sp-weekend'
-      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
-    setCurrentId('sp-weekend'); setRoute('space'); setLoadingFeed(false);
-  };
-
-  // Space with no items — lands on the empty-feed state directly.
-  const goEmptyFeed = () => {
-    setUser(DEFAULT_USER);
-    const emptySpace = {
-      id: 'sp-empty', name: 'Reading Room', funded: true, dormancy: null,
-      champion: 'You', championEmail: DEFAULT_USER.email,
-      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
-      items: [],
-    };
-    setSpaces(prev => [emptySpace, ...prev.filter(s => s.id !== 'sp-empty')]);
-    setCurrentId('sp-empty'); setTab('active'); setRoute('space'); setLoadingFeed(false);
-  };
-
-  // Space at the 10-member cap (champion view → "Space is full" on invite).
-  const goFullSpaceManage = () => {
-    setUser(DEFAULT_USER);
-    const fullSpace = {
-      id: 'sp-full', name: 'Design Guild', funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email,
-      members: [
-        M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'),
-        M('Marcus T.', 'marcus.t@example.com'), M('Joe M.', 'joe.m@example.com'), M('Ada L.', 'ada.l@example.com'),
-        M('Ravi P.', 'ravi.p@example.com'), M('Nina K.', 'nina.k@example.com'), M('Tom B.', 'tom.b@example.com'),
-        M('Lena F.', 'lena.f@example.com'),
-      ],
-      items: [
-        IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Ada L.'),
-        IT('https://rauno.me/craft/interaction-design', 'Added by Nina K.'),
-        IT('https://www.figma.com/blog/the-quiet-design-system/', 'Added by Sam R.'),
-      ],
-    };
-    setSpaces(prev => [fullSpace, ...prev.filter(s => s.id !== 'sp-full')]);
-    setCurrentId('sp-full'); setTab('active'); setRoute('members');
-  };
-
-  const SCENARIOS = [
-    { h: 'Onboarding' },
-    { k: 'Sign up \u2192 first circle', go: () => { setSpaces([]); setRoute('signup'); } },
-    { k: 'Sign in (new device)', go: () => setRoute('signin') },
-    { k: 'Forgot password', go: () => setRoute('recovery') },
-    { k: 'One-time code \u2014 errors', go: () => { setOtc({ context: 'device', error: { expired: true } }); setPostAuthTo('space'); setRoute('otc'); } },
-    { h: 'The feed' },
-    { k: 'The reading loop', go: () => goSpace('sp-backend') },
-    { k: 'Empty feed (no links)', go: goEmptyFeed },
-    { k: 'No circles yet', go: () => { setSpaces([]); setCurrentId(null); setRoute('home'); } },
-    { h: 'Members & funding' },
-    { k: 'Members \u2014 champion (you)', go: () => goSpace('sp-backend', 'members') },
-    { k: 'Members \u2014 non-champion', go: () => goSpace('sp-book', 'members') },
-    { k: 'Members \u2014 circle full', go: goFullSpaceManage },
-    { k: 'Manage funding (champion)', go: () => { goSpace('sp-backend'); setManageIntent('manage'); setRoute('manage-interstitial'); } },
-    { k: 'Create + fund a circle', go: () => openCreateSpace() },
-    { h: 'Dormant circle' },
-    { k: 'Dormant \u2014 champion re-fund', go: () => stageDormant({ champion: 'You', championEmail: DEFAULT_USER.email, dormancy: 'terminal' }) },
-    { k: 'Dormant \u2014 champion suspended', go: () => stageDormant({ champion: 'You', championEmail: DEFAULT_USER.email, dormancy: 'suspended' }) },
-    { k: 'Dormant \u2014 non-champion', go: () => stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-    { h: 'Invitations' },
-    { k: 'Accept invite \u2014 funded', go: () => goSpace('sp-book') },
-    { k: 'Accept invite \u2014 dormant', go: () => stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-    { k: 'Accept invite \u2014 invalid', go: () => setRoute('invalid-invite') },
-    { k: 'Accept invite \u2014 circle full', go: () => setRoute('space-full') },
-    { h: 'Account' },
-    { k: 'Change password', go: () => goSpace('sp-backend', 'account') },
-    { h: 'Preview gate' },
-    { k: 'Preview gate \u2014 on', go: () => setGateOverride(true) },
-    { k: 'Preview gate \u2014 off', go: () => setGateOverride(false) },
-  ];
+  // ---- config launcher setups ----
+  // Data + staging actions live in app/config.jsx (a deletable prototype aid).
+  // buildScenarios closes over the setters it needs; drop that file and the
+  // launcher + these setups vanish together, leaving the product core clean.
+  const { groups: SCENARIO_GROUPS, reset } = (window.buildScenarios
+    ? window.buildScenarios({
+        spaces, STATE_KEY,
+        setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
+        setOtc, setPostAuthTo, setManageIntent,
+        enterSpace, openCreateSpace,
+      })
+    : { groups: [], reset: () => {} });
 
   // ---- shared shell wrapper ----
   const inShell = (content, opts = {}) => (
@@ -456,7 +249,7 @@ const CircApp = () => {
     screen = <OtcEntry email={pendingEmail} context={otc.context} initialError={otc.error}
       onVerify={finishOtc} onBack={() => setRoute(otc.context === 'signup' ? 'signup' : 'signin')} />;
   } else if (route === 'google-return') {
-    screen = <GoogleReturn onDone={() => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); goHome(); } else if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} />;
+    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); goHome(); } else if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} />;
   } else if (route === 'recovery') {
     screen = <Recovery onDone={() => { if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} onBackToSignin={() => setRoute('signin')} />;
   } else if (route === 'funding') {
@@ -468,9 +261,9 @@ const CircApp = () => {
     screen = <Checkout user={user} spaceName={fundFlow.name} refund={fundFlow.mode === 'refund'}
       onSuccess={onCheckoutSuccess} onCancel={() => setRoute('funding')} />;
   } else if (route === 'setting-up') {
-    screen = <SettingUp spaceName={fundFlow.name} onDone={finishProvisioning} />;
+    screen = <SettingUp spaceName={fundFlow.name} onDone={holdLoading ? () => {} : finishProvisioning} />;
   } else if (route === 'manage-interstitial') {
-    screen = <ProviderInterstitial label="Opening this circle\u2019s billing\u2026" onDone={() => setRoute('manage-funding')} />;
+    screen = <ProviderInterstitial label="Opening this circle\u2019s billing\u2026" onDone={holdLoading ? () => {} : () => setRoute('manage-funding')} />;
   } else if (route === 'manage-funding') {
     screen = <ManageFunding user={user} spaceName={space ? space.name : ''} intent={manageIntent}
       onReturn={() => setRoute('members')} onCancelSub={cancelFunding} />;
@@ -500,11 +293,16 @@ const CircApp = () => {
       );
     } else {
       const visible = tab === 'active' ? activeItems : readItems;
-      const feed = (
+      const feed = loadingFeed ? (
+        // Loading: the spinner is the whole view, centred in the content region
+        // (fills main, which flex:1-stretches below the top bar + tabs).
+        <main style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <FeedLoading />
+        </main>
+      ) : (
         <main style={{ flex: 1, width: '100%' }}>
           <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
-            {loadingFeed ? <FeedLoading />
-              : visible.length === 0 ? <EmptyState />
+            {visible.length === 0 ? <EmptyState tab={tab} />
               : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {visible.map(item => (
@@ -550,8 +348,10 @@ const CircApp = () => {
         </div>
       ) : appTree}
 
-      {/* Scenarios launcher — prototype aid; deleting app/scenarios.jsx removes it, no edit here */}
-      {ScenariosLauncher && <ScenariosLauncher scenarios={SCENARIOS} onReset={reset} />}
+      {/* Config launcher — prototype aid; deleting app/config.jsx removes it, no edit here */}
+      {ConfigLauncher && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
+        gateOn={gateOverride} onGateChange={setGateOverride}
+        layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
 
       {/* Tweaks panel — deleting app/circ-tweaks.jsx removes it, no edit here */}
       {CircTweaks && <CircTweaks tw={tw} setTweak={setTweak} />}
