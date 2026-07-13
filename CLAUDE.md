@@ -62,6 +62,8 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 
 **Updating the working line** — a fresh export for the live line replaces `app/circlists/next/` in place (same verbatim rule as step 1 — copy the whole export, including `brand/`). Don't add a new slug; keep the single `next` entry in `index.html` and append a `changelog` entry to it.
 
+**Commit gate** — a bugfix update only gets committed and pushed providing the agent has verified and is happy it actually resolves the reported problem (drive it live, e.g. `lm-tooling:playwright-cli`). The user often can't check the live prototype themselves, so a source diff alone isn't verification.
+
 ## Deploy
 
 Published via **GitHub Pages** at https://latentmagic.github.io/prototypes-3f9c1a/. A push to `main` triggers the `pages-build-deployment` Actions job, which serves the repo as-is (no build step) in ~25s.
