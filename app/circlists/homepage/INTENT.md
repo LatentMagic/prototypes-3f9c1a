@@ -1,17 +1,24 @@
-# Circlists front page — Acceptance criteria
+# Circlists homepage — Acceptance criteria
 
-The prototype (`index.html` + `site.css` + `tokens.css` + the vendored demo) is the
-**behavioural source of truth** for the shipped page. Every AC below is required of the
-coded site, and each is a single testable behaviour or contract. A *Note* marks anything
+This is the **acceptance-criteria contract** for the Circlists homepage: the behaviour
+the shipped page is built and tested against. Every AC below is required of the shipped
+site, and each is a single testable behaviour or contract. A *Note* marks anything
 late-bound at deploy — a value we don't know yet, but whose behaviour is fully specified
 here.
+
+**This document is the authority.** These criteria were derived from a design mock, but
+that mock is a reference for how the page looks and reads — it is **not** the deliverable,
+and conformance is judged against the ACs here, never against the mock. Build the page to
+this spec; do not port or "convert" the mock into the production site.
+
+This document is self-contained: it depends on no other document and requires no reading
+of the mock to be implemented. It is the behavioural spec, full stop.
 
 IDs are stable — reference them in code review ("satisfies AC-7") and tests ("test('AC-7 - xyz")). Order roughly follows
 page flow, but the ID is the anchor, not the position.
 
-Content (copy, archetype names, supporting pricing lines, changelog wording) is per the
-prototype and is **not** asserted line-by-line here — see the Notes at the end. Product
-essence these serve: **[ABOUT.md](ABOUT.md)**. Brand rules: **[BRANDING.md](BRANDING.md)**.
+Content (copy, archetype names, supporting pricing lines, changelog wording) is **not**
+asserted line-by-line here — see the Notes at the end.
 
 ---
 
@@ -22,7 +29,7 @@ essence these serve: **[ABOUT.md](ABOUT.md)**. Brand rules: **[BRANDING.md](BRAN
 - **AC-2 — Sign-up routing.** Activating "Sign up" takes the visitor to the sign-up
   destination. *Note: target URL wired at deploy (currently `#`).*
 - **AC-3 — Wordmark links home.** The header wordmark links to the home page, from every
-  page it appears on (including `privacy.html`).
+  page it appears on (including the privacy page).
 - **AC-4 — Header is sticky.** The header stays visible, pinned to the top, as the page
   scrolls.
 
@@ -48,12 +55,12 @@ essence these serve: **[ABOUT.md](ABOUT.md)**. Brand rules: **[BRANDING.md](BRAN
 
 - **AC-10 — Changelog structure.** Entries render newest-first, each carrying a
   description. The newest entry is flagged with a "Latest" marker and an accent bullet.
-  *Note: the entries are hand-authored content — the current prototype entries are
-  placeholder and are not the real changelog.*
+  *Note: the entries are hand-authored content, supplied at build time — any entries
+  carried over from the mock are placeholder, not the real changelog.*
 
 ## Footer
 
-- **AC-11 — Footer links resolve.** The Privacy link goes to `privacy.html`; the support
+- **AC-11 — Footer links resolve.** The Privacy link goes to the privacy page; the support
   link is a `mailto:` to the support address.
 
 ## Assets
@@ -66,15 +73,15 @@ essence these serve: **[ABOUT.md](ABOUT.md)**. Brand rules: **[BRANDING.md](BRAN
 
 ## Notes (not acceptance criteria)
 
-- **Content is per the prototype.** Copy, archetype names, the supporting pricing lines
-  (champion funds the circle, up to 10 members invited free, shared list / private
-  read-state), page title, and meta description are taken from the prototype, not
-  asserted here. If any of those become contracts rather than copy, promote them to ACs.
-- **Animated marks follow the brand motion pack.** The header lockup pulse, the two
-  live-dots (demo hint + changelog), and the loading spinner are inline brand treatments
-  governed by BRANDING.md — not itemized here.
-- **The demo is vendored.** The site frames the demo (`demo-embed.html` over
-  `uploads/homepage-demo/`) and never edits its internals — see `DEMO.md`.
-- **Remove review scaffolding at conversion.** The Config launcher, the full-site preview
-  stage, the `?preview=1` guards, and `css/15-config-launcher.css` are prototype aids and
-  are not part of the product.
+- **Content is author-supplied, not asserted here.** Copy, archetype names, the supporting
+  pricing lines (champion funds the circle, up to 10 members invited free, shared list /
+  private read-state), page title, and meta description are content the team provides at
+  build time. If any of those become contracts rather than copy, promote them to ACs.
+- **Animated marks are brand treatments, not itemized here.** The header lockup pulse, the
+  two live-dots (demo hint + changelog), and the loading spinner are inline brand
+  treatments; their exact motion is not asserted as acceptance criteria.
+- **The demo is vendored.** The site frames the demo and never edits its internals; the
+  framing behaviour is captured by AC-5 through AC-8.
+- **Review-only aids are not part of the product.** The mock carries authoring aids — a
+  Config launcher, a full-site preview stage, and their preview guards — for reviewing the
+  design. They are not features: the shipped page must not include them.

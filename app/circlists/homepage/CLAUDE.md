@@ -1,19 +1,21 @@
-# Circlists — front page (this space)
+# Circlists — homepage (this space)
 
-The **public marketing front page** for Circlists. Static, not yet deployed. Work in progress.
+The **public marketing homepage** for Circlists. Static, not yet deployed. Work in progress.
 
 For what the *product* actually is, read **[ABOUT.md](ABOUT.md)** — durable product essence (loop, audience, pricing, emotional intent, hard "nots").
 
 ## Acceptance criteria — keep INTENT.md in sync
 
-**[INTENT.md](INTENT.md)** is the acceptance-criteria list for this page — the behavioural spec used when the prototype is converted to the production site. The prototype is the source of truth; each AC is required of the shipped page, with notes for anything late-bound at deploy (e.g. sign-in/sign-up URLs) or excluded from ship (the Config launcher).
+**[INTENT.md](INTENT.md)** is the acceptance-criteria list for this page — the behavioural spec used when the homepage is built for production. It is the *authority*: each AC is required of the shipped page, with notes for anything late-bound at deploy (e.g. sign-in/sign-up URLs) or excluded from ship (the Config launcher). This prototype (`index.html` et al.) is the design reference the ACs were derived from — not the deliverable, and not what conformance is judged against. Keep that direction straight: the page is built to the ACs, not "converted" from this mock.
 
 **Rule:** any change to what the page *does*, or to a deploy-time contract, updates `INTENT.md` in the same change. Add a new AC-N (IDs are stable, never reused), amend the affected one, or strike it — don't let behaviour and criteria drift apart.
 
+**INTENT.md is deliberately self-contained** — it references no other file, so it can travel to implementation on its own. The context it used to link out to lives here instead: product essence is in `ABOUT.md`, brand/motion rules in `BRANDING.md`, and the vendored hero demo in `DEMO.md` (`demo-embed.html` over `uploads/homepage-demo/`). When editing an AC, consult those here; keep the AC text itself free of cross-references.
+
 ## What's in here
 
-- `index.html` — the live front page (header with sign in/up, hero + live-app demo, who-it's-for, pricing, changelog).
-- `INTENT.md` — **acceptance criteria** for the front page (the behavioural handoff spec — see the rule below).
+- `index.html` — the live homepage (header with sign in/up, hero + live-app demo, who-it's-for, pricing, changelog).
+- `INTENT.md` — **acceptance criteria** for the homepage (the behavioural handoff spec — see the rule below).
 - `privacy.html` — privacy notice.
 - `tokens.css` — **design tokens** (colour, type, spacing, radius, shadow). Change identity here, never by hard-coding values in component CSS.
 - `site.css` — component styles for the page.
