@@ -105,22 +105,14 @@
   }
 }
 
-.changelog__meta {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
+.changelog__latest {
+  align-self: center;
   font-family: var(--font-mono);
   font-weight: var(--weight-medium);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.changelog__date {
   color: var(--color-fg-1);
-}
-.changelog__version {
-  color: var(--color-fg-3);
+  white-space: nowrap;
 }
 
 .changelog__dot {
