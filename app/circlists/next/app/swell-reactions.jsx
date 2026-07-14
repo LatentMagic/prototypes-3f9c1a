@@ -69,6 +69,22 @@ const useSheetMount = (narrow, onClose) => {
   return { shown, requestClose };
 };
 
+// ---- focus trap -----------------------------------------------------------
+// Wrap Tab / Shift+Tab within a dialog so focus can't fall out to the page
+// behind the scrim. Roving-tabindex controls (the glyph radiogroup) expose only
+// their one tabbable member, so they count as a single stop — exactly right.
+const rxFocusable = (root) => Array.from(root.querySelectorAll(
+  'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])'
+)).filter(el => el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement);
+const trapTab = (root, e) => {
+  if (e.key !== 'Tab' || !root) return;
+  const list = rxFocusable(root);
+  if (!list.length) return;
+  const first = list[0], last = list[list.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+};
+
 // ---- data helpers ----------------------------------------------------------
 const rxOthers = (item) => ((item && item.reactions) || []).filter(r => r.name !== 'You');
 const rxMine   = (item) => ((item && item.reactions) || []).find(r => r.name === 'You') || null;
@@ -92,6 +108,27 @@ const rxHash = (s) => { let h = 2166136261; s = String(s); for (let i = 0; i < s
 // to this feature; not general product decoration.)
 const RX_GLYPHS = ['\u2764\uFE0F', '\uD83D\uDD25', '\uD83D\uDC4D', '\uD83D\uDCA1', '\uD83D\uDE02'];
 const RX_N = RX_GLYPHS.length;
+
+// ---- depth vocabulary (AA) -------------------------------------------------
+// A reaction is quantised to three depth rungs. These words are the SPOKEN
+// value on every reaction — the input slider's aria-valuetext, the disc glyphs,
+// and the roster rows — so a screen-reader user hears HOW DEEPLY it landed, not
+// a number. Level 1..3 maps low->high: a little / moderately / deeply.
+const DEPTH_WORDS = ['a little', 'moderately', 'deeply'];
+const GLYPH_NAMES = { [RX_GLYPHS[0]]: 'heart', [RX_GLYPHS[1]]: 'fire', [RX_GLYPHS[2]]: 'thumbs up', [RX_GLYPHS[3]]: 'lightbulb', [RX_GLYPHS[4]]: 'laughing' };
+// Even-thirds quantiser over the stored 0..1 intensity — one rule for seed data
+// and fresh reactions alike.
+const levelFromIntensity = (i) => { const v = i == null ? 0.42 : i; return v < 0.34 ? 1 : v < 0.67 ? 2 : 3; };
+// Rung -> a representative intensity (keyboard input lands exactly on a rung,
+// and re-quantises back to the same level).
+const intensityFromLevel = (L) => [0.28, 0.6, 0.92][Math.max(1, Math.min(3, L)) - 1];
+const depthWord = (r) => DEPTH_WORDS[levelFromIntensity(iv(r)) - 1];
+const glyphName = (g) => GLYPH_NAMES[g] || 'reaction';
+// Full accessible name for a reactor, everywhere it's read aloud. A reaction
+// says who + what + how deep; a skip says who read it with no reaction.
+const rxAriaLabel = (r) => rxIsSkip(r)
+  ? (rxLabel(r) + ', read, no reaction')
+  : (rxLabel(r) + ', ' + glyphName(r.glyph) + ', ' + depthWord(r));
 
 // ---- geometry --------------------------------------------------------------
 const SWELL_MAX  = 0.46;    // furthest a glyph sits from centre (fraction of pad)
@@ -246,7 +283,7 @@ const RxActions = ({ onSkip, done }) => (
 // ring the pad (SwellPalette); the puck you drag is a plain handle, so the glyph
 // you're choosing is never hidden under your finger.
 // ============================================================================
-const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, opts }) => {
+const SwellPad = ({ size, mine, others, live, level, onChange, onDepth, onSubmit, interactive, opts }) => {
   const { centerDot = false, breath = false, snap = false } = opts || {};
   const boxRef = rxRef(null);
   const small = size <= 80;
@@ -282,20 +319,21 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
     el.addEventListener('pointermove', move);
     el.addEventListener('pointerup', up);
   };
+  // The pad is the DEPTH slider for the keyboard/AT path: which glyph is chosen
+  // lives in the glyph radiogroup (SwellGlyphRadios); here Up/Right go deeper,
+  // Down/Left shallower, CLAMPED at the two ends — the top rung does not wrap or
+  // reset. Enter/Space commits. Pointer drag (onPointerDown) still sets both axes.
   const onKeyDown = (e) => {
     if (!interactive) return;
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSubmit && onSubmit(); return; }
-    const cur = live || {}; let dx = (cur.nx != null ? cur.nx : 0.5) - 0.5, dy = (cur.ny != null ? cur.ny : 0.5) - 0.5;
-    let ang = Math.hypot(dx, dy) < 0.001 ? -Math.PI / 2 : Math.atan2(dy, dx);
-    let rad = Math.hypot(dx, dy);
-    if (e.key === 'ArrowUp') rad = Math.min(SWELL_MAX, rad + 0.06);
-    else if (e.key === 'ArrowDown') rad = Math.max(0, rad - 0.06);
-    else if (e.key === 'ArrowRight') ang += 2 * Math.PI / RX_N;
-    else if (e.key === 'ArrowLeft') ang -= 2 * Math.PI / RX_N;
+    let L = level || 1;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') L = Math.min(3, L + 1);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') L = Math.max(1, L - 1);
+    else if (e.key === 'Home') L = 1;
+    else if (e.key === 'End') L = 3;
     else return;
     e.preventDefault();
-    dx = Math.cos(ang) * rad; dy = Math.sin(ang) * rad;
-    onChange({ nx: 0.5 + dx, ny: 0.5 + dy, intensity: Math.min(1, rad / SWELL_MAX), glyph: nearestGlyph(dx, dy, rad) });
+    onDepth && onDepth(L);
   };
   const emoji = (r, isMine, key) => {
     const p = swellPos(r); const fs = swellFontSize(iv(r), small, isMine);
@@ -324,9 +362,13 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
     );
   };
   return (
-    <div ref={boxRef}
+    <div ref={boxRef} className={interactive ? 'circ-swell-pad' : undefined}
       tabIndex={interactive ? 0 : undefined} onKeyDown={onKeyDown} onPointerDown={onPointerDown}
-      role={interactive ? 'slider' : undefined} aria-label={interactive ? 'Drag toward a glyph to react' : undefined}
+      role={interactive ? 'slider' : undefined}
+      aria-label={interactive ? 'How deeply it landed' : undefined}
+      aria-valuemin={interactive ? 1 : undefined} aria-valuemax={interactive ? 3 : undefined}
+      aria-valuenow={interactive ? (level || 1) : undefined}
+      aria-valuetext={interactive ? DEPTH_WORDS[(level || 1) - 1] : undefined}
       style={{
         position: 'relative', width: size, height: size, flexShrink: 0,
         background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
@@ -368,6 +410,51 @@ const SwellPalette = ({ live, box }) => {
 };
 
 // ============================================================================
+// SwellGlyphRadios — the always-present, accessible glyph picker.
+// ----------------------------------------------------------------------------
+// A radiogroup of the five glyphs, positioned exactly over SwellPalette's ring
+// (transparent 44px hit targets). This is the KEYBOARD/AT path for "which glyph":
+// Tab lands in the group; Left/Right (and Up/Down) move across the five and
+// select as they go, WRAPPING past the ends (standard radiogroup). The chosen
+// glyph drives the same `live` draft the pointer drag writes, so the visible
+// palette + puck reflect it. Pointer users can also click a glyph directly.
+// The depth (how deep) is the separate slider — the pad itself. Two controls,
+// never a 15-stop grid.
+// ============================================================================
+const SwellGlyphRadios = ({ live, onPick }) => {
+  const ref = rxRef(null);
+  const idxActive = live && live.glyph ? glyphIndexOf(live.glyph) : -1;
+  const focusIdx = (i) => { const el = ref.current && ref.current.querySelector('[data-gi="' + i + '"]'); if (el) el.focus(); };
+  const move = (delta) => {
+    const cur = idxActive < 0 ? 0 : idxActive;
+    const next = (cur + delta + RX_N) % RX_N;
+    onPick(RX_GLYPHS[next]);
+    requestAnimationFrame(() => focusIdx(next));
+  };
+  const onKey = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+  };
+  return (
+    <div ref={ref} role="radiogroup" aria-label="Reaction" onKeyDown={onKey}
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {RX_GLYPHS.map((g, k) => {
+        const a = glyphAngle(k), rr = 0.45, on = idxActive === k;
+        return (
+          <button type="button" key={k} data-gi={k} role="radio" aria-checked={on}
+            aria-label={glyphName(g)} className="circ-swell-radio"
+            tabIndex={on || (idxActive < 0 && k === 0) ? 0 : -1}
+            onClick={() => onPick(g)}
+            style={{ position: 'absolute', left: (50 + Math.cos(a) * rr * 100) + '%', top: (50 + Math.sin(a) * rr * 100) + '%',
+              transform: 'translate(-50%,-50%)', width: 44, height: 44, borderRadius: '50%',
+              background: 'transparent', border: 0, padding: 0, cursor: 'pointer', pointerEvents: 'auto', zIndex: 2 }} />
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
 // SwellScatter — the STATIC review circle (used by reveal AND door modal).
 // ----------------------------------------------------------------------------
 // Its own renderer (not SwellPad) so it can own selection: tap a glyph to PIN
@@ -392,7 +479,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         const on = selected === i, dim = active && !on;
         return (
           <div key={i} role={canPick ? 'button' : undefined} tabIndex={canPick ? 0 : undefined}
-            aria-label={rxLabel(r)}
+            aria-label={rxAriaLabel(r)}
             onClick={canPick ? (e) => { e.stopPropagation(); onSelect(on ? null : i); } : undefined}
             onKeyDown={canPick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(on ? null : i); } } : undefined}
             style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
@@ -473,7 +560,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
             {reacted.map((r, i) => {
               const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
               return interactive ? (
-                <button key={'r' + i} type="button" className="circ-swell-rrow"
+                <button key={'r' + i} type="button" className="circ-swell-rrow" aria-label={rxAriaLabel(r)}
                   onClick={() => setSel(on ? null : i)}
                   style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
@@ -481,7 +568,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
                   {rxLabel(r)}
                 </button>
               ) : (
-                <div key={'r' + i} style={rowStyle(me, dim, on)}>
+                <div key={'r' + i} style={rowStyle(me, dim, on)} aria-label={rxAriaLabel(r)}>
                   <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
                   {rxLabel(r)}
                 </div>
@@ -490,7 +577,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
             {skipped.map((r, i) => {
               const me = r.name === 'You';
               return (
-                <div key={'s' + i} style={rowStyle(me, sel != null, false)}>
+                <div key={'s' + i} style={rowStyle(me, sel != null, false)} aria-label={rxAriaLabel(r)}>
                   <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center' }}><ReadRing me={me} /></span>
                   {rxLabel(r)}
                 </div>
@@ -508,6 +595,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
 // ============================================================================
 const SwellReviewModal = ({ item, onClose }) => {
   const closeRef = rxRef(null);
+  const panelRef = rxRef(null);
   // Bottom sheet on mobile (incl. the forced-mobile phone frame), centred dialog
   // on desktop — the SAME treatment as the reveal step, so the door modal and the
   // just-reacted reveal read as one surface. The old check keyed off
@@ -546,6 +634,7 @@ const SwellReviewModal = ({ item, onClose }) => {
         opacity: tight ? (shown ? 1 : 0) : 1,
         transition: tight ? 'opacity var(--duration-slow) ease-in-out' : undefined }}>
       <div role="dialog" aria-modal="true" aria-label="How the circle landed"
+        ref={panelRef} onKeyDown={(e) => trapTab(panelRef.current, e)}
         style={tight ? {
           position: 'relative', background: 'var(--color-surface)',
           borderTopLeftRadius: 16, borderTopRightRadius: 16,
@@ -648,8 +737,11 @@ const SwellDoor = ({ item }) => {
 const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const [step, setStep] = rxState('input');
   const [mine, setMine] = rxState(null);
+  const [status, setStatus] = rxState('');
   const others = rxMemo(() => rxOthers(item), [item]);
   const bodyRef = rxRef(null);
+  const panelRef = rxRef(null);
+  const headingRef = rxRef(null);
   const [bodyH, setBodyH] = rxState('auto');
   const [clip, setClip] = rxState(false);
   const [fading, setFading] = rxState(false);
@@ -659,6 +751,12 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const narrow = vw < 520 || (typeof document !== 'undefined' && !!document.querySelector('.circ-phone-screen'));
   const { shown, requestClose } = useSheetMount(narrow, onClose);
   rxEffect(() => lockScroll(), []);
+  // Move focus into the dialog on open, to the HEADING — not a glyph — so no
+  // reaction looks pre-picked. The first Tab/arrow then enters the glyph ring.
+  // preventScroll for the same reason the door modal uses it (sheet mounts below).
+  rxEffect(() => {
+    if (headingRef.current) headingRef.current.focus({ preventScroll: true });
+  }, []);
   rxEffect(() => {
     const on = () => setVw(window.innerWidth);
     window.addEventListener('resize', on);
@@ -666,6 +764,16 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   }, []);
   const [swell, setSwell] = rxState({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
   const swellTouched = swell.glyph != null;
+  // Keyboard/AT path: glyph comes from the radiogroup, depth from the pad slider.
+  // Both resolve to a rung on the chosen glyph's spoke, writing the same draft the
+  // pointer drag does, so the visible pad + puck stay in sync with either path.
+  const inputLevel = levelFromIntensity(swell.intensity != null ? swell.intensity : 0.6);
+  const applyGlyphLevel = (g, L) => {
+    const a = glyphAngle(glyphIndexOf(g)), r = intensityFromLevel(L) * SWELL_MAX;
+    setSwell({ glyph: g, intensity: intensityFromLevel(L), nx: 0.5 + Math.cos(a) * r, ny: 0.5 + Math.sin(a) * r });
+  };
+  const pickGlyph = (g) => applyGlyphLevel(g, swell.glyph ? inputLevel : 2);
+  const setDepthLevel = (L) => applyGlyphLevel(swell.glyph || RX_GLYPHS[0], L);
   const commitSwell = () => commit({ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny });
   // Skip = read, no note. Still recorded (a glyphless reaction) so you appear in
   // the roster as an empty ring; it just never lands on the disc.
@@ -673,6 +781,9 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
 
   const commit = (rx) => {
     onMarkRead(item, rx); setMine(rx);
+    // Commit feedback for AT (4.1.3): the reveal is aria-hidden, so THIS is what
+    // tells a screen-reader user their action worked and where the item went.
+    setStatus((rxIsSkip(rx) ? 'Marked as read.' : ('Reaction saved as ' + glyphName(rx.glyph) + ', ' + depthWord(rx) + '.')) + ' Moved to your Read tab.');
     setStep('reveal');   // always reveal — the first reader gets the first-one-here circle too, react or skip
   };
 
@@ -716,7 +827,9 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
       {/* Mobile: bottom sheet (matches AddReveal) — anchored to the bottom, grows
          upward as the panel resizes between steps; the disc drifts up but never
          resizes. Slides in on open, back down on close. Desktop: centred dialog. */}
-      <div style={tight ? {
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-label="How did it land?"
+        onKeyDown={(e) => trapTab(panelRef.current, e)}
+        style={tight ? {
         position: 'relative', background: 'var(--color-surface)',
         borderTopLeftRadius: 16, borderTopRightRadius: 16,
         boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
@@ -737,16 +850,19 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
             <CloseX />
           </button>
         )}
+        <div role="status" aria-live="polite"
+          style={{ position: 'absolute', width: 1, height: 1, margin: -1, padding: 0, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0 }}>{status}</div>
         <div ref={bodyRef} style={{ height: bodyH === 'auto' ? 'auto' : bodyH, overflow: clip ? 'hidden' : 'visible', transition: 'height 300ms var(--ease-quiet)' }}>
           {step === 'input' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>How did it land?</h2>
+              <h2 ref={headingRef} tabIndex={-1} style={{ outline: 'none', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>How did it land?</h2>
               <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Your reaction for the circle.</p>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 <div style={{ position: 'relative', width: box, height: box, margin: narrow ? '2px 0 0' : '10px 0 0' }}>
+                  <SwellGlyphRadios live={swell} onPick={pickGlyph} />
                   <div style={{ position: 'absolute', inset }}>
-                    <SwellPad size={pad} live={swell} interactive opts={swellOpts}
-                      onChange={setSwell} onSubmit={() => { if (swellTouched) commitSwell(); }} />
+                    <SwellPad size={pad} live={swell} level={inputLevel} interactive opts={swellOpts}
+                      onChange={setSwell} onDepth={setDepthLevel} onSubmit={() => { if (swellTouched) commitSwell(); }} />
                   </div>
                   <SwellPalette live={swell} box={box} />
                 </div>
@@ -755,7 +871,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
               </div>
             </div>
           ) : (
-            <div style={{ opacity: fading ? 0 : 1, transition: 'opacity 460ms var(--ease-quiet)' }}>
+            <div aria-hidden="true" style={{ opacity: fading ? 0 : 1, transition: 'opacity 460ms var(--ease-quiet)' }}>
               <SwellReview all={[...others, ...(mine ? [mine] : [])]} interactive={false} firstHere={others.length === 0} />
             </div>
           )}

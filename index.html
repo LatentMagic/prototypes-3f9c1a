@@ -1010,6 +1010,16 @@
           changelog: [
             {
               date: '2026-07-14',
+              title: 'Swell reaction — keyboard + screen-reader access (AA)',
+              items: [
+                'The reaction moment and the Read-tab roster/disc reach WCAG 2.1 AA: the drag-pad is now painted over always-present accessible controls — a glyph radiogroup and a three-rung depth slider (a little / moderately / deeply) — so keyboard/AT users operate the same reaction with no mode switch.',
+                'Depth is spoken, not numeric, across all data: reactions read "name, glyph, depth", skips read "name, read, no reaction".',
+                'Both dialogs gain focus-in + a focus trap; the timed reveal is muted for AT (aria-hidden — the door is its accessible home), and commit fires a polite status announce naming what was saved.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-14',
               title: 'Automatic link-scheme resolution on add',
               items: [
                 'Adding a link no longer requires a typed scheme — a bare domain or path is accepted and the scheme is filled in locally: missing defaults to https, an explicit http:// is respected as typed rather than upgraded. No outbound request; non-http(s) schemes and reachability stay out of scope (LM-456).',

@@ -3,6 +3,17 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Swell reaction mechanism — keyboard + screen-reader access (AA) — 2026-07-14
+- The reaction moment and the Read-tab roster/disc reach WCAG 2.1 AA: the drag-pad
+  is now painted over always-present accessible controls — a glyph **radiogroup**
+  and a three-rung **depth slider** (*a little / moderately / deeply*) — so
+  keyboard/AT users operate the same reaction with no mode switch.
+- Depth is spoken, not numeric, across all data: reactions read *"name, glyph,
+  depth"*, skips read *"name, read, no reaction"*.
+- Both dialogs gain focus-in + a focus trap; the timed reveal is muted for AT
+  (`aria-hidden` — the door is its accessible home), and commit fires a polite
+  status announce naming what was saved.
+
 ## Automatic link-scheme resolution on add — 2026-07-14
 - Adding a link no longer requires a typed scheme: a bare domain or path is
   accepted and the scheme is filled locally — missing → `https`, explicit

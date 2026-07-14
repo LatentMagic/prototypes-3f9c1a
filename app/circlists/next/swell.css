@@ -24,6 +24,14 @@
 .circ-swell-done:hover { background: var(--color-accent-hover) !important; }
 .circ-swell-done:active { background: var(--color-accent-press) !important; }
 
+/* Accessible input controls (always present under the drag-pad): the depth
+   slider (the pad) and the glyph radiogroup. Visible focus is required — the
+   pad's own puck/palette also reflect the state, but the ring is what a keyboard
+   user lands on. Circle rings match the round hit targets. */
+.circ-swell-pad:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
+.circ-swell-radio:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
+.circ-swell-rrow:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
+
 /* Dialog / scrim fade-in. */
 @keyframes circ-anim-fade { from { opacity: 0; } to { opacity: 1; } }
 .circ-anim-fade { animation: circ-anim-fade var(--duration-base, 150ms) var(--ease-quiet) both; }
