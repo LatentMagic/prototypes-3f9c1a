@@ -112,7 +112,17 @@ function seedSpaces(userEmail) {
           { name: 'Ada L.', skipped: true },
           { name: 'You', skipped: true },
         ]),
-        IT('https://martinfowler.com/bliki/CircuitBreaker.html', 'Added by former member.', true),
+        // Everyone who's read it skipped — no glyphs at all. The door still shows:
+        // empty disc, roster is just the skip list. Also the former-member demo:
+        // one row has no name, only { former: true } — their account was deleted,
+        // so the roster labels them "Former member" same as the card attribution.
+        IT('https://martinfowler.com/bliki/FormerMember.html', 'Added by former member.', true, [
+          { name: 'Sam R.', skipped: true },
+          { name: 'Priya N.', skipped: true },
+          { former: true, skipped: true },
+          { name: 'Ada L.', skipped: true },
+          { name: 'You', skipped: true },
+        ]),
       ],
     },
     {

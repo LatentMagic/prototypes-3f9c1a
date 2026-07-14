@@ -7,6 +7,8 @@
 - `docs/ABOUT.md` — what the product is, who it's for, how it's sold, emotional intent, and the deliberate NOTs. Durable product essence.
 - `brand/circlists-brand.md` — the Circlists brand pack: palette, mark, wordmark, lockup, type. Source of truth for all brand assets; the SVGs and raster set (favicons, PWA icons) live in `brand/assets/`, generators in `brand/scripts/`. The pack mirrors the company wiki (linked in `brand/README.md`) and may be overwritten by future syncs.
 - `docs/BRANDING.md` — thin pointer to `brand/`, noting it's a manual copy of the wiki's brand directory.
+- `GOTCHA.md` — hard-won, non-obvious traps (overlay/sheet motion, sandbox verification pitfalls). Read before touching animated overlays or "verifying" a mount transition.
+  - **Editing rule:** only add an entry when the user approves it — do not append gotchas unprompted. Keep each entry terse: symptom → cause → fix → rule.
 - `skills/frontend-ui-engineering/SKILL.md` (+ `references/accessibility-checklist.md`) — code-quality bar for building or reorganising the `app/` UI: composition, focused components (split past ~200 lines), state-management fit, WCAG 2.1 AA, and the anti-AI-aesthetic rules. Read before non-trivial UI work or refactors. It reinforces conventions the app already follows — deletable aids, `window`-based module decoupling, container/presentation split — so keep those intact when editing.
 
 These distil the durable essence. For exact tokens, components, and visual style, this project's own `tokens.css` and the brand pack (`brand/circlists-brand.md` + its SVGs) are the binding source — when in doubt on a specific value, they win. (Voice and the destructive-red `#991b1b` are captured in Key reminders below, not the pack.)

@@ -3,6 +3,15 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Automatic link-scheme resolution on add — 2026-07-14
+- Adding a link no longer requires a typed scheme: a bare domain or path is
+  accepted and the scheme is filled locally — missing → `https`, explicit
+  `http://` respected as typed, not upgraded. No outbound request. Non-http(s)
+  schemes and reachability stay out of scope.
+- The Add-link placeholder moves from `https://` to a bare-domain example
+  (`example.com/article`) so the field demonstrates that the scheme is optional
+  rather than prompting for it.
+
 ## Brand motion system — 2026-07-12
 - The static mark gains three animated treatments, driven by the motion pack in
   `brand/motion/` (`app/brand-motion.jsx`): **pulse** (idle breathing mark on the

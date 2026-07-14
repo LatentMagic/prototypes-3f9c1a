@@ -11,6 +11,8 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
   const former = /former member/i.test(item.attribution);
   // Display name parsed out of "Added by Sam R." for the avatar.
   const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
+  // "Added by" stays semibold always; only the former-member name portion drops to regular weight.
+  const attrMatch = item.attribution.match(/^(added by\s+)(.*)$/i);
   return (
     <article className="circ-card" style={{
       background: 'var(--color-surface)',
@@ -39,7 +41,7 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
         <Avatar name={former ? null : who} size={32} />
         <span style={{
           flex: 1, minWidth: 0,
-          fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16,
+          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 16,
           lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em',
         }}>{item.attribution}</span>
         {tab === 'read' && <SwellDoor item={item} />}
@@ -210,7 +212,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
         </div>
         <Field
           ref={inputRef} name="add-url" mono type="text" inputMode="url"
-          placeholder="https://" value={url} disabled={loading}
+          placeholder="example.com/article" value={url} disabled={loading}
           onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }}
           error={error}
         />

@@ -23,16 +23,63 @@
 // A SKIP (read, no note) is a reaction with NO glyph: { name, skipped: true }.
 //   It lives in the roster ONLY — never on the disc — always last, shown as an
 //   empty ring. Same name, same weight as any reaction; only the mark differs.
+// A FORMER-MEMBER reaction carries `former: true` and NO `name` — the reactor's
+//   account has since been deleted (same trigger + wording as a card's "Added by
+//   former member." attribution; mere removal from the circle keeps the real
+//   name). Renders identically to any other reactor — same weight, same disc
+//   placement — just labelled "Former member" instead of a name. Can carry a
+//   glyph or be a skip ({ former: true, skipped: true }).
 // An item is: { id, url, attribution, read, reactions: [reaction, ...] }
 // ============================================================================
 
 const { useState: rxState, useEffect: rxEffect, useLayoutEffect: rxLayout, useRef: rxRef, useMemo: rxMemo } = React;
+
+// Lock background scroll while an overlay is up (mirrors the Config modal in
+// config.jsx): a scroll gesture on the scrim/card never falls through to the
+// feed behind. Locks the forced-mobile inner screen when present, else the
+// document. Returns a cleanup that restores the prior value. Call from a
+// mount-only effect: rxEffect(() => lockScroll(), []).
+const lockScroll = () => {
+  const el = document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
+  const prev = el.style.overflow;
+  el.style.overflow = 'hidden';
+  return () => { el.style.overflow = prev; };
+};
+
+// Bottom-sheet mount/close choreography, shared by the reveal flow and the door
+// modal. This is the SAME mechanism as AddReveal (the Add-link sheet, feed.jsx),
+// no deviations: render at translateY(100%), then a double-requestAnimationFrame
+// flips `shown` true so the CSS *transition* carries the sheet up. To close,
+// `shown` goes false so the transition slides it back down, then we unmount
+// after the slide. Desktop closes instantly (parent just fades the scrim).
+const useSheetMount = (narrow, onClose) => {
+  const [shown, setShown] = rxState(false);
+  const closingRef = rxRef(false);
+  rxEffect(() => {
+    let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, []);
+  const requestClose = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    if (!narrow) { onClose(); return; }
+    setShown(false);
+    setTimeout(onClose, 240);
+  };
+  return { shown, requestClose };
+};
 
 // ---- data helpers ----------------------------------------------------------
 const rxOthers = (item) => ((item && item.reactions) || []).filter(r => r.name !== 'You');
 const rxMine   = (item) => ((item && item.reactions) || []).find(r => r.name === 'You') || null;
 // Attribution wording. The current user is always "You"; everyone else by name.
 const who = (name) => (name === 'You' ? 'You' : name);
+// Display label for a roster row / pinned name — former-member reactions never
+// carry a name, so they always read "Former member", regardless of who it was.
+const rxLabel = (r) => (r && r.former ? 'Former member' : who(r && r.name));
+// Stable hash key for a reactor — former members have no name, so they share a
+// fixed fallback key (any resulting overlap is broken by the collision pass).
+const rxKey = (r) => (r && (r.name || (r.former ? '~former' : '')));
 const iv  = (r) => (r && r.intensity != null ? r.intensity : 0.42);
 // A skip = read, no note: a reaction carrying no glyph. Roster-only, never on the disc.
 const rxIsSkip = (r) => !r || !r.glyph;
@@ -66,8 +113,8 @@ const swellPos = (r) => {
   const i = iv(r);
   const idx = r && r.glyph ? glyphIndexOf(r.glyph) : -1;
   let rr = idx >= 0 ? 0.13 + i * 0.20 : 0.05;
-  if (idx >= 0) rr = Math.max(0.1, Math.min(0.34, rr + swellJitterR(r && r.name)));
-  const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(r && r.name);
+  if (idx >= 0) rr = Math.max(0.1, Math.min(0.34, rr + swellJitterR(rxKey(r))));
+  const a = (idx >= 0 ? glyphAngle(idx) : -Math.PI / 2) + swellJitter(rxKey(r));
   return { x: 0.5 + Math.cos(a) * rr, y: 0.5 + Math.sin(a) * rr };
 };
 // Nearest glyph for a free pull direction — one glyph, never a blend.
@@ -177,7 +224,7 @@ const RxActions = ({ onSkip, done }) => (
     <button type="button" onClick={onSkip} className="circ-swell-skip"
       style={{ background: 'transparent', border: 0, cursor: 'pointer', minHeight: 44, padding: '8px 12px',
         fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-3)', borderRadius: 'var(--radius-md)' }}>
-      Skip
+      Skip reaction
     </button>
     {done && (
       <button type="button" onClick={done} className="circ-swell-done"
@@ -253,7 +300,7 @@ const SwellPad = ({ size, mine, others, live, onChange, onSubmit, interactive, o
   const emoji = (r, isMine, key) => {
     const p = swellPos(r); const fs = swellFontSize(iv(r), small, isMine);
     return (
-      <span key={key} title={small ? undefined : (isMine ? 'You' : r.name)} style={{
+      <span key={key} title={small ? undefined : rxLabel(r)} style={{
         position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
         transform: 'translate(-50%,-50%)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       }}>
@@ -345,7 +392,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         const on = selected === i, dim = active && !on;
         return (
           <div key={i} role={canPick ? 'button' : undefined} tabIndex={canPick ? 0 : undefined}
-            aria-label={me ? 'You' : r.name}
+            aria-label={rxLabel(r)}
             onClick={canPick ? (e) => { e.stopPropagation(); onSelect(on ? null : i); } : undefined}
             onKeyDown={canPick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(on ? null : i); } } : undefined}
             style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%',
@@ -365,10 +412,10 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         return (
           <div style={{ position: 'absolute', left: (p.x * 100) + '%', top: (p.y * 100) + '%', zIndex: 5,
             transform: below ? 'translate(-50%,16px)' : 'translate(-50%,calc(-100% - 16px))',
-            background: bg, color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5,
+            background: bg, color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 12.5,
             whiteSpace: 'nowrap', padding: '5px 10px', borderRadius: 'var(--radius-md)', pointerEvents: 'none',
             boxShadow: '0 4px 12px rgba(10,10,10,0.16)' }}>
-            {who(r.name)}
+            {rxLabel(r)}
             <span style={{ position: 'absolute', left: '50%', [below ? 'top' : 'bottom']: -4, width: 8, height: 8, background: bg, transform: 'translateX(-50%) rotate(45deg)' }} />
           </div>
         );
@@ -407,7 +454,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
   const rn = reacted.length + skipped.length;
   const rf = 1 + 0.22 * Math.max(0, 1 - (rn - 1) / 3);
   const rowStyle = (accent, dim, on) => ({ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
-    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'clamp(14px, calc(14px * var(--rf, 1)), 18px)', whiteSpace: 'nowrap',
+    fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 'clamp(14px, calc(14px * var(--rf, 1)), 18px)', whiteSpace: 'nowrap',
     color: accent ? 'var(--color-accent)' : 'var(--color-fg-1)',
     background: on ? 'var(--color-surface-sunken)' : 'transparent', opacity: dim ? 0.4 : 1 });
   return (
@@ -431,12 +478,12 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
                   style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
                   <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
-                  {who(r.name)}
+                  {rxLabel(r)}
                 </button>
               ) : (
                 <div key={'r' + i} style={rowStyle(me, dim, on)}>
                   <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
-                  {who(r.name)}
+                  {rxLabel(r)}
                 </div>
               );
             })}
@@ -445,7 +492,7 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
               return (
                 <div key={'s' + i} style={rowStyle(me, sel != null, false)}>
                   <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center' }}><ReadRing me={me} /></span>
-                  {who(r.name)}
+                  {rxLabel(r)}
                 </div>
               );
             })}
@@ -461,24 +508,58 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
 // ============================================================================
 const SwellReviewModal = ({ item, onClose }) => {
   const closeRef = rxRef(null);
+  // Bottom sheet on mobile (incl. the forced-mobile phone frame), centred dialog
+  // on desktop — the SAME treatment as the reveal step, so the door modal and the
+  // just-reacted reveal read as one surface. The old check keyed off
+  // window.innerWidth alone, so inside the phone frame (window > 520) it always
+  // fell to the desktop dialog — hence the door never became a sheet.
+  const [narrow] = rxState(() => (typeof window !== 'undefined' && window.innerWidth < 520)
+    || (typeof document !== 'undefined' && !!document.querySelector('.circ-phone-screen')));
+  const { shown, requestClose } = useSheetMount(narrow, onClose);
+  // Render at the phone-screen root (or <body> when not framed) instead of buried
+  // in the FeedCard. A position:fixed overlay that animates deep inside the
+  // scrolled, overflow-clipped feed forces the browser to re-composite the whole
+  // scroll layer on the transition — that's the "entire screen erupts" glitch.
+  // Portalling puts the door at the SAME shallow DOM depth as the mark-as-read
+  // reveal and the Add sheet (both siblings of the feed), which animate cleanly.
+  const [portalTarget] = rxState(() => (typeof document !== 'undefined'
+    && (document.querySelector('.circ-phone-screen') || document.body)) || null);
+  rxEffect(() => lockScroll(), []);
   rxEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    const onKey = (e) => { if (e.key === 'Escape') requestClose(); };
     window.addEventListener('keydown', onKey);
-    if (closeRef.current) closeRef.current.focus();
+    // preventScroll: the sheet mounts at translateY(100%) (offscreen below), so a
+    // plain focus() makes the browser scroll the close button into view and heave
+    // the whole feed up ~half a viewport, then settle as the sheet slides in —
+    // that was the "screen erupts" glitch. Focus without scrolling.
+    if (closeRef.current) closeRef.current.focus({ preventScroll: true });
     return () => window.removeEventListener('keydown', onKey);
   }, []);
   const all = (item.reactions || []);
-  const narrow = typeof window !== 'undefined' && window.innerWidth < 520;
-  return (
-    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="circ-anim-fade"
+  const tight = narrow;
+  const tree = (
+    <div onClick={(e) => { if (e.target === e.currentTarget) requestClose(); }}
+      className={tight ? undefined : 'circ-anim-fade'}
       style={{ position: 'fixed', inset: 0, zIndex: 140, background: 'var(--color-scrim)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: narrow ? 8 : 16 }}>
+        display: 'flex', justifyContent: 'center', alignItems: tight ? 'flex-end' : 'center',
+        padding: tight ? 0 : 16,
+        opacity: tight ? (shown ? 1 : 0) : 1,
+        transition: tight ? 'opacity var(--duration-slow) ease-in-out' : undefined }}>
       <div role="dialog" aria-modal="true" aria-label="How the circle landed"
-        style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
-          padding: narrow ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
-          width: narrow ? '100%' : 348, maxWidth: 420, minWidth: narrow ? 0 : 288,
-          maxHeight: '88vh', overflowY: 'auto' }}>
-        <button ref={closeRef} type="button" onClick={onClose} aria-label="Close" className="circ-rx-close"
+        style={tight ? {
+          position: 'relative', background: 'var(--color-surface)',
+          borderTopLeftRadius: 16, borderTopRightRadius: 16,
+          boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
+          padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom, 0px))',
+          maxHeight: 'calc(100% - 24px)', overflowY: 'auto', overscrollBehavior: 'contain',
+          transform: shown ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform var(--duration-slow) var(--ease-quiet)',
+        } : {
+          position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+          padding: 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
+          width: 348, maxWidth: 420, minWidth: 288,
+          maxHeight: '88vh', overflowY: 'auto', overscrollBehavior: 'contain' }}>
+        <button ref={closeRef} type="button" onClick={requestClose} aria-label="Close" className="circ-rx-close"
           style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
@@ -488,6 +569,7 @@ const SwellReviewModal = ({ item, onClose }) => {
       </div>
     </div>
   );
+  return portalTarget ? ReactDOM.createPortal(tree, portalTarget) : tree;
 };
 
 // ============================================================================
@@ -496,7 +578,10 @@ const SwellReviewModal = ({ item, onClose }) => {
 // A borderless huddle of up to 3 DISTINCT glyphs (uniform 16px — NO intensity,
 // no dominant glyph) + a faint always-on "opens-a-view" cue (arrows-out, NOT a
 // caret, because it opens a modal not a dropdown). No box at rest; hover/focus
-// shows the card's own sunken pill. NO reactions => renders nothing.
+// shows the card's own sunken pill. NOBODY has read it yet => renders nothing.
+// If everyone who read it skipped (no glyphs), the door still renders — glyph
+// huddle is empty, just the arrows-out cue — and opens onto the empty disc +
+// roster of skips, same as any other circle.
 // Place it at the right edge of the attribution row: "added by one, received by
 // many." Depth/weight lives inside the modal, never in the door.
 // ============================================================================
@@ -509,9 +594,11 @@ const swellDoorGlyphs = (all) => {
 const SwellDoor = ({ item }) => {
   const [open, setOpen] = rxState(false);
   const all = (item && item.reactions) || [];
-  if (all.length === 0) return null;              // no reactions -> no door
-  const glyphs = swellDoorGlyphs(all);
-  if (glyphs.length === 0) return null;
+  if (all.length === 0) return null;              // nobody has read it yet -> no door
+  const glyphs = swellDoorGlyphs(all);             // may be empty — everyone skipped is still shown
+  // Everyone who read it skipped: no glyphs to huddle. Show NO stand-in mark —
+  // empty circles just read as reactions that failed to render. The arrows-out
+  // cue alone carries the door: nothing to preview, only a view to open.
   return (
     <React.Fragment>
       <button type="button" onClick={() => setOpen(true)} className="circ-swell-door"
@@ -520,11 +607,13 @@ const SwellDoor = ({ item }) => {
           border: 0, background: 'transparent', padding: 8, margin: '-8px -8px -8px 0',
           borderRadius: 'var(--radius-md)', flexShrink: 0, minHeight: 44,
           transition: 'background var(--duration-fast) var(--ease-quiet)' }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-          {glyphs.map((g, i) => (
-            <span key={i} style={{ fontSize: 16, lineHeight: 1, width: 17, height: 17, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: i === 0 ? 0 : -4 }}>{g}</span>
-          ))}
-        </span>
+        {glyphs.length > 0 && (
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            {glyphs.map((g, i) => (
+              <span key={i} style={{ fontSize: 16, lineHeight: 1, width: 17, height: 17, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: i === 0 ? 0 : -4 }}>{g}</span>
+            ))}
+          </span>
+        )}
         <svg viewBox="0 0 24 24" width={13} height={13} aria-hidden="true"
           style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', opacity: 0.55, flexShrink: 0 }}>
           <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
@@ -542,9 +631,12 @@ const SwellDoor = ({ item }) => {
 // Step 2 (reveal): the SAME SwellReview surface, but PASSIVE — no close button,
 //   non-interactive (no tap-to-name), fades on its own after a short hold. Can
 //   still be dismissed early by clicking off (scrim) or Esc; there's just no x.
-// The circle is pixel-pinned across the two steps (same size + position):
-//   - the modal is TOP-ANCHORED (not vertically centred), so height changes grow
-//     downward and never re-centre/drag the circle;
+// The circle's SIZE is pinned across the two steps (the disc box is computed by
+// ONE identical rule in both steps) — that size constancy is the thing that must
+// never break. Position is free:
+//   - the modal is CENTRED; as the panel grows for the reveal it re-centres, so
+//     the disc may drift vertically. That's fine — only disc RESIZING was ever the
+//     problem, never disc movement;
 //   - the width is LOCKED across steps (no horizontal snap);
 //   - the reveal disc reserves the input pad's footprint and matches its header.
 // First reader (react OR skip) => reveal too, headed "You're the first one here.";
@@ -562,6 +654,11 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const [clip, setClip] = rxState(false);
   const [fading, setFading] = rxState(false);
   const [vw, setVw] = rxState(typeof window !== 'undefined' ? window.innerWidth : 400);
+  // Bottom sheet on mobile (or the forced-mobile phone frame); centred dialog on
+  // desktop. narrow must be known before useSheetMount, so it's computed up here.
+  const narrow = vw < 520 || (typeof document !== 'undefined' && !!document.querySelector('.circ-phone-screen'));
+  const { shown, requestClose } = useSheetMount(narrow, onClose);
+  rxEffect(() => lockScroll(), []);
   rxEffect(() => {
     const on = () => setVw(window.innerWidth);
     window.addEventListener('resize', on);
@@ -580,7 +677,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   };
 
   rxEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commitSkip(); else onClose(); } };
+    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commitSkip(); else requestClose(); } };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [step]);
@@ -593,12 +690,13 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   rxEffect(() => {
     if (step !== 'reveal') return;
     const hold = 5000;
+    // Mobile: hold, then slide the sheet away. Desktop: hold, fade content, close.
+    if (narrow) { const d = setTimeout(requestClose, hold); return () => clearTimeout(d); }
     const f = setTimeout(() => setFading(true), hold);
     const d = setTimeout(onClose, hold + 480);
     return () => { clearTimeout(f); clearTimeout(d); };
   }, [step]);
 
-  const narrow = vw < 520;
   const avail = vw - (narrow ? 16 : 48) - (narrow ? 24 : 48);
   // Same single disc-size rule as the reveal step — keeping these identical is the
   // input→reveal pin. Change one, change both.
@@ -608,14 +706,31 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const tight = narrow;
 
   return (
-    <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="circ-anim-fade"
+    <div onClick={(e) => { if (e.target === e.currentTarget) requestClose(); }}
+      className={tight ? undefined : 'circ-anim-fade'}
       style={{ position: 'fixed', inset: 0, zIndex: 135, background: 'var(--color-scrim)',
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: tight ? 8 : 16 }}>
-      <div style={{ position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
-        padding: tight ? 'var(--space-3)' : 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
-        maxWidth: 420, width: tight ? '100%' : 348, minWidth: tight ? 0 : 288, marginTop: tight ? 14 : '5vh' }}>
+        display: 'flex', justifyContent: 'center',
+        alignItems: tight ? 'flex-end' : 'center', padding: tight ? 0 : 16,
+        opacity: tight ? (shown ? 1 : 0) : 1,
+        transition: tight ? 'opacity var(--duration-slow) ease-in-out' : undefined }}>
+      {/* Mobile: bottom sheet (matches AddReveal) — anchored to the bottom, grows
+         upward as the panel resizes between steps; the disc drifts up but never
+         resizes. Slides in on open, back down on close. Desktop: centred dialog. */}
+      <div style={tight ? {
+        position: 'relative', background: 'var(--color-surface)',
+        borderTopLeftRadius: 16, borderTopRightRadius: 16,
+        boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
+        padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom, 0px))',
+        maxHeight: 'calc(100% - 24px)', overflowY: 'auto',
+        transform: shown ? 'translateY(0)' : 'translateY(100%)',
+        transition: 'transform var(--duration-slow) var(--ease-quiet)',
+      } : {
+        position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
+        maxWidth: 420, width: 348, minWidth: 288,
+      }}>
         {step === 'input' && (
-          <button type="button" onClick={onClose} aria-label="Close" className="circ-rx-close"
+          <button type="button" onClick={requestClose} aria-label="Close" className="circ-rx-close"
             style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer', color: 'var(--color-fg-3)' }}>
@@ -626,7 +741,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
           {step === 'input' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-xl)', color: 'var(--color-fg-1)', margin: '0 0 4px', letterSpacing: '-0.01em' }}>How did it land?</h2>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Optional — your reaction for the circle.</p>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-fg-3)', margin: narrow ? '0 0 6px' : '0 0 18px' }}>Your reaction for the circle.</p>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 <div style={{ position: 'relative', width: box, height: box, margin: narrow ? '2px 0 0' : '10px 0 0' }}>
                   <div style={{ position: 'absolute', inset }}>

@@ -1009,6 +1009,15 @@
           desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, and a support-contact link in settings. Champion self-serve and change-email carry in from the shipped line.',
           changelog: [
             {
+              date: '2026-07-14',
+              title: 'Automatic link-scheme resolution on add',
+              items: [
+                'Adding a link no longer requires a typed scheme — a bare domain or path is accepted and the scheme is filled in locally: missing defaults to https, an explicit http:// is respected as typed rather than upgraded. No outbound request; non-http(s) schemes and reachability stay out of scope (LM-456).',
+                'The Add-link placeholder moves from https:// to a bare-domain example (example.com/article), signalling the scheme is optional rather than prompting for one.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
               date: '2026-07-12',
               title: 'Scenarios launcher → Config button',
               items: [
