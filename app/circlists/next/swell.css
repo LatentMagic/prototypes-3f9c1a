@@ -8,11 +8,15 @@
 /* Reaction door — borderless at rest, sunken pill on hover/focus (the card's
    own hover language). It must NOT look like a button until touched. */
 .circ-swell-door:hover { background: var(--color-surface-sunken); }
-.circ-swell-door:focus-visible { outline: none; background: var(--color-surface-sunken); box-shadow: 0 0 0 2px var(--color-accent-ring); }
+.circ-swell-door:focus-visible { outline: none; background: var(--color-surface-sunken); box-shadow: 0 0 0 2px var(--color-accent); }
 
-/* Review-modal roster rows (tap to pin a glyph's name). */
+/* Review-modal roster rows (tap to pin a glyph's name). Focus ring is SOLID
+   accent, not the 30%-opacity ring token — a keyboard/SR user tabbing the
+   roster must see where they are (WCAG 1.4.11, 3:1 min). */
 .circ-swell-rrow:hover { background: var(--color-surface-sunken) !important; }
-.circ-swell-rrow:focus-visible { box-shadow: 0 0 0 2px var(--color-accent-ring); }
+.circ-swell-rrow:focus-visible { box-shadow: 0 0 0 2px var(--color-accent); }
+/* Disc glyphs (role=button) in the review circle — same visible-focus rule. */
+.circ-swell-glyph:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
 
 /* Modal close (x). */
 .circ-rx-close { transition: background var(--duration-base), color var(--duration-base); }
@@ -28,9 +32,9 @@
    slider (the pad) and the glyph radiogroup. Visible focus is required — the
    pad's own puck/palette also reflect the state, but the ring is what a keyboard
    user lands on. Circle rings match the round hit targets. */
-.circ-swell-pad:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
-.circ-swell-radio:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
-.circ-swell-rrow:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent-ring); }
+.circ-swell-pad:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+.circ-swell-radio:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+.circ-swell-rrow:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
 
 /* Dialog / scrim fade-in. */
 @keyframes circ-anim-fade { from { opacity: 0; } to { opacity: 1; } }

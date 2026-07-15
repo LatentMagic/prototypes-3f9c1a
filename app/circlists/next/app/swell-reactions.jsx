@@ -479,6 +479,7 @@ const SwellScatter = ({ all, size, selected, onSelect, interactive = true }) => 
         const on = selected === i, dim = active && !on;
         return (
           <div key={i} role={canPick ? 'button' : undefined} tabIndex={canPick ? 0 : undefined}
+            className={canPick ? 'circ-swell-glyph' : undefined}
             aria-label={rxAriaLabel(r)}
             onClick={canPick ? (e) => { e.stopPropagation(); onSelect(on ? null : i); } : undefined}
             onKeyDown={canPick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(on ? null : i); } } : undefined}
@@ -576,7 +577,20 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
             })}
             {skipped.map((r, i) => {
               const me = r.name === 'You';
-              return (
+              // Skips carry no disc glyph, so there's nothing to pin — but a
+              // keyboard/SR user must still reach every roster member. When the
+              // surface is interactive (the door modal) render the row as a
+              // button so it's a real tab stop; activating it just clears any
+              // pinned disc selection. Reveal (static) keeps the plain div.
+              return interactive ? (
+                <button key={'s' + i} type="button" className="circ-swell-rrow" aria-label={rxAriaLabel(r)}
+                  onClick={() => setSel(null)}
+                  style={{ ...rowStyle(me, sel != null, false), border: 0, cursor: 'pointer', outline: 'none',
+                    transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
+                  <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center' }}><ReadRing me={me} /></span>
+                  {rxLabel(r)}
+                </button>
+              ) : (
                 <div key={'s' + i} style={rowStyle(me, sel != null, false)} aria-label={rxAriaLabel(r)}>
                   <span style={{ display: 'inline-flex', width: 16, justifyContent: 'center' }}><ReadRing me={me} /></span>
                   {rxLabel(r)}
@@ -704,7 +718,7 @@ const SwellDoor = ({ item }) => {
           </span>
         )}
         <svg viewBox="0 0 24 24" width={13} height={13} aria-hidden="true"
-          style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', opacity: 0.55, flexShrink: 0 }}>
+          style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', flexShrink: 0 }}>
           <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
         </svg>
       </button>
@@ -742,6 +756,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   const bodyRef = rxRef(null);
   const panelRef = rxRef(null);
   const headingRef = rxRef(null);
+  const invokerRef = rxRef(null);
   const [bodyH, setBodyH] = rxState('auto');
   const [clip, setClip] = rxState(false);
   const [fading, setFading] = rxState(false);
@@ -755,7 +770,9 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   // reaction looks pre-picked. The first Tab/arrow then enters the glyph ring.
   // preventScroll for the same reason the door modal uses it (sheet mounts below).
   rxEffect(() => {
+    invokerRef.current = document.activeElement;
     if (headingRef.current) headingRef.current.focus({ preventScroll: true });
+    return () => { if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus({ preventScroll: true }); };
   }, []);
   rxEffect(() => {
     const on = () => setVw(window.innerWidth);
@@ -768,12 +785,19 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   // Both resolve to a rung on the chosen glyph's spoke, writing the same draft the
   // pointer drag does, so the visible pad + puck stay in sync with either path.
   const inputLevel = levelFromIntensity(swell.intensity != null ? swell.intensity : 0.6);
+  // L == null => glyph targeted but no depth chosen yet: park the puck in the
+  // dead zone on that glyph's spoke, don't invent an intensity.
   const applyGlyphLevel = (g, L) => {
-    const a = glyphAngle(glyphIndexOf(g)), r = intensityFromLevel(L) * SWELL_MAX;
+    const a = glyphAngle(glyphIndexOf(g));
+    if (L == null) { setSwell({ glyph: g, intensity: null, nx: 0.5, ny: 0.5 }); return; }
+    const r = intensityFromLevel(L) * SWELL_MAX;
     setSwell({ glyph: g, intensity: intensityFromLevel(L), nx: 0.5 + Math.cos(a) * r, ny: 0.5 + Math.sin(a) * r });
   };
-  const pickGlyph = (g) => applyGlyphLevel(g, swell.glyph ? inputLevel : 2);
-  const setDepthLevel = (L) => applyGlyphLevel(swell.glyph || RX_GLYPHS[0], L);
+  // Moving between glyphs (radiogroup Left/Right) only changes WHICH glyph is
+  // targeted — it carries over an already-chosen depth, but never assigns one.
+  const pickGlyph = (g) => applyGlyphLevel(g, swell.intensity != null ? inputLevel : null);
+  // The depth pad is inert until a glyph is targeted — nothing for depth to apply to.
+  const setDepthLevel = (L) => { if (swell.glyph) applyGlyphLevel(swell.glyph, L); };
   const commitSwell = () => commit({ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny });
   // Skip = read, no note. Still recorded (a glyphless reaction) so you appear in
   // the roster as an empty ring; it just never lands on the disc.
@@ -788,7 +812,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   };
 
   rxEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') { if (step === 'input') commitSkip(); else requestClose(); } };
+    const onKey = (e) => { if (e.key === 'Escape') requestClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [step]);
