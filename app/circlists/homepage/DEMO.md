@@ -4,7 +4,8 @@ The hero's "live demo" is a **live prototype of the app**, embedded — not scre
 
 ## Two parts, different rules
 
-- **The app** lives in `uploads/homepage-demo/` (`app.js` + `tokens.css` + `swell.css` + `brand/`). It's **vendored**: a first pass from another agent, hosted elsewhere as the live prototype. **Never edit it.** It can receive updates (a new drop replaces the folder), but the site never reaches inside.
+- **The app** lives in `uploads/homepage-demo/` (`app.js` + `tokens.css` + `swell.css` + `fonts.css` + `fonts/` + React's two UMD files + `brand/`). It's **vendored**: a first pass from another agent, hosted elsewhere as the live prototype. **Never edit it.** It can receive updates (a new drop replaces the folder), but the site never reaches inside.
+  - It is **self-contained on purpose** — React and the fonts ship inside it rather than loading from `unpkg` / Google Fonts, so an embedded demo makes **no third-party request**. A drop that reintroduces an external URL is a regression: it belongs back in the build (`tools/homepage-demo/`), not patched here.
 - **The frame** is ours: the `.appdemo` block in `index.html` + `site.css`, and `demo-embed.html`. We style *around* the app, never *into* it.
 
 ## How it's wired

@@ -19,7 +19,7 @@ That embedded build is the **homepage-demo**. You do not author it. You produce 
 One prototype export → the build → the packaged demo. Three parts:
 
 - **Source** — a working-line prototype export, dropped into `tools/homepage-demo/src/`.
-- **Build** — `tools/homepage-demo/build.mjs`: a script that runs **esbuild**. It deletes the files you list, bundles the rest into one `app.js`, and drops babel plus the per-module fetch the raw prototype does at runtime — so the result is iframe-ready. Detail and the current delete-list: [README.md](../../../tools/homepage-demo/README.md).
+- **Build** — `tools/homepage-demo/build.mjs`: a script that runs **esbuild**. It deletes the files you list, bundles the rest into one `app.js`, and drops babel plus the per-module fetch the raw prototype does at runtime — so the result is iframe-ready. It also **vendors React and the fonts**: a Design export fetches both from `unpkg` and Google Fonts, which is fine for a prototype and not fine for a demo embedded in the public marketing site, where it would hand every visitor's IP to two third parties. Detail and the current delete-list: [README.md](../../../tools/homepage-demo/README.md).
 - **Output** — the packaged demo at `app/circlists/homepage-demo/`, shown as a console node. It **declares its own embed contract**: the flags and layout modes a consumer sets on it, so embedding never means reverse-engineering minified source.
 
 You run the build. You do not write app code.
@@ -42,7 +42,7 @@ First read what you are working from: the export's entry HTML (module load order
 2. **Set the strip list.** In `build.mjs`, set `DELETE_LIST` to the files to drop: the surfaces reachable *only* through a gated control (create-circle, members/settings, account) plus the dev aids (scenarios, tweaks). Leave anything reachable *without* a gate, such as the dormant-circle surface. The rule: never drop a file a live path still renders, or one a kept file still depends on. Unsure? Step 5 catches a wrong list.
 3. **Run the build.** `npm run build` in `tools/homepage-demo/`. esbuild strips the listed files, bundles the rest into `app.js`, and writes the packaged demo to `app/circlists/homepage-demo/`.
 4. **Wire the console node.** First build only: add the node to the repo-root `index.html` — `kind: 'demo'`, its own accent, deep-linked `#homepage-demo`, skipped by default landing. On a refresh it is already there; confirm it.
-5. **Verify.** Serve the repo (`npm start` → :4321), open **Homepage Demo**, and walk it: the reading loop runs; every gated control opens the gate, not a crash; edge states such as the dormant circle render; the console stays clean. A wrong strip list white-screens silently, so this walk is the proof.
+5. **Verify.** Serve the repo (`npm start` → :4321), open **Homepage Demo**, and walk it: the reading loop runs; every gated control opens the gate, not a crash; edge states such as the dormant circle render; the console stays clean. A wrong strip list white-screens silently, so this walk is the proof. Then open the **network tab**: it must show no third-party host — no `unpkg`, no `fonts.googleapis`, nothing but same-origin. Text in the wrong typeface means a font failed to match; the build guards that, but look anyway.
 6. **Ship.** Commit and push; GitHub Pages redeploys in ~25s; confirm it is live. If the same export also advanced the working line, refresh the `next` node too.
 
 ## CRITICAL: run the build, don't rebuild the app

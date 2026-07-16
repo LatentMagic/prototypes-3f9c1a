@@ -10,7 +10,7 @@
    For self-hosting, drop .woff2 files into /fonts and replace these imports
    with @font-face declarations pointing to the local files. The variable names
    below do not change. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('fonts.css');
 
 :root {
   /* ------------------------------------------------------------------------ */
