@@ -8,6 +8,7 @@
 // The account control lives at the FOOT of the rail; its menu opens upward.
 const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate }) => {
   const [acctOpen, setAcctOpen] = React.useState(false);
+  const acctBtnRef = React.useRef(null);
   return (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', padding: '4px 8px 20px' }}>
@@ -50,7 +51,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     </button>
     <div style={{ flex: 1 }} />
     <div style={{ position: 'relative', borderTop: '1px solid var(--color-border-2)', marginTop: 12, paddingTop: 8 }}>
-      <button onClick={() => { if (onAccountGate) { onClose && onClose(); onAccountGate(); return; } setAcctOpen(v => !v); }} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
+      <button ref={acctBtnRef} onClick={() => { if (onAccountGate) { onClose && onClose(); onAccountGate(); return; } setAcctOpen(v => !v); }} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer',
         background: 'transparent', border: 0, padding: '8px', borderRadius: 'var(--radius-md)', minHeight: 44,
       }}>
@@ -62,7 +63,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
         <Icon name="chevron-down" size={14} color="var(--color-fg-3)" style={{ flexShrink: 0, transform: acctOpen ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
       </button>
       {acctOpen && (
-        <UserMenu user={user} openUp stretch
+        <UserMenu user={user} openUp stretch anchorRef={acctBtnRef}
           onManageAccount={() => { onClose && onClose(); onManageAccount(); }}
           onSignOut={() => { onClose && onClose(); onSignOut(); }}
           onClose={() => setAcctOpen(false)} />
@@ -73,10 +74,17 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
 };
 
 // ---- User menu (avatar dropdown) -------------------------------------------
-const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onSignOut, onClose, anchorRight, openUp, stretch }) => {
+const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onSignOut, onClose, anchorRight, openUp, stretch, anchorRef }) => {
   const ref = React.useRef(null);
   React.useEffect(() => {
-    const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    // Ignore mousedowns on the toggle button itself — it runs its own open/close
+    // logic on click. Without this, the outside-mousedown handler closes the menu
+    // first, then the button's click (fired right after on the same press) flips
+    // state again and the menu instantly reopens.
+    const onDown = (e) => {
+      if (anchorRef && anchorRef.current && anchorRef.current.contains(e.target)) return;
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('mousedown', onDown);
     window.addEventListener('keydown', onKey);

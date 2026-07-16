@@ -121,6 +121,17 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  // Lock whatever's actually scrolling behind the modal — the phone-frame's
+  // inner screen when forced-mobile, otherwise the document itself — so a
+  // scroll gesture that starts on the scrim/card never falls through to the
+  // feed behind. Restored on close.
+  useCEffect(() => {
+    const scroller = document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
+    const prevOverflow = scroller.style.overflow;
+    scroller.style.overflow = 'hidden';
+    return () => { scroller.style.overflow = prevOverflow; };
+  }, []);
+
   return (
     <div className="circ-config-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
