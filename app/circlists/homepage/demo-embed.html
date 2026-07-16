@@ -123,7 +123,8 @@
   .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
 
   /* ---- menus / links ---- */
-  .circ-menuitem:hover { background: var(--color-surface-sunken); }
+  .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
   .circ-topaction:hover { background: var(--color-surface-sunken); }
   .circ-topaction:hover { color: var(--color-fg-1); }
   .circ-railacct:hover { background: var(--color-surface); }
@@ -145,6 +146,7 @@
     background: var(--color-scrim);
     display: flex; align-items: center; justify-content: center; padding: 24px;
     transition: opacity var(--duration-slow) ease-in-out;
+    overscroll-behavior: contain;
   }
   .circ-config-modal {
     width: min(760px, 100%); max-height: min(84vh, 720px);
@@ -171,7 +173,7 @@
     color: var(--color-fg-2); border-radius: var(--radius-sm); display: inline-flex; flex-shrink: 0;
   }
   .circ-config-close:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
-  .circ-config-body { padding: var(--space-5); overflow-y: auto; }
+  .circ-config-body { padding: var(--space-5); overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-height: 0; overscroll-behavior: contain; }
   .circ-config-eyebrow {
     font-family: var(--font-mono); font-weight: 500; font-size: 11px;
     letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
@@ -233,13 +235,16 @@
     height: min(872px, calc(100vh - 48px));
     background: #050505; border-radius: 52px; padding: 11px;
     box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
+    overflow: hidden;
+    transform: translateZ(0); /* containing block for position:fixed modals — on the
+       non-scrolling bezel (NOT .circ-phone-screen) so fixed overlays pin to the phone
+       viewport instead of riding the scrolled feed */
   }
   .circ-phone-screen {
     position: relative; width: 100%; height: 100%;
     border-radius: 42px; overflow: hidden;
     background: var(--color-canvas);
     overflow-y: auto; -webkit-overflow-scrolling: touch;
-    transform: translateZ(0); /* containing block for position:fixed children */
     --circ-vh: 100%;
   }
   .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }

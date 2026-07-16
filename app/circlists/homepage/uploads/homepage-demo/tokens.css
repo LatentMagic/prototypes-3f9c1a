@@ -40,7 +40,7 @@
 
   --color-fg-1:             #0A0A0A;  /* near-black, body & titles  */
   --color-fg-2:             #525252;  /* secondary text             */
-  --color-fg-3:             #8A8A87;  /* tertiary, captions, meta   */
+  --color-fg-3:             #6E6E6B;  /* tertiary, captions, meta — AA 4.5:1 on cream/white */
   --color-fg-inverse:       #FFFFFF;  /* on accent fills            */
 
   --color-border-1:         #DCDCD8;  /* card borders, default      */

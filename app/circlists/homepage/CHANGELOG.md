@@ -1,6 +1,6 @@
-# Changelog — Circlists front page
+# Changelog — Circlists homepage
 
-A running record of changes to the public front page.
+A running record of changes to the public homepage.
 
 ## 2026-07-12
 

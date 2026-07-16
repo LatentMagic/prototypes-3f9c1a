@@ -4,7 +4,7 @@ Pointer doc: what the identity is, where the local assets live, and where they *
 
 ## What this is
 
-Circlists' visual identity — palette, mark, wordmark, lockup — as used on this front page. Full spec (values) is [assets/brand/circlists-brand.md](assets/brand/circlists-brand.md); the visual board is [assets/brand/circlists-brand.html](assets/brand/circlists-brand.html).
+Circlists' visual identity — palette, mark, wordmark, lockup — as used on this homepage. Full spec (values) is [assets/brand/circlists-brand.md](assets/brand/circlists-brand.md); the visual board is [assets/brand/circlists-brand.html](assets/brand/circlists-brand.html).
 
 Quick reference:
 
