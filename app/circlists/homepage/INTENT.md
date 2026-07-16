@@ -59,19 +59,19 @@ asserted line-by-line here — see the Notes at the end.
   *Note: the entries are hand-authored content, supplied at build time — any entries
   carried over from the mock are placeholder, not the real changelog.*
 
-- **AC-13 — "Latest" marker placement is responsive.** At full width the "Latest"
+- **AC-11 — "Latest" marker placement is responsive.** At full width the "Latest"
   marker sits to the right of the entry description, baseline-aligned. At narrow
   widths (≤640px) it stacks above the description rather than folding beneath it,
   so it reads as a tag on the entry, not a trailing afterthought.
 
 ## Footer
 
-- **AC-11 — Footer links resolve.** The Privacy link goes to the privacy page; the support
+- **AC-12 — Footer links resolve.** The Privacy link goes to the privacy page; the support
   link is a `mailto:` to the support address.
 
 ## Assets
 
-- **AC-12 — Brand & icon assets resolve.** Every file-referenced brand and icon asset
+- **AC-13 — Brand & icon assets resolve.** Every file-referenced brand and icon asset
   resolves to its bundled file: the footer wordmark, the demo poster lockup, and the icon
   set (favicon `.ico` + SVG, apple-touch, PWA raster).
 
