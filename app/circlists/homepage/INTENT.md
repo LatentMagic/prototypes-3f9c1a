@@ -54,11 +54,12 @@ asserted line-by-line here — see the Notes at the end.
 ## Changelog
 
 - **AC-10 — Changelog structure.** Entries render newest-first, each carrying a
-  description. The newest entry is flagged with a "Latest" marker and an accent bullet.
+  description, up to a maximum of three — older entries are dropped, not paginated.
+  The newest entry is flagged with a "Latest" marker and an accent bullet.
   *Note: the entries are hand-authored content, supplied at build time — any entries
   carried over from the mock are placeholder, not the real changelog.*
 
-- **AC-11 — "Latest" marker placement is responsive.** At full width the "Latest"
+- **AC-13 — "Latest" marker placement is responsive.** At full width the "Latest"
   marker sits to the right of the entry description, baseline-aligned. At narrow
   widths (≤640px) it stacks above the description rather than folding beneath it,
   so it reads as a tag on the entry, not a trailing afterthought.
