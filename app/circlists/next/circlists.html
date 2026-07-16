@@ -122,7 +122,8 @@
   .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
 
   /* ---- menus / links ---- */
-  .circ-menuitem:hover { background: var(--color-surface-sunken); }
+  .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
   .circ-topaction:hover { background: var(--color-surface-sunken); }
   .circ-topaction:hover { color: var(--color-fg-1); }
   .circ-railacct:hover { background: var(--color-surface); }
