@@ -9,7 +9,13 @@ set -o pipefail
 input=$(cat)
 command=$(echo "$input" | jq -r '.tool_input.command // empty')
 
-if [[ "$command" != *"git push"* ]]; then
+# Match `git` and `push` separately — they are NOT adjacent in
+# `git -C <path> push`, the form used when this repo is driven from a
+# business-ops session, so a literal *"git push"* test silently misses it and
+# the gate never fires. Regex in a variable: an inline one with a bracket
+# expression breaks the [[ ]] parse.
+git_re='(^|[[:space:];&|])git[[:space:]]'
+if [[ ! "$command" =~ $git_re ]] || [[ "$command" != *push* ]]; then
   exit 0
 fi
 
