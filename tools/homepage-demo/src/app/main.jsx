@@ -96,7 +96,7 @@ const CircApp = () => {
   // the item being reacted to, or null.
   const [reacting, setReacting] = useState(null);
   const [otc, setOtc] = useState({ context: 'device', error: null });
-  const [pendingEmail, setPendingEmail] = useState('you@example.com');
+  const [pendingEmail, setPendingEmail] = useState('sam.rivera@gmail.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
   // (Config launcher state + drag now live in app/config.jsx — a deletable aid.)
   // funding flow: { mode: 'new' | 'refund', name, spaceId }

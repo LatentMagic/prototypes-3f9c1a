@@ -1,11 +1,18 @@
 // ============================================================================
 // Circlists homepage-demo build.
 //
-// Derives the public homepage demo FROM the working-line prototype in ./src by
-// DELETION ONLY — no source file is edited. The working line is authored so that
-// every surface the demo must not show (New circle, circle settings, account,
-// and the dev aids) becomes unreachable once the preview gate is lit; the files
-// behind those surfaces then drop with no dangling reference on any live path.
+// Derives the public homepage demo FROM the working-line prototype in ./src,
+// almost entirely by DELETION — no source file is rewritten. The working line
+// is authored so that every surface the demo must not show (New circle, circle
+// settings, account, and the dev aids) becomes unreachable once the preview
+// gate is lit; the files behind those surfaces then drop with no dangling
+// reference on any live path.
+//
+// One exception: seed-data.jsx is always kept (main.jsx reads it unconditionally,
+// no presence guard), so its two data-showcase circles (id-prefixed `sp-test-`)
+// can't be dropped as whole files — stripTestFixtures() below removes just those
+// two object literals from the in-memory copy before it's bundled. ./src itself
+// is never touched.
 //
 // What the build does that the raw prototype does not:
 //   • concatenates the KEPT modules (in the entry's own load order) and runs ONE
@@ -46,6 +53,38 @@ const DELETE_LIST = new Set([
   'auth.jsx',         // sign-in / up / otc / recovery — never authenticates in preview
   'spaces.jsx',       // create / members / account surfaces — all gated-unreachable
 ]);
+
+// seed-data.jsx is always kept (main.jsx reads window.CircSeed unconditionally),
+// so its two data-showcase circles can't be dropped by file deletion — they need
+// a content-level strip instead. The working line marks them with an `sp-test-`
+// id prefix precisely so this can match structurally rather than by name text.
+const TEST_SPACE_ID_PREFIX = 'sp-test-';
+
+// Removes each top-level seedSpaces() object whose `id` starts with the test
+// prefix. Every such object is a flat `    {` … `    },` block at 4-space
+// indent — nothing nested inside (members arrays, item reactions) opens a brace
+// alone on a 4-space line — so a line-based scan finds exact block boundaries
+// without needing a real parser.
+function stripTestFixtures(source) {
+  const lines = source.split('\n');
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i] === '    {') {
+      const start = i;
+      let end = i + 1;
+      while (end < lines.length && lines[end] !== '    },') end++;
+      const block = lines.slice(start, end + 1).join('\n');
+      if (new RegExp(`id:\\s*'${TEST_SPACE_ID_PREFIX}`).test(block)) {
+        i = end + 1;
+        continue;
+      }
+    }
+    out.push(lines[i]);
+    i++;
+  }
+  return out.join('\n');
+}
 
 // React is vendored from node_modules rather than fetched from unpkg at runtime.
 // The working line names the version it was authored against in its own script
@@ -138,10 +177,14 @@ async function main() {
   const kept = ordered.filter(f => !DELETE_LIST.has(f));
   if (!kept.length) throw new Error('No modules matched — check src/circlists.html script tags.');
 
-  // 2. Concatenate the kept modules verbatim, in load order (no source edits).
+  // 2. Concatenate the kept modules verbatim, in load order (no source edits to
+  //    the src/ base — the test-fixture strip below runs only on the in-memory
+  //    copy that goes into the bundle).
   const parts = [];
   for (const f of kept) {
-    parts.push(`// ==== app/${f} ====\n` + await readFile(path.join(SRC, 'app', f), 'utf8'));
+    let content = await readFile(path.join(SRC, 'app', f), 'utf8');
+    if (f === 'seed-data.jsx') content = stripTestFixtures(content);
+    parts.push(`// ==== app/${f} ====\n` + content);
   }
   // In the raw prototype each kept file is its own <script type="text/babel">;
   // Babel Standalone hoists that script's top-level const/let to real globals, so
@@ -220,6 +263,7 @@ async function main() {
   console.log(`Built homepage demo → ${path.relative(path.join(__dirname, '..', '..'), OUT)}`);
   console.log(`  kept   : ${kept.join(', ')}`);
   console.log(`  dropped: ${[...DELETE_LIST].join(', ')}`);
+  console.log(`  seed strip: circles id-prefixed '${TEST_SPACE_ID_PREFIX}' removed from seed-data.jsx`);
   console.log(`  vendored: ${react.join(', ')}`);
   console.log(`  fonts  : ${fonts.count} files, latin — ${fonts.families.join(' + ')}`);
   console.log(`  app.js : ${(Buffer.byteLength(code) / 1024).toFixed(1)} KB`);

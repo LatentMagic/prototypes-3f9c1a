@@ -217,4 +217,11 @@ const Avatar = ({ name, size = 34, accent = false }) => (
   }}>{initialsOf(name)}</span>
 );
 
-Object.assign(window, { Icon, Spinner, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf });
+// Account-chip display name. The current user's roster identity is the literal
+// 'You' everywhere in shared views; their own account surfaces the real name.
+function displayName(u) {
+  if (u && u.firstName && u.lastName) return u.firstName + ' ' + u.lastName;
+  return (u && u.name) || '';
+}
+
+Object.assign(window, { Icon, Spinner, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf, displayName });

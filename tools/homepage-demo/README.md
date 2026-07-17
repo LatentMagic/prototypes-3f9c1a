@@ -20,10 +20,13 @@ each is a transform the build applies on the way out.
    line (`app/gate.jsx`), dormant; the build lights it by setting
    `window.CIRC_FORCE_GATE = true` in the embed HTML. `main.jsx` reads that flag.
 
-2. **Strip-out — by deletion only.** Because the gate makes those surfaces (and
-   everything reachable only through them) unreachable, the files behind them
-   drop with no dangling reference on any live path. The demo is *derived by
-   deleting files*, never by rewriting them.
+2. **Strip-out — by deletion, plus one content-level exception.** Because the
+   gate makes those surfaces (and everything reachable only through them)
+   unreachable, the files behind them drop with no dangling reference on any
+   live path. The one exception: `seed-data.jsx` is always kept (see below), so
+   its two data-showcase circles are stripped at the *data* level instead —
+   `stripTestFixtures()` in `build.mjs` removes them from the in-memory copy
+   before bundling. `src/` itself is never rewritten either way.
 
 3. **Third-party removal — vendored, not fetched.** A Design export has no build
    step, so the working line pulls React from `unpkg.com` and its fonts from
@@ -53,17 +56,37 @@ makes unreachable.
 
 **Kept:** `seed-data` · `primitives` · `brand-motion` · `swell-reactions` · `feed` · `shell` · `subscriptions` · `gate` · `main`.
 
-`seed-data.jsx` and `brand-motion.jsx` are always kept — `main.jsx` and `primitives.jsx`
-reference their exports (`window.CircSeed`, `BrandSpinner`, `PulseLockup`, ...)
-unconditionally, no presence guard.
-
-`subscriptions.jsx` stays because the seed carries a **dormant circle** (Weekend
-Reads); switching to it renders `DormantSpace`, which lives in that file. It is
-reachable without passing a gate, so it cannot be dropped.
+`seed-data.jsx`, `brand-motion.jsx`, and `subscriptions.jsx` are always kept —
+`main.jsx` and `primitives.jsx` reference their exports (`window.CircSeed`,
+`BrandSpinner`, `PulseLockup`, `FundingPage`, `ManageFunding`, `DormantSpace`, ...)
+unconditionally, no presence guard. That coupling is exactly why the two
+test-data circles below can't be file-deleted along with them.
 
 > ⚠️ If the gate's scope changes (e.g. it stops covering circle settings),
 > re-check reachability before trusting this list — a surface that becomes
 > reachable again would reference a deleted component and white-screen.
+
+### The seed-data strip
+
+Two circles in `seed-data.jsx`'s `seedSpaces()` are data-showcase fixtures, not
+demo content — each id-prefixed `sp-test-` in the working line, e.g. `sp-test-backend`
+("TEST - Backend Pod", every reaction-shape edge case) and `sp-test-weekend`
+("TEST - Weekend Reads", the dormant/terminal take-over view). `stripTestFixtures()`
+in `build.mjs` removes any `seedSpaces()` object whose `id` carries that prefix
+before the bundle is built — matching on `sp-test-` rather than the display name,
+since the id is the structural marker a future export is more likely to keep
+stable than prose. The three real circles (Backend Pod, Tuesday Book Club, Me &
+Sam) ship untouched.
+
+Consequence worth knowing: with the dormant fixture stripped, `DormantSpace`
+(in `subscriptions.jsx`) has no seed data left to render it — the component ships
+in `app.js` but is currently unreachable in the demo. It stays anyway, per the
+unconditional-reference rule above.
+
+> ⚠️ If a future export adds a real (non-test) dormant or edge-case circle, or
+> drops the `sp-test-` id convention, re-check `stripTestFixtures()` against the
+> new `seed-data.jsx` before building — a silent mismatch ships test data to the
+> public site instead of stripping it.
 
 ## What the build does that the raw prototype does not
 
@@ -109,8 +132,9 @@ npm run build
 
 Verify locally by serving the repo (`npm start` at the repo root → :4321), opening
 the **Homepage Demo** node, and walking: the reading loop (add → read → react →
-see responses), each gated control (New circle · Circle settings · account →
-gate), and a switch to the dormant circle. Watch for a clean console.
+see responses) across all three real circles, and each gated control (New circle
+· Circle settings · account → gate). Confirm no `TEST -` circle appears anywhere.
+Watch for a clean console.
 
 **Check the network tab is empty of third parties** — no `unpkg`, no
 `fonts.googleapis`, nothing but same-origin. Text rendering in the wrong typeface

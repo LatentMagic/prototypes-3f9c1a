@@ -55,9 +55,9 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer',
         background: 'transparent', border: 0, padding: '8px', borderRadius: 'var(--radius-md)', minHeight: 44,
       }}>
-        <Avatar name={user.name} size={30} accent />
+        <Avatar name={displayName(user)} size={30} accent />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</div>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName(user)}</div>
           <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
         </div>
         <Icon name="chevron-down" size={14} color="var(--color-fg-3)" style={{ flexShrink: 0, transform: acctOpen ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
@@ -110,9 +110,9 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
       borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
     }} className="circ-anim-fade">
       <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid var(--color-border-2)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Avatar name={user.name} size={34} accent />
+        <Avatar name={displayName(user)} size={34} accent />
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{user.name}</div>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{displayName(user)}</div>
           <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
         </div>
       </div>

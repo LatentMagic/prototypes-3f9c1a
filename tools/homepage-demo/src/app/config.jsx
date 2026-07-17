@@ -221,11 +221,11 @@ function buildScenarios(api) {
     if (toRoute) setRoute(toRoute); else enterSpace(id);
   };
 
-  // restage the dormant Weekend Reads to demo a given role/dormancy, then enter it
+  // restage the dormant TEST - Weekend Reads to demo a given role/dormancy, then enter it
   const stageDormant = (cfg) => {
-    setSpaces(prev => prev.map(s => s.id === 'sp-weekend'
+    setSpaces(prev => prev.map(s => s.id === 'sp-test-weekend'
       ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
-    setCurrentId('sp-weekend'); setRoute('space'); setLoadingFeed(false);
+    setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
   };
 
   // ---- Loading lane — hold each loading state at rest for review ----------
