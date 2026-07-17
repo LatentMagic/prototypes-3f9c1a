@@ -2,6 +2,34 @@
 
 A running record of changes to the public homepage.
 
+## 2026-07-17
+
+- **New hero demo build; retired the gate-copy override seam.** `uploads/homepage-demo/app.js`
+  updated (new build; mock feed data reshuffled). More notably, the vendored
+  sign-up gate now ships our pre-launch copy natively ("This is a preview" /
+  "Got it", no secondary button) instead of the real sign-up copy — so the
+  site-side seam in `demo-embed.html` that used to rewrite it at mount is no
+  longer needed and was removed. See `DEMO.md`'s Gate copy section. Brand
+  assets, fonts, and vendored libs in the drop were unchanged.
+
+- **Hero demo build fixed a production bug: React and fonts were loading from
+  third-party CDNs.** `uploads/homepage-demo/` now vendors `react.production.min.js`
+  / `react-dom.production.min.js` locally instead of unpkg, and `tokens.css`
+  imports a self-hosted `fonts.css` (Inter + JetBrains Mono, subsetted) instead
+  of a `fonts.googleapis.com` `@import` — the real site was flagged for making
+  third-party requests it shouldn't. `demo-embed.html` regenerated over the new
+  build (local React script tags; embed seam unchanged). Verified this also
+  works inside our iframe embed: `@font-face`/`@import` URLs resolve relative
+  to the stylesheet, not the page's `<base href>`, so nothing broke there.
+
+## 2026-07-16
+
+- **Privacy notice now discloses the hero demo's local storage.** The demo
+  persists its own state (current screen, opened circle) on-device so it
+  doesn't reset while visitors look around — this wasn't disclosed. Added to
+  the Cookies section (now "Cookies and storage") in `privacy.html`: nothing
+  leaves the device, and clearing site data clears it.
+
 ## 2026-07-12
 
 - **Updated the hero's live-app demo to a new build.** `uploads/homepage-demo/`

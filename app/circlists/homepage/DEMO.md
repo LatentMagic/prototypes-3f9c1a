@@ -4,8 +4,7 @@ The hero's "live demo" is a **live prototype of the app**, embedded — not scre
 
 ## Two parts, different rules
 
-- **The app** lives in `uploads/homepage-demo/` (`app.js` + `tokens.css` + `swell.css` + `fonts.css` + `fonts/` + React's two UMD files + `brand/`). It's **vendored**: a first pass from another agent, hosted elsewhere as the live prototype. **Never edit it.** It can receive updates (a new drop replaces the folder), but the site never reaches inside.
-  - It is **self-contained on purpose** — React and the fonts ship inside it rather than loading from `unpkg` / Google Fonts, so an embedded demo makes **no third-party request**. A drop that reintroduces an external URL is a regression: it belongs back in the build (`tools/homepage-demo/`), not patched here.
+- **The app** lives in `uploads/homepage-demo/` (`app.js` + `tokens.css` + `swell.css` + `brand/`). It's **vendored**: a first pass from another agent, hosted elsewhere as the live prototype. **Never edit it.** It can receive updates (a new drop replaces the folder), but the site never reaches inside.
 - **The frame** is ours: the `.appdemo` block in `index.html` + `site.css`, and `demo-embed.html`. We style *around* the app, never *into* it.
 
 ## How it's wired
@@ -26,6 +25,21 @@ The controller script + `.appdemo` CSS handle: lazy-load, the branded loading po
 ## When a new app drop arrives
 
 Replace `uploads/homepage-demo/`, then regenerate `demo-embed.html` re-applying the three changes above.
+
+## Gate copy (pre-launch)
+
+The gate overlay reads, natively, as of the 2026-07-17 drop:
+
+- heading: `This is a preview`
+- body: `This is a preview of Circlists. It isn't open yet — full access comes at launch.`
+- button: `Got it` (no secondary button)
+
+This used to ship as **sign-up** copy (`Sign up to continue.` / `Not now` / `Sign up`),
+which a site-side seam in `demo-embed.html` rewrote at mount without touching the app.
+Upstream has since adopted the pre-launch copy directly, so that seam was removed —
+nothing to patch. If a future drop reverts to sign-up copy, either re-add a text-matched
+rewrite seam (see git history) or push for upstream to carry the pre-launch copy again.
+At real launch, upstream will need to ship real sign-up copy once more.
 
 ## Worth flagging upstream
 

@@ -31,6 +31,28 @@
   background: var(--color-fg-3);
   display: inline-block;
 }
+.hero__eyebrow--status {
+  color: var(--color-accent);
+}
+.hero__eyebrow--status::before {
+  display: none;
+}
+.hero__eyebrow--status .live-dot {
+  flex-shrink: 0;
+}
+.site-header__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-accent);
+}
+.site-header__status .live-dot {
+  flex-shrink: 0;
+}
 
 .hero__headline {
   font-family: var(--font-sans);

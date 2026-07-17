@@ -46,8 +46,13 @@ if (/(?:^|[?&])preview=1(?:&|$)/.test(location.search)) {
 </svg>
     </a>
     <nav class="site-header__actions" aria-label="Account">
+      <span class="site-header__status">
+        <svg class="live-dot" viewBox="-2 -2 52 52" width="12" height="12" aria-hidden="true"><defs><clipPath id="cl-micro-halo-3"><circle cx="24" cy="24" r="22.5"></circle></clipPath><linearGradient id="cl-micro-band-3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8BBFAD" stop-opacity="0"></stop><stop offset="0.5" stop-color="#8BBFAD" stop-opacity="1"></stop><stop offset="1" stop-color="#8BBFAD" stop-opacity="0"></stop></linearGradient></defs><circle class="cl-halo-static" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle><g clip-path="url(#cl-micro-halo-3)"><rect class="cl-reveal" x="-32" y="-10" width="26" height="68" fill="url(#cl-micro-band-3)"></rect></g><circle cx="24" cy="24" r="14.25" fill="#047857"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle></svg>Coming soon
+      </span>
+      <!-- Account actions hidden until launch (AC-1, AC-2). Kept for restore.
       <a class="btn btn--quiet btn--sm" href="#">Sign in</a>
       <a class="btn btn--primary btn--sm" href="#">Sign up</a>
+      -->
     </nav>
   </div>
 </header>
@@ -171,7 +176,7 @@ if (/(?:^|[?&])preview=1(?:&|$)/.test(location.search)) {
   </section>
 
 
-  <!-- ========== WHAT'S NEW ========== -->
+  <!-- ========== WHAT'S NEW (hidden until launch — AC-10, AC-11; kept for restore) ==========
   <section class="whatsnew" data-screen-label="What's new" aria-labelledby="whatsnew-heading">
     <div class="container">
       <div class="changelog-panel">
@@ -203,6 +208,7 @@ if (/(?:^|[?&])preview=1(?:&|$)/.test(location.search)) {
       </div>
     </div>
   </section>
+  ========================================================================== -->
 
 
 </main>
