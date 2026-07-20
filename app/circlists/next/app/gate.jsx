@@ -6,15 +6,7 @@
 // Same mount/animate/scrim logic as AddReveal (feed.jsx): mobile gets a
 // bottom sheet + scrim fade, desktop gets a borderless-scrim fixed card in
 // the bottom-right, both easing on --ease-quiet. Copy is identical regardless
-// of which control triggered it.
-//
-// PRIOR COPY (pre-2026-07-17 launch-copy pass — revert to this if the
-// launch-copy framing is ever rolled back):
-//   aria-label: "Sign up"
-//   title:      "Sign up to continue."
-//   body:       "This is a preview of Circlists. Everything past this point
-//                needs an account."
-//   buttons:    "Not now" (secondary) + "Sign up" (primary)
+// of which control triggered it — placeholder pending real signup copy.
 // ============================================================================
 
 const GateOverlay = ({ open, isMobile, onClose }) => {
@@ -76,12 +68,12 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         opacity: shown ? 1 : 0,
         transition: 'opacity var(--duration-slow) ease-in-out',
       }} />
-      <div role="dialog" aria-label="This is a preview" style={surface}>
+      <div role="dialog" aria-label="Sign up" style={surface}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
           <h2 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-lg)',
             lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: 0,
-          }}>This is a preview</h2>
+          }}>Sign up to continue.</h2>
           <button onClick={onClose} aria-label="Close" style={{
             background: 'transparent', border: 0, padding: 6, margin: -6, cursor: 'pointer',
             color: 'var(--color-fg-2)', display: 'inline-flex', flexShrink: 0,
@@ -90,9 +82,10 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         <p style={{
           fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.55,
           color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)',
-        }}>This is a preview of Circlists. It isn't open yet — full access comes at launch.</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button variant="primary" onClick={onClose}>Got it</Button>
+        }}>This is a preview of Circlists. Everything past this point needs an account.</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+          <Button variant="secondary" onClick={onClose}>Not now</Button>
+          <Button variant="primary" onClick={onClose}>Sign up</Button>
         </div>
       </div>
     </>

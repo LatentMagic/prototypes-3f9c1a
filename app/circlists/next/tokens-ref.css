@@ -1,0 +1,273 @@
+/* ============================================================================
+   LatentPulse Design Tokens — Pulse Modernist
+   ----------------------------------------------------------------------------
+   The token layer. Every colour, type, spacing, radius, and shadow value lives
+   here as a CSS custom property. Identity work happens by editing these values
+   — never by hard-coding alternatives in component CSS.
+   ============================================================================ */
+
+/* Webfonts — Inter (primary) + JetBrains Mono (mono accent) via Google Fonts.
+   For self-hosting, drop .woff2 files into /fonts and replace these imports
+   with @font-face declarations pointing to the local files. The variable names
+   below do not change. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ------------------------------------------------------------------------ */
+  /* Colour — accent                                                          */
+  /* ------------------------------------------------------------------------ */
+  --color-accent:           #047857;  /* Pulse Green — Penguin / Braun lineage */
+  --color-accent-hover:     #036549;  /* 4% darker  */
+  --color-accent-press:     #024F3A;  /* 8% darker  */
+  --color-accent-ring:      rgba(4, 120, 87, 0.30);
+  --color-accent-soft:      #ECFDF5;  /* Reserved — focus-ring bg only */
+
+  /* Approved fallbacks (use only if the primary feels wrong in composition) */
+  --color-accent-warm:      #0D9488;  /* deep chromatic teal */
+  --color-accent-cool:      #166534;  /* deep forest hunter  */
+
+  /* ------------------------------------------------------------------------ */
+  /* Colour — neutrals (warm-neutral, paper-leaning)                          */
+  /* ------------------------------------------------------------------------ */
+  --color-page:             #FAFAF7;  /* off-white page background */
+  --color-surface:          #FFFFFF;  /* card / popover surface     */
+  --color-surface-raised:   #FFFFFF;  /* identical for now; reserved */
+  --color-surface-sunken:   #F5F5F2;  /* hover area on cards        */
+
+  --color-fg-1:             #0A0A0A;  /* near-black, body & titles  */
+  --color-fg-2:             #525252;  /* secondary text             */
+  --color-fg-3:             #8A8A87;  /* tertiary, captions, meta   */
+  --color-fg-inverse:       #FFFFFF;  /* on accent fills            */
+
+  --color-border-1:         #DCDCD8;  /* card borders, default      */
+  --color-border-2:         #E8E8E5;  /* separators, hairlines      */
+  --color-border-strong:    #0A0A0A;  /* deliberate emphasis only   */
+
+  /* Destructive — used in v1 ONLY on the last-member Leave primary action.   */
+  --color-destructive:      #991B1B;
+  --color-destructive-hover:#7F1818;
+  --color-destructive-press:#641212;
+  --color-destructive-ring: rgba(153, 27, 27, 0.30);
+
+  /* Scrims (dialog / sheet overlays) — flat, no blur */
+  --color-scrim:            rgba(10, 10, 10, 0.40);
+
+  /* ------------------------------------------------------------------------ */
+  /* Type — families                                                          */
+  /* ------------------------------------------------------------------------ */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* Display alias — same family as sans for now; reserved for future divergence */
+  --font-display: var(--font-sans);
+
+  /* Page-surface alias — semantic name used by app shells */
+  --color-canvas: var(--color-page);
+
+  /* Weights — exact named steps in use */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ------------------------------------------------------------------------ */
+  /* Type scale — sizes (4px grid) + line-heights + tracking                  */
+  /* ------------------------------------------------------------------------ */
+  --text-xs:    12px;   /* mono caption, badges */
+  --text-sm:    13px;   /* secondary body, meta */
+  --text-base:  15px;   /* body                 */
+  --text-md:    16px;   /* card body / dialog body */
+  --text-lg:    18px;   /* card titles (mobile) */
+  --text-xl:    20px;   /* card titles (desktop) */
+  --text-2xl:   24px;   /* dialog titles, page H2 */
+  --text-3xl:   32px;   /* page titles (Create Space, Empty-state primary) */
+  --text-4xl:   40px;   /* hero / brand moments only */
+
+  --leading-tight:  1.25;
+  --leading-snug:   1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed:1.6;
+
+  --tracking-tight: -0.01em;   /* large titles */
+  --tracking-normal: 0;        /* body */
+  --tracking-wide:   0.02em;   /* mono badges, all-caps eyebrows (rare) */
+
+  /* ------------------------------------------------------------------------ */
+  /* Spacing scale — 4px base                                                 */
+  /* ------------------------------------------------------------------------ */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+  --space-20:  80px;
+  --space-24:  96px;
+
+  /* ------------------------------------------------------------------------ */
+  /* Radii                                                                    */
+  /* ------------------------------------------------------------------------ */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-pill: 9999px;   /* reserved — content-type badges only, NOT buttons */
+
+  /* ------------------------------------------------------------------------ */
+  /* Shadows — three steps                                                    */
+  /* ------------------------------------------------------------------------ */
+  --shadow-flat:    none;
+  --shadow-raised:  0 1px 2px rgba(10, 10, 10, 0.04), 0 1px 3px rgba(10, 10, 10, 0.04);
+  --shadow-overlay: 0 16px 32px rgba(10, 10, 10, 0.08), 0 4px 8px rgba(10, 10, 10, 0.06);
+
+  /* Focus ring — composed from accent + offset */
+  --ring-width: 2px;
+  --ring-offset: 2px;
+  --ring-color: var(--color-accent-ring);
+
+  /* ------------------------------------------------------------------------ */
+  /* Motion                                                                   */
+  /* ------------------------------------------------------------------------ */
+  --duration-instant: 0ms;
+  --duration-fast:    100ms;
+  --duration-base:    150ms;
+  --duration-slow:    200ms;
+  --ease-quiet:       cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ------------------------------------------------------------------------ */
+  /* Layout                                                                   */
+  /* ------------------------------------------------------------------------ */
+  --max-feed-width: 720px;
+  --rail-width:     240px;
+  --top-bar-height: 56px;
+  --tap-target-min: 44px;
+}
+
+/* ============================================================================
+   Semantic / element styles
+   These give every common element a default that matches Pulse Modernist.
+   Override per-component as needed, but stay inside the token scale.
+   ============================================================================ */
+
+html, body {
+  background: var(--color-page);
+  color: var(--color-fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Headings ---- */
+h1, .h1 {
+  font: var(--weight-semibold) var(--text-3xl) / var(--leading-tight) var(--font-sans);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-1);
+  margin: 0;
+}
+h2, .h2 {
+  font: var(--weight-semibold) var(--text-2xl) / var(--leading-snug) var(--font-sans);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-1);
+  margin: 0;
+}
+h3, .h3 {
+  font: var(--weight-semibold) var(--text-xl) / var(--leading-snug) var(--font-sans);
+  color: var(--color-fg-1);
+  margin: 0;
+}
+h4, .h4 {
+  font: var(--weight-semibold) var(--text-lg) / var(--leading-snug) var(--font-sans);
+  color: var(--color-fg-1);
+  margin: 0;
+}
+
+/* ---- Body & helpers ---- */
+p, .p {
+  font: var(--weight-regular) var(--text-md) / var(--leading-relaxed) var(--font-sans);
+  color: var(--color-fg-1);
+  margin: 0;
+}
+.body-sm {
+  font: var(--weight-regular) var(--text-sm) / var(--leading-normal) var(--font-sans);
+  color: var(--color-fg-2);
+}
+.meta {
+  font: var(--weight-medium) var(--text-sm) / var(--leading-normal) var(--font-sans);
+  color: var(--color-fg-3);
+}
+
+/* ---- Card-specific (the load-bearing typography of the product) ---- */
+.card-title {
+  font: var(--weight-semibold) var(--text-lg) / var(--leading-snug) var(--font-sans);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-1);
+}
+@media (min-width: 1024px) {
+  .card-title { font-size: var(--text-xl); }
+}
+
+.attribution {
+  /* NON-NEGOTIABLE: weight equal to title, never caption-sized, never greyed-out */
+  font: var(--weight-semibold) var(--text-md) / var(--leading-snug) var(--font-sans);
+  color: var(--color-fg-1);
+}
+
+.domain {
+  font: var(--weight-medium) var(--text-sm) / var(--leading-normal) var(--font-mono);
+  color: var(--color-fg-2);
+  letter-spacing: 0;
+}
+
+.badge {
+  font: var(--weight-medium) var(--text-xs) / 1 var(--font-mono);
+  color: var(--color-fg-2);
+  letter-spacing: var(--tracking-wide);
+  text-transform: lowercase;
+}
+
+/* ---- Code / inline mono ---- */
+code, kbd, samp, pre, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+/* ---- Links ---- */
+a {
+  color: var(--color-fg-1);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--color-border-1);
+}
+a:hover { text-decoration-color: var(--color-fg-1); }
+a:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+  border-radius: 2px;
+}
+
+/* ---- Buttons (token-only base; UI kits compose on top) ---- */
+button { font-family: inherit; }
+
+/* ---- Focus ring (universal default) ---- */
+:focus-visible {
+  outline: var(--ring-width) solid var(--color-accent);
+  outline-offset: var(--ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

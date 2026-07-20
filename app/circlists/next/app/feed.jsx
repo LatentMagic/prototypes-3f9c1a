@@ -7,10 +7,16 @@
 // ---- FeedCard --------------------------------------------------------------
 // Anatomy: URL line (mono) + attribution block (sans, co-equal weight). No
 // thumbnail, no title, no domain line, no badge. Actions are recessive.
-const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
+const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
   const former = /former member/i.test(item.attribution);
   // Display name parsed out of "Added by Sam R." for the avatar.
   const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
+  // The roster/attribution line always reads "You" for the current user's own
+  // items (never their real name — that's shared-view convention). But the
+  // avatar is the account's own identity, so it uses the real name + the
+  // account's accent treatment, same as the roster and account-chip avatars.
+  const isYou = who === 'You';
+  const avatarName = isYou ? displayName(user) : who;
   // "Added by" stays semibold always; only the former-member name portion drops to regular weight.
   const attrMatch = item.attribution.match(/^(added by\s+)(.*)$/i);
   return (
@@ -38,7 +44,7 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
           tab, the reaction door sits at the right edge: added by one, received
           by many. */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-        <Avatar name={former ? null : who} size={32} />
+        <Avatar name={former ? null : avatarName} size={32} accent={isYou} />
         <span style={{
           flex: 1, minWidth: 0,
           fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 16,

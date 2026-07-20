@@ -306,7 +306,7 @@ const CircApp = () => {
               : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {visible.map(item => (
-                    <FeedCard key={item.id} item={item} tab={tab}
+                    <FeedCard key={item.id} item={item} tab={tab} user={user}
                       onOpen={openLink}
                       onMarkRead={(it) => setReacting(it)}
                       onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />
