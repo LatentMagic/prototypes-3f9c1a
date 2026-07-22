@@ -189,8 +189,6 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
     setErr(null); setSentTo(email.trim()); setEmail(''); onInvite && onInvite(v);
   };
 
-  const championLabel = isChampion ? 'You' : (championName || 'the champion');
-
   return (
     <ContentPage>
       {editingName ? (
@@ -233,7 +231,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         </div>
       )}
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>
-        {space.members.length} of {SPACE_CAP} members · Championed by {championLabel}
+        {space.members.length} of {SPACE_CAP} members
       </p>
 
       {/* Member list */}
@@ -253,7 +251,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
               <Avatar name={m.name} size={32} accent={isYou} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{m.name}{isYou && m.name !== 'You' ? ' (you)' : ''}</div>
-                {m.email && (isYou || isChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
+                {m.email && (isYou || memberIsChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
               </div>
               {memberIsChampion ? (
                 <span style={{
@@ -325,15 +323,11 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         )
       ) : (
         <div style={{
-          background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-          borderRadius: 'var(--radius-lg)', padding: 'var(--space-5) var(--space-6)', marginBottom: 'var(--space-5)',
-          display: 'flex', alignItems: 'flex-start', gap: 12,
+          display: 'flex', alignItems: 'flex-start', gap: 8, padding: '0 2px', marginBottom: 'var(--space-5)',
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)',
         }}>
-          <span style={{ marginTop: 1, color: 'var(--color-fg-3)', flexShrink: 0 }}><Icon name="users" size={18} /></span>
-          <div>
-            <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14.5, lineHeight: 1.5, color: 'var(--color-fg-1)' }}>Only the champion can invite new members.</div>
-            <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: 'var(--color-fg-2)', marginTop: 2 }}>Only the champion manages this space’s funding.</div>
-          </div>
+          <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>
+          <span>The Champion manages this circle’s membership and funding.</span>
         </div>
       )}
 

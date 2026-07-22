@@ -3,6 +3,15 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Champion role — consolidated to one place on the members surface — 2026-07-22
+- The champion role no longer appears in three overlapping spots on the settings
+  surface. The header line drops "· Championed by X" (the roster's **Champion**
+  badge already carries it), and the non-champion's two-line "Only the champion
+  can invite / manage funding" card collapses to a single quiet crown line: *The
+  Champion manages this circle's membership and funding.*
+- One statement of the role instead of a card, a header clause, and a badge —
+  the term stops being restated in copy that read as a restriction.
+
 ## Swell reaction mechanism — keyboard + screen-reader access (AA) — 2026-07-14
 - The reaction moment and the Read-tab roster/disc reach WCAG 2.1 AA: the drag-pad
   is now painted over always-present accessible controls — a glyph **radiogroup**
