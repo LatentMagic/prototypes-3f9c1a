@@ -322,7 +322,8 @@ function buildScenarios(api) {
       { k: 'Accept invite \u2014 circle full', go: () => setRoute('space-full') },
     ] },
     { title: 'Account', items: [
-      { k: 'Change password', go: () => goSpace('sp-backend', 'account') },
+      { k: 'Change email & password', go: () => goSpace('sp-backend', 'account') },
+      { k: 'Email & password via SSO', go: () => { setUser({ ...DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); goSpace('sp-backend', 'account'); } },
     ] },
   ];
 

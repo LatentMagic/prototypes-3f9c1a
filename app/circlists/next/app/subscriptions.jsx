@@ -15,6 +15,18 @@ const OPERATOR_EMAIL = 'support@circlists.com';
 // ---- Funding page (Circlists-authored, full page) --------------------------
 // One reusable page: fund a NEW space, or re-fund a DORMANT one. The re-fund
 // register acknowledges the returning champion — never new-customer pricing.
+// Tightened layout (design audit, Option 1): no card, back + X both in the top
+// bar, and the body is safe-centred with a scroll fallback so it stays centred
+// on tall screens yet never clips on the smallest phones (natural content
+// ~370px clears a 360×640 screen with headroom; if copy ever grows it
+// top-aligns and scrolls instead of overrunning the viewport).
+const IconBtn = ({ name, label, onClick }) => (
+  <button onClick={onClick} aria-label={label} className="circ-iconbtn" style={{
+    background: 'transparent', border: 0, padding: 8, cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40,
+    borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)',
+  }}><Icon name={name} size={20} /></button>
+);
 const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }) => {
   const refund = mode === 'refund';
   const features = refund
@@ -29,79 +41,58 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
         'Shared list, private read-state',
       ];
   return (
-    <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 24px' }}>
-        {onCancel && (
-          <button onClick={onCancel} aria-label="Exit" style={{
-            background: 'transparent', border: 0, padding: 8, margin: '-8px -8px -8px 0', cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40,
-            borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)',
-          }}><Icon name="x" size={20} /></button>
-        )}
+    <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', flex: 'none' }}>
+        {onBack ? <IconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40 }} />}
+        {onCancel ? <IconBtn name="x" label="Exit" onClick={onCancel} /> : <span style={{ width: 40 }} />}
       </header>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px 64px' }}>
-        <div style={{ maxWidth: 408, width: '100%', textAlign: 'center' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center', padding: '8px 24px 32px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 408, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
-            textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 16,
+            textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 14,
           }}>
             <span>{refund ? 'Returning champion' : 'New circle'}</span>
             {spaceName && <MicroDot size={10} />}
             {spaceName && <span style={{ fontWeight: 700 }}>{spaceName}</span>}
           </div>
           <h1 style={{
-            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-3xl)', lineHeight: 1.15,
-            letterSpacing: '-0.025em', color: 'var(--color-fg-1)', margin: '0 0 10px',
-          }}>{refund ? `Re-fund ${spaceName || 'this circle'}.` : 'Fund your circle.'}</h1>
-          <p style={{
-            fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.55,
-            color: 'var(--color-fg-2)', margin: '0 auto 32px', maxWidth: 420,
-          }}>{refund
-            ? `Pick ${spaceName || 'it'} back up where it left off. \u00a3${PRICE_PER_SPACE} a month brings it back for everyone — your members and history are still here.`
-            : 'Everyone you invite joins free.'}</p>
-
-          <div style={{
-            background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-            borderRadius: 'var(--radius-lg)', padding: 'var(--space-8)', textAlign: 'center',
-            boxShadow: 'var(--shadow-raised)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 10, marginBottom: refund ? 20 : 24 }}>
-              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 48, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
-              {!refund && (
-                <span style={{
-                  fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
-                  letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
-                  border: '1px solid var(--color-accent)', marginLeft: 14,
-                  padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
-                }}>Founding rate</span>
-              )}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 28, width: 'fit-content', marginInline: 'auto' }}>
-              {features.map((f) => (
-                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                  <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={20} /></span>
-                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 'var(--text-md)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' }}>{f}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-3)', marginBottom: 20 }}>Billed to {user ? user.email : 'your account'}. Cancel anytime.</div>
-            <Button variant="primary" full size="lg" onClick={onFund}>{refund ? 'Re-fund this circle' : 'Fund this circle'}</Button>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 14, color: 'var(--color-fg-3)' }}>
-              <Icon name="lock" size={13} />
-              <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12 }}>Secure checkout · powered by a payment provider</span>
-            </div>
-          </div>
-          {!refund && onBack && (
-            <div style={{ textAlign: 'left', marginTop: 'var(--space-5)' }}>
-              <button onClick={onBack} style={{
-                background: 'transparent', border: 0, padding: '8px 6px', margin: '0 0 0 -6px', cursor: 'pointer',
-                display: 'inline-flex', alignItems: 'center', gap: 6, minHeight: 40,
-                fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)',
-              }}><Icon name="arrow-left" size={16} /> Back</button>
-            </div>
+            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.2,
+            letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: refund ? '0 0 12px' : '0 0 20px',
+          }}>{refund ? `Re-fund ${spaceName || 'this circle'}` : 'Fund your circle'}</h1>
+          {refund && (
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
+              color: 'var(--color-fg-2)', margin: '0 auto 22px', maxWidth: 380,
+            }}>{`Pick ${spaceName || 'it'} back up where it left off. \u00a3${PRICE_PER_SPACE} a month brings it back for everyone — your members and history are still here.`}</p>
           )}
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8, marginBottom: 22 }}>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
+            {!refund && (
+              <span style={{
+                fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
+                letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
+                border: '1px solid var(--color-accent)', marginLeft: 6,
+                padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
+              }}>Founding rate</span>
+            )}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 22, width: '100%', maxWidth: 300 }}>
+            {features.map((f) => (
+              <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+                <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
+                <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' }}>{f}</span>
+              </div>
+            ))}
+          </div>
+          <Button variant="primary" full size="lg" onClick={onFund} style={{ maxWidth: 320 }}>{refund ? 'Re-fund this circle' : 'Fund this circle'}</Button>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-3)', margin: '12px 0' }}>Billed to {user ? user.email : 'your account'}. Cancel anytime.</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--color-fg-3)' }}>
+            <Icon name="lock" size={13} />
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12 }}>Secure checkout · powered by a payment provider</span>
+          </div>
         </div>
       </div>
     </div>

@@ -96,7 +96,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
             <p style={{
               fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
               color: 'var(--color-fg-2)', margin: '0 0 var(--space-8)',
-            }}>A circle is a shared list for a small, trusted group. You’ll fund it as its champion — up to {SPACE_CAP} people join free.</p>
+            }}>A circle is a shared list for a small, trusted group of up to {SPACE_CAP} people. You'll fund it as its champion; everyone joins free.</p>
             <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
               value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
@@ -125,16 +125,59 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   }, []);
   if (!member) return null;
   const name = member.name;
+  const firstName = name.includes(' ') ? name.split(' ')[0] : name;
   return (
-    <div role="alertdialog" aria-modal="true" aria-label={`Remove ${name}?`}
+    <div role="alertdialog" aria-modal="true" aria-label={`Remove ${firstName}?`}
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
-        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>Remove {name}?</h2>
+        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>Remove {firstName}?</h2>
         <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>They lose access to this circle. Their links stay, with their name. You can re-invite them later.</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="destructive" onClick={() => onConfirm()}>Remove {name}</Button>
+          <Button variant="destructive" onClick={() => onConfirm()}>Remove {firstName}</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---- Rename-circle dialog — champion only ----------------------------------
+// Focused dialog (matches the Remove-member treatment). Auto-growing textarea so
+// a long name wraps and stays fully visible instead of scrolling out of a single
+// line; 60-char cap enforced silently; Save trims. Enter saves, Esc/scrim/Cancel
+// dismiss. No X, no explanatory subline — the title and one field carry it.
+const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
+  const [draft, setDraft] = React.useState(currentName);
+  const [err, setErr] = React.useState(null);
+  const areaRef = React.useRef(null);
+  const invokerRef = React.useRef(null);
+  React.useEffect(() => {
+    invokerRef.current = document.activeElement;
+    const id = setTimeout(() => { const el = areaRef.current; if (el) { el.focus(); const n = el.value.length; el.setSelectionRange(n, n); } }, 40);
+    const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
+    window.addEventListener('keydown', onKey);
+    return () => { clearTimeout(id); window.removeEventListener('keydown', onKey); if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus(); };
+  }, []);
+  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v); };
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Rename circle"
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+      style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
+      <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
+        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-5)' }}>Rename circle</h2>
+        <input id="rename-circle-input" ref={areaRef} value={draft} maxLength={30} aria-label="Circle name" aria-invalid={!!err}
+          onChange={(e) => { setDraft(e.target.value); if (err) setErr(null); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); } }}
+          style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.4, color: 'var(--color-fg-1)', border: '1px solid ' + (err ? 'var(--color-destructive)' : 'var(--color-border-1)'), borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44, background: 'var(--color-surface)' }} />
+        {err && (
+          <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 7, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-destructive)' }}>
+            <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{err}</span>
+          </div>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-5)' }}>
+          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button variant="primary" onClick={save} disabled={!draft.trim()}>Save</Button>
         </div>
       </div>
     </div>
@@ -154,19 +197,9 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   const ref = React.useRef(null);
   React.useEffect(() => { if (isChampion && !full) { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); } }, [isChampion, full]);
 
-  // Inline rename (champion only)
-  const [editingName, setEditingName] = React.useState(false);
-  const [nameDraft, setNameDraft] = React.useState(space.name);
-  const [nameErr, setNameErr] = React.useState(null);
-  const nameRef = React.useRef(null);
-  React.useEffect(() => { if (editingName) { const t = setTimeout(() => nameRef.current && nameRef.current.select(), 40); return () => clearTimeout(t); } }, [editingName]);
-  const beginRename = () => { setNameDraft(space.name); setNameErr(null); setEditingName(true); };
-  const saveRename = () => {
-    const v = nameDraft.trim();
-    if (!v) { setNameErr('Give your circle a name.'); return; }
-    onRename && onRename(v); setEditingName(false); setNameErr(null);
-  };
-  const cancelRename = () => { setEditingName(false); setNameErr(null); };
+  // Rename (champion only) — opens a focused dialog
+  const [renaming, setRenaming] = React.useState(false);
+  const beginRename = () => setRenaming(true);
 
   // Per-member kebab + removal (champion only)
   const [menuFor, setMenuFor] = React.useState(null);
@@ -191,32 +224,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 
   return (
     <ContentPage>
-      {editingName ? (
-        <div style={{ margin: '0 0 6px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-            <input
-              ref={nameRef} value={nameDraft} aria-label="Circle name" aria-invalid={!!nameErr}
-              onChange={(e) => { setNameDraft(e.target.value); if (nameErr) setNameErr(null); }}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); saveRename(); } if (e.key === 'Escape') { e.preventDefault(); cancelRename(); } }}
-              style={{
-                flex: '1 1 200px', minWidth: 0, boxSizing: 'border-box',
-                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)',
-                letterSpacing: '-0.01em', color: 'var(--color-fg-1)',
-                border: '1px solid ' + (nameErr ? 'var(--color-destructive)' : 'var(--color-border-1)'),
-                borderRadius: 'var(--radius-md)', padding: '6px 10px', minHeight: 44, background: 'var(--color-surface)',
-              }} />
-            <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-              <Button variant="secondary" size="sm" onClick={cancelRename}>Cancel</Button>
-              <Button variant="primary" size="sm" onClick={saveRename} disabled={!nameDraft.trim()}>Save</Button>
-            </div>
-          </div>
-          {nameErr && (
-            <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 7, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-destructive)' }}>
-              <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{nameErr}</span>
-            </div>
-          )}
-        </div>
-      ) : (
+      {(
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', margin: '0 0 6px' }}>
           <h1 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.25,
@@ -230,6 +238,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           )}
         </div>
       )}
+      {renaming && <RenameCircleDialog currentName={space.name} onSave={(v) => { onRename && onRename(v); setRenaming(false); }} onCancel={() => setRenaming(false)} />}
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>
         {space.members.length} of {SPACE_CAP} members
       </p>
@@ -250,14 +259,13 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             }}>
               <Avatar name={m.name} size={32} accent={isYou} />
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{m.name}{isYou && m.name !== 'You' ? ' (you)' : ''}</div>
+                <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{m.name}</div>
                 {m.email && (isYou || memberIsChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
               </div>
               {memberIsChampion ? (
-                <span style={{
-                  fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, letterSpacing: '0.04em',
-                  textTransform: 'uppercase', color: 'var(--color-fg-3)', flexShrink: 0,
-                }}>Champion</span>
+                <span aria-label="Champion" title="Champion" style={{ minWidth: 44, minHeight: 44, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-fg-3)' }}>
+                  <Icon name="crown" size={16} />
+                </span>
               ) : isChampion ? (
                 <div data-kebab-root style={{ position: 'relative', flexShrink: 0 }}>
                   <button onClick={() => setMenuFor(menuFor === m.name ? null : m.name)}
@@ -348,7 +356,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
             <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => onManageFunding && onManageFunding('update')}>Update payment card</Button>
-            <Button variant="tertiary" onClick={() => onManageFunding && onManageFunding('cancel')}>Cancel funding</Button>
+            <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => onManageFunding && onManageFunding('cancel')}>Cancel funding</Button>
           </div>
           <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0' }}>
             Both open this circle’s subscription on our payment provider.
@@ -371,7 +379,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 // domain convention. Reads OPERATOR_EMAIL at render time (single source).
 const SupportLine = () => (
   <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, color: 'var(--color-fg-3)', margin: 'var(--space-6) 0 0' }}>
-    <a href={`mailto:${window.OPERATOR_EMAIL}`} className="circ-textlink" style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-fg-3)', textDecoration: 'none' }}>{window.OPERATOR_EMAIL}</a>
+    <a href={`mailto:${window.OPERATOR_EMAIL}`} className="circ-textlink" style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-fg-3)', textDecoration: 'underline' }}>{window.OPERATOR_EMAIL}</a>
   </p>
 );
 
@@ -398,6 +406,9 @@ const AccountSettings = ({ user, onChangeEmail }) => {
       }}>Account</h1>
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>{user.email}</p>
 
+      {user.ssoProvider ? (
+        <><SsoManaged /><SupportLine /></>
+      ) : (<>
       <ChangeEmail user={user} onChangeEmail={onChangeEmail} />
 
       <div style={{ height: 'var(--space-5)' }} />
@@ -423,9 +434,26 @@ const AccountSettings = ({ user, onChangeEmail }) => {
         </div>
       </form>
       <SupportLine />
+      </>)}
     </ContentPage>
   );
 };
+
+// ---- SSO-managed account — single card for BOTH email and password ---------
+// When the user signed in through an identity provider, email and password are
+// not ours to change: they live with the provider. One consolidated card says
+// so (no two separate managed rows) and points them to the provider.
+const SsoManaged = () => (
+  <div style={{
+    background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+    borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)',
+  }}>
+    <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)', marginBottom: 6 }}>Change email &amp; password</div>
+    <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: 0 }}>
+      Your email and password are managed by your sign-in provider and can be changed there.
+    </p>
+  </div>
+);
 
 // ---- Change email — verify the NEW address by code, then switch ------------
 // No password / re-auth step: control of the new address is proven by a code
@@ -523,4 +551,4 @@ const NoSpaceHome = ({ onCreate }) => (
   </main>
 );
 
-Object.assign(window, { SPACE_CAP, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, InvalidInvite, SpaceFull });
+Object.assign(window, { SPACE_CAP, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, SsoManaged, InvalidInvite, SpaceFull });
