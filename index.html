@@ -18,7 +18,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Barlow+Condensed:wght@800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
 <style>
   :root {
@@ -1127,11 +1127,29 @@
           ]
         }
       ]
+    },
+    commentape: {
+      label: 'Commentape',
+      // No brand lockup exists yet — interpret the app's own type for the rail:
+      // Barlow Condensed 800 uppercase, "tape" on a floodlit-green (#35E08A)
+      // skewed tape strip, mirroring the in-app wordmark. Swap for a lockup SVG
+      // once one is locked.
+      logo: '<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:22px;letter-spacing:.5px;text-transform:uppercase;line-height:1;color:#EDF3EC;">Commen<span style="position:relative;color:#052214;padding:0 3px;"><span style="position:absolute;inset:8% -2px;background:#35E08A;transform:skewX(-9deg);border-radius:2px;z-index:0;"></span><span style="position:relative;z-index:1;">tape</span></span></span>',
+      prototypes: [
+        {
+          slug: 'mvp',
+          label: 'MVP',
+          version: 'v1',
+          ticket: '—',
+          html: 'Commentate.dc.html',
+          desc: 'Commentate MVP — a pitchside media engine for grassroots football. Voice a match event and it becomes a postable social graphic in seconds: matchday dashboard, live match workspace with a mic-driven capture overlay, event review & share sheet, and slot-filling for missing detail (Squad and Brand kit alongside). Voice is simulated; football only. Bespoke floodlit-green palette and Barlow / Barlow Condensed type — a brand-open build, no lockup locked yet.'
+        }
+      ]
     }
   };
 
   // Active app + its prototypes are owned by renderApp() — re-runnable so the
-  // app switcher can repoint to another app (data-driven; one app today).
+  // app switcher can repoint to another app (data-driven; Circlists + Commentape).
   var ACTIVE_APP, APP, PROTOTYPES;
 
   function srcFor(app, slug, html) {
@@ -1233,9 +1251,11 @@
     railMeta.ticket.textContent = spec.ticket;
     railMeta.desc.textContent = spec.desc;
     syncChangelog(spec);
-    // keep the URL shareable: reflect the active slug in the hash (replaceState =
-    // no history spam, and no hashchange event so this never loops back on us).
-    var wantHash = '#' + spec.slug;
+    // keep the URL shareable: reflect the active app + slug in the hash
+    // (#<app>/<slug>) — the app segment scopes the slug so two apps can share a
+    // slug (both have `next`) without colliding. replaceState = no history spam,
+    // and no hashchange event so this never loops back on us.
+    var wantHash = '#' + ACTIVE_APP + '/' + spec.slug;
     if (location.hash !== wantHash) history.replaceState(null, '', wantHash);
     if (moveFocus) tabs[i].focus();
   }
@@ -1490,8 +1510,11 @@
   clScrim.addEventListener('click', closeChangelog);
 
   // ---- deep-linking ----
-  // A prototype is shareable at #<slug>. activate() keeps the hash in sync; on
-  // load (and on back/forward) we resolve an incoming hash to its app + tab.
+  // A prototype is shareable at #<app>/<slug> (e.g. #circlists/next). activate()
+  // keeps the hash in sync; on load (and on back/forward) we resolve an incoming
+  // hash to its app + tab. A bare #<slug> with no app segment still resolves for
+  // back-compat — the first app that owns the slug wins, as it did before
+  // scoping — and activate() then rewrites the URL to the scoped form.
   function findBySlug(slug) {
     var keys = Object.keys(APPS);
     for (var k = 0; k < keys.length; k++) {
@@ -1502,13 +1525,29 @@
     }
     return null;
   }
-  function slugFromHash() {
-    try { return decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); }
-    catch (e) { return ''; }
+  function parseHash() {
+    var raw;
+    try { raw = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); }
+    catch (e) { raw = ''; }
+    if (!raw) return null;
+    var slash = raw.indexOf('/');
+    if (slash === -1) return { appKey: null, slug: raw };          // bare slug (legacy)
+    return { appKey: raw.slice(0, slash), slug: raw.slice(slash + 1) };
   }
-  function selectSlug(slug) {
-    var t = findBySlug(slug);
-    if (!t) return false;                       // unknown slug → leave default
+  function resolveTarget(h) {
+    if (!h) return null;
+    if (h.appKey) {                                                // scoped #app/slug
+      var app = APPS[h.appKey];
+      if (!app) return null;                                       // unknown app → leave default
+      for (var i = 0; i < app.prototypes.length; i++) {
+        if (app.prototypes[i].slug === h.slug) return { appKey: h.appKey, index: i };
+      }
+      return null;                                                 // unknown slug in that app
+    }
+    return findBySlug(h.slug);                                     // legacy bare slug
+  }
+  function selectTarget(t) {
+    if (!t) return false;                       // unresolved → leave default
     if (t.appKey !== ACTIVE_APP) renderApp(t.appKey);
     activate(t.index, false);
     return true;
@@ -1516,10 +1555,10 @@
 
   // ---- boot ----
   buildAppMenu();
-  var bootSlug = slugFromHash();                 // capture before renderApp rewrites the hash
+  var bootHash = parseHash();                    // capture before renderApp rewrites the hash
   renderApp(Object.keys(APPS)[0]);
-  if (bootSlug) selectSlug(bootSlug);            // honour a shared #slug link
-  window.addEventListener('hashchange', function () { selectSlug(slugFromHash()); });
+  if (bootHash) selectTarget(resolveTarget(bootHash));   // honour a shared link
+  window.addEventListener('hashchange', function () { selectTarget(resolveTarget(parseHash())); });
 </script>
 </body>
 </html>

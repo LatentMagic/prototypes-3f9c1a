@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:#06100C;font-family:'Barlow',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#EDF3EC;}
+  a{color:#35E08A;text-decoration:none;}
+  a:hover{color:#23B96E;}
+  button{font-family:'Barlow',sans-serif;}
+  ::-webkit-scrollbar{width:0;height:0;}
+  @keyframes pulseRing{0%{transform:scale(1);opacity:.5}70%{transform:scale(2.2);opacity:0}100%{opacity:0}}
+  @keyframes micBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes wave{0%,100%{transform:scaleY(.22)}50%{transform:scaleY(1)}}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes sheetUp{from{transform:translateY(101%)}to{transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes chipUp{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes toastIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes liveDot{0%,100%{opacity:1}50%{opacity:.25}}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+  @media (max-width:640px){
+    .cm-stage{padding:0!important;background:#0A130F!important;align-items:stretch!important;justify-content:stretch!important;}
+    .cm-device{width:100%!important;max-width:100%!important;height:100vh!important;height:100dvh!important;border:none!important;border-radius:0!important;box-shadow:none!important;}
+  }
+</style>
+</helmet>
+
+<div class="cm-stage" style="{{ stageStyle }}">
+<div class="cm-device" style="{{ deviceStyle }}">
+
+  <div style="position:absolute;top:-70px;left:50%;transform:translateX(-50%);width:360px;height:230px;background:radial-gradient(50% 50% at 50% 50%,rgba(53,224,138,.16),transparent 70%);pointer-events:none;z-index:1;"></div>
+
+  <div style="flex:0 0 auto;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#EDF3EC;position:relative;z-index:5;">
+    <span style="font-weight:700;letter-spacing:.5px;">15:47</span>
+    <sc-if value="{{ showSignal }}" hint-placeholder-val="{{ true }}">
+      <span style="display:flex;align-items:center;gap:6px;color:#9DB2A6;font-size:10px;font-weight:500;letter-spacing:.5px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#FF5B4E;"></span>NO SIGNAL · ON-DEVICE
+      </span>
+    </sc-if>
+  </div>
+
+  <div style="flex:1 1 auto;overflow-y:auto;position:relative;z-index:2;">
+
+    <!-- ============ DASHBOARD ============ -->
+    <sc-if value="{{ showDashboard }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:16px 16px 4px;">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:18px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#0F6B41,#063C25);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:.5px;flex:0 0 auto;box-shadow:inset 0 -6px 12px rgba(0,0,0,.35);">AV</div>
+          <div style="line-height:1.15;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.3px;color:#EDF3EC;text-transform:uppercase;">Ashford Vale FC</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#64786D;letter-spacing:.5px;">CHESHAM &amp; DISTRICT · DIV ONE</div>
+          </div>
+        </div>
+
+        <div style="position:relative;border-radius:22px;padding:22px;overflow:hidden;background:linear-gradient(158deg,#0F5C3A 0%,#0A3E27 62%,#083320 100%);border:1px solid rgba(255,255,255,.09);box-shadow:0 16px 40px rgba(0,0,0,.35);">
+          <div style="position:absolute;right:-30px;top:-28px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:170px;line-height:.8;color:rgba(255,255,255,.05);pointer-events:none;">VS</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:14px;">NEXT FIXTURE · SAT 3:00 PM</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;line-height:.98;letter-spacing:.3px;text-transform:uppercase;color:#fff;">Ashford Vale<br><span style="color:rgba(255,255,255,.45);font-size:20px;font-weight:600;">vs</span> Hartsden Town</div>
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:5px;font-family:'Barlow',sans-serif;font-size:13px;color:rgba(255,255,255,.7);">
+            <div>Chesham &amp; District League · Division One</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;">VALE PARK</div>
+          </div>
+          <button onClick="{{ startMatchday }}" style="margin-top:18px;width:100%;background:#35E08A;color:#052214;border:none;border-radius:14px;padding:16px;font-family:'Barlow',sans-serif;font-weight:700;font-size:17px;letter-spacing:.2px;cursor:pointer;" style-hover="background:#2BC578;" style-active="background:#23B96E;">Start matchday</button>
+        </div>
+      </div>
+
+      <div style="padding:16px 16px 90px;">
+        <div style="display:flex;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:4px;gap:4px;margin-bottom:14px;">
+          <button onClick="{{ setUpcoming }}" style="flex:1;padding:9px;border:none;border-radius:9px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;cursor:pointer;background:{{ upBg }};color:{{ upFg }};">Upcoming</button>
+          <button onClick="{{ setPast }}" style="flex:1;padding:9px;border:none;border-radius:9px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;cursor:pointer;background:{{ pastBg }};color:{{ pastFg }};">Past</button>
+        </div>
+
+        <sc-if value="{{ isUpcoming }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ upcoming }}" as="fx" hint-placeholder-count="1">
+            <div style="display:flex;align-items:center;gap:13px;background:#14201A;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:#0C3521;border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:#fff;flex:0 0 auto;">MR</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;color:#EDF3EC;">{{ fx.opp }}</div>
+                <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#64786D;">{{ fx.when }}</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9DB2A6;text-align:right;letter-spacing:.5px;">{{ fx.where }}</div>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ isPast }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ past }}" as="r" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:13px;background:#14201A;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;">
+                <div style="width:30px;height:30px;border-radius:8px;background:rgba(53,224,138,.16);color:#35E08A;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;flex:0 0 auto;">{{ r.res }}</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;color:#EDF3EC;letter-spacing:.3px;">{{ r.line }}</div>
+                  <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#64786D;">{{ r.comp }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- ============ LIVE WORKSPACE ============ -->
+    <sc-if value="{{ showLive }}" hint-placeholder-val="{{ false }}">
+      <div style="position:sticky;top:0;z-index:3;background:linear-gradient(#111C15,#0E1811);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 14px 15px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;">
+          <button onClick="{{ goDashboard }}" aria-label="Back to matches" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#9DB2A6;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(255,91,78,.13);border:1px solid rgba(255,91,78,.32);padding:6px 11px;border-radius:9px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#FF5B4E;animation:liveDot 1s infinite;"></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5B4E;letter-spacing:1px;">LIVE</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#EDF3EC;font-variant-numeric:tabular-nums;">{{ clockText }}</span>
+          </div>
+          <div style="display:flex;gap:7px;">
+            <button onClick="{{ fullTime }}" style="background:transparent;border:1px solid rgba(255,255,255,.18);color:#9DB2A6;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;letter-spacing:.5px;padding:0 10px;border-radius:9px;cursor:pointer;text-transform:uppercase;" style-hover="color:#EDF3EC;border-color:rgba(255,255,255,.35);">Full time</button>
+            <button onClick="{{ togglePause }}" aria-label="Pause clock" style="width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#EDF3EC;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;">
+              <sc-if value="{{ paused }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8Z"/></svg></sc-if>
+              <sc-if value="{{ playing }}" hint-placeholder-val="{{ true }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></sc-if>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+          <div style="flex:1;text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.3px;color:#EDF3EC;line-height:1;">Ashford<br>Vale</div>
+          <div style="display:flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-weight:800;color:#fff;line-height:1;">
+            <span style="font-size:42px;font-variant-numeric:tabular-nums;">{{ homeScore }}</span>
+            <span style="color:#35E08A;font-size:24px;">–</span>
+            <span style="font-size:42px;font-variant-numeric:tabular-nums;">{{ awayScore }}</span>
+          </div>
+          <div style="flex:1;text-align:left;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.3px;color:#EDF3EC;line-height:1;">Hartsden<br>Town</div>
+        </div>
+      </div>
+
+      <div style="padding:15px 16px 150px;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#64786D;font-weight:700;">MATCH FEED</span>
+          <span style="font-family:'Barlow',sans-serif;font-size:11px;color:#64786D;">newest first</span>
+        </div>
+        <sc-for list="{{ events }}" as="event" hint-placeholder-count="1">
+          <div style="display:flex;gap:13px;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;animation:chipUp .3s ease both;">
+            <div style="flex:0 0 auto;min-width:38px;text-align:center;">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:25px;color:#EDF3EC;line-height:1;">{{ event.minText }}</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,.08);"></div>
+            <div style="flex:1;min-width:0;">
+              <sc-if value="{{ event.isGoal }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(53,224,138,.15);color:#35E08A;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;letter-spacing:1.5px;padding:4px 8px;border-radius:6px;">GOAL</span>
+              </sc-if>
+              <sc-if value="{{ event.isYellow }}" hint-placeholder-val="{{ true }}">
+                <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(244,208,33,.13);color:#F4D021;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;letter-spacing:1.5px;padding:4px 8px;border-radius:6px;"><span style="width:8px;height:11px;background:#F4D021;border-radius:2px;"></span>YELLOW CARD</span>
+              </sc-if>
+              <div style="margin-top:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;text-transform:uppercase;color:#EDF3EC;letter-spacing:.3px;"><span style="color:#35E08A;">{{ event.numText }}</span> {{ event.player }}</div>
+              <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#64786D;margin-top:2px;">{{ event.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ============ SQUAD ============ -->
+    <sc-if value="{{ showSquad }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px 16px 90px;">
+        <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px;letter-spacing:.3px;color:#EDF3EC;margin:0;text-transform:uppercase;">Squad</h1>
+        <p style="font-family:'Barlow',sans-serif;font-size:13px;color:#9DB2A6;margin:6px 0 18px;">The words you shout, resolved to the right player. Aliases feed the on-device parse.</p>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <sc-for list="{{ squad }}" as="p" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:14px;padding:13px 14px;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:14px;">
+              <div style="width:38px;height:38px;border-radius:10px;background:rgba(53,224,138,.12);color:#35E08A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">{{ p.num }}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;color:#EDF3EC;letter-spacing:.3px;text-transform:uppercase;">{{ p.name }}</div>
+                <div style="font-size:12px;color:#64786D;font-family:'JetBrains Mono',monospace;letter-spacing:.3px;">{{ p.pos }}</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#FFC24B;background:rgba(255,194,75,.1);border:1px solid rgba(255,194,75,.28);padding:5px 10px;border-radius:8px;">{{ p.aliasQ }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ BRAND KIT ============ -->
+    <sc-if value="{{ showBrand }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px 16px 90px;">
+        <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px;letter-spacing:.3px;color:#EDF3EC;margin:0;text-transform:uppercase;">Brand kit</h1>
+        <p style="font-family:'Barlow',sans-serif;font-size:13px;color:#9DB2A6;margin:6px 0 20px;">Where every graphic gets its identity.</p>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">CLUB CREST</div>
+        <div style="display:flex;align-items:center;gap:14px;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px;margin-bottom:22px;">
+          <div style="width:60px;height:60px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#0F6B41,#063C25);border:2.5px solid rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:#fff;flex:0 0 auto;box-shadow:inset 0 -8px 16px rgba(0,0,0,.35);">AV</div>
+          <div style="flex:1;">
+            <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;color:#EDF3EC;">Vale crest</div>
+            <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#64786D;">Sits on every graphic, top-left.</div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#35E08A;background:rgba(53,224,138,.12);padding:5px 9px;border-radius:7px;">SET</span>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">COLOURS</div>
+        <div style="display:flex;gap:10px;margin-bottom:22px;">
+          <div style="flex:1;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+            <div style="height:46px;border-radius:9px;background:#0B5C39;border:1px solid rgba(255,255,255,.12);margin-bottom:9px;"></div>
+            <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:#EDF3EC;">Vale Green</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64786D;">#0B5C39</div>
+          </div>
+          <div style="flex:1;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px;">
+            <div style="height:46px;border-radius:9px;background:#FFFFFF;border:1px solid rgba(255,255,255,.12);margin-bottom:9px;"></div>
+            <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:#EDF3EC;">Chalk White</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64786D;">#FFFFFF</div>
+          </div>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">TYPEFACE</div>
+        <div style="background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;margin-bottom:22px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;color:#EDF3EC;text-transform:uppercase;line-height:1;">Matchday Bold</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64786D;margin-top:4px;">Barlow Condensed · headlines &amp; scores</div>
+          <div style="height:1px;background:rgba(255,255,255,.07);margin:12px 0;"></div>
+          <div style="font-family:'Barlow',sans-serif;font-weight:500;font-size:15px;color:#9DB2A6;">Barlow · body &amp; captions</div>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">SPONSOR</div>
+        <div style="display:flex;align-items:center;gap:14px;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px;margin-bottom:22px;">
+          <div style="width:60px;height:60px;border-radius:12px;background:#7A1518;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#FFC24B;text-align:center;line-height:.95;flex:0 0 auto;">THE<br>RED<br>LION</div>
+          <div style="flex:1;">
+            <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;color:#EDF3EC;">The Red Lion</div>
+            <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#64786D;">Match sponsor · runs along every graphic.</div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#35E08A;background:rgba(53,224,138,.12);padding:5px 9px;border-radius:7px;">SET</span>
+        </div>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">TEMPLATE PACK</div>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,#0C6A42,#083E27);position:relative;border:1px solid rgba(255,255,255,.08);">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;color:#fff;line-height:.85;">GOAL</div>
+              <div style="width:26px;height:4px;background:#FFC24B;margin-top:5px;border-radius:2px;"></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;height:14px;background:rgba(0,0,0,.35);"></div>
+          </div>
+          <div style="flex:1;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,#0C6A42,#083E27);position:relative;border:1px solid rgba(255,255,255,.08);">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#fff;line-height:.85;">FULL<br>TIME</div>
+              <div style="width:26px;height:4px;background:#FFC24B;margin-top:5px;border-radius:2px;"></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;height:14px;background:rgba(0,0,0,.35);"></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ SETTINGS ============ -->
+    <sc-if value="{{ showSettings }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px 16px 90px;">
+        <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px;letter-spacing:.3px;color:#EDF3EC;margin:0;text-transform:uppercase;">Settings</h1>
+        <p style="font-family:'Barlow',sans-serif;font-size:13px;color:#9DB2A6;margin:6px 0 22px;">App-wide preferences.</p>
+
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;margin-bottom:10px;">APP</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;background:#16241C;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:34px 20px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;letter-spacing:1px;text-transform:uppercase;line-height:1;color:#EDF3EC;">Commen<span style="position:relative;color:#052214;padding:0 4px;"><span style="position:absolute;inset:6% -2px;background:#35E08A;transform:skewX(-9deg);border-radius:2px;z-index:0;"></span><span style="position:relative;z-index:1;">tape</span></span></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#64786D;">MATCHDAY, IN YOUR VOICE</div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:0 0 auto;display:flex;background:#0E1811;border-top:1px solid rgba(255,255,255,.07);padding:9px 8px 16px;position:relative;z-index:4;">
+      <button onClick="{{ setMatches }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ navMatchesColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h11"/></svg>
+        <span style="font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;">Matches</span>
+      </button>
+      <button onClick="{{ setSquad }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ navSquadColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span style="font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;">Squad</span>
+      </button>
+      <button onClick="{{ setBrand }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ navBrandColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span style="font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;">Brand kit</span>
+      </button>
+      <button onClick="{{ setSettings }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:{{ navSettingsColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span style="font-family:'Barlow',sans-serif;font-weight:600;font-size:11px;">Settings</span>
+      </button>
+    </div>
+  </sc-if>
+
+  <!-- ============ MIC FAB (live only) ============ -->
+  <sc-if value="{{ showLive }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;bottom:0;height:158px;z-index:6;pointer-events:none;background:linear-gradient(to top,#0A130F 32%,rgba(10,19,15,.85) 60%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:26px;gap:12px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:#64786D;pointer-events:none;">TAP · SHOUT · POST</div>
+      <div style="position:relative;width:86px;height:86px;pointer-events:auto;">
+        <span style="position:absolute;inset:0;border-radius:50%;background:rgba(53,224,138,.35);animation:pulseRing 2.4s ease-out infinite;"></span>
+        <span style="position:absolute;inset:0;border-radius:50%;background:rgba(53,224,138,.25);animation:pulseRing 2.4s ease-out .8s infinite;"></span>
+        <button onClick="{{ tapMic }}" aria-label="Capture voice update" style="position:absolute;inset:0;border-radius:50%;border:none;background:radial-gradient(120% 120% at 40% 30%,#4CF29B,#22C06F);color:#052214;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 30px rgba(53,224,138,.4);animation:micBreathe 2.6s ease-in-out infinite;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/><path d="M8.5 21h7"/></svg>
+        </button>
+        <button onClick="{{ tipMic }}" aria-label="How capture works" style="position:absolute;top:-4px;right:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);background:#0E1811;color:#EDF3EC;font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;line-height:1;">i</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ VOICE CAPTURE OVERLAY ============ -->
+  <sc-if value="{{ capActive }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ skip }}" style="position:absolute;inset:0;z-index:20;background:rgba(5,13,9,.95);animation:fadeIn .18s ease both;display:flex;flex-direction:column;padding:26px 22px 30px;cursor:pointer;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex:0 0 auto;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#FF5B4E;animation:liveDot 1s infinite;"></span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#FF5B4E;letter-spacing:1.5px;">CAPTURING</span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#64786D;letter-spacing:.5px;">TAP TO SKIP</span>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+        <sc-if value="{{ capWave }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:4px;height:84px;">
+              <sc-for list="{{ waveBars }}" as="bar" hint-placeholder-count="22">
+                <div style="width:4px;height:72px;border-radius:3px;background:#35E08A;transform-origin:center;animation:wave {{ bar.anim }};"></div>
+              </sc-for>
+            </div>
+            <div style="text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;letter-spacing:.5px;color:#EDF3EC;margin-top:16px;text-transform:uppercase;">{{ capStatus }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ capShowTranscript }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:15px 17px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#64786D;margin-bottom:9px;">YOU SAID</div>
+            <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:18px;color:#EDF3EC;line-height:1.35;">&ldquo;{{ captureTyped }}&rdquo;<sc-if value="{{ capTranscribing }}" hint-placeholder-val="{{ true }}"><span style="display:inline-block;width:2px;height:17px;background:#35E08A;margin-left:2px;vertical-align:-3px;animation:blink 1s step-end infinite;"></span></sc-if></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ capParsed }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;">PARSED ON-DEVICE</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#64786D;">24&nbsp;ms · 0 cloud</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ parseSlots }}" as="slot" hint-placeholder-count="5">
+                <div style="background:#16241C;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 13px;position:relative;animation:chipUp .34s cubic-bezier(.16,1,.3,1) {{ slot.delay }} both;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#35E08A;margin-bottom:5px;">{{ slot.label }}</div>
+                  <sc-if value="{{ slot.isPlayer }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:9px;">
+                      <span style="width:30px;height:30px;border-radius:8px;background:rgba(53,224,138,.12);color:#35E08A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">{{ slot.num }}</span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;text-transform:uppercase;color:#EDF3EC;letter-spacing:.3px;line-height:1;">{{ slot.name }}</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#FFC24B;margin-top:3px;">matched {{ slot.alias }}</div>
+                      </div>
+                      <sc-if value="{{ slot.info }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ tipAlias }}" aria-label="How alias matching works" style="width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);background:rgba(0,0,0,.25);color:#EDF3EC;font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto;">i</button>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ slot.isSimple }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:#EDF3EC;letter-spacing:.3px;">{{ slot.value }}</div>
+                  </sc-if>
+                  <sc-if value="{{ slot.isMissing }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:#FFC24B;">?</span><span style="font-family:'Barlow',sans-serif;font-size:12px;color:#FFC24B;">needs a minute</span></div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ SLOT-FILL PROMPT ============ -->
+  <sc-if value="{{ slotActive }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:22;background:rgba(5,13,9,.55);display:flex;flex-direction:column;justify-content:flex-end;">
+      <div style="background:#121D17;border-top:1px solid rgba(255,255,255,.09);border-radius:24px 24px 0 0;padding:20px 20px 28px;animation:sheetUp .22s cubic-bezier(.16,1,.3,1) both;box-shadow:0 -16px 40px rgba(0,0,0,.5);">
+        <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 16px;"></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#FFC24B;font-weight:700;">SLOT FILLING</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;color:#EDF3EC;text-transform:uppercase;margin:5px 0 3px;line-height:1;">What minute?</div>
+        <div style="font-family:'Barlow',sans-serif;font-size:13px;color:#9DB2A6;margin-bottom:18px;">Yellow card · {{ slotPlayer }}. Didn&rsquo;t catch the minute &mdash; tap one.</div>
+        <div style="display:flex;gap:10px;">
+          <sc-for list="{{ minuteOptions }}" as="opt" hint-placeholder-count="3">
+            <button onClick="{{ opt.onTap }}" style="flex:1;padding:16px 0;border:1px solid rgba(255,194,75,.4);background:rgba(255,194,75,.08);color:#FFC24B;border-radius:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;cursor:pointer;" style-hover="background:rgba(255,194,75,.18);">{{ opt.t }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ REVIEW & SHARE SHEET ============ -->
+  <sc-if value="{{ reviewActive }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeReview }}" style="position:absolute;inset:0;z-index:24;background:rgba(5,13,9,.6);display:flex;flex-direction:column;justify-content:flex-end;">
+      <div onClick="{{ stop }}" style="background:#0E1811;border-top:1px solid rgba(255,255,255,.09);border-radius:24px 24px 0 0;max-height:94%;overflow-y:auto;animation:sheetUp .24s cubic-bezier(.16,1,.3,1) both;box-shadow:0 -18px 44px rgba(0,0,0,.55);">
+        <div style="padding:14px 18px 0;position:sticky;top:0;background:#0E1811;">
+          <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:0 auto 12px;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;">READY TO POST</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#EDF3EC;text-transform:uppercase;line-height:1;margin-top:2px;">{{ reviewTitle }}</div>
+            </div>
+            <button onClick="{{ closeReview }}" aria-label="Close" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#9DB2A6;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="padding:0 18px;">
+          <!-- ===== GRAPHIC ===== -->
+          <div style="position:relative;width:100%;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:linear-gradient(150deg,#0C6A42 0%,#083E27 60%,#052A1A 100%);color:#fff;box-shadow:0 12px 32px rgba(0,0,0,.45);">
+            <div style="position:absolute;inset:10px;border:1.5px solid rgba(255,255,255,.16);border-radius:9px;pointer-events:none;"></div>
+
+            <!-- GOAL -->
+            <sc-if value="{{ reviewGoal }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;right:-16px;top:2px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:240px;line-height:.8;color:rgba(255,255,255,.06);pointer-events:none;">{{ rvScorerNumBare }}</div>
+              <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:20px 20px 46px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#0F6B41,#063C25);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#fff;flex:0 0 auto;">AV</div>
+                  <div style="line-height:1.1;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;">Ashford Vale FC</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(255,255,255,.6);letter-spacing:.5px;">CHESHAM &amp; DISTRICT LEAGUE</div>
+                  </div>
+                  <div style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;background:#FFC24B;color:#0A2A18;padding:2px 10px;border-radius:6px;">{{ rvMin }}</div>
+                </div>
+                <div style="margin-top:auto;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:88px;line-height:.82;letter-spacing:-1px;">GOAL</div>
+                  <div style="width:74px;height:7px;background:#FFC24B;margin:10px 0 14px;border-radius:2px;"></div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:33px;letter-spacing:.4px;text-transform:uppercase;line-height:1;">{{ rvScorer }}</div>
+                  <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:14px;color:rgba(255,255,255,.72);margin-top:5px;">Assisted by {{ rvAssist }}</div>
+                  <div style="margin-top:15px;display:flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;">
+                    <span style="font-size:15px;letter-spacing:.4px;">AVFC</span>
+                    <span style="font-size:21px;background:rgba(0,0,0,.28);padding:2px 10px;border-radius:6px;">{{ rvHome }}</span>
+                    <span style="font-size:13px;color:rgba(255,255,255,.5);">–</span>
+                    <span style="font-size:21px;background:rgba(0,0,0,.28);padding:2px 10px;border-radius:6px;">{{ rvAway }}</span>
+                    <span style="font-size:15px;letter-spacing:.4px;">HTFC</span>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- YELLOW -->
+            <sc-if value="{{ reviewYellow }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;right:22px;top:46px;width:118px;height:166px;background:#F4D021;border-radius:10px;transform:rotate(11deg);box-shadow:0 14px 34px rgba(0,0,0,.4);"></div>
+              <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:20px 20px 46px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#0F6B41,#063C25);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#fff;flex:0 0 auto;">AV</div>
+                  <div style="line-height:1.1;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;">Ashford Vale FC</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(255,255,255,.6);letter-spacing:.5px;">CHESHAM &amp; DISTRICT LEAGUE</div>
+                  </div>
+                  <div style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;background:#FFC24B;color:#0A2A18;padding:2px 10px;border-radius:6px;">{{ rvMin }}</div>
+                </div>
+                <div style="margin-top:auto;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:60px;line-height:.82;letter-spacing:-1px;">BOOKED</div>
+                  <div style="width:74px;height:7px;background:#F4D021;margin:10px 0 14px;border-radius:2px;"></div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:33px;letter-spacing:.4px;text-transform:uppercase;line-height:1;">{{ rvPlayer }}</div>
+                  <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:14px;color:rgba(255,255,255,.72);margin-top:5px;">{{ rvNum }} · Yellow card</div>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- FULL TIME -->
+            <sc-if value="{{ reviewFulltime }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:20px 20px 46px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#0F6B41,#063C25);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#fff;flex:0 0 auto;">AV</div>
+                  <div style="line-height:1.1;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;">Ashford Vale FC</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(255,255,255,.6);letter-spacing:.5px;">CHESHAM &amp; DISTRICT LEAGUE</div>
+                  </div>
+                </div>
+                <div style="margin-top:auto;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:58px;line-height:.82;">FULL TIME</div>
+                  <div style="width:74px;height:7px;background:#FFC24B;margin:10px 0 16px;border-radius:2px;"></div>
+                  <div style="display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;">
+                    <span style="font-size:17px;text-transform:uppercase;">Ashford Vale</span>
+                    <span style="font-size:30px;background:rgba(0,0,0,.28);padding:2px 12px;border-radius:8px;">{{ rvHome }}</span>
+                    <span style="color:rgba(255,255,255,.5);">–</span>
+                    <span style="font-size:30px;background:rgba(0,0,0,.28);padding:2px 12px;border-radius:8px;">{{ rvAway }}</span>
+                    <span style="font-size:17px;text-transform:uppercase;">Hartsden T.</span>
+                  </div>
+                  <div style="margin-top:12px;font-family:'Barlow',sans-serif;font-size:13px;color:rgba(255,255,255,.78);">
+                    <sc-if value="{{ ftHasScorers }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-weight:600;">Scorers · </span>
+                      <sc-for list="{{ ftScorers }}" as="sc" hint-placeholder-count="1"><span style="margin-right:10px;">{{ sc.name }} {{ sc.minText }}</span></sc-for>
+                    </sc-if>
+                    <sc-if value="{{ ftNoScorers }}" hint-placeholder-val="{{ true }}"><span style="color:rgba(255,255,255,.55);">A hard-fought point at Vale Park.</span></sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- SPONSOR STRIP -->
+            <div style="position:absolute;left:0;right:0;bottom:0;height:36px;background:rgba(0,0,0,.38);display:flex;align-items:center;gap:8px;padding:0 14px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,.55);letter-spacing:.5px;">MATCH SPONSOR</span>
+              <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:1px;color:#FFC24B;">THE RED LION</span>
+              <button onClick="{{ tipSponsor }}" aria-label="Why the sponsor slot matters" style="margin-left:auto;width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(0,0,0,.3);color:#fff;font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto;">i</button>
+            </div>
+          </div>
+
+          <!-- CAPTION -->
+          <div style="margin-top:16px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#64786D;margin-bottom:7px;">CAPTION</div>
+            <textarea onChange="{{ editCaption }}" value="{{ caption }}" style="width:100%;min-height:78px;resize:none;background:#16241C;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 13px;color:#EDF3EC;font-family:'Barlow',sans-serif;font-size:14px;line-height:1.4;outline:none;" style-focus="border-color:rgba(53,224,138,.5);"></textarea>
+          </div>
+
+          <!-- SHARE BAR -->
+          <div style="margin:14px 0 22px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#64786D;">SHARE</span>
+              <button onClick="{{ tipShare }}" aria-label="How sharing works" style="width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.04);color:#9DB2A6;font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;">i</button>
+            </div>
+            <div style="display:flex;gap:9px;">
+              <button onClick="{{ postX }}" style="flex:1.4;background:#35E08A;color:#052214;border:none;border-radius:13px;padding:15px 0;font-family:'Barlow',sans-serif;font-weight:700;font-size:15px;cursor:pointer;" style-hover="background:#2BC578;">Post to X</button>
+              <button onClick="{{ postInsta }}" style="flex:1;background:#16241C;color:#EDF3EC;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:15px 0;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;cursor:pointer;" style-hover="background:#1B2A21;">Insta Story</button>
+              <button onClick="{{ postWhats }}" style="flex:1;background:#16241C;color:#EDF3EC;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:15px 0;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;cursor:pointer;" style-hover="background:#1B2A21;">WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ TOAST ============ -->
+  <sc-if value="{{ toastActive }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;bottom:96px;z-index:30;display:flex;justify-content:center;pointer-events:none;">
+      <div style="display:flex;align-items:center;gap:10px;background:#123324;border:1px solid rgba(53,224,138,.4);border-radius:12px;padding:12px 16px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:toastIn .25s cubic-bezier(.16,1,.3,1) both;">
+        <span style="width:22px;height:22px;border-radius:50%;background:#35E08A;color:#052214;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>
+        <span style="font-family:'Barlow',sans-serif;font-weight:600;font-size:14px;color:#EDF3EC;">{{ toastText }}</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ TOOLTIP ============ -->
+  <sc-if value="{{ tooltipActive }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ hideTip }}" style="position:absolute;inset:0;z-index:40;background:rgba(5,13,9,.35);display:flex;flex-direction:column;justify-content:flex-end;padding:0 16px 24px;cursor:pointer;">
+      <div onClick="{{ stop }}" style="background:#16241C;border:1px solid rgba(53,224,138,.28);border-radius:16px;padding:16px 17px;box-shadow:0 16px 40px rgba(0,0,0,.5);animation:toastIn .22s cubic-bezier(.16,1,.3,1) both;">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
+          <span style="width:24px;height:24px;border-radius:50%;background:rgba(53,224,138,.15);color:#35E08A;font-family:'Barlow',sans-serif;font-style:italic;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">i</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#35E08A;font-weight:700;">HOW IT WORKS</span>
+          <button onClick="{{ hideTip }}" aria-label="Close" style="margin-left:auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.06);border:none;color:#9DB2A6;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p style="font-family:'Barlow',sans-serif;font-size:14px;line-height:1.5;color:#DCE8DE;margin:0;text-wrap:pretty;">{{ tooltipText }}</p>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 440, &quot;height&quot;: 900 },
+  &quot;screenLayout&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Device frame (desktop)&quot;, &quot;Full screen (mobile)&quot;], &quot;default&quot;: &quot;Device frame (desktop)&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Layout&quot; },
+  &quot;captureSpeed&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Cinematic&quot;, &quot;Snappy&quot;], &quot;default&quot;: &quot;Cinematic&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Demo&quot; },
+  &quot;pauseAtStart&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Demo&quot; },
+  &quot;showSignalBadge&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Demo&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    tab: 'matches', screen: 'dashboard', fixtureFilter: 'upcoming',
+    clock: 33 * 60 + 38, paused: false,
+    homeScore: 0, awayScore: 0,
+    events: [{ id: 1, min: 12, type: 'yellow', player: 'Rob Carter', num: 4 }],
+    captureCount: 0, capture: null, slotPending: null,
+    review: null, caption: '', toast: null, tooltip: null,
+  };
+  _t = [];
+
+  componentDidMount() {
+    if (this.props.pauseAtStart) this.setState({ paused: true });
+    this.timer = setInterval(() => {
+      this.setState(s => (s.paused || s.screen !== 'live') ? null : ({ clock: s.clock + 1 }));
+    }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); this.clearTimers(); }
+  clearTimers() { this._t.forEach(clearTimeout); this._t = []; if (this._type) { clearInterval(this._type); this._type = null; } }
+  after(ms, fn) { const id = setTimeout(fn, ms); this._t.push(id); return id; }
+  spd(ms) { return this.props.captureSpeed === 'Snappy' ? Math.round(ms * 0.55) : ms; }
+  fmt(sec) { const m = Math.floor(sec / 60), s = sec % 60; return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); }
+
+  seq(goal) {
+    if (goal) return {
+      kind: 'goal', transcript: 'Davey set up Smithy for a goal, absolute screamer, 34 minutes, 1-0',
+      slots: [
+        { label: 'EVENT', value: 'Goal', kind: 'event' },
+        { label: 'SCORER', value: 'Dave Smith', num: 8, alias: 'Smithy', kind: 'player', info: true },
+        { label: 'ASSIST', value: 'Jonny Davey', num: 9, alias: 'Davey', kind: 'player' },
+        { label: 'MINUTE', value: "34\u2019", kind: 'minute' },
+        { label: 'SCORE', value: '1\u20130', kind: 'score' },
+      ],
+    };
+    return {
+      kind: 'yellow', transcript: 'Yellow card for Robbo',
+      slots: [
+        { label: 'EVENT', value: 'Yellow card', kind: 'event' },
+        { label: 'PLAYER', value: 'Rob Carter', num: 4, alias: 'Robbo', kind: 'player', info: true },
+        { label: 'MINUTE', value: null, kind: 'minute', missing: true },
+      ],
+    };
+  }
+
+  tapMic() {
+    if (this.state.capture || this.state.slotPending || this.state.review) return;
+    this.clearTimers();
+    const goal = this.state.captureCount === 0;
+    const seq = this.seq(goal);
+    this.setState({ capture: { phase: 'listening', typed: '', seq }, captureCount: this.state.captureCount + 1, tooltip: null });
+    this.after(this.spd(950), () => this.type(seq));
+  }
+  type(seq) {
+    this.setState(s => s.capture ? ({ capture: { ...s.capture, phase: 'transcribing', typed: '' } }) : null);
+    let i = 0; const full = seq.transcript;
+    this._type = setInterval(() => {
+      i += 2; const typed = full.slice(0, i);
+      this.setState(s => s.capture ? ({ capture: { ...s.capture, typed } }) : null);
+      if (i >= full.length) { clearInterval(this._type); this._type = null; this.after(this.spd(400), () => this.parsed(seq)); }
+    }, this.spd(40));
+  }
+  parsed(seq) {
+    this.setState(s => s.capture ? ({ capture: { ...s.capture, phase: 'parsed', typed: seq.transcript } }) : null);
+    this.after(this.spd(1600), () => seq.kind === 'goal' ? this.goalReview() : this.slotPrompt());
+  }
+  skip() {
+    const c = this.state.capture; if (!c) return;
+    this.clearTimers();
+    c.seq.kind === 'goal' ? this.goalReview() : this.slotPrompt();
+  }
+  goalReview() {
+    this.clearTimers();
+    this.setState({
+      capture: null,
+      review: { kind: 'goal', min: 34, scorer: 'Dave Smith', scorerNum: 8, assist: 'Jonny Davey', home: 1, away: 0 },
+      caption: 'GOAL! 34\u2019 \u2014 Smithy smashes it in from 25 yards, teed up by Davey. 1-0 Vale! \u26bd\ud83d\udd25 #UpTheVale',
+      tooltip: null,
+    });
+  }
+  slotPrompt() { this.clearTimers(); this.setState({ capture: null, slotPending: { player: 'Rob Carter', num: 4 } }); }
+  chooseMinute(m) {
+    this.setState({
+      slotPending: null,
+      review: { kind: 'yellow', min: m, player: 'Rob Carter', num: 4 },
+      caption: m + '\u2019 \u2014 Booking for Robbo. Keep it calm, lads. #UpTheVale',
+    });
+  }
+  fullTime() {
+    this.setState(s => ({
+      review: { kind: 'fulltime', home: s.homeScore, away: s.awayScore },
+      caption: 'FULL TIME \u00b7 Ashford Vale ' + s.homeScore + '-' + s.awayScore + ' Hartsden Town. Up the Vale! #UpTheVale',
+      tooltip: null,
+    }));
+  }
+  post(channel) {
+    const r = this.state.review; if (!r) return;
+    this.clearTimers();
+    this.setState(s => {
+      let ev = s.events, h = s.homeScore;
+      if (r.kind === 'goal') { ev = [{ id: Date.now(), min: r.min, type: 'goal', player: r.scorer, num: r.scorerNum, assist: r.assist }, ...ev]; h = 1; }
+      else if (r.kind === 'yellow') { ev = [{ id: Date.now(), min: r.min, type: 'yellow', player: r.player, num: r.num }, ...ev]; }
+      return { events: ev, homeScore: h, review: null, toast: { channel } };
+    });
+    this.after(2400, () => this.setState({ toast: null }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const fullScreen = this.props.screenLayout === 'Full screen (mobile)';
+    const stageStyle = fullScreen
+      ? 'min-height:100vh;width:100%;display:flex;background:#0A130F;'
+      : 'min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;padding:28px 16px;background:radial-gradient(125% 80% at 50% -12%,#12492f 0%,#08160E 46%,#050C09 100%);';
+    const deviceStyle = fullScreen
+      ? 'position:relative;width:100%;max-width:100%;height:100vh;background:#0A130F;overflow:hidden;display:flex;flex-direction:column;'
+      : 'position:relative;width:390px;max-width:100%;height:min(844px,94vh);background:#0A130F;border-radius:46px;border:9px solid #05100B;box-shadow:0 44px 120px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.05),inset 0 0 0 1px rgba(255,255,255,.03);overflow:hidden;display:flex;flex-direction:column;';
+    const tips = {
+      mic: 'Everything runs on the phone \u2014 local Whisper transcription plus a small language model parse the shout. Grassroots pitches are mobile dead zones; offline-first is the moat.',
+      alias: 'Squad-aware parsing: \u201cSmithy\u201d resolves to #8 Dave Smith from the squad\u2019s alias list. Generic AI tools don\u2019t know local nicknames.',
+      sponsor: 'Clubs sell this sponsor slot to the local pub for \u00a3100\u2013\u00a3300 a season \u2014 Commentate pays for itself.',
+      share: 'The graphic renders on-device in under 30 ms and shares straight into X, Instagram, or WhatsApp \u2014 no cloud, \u00a30 per post.',
+    };
+    const events = s.events.map(e => ({
+      id: e.id, minText: e.min + '\u2019', isGoal: e.type === 'goal', isYellow: e.type === 'yellow',
+      numText: '#' + e.num, player: e.player,
+      sub: e.assist ? 'Assist \u00b7 ' + e.assist : 'Caution',
+    }));
+    const cap = s.capture;
+    const parseSlots = (cap ? cap.seq.slots : []).map((sl, i) => ({
+      label: sl.label, isPlayer: sl.kind === 'player', isMissing: !!sl.missing,
+      isSimple: sl.kind !== 'player' && !sl.missing,
+      value: sl.value, num: sl.num ? '#' + sl.num : '', name: sl.value,
+      alias: sl.alias ? '\u201c' + sl.alias + '\u201d' : '', info: !!sl.info,
+      delay: (0.1 + i * 0.11).toFixed(2) + 's',
+    }));
+    const r = s.review || {};
+    const scorers = s.events.filter(e => e.type === 'goal');
+    const titles = { goal: 'Goal graphic', yellow: 'Yellow card', fulltime: 'Full-time card' };
+    return {
+      stageStyle, deviceStyle,
+      showSignal: this.props.showSignalBadge !== false,
+      tab: s.tab,
+      showDashboard: s.tab === 'matches' && s.screen === 'dashboard',
+      showLive: s.tab === 'matches' && s.screen === 'live',
+      showSquad: s.tab === 'squad',
+      showBrand: s.tab === 'brand',
+      showSettings: s.tab === 'settings',
+      showNav: !(s.tab === 'matches' && s.screen === 'live'),
+      navMatchesColor: s.tab === 'matches' ? '#35E08A' : '#64786D',
+      navSquadColor: s.tab === 'squad' ? '#35E08A' : '#64786D',
+      navBrandColor: s.tab === 'brand' ? '#35E08A' : '#64786D',
+      navSettingsColor: s.tab === 'settings' ? '#35E08A' : '#64786D',
+      isUpcoming: s.fixtureFilter === 'upcoming', isPast: s.fixtureFilter === 'past',
+      upBg: s.fixtureFilter === 'upcoming' ? '#35E08A' : 'transparent',
+      upFg: s.fixtureFilter === 'upcoming' ? '#052214' : '#9DB2A6',
+      pastBg: s.fixtureFilter === 'past' ? '#35E08A' : 'transparent',
+      pastFg: s.fixtureFilter === 'past' ? '#052214' : '#9DB2A6',
+      upcoming: [{ opp: 'Meadow Rangers', when: 'Sat 2 Aug \u00b7 3:00 PM', where: 'AWAY · LEAGUE' }],
+      past: [
+        { res: 'W', line: 'Ashford Vale 2 \u2013 1 Brackley Sports', comp: 'League \u00b7 Home' },
+        { res: 'W', line: 'Meadow Rangers 0 \u2013 3 Ashford Vale', comp: 'League \u00b7 Away' },
+      ],
+      squad: [
+        { num: 1, name: 'Lee Nash', pos: 'Goalkeeper', aliasQ: '\u201cNashy\u201d' },
+        { num: 4, name: 'Rob Carter', pos: 'Centre-back', aliasQ: '\u201cRobbo\u201d' },
+        { num: 6, name: 'Tom Whitfield', pos: 'Centre-mid', aliasQ: '\u201cWhit\u201d' },
+        { num: 8, name: 'Dave Smith', pos: 'Centre-mid', aliasQ: '\u201cSmithy\u201d' },
+        { num: 9, name: 'Jonny Davey', pos: 'Striker', aliasQ: '\u201cDavey\u201d' },
+        { num: 10, name: 'Callum Reid', pos: 'Attacking-mid', aliasQ: '\u201cReidy\u201d' },
+        { num: 11, name: 'Sam Okafor', pos: 'Left-wing', aliasQ: '\u201cOka\u201d' },
+      ],
+      events,
+      clockText: this.fmt(s.clock), paused: s.paused, playing: !s.paused,
+      homeScore: s.homeScore, awayScore: s.awayScore,
+      capActive: !!cap,
+      capWave: !!(cap && (cap.phase === 'listening' || cap.phase === 'transcribing')),
+      capShowTranscript: !!(cap && (cap.phase === 'transcribing' || cap.phase === 'parsed')),
+      capTranscribing: !!(cap && cap.phase === 'transcribing'),
+      capParsed: !!(cap && cap.phase === 'parsed'),
+      capStatus: cap && cap.phase === 'listening' ? 'Listening\u2026' : 'Transcribing on-device\u2026',
+      captureTyped: cap ? cap.typed : '', parseSlots,
+      waveBars: Array.from({ length: 26 }, (_, i) => ({ i, anim: (0.55 + (i % 4) * 0.12).toFixed(2) + 's ease-in-out ' + (-(i * 0.07)).toFixed(2) + 's infinite' })),
+      slotActive: !!s.slotPending, slotPlayer: s.slotPending ? '#' + s.slotPending.num + ' ' + s.slotPending.player : '',
+      minuteOptions: [
+        { m: 38, t: "38\u2019", onTap: () => this.chooseMinute(38) },
+        { m: 40, t: "40\u2019", onTap: () => this.chooseMinute(40) },
+        { m: 42, t: "42\u2019", onTap: () => this.chooseMinute(42) },
+      ],
+      reviewActive: !!s.review, reviewGoal: r.kind === 'goal', reviewYellow: r.kind === 'yellow', reviewFulltime: r.kind === 'fulltime',
+      reviewTitle: titles[r.kind] || '',
+      rvMin: r.min ? r.min + '\u2019' : '', rvScorer: r.scorer || '', rvScorerNumBare: r.scorerNum ? String(r.scorerNum) : '',
+      rvAssist: r.assist || '', rvHome: r.home, rvAway: r.away, rvPlayer: r.player || '', rvNum: r.num ? '#' + r.num : '',
+      ftScorers: scorers.map(e => ({ name: e.player, minText: e.min + '\u2019' })),
+      ftHasScorers: scorers.length > 0, ftNoScorers: scorers.length === 0,
+      caption: s.caption,
+      toastActive: !!s.toast, toastText: s.toast ? 'Queued to ' + s.toast.channel : '',
+      tooltipActive: !!s.tooltip, tooltipText: s.tooltip ? tips[s.tooltip] : '',
+      startMatchday: () => this.setState({ screen: 'live' }),
+      goDashboard: () => this.setState({ screen: 'dashboard' }),
+      setMatches: () => this.setState({ tab: 'matches' }),
+      setSquad: () => this.setState({ tab: 'squad' }),
+      setBrand: () => this.setState({ tab: 'brand' }),
+      setSettings: () => this.setState({ tab: 'settings' }),
+      setUpcoming: () => this.setState({ fixtureFilter: 'upcoming' }),
+      setPast: () => this.setState({ fixtureFilter: 'past' }),
+      togglePause: () => this.setState(st => ({ paused: !st.paused })),
+      tapMic: () => this.tapMic(),
+      skip: () => this.skip(),
+      fullTime: () => this.fullTime(),
+      closeReview: () => this.setState({ review: null }),
+      postX: () => this.post('X'), postInsta: () => this.post('Instagram'), postWhats: () => this.post('WhatsApp'),
+      editCaption: (e) => this.setState({ caption: e.target.value }),
+      tipMic: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ tooltip: 'mic' }); },
+      tipAlias: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ tooltip: 'alias' }); },
+      tipSponsor: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ tooltip: 'sponsor' }); },
+      tipShare: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ tooltip: 'share' }); },
+      hideTip: () => this.setState({ tooltip: null }),
+      stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+    };
+  }
+}
+</script>
+</body>
+</html>
