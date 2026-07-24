@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — primitives. Icons (inline), Button, Field, Logo, Spinner.
+// Circlists — primitives. Icons (inline), Button, Field, Logo, Spinner.
 // Pulse Modernist: one accent, calm neutrals, weight-and-size hierarchy.
 // ============================================================================
 
@@ -21,6 +21,7 @@ const LP_ICONS = {
   link: '<path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"></path><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"></path>',
   settings: '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>',
   card: '<rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line>',
+  crown: '<path d="m2 20 1.7-11L8 13l4-7 4 7 4.3-4L22 20z"></path><line x1="2" y1="20" x2="22" y2="20"></line>',
   edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>',
   'more-vertical': '<circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"></circle>',
   logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>',
@@ -55,11 +56,29 @@ const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth
 
 // ---- Spinner ---------------------------------------------------------------
 const Spinner = ({ size = 14, light = true }) => (
-  <span className="lp-spin" style={{
+  <span className="circ-spin" style={{
     width: size, height: size,
     borderColor: light ? 'rgba(255,255,255,0.4)' : 'rgba(10,10,10,0.18)',
     borderTopColor: light ? '#fff' : 'var(--color-fg-1)',
   }} aria-hidden="true" />
+);
+
+// ---- App-level loading — the ONE full-screen loading state -----------------
+// There are exactly two loading states in the product: this app-level one, and
+// the in-shell FeedLoading (spinner within the rail + tabs). Every full-view
+// transition that isn't the feed — auth return, circle provisioning, the billing
+// provider handoff — is the SAME state and renders this single component. The
+// flows differ (they resolve to different places); the loading treatment does
+// not. Caption-less brand mark on the app canvas; `label` is the accessible
+// announcement only (role="status"), never shown. NB: the provider slate
+// (#0f172a) belongs to the actual Checkout/billing screens, not to loading.
+const AppLoading = ({ label = 'Loading' }) => (
+  <div role="status" aria-label={label} style={{
+    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px',
+  }}>
+    <BrandSpinner size={100} />
+  </div>
 );
 
 // ---- Button ----------------------------------------------------------------
@@ -90,7 +109,7 @@ const Button = React.forwardRef((props, ref) => {
     destructive: { background: 'var(--color-destructive)', color: '#fff' },
     ghost: { background: 'transparent', color: 'var(--color-fg-2)', fontWeight: 500, border: '1px solid var(--color-border-1)' },
   };
-  const cls = 'lp-btn lp-btn-' + variant;
+  const cls = 'circ-btn circ-btn-' + variant;
   return (
     <button
       ref={ref} type={type} onClick={onClick} disabled={loading || disabled}
@@ -154,28 +173,31 @@ const Field = React.forwardRef(({ label, hint, error, mono = false, suffix, ...r
   );
 });
 
-// ---- Logo mark — the LatentPulse "LP" box (matches the tab favicon) ----------
+// ---- Logo mark — the Circlists "circle" (brand pack: sage halo / green disc /
+// thin white separator ring). Halo is OPAQUE sage so the mark reads at favicon
+// size on any ground. Disc stays var(--color-accent) so it tracks the accent Tweak.
 const LogoMark = ({ size = 24 }) => (
-  <span style={{
-    width: size, height: size, borderRadius: Math.max(4, Math.round(size * 0.16)),
-    background: 'var(--color-accent)', flexShrink: 0,
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    fontFamily: 'var(--font-sans)', fontWeight: 700, color: '#fff',
-    fontSize: Math.round(size * 0.44), letterSpacing: '-0.02em', lineHeight: 1,
-  }}>LP</span>
+  <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="Circlists"
+    style={{ display: 'block', flexShrink: 0 }}>
+    <circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle>
+    <circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle>
+    <circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" strokeWidth={1.35}></circle>
+  </svg>
 );
 
-const Wordmark = ({ size = 16, mark = true }) => (
-  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-    {mark && <LogoMark size={size * 1.4} />}
-    <span style={{
-      fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: size,
-      letterSpacing: '-0.01em', color: 'var(--color-fg-1)',
-    }}>
-      Latent<span style={{ color: 'var(--color-accent)' }}>Pulse</span>
-    </span>
-  </span>
-);
+// ---- Wordmark / lockup. These ship as finished vector assets in the brand pack
+// (outlined paths — font-independent, tittle baked in exactly). Render them
+// directly; nothing is re-derived. mark=true → lockup (mark + wordmark), else the
+// wordmark alone. Ink variants — every in-app placement is a light ground.
+// (`size` ≈ wordmark font-size; both assets share cap-height 1490 in their viewBox.)
+const Wordmark = ({ size = 16, mark = true }) => {
+  const cap = size * 0.727;
+  const height = Math.round(cap * (mark ? 2514.33 : 2212.05) / 1490);
+  return (
+    <img src={mark ? 'brand/assets/circlists-lockup.svg' : 'brand/assets/circlists-wordmark.svg'}
+      alt="Circlists" style={{ height, width: 'auto', display: 'block', flexShrink: 0 }} />
+  );
+};
 
 // ---- Avatar (initials) -----------------------------------------------------
 function initialsOf(name) {
@@ -196,4 +218,11 @@ const Avatar = ({ name, size = 34, accent = false }) => (
   }}>{initialsOf(name)}</span>
 );
 
-Object.assign(window, { Icon, Spinner, Button, Field, LogoMark, Wordmark, Avatar, initialsOf });
+// Account-chip display name. The current user's roster identity is the literal
+// 'You' everywhere in shared views; their own account surfaces the real name.
+function displayName(u) {
+  if (u && u.firstName && u.lastName) return u.firstName + ' ' + u.lastName;
+  return (u && u.name) || '';
+}
+
+Object.assign(window, { Icon, Spinner, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf, displayName });

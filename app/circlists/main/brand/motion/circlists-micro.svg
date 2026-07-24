@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 52 52" width="52" height="52" role="img" aria-label="Circlists — live signal">
+  
+  <defs>
+    <clipPath id="cl-micro-halo"><circle cx="24" cy="24" r="22.5"></circle></clipPath>
+    <linearGradient id="cl-micro-band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8BBFAD" stop-opacity="0"></stop>
+      <stop offset="0.5" stop-color="#8BBFAD" stop-opacity="1"></stop>
+      <stop offset="1" stop-color="#8BBFAD" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+  
+  <circle class="cl-halo-static" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle>
+  
+  <g clip-path="url(#cl-micro-halo)">
+    <rect class="cl-reveal" x="-32" y="-10" width="26" height="68" fill="url(#cl-micro-band)"></rect>
+  </g>
+  
+  <circle cx="24" cy="24" r="14.25" fill="#047857"></circle>
+  <circle cx="24" cy="24" r="14.925" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle>
+</svg>

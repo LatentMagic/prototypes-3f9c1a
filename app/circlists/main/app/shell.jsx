@@ -1,23 +1,24 @@
 // ============================================================================
-// LatentPulse — App shell. Persistent chrome on every authenticated surface.
+// Circlists — App shell. Persistent chrome on every authenticated surface.
 // Desktop: left space-switcher rail. Mobile: switcher behind a menu trigger.
 // Top bar carries space name + invite + members + avatar→user menu.
 // ============================================================================
 
 // ---- Rail contents (shared by desktop rail + mobile drawer) ----------------
 // The account control lives at the FOOT of the rail; its menu opens upward.
-const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut }) => {
+const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate }) => {
   const [acctOpen, setAcctOpen] = React.useState(false);
+  const acctBtnRef = React.useRef(null);
   return (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', padding: '4px 8px 20px' }}>
-      <Wordmark size={15} />
+      <PulseLockup size={20} />
     </div>
     <div style={{
       fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11,
       letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)',
-      padding: '0 8px 8px',
-    }}>Spaces</div>
+      padding: '0 14px 8px',
+    }}>Circles</div>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {spaces.map((s) => {
         const active = s.id === currentId;
@@ -46,23 +47,30 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
       fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)',
       display: 'flex', alignItems: 'center', gap: 8,
     }}>
-      <Icon name="plus" size={16} /> New space
+      <Icon name="plus" size={16} /> New circle
     </button>
+    {spaces.length === 0 && (
+      <p style={{
+        margin: 0, padding: '2px 14px 0',
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5,
+        color: 'var(--color-fg-3)',
+      }}>Your circles show up here.</p>
+    )}
     <div style={{ flex: 1 }} />
     <div style={{ position: 'relative', borderTop: '1px solid var(--color-border-2)', marginTop: 12, paddingTop: 8 }}>
-      <button onClick={() => setAcctOpen(v => !v)} aria-haspopup="menu" aria-expanded={acctOpen} className="lp-railacct" style={{
+      <button ref={acctBtnRef} onClick={() => { if (onAccountGate) { onClose && onClose(); onAccountGate(); return; } setAcctOpen(v => !v); }} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', cursor: 'pointer',
         background: 'transparent', border: 0, padding: '8px', borderRadius: 'var(--radius-md)', minHeight: 44,
       }}>
-        <Avatar name={user.name} size={30} accent />
+        <Avatar name={displayName(user)} size={30} accent />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</div>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName(user)}</div>
           <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
         </div>
         <Icon name="chevron-down" size={14} color="var(--color-fg-3)" style={{ flexShrink: 0, transform: acctOpen ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
       </button>
       {acctOpen && (
-        <UserMenu user={user} openUp stretch
+        <UserMenu user={user} openUp stretch anchorRef={acctBtnRef}
           onManageAccount={() => { onClose && onClose(); onManageAccount(); }}
           onSignOut={() => { onClose && onClose(); onSignOut(); }}
           onClose={() => setAcctOpen(false)} />
@@ -73,17 +81,24 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
 };
 
 // ---- User menu (avatar dropdown) -------------------------------------------
-const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onSignOut, onClose, anchorRight, openUp, stretch }) => {
+const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onSignOut, onClose, anchorRight, openUp, stretch, anchorRef }) => {
   const ref = React.useRef(null);
   React.useEffect(() => {
-    const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    // Ignore mousedowns on the toggle button itself — it runs its own open/close
+    // logic on click. Without this, the outside-mousedown handler closes the menu
+    // first, then the button's click (fired right after on the same press) flips
+    // state again and the menu instantly reopens.
+    const onDown = (e) => {
+      if (anchorRef && anchorRef.current && anchorRef.current.contains(e.target)) return;
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('mousedown', onDown);
     window.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('mousedown', onDown); window.removeEventListener('keydown', onKey); };
   }, [onClose]);
   const Item = ({ icon, label, onClick, danger }) => (
-    <button onClick={() => { onClose(); onClick(); }} className="lp-menuitem" style={{
+    <button onClick={() => { onClose(); onClick(); }} className="circ-menuitem" style={{
       display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
       background: 'transparent', border: 0, cursor: 'pointer', minHeight: 44,
       padding: '11px 14px', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
@@ -100,11 +115,11 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
       ...(stretch ? { left: 0, right: 0 } : { right: anchorRight ? 0 : 'auto' }),
       minWidth: stretch ? 0 : 240, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
-    }} className="lp-anim-fade">
+    }} className="circ-anim-fade">
       <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid var(--color-border-2)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Avatar name={user.name} size={34} accent />
+        <Avatar name={displayName(user)} size={34} accent />
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{user.name}</div>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{displayName(user)}</div>
           <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
         </div>
       </div>
@@ -138,7 +153,7 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
           color: 'var(--color-fg-1)', display: 'inline-flex',
         }}><Icon name="arrow-left" size={20} /></button>
       ) : isMobile ? (
-        <button onClick={onMenu} aria-label={menuOpen ? 'Close spaces menu' : 'Spaces menu'} aria-expanded={menuOpen} style={{
+        <button onClick={onMenu} aria-label={menuOpen ? 'Close circles menu' : 'Circles menu'} aria-expanded={menuOpen} style={{
           background: 'transparent', border: 0, padding: 10, margin: '0 -2px', cursor: 'pointer',
           color: 'var(--color-fg-1)', display: 'inline-flex',
         }}><Icon name={menuOpen ? 'menu-open' : 'menu'} size={20} /></button>
@@ -160,14 +175,14 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
       ) : <div style={{ flex: 1 }} />}
 
       {!topbarNav && space && showMembers && (
-        <button onClick={onMembers} className="lp-topaction" aria-label="Space settings" style={{
+        <button onClick={onMembers} className="circ-topaction" aria-label="Circle settings" style={{
           display: 'inline-flex', alignItems: 'center', gap: 7, background: 'transparent',
           border: '1px solid var(--color-border-1)', cursor: 'pointer', padding: '8px 12px',
           borderRadius: 'var(--radius-md)', minHeight: 40,
           fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-1)',
         }}>
           <Icon name="settings" size={17} />
-          {!isMobile && <span>Space settings</span>}
+          {!isMobile && <span>Circle settings</span>}
         </button>
       )}
     </header>
@@ -245,19 +260,19 @@ const MobileDrawer = ({ open, ...rail }) => {
 // ---- AppShell --------------------------------------------------------------
 const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true,
                     onSelectSpace, onCreateSpace, onMembers,
-                    onManageAccount, onSignOut, subView = null, children }) => {
+                    onManageAccount, onSignOut, onAccountGate, subView = null, children }) => {
   const [drawer, setDrawer] = React.useState(false);
   const rail = {
     spaces, currentId, onSelect: onSelectSpace, onCreate: onCreateSpace, user,
-    onManageAccount, onSignOut,
+    onManageAccount, onSignOut, onAccountGate,
   };
   return (
-    <div style={{ display: 'flex', minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)' }}>
+    <div style={{ display: 'flex', minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)' }}>
       {!isMobile && (
         <aside style={{
           width: 'var(--rail-width)', flexShrink: 0, background: 'var(--color-surface-sunken)',
           borderRight: '1px solid var(--color-border-2)', padding: '20px 12px',
-          position: 'sticky', top: 0, height: 'var(--lp-vh)',
+          position: 'sticky', top: 0, height: 'var(--circ-vh)',
         }}>
           <RailBody {...rail} />
         </aside>

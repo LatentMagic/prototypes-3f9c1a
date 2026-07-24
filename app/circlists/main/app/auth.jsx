@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — Auth surfaces. No app shell. Centred card on neutral page.
+// Circlists — Auth surfaces. No app shell. Centred card on neutral page.
 // Sign-in, Sign-up, One-time-code, Google return, Password recovery.
 // ============================================================================
 
@@ -8,7 +8,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // ---- Shared frame ----------------------------------------------------------
 const AuthFrame = ({ title, subtitle, children, footer, onBack }) => (
   <div style={{
-    minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
+    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     padding: '32px 20px 48px',
   }}>
@@ -19,7 +19,7 @@ const AuthFrame = ({ title, subtitle, children, footer, onBack }) => (
           color: 'var(--color-fg-2)', display: 'inline-flex',
         }}><Icon name="arrow-left" size={20} /></button>
       )}
-      <Wordmark size={17} />
+      <Wordmark size={22} />
       {onBack && <span style={{ width: 20 }} />}
     </div>
     <div style={{
@@ -54,7 +54,7 @@ const TextLink = ({ children, onClick }) => (
     background: 'transparent', border: 0, padding: 0, cursor: 'pointer',
     fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent)',
     textDecoration: 'none',
-  }} className="lp-textlink">{children}</button>
+  }} className="circ-textlink">{children}</button>
 );
 
 const OrDivider = () => (
@@ -79,7 +79,7 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
     if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
   };
   return (
-    <AuthFrame title="Sign in" subtitle="Pick up your queue where you left off."
+    <AuthFrame title="Sign in" subtitle="Pick up your list where you left off."
       footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink></span>}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
@@ -115,7 +115,7 @@ const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
     if (Object.keys(next).length === 0) onSubmit({ firstName: first.trim(), lastName: last.trim(), email: email.trim() });
   };
   return (
-    <AuthFrame title="Create your account" subtitle="One account, every space you’re part of."
+    <AuthFrame title="Create your account" subtitle="One account, every circle you’re part of."
       footer={<span>Already have an account? <TextLink onClick={onGoSignin}>Sign in</TextLink></span>}>
       <form onSubmit={submit} noValidate>
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
@@ -159,9 +159,9 @@ const OtcEntry = ({ email, context = 'device', initialError = null, onVerify, on
   const submit = (e) => {
     e.preventDefault();
     const v = code.replace(/\s/g, '');
-    if (v.length < 6) { setErr('That code’s not right — check and re-enter.'); return; }
+    if (v.length < 6) { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; }
     if (v === '000000') { setErr({ expired: true }); return; }     // demo: expired
-    if (v === '111111') { setErr('That code’s not right — check and re-enter.'); return; } // demo: wrong
+    if (v === '111111') { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; } // demo: wrong
     setErr(null); onVerify();
   };
   const resend = () => { setResent(true); setErr(null); setCode(''); ref.current && ref.current.focus(); setTimeout(() => setResent(false), 2600); };
@@ -199,21 +199,10 @@ const OtcEntry = ({ email, context = 'device', initialError = null, onVerify, on
   );
 };
 
-// ---- Google sign-in return -------------------------------------------------
+// ---- Google sign-in return — app-level loading state (see AppLoading) ------
 const GoogleReturn = ({ onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 1500); return () => clearTimeout(t); }, [onDone]);
-  return (
-    <div style={{
-      minHeight: 'var(--lp-vh)', background: 'var(--color-canvas)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20,
-    }}>
-      <Wordmark size={18} />
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-fg-2)' }}>
-        <Spinner size={18} light={false} />
-        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15 }}>Completing sign-in…</span>
-      </div>
-    </div>
-  );
+  return <AppLoading label="Completing sign-in" />;
 };
 
 // ---- Password recovery (3 sequential views) --------------------------------
@@ -258,7 +247,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
     const submit = (e) => {
       e.preventDefault();
       const v = code.replace(/\s/g, '');
-      if (v.length < 6) { setErr('That code’s not right — check and re-enter.'); return; }
+      if (v.length < 6) { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; }
       setErr(null); setStep('newpass');
     };
     return (
@@ -277,7 +266,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
   const submit = (e) => {
     e.preventDefault();
     if (pw.length < 8) { setErr('Use at least 8 characters.'); return; }
-    if (pw !== pw2) { setErr('Passwords don’t match. Re-enter to confirm.'); return; }
+    if (pw !== pw2) { setErr('Passwords don\u2019t match. Re-enter to confirm.'); return; }
     setErr(null); onDone();
   };
   return (

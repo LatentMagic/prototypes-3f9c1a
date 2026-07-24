@@ -1,5 +1,5 @@
 // ============================================================================
-// LatentPulse — Feed. The product's heart.
+// Circlists — Feed. The product's heart.
 // FeedCard (URL + attribution ONLY), AddReveal (sheet/popover), EmptyState,
 // FeedLoading, ConfirmDialog (mark-read calm / delete destructive).
 // ============================================================================
@@ -7,12 +7,20 @@
 // ---- FeedCard --------------------------------------------------------------
 // Anatomy: URL line (mono) + attribution block (sans, co-equal weight). No
 // thumbnail, no title, no domain line, no badge. Actions are recessive.
-const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
+const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
   const former = /former member/i.test(item.attribution);
   // Display name parsed out of "Added by Sam R." for the avatar.
   const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
+  // The roster/attribution line always reads "You" for the current user's own
+  // items (never their real name — that's shared-view convention). But the
+  // avatar is the account's own identity, so it uses the real name + the
+  // account's accent treatment, same as the roster and account-chip avatars.
+  const isYou = who === 'You';
+  const avatarName = isYou ? displayName(user) : who;
+  // "Added by" stays semibold always; only the former-member name portion drops to regular weight.
+  const attrMatch = item.attribution.match(/^(added by\s+)(.*)$/i);
   return (
-    <article className="lp-card" style={{
+    <article className="circ-card" style={{
       background: 'var(--color-surface)',
       border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)',
@@ -23,7 +31,7 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
       <a
         href={item.url} target="_blank" rel="noopener noreferrer"
         onClick={() => onOpen && onOpen(item)}
-        className="lp-url"
+        className="circ-url"
         style={{
           fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 15,
           lineHeight: 1.5, color: 'var(--color-fg-1)',
@@ -32,13 +40,17 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
         }}
       >{item.url}</a>
 
-      {/* Attribution block — co-equal with the URL, never a footer. */}
+      {/* Attribution block — co-equal with the URL, never a footer. On the Read
+          tab, the reaction door sits at the right edge: added by one, received
+          by many. */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-        <Avatar name={former ? null : who} size={32} />
+        <Avatar name={former ? null : avatarName} size={32} accent={isYou} />
         <span style={{
-          fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16,
+          flex: 1, minWidth: 0,
+          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 16,
           lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em',
         }}>{item.attribution}</span>
+        {tab === 'read' && <SwellDoor item={item} />}
       </div>
 
       {/* Recessive actions — quiet, separated by a hairline. */}
@@ -47,16 +59,16 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
         gap: 'var(--space-2)', paddingTop: 'var(--space-3)',
         borderTop: '1px solid var(--color-border-2)',
       }}>
-        <button className="lp-cardaction" onClick={() => onOpen && onOpen(item)}>
+        <button className="circ-cardaction" onClick={() => onOpen && onOpen(item)}>
           <Icon name="external-link" size={16} /><span>Open</span>
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           {tab === 'active' && (
-            <button className="lp-cardaction" onClick={() => onMarkRead(item)}>
+            <button className="circ-cardaction" onClick={() => onMarkRead(item)}>
               <Icon name="check" size={16} /><span>Mark as read</span>
             </button>
           )}
-          <button className="lp-cardaction lp-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link">
+          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link">
             <Icon name="trash" size={16} />
           </button>
         </div>
@@ -67,14 +79,12 @@ const FeedCard = ({ item, tab, onOpen, onMarkRead, onDelete }) => {
 
 // ---- Feed loading — a single quiet indicator (NOT a skeleton) --------------
 const FeedLoading = () => (
-  <div style={{
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    gap: 'var(--space-3)', padding: '88px 24px', color: 'var(--color-fg-3)',
-  }}>
-    <Spinner size={22} light={false} />
-    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-3)' }}>
-      Loading this space…
-    </span>
+  <div role="status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    {/* No caption — the mark is the whole loading state (spec's calm floor).
+        Centred by the parent <main>. The SVG's aria-label="Loading" inside this
+        role="status" region carries the accessible announcement; no visible
+        text is needed for a11y. */}
+    <BrandSpinner size={100} />
   </div>
 );
 
@@ -83,11 +93,17 @@ const FeedLoading = () => (
 // separate fresh-space variant, no "add the first link" CTA — the Add affordance
 // (FAB / popover) already serves that.
 const EMPTY_COPY = {
-  primary: 'Nothing here.',
-  supporting: 'Links shared in this space land in everyone’s queue, to read at your own pace.',
+  active: {
+    primary: 'Nothing here.',
+    supporting: 'Links shared in this circle land in everyone\u2019s list, to read at your own pace.',
+  },
+  read: {
+    primary: 'Nothing here.',
+    supporting: 'Links you mark as read land here, but stay in everyone else\u2019s list.',
+  },
 };
-const EmptyState = () => {
-  const c = EMPTY_COPY;
+const EmptyState = ({ tab }) => {
+  const c = EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
     <div style={{
       textAlign: 'center', minHeight: 320, padding: '72px 24px',
@@ -154,7 +170,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
     e.preventDefault();
     const v = url.trim();
     if (!URL_RE.test(v)) {
-      setError('That doesn’t look like a valid URL. Check it and try again.');
+      setError('That doesn\u2019t look like a valid URL. Check it and try again.');
       return;
     }
     setError(null); setLoading(true);
@@ -202,13 +218,13 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
         </div>
         <Field
           ref={inputRef} name="add-url" mono type="text" inputMode="url"
-          placeholder="https://" value={url} disabled={loading}
+          placeholder="example.com/article" value={url} disabled={loading}
           onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }}
           error={error}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-1)' }}>
           <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" loading={loading}>{loading ? 'Adding…' : 'Add'}</Button>
+          <Button type="submit" variant="primary" loading={loading}>{loading ? 'Adding\u2026' : 'Add'}</Button>
         </div>
       </form>
     </>
@@ -230,16 +246,12 @@ const FAB = ({ onClick, expanded, isMobile }) => (
   </button>
 );
 
-// ---- ConfirmDialog — one primitive, calm vs destructive --------------------
+// ---- ConfirmDialog — one primitive; destructive delete. (Mark-as-read no
+// longer confirms: it opens the Swell reaction flow — see SwellReactionFlow.)
 const CONFIRM = {
-  'mark-read': {
-    title: 'Mark as read?',
-    body: 'Moves to your Read tab. Others still see it in theirs.',
-    primary: 'Mark as read', variant: 'primary', role: 'dialog',
-  },
   'delete': {
     title: 'Delete this link?',
-    body: 'It’s removed from the space for everyone, and can’t be undone.',
+    body: 'It\u2019s removed from the circle for everyone, and can\u2019t be undone.',
     primary: 'Delete', variant: 'destructive', role: 'alertdialog',
   },
 };
@@ -265,7 +277,7 @@ const ConfirmDialog = ({ kind, onConfirm, onCancel }) => {
       style={{
         position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
-      }} className="lp-anim-fade">
+      }} className="circ-anim-fade">
       <div style={{
         background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
         padding: 'var(--space-6)', maxWidth: 400, width: '100%',
