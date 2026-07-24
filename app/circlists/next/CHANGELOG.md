@@ -3,6 +3,29 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Adding a link is async — the card arrives pending — 2026-07-24
+- Metadata extraction no longer blocks the add: the add sheet/popover dismisses
+  immediately and the card lands in the feed in a **pending** state. Progress
+  lives on the card, not in the dialog.
+- Pending card shows the **URL as a stand-in title** with quiet **skeleton**
+  placeholders for the source line and image (a soft shimmer, never a spinner or
+  broken glyph). It reads as *arriving*, not empty.
+- Metadata **fills the card in place** on resolve — the image slot is held, so
+  there's no reflow or position jump — settling to one of three terminal states:
+  title · source · image, title · source (text-only), or the URL-as-title floor.
+
+## Feed cards carry extracted metadata — 2026-07-24
+- A feed card is no longer a bare URL: it now leads with the extracted **title**
+  as its headline, a **source** line (publication, or the bare domain when
+  nothing better is known), and a right-hand **preview image**. Attribution and
+  the Swell door/actions move into a footer below.
+- Layout is *List dense — foot, edge-matched*: image locked on the right, the
+  trailing action's optical edge pulled onto the image's edge so tick/delete
+  read as aligned to the media. Open affordance narrows to **title + image only**.
+- Fallbacks never fabricate: no preview → a calm source-keyed tint block; no
+  favicon → nothing; failed extraction → the URL becomes the headline (mono).
+  Seed items gain title/source/image (`SEED_META`); state key bumped to `v5`.
+
 ## Champion role — consolidated to one place on the members surface — 2026-07-22
 - The champion role no longer appears in three overlapping spots on the settings
   surface. The header line drops "· Championed by X" (the roster's **Champion**

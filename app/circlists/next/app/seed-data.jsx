@@ -7,12 +7,42 @@
 // ============================================================================
 // ---- Seed data — inhabited, role-staged, no Lorem Ipsum --------------------
 const M = (name, email) => ({ name, email });
-const IT = (url, attribution, read, reactions) => ({ id: 'seed-' + Math.random().toString(36).slice(2, 9), url, attribution, read: !!read, reactions: reactions || [] });
+// IT(url, attribution, read, reactions, meta?) — `meta` carries the extracted
+// enrichment fields (BIZ-80): { title, source, image, hasImage, faviconExists }.
+// Omit meta and the card derives a title from the URL + shows a tint block.
+const IT = (url, attribution, read, reactions, meta) => ({ id: 'seed-' + Math.random().toString(36).slice(2, 9), url, attribution, read: !!read, reactions: reactions || [], ...(meta || {}) });
 // The Swell vocabulary — the only five glyphs a reaction can carry.
 const HEART = '\u2764\uFE0F', FIRE = '\uD83D\uDD25', THUMB = '\uD83D\uDC4D', BULB = '\uD83D\uDCA1', LOL = '\uD83D\uDE02';
 
+// ---- Extracted metadata (BIZ-80), keyed by URL. Merged onto the seed items in
+// seedSpaces() so the item fixtures stay readable. Fields: title (headline),
+// source (publication; omit -> bare domain), image (preview path; omit -> a
+// source-keyed tint block), hasImage:false (genuinely no preview -> text-only),
+// faviconExists:false (host ships no favicon -> no garnish). The throwaway TEST
+// spaces are intentionally left unlisted: they derive a title + tint block.
+const SEED_META = {
+  'https://newsletter.pragmaticengineer.com/p/scaling-on-call': { title: 'Scaling On-Call Without Burning Out the Team', source: 'The Pragmatic Engineer', image: 'uploads/card-previews/pragmatic-engineer.jpg' },
+  'https://blog.rust-lang.org/2026/01/async-internals': { title: 'Inside Async: How Rust Schedules Your Futures', source: 'Rust Blog', image: 'uploads/card-previews/blog-overreacted.png' },
+  'https://martinfowler.com/articles/cd-pipeline.html': { title: 'Continuous Delivery Pipelines, End to End', source: 'Martin Fowler' },
+  'https://arxiv.org/abs/2503.04918': { title: 'Learned Index Structures for Time-Series Stores', source: 'arXiv' },
+  'https://www.youtube.com/watch?v=Kx7Bvksk_qg': { title: 'Simple Made Easy \u2014 Rich Hickey', source: 'YouTube', image: 'uploads/card-previews/youtube-maxres.jpg' },
+  'https://danluu.com/percentile-latency/': { title: 'How to Measure Latency, and Why the Percentiles Matter', source: null, hasImage: false, faviconExists: false },
+  'https://sqlite.org/whentouse.html': { title: 'Appropriate Uses For SQLite', source: 'SQLite' },
+  'https://go.dev/blog/pipelines': { title: 'Go Concurrency Patterns: Pipelines', source: 'The Go Blog', image: 'uploads/card-previews/youtube-hqdefault.jpg' },
+  'https://jvns.ca/blog/2026/02/dns-resolvers/': { title: 'How DNS Resolvers Actually Work', source: 'Julia Evans' },
+  'https://www.kernel.org/doc/html/latest/process/submitting-patches.html': { title: 'Submitting Patches: The Essential Guide', source: 'The Linux Kernel Archives' },
+  'https://martinfowler.com/bliki/FormerMember.html': { title: 'On Naming Things You Later Regret', source: 'Martin Fowler', hasImage: false },
+  'https://go.dev/blog/errors-are-values': { title: 'Errors Are Values: Handling Failure the Go Way', source: 'The Go Blog', image: 'uploads/card-previews/blog-overreacted.png' },
+  'https://www.newyorker.com/books/page-turner/the-quiet-novel-revival': { title: 'The Quiet Novel Revival', source: 'The New Yorker' },
+  'https://lithub.com/on-rereading-your-favorite-books/': { title: 'On Rereading Your Favorite Books', source: 'Literary Hub' },
+  'https://www.theparisreview.org/interviews/the-art-of-fiction': { title: 'The Art of Fiction No. 240', source: 'The Paris Review' },
+  'https://www.gutenberg.org/files/2701/2701-h/2701-h.htm': { title: 'Moby-Dick; or, The Whale', source: 'Project Gutenberg', hasImage: false },
+  'https://www.gutenberg.org/files/1342/1342-h/1342-h.htm': { title: 'Pride and Prejudice', source: 'Project Gutenberg', hasImage: false },
+  'https://longreads.com/2026/01/the-long-walk-home/': { title: 'The Long Walk Home', source: 'Longreads' },
+};
+
 function seedSpaces(userEmail) {
-  return [
+  const spaces = [
     {
       // You champion it → Invite + Manage funding + "Championed by You".
       id: 'sp-backend',
@@ -86,6 +116,14 @@ function seedSpaces(userEmail) {
           { name: 'Priya N.', skipped: true },
           { former: true, skipped: true },
           { name: 'Ada L.', skipped: true },
+          { name: 'You', skipped: true },
+        ]),
+        // Read + all-skips but WITH a preview image — the bare (glyph-less) door
+        // sitting on an image-bearing card, to compare against the image cards above.
+        IT('https://go.dev/blog/errors-are-values', 'Added by Ada L.', true, [
+          { name: 'Priya N.', skipped: true },
+          { name: 'Marcus T.', skipped: true },
+          { name: 'Sam R.', skipped: true },
           { name: 'You', skipped: true },
         ]),
       ],
@@ -180,6 +218,9 @@ function seedSpaces(userEmail) {
       ],
     },
   ];
+  // Fold the extracted metadata onto each seed item (see SEED_META).
+  spaces.forEach((sp) => sp.items.forEach((it) => { if (SEED_META[it.url]) Object.assign(it, SEED_META[it.url]); }));
+  return spaces;
 }
 
 const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'sam.rivera@gmail.com' };

@@ -17,8 +17,9 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // adds afewskipped.com (mixed reactions + skips) and heartsclustered.com (all
 // members responded, hearts clustered) — two more Swell demo fixtures. v4 adds
 // heartsandfires.com — five hearts + five fires, adjacent sectors, to stress the
-// two-big-huddles collision case.)
-const STATE_KEY = 'circ_state_v4';
+// two-big-huddles collision case. v5 adds extracted card metadata — title,
+// source, and preview image per item (BIZ-80).)
+const STATE_KEY = 'circ_state_v6';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -138,7 +139,19 @@ const CircApp = () => {
   }, [spaces, currentId]);
 
   // ---- content mutations (peer powers) ----
-  const addItem = (item) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: [item, ...s.items] } : s));
+  const addItem = (item) => {
+    setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: [item, ...s.items] } : s));
+    // Async metadata extraction: the card lands pending, then settles in place.
+    // (No fixtures come back here, so FeedCard's URL-derived title + source-keyed
+    // tint carry the resolved card — the honest floor, never a broken state.)
+    if (item.pending) {
+      const sid = currentId;
+      const settleMs = 1400 + Math.round(Math.random() * 900);
+      setTimeout(() => setSpaces(prev => prev.map(s => s.id === sid
+        ? { ...s, items: s.items.map(i => i.id === item.id ? { ...i, pending: false } : i) }
+        : s)), settleMs);
+    }
+  };
   // Mark-as-read now also carries the reader's optional reaction (The Swell).
   // The read-write happens regardless; the reaction is appended when present.
   const markRead = (item, reaction) => setSpaces(prev => prev.map(s => s.id === currentId
@@ -320,7 +333,7 @@ const CircApp = () => {
         <>
           <Tabs active={tab} onChange={setTab} />
           {feed}
-          {tab === 'active' && !loadingFeed && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} isMobile={isMobile} />}
+          {!loadingFeed && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
         </>
       );

@@ -120,8 +120,30 @@
     transition: background var(--duration-base), color var(--duration-base);
   }
   .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
-  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; }
+  /* Icon actions keep the full 44px hit target; the hover fill is an INSET state
+     layer (Material/HIG icon-button spec) so adjacent controls read as separate
+     without moving glyphs or breaking edge alignment. */
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  /* enriched card is a container so the footer can adapt to its own width */
+  .circ-card { container-type: inline-size; }
+  /* ---- Pending card (extraction still resolving) — quiet skeleton, no spinner ---- */
+  .circ-skel { background: linear-gradient(90deg, var(--color-surface-sunken) 25%, var(--color-border-2) 50%, var(--color-surface-sunken) 75%); background-size: 200% 100%; animation: circ-skel 1.4s ease-in-out infinite; }
+  @keyframes circ-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .circ-settled { animation: circ-fade 300ms var(--ease-quiet); }
+  @media (prefers-reduced-motion: reduce) { .circ-skel { animation: none !important; } }
+  /* very narrow card: drop the "Added by " prefix (avatar already carries who) */
+  @container (max-width: 380px) { .circ-attrib-pre { display: none; } }
   .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
+
+  /* ---- enriched card: open affordance = title + image only ---- */
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
 
   /* ---- menus / links ---- */
   .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }

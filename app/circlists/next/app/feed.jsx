@@ -5,71 +5,155 @@
 // ============================================================================
 
 // ---- FeedCard --------------------------------------------------------------
-// Anatomy: URL line (mono) + attribution block (sans, co-equal weight). No
-// thumbnail, no title, no domain line, no badge. Actions are recessive.
+// Enriched card (BIZ-80) — "List dense — foot, edge-matched". Dense body
+// (source line + extracted title + right-hand preview), the real app's footer
+// below (attribution left, actions right). The trailing action's optical edge
+// is pulled onto the image's right edge, so tick/delete read as aligned to the
+// media rather than floating — the resolution the alignment study landed on.
+//   - Open affordance = title + image ONLY (both link out). Source, favicon,
+//     attribution and footer never open.
+//   - Failed extraction -> the URL becomes the headline (mono, black, a touch
+//     smaller): an honest raw address, never a naked/broken card. Source still
+//     falls back to the bare domain.
+//   - Favicon is an optional garnish beside the source; genuine absence shows
+//     nothing (never a fabricated globe). No preview -> a calm source-keyed
+//     tint block (never a fabricated photo).
+//   - Mark-as-read (Active tab) opens the Swell flow; the Read tab shows the
+//     Swell door in its place. Delete opens the confirm dialog. Both unchanged.
+const feedHostOf = (url) => {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch (e) { return String(url).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]; }
+};
+// Best-effort title from the URL path when extraction gave one but the seed
+// carries none — the test fixtures rely on it; the real spaces author titles.
+const feedDeriveTitle = (url) => {
+  try {
+    const seg = (new URL(url).pathname.split('/').filter(Boolean).pop() || '')
+      .replace(/\.(html?|php|aspx?)$/i, '').replace(/[-_]+/g, ' ').trim();
+    if (!seg || /^\d+$/.test(seg) || seg.length < 3) return null;
+    return seg.charAt(0).toUpperCase() + seg.slice(1);
+  } catch (e) { return null; }
+};
+// Source-keyed tint blocks — the "bits of colour" fallback preview: never a
+// fabricated photo, just a calm two-tone block so a card is never naked. Muted,
+// paper-adjacent hues that sit inside the theme.
+const FEED_TINTS = [
+  ['#3a3a38', '#5a5a56'], ['#33413f', '#54655f'], ['#403830', '#645749'],
+  ['#343a4a', '#565f77'], ['#42323c', '#66505d'],
+];
+const feedHash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
+const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.length]; return 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'; };
+
 const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
+  const [favBroken, setFavBroken] = React.useState(false);
+  const [imgBroken, setImgBroken] = React.useState(false);
+
   const former = /former member/i.test(item.attribution);
-  // Display name parsed out of "Added by Sam R." for the avatar.
-  const who = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
-  // The roster/attribution line always reads "You" for the current user's own
-  // items (never their real name — that's shared-view convention). But the
-  // avatar is the account's own identity, so it uses the real name + the
-  // account's accent treatment, same as the roster and account-chip avatars.
-  const isYou = who === 'You';
-  const avatarName = isYou ? displayName(user) : who;
-  // "Added by" stays semibold always; only the former-member name portion drops to regular weight.
-  const attrMatch = item.attribution.match(/^(added by\s+)(.*)$/i);
+  // Adaptive attribution: split the "Added by " prefix so a container query can
+  // drop it on a very narrow card (see .circ-attrib-pre in circlists.html).
+  const attribPre = /^added by\s+/i.exec(item.attribution);
+  // Display name parsed out of "Added by Sam R." for the avatar. The line always
+  // reads "You" for the current user's own items (shared-view convention); the
+  // avatar uses the account's real name + accent, same as the roster.
+  const whoName = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
+  const isYou = whoName === 'You';
+  const avatarName = isYou ? displayName(user) : whoName;
+
+  const host = feedHostOf(item.url);
+  const source = item.source || host;               // source is always present
+  const title = item.title || feedDeriveTitle(item.url);
+  const prettyUrl = item.url.replace(/^https?:\/\//, '');
+  const showImage = item.hasImage !== false;
+  const faviconOk = item.faviconExists !== false && !favBroken;
+  const faviconUrl = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=64';
+
+  const open = () => onOpen && onOpen(item);
+  const openLinkProps = { href: item.url, target: '_blank', rel: 'noopener noreferrer', onClick: open };
+
+  // Pending — extraction still resolving. Same layout, but the source line and
+  // preview render as quiet skeletons and the URL stands in as the title; the
+  // slot is held so the resolve fills in place with no reflow. Never a spinner.
+  if (item.pending) {
+    return (
+      <article className="circ-card" style={{
+        background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+        borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span className="circ-skel" aria-hidden="true" style={{ width: 120, height: 13, borderRadius: 3 }} />
+            <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-3)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>
+          </div>
+          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: 60, height: 60, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-3)' }}>
+          <Avatar name={avatarName} size={28} accent={isYou} />
+          <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.attribution}</span>
+          <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, opacity: 0.4, pointerEvents: 'none' }}>
+            <span className="circ-cardaction circ-cardaction-icon"><Icon name="check" size={18} /></span>
+            <span className="circ-cardaction circ-cardaction-icon"><Icon name="trash" size={17} /></span>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className="circ-card" style={{
-      background: 'var(--color-surface)',
-      border: '1px solid var(--color-border-1)',
-      borderRadius: 'var(--radius-lg)',
-      padding: 'var(--space-5)',
-      display: 'flex', flexDirection: 'column', gap: 'var(--space-4)',
+      background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+      borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+      display: 'flex', flexDirection: 'column',
     }}>
-      {/* URL line — JetBrains Mono, inherits the old domain line's typographic role */}
-      <a
-        href={item.url} target="_blank" rel="noopener noreferrer"
-        onClick={() => onOpen && onOpen(item)}
-        className="circ-url"
-        style={{
-          fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 15,
-          lineHeight: 1.5, color: 'var(--color-fg-1)',
-          textDecoration: 'none', wordBreak: 'break-all',
-          textDecorationColor: 'transparent',
-        }}
-      >{item.url}</a>
-
-      {/* Attribution block — co-equal with the URL, never a footer. On the Read
-          tab, the reaction door sits at the right edge: added by one, received
-          by many. */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-        <Avatar name={former ? null : avatarName} size={32} accent={isYou} />
-        <span style={{
-          flex: 1, minWidth: 0,
-          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 16,
-          lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em',
-        }}>{item.attribution}</span>
-        {tab === 'read' && <SwellDoor item={item} />}
+      {/* Open zone — source + title (left), preview (right). Title + image are
+          the only open targets; nothing else in the card opens. */}
+      <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            {faviconOk && (
+              <span style={{ width: 15, height: 15, borderRadius: 3, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--color-border-2)', display: 'inline-flex' }}>
+                <img src={faviconUrl} alt="" onError={() => setFavBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </span>
+            )}
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: item.source ? 600 : 500, fontSize: 13, color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{source}</span>
+          </div>
+          {title
+            ? <a {...openLinkProps} className="circ-cardtitle" style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</a>
+            : <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-1)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>}
+        </div>
+        {showImage && (
+          <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: 60, height: 60, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
+            {item.image && !imgBroken
+              ? <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              : <span style={{ display: 'block', width: '100%', height: '100%', background: feedTint(source) }} />}
+          </a>
+        )}
       </div>
 
-      {/* Recessive actions — quiet, separated by a hairline. */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: 'var(--space-2)', paddingTop: 'var(--space-3)',
-        borderTop: '1px solid var(--color-border-2)',
-      }}>
-        <button className="circ-cardaction" onClick={() => onOpen && onOpen(item)}>
-          <Icon name="external-link" size={16} /><span>Open</span>
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          {tab === 'active' && (
-            <button className="circ-cardaction" onClick={() => onMarkRead(item)}>
-              <Icon name="check" size={16} /><span>Mark as read</span>
-            </button>
-          )}
-          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link">
-            <Icon name="trash" size={16} />
+      {/* Footer — attribution (left) + recessive actions (right). The action
+          cluster's optical edge is pulled onto the card's content edge (= the
+          image's right edge). On Read, the Swell door takes the tick's place. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-3)' }}>
+        <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
+        <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {attribPre
+            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span>{item.attribution.slice(attribPre[0].length)}</React.Fragment>
+            : item.attribution}
+        </span>
+        {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
+            optical edge is pulled onto the image's right edge via the -13 nudge;
+            each action keeps a full 44px target with its hover fill inset, and
+            that inset gap carries the separation — no drawn hairline. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13 }}>
+          {tab === 'read'
+            ? <SwellDoor item={item} />
+            : (
+              <button className="circ-cardaction circ-cardaction-icon" onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+                <Icon name="check" size={18} />
+              </button>
+            )}
+          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
+            <Icon name="trash" size={17} />
           </button>
         </div>
       </div>
@@ -127,7 +211,6 @@ const URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
 const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
   const [url, setUrl] = React.useState('');
   const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
   const inputRef = React.useRef(null);
   const invokerRef = React.useRef(null);
 
@@ -149,7 +232,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
   React.useEffect(() => {
     if (open) {
       invokerRef.current = document.activeElement;
-      setUrl(''); setError(null); setLoading(false);
+      setUrl(''); setError(null);
       const id = setTimeout(() => inputRef.current && inputRef.current.focus(), 60);
       return () => clearTimeout(id);
     } else if (invokerRef.current && invokerRef.current.focus) {
@@ -173,14 +256,13 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
       setError('That doesn\u2019t look like a valid URL. Check it and try again.');
       return;
     }
-    setError(null); setLoading(true);
+    setError(null);
     const normalized = /^https?:\/\//i.test(v) ? v : 'https://' + v;
-    // Commit holds a loading state until the write confirms.
-    setTimeout(() => {
-      onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by You.', read: false });
-      setLoading(false);
-      onClose();
-    }, 900);
+    // Extraction is slow + unreliable, so add never blocks on it: the sheet
+    // closes at once and the card lands PENDING in the feed. Metadata fills it
+    // in place when it resolves (main.jsx schedules the async settle).
+    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by You.', read: false, pending: true });
+    onClose();
   };
 
   const surface = isMobile
@@ -218,20 +300,20 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
         </div>
         <Field
           ref={inputRef} name="add-url" mono type="text" inputMode="url"
-          placeholder="example.com/article" value={url} disabled={loading}
+          placeholder="example.com/article" value={url}
           onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }}
           error={error}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-1)' }}>
           <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" loading={loading}>{loading ? 'Adding\u2026' : 'Add'}</Button>
+          <Button type="submit" variant="primary">Add</Button>
         </div>
       </form>
     </>
   );
 };
 
-// ---- FAB — Active tab only -------------------------------------------------
+// ---- FAB — Active + Read tabs ------------------------------------------------
 const FAB = ({ onClick, expanded, isMobile }) => (
   <button onClick={onClick} aria-label="Add a link" style={{
     position: 'fixed', right: isMobile ? 24 : 32, bottom: isMobile ? 24 : 32, zIndex: 80,

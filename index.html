@@ -1105,8 +1105,28 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, and a support-contact link in settings. Champion self-serve and change-email carry in from the shipped line.',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, and a support-contact link in settings. Champion self-serve and change-email carry in from the shipped line.',
           changelog: [
+            {
+              date: '2026-07-24',
+              title: 'Adding a link is async — the card arrives pending',
+              items: [
+                'Metadata extraction no longer blocks the add: the add sheet/popover dismisses immediately and the card lands in the feed in a pending state. Progress lives on the card, not in the dialog.',
+                'Pending card shows the URL as a stand-in title with quiet skeleton placeholders for the source line and image (a soft shimmer, never a spinner or broken glyph). It reads as arriving, not empty.',
+                'Metadata fills the card in place on resolve — the image slot is held, so there\'s no reflow or position jump — settling to one of three terminal states: title · source · image, title · source (text-only), or the URL-as-title floor.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-24',
+              title: 'Feed cards carry extracted metadata',
+              items: [
+                'A feed card is no longer a bare URL: it now leads with the extracted title as its headline, a source line (publication, or the bare domain when nothing better is known), and a right-hand preview image. Attribution and the Swell door/actions move into a footer below.',
+                'Layout is List dense — foot, edge-matched: image locked on the right, the trailing action\'s optical edge pulled onto the image\'s edge so tick/delete read as aligned to the media. Open affordance narrows to title + image only.',
+                'Fallbacks never fabricate: no preview → a calm source-keyed tint block; no favicon → nothing; failed extraction → the URL becomes the headline (mono). Seed items gain title/source/image (SEED_META); state key bumped to v5.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
             {
               date: '2026-07-23',
               title: 'Fund-circle page tightened to fit one screen; rename extracted to its own dialog',
