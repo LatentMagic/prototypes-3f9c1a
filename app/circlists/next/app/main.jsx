@@ -92,6 +92,10 @@ const CircApp = () => {
   // it never leaks into a real auth / billing flow.
   const [holdLoading, setHoldLoading] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  // FAB success beat: a successful add flips this true, resolving the FAB glyph to
+  // a tick, then self-clears back to the plus. Cancel never sets it.
+  const [addConfirm, setAddConfirm] = useState(false);
+  const addConfirmTimer = useRef(null);
   const [confirm, setConfirm] = useState(null);
   // The Swell: mark-as-read opens the reaction flow (no confirm modal). Holds
   // the item being reacted to, or null.
@@ -141,6 +145,11 @@ const CircApp = () => {
   // ---- content mutations (peer powers) ----
   const addItem = (item) => {
     setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: [item, ...s.items] } : s));
+    // Quiet, self-clearing confirmation on the FAB itself — the tick resolves,
+    // then settles back to the plus. Green throughout; colour never carries status.
+    if (addConfirmTimer.current) clearTimeout(addConfirmTimer.current);
+    setAddConfirm(true);
+    addConfirmTimer.current = setTimeout(() => setAddConfirm(false), 2600);
     // Async metadata extraction: the card lands pending, then settles in place.
     // (No fixtures come back here, so FeedCard's URL-derived title + source-keyed
     // tint carry the resolved card — the honest floor, never a broken state.)
@@ -333,7 +342,7 @@ const CircApp = () => {
         <>
           <Tabs active={tab} onChange={setTab} />
           {feed}
-          {!loadingFeed && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} isMobile={isMobile} />}
+          {!loadingFeed && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
         </>
       );

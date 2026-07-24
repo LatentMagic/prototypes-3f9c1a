@@ -3,6 +3,17 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Add from anywhere, confirmed on the FAB — biz-83 — 2026-07-24
+- The add-link **FAB now renders on the Read tab too**, not just Active — same
+  bottom-right placement and add flow. Adding from Read leaves the tab and scroll
+  position untouched; the new card lands on Active unseen.
+- Because that add happens off-screen from Read, the **FAB itself confirms it**:
+  a successful submit resolves the glyph `✕ → tick → plus` — the checkmark
+  **draws itself on** (stroke reveal), holds, then settles back to the plus.
+  Cancel resolves `✕ → plus` with no tick.
+- Quiet register throughout: the FAB stays **accent green** — colour never
+  carries status — and the tick is a small confirmation beat, not a celebration.
+
 ## Adding a link is async — the card arrives pending — 2026-07-24
 - Metadata extraction no longer blocks the add: the add sheet/popover dismisses
   immediately and the card lands in the feed in a **pending** state. Progress

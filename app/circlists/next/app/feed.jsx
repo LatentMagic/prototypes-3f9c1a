@@ -87,7 +87,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
           </div>
           <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: 60, height: 60, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
           <Avatar name={avatarName} size={28} accent={isYou} />
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.attribution}</span>
           <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, opacity: 0.4, pointerEvents: 'none' }}>
@@ -133,7 +133,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
       {/* Footer — attribution (left) + recessive actions (right). The action
           cluster's optical edge is pulled onto the card's content edge (= the
           image's right edge). On Read, the Swell door takes the tick's place. */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-3)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
         <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
         <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {attribPre
@@ -314,19 +314,50 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
 };
 
 // ---- FAB — Active + Read tabs ------------------------------------------------
-const FAB = ({ onClick, expanded, isMobile }) => (
+// Glyph is a single 24px SVG carrying two shapes: the plus/cross (rotates 45°
+// when open → ×) and a tick that resolves in on a successful add. States:
+//   plus  — idle
+//   cross — open (× — rotated plus)
+//   tick  — a brief post-add confirmation, then self-clears back to plus
+// Cancel goes cross→plus (no tick); submit goes cross→tick→plus. The tick grows
+// in as it resolves — a small, quiet moment, never a colour shift or halo.
+const FAB = ({ onClick, expanded, isMobile, confirm }) => {
+  const glyph = confirm ? 'tick' : (expanded ? 'cross' : 'plus');
+  return (
   <button onClick={onClick} aria-label="Add a link" style={{
     position: 'fixed', right: isMobile ? 24 : 32, bottom: isMobile ? 24 : 32, zIndex: 80,
     width: 56, height: 56, borderRadius: '50%',
     background: 'var(--color-accent)', color: '#fff', border: 0, cursor: 'pointer',
     boxShadow: '0 4px 14px rgba(4,120,87,0.28), 0 1px 3px rgba(10,10,10,0.12)',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    transition: 'transform var(--duration-slow) var(--ease-quiet), background var(--duration-base)',
-    transform: expanded ? 'rotate(45deg)' : 'none',
+    transition: 'background var(--duration-base)',
   }}>
-    <Icon name="plus" size={24} color="#fff" strokeWidth={2} />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ display: 'block', overflow: 'visible' }}>
+      <g stroke="#fff" strokeWidth="2" strokeLinecap="round" style={{
+        transformBox: 'fill-box', transformOrigin: 'center',
+        transform: (glyph === 'cross' ? 'rotate(45deg) ' : 'rotate(0deg) ') + (glyph === 'tick' ? 'scale(0.7)' : 'scale(1)'),
+        opacity: glyph === 'tick' ? 0 : 1,
+        transition: 'transform var(--duration-slow) var(--ease-quiet), opacity var(--duration-base) var(--ease-quiet)',
+      }}>
+        <line x1="12" y1="4" x2="12" y2="20" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+      </g>
+      <path d="M4.8 12.6 L10 17.6 L19.2 7.4" pathLength="1" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{
+        transformBox: 'fill-box', transformOrigin: 'center',
+        // Draw-on: the checkmark strokes itself from the heel to the tip, then a
+        // faint scale settle as it lands. Retracts (offset 0\u21921) on the way out.
+        strokeDasharray: 1,
+        strokeDashoffset: glyph === 'tick' ? 0 : 1,
+        transform: glyph === 'tick' ? 'scale(1.06)' : 'scale(0.92)',
+        opacity: glyph === 'tick' ? 1 : 0,
+        transition: glyph === 'tick'
+          ? 'stroke-dashoffset 300ms var(--ease-quiet), transform 300ms var(--ease-quiet), opacity 90ms linear'
+          : 'stroke-dashoffset 160ms var(--ease-quiet), transform 160ms var(--ease-quiet), opacity 120ms linear 40ms',
+      }} />
+    </svg>
   </button>
-);
+  );
+};
 
 // ---- ConfirmDialog — one primitive; destructive delete. (Mark-as-read no
 // longer confirms: it opens the Swell reaction flow — see SwellReactionFlow.)
