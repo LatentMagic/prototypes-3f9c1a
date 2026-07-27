@@ -179,14 +179,14 @@ const FeedLoading = () => (
 const EMPTY_COPY = {
   active: {
     primary: 'Nothing here.',
-    supporting: 'Links shared in this circle land in everyone\u2019s list, to read at your own pace.',
+    supporting: 'Links shared in this circle land in everyone\u2019s list, to consume at your own pace.',
   },
   read: {
     primary: 'Nothing here.',
     supporting: 'Links you mark as read land here, but stay in everyone else\u2019s list.',
   },
 };
-const EmptyState = ({ tab }) => {
+const EmptyState = ({ tab, onStartCircle }) => {
   const c = EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
     <div style={{
@@ -202,6 +202,13 @@ const EmptyState = ({ tab }) => {
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
         color: 'var(--color-fg-2)', margin: 0, maxWidth: 420,
       }}>{c.supporting}</p>
+      {/* Door: quiet line, only the verb phrase is the link. */}
+      <p style={{
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
+        color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0',
+      }}>When you want a circle of your own, <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
+        backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
+      }}>start one</button>.</p>
     </div>
   );
 };

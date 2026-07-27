@@ -11,8 +11,10 @@ template below are DUPLICATED from that spec (a deliberate call — four hexes a
 token-generator). If you change a colour or the type spec, update it in BOTH places:
 here AND circlists-brand.md. The marks are not duplicated — they come from the SVGs.
 
-One mark everywhere: the favicon is the mark itself (opaque sage halo → reads at 16px on
-any tab), so there is no separate card / tile asset to maintain."""
+One frozen mark. The tab favicon is the mark itself (opaque sage halo → reads at 16px on
+any tab); the installed app icon (iOS/Android) is the SAME mark on an opaque cream ground,
+held smaller, because those surfaces can't control the background — the installed-icon exception,
+circlists-brand.md §2. All rasters are supersampled for crisp edges."""
 import os, re, sys, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -139,8 +141,9 @@ html = f"""<!doctype html>
     <div class="tabbar" style="background:#f3f3ef">{tab(False)}{tab(False)}</div>
     <div class="tabbar" style="background:#1f1f1d">{tab(True)}{tab(True)}</div>
   </div>
-  <p class="note">No card, no tile — the favicon <b>is</b> the mark. One asset everywhere: nothing
-  to keep in sync, nothing to drift.</p>
+  <p class="note">The tab favicon <b>is</b> the mark — bare, on transparency, full size (tested on light
+  and dark tabs). The one exception is the installed app icon (iOS/Android), which places the same frozen
+  mark on an opaque cream ground, held smaller, because those surfaces can't control the background (see &sect;2).</p>
 </section>
 
 <section>
@@ -150,7 +153,7 @@ html = f"""<!doctype html>
       <figure><img src="{datauri('favicon-16.png')}" width="16" height="16"><figcaption>16 &middot; favicon</figcaption></figure>
       <figure><img src="{datauri('favicon-32.png')}" width="32" height="32"><figcaption>32 &middot; favicon</figcaption></figure>
       <figure><img src="{datauri('apple-touch-icon.png')}" width="60" height="60"><figcaption>180 &middot; apple-touch</figcaption></figure>
-      <figure><img src="{datauri('icon-512.png')}" width="96" height="96"><figcaption>512 &middot; PWA / avatar</figcaption></figure>
+      <figure><img src="{datauri('icon-512.png')}" width="96" height="96"><figcaption>512 &middot; PWA</figcaption></figure>
     </div></div>
     <div class="panel dark"><div class="rowb">
       <figure><img src="{datauri('favicon-16.png')}" width="16" height="16"><figcaption>16</figcaption></figure>
@@ -159,9 +162,10 @@ html = f"""<!doctype html>
       <figure><img src="{datauri('icon-512.png')}" width="96" height="96"><figcaption>512</figcaption></figure>
     </div></div>
   </div>
-  <p class="note"><b>favicon.ico</b> packs 16&middot;32&middot;48 for classic browser tabs; the PNGs cover modern
-  <b>&lt;link rel=icon&gt;</b>, iOS home-screen (180) and PWA (192/512). The 512 doubles as the raster mark for
-  avatars, email and social — anywhere SVG isn't accepted. All rendered from one source, <b>circlists-mark.svg</b>.</p>
+  <p class="note"><b>favicon.ico</b> packs 16&middot;32&middot;48 for classic browser tabs (transparent, full mark); the
+  PNGs cover modern <b>&lt;link rel=icon&gt;</b>. iOS home-screen (180) and PWA (192/512) carry an opaque
+  cream ground with the mark held smaller — the installed-icon exception. For a transparent raster mark
+  (avatars, email, social), export from <b>circlists-mark.svg</b> directly. All rendered from that one source, supersampled.</p>
 </section>
 
 <section>
@@ -170,7 +174,7 @@ html = f"""<!doctype html>
     <div class="sw"><div class="chip" style="background:#047857"></div><span class="mono">Emerald<br><b>#047857</b> · disc / brand</span></div>
     <div class="sw"><div class="chip" style="background:#8bbfad"></div><span class="mono">Sage<br><b>#8BBFAD</b> · the halo (opaque)</span></div>
     <div class="sw"><div class="chip" style="background:#0a0a0a"></div><span class="mono">Ink<br><b>#0A0A0A</b> · wordmark / text</span></div>
-    <div class="sw"><div class="chip" style="background:#fafaf7"></div><span class="mono">Cream<br><b>#fafaf7</b> · page ground</span></div>
+    <div class="sw"><div class="chip" style="background:#fafaf7"></div><span class="mono">Cream<br><b>#fafaf7</b> · page / icon ground</span></div>
   </div>
   <p class="note" style="margin-top:24px"><b>Type:</b> Inter Bold (700), letter-spacing &minus;0.01em,
   sentence case, always one word.</p>

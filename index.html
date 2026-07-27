@@ -1105,8 +1105,18 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, and a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard. Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), and a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard. Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
           changelog: [
+            {
+              date: '2026-07-27',
+              title: 'Upsell doors — a way out of a free membership, on surfaces that already exist',
+              items: [
+                'Three passive doors to starting your own circle, each a line of copy on a surface the app already renders: the feed\'s empty state (Active and Read), the non-champion crown line on circle settings, and the champion\'s cap-full panel. Nothing is detected, triggered, timed, or dismissible — the doors are simply always there.',
+                'Circles, never seats. Each offers another circle, never a bigger plan or more members, and no price appears near any of them. The cap-full door in particular refuses to read as a workaround for the cap.',
+                'Doors are text links, never buttons — a shared .circ-doorlink: accent green, underlined at a light tint, deepening to full accent on hover and focus. The resting underline is required, not decorative: accent against tertiary text is 1.07:1, so colour alone cannot distinguish an inline link (WCAG 1.4.1), and hover does not exist on touch.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
             {
               date: '2026-07-27',
               title: 'App posture IA — home is the root, the bar belongs to the circle',

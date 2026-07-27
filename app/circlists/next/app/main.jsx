@@ -340,7 +340,8 @@ const CircApp = () => {
     screen = <SpaceFull onHome={() => goSpace('sp-backend')} />;
   } else if (route === 'members') {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
-      onInvite={inviteEmail} onManageFunding={openManageFunding} onRename={renameSpace} onRemoveMember={removeMember} />,
+      onInvite={inviteEmail} onManageFunding={openManageFunding} onRename={renameSpace} onRemoveMember={removeMember}
+      onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {
     screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} />,
@@ -373,7 +374,7 @@ const CircApp = () => {
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
           <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
-            {visible.length === 0 ? <EmptyState tab={tab} />
+            {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {visible.map(item => (

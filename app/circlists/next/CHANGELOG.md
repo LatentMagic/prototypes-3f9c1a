@@ -3,6 +3,21 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Upsell doors — a way out of a free membership, on surfaces that already exist — 2026-07-27
+- Three **passive doors** to starting your own circle, each a line of copy on a
+  surface the app already renders: the feed's empty state (Active and Read), the
+  non-champion crown line on circle settings, and the champion's cap-full panel.
+  Nothing is detected, triggered, timed, or dismissible — the doors are simply
+  always there.
+- **Circles, never seats.** Each offers *another circle*, never a bigger plan or
+  more members, and no price appears near any of them. The cap-full door in
+  particular refuses to read as a workaround for the cap.
+- Doors are **text links, never buttons** — a shared `.circ-doorlink`: accent
+  green, underlined at a light tint, deepening to full accent on hover and focus.
+  The resting underline is required, not decorative: accent against tertiary text
+  is 1.07:1, so colour alone cannot distinguish an inline link (WCAG 1.4.1), and
+  hover does not exist on touch.
+
 ## App posture IA — home is the root, the bar belongs to the circle — 2026-07-27
 - The app posture gains a **home screen** at account level: the circles list, each
   with a reason to look at it, plus New circle. Account hangs off the avatar in

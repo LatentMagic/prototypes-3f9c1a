@@ -159,6 +159,15 @@
   .circ-railacct:hover { background: var(--color-surface); }
   .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
 
+  /* ---- upsell doors: accent text link, always underlined ----
+     A resting underline is required, not decorative: accent #047857 against
+     fg-3 #6E6E6B is 1.07:1, so colour alone can't distinguish the link from the
+     text around it (WCAG 1.4.1) — and hover doesn't exist on touch. The
+     underline sits at a light tint and deepens to full accent on hover/focus. */
+  .circ-doorlink { color: var(--color-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-accent) 35%, transparent); transition: text-decoration-color var(--duration-base) var(--ease-quiet); }
+  .circ-doorlink:hover, .circ-doorlink:focus-visible { text-decoration-color: var(--color-accent); }
+  @media (prefers-reduced-motion: reduce) { .circ-doorlink { transition: none; } }
+
   /* ---- config launcher (prototype aid) ---- */
   .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
   .circ-config-btn {

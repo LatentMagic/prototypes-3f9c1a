@@ -189,7 +189,7 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
 // Role-conditioned: champion sees Invite + Manage funding; a non-champion sees
 // the list and calm lines that only the champion can invite / manage funding.
 // Champion also gets: inline space rename, and per-member removal (kebab menu).
-const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onRename, onRemoveMember }) => {
+const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onRename, onRemoveMember, onStartCircle }) => {
   const [email, setEmail] = React.useState('');
   const [err, setErr] = React.useState(null);
   const [sentTo, setSentTo] = React.useState(null);
@@ -306,6 +306,13 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: 0 }}>
               It’s reached its limit of {SPACE_CAP} members, so no one new can be added right now.
             </p>
+            {/* Door: own line, grey sentence with the link inside — same construction as the empty state. */}
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13.5, lineHeight: 1.5,
+              color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0',
+            }}><button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
+              backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
+            }}>Start another circle</button> any time.</p>
           </div>
         ) : (
           <form onSubmit={submit} noValidate style={{
@@ -335,7 +342,13 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)',
         }}>
           <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>
-          <span>The Champion manages this circle’s membership and funding.</span>
+          <span>
+            The Champion manages this circle’s membership and funding. You can{' '}
+            {/* Door: continuation of the same line, green on the last two words only. */}
+            <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
+              backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
+            }}>champion your own</button>.
+          </span>
         </div>
       )}
 
