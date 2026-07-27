@@ -26,7 +26,7 @@
      ground); NOT the accent, never a status or action colour. Brand mark only. */
   --color-sage:             #8BBFAD;
 
-  /* Approved fallbacks (use only if the primary feels wrong in composition) */
+  /* NOT approved fallbacks. Kept in case a fallback is needed later — never use without raising it to the user first. */
   --color-accent-warm:      #0D9488;  /* deep chromatic teal */
   --color-accent-cool:      #166534;  /* deep forest hunter  */
 
