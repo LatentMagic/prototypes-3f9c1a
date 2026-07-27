@@ -17,7 +17,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     <div style={{
       fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11,
       letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)',
-      padding: '0 8px 8px',
+      padding: '0 14px 8px',
     }}>Circles</div>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {spaces.map((s) => {
@@ -49,6 +49,13 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     }}>
       <Icon name="plus" size={16} /> New circle
     </button>
+    {spaces.length === 0 && (
+      <p style={{
+        margin: 0, padding: '2px 14px 0',
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5,
+        color: 'var(--color-fg-3)',
+      }}>Your circles show up here.</p>
+    )}
     <div style={{ flex: 1 }} />
     <div style={{ position: 'relative', borderTop: '1px solid var(--color-border-2)', marginTop: 12, paddingTop: 8 }}>
       <button ref={acctBtnRef} onClick={() => { if (onAccountGate) { onClose && onClose(); onAccountGate(); return; } setAcctOpen(v => !v); }} aria-haspopup="menu" aria-expanded={acctOpen} className="circ-railacct" style={{

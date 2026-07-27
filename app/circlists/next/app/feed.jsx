@@ -56,7 +56,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
   // reads "You" for the current user's own items (shared-view convention); the
   // avatar uses the account's real name + accent, same as the roster.
   const whoName = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
-  const isYou = whoName === 'You';
+  const isYou = /^you$/i.test(whoName);
   const avatarName = isYou ? displayName(user) : whoName;
 
   const host = feedHostOf(item.url);
@@ -115,7 +115,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
                 <img src={faviconUrl} alt="" onError={() => setFavBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </span>
             )}
-            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: item.source ? 600 : 500, fontSize: 13, color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{source}</span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: item.source ? 600 : 500, fontSize: 13, color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, flex: 1 }}>{source}</span>
           </div>
           {title
             ? <a {...openLinkProps} className="circ-cardtitle" style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</a>
@@ -137,7 +137,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
         <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
         <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {attribPre
-            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span>{item.attribution.slice(attribPre[0].length)}</React.Fragment>
+            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span><span className="circ-attrib-rest">{item.attribution.slice(attribPre[0].length)}</span></React.Fragment>
             : item.attribution}
         </span>
         {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
@@ -261,7 +261,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
     // Extraction is slow + unreliable, so add never blocks on it: the sheet
     // closes at once and the card lands PENDING in the feed. Metadata fills it
     // in place when it resolves (main.jsx schedules the async settle).
-    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by You.', read: false, pending: true });
+    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: false, pending: true });
     onClose();
   };
 
@@ -269,7 +269,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
     ? {
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 121,
         background: 'var(--color-surface)',
-        borderTopLeftRadius: 16, borderTopRightRadius: 16,
+        borderTopLeftRadius: 20, borderTopRightRadius: 20,
         padding: 'var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
         boxShadow: 'var(--shadow-overlay)',
         transform: shown ? 'translateY(0)' : 'translateY(100%)',

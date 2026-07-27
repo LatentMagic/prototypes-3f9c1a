@@ -52,6 +52,11 @@ const DELETE_LIST = new Set([
   'tweaks-panel.jsx', // dev aid — tweaks panel UI (typeof-guarded in main)
   'auth.jsx',         // sign-in / up / otc / recovery — never authenticates in preview
   'spaces.jsx',       // create / members / account surfaces — all gated-unreachable
+  'app-shell.jsx',    // app-posture chrome — only swapped in when Config's Platform
+                       // toggle sets isApp; config.jsx is dropped so it never fires
+  'home.jsx',         // shared home screen — only reached via goHome(), which no
+                       // kept web-shell affordance calls (route defaults to 'space'
+                       // with seeded circles present)
 ]);
 
 // seed-data.jsx is always kept (main.jsx reads window.CircSeed unconditionally),

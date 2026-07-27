@@ -1105,8 +1105,31 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, and a support-contact link in settings. Champion self-serve and change-email carry in from the shipped line.',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, and a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard. Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
           changelog: [
+            {
+              date: '2026-07-27',
+              title: 'App posture IA — home is the root, the bar belongs to the circle',
+              items: [
+                'The app posture gains a home screen at account level: the circles list, each with a reason to look at it, plus New circle. Account hangs off the avatar in the top bar, not off a nav slot. Entering a circle pushes a full-screen layer over it.',
+                'The bottom bar is no longer global — it renders only inside a circle, and carries three circle-local slots: Home · Add · Settings. Reading loses its slot; the feed\'s Active/Read tabs are unchanged.',
+                'Containers settled: a bottom sheet is for Add only; circle entry, circle settings and Account are full pages that slide in from the right. The circle-switcher and account sheets are removed — circles are listed on home, so there is one way to switch.',
+                'Documentation split out: ARCHITECTURE.md (three postures, one shared core; the inShell() swap; droppable modules; the payments guard) and MOBILE.md (the app posture\'s own IA, containers, motion). Web postures are frozen and unchanged.',
+                'Caveat: a large, largely one-shot rework of the app posture, QA\'d by hand rather than exhaustively — a prototype sketch, not a settled build.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-24',
+              title: 'App platform posture — a third presentation, one shared core',
+              items: [
+                'Adds a third presentation posture alongside desktop and mobile web: app, how Circlists reads as a native mobile app. Not a fork — same routes, state, data, tokens, and copy. main.jsx routes every in-shell surface through inShell(), which swaps only the persistent chrome (app-shell.jsx\'s AppShellNative) and inherits every shared surface unchanged.',
+                'App chrome is thumb-first and bottom-anchored: bottom navigation (Reading · Circles · Add · Account) replaces the rail/drawer; circle switching and account access become bottom sheets; Add is an accent bar action, not a floating button; the top bar carries status + circle settings only.',
+                'Web-only payments: in app mode every path to the funding/checkout wizard lands on a calm finish-on-web handoff — the circle is named in-app, no checkout/price/provider reachable. A Mobile payments: On toggle runs the real wizard in the app posture instead.',
+                'Config gains Platform (Web / App) and Mobile payments (Off / On). Web posture is frozen — unchanged in look and behaviour.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
             {
               date: '2026-07-24',
               title: 'Add from anywhere, confirmed on the FAB — biz-83',

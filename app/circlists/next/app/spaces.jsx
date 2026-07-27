@@ -9,7 +9,7 @@ const SPACE_CAP = 10;
 // ---- In-shell content page frame (back + centred column) -------------------
 const ContentPage = ({ onBack, backLabel = 'Back', children, max = 'var(--max-feed-width)' }) => (
   <main style={{ flex: 1, width: '100%' }}>
-    <div style={{ maxWidth: max, margin: '0 auto', padding: '24px 20px 96px', width: '100%' }}>
+    <div style={{ maxWidth: max, margin: '0 auto', padding: '24px 24px 96px', width: '100%' }}>
       {onBack && (
         <button onClick={onBack} style={{
           background: 'transparent', border: 0, padding: '8px 6px', margin: '0 0 16px -6px', cursor: 'pointer',

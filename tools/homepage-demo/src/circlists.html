@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Circlists</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="brand/assets/favicon-16.png" />
@@ -108,6 +109,7 @@
   .circ-btn-destructive:hover:not(:disabled) { background: var(--color-destructive-hover) !important; }
   .circ-btn-destructive:active:not(:disabled) { background: var(--color-destructive-press) !important; }
   .circ-btn-tertiary:hover { text-decoration: underline; }
+  .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
   /* ---- card actions: quiet, recessive ---- */
   .circ-cardaction {
@@ -118,14 +120,42 @@
     transition: background var(--duration-base), color var(--duration-base);
   }
   .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
-  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; }
+  /* Icon actions keep the full 44px hit target; the hover fill is an INSET state
+     layer (Material/HIG icon-button spec) so adjacent controls read as separate
+     without moving glyphs or breaking edge alignment. */
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  /* enriched card is a container so the footer can adapt to its own width */
+  .circ-card { container-type: inline-size; }
+  /* ---- Pending card (extraction still resolving) — quiet skeleton, no spinner ---- */
+  .circ-skel { background: linear-gradient(90deg, var(--color-surface-sunken) 25%, var(--color-border-2) 50%, var(--color-surface-sunken) 75%); background-size: 200% 100%; animation: circ-skel 1.4s ease-in-out infinite; }
+  @keyframes circ-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .circ-settled { animation: circ-fade 300ms var(--ease-quiet); }
+  @media (prefers-reduced-motion: reduce) { .circ-skel { animation: none !important; } }
+  /* very narrow card: drop the "Added by " prefix (avatar already carries who) */
+  @container (max-width: 380px) { .circ-attrib-pre { display: none; } .circ-attrib-rest { display: inline-block; } .circ-attrib-rest::first-letter { text-transform: capitalize; } }
   .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
+
+  /* ---- enriched card: open affordance = title + image only ---- */
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
 
   /* ---- menus / links ---- */
   .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }
   .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
   .circ-topaction:hover { background: var(--color-surface-sunken); }
   .circ-topaction:hover { color: var(--color-fg-1); }
+
+  /* ---- app posture (native mobile) chrome ---- */
+  .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }
+  .circ-appnav-add:active:not(:disabled) .circ-appnav-adddot { background: var(--color-accent-press) !important; }
+  .circ-appsheet-row:hover { background: var(--color-surface-sunken); }
+  .circ-appsheet-row:active { background: var(--color-border-2); }
   .circ-railacct:hover { background: var(--color-surface); }
   .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
 
@@ -235,18 +265,30 @@
     background: #050505; border-radius: 52px; padding: 11px;
     box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
     overflow: hidden;
-    transform: translateZ(0); /* containing block for position:fixed modals — on the
-       non-scrolling bezel (NOT .circ-phone-screen) so fixed overlays pin to the phone
-       viewport instead of riding the scrolled feed */
+  }
+  .circ-phone-clip {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden; background: var(--color-canvas);
+    transform: translateZ(0); /* containing block for position:fixed overlays — a
+       NON-scrolling wrapper with exactly the screen's bounds + corner radius, so
+       sheets/scrims pin to the phone screen (and get clipped by its corners)
+       instead of bleeding onto the bezel or riding the scrolled feed */
   }
   .circ-phone-screen {
-    position: relative; width: 100%; height: 100%;
-    border-radius: 42px; overflow: hidden;
-    background: var(--color-canvas);
+    width: 100%; height: 100%;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     --circ-vh: 100%;
   }
   .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* app posture: full-page push layers (app/app-shell.jsx, useNativePush).
+     Keyframes, not transitions — the layer mounts and animates in the same
+     commit, so there is no painted from-state for a transition to start from. */
+  @keyframes circ-push-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes circ-push-out { from { transform: translateX(0) } to { transform: translateX(100%) } }
+  .circ-push-in { animation: circ-push-in var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
 
   /* ---- entrance animations ----
      Overlays rest at their visible end-state with NO entrance keyframe, so they
@@ -269,6 +311,8 @@
 <script type="text/babel" src="app/swell-reactions.jsx"></script>
 <script type="text/babel" src="app/feed.jsx"></script>
 <script type="text/babel" src="app/shell.jsx"></script>
+<script type="text/babel" src="app/home.jsx"></script>
+<script type="text/babel" src="app/app-shell.jsx"></script>
 <script type="text/babel" src="app/auth.jsx"></script>
 <script type="text/babel" src="app/spaces.jsx"></script>
 <script type="text/babel" src="app/subscriptions.jsx"></script>

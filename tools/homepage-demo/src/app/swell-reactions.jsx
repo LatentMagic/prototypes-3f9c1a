@@ -699,28 +699,30 @@ const SwellDoor = ({ item }) => {
   const all = (item && item.reactions) || [];
   if (all.length === 0) return null;              // nobody has read it yet -> no door
   const glyphs = swellDoorGlyphs(all);             // may be empty — everyone skipped is still shown
-  // Everyone who read it skipped: no glyphs to huddle. Show NO stand-in mark —
-  // empty circles just read as reactions that failed to render. The arrows-out
-  // cue alone carries the door: nothing to preview, only a view to open.
+  // The arrows' OPEN cue holds a fixed slot so it lands in the exact tick/delete
+  // position (paddingRight 15.5 -> centre 22px from the door's right edge). The
+  // glyph huddle hangs off its LEFT and, when present, the arrows' left padding
+  // tightens to 6px so the huddle hugs the arrows as ONE conjoined button; bare,
+  // the arrows relax to a full 44px touch target.
   return (
     <React.Fragment>
       <button type="button" onClick={() => setOpen(true)} className="circ-swell-door"
         aria-label="How the circle landed" aria-haspopup="dialog"
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-          border: 0, background: 'transparent', padding: 8, margin: '-8px -8px -8px 0',
-          borderRadius: 'var(--radius-md)', flexShrink: 0, minHeight: 44,
-          transition: 'background var(--duration-fast) var(--ease-quiet)' }}>
+        style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer', border: 0,
+          background: 'transparent', padding: 0, minHeight: 44, flexShrink: 0 }}>
         {glyphs.length > 0 && (
-          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', paddingLeft: 8 }}>
             {glyphs.map((g, i) => (
               <span key={i} style={{ fontSize: 16, lineHeight: 1, width: 17, height: 17, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: i === 0 ? 0 : -4 }}>{g}</span>
             ))}
           </span>
         )}
-        <svg viewBox="0 0 24 24" width={13} height={13} aria-hidden="true"
-          style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', flexShrink: 0 }}>
-          <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
-        </svg>
+        <span style={{ height: 44, paddingLeft: glyphs.length > 0 ? 6 : 15.5, paddingRight: 15.5, display: 'inline-flex', alignItems: 'center' }}>
+          <svg viewBox="0 0 24 24" width={13} height={13} aria-hidden="true"
+            style={{ stroke: 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round', flexShrink: 0 }}>
+            <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+        </span>
       </button>
       {open && <SwellReviewModal item={item} onClose={() => setOpen(false)} />}
     </React.Fragment>

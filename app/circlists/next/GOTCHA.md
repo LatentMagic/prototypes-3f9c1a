@@ -71,3 +71,56 @@ All three now share one open/close mechanism (`useSheetMount`), which is the
 AddReveal pattern verbatim: mount at `translateY(100%)`, double-rAF → `shown`,
 transition up; close = `shown` false → transition down → unmount after the slide.
 Keep them identical — divergence here is where the bugs came from.
+
+---
+
+## 4. A trailing slash does NOT make `feedDeriveTitle` return null
+
+**Symptom.** Tried to seed a card with no title (bare-URL/mono-font fallback)
+by giving it a long path ending in `/`. The card kept showing a real derived
+title instead of falling through to the URL-font treatment.
+
+**Cause.** `feedDeriveTitle` (`app/feed.jsx`) does
+`pathname.split('/').filter(Boolean).pop()` — `filter(Boolean)` strips the
+empty string a trailing slash produces, so `pop()` still returns the last real
+segment. Only an empty/very short (`<3` chars) or all-numeric last segment
+makes it return `null`.
+
+**Fix.** To seed a genuinely titleless card, put the long content in the query
+string instead of the path (e.g. `https://example.com/?trace=...long-slug...`)
+so `pathname` is just `/` and there's no segment to derive from. No
+`SEED_META` entry for that URL either.
+
+**Rule.** Titleless-fallback test fixtures need an empty/near-empty pathname,
+not just a trailing slash.
+
+---
+
+## 5. A `transform` creates a containing block — it captures every `position: fixed` inside it
+
+One rule, two ways it bites. Both cost a session.
+
+**Symptom A — the sheets bled onto the bezel.** Bottom sheets pinned to the
+phone *frame* rather than the screen, spilling over the rounded bezel edge. Put
+the transform on the scroller instead and the sheets rode the feed as it
+scrolled.
+
+**Symptom B — mispinned overlays after a page push.** After the app posture's
+slide-in page transition settled, sheets opened inside it were subtly offset —
+the layer still carried `translateX(0)`, which is still a transform.
+
+**Cause (both).** `position: fixed` resolves against the nearest transformed
+ancestor, not the viewport. Any non-`none` transform — including the identity
+`translateX(0)` — makes that ancestor the containing block.
+
+**Fix.**
+- Structural: the phone frame is **three** layers — bezel (`.circ-phone`) → clip
+  (`.circ-phone-clip`: carries the transform, non-scrolling, exactly the
+  screen's bounds + radius) → screen (`.circ-phone-screen`: scrolls).
+- Transient: `useNativePush` (`app/app-shell.jsx`) holds its two layers only for
+  the length of the transition and returns the plain view once idle, so no
+  transform survives at rest.
+
+**Rule.** The only layer allowed a standing transform is one whose box is
+exactly the screen and which does not scroll. Everywhere else, transforms are
+transient — a layer at rest has no transform, not even an identity one.

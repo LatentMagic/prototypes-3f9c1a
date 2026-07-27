@@ -3,6 +3,48 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## App posture IA — home is the root, the bar belongs to the circle — 2026-07-27
+- The app posture gains a **home screen** at account level: the circles list, each
+  with a reason to look at it, plus New circle. Account hangs off the avatar in
+  the top bar, not off a nav slot. Entering a circle pushes a full-screen layer
+  over it.
+- The **bottom bar is no longer global** — it renders only inside a circle, and
+  carries three circle-local slots: **Home · Add · Settings**. Because the bar
+  cannot be seen from outside a circle, the bar *is* the circle scope, which is
+  what the earlier five-slot bar could not express. Reading loses its slot (it was
+  a tab for the screen you were already on); the feed's Active/Read tabs are
+  unchanged.
+- **Containers settled:** a bottom sheet is for Add only; circle entry, circle
+  settings and Account are full pages that slide in from the right. The
+  circle-switcher and account sheets are removed — circles are listed on home, so
+  there is one way to switch.
+- Documentation split out: **`ARCHITECTURE.md`** (three postures, one shared core;
+  the `inShell()` swap; droppable modules; the payments guard) and **`MOBILE.md`**
+  (the app posture's own IA, containers, motion, and how to maintain it alongside
+  the web prototype). Web postures are frozen and unchanged.
+- **Caveat.** This was a large, largely one-shot rework of the app posture,
+  QA'd by hand rather than exhaustively. It is a prototype sketch, not a settled
+  build — expect regressions to surface, and treat `MOBILE.md`'s status note as
+  binding when judging what is decided versus what is merely present.
+
+## App platform posture — a third presentation, one shared core — 2026-07-24
+- Adds a third presentation **posture** alongside desktop and mobile web: **app**,
+  how Circlists reads as a native mobile app. Not a fork — same routes, state,
+  data, tokens, and copy. `main.jsx` routes every in-shell surface through
+  `inShell()`, which swaps only the persistent chrome (`app/app-shell.jsx`'s
+  `AppShellNative`) and inherits every shared surface unchanged, so future
+  shared-surface changes land in the app posture with no app-side edit.
+- App chrome is **thumb-first and bottom-anchored**: bottom navigation
+  (Reading · Circles · Add · Account) replaces the rail/drawer; circle switching
+  and account access become bottom **sheets**; Add is an accent bar action, not a
+  floating button (no FAB); the top bar carries status + circle settings only.
+- **Web-only payments**: in app mode every path to the funding/checkout wizard
+  (create, re-fund, manage) lands on a calm finish-on-web handoff — the circle is
+  named in-app, no checkout/price/provider reachable. A `Mobile payments: On`
+  toggle runs the real wizard in the app posture instead.
+- Config gains **Platform (Web / App)** and **Mobile payments (Off / On)**. Web
+  posture is frozen — unchanged in look and behaviour.
+
 ## Add from anywhere, confirmed on the FAB — biz-83 — 2026-07-24
 - The add-link **FAB now renders on the Read tab too**, not just Active — same
   bottom-right placement and add flow. Adding from Read leaves the tab and scroll

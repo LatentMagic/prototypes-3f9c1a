@@ -53,6 +53,8 @@ makes unreachable.
 | `tweaks-panel.jsx` | Dev aid (tweaks panel). `main.jsx` guards on `typeof useTweaks`. |
 | `auth.jsx` | Sign-in / up / one-time-code / recovery. The demo starts authenticated and never signs out — all auth routes are unreachable. |
 | `spaces.jsx` | Create-circle, **members / circle-settings**, and account surfaces. All three are gated → unreachable, so these components are never rendered. |
+| `app-shell.jsx` | App-posture chrome. `main.jsx` only swaps to it when Config's Platform toggle sets `isApp` — and `config.jsx` is dropped, so `isApp` never turns true. |
+| `home.jsx` | Shared home screen. Only reached via `goHome()`; no affordance in the kept web `shell.jsx` calls it, and the demo's seeded circles keep the zero-space fallback route from firing either. |
 
 **Kept:** `seed-data` · `primitives` · `brand-motion` · `swell-reactions` · `feed` · `shell` · `subscriptions` · `gate` · `main`.
 

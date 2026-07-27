@@ -1,6 +1,8 @@
 # Project: Circlists
 
 ## Reference docs — read when relevant
+- `ARCHITECTURE.md` — app-wide structure: one app / three postures, how `inShell()` swaps only the chrome, deletable aids and droppable modules, the web-only-payments guard, code conventions. Read before touching routing, shells, or module load order.
+- `MOBILE.md` — the app posture (native mobile): its two chrome states, containers, push motion, the chrome-vs-surface test for home, and the checklist for maintaining app and web together. Read before any app-posture work.
 - `CHANGELOG.md` — major milestones over time (not granular). Read to catch up on where the product has been.
   - **Editing rule (strict):** one entry per *significant landed step* — a feature introduced, a rebrand, a model change, or a **fundamental change to how the app works or is structured** (an information-architecture rework, consolidating an overloaded concept, a flow being reshaped) even when it originates as a bug fix. What matters is whether the *shape* of the product changed, not the label on the task. NOT for iterative work: refinements, cosmetic bug fixes, size/spacing/timing tweaks, seed-data changes, enabling an option, renaming a key, motion detail, etc. never get their own entry or bullet.
   - Do NOT keep amending an entry as you iterate within a feature — the entry captures the *shape* of the step, written once, and then left alone. When in doubt, add nothing and ask. A single terse title + 2–4 shape-level bullets is the ceiling.
@@ -23,6 +25,7 @@ These distil the durable essence. For exact tokens, components, and visual style
 - **Voice:** direct, present-tense, verb-led. Evergreen copy (no first-visit/temporal framing). Calm and non-blaming at failures. No emoji, ever.
 - **Calm is the floor.** Avoid anxiety, performance pressure, FOMO by design.
 - **Communal library, individual read-state.** Delete is everyone-delete, not private dismissal. No "who read it" signals. URLs only.
+- **Three presentation postures, one shared core.** Desktop web, mobile web, and **app** (native mobile). `main.jsx` routes every in-shell surface through `inShell()`, which swaps ONLY the chrome; everything inside is the same shared component, so a shared-surface change must land in all three with no per-posture edit — never fork a surface for the app. Web is frozen. Mechanism and module rules in `ARCHITECTURE.md`; the app posture's own IA in `MOBILE.md`.
 
 ## Replying in chat (not product copy)
 - **CRITICAL: the reply's last line carries the one thing the user must act on** — the open question, the decision needed, or a one-line summary of what landed — led by an emoji (🎯 ❓ ✅ ⚠️ 💡). User scans bottom-up; never bury the ask or takeaway above it, never hide it mid-paragraph. (This governs chat replies only — the product's "no emoji, ever" rule still holds for all UI copy.)

@@ -39,6 +39,10 @@ const SEED_META = {
   'https://www.gutenberg.org/files/2701/2701-h/2701-h.htm': { title: 'Moby-Dick; or, The Whale', source: 'Project Gutenberg', hasImage: false },
   'https://www.gutenberg.org/files/1342/1342-h/1342-h.htm': { title: 'Pride and Prejudice', source: 'Project Gutenberg', hasImage: false },
   'https://longreads.com/2026/01/the-long-walk-home/': { title: 'The Long Walk Home', source: 'Longreads' },
+  'https://engineering.stripe-shopfront-example.com/blog/2026/03/how-we-migrated-forty-two-microservices-off-a-shared-postgres-instance-without-downtime': { title: 'How We Migrated Forty-Two Microservices Off a Shared Postgres Instance Without Any Downtime', source: 'Engineering at Shopfront', image: 'uploads/card-previews/blog-overreacted.png' },
+  'https://docs.internal-infra-example.org/wiki/spaces/PLATFORM/pages/884213/postmortem-2026-02-14-cross-region-replication-lag-incident-review-and-followups': { title: 'Postmortem: Cross-Region Replication Lag Incident, Root Cause, and the Nineteen Followup Action Items', source: null, hasImage: false, faviconExists: false },
+  'https://blog.distributed-systems-weekly-example.com/archive/2026/consensus-protocols-explained-raft-paxos-and-why-most-teams-should-never-build-their-own': { title: 'Consensus Protocols Explained: Raft, Paxos, and Why Most Teams Should Never Build Their Own', source: 'Distributed Systems Weekly', image: 'uploads/card-previews/youtube-hqdefault.jpg' },
+  'https://internal-wiki-example.atlassian.net/wiki/spaces/ENG/pages/9982341/runbook-database-failover-procedure-for-the-primary-analytics-cluster-updated-march-2026': { title: 'Runbook: Database Failover Procedure for the Primary Analytics Cluster (Updated March 2026)', source: null, hasImage: false, faviconExists: false },
 };
 
 function seedSpaces(userEmail) {
@@ -84,7 +88,7 @@ function seedSpaces(userEmail) {
           { name: 'Nadia F.', skipped: true },
           { name: 'Theo B.', skipped: true },
         ]),
-        IT('https://sqlite.org/whentouse.html', 'Added by former member.'),
+        IT('https://sqlite.org/whentouse.html', 'Added by former member'),
         IT('https://go.dev/blog/pipelines', 'Added by Marcus T.', true, [
           { name: 'Priya N.', glyph: FIRE, intensity: 0.72 },
           { name: 'Ada L.', glyph: FIRE, intensity: 0.88 },
@@ -111,7 +115,7 @@ function seedSpaces(userEmail) {
         // empty disc, roster is just the skip list. Also the former-member demo:
         // one row has no name, only { former: true } — their account was deleted,
         // so the roster labels them "Former member" same as the card attribution.
-        IT('https://martinfowler.com/bliki/FormerMember.html', 'Added by former member.', true, [
+        IT('https://martinfowler.com/bliki/FormerMember.html', 'Added by former member', true, [
           { name: 'Sam R.', skipped: true },
           { name: 'Priya N.', skipped: true },
           { former: true, skipped: true },
@@ -125,6 +129,27 @@ function seedSpaces(userEmail) {
           { name: 'Marcus T.', skipped: true },
           { name: 'Sam R.', skipped: true },
           { name: 'You', skipped: true },
+        ]),
+        // Long-URL / long-title stress cases — one with a preview image, one without.
+        IT('https://engineering.stripe-shopfront-example.com/blog/2026/03/how-we-migrated-forty-two-microservices-off-a-shared-postgres-instance-without-downtime', 'Added by Dev K.', false, [
+          { name: 'Marcus T.', glyph: FIRE, intensity: 0.6 },
+          { name: 'Priya N.', glyph: BULB, intensity: 0.42 },
+        ]),
+        IT('https://docs.internal-infra-example.org/wiki/spaces/PLATFORM/pages/884213/postmortem-2026-02-14-cross-region-replication-lag-incident-review-and-followups', 'Added by Priya N.', true, [
+          { name: 'Sam R.', glyph: THUMB, intensity: 0.5 },
+          { name: 'Ada L.', skipped: true },
+        ]),
+        IT('https://blog.distributed-systems-weekly-example.com/archive/2026/consensus-protocols-explained-raft-paxos-and-why-most-teams-should-never-build-their-own', 'Added by Ada L.', false, [
+          { name: 'Dev K.', glyph: FIRE, intensity: 0.68 },
+          { name: 'Lena P.', glyph: BULB, intensity: 0.3 },
+        ]),
+        IT('https://internal-wiki-example.atlassian.net/wiki/spaces/ENG/pages/9982341/runbook-database-failover-procedure-for-the-primary-analytics-cluster-updated-march-2026', 'Added by Marcus T.', true, [
+          { name: 'Priya N.', skipped: true },
+          { name: 'You', skipped: true },
+        ]),
+        // No SEED_META entry on purpose — no title at all, just the raw giant URL/slug.
+        IT('https://analytics-internal-example.com/?trace=8823ff1c9e0a4b12-2026-03-retro-followups-database-migration-incident-action-items-and-owners-final-draft-v3', 'Added by Sam R.', false, [
+          { name: 'Dev K.', skipped: true },
         ]),
       ],
     },
@@ -152,7 +177,7 @@ function seedSpaces(userEmail) {
       members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com')],
       items: [
         IT('https://www.gutenberg.org/files/1342/1342-h/1342-h.htm', 'Added by Sam R.'),
-        IT('https://longreads.com/2026/01/the-long-walk-home/', 'Added by You.'),
+        IT('https://longreads.com/2026/01/the-long-walk-home/', 'Added by you'),
       ],
     },
     {

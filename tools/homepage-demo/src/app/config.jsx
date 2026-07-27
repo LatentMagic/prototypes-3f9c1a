@@ -15,7 +15,8 @@
 // ============================================================================
 const { useState: useCState, useRef: useCRef, useEffect: useCEffect } = React;
 
-const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange }) => {
+const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
+                         platform, onPlatformChange, mobilePayments, onMobilePaymentsChange }) => {
   const [open, setOpen] = useCState(false);
   // draggable launcher-button position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
@@ -89,6 +90,8 @@ const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayou
           groups={groups} onReset={onReset}
           gateOn={gateOn} onGateChange={onGateChange}
           layout={layout} onLayoutChange={onLayoutChange}
+          platform={platform} onPlatformChange={onPlatformChange}
+          mobilePayments={mobilePayments} onMobilePaymentsChange={onMobilePaymentsChange}
           onClose={closeModal}
         />
       )}
@@ -108,7 +111,9 @@ const ConfigSeg = ({ options, value, onChange }) => (
 );
 
 // ---- The modal itself ----
-const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange, onClose }) => {
+const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
+                       platform, onPlatformChange, mobilePayments, onMobilePaymentsChange, onClose }) => {
+  const isApp = platform === 'app';
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -149,12 +154,28 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
           <div className="circ-config-eyebrow">Review settings</div>
 
           <div className="circ-config-row">
+            <div className="circ-config-row-label">Platform</div>
+            <ConfigSeg value={platform || 'web'} onChange={onPlatformChange} options={[
+              { value: 'web', label: 'Web' }, { value: 'app', label: 'Mobile' },
+            ]} />
+          </div>
+          <div className="circ-config-hint">Mobile renders the product as a native mobile app — bottom navigation, sheets, no floating button — on the same shared state. Always shown in a phone.</div>
+
+          <div className="circ-config-row">
             <div className="circ-config-row-label">Viewport</div>
             <ConfigSeg value={layout} onChange={onLayoutChange} options={[
               { value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' },
             ]} />
           </div>
-          <div className="circ-config-hint">Mobile frames every screen in a phone bezel, regardless of window size.</div>
+          <div className="circ-config-hint">Web posture only. Mobile frames every screen in a phone bezel, regardless of window size.{isApp ? ' — The mobile app overrides this and always uses the phone.' : ''}</div>
+
+          <div className="circ-config-row">
+            <div className="circ-config-row-label">Mobile payments</div>
+            <ConfigSeg value={mobilePayments ? 'on' : 'off'} onChange={(v) => onMobilePaymentsChange(v === 'on')} options={[
+              { value: 'off', label: 'Off' }, { value: 'on', label: 'On' },
+            ]} />
+          </div>
+          <div className="circ-config-hint">Mobile only. Off, funding and checkout hand off to the web; on, the wizard runs in the app. Web mode always takes payment.</div>
 
           <div className="circ-config-row">
             <div className="circ-config-row-label">Preview gate</div>
@@ -322,7 +343,8 @@ function buildScenarios(api) {
       { k: 'Accept invite \u2014 circle full', go: () => setRoute('space-full') },
     ] },
     { title: 'Account', items: [
-      { k: 'Change password', go: () => goSpace('sp-backend', 'account') },
+      { k: 'Change email & password', go: () => goSpace('sp-backend', 'account') },
+      { k: 'Email & password via SSO', go: () => { setUser({ ...DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); goSpace('sp-backend', 'account'); } },
     ] },
   ];
 

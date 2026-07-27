@@ -19,7 +19,7 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // heartsandfires.com — five hearts + five fires, adjacent sectors, to stress the
 // two-big-huddles collision case. v5 adds extracted card metadata — title,
 // source, and preview image per item (BIZ-80).)
-const STATE_KEY = 'circ_state_v6';
+const STATE_KEY = 'circ_state_v7';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -51,8 +51,16 @@ const CircApp = () => {
     window.addEventListener('resize', on);
     return () => window.removeEventListener('resize', on);
   }, []);
-  const forcedMobile = tw.layout === 'mobile';
-  const isMobile = tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
+  // Platform posture (Config aid, session-only like the gate). 'web' = the two
+  // frozen web postures (desktop + mobile web); 'app' = the native mobile-app
+  // posture (AppShellNative). App mode implies the phone viewport regardless of
+  // the Viewport control. Mobile payments (off by default in app mode) sends the
+  // funding/checkout paths to the finish-on-web handoff.
+  const [platform, setPlatform] = useState('web');
+  const [mobilePayments, setMobilePayments] = useState(false);
+  const isApp = platform === 'app';
+  const forcedMobile = tw.layout === 'mobile' || isApp;
+  const isMobile = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
 
   // ---- Deletable-aid / droppable-module handles ----
   // Read once per render from window so the app tolerates any of these files
@@ -111,8 +119,17 @@ const CircApp = () => {
   // open Create-a-space fresh (clears any carried name)
   const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', spaceId: null }); setRoute('create-space'); };
 
-  // the authenticated home for a user who holds no membership
+  // Home — the account level. Historically this was only the landing place for a
+  // user who holds no membership; in the app posture it is a real destination
+  // (the circles list) reached from the circle bar's Home slot. One route serves
+  // both: the no-membership case is simply its empty state.
   const goHome = () => { setCurrentId(null); setRoute('home'); };
+  // Where Back should return to when Account was opened (home vs a circle).
+  // Returning to a circle you were already in must NOT re-run the feed's load
+  // state — the feed never left.
+  const returnToSpace = () => setRoute('space');
+  const [accountFrom, setAccountFrom] = useState('space');
+  const openAccount = () => { setAccountFrom(route === 'home' ? 'home' : 'space'); setRoute('account'); };
 
   // ✕ exit / return destination: no-space home if no membership, else default space
   const exitToApp = () => { if (spaces.length === 0) goHome(); else enterSpace(currentId || (spaces[0] && spaces[0].id)); };
@@ -141,6 +158,13 @@ const CircApp = () => {
     if (sp && sp.funded) { setLoadingFeed(true); setTimeout(() => setLoadingFeed(false), 700); }
     else setLoadingFeed(false);
   }, [spaces, currentId]);
+
+  // Home is app-posture chrome. The web postures reach their circles through the
+  // rail, so a web session must never sit on it while the user holds circles —
+  // switching Platform back to Web lands you in a circle instead.
+  useEffect(() => {
+    if (!isApp && route === 'home' && spaces.length > 0) enterSpace(currentId || spaces[0].id);
+  }, [isApp, route, spaces.length, currentId, enterSpace]);
 
   // ---- content mutations (peer powers) ----
   const addItem = (item) => {
@@ -248,22 +272,41 @@ const CircApp = () => {
     : { groups: [], reset: () => {} });
 
   // ---- shared shell wrapper ----
+  // App posture swaps ONLY the persistent chrome (AppShellNative): the children
+  // handed in are the exact same shared surfaces the web shell renders. Falls
+  // back to the web shell if app/app-shell.jsx is absent (droppable module).
+  const Shell = (isApp && window.AppShellNative) ? window.AppShellNative : AppShell;
   const inShell = (content, opts = {}) => (
-    <AppShell
+    <Shell
       isMobile={isMobile} user={user} showMembers={opts.showMembers !== false}
       spaces={spaces} currentId={currentId} space={space}
       onSelectSpace={enterSpace} onCreateSpace={gateActive ? onGate : openCreateSpace}
       onMembers={gateActive ? onGate : () => setRoute('members')}
-      onManageAccount={() => setRoute('account')}
+      onManageAccount={openAccount}
+      onHome={goHome} isHome={!!opts.home}
       onAccountGate={gateActive ? onGate : null}
       onSignOut={signOut}
+      onAdd={() => setAddOpen(true)} canAdd={!!opts.canAdd}
       subView={opts.subView || null}
-    >{content}</AppShell>
+    >{content}</Shell>
   );
 
   // ---- render route ----
+  // App posture + mobile payments OFF: every path that would reach the funding /
+  // checkout / provider surfaces lands on the finish-on-web handoff instead. One
+  // render-level guard covers ALL entry points (real flows AND Config scenarios),
+  // so no checkout, price-entry, or provider surface is reachable in-app while
+  // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
-  if (route === 'signin') {
+  const PAYMENT_ROUTES = ['funding', 'checkout', 'manage-interstitial', 'manage-funding'];
+  if (isApp && !mobilePayments && PAYMENT_ROUTES.includes(route)) {
+    const ctx = (route === 'manage-interstitial' || route === 'manage-funding')
+      ? 'manage' : (fundFlow.mode === 'refund' ? 'refund' : 'new');
+    const nm = ctx === 'new' ? fundFlow.name : (space ? space.name : fundFlow.name);
+    screen = window.WebHandoff
+      ? <WebHandoff context={ctx} spaceName={nm} onExit={exitToApp} />
+      : null;
+  } else if (route === 'signin') {
     screen = <SignIn onSubmit={({ email }) => startSignin(email)} onGoogle={() => { setPostAuthTo('space'); setRoute('google-return'); }} onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
   } else if (route === 'signup') {
     screen = <SignUp onSubmit={startSignup} onGoogle={() => { setPostAuthTo('post-signup'); setRoute('google-return'); }} onGoSignin={() => setRoute('signin')} />;
@@ -298,13 +341,19 @@ const CircApp = () => {
   } else if (route === 'members') {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
       onInvite={inviteEmail} onManageFunding={openManageFunding} onRename={renameSpace} onRemoveMember={removeMember} />,
-      { subView: { title: 'Settings', onBack: () => enterSpace(currentId) } });
+      { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {
     screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} />,
-      { subView: { title: 'Account', onBack: () => enterSpace(currentId) } });
+      { subView: { title: 'Account', onBack: () => (accountFrom === 'home' ? goHome() : returnToSpace()) } });
   } else if (route === 'home' || (!space && spaces.length === 0)) {
-    // No-space home — authenticated, inside the shell, no space name in header
-    screen = inShell(<NoSpaceHome onCreate={openCreateSpace} />, { showMembers: false });
+    // Home — the account level. With circles, the circles list (app/home.jsx, a
+    // droppable body); with none, the same screen's empty state.
+    const CirclesHomeBody = window.CirclesHome;
+    screen = inShell(
+      (spaces.length > 0 && CirclesHomeBody)
+        ? <CirclesHomeBody spaces={spaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace} />
+        : <NoSpaceHome onCreate={gateActive ? onGate : openCreateSpace} />,
+      { showMembers: false, home: true });
   } else {
     // space view — dormant gate, else the feed (the heart)
     if (space && !space.funded) {
@@ -342,9 +391,10 @@ const CircApp = () => {
         <>
           <Tabs active={tab} onChange={setTab} />
           {feed}
-          {!loadingFeed && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
+          {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
-        </>
+        </>,
+        { canAdd: true }
       );
     }
   }
@@ -366,13 +416,15 @@ const CircApp = () => {
     <>
       {forcedMobile ? (
         <div className="circ-stage">
-          <div className="circ-phone"><div className="circ-phone-screen">{appTree}</div></div>
+          <div className="circ-phone"><div className="circ-phone-clip"><div className="circ-phone-screen">{appTree}</div></div></div>
         </div>
       ) : appTree}
 
       {/* Config launcher — prototype aid; deleting app/config.jsx removes it, no edit here */}
       {ConfigLauncher && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
         gateOn={gateOverride} onGateChange={setGateOverride}
+        platform={platform} onPlatformChange={setPlatform}
+        mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}
         layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
 
       {/* Tweaks panel — deleting app/circ-tweaks.jsx removes it, no edit here */}
