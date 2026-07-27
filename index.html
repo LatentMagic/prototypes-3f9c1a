@@ -1105,8 +1105,18 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), and a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard. Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard, and Create/Fund circle now sharing one wizard shell (desktop renders as a page rather than a floating-card modal). Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
           changelog: [
+            {
+              date: '2026-07-27',
+              title: 'Create → Fund — one wizard shell, and desktop stops pretending to be a modal',
+              items: [
+                'Both steps now render through a single shell (app/wizard.jsx) that owns the page ground, the chrome row, and one content column shared by every step and every posture. The two screens are identical by construction rather than by coincidence; column width is set in one place and cannot be set per step.',
+                'Desktop is a page, not a dialog. The floating card is gone — it read as a modal over a route that has nothing behind it. Desktop is now the mobile screen, wider: page background, chrome at the page corners, column centred horizontally.',
+                'Steps are top-aligned, never vertically centred. Centring positions a block by its middle, so the taller step displaced its own heading; anchoring content a fixed distance below the chrome removes the cause. Leftover space collects at the bottom of the shorter step, which is accepted rather than compensated for.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
             {
               date: '2026-07-27',
               title: 'Upsell doors — a way out of a free membership, on surfaces that already exist',

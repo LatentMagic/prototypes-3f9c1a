@@ -61,6 +61,12 @@ const CircApp = () => {
   const isApp = platform === 'app';
   const forcedMobile = tw.layout === 'mobile' || isApp;
   const isMobile = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
+  // Posture + wizard alignment as <html> data attrs — CSS that must follow the
+  // POSTURE (not the raw viewport width) keys off these. See .circ-wizard-body.
+  useEffect(() => {
+    const d = document.documentElement;
+    d.setAttribute('data-circ-posture', isMobile ? 'mobile' : 'desktop');
+  }, [isMobile]);
 
   // ---- Deletable-aid / droppable-module handles ----
   // Read once per render from window so the app tolerates any of these files

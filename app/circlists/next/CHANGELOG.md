@@ -3,6 +3,19 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Create → Fund — one wizard shell, and desktop stops pretending to be a modal — 2026-07-27
+- Both steps now render through a **single shell** (`app/wizard.jsx`) that owns the
+  page ground, the chrome row, and one content column shared by every step and
+  every posture. The two screens are identical by construction rather than by
+  coincidence; column width is set in one place and cannot be set per step.
+- **Desktop is a page, not a dialog.** The floating card is gone — it read as a
+  modal over a route that has nothing behind it. Desktop is now the mobile screen,
+  wider: page background, chrome at the page corners, column centred horizontally.
+- **Steps are top-aligned, never vertically centred.** Centring positions a block
+  by its middle, so the taller step displaced its own heading; anchoring content a
+  fixed distance below the chrome removes the cause. Leftover space collects at the
+  bottom of the shorter step, which is accepted rather than compensated for.
+
 ## Upsell doors — a way out of a free membership, on surfaces that already exist — 2026-07-27
 - Three **passive doors** to starting your own circle, each a line of copy on a
   surface the app already renders: the feed's empty state (Active and Read), the

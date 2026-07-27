@@ -111,6 +111,19 @@
   .circ-btn-tertiary:hover { text-decoration: underline; }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
+  /* ---- Create → Fund wizard body ----
+     Mobile: safe-centred (the screen is the card, content sits in the middle).
+     Desktop: pinned to a fixed offset from the top, so the title lands at the
+     SAME y on step 1 and step 2 — the flick between steps stops jumping. */
+  /* Every step is top-aligned, so the heading lands at the same y on all of them.
+     No measuring, no reserved height, no hidden steps — one step in the DOM at a
+     time. Only the top offset differs by posture. Posture, not viewport width:
+     a forced-mobile frame on a wide window is mobile. */
+  .circ-wizard-body { justify-content: flex-start; padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  @media (min-width: 760px) { .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; } }
+  [data-circ-posture="mobile"] .circ-wizard-body { padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  [data-circ-posture="desktop"] .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; }
+
   /* ---- card actions: quiet, recessive ---- */
   .circ-cardaction {
     background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
@@ -323,6 +336,7 @@
 <script type="text/babel" src="app/home.jsx"></script>
 <script type="text/babel" src="app/app-shell.jsx"></script>
 <script type="text/babel" src="app/auth.jsx"></script>
+<script type="text/babel" src="app/wizard.jsx"></script>
 <script type="text/babel" src="app/spaces.jsx"></script>
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/tweaks-panel.jsx"></script>

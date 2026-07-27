@@ -77,35 +77,22 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
     if (!name.trim()) { setErr('Give your circle a name.'); return; }
     onCreate(name.trim());
   };
+  // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
   return (
-    <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 24px' }}>
-        <button onClick={onCancel} aria-label="Exit" style={{
-          background: 'transparent', border: 0, padding: 8, margin: '-8px -8px -8px 0', cursor: 'pointer',
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40,
-          borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)',
-        }}><Icon name="x" size={20} /></button>
-      </header>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '24px 20px 64px' }}>
-        <div style={{ maxWidth: 460, width: '100%', margin: '0 auto' }}>
-          <form onSubmit={submit} noValidate style={{ marginTop: 'min(6vh,40px)' }}>
-            <h1 style={{
-              fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-3xl)', lineHeight: 1.15,
-              letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: '0 0 8px',
-            }}>Create a circle</h1>
-            <p style={{
-              fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
-              color: 'var(--color-fg-2)', margin: '0 0 var(--space-8)',
-            }}>A circle is a shared list for a small, trusted group of up to {SPACE_CAP} people. You'll fund it as its champion; everyone joins free.</p>
-            <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
-              value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
-              <Button type="submit" variant="primary" size="lg" disabled={!name.trim()}>Continue</Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <WizardShell step={0} onExit={canCancel === false ? null : onCancel}>
+      <WizardTitle>Create a circle</WizardTitle>
+      <p style={{
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
+        color: 'var(--color-fg-2)', margin: '0 0 24px',
+      }}>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</p>
+      <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
+        <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
+          value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
+        <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
+        </Button>
+      </form>
+    </WizardShell>
   );
 };
 
