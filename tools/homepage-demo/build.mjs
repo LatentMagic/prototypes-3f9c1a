@@ -38,7 +38,24 @@
 import { readFile, writeFile, mkdir, rm, cp, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import esbuild from 'esbuild';
+
+// GitHub Pages serves everything with a fixed cache-control: max-age=600 (10
+// min) — not configurable, no server to point custom headers at. A browser
+// reload doesn't reliably re-fetch an iframe's own cached subresources across
+// browsers either, so "app.js changed but the URL didn't" is a real trap: a
+// visitor (or a reviewer testing right after a push) can sit on a stale build
+// for up to 10 minutes with no way to force a refresh short of DevTools'
+// disable-cache or an incognito window. Fix at the source instead of leaning
+// on the browser: name the file after a hash of its own content, so a changed
+// build is a genuinely new URL no cache has ever seen, and an unchanged build
+// keeps its old URL (nothing to bust). shortHash() is content-addressed, not
+// a build timestamp, so re-running the build twice on the same input yields
+// the same filename — no needless cache invalidation.
+function shortHash(content) {
+  return createHash('sha256').update(content).digest('hex').slice(0, 10);
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(__dirname, 'src');
@@ -252,10 +269,13 @@ async function main() {
     legalComments: 'none',
   });
 
-  // 4. Reset output, write bundle + static assets.
+  // 4. Reset output, write bundle + static assets. app.js is named after a
+  // hash of its own content (see shortHash() above) so a build that actually
+  // changes the code is a new URL no browser or CDN cache has ever seen.
   await rm(OUT, { recursive: true, force: true });
   await mkdir(OUT, { recursive: true });
-  await writeFile(path.join(OUT, 'app.js'), code);
+  const appFile = `app.${shortHash(code)}.js`;
+  await writeFile(path.join(OUT, appFile), code);
   await cp(path.join(SRC, 'swell.css'), path.join(OUT, 'swell.css'));
   await cp(path.join(SRC, 'brand'), path.join(OUT, 'brand'), { recursive: true });
   // Card-preview images: seed-data.jsx references these by relative path
@@ -290,15 +310,18 @@ async function main() {
       );
     }
   }
-  await writeFile(
-    path.join(OUT, 'tokens.css'),
-    tokensSrc.replace(gfImport, "@import url('fonts.css');"),
-  );
+  const tokensOut = tokensSrc.replace(gfImport, "@import url('fonts.css');");
+  const tokensFile = `tokens.${shortHash(tokensOut)}.css`;
+  await writeFile(path.join(OUT, tokensFile), tokensOut);
 
   // 5. Derive the embed HTML from the entry: drop babel + the per-module scripts,
   //    move React/ReactDOM to production (dropping the now-stale SRI hashes), point
-  //    them at the vendored copies instead of unpkg, light the gate, and load the
-  //    one prebuilt bundle.
+  //    them at the vendored copies instead of unpkg, light the gate, point
+  //    tokens.css at its hashed filename, and load the one prebuilt bundle
+  //    (also hashed — see shortHash() above for why).
+  if (!/href="tokens\.css"/.test(entryHtml)) {
+    throw new Error('No href="tokens.css" in src/circlists.html — has the entry changed?');
+  }
   const html = entryHtml
     .replace(/^.*@babel\/standalone.*\n/m, '')
     .replace(/\s*<script\s+type="text\/babel"[^>]*><\/script>/g, '')
@@ -310,10 +333,11 @@ async function main() {
     .replace(/https:\/\/unpkg\.com\/react(?:-dom)?@[\d.]+\/umd\//g, '')
     .replace(/\s+integrity="[^"]*"/g, '')
     .replace(/\s+crossorigin="[^"]*"/g, '')
+    .replace(/href="tokens\.css"/, `href="${tokensFile}"`)
     .replace(/<title>[^<]*<\/title>/, '<title>Circlists — homepage demo</title>')
     .replace(/<\/body>/,
       '<script>window.CIRC_FORCE_GATE = true;</script>\n' +
-      '<script src="app.js"></script>\n</body>');
+      `<script src="${appFile}"></script>\n</body>`);
 
   await writeFile(path.join(OUT, 'index.html'), html);
 
@@ -325,7 +349,8 @@ async function main() {
   console.log(`  card previews: vendored from uploads/card-previews/`);
   console.log(`  vendored: ${react.join(', ')}`);
   console.log(`  fonts  : ${fonts.count} files, latin — ${fonts.families.join(' + ')}`);
-  console.log(`  app.js : ${(Buffer.byteLength(code) / 1024).toFixed(1)} KB`);
+  console.log(`  ${appFile} : ${(Buffer.byteLength(code) / 1024).toFixed(1)} KB (content-hashed — cache-busts automatically on change)`);
+  console.log(`  ${tokensFile}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
