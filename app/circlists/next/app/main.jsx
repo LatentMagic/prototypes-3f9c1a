@@ -18,8 +18,10 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // members responded, hearts clustered) — two more Swell demo fixtures. v4 adds
 // heartsandfires.com — five hearts + five fires, adjacent sectors, to stress the
 // two-big-huddles collision case. v5 adds extracted card metadata — title,
-// source, and preview image per item (BIZ-80).)
-const STATE_KEY = 'circ_state_v7';
+// source, and preview image per item (BIZ-80). v8 adds the real Martin Fowler +
+// arXiv OG previews to the Backend Pod's first five. v9 makes the top card
+// yours.)
+const STATE_KEY = 'circ_state_v9';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -57,6 +59,9 @@ const CircApp = () => {
   // the Viewport control. Mobile payments (off by default in app mode) sends the
   // funding/checkout paths to the finish-on-web handoff.
   const [platform, setPlatform] = useState('web');
+  // Review-only: hide the TEST - * demo circles from circle lists (screenshots).
+  // Filters presentation only; the fixtures stay in state so scenarios still work.
+  const [showTest, setShowTest] = useState(true);
   const [mobilePayments, setMobilePayments] = useState(false);
   const isApp = platform === 'app';
   const forcedMobile = tw.layout === 'mobile' || isApp;
@@ -145,6 +150,8 @@ const CircApp = () => {
     try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
   }, [route, user, spaces, currentId, tab]);
 
+  const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
+  const listSpaces = useMemo(() => showTest ? spaces : spaces.filter(s => !isTestSpace(s)), [spaces, showTest]);
   const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
   const isChampion = (s) => !!s && s.champion === 'You';
@@ -171,6 +178,16 @@ const CircApp = () => {
   useEffect(() => {
     if (!isApp && route === 'home' && spaces.length > 0) enterSpace(currentId || spaces[0].id);
   }, [isApp, route, spaces.length, currentId, enterSpace]);
+
+  // Review-only: hiding the TEST circles while inside one steps out to the first
+  // remaining circle so the screenshot never shows a hidden circle's feed.
+  useEffect(() => {
+    if (showTest) return;
+    const cur = spaces.find(s => s.id === currentId);
+    if (cur && isTestSpace(cur)) {
+      if (listSpaces.length > 0) enterSpace(listSpaces[0].id); else { setCurrentId(null); goHome(); }
+    }
+  }, [showTest, currentId, listSpaces]);
 
   // ---- content mutations (peer powers) ----
   const addItem = (item) => {
@@ -285,7 +302,7 @@ const CircApp = () => {
   const inShell = (content, opts = {}) => (
     <Shell
       isMobile={isMobile} user={user} showMembers={opts.showMembers !== false}
-      spaces={spaces} currentId={currentId} space={space}
+      spaces={listSpaces} currentId={currentId} space={space}
       onSelectSpace={enterSpace} onCreateSpace={gateActive ? onGate : openCreateSpace}
       onMembers={gateActive ? onGate : () => setRoute('members')}
       onManageAccount={openAccount}
@@ -352,13 +369,13 @@ const CircApp = () => {
   } else if (route === 'account') {
     screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} />,
       { subView: { title: 'Account', onBack: () => (accountFrom === 'home' ? goHome() : returnToSpace()) } });
-  } else if (route === 'home' || (!space && spaces.length === 0)) {
+  } else if (route === 'home' || (!space && listSpaces.length === 0)) {
     // Home — the account level. With circles, the circles list (app/home.jsx, a
     // droppable body); with none, the same screen's empty state.
     const CirclesHomeBody = window.CirclesHome;
     screen = inShell(
-      (spaces.length > 0 && CirclesHomeBody)
-        ? <CirclesHomeBody spaces={spaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace} />
+      (listSpaces.length > 0 && CirclesHomeBody)
+        ? <CirclesHomeBody spaces={listSpaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace} />
         : <NoSpaceHome onCreate={gateActive ? onGate : openCreateSpace} />,
       { showMembers: false, home: true });
   } else {
@@ -428,10 +445,11 @@ const CircApp = () => {
       ) : appTree}
 
       {/* Config launcher — prototype aid; deleting app/config.jsx removes it, no edit here */}
-      {ConfigLauncher && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
+      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
         gateOn={gateOverride} onGateChange={setGateOverride}
         platform={platform} onPlatformChange={setPlatform}
         mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}
+        showTest={showTest} onShowTestChange={setShowTest}
         layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
 
       {/* Tweaks panel — deleting app/circ-tweaks.jsx removes it, no edit here */}

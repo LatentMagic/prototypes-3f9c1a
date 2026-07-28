@@ -63,6 +63,48 @@ Explored app-posture navigation IA and overlay presentation. What it added to th
 - Copy the prototype's phone frame geometry AND its clip/transform layering, or
   fixed overlays bleed onto the bezel (see GOTCHA).
 
+## Third playground: `docs/specs/discourse/Discourse playground.html` (+ its `pg-disc-*.jsx`)
+
+> **PENDING: review this playground and fold the lessons back in.** This section was written
+> as the playground was built, not after living with it. The user has asked for a deliberate
+> pass over `docs/specs/discourse/Discourse playground.html` — as the reference example, issues
+> included — to work out what actually belongs in these conventions. **Do not treat the notes
+> below as settled.** Read
+> `docs/specs/discourse/handoff-2026-07-27_discourse-playground.md` first: its Learnings and
+> Action Items list the open questions this review has to answer, chiefly:
+> - Is the three-pane rail (Directions / Config / The loop) right, or should options and config
+>   be visible at once — which means shrinking or scaling the phone?
+> - Should we set a **minimum viewport** every playground must work at? Three columns needed
+>   ~1100px and broke on a ~1050px window; that failure is the sharpest lesson of the session.
+> - Does "drive the loop from a side panel" generalise beyond this question?
+> - Is copying a shipped component's internal geometry acceptable, or should shipped modules
+>   export internals for playground reuse?
+>
+> Rewrite this section once that pass is done, and delete this block.
+
+Explored what shape discourse takes around a shared link. What it added to the shape:
+- **Reuse the real interactive component, not a mock of it.** The mark-as-read beat mounts the
+  shipped `SwellReactionFlow`; the playground only owns what happens at `onMarkRead` / `onClose`.
+  Unmount the flow at commit when an option replaces the reveal, let it play when the option is
+  sequential — that one fork is the whole difference between "merged with the reaction" and "after
+  the reaction", and it is worth wiring rather than describing.
+- **A side column that WALKS the loop.** Four beats (attach / receive / respond / lives), each with
+  a button that drives the phone to that beat. When the question is "is this loop complete?", a
+  static feed cannot answer it — the beats have to be reachable in one click each.
+- **Publish every option's lever answers as a readout**, not just the overridable ones. Levers you
+  choose not to put in the heading still differ per option; a small table beside the phone keeps
+  them visible instead of buried in the data file.
+- **One composer, four response shapes** (note / stem / one word / echo) driven by config, so a
+  response shape can be A/B'd across options that never intended it.
+- Copy the app's card body when you need to slot content INTO it — wrapping the real `FeedCard`
+  can't work, because discourse belongs inside the card's border.
+- 3D flips: don't trust `backface-visibility` alone. Toggle `visibility` on each face with a
+  `transition: visibility 0s linear <half-duration>` so exactly one face is ever painted.
+- **Layout is not a detail — it is the first thing that breaks.** Three columns (options + phone +
+  config) need ~1100px and fell apart on a ~1050px window; the config went below the fold and the
+  whole playground read as broken. It ended as one sticky left rail with three panes. Treat that as
+  a workaround under review, not a convention (see the PENDING block above).
+
 ## Housekeeping
 - Persist selection + overrides to a namespaced `localStorage` key
   (`pg_cardmeta_v1`) so reloads keep your place.

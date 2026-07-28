@@ -13,7 +13,7 @@ The user cares a lot about this flow and wanted it *resolved*, but explicitly **
 - **Progress = segmented dots**, and the dots are **IMMUTABLE** — dead-centre in the header, never shifted by anything (a version that stacked the circle name above the dots was rejected because it moved the indicator).
 - **Headings**: "Name your circle" (step 1) → "Fund your circle" (step 2). Kept as verb-led actions. Do **not** put the circle name *as* the heading ("Fund Backend Pod") — same font/size as a heading reads like the screen's title, not the user's value. Rejected twice.
 - **No eyebrows.** No mono all-caps context line above the body, no pill/chip. The user vetoed these repeatedly and strongly.
-- **Responsive rule**: one narrow content column in both contexts; the primary button spans the *column*, never the full desktop width. Only vertical placement changes — **centred < ~640px, pinned toward the top (~56px down) on desktop.**
+- **Responsive rule**: one narrow content column in both contexts; the primary button spans the *column*, never the full desktop width. ~~Only vertical placement changes — centred < ~640px, pinned toward the top on desktop.~~ **SUPERSEDED — see "Desktop resolved" below: every step is top-aligned in both postures; nothing is vertically centred.**
 - **Price**: keep the big £3 + "per circle / month" + "Founding rate" pill. Drop any secondary "£3/mo" — redundant with the big £3.
 - **"Billed to <email>"** stays — it tells the champion which account is charged.
 - **"powered by a payment provider"** — REMOVED from this screen (generic, non-branded; the real provider checkout is the next screen and carries branding/security/terms). Do not reintroduce.
@@ -26,7 +26,26 @@ Two decisions landed and one mistake to avoid repeating.
 
 **2. Footer microcopy is settled: "Billed to <email>. Cancel anytime."** — one line/unit, nothing else beneath the button. The "powered by a payment provider" / "Secure checkout" row is GONE (I accidentally reintroduced it by reusing an old `FinePrint` component — removed again). Do not bring it back on this screen.
 
-**3. Desktop treatment — PARKED, not decided.** The user pushed on why the desktop mock is a white card floating on empty canvas. Correct read: that floating-card state is **not a real pattern** — it was a half-finished mock (a card with nothing behind it). It only becomes legitimate as either (a) a **modal** — same card sitting on a dimmed overlay *over the actual app screen*, or (b) **full-page** — content on the page, no card. The user has NOT yet chosen. **Next action: get the pick (modal-over-app vs full-page step), then build only that.** Latest mock is `Create → Fund - wizard desktop.html` (centered ~460px card, name already removed, footer already fixed) — but it needs the app-behind-it or to be converted to full-page.
+**3. Desktop treatment — PARKED, not decided.** The user pushed on why the desktop mock is a white card floating on empty canvas. Correct read: that floating-card state is **not a real pattern** — it was a half-finished mock (a card with nothing behind it). It only becomes legitimate as either (a) a **modal** — same card sitting on a dimmed overlay *over the actual app screen*, or (b) **full-page** — content on the page, no card. **RESOLVED 2026-07-27 — see below.**
+
+## Desktop resolved + wizard shell integrated (2026-07-27)
+
+The flow **must stay a full page** — routing depends on it, so a modal was never available. Option (b) won, in its barest form.
+
+**Desktop is a page, not a dialog.** The card is gone. Desktop is the mobile screen, wider: page background, chrome at the page corners, column centred horizontally. Three signals were producing the modal read and must not return — **cast shadow**, **rounded box with clear space on all four sides**, **an exit control inside a floating panel**.
+
+**One shell, `app/wizard.jsx`** — owns the page ground, the chrome row, and `WIZARD_COL` (300px), the single content column shared by every step and posture. The two screens are identical by construction. Column width is set here and **must never be set per step**. Exports `WizardShell`, `WizardDots`, `WizardTitle`, `WizardIconBtn`; loaded before `spaces.jsx` and `subscriptions.jsx`.
+
+**Steps are top-aligned; nothing is vertically centred.** Content starts a fixed distance below the chrome, identical on both steps, so the heading lands at the same y automatically — no measuring, no matched heights, no shared container. Centring was the original cause: it positions a block by its middle, so the taller step displaced its own heading. Offsets are the only posture difference: `clamp(16px, 4vh, 44px)` mobile, `clamp(40px, 9vh, 92px)` desktop. Keyed off `data-circ-posture` on `<html>` (set in `main.jsx`) as well as a width media query — the prototype can force a phone frame inside a wide window, where width alone lies.
+
+**Corollary, accepted not fixed:** leftover space collects at the bottom, so step 1 has more empty space below its button than step 2.
+
+**Rejected — do not repropose:**
+- Measuring step heights at runtime to reserve space — shifted the heading on narrow screens after visiting step 2.
+- Stacking both steps in one container so it sizes to the taller — breaks the two-screen model and puts hidden content in the page.
+- A fixed hand-picked column height — magic number, breaks on longer copy or translation.
+
+**Also landed:** step 1 moved to the shared centred column and gained the dots (was left-aligned 460px, button bottom-right); `arrow-right` added to `LP_ICONS` in `app/primitives.jsx`; re-fund keeps exit-only, no back, no dots.
 
 ### Process note (the user was explicit about this)
 I lost their trust this session by (a) building out a full direction when they'd only flagged a problem, and (b) reintroducing already-cut copy. Going forward: **when they flag a problem, confirm the direction before building it out**, and never re-add copy we've removed. They don't mind the work — they mind changes happening without being asked.
@@ -37,13 +56,21 @@ I lost their trust this session by (a) building out a full direction when they'd
 - **`circlists.html`** → added `.circ-iconbtn:hover { background: var(--color-surface-sunken) }`. Note `.circ-iconbtn` is otherwise app-defined via inline styles.
 - Step 1 ("Name your circle") lives in **`app/spaces.jsx`** → `CreateSpace`. The wizard chrome (shared header + dots + the center-on-mobile/top-on-desktop rule) still needs to be applied to BOTH steps for the flow to actually read as one wizard — the playgrounds mock this but it is **not yet in the real app**.
 
-## Still parked (not yet addressed in real code)
-- **Desktop step-1 controls** — user disliked the input field + Continue button on desktop; needs tuning. (See `Create → Fund - wizard desktop.html`.)
-- **Applying the shared wizard chrome to step 1** in `app/spaces.jsx` (dots, responsive placement) — mocked, not integrated.
-- The "size of the screen jumps between step 1 and 2" observation — user decided to **not** worry about it; leave unless raised again.
+## Still open
+- **Mobile primary button is in the flow, not anchored to the bottom of the screen.** Anchoring is the standard mobile pattern and would absorb the gap under step 1's button. Proposed, not done — user's call.
+- **Desktop top offset floors at 40px** on short windows (~600px tall), which sits close to the exit control. Raising the minimum to ~56px was proposed, not applied.
+- **Not tested on physical devices** — safe-area insets and dynamic browser toolbars change available height.
+
+## Closed since
+- Desktop container — resolved (above).
+- Shared wizard chrome on step 1 — integrated.
+- "Size of the screen jumps between step 1 and 2" — this came back and was the main thread of the follow-up session. Now solved by top-alignment.
 
 ## Playground files (exploration artifacts, newest → oldest)
-- `Create → Fund - footer pairing.html` — **current**: D / G / F footer groupings.
+All in `archive/` at the project root except where noted.
+- `Create → Fund - desktop container options.html` — **in this directory**: the four full-page desktop containers (A bare page won). Supersedes the mocks below for desktop.
+- `Create → Fund - mobile agreed.html` — the agreed design, both viewports + a decisions list. The reference mock for this flow.
+- `Create → Fund - footer pairing.html` — D / G / F footer groupings.
 - `Create → Fund - footer email.html` — one-line vs two-line footer with email.
 - `Create → Fund - beneath the button.html` — five ways to calm the sub-button microcopy.
 - `Create → Fund - name home options.html` — five homes for the name (all but "strip"/"fine-print" rejected).

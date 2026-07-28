@@ -35,7 +35,7 @@
 // build`. The DELETE_LIST below IS the derivation rule; keep it in step with what
 // the gate makes unreachable.
 // ============================================================================
-import { readFile, writeFile, mkdir, rm, cp } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm, cp, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import esbuild from 'esbuild';
@@ -89,6 +89,45 @@ function stripTestFixtures(source) {
     i++;
   }
   return out.join('\n');
+}
+
+// feed.jsx fetches every card's favicon live from Google's s2/favicons — fine
+// in the working line, not fine in the demo, which ships on the public
+// marketing site and must make no third-party request. Rather than switching
+// the favicon badge off outright (loses a real feature for every card), the
+// build swaps the live URL for a lookup against favicons vendored locally
+// (see vendorFavicons below) — same domain-keyed treatment as the card-preview
+// images. A domain with no vendored file simply gets no badge, same as
+// feed.jsx's own broken-image fallback. No source edit to src/.
+function stripFaviconFetch(source, faviconMap) {
+  const okMarker = "const faviconOk = item.faviconExists !== false && !favBroken;";
+  const urlMarker = "const faviconUrl = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=64';";
+  if (!source.includes(okMarker) || !source.includes(urlMarker)) {
+    throw new Error('feed.jsx favicon lines not found — has it moved? Update stripFaviconFetch().');
+  }
+  const injected = `const CIRC_LOCAL_FAVICONS = ${JSON.stringify(faviconMap)}; ` +
+    `// vendored by build.mjs — no third-party fetch in the demo\n`;
+  return injected + source
+    .replace(okMarker, 'const faviconOk = item.faviconExists !== false && !favBroken && !!CIRC_LOCAL_FAVICONS[host];')
+    .replace(urlMarker, "const faviconUrl = CIRC_LOCAL_FAVICONS[host] || '';");
+}
+
+// Favicons vendored from tools/homepage-demo/src/uploads/favicons/ — real
+// files fetched once, direct from each site (not via Google), keyed by the
+// bare domain their filename names (sqlite.org.ico → 'sqlite.org'). Only
+// covers seeded domains without a card-preview image; everything else falls
+// back to no badge, same as before. Split from the copy step below because
+// the map is needed before OUT exists (it's baked into the bundled JS).
+const FAVICON_DIR = path.join(SRC, 'uploads', 'favicons');
+async function buildFaviconMap() {
+  let files = [];
+  try { files = await readdir(FAVICON_DIR); } catch { return {}; }
+  const map = {};
+  for (const f of files) {
+    if (f.startsWith('.')) continue;
+    map[f.replace(/\.(ico|png)$/i, '')] = `uploads/favicons/${f}`;
+  }
+  return map;
 }
 
 // React is vendored from node_modules rather than fetched from unpkg at runtime.
@@ -185,10 +224,12 @@ async function main() {
   // 2. Concatenate the kept modules verbatim, in load order (no source edits to
   //    the src/ base — the test-fixture strip below runs only on the in-memory
   //    copy that goes into the bundle).
+  const faviconMap = await buildFaviconMap();
   const parts = [];
   for (const f of kept) {
     let content = await readFile(path.join(SRC, 'app', f), 'utf8');
     if (f === 'seed-data.jsx') content = stripTestFixtures(content);
+    if (f === 'feed.jsx') content = stripFaviconFetch(content, faviconMap);
     parts.push(`// ==== app/${f} ====\n` + content);
   }
   // In the raw prototype each kept file is its own <script type="text/babel">;
@@ -217,6 +258,17 @@ async function main() {
   await writeFile(path.join(OUT, 'app.js'), code);
   await cp(path.join(SRC, 'swell.css'), path.join(OUT, 'swell.css'));
   await cp(path.join(SRC, 'brand'), path.join(OUT, 'brand'), { recursive: true });
+  // Card-preview images: seed-data.jsx references these by relative path
+  // ('uploads/card-previews/...') and the browser fetches them same-origin, so
+  // they need to ship beside app.js like any other runtime-fetched asset.
+  await cp(
+    path.join(SRC, 'uploads', 'card-previews'),
+    path.join(OUT, 'uploads', 'card-previews'),
+    { recursive: true, filter: (src) => !src.endsWith('SOURCES.md') },
+  );
+  if (Object.keys(faviconMap).length) {
+    await cp(FAVICON_DIR, path.join(OUT, 'uploads', 'favicons'), { recursive: true });
+  }
   const react = await vendorReact(entryHtml);
   const fonts = await vendorFonts();
 
@@ -269,6 +321,8 @@ async function main() {
   console.log(`  kept   : ${kept.join(', ')}`);
   console.log(`  dropped: ${[...DELETE_LIST].join(', ')}`);
   console.log(`  seed strip: circles id-prefixed '${TEST_SPACE_ID_PREFIX}' removed from seed-data.jsx`);
+  console.log(`  favicons: ${Object.keys(faviconMap).length} vendored locally (${Object.keys(faviconMap).join(', ') || 'none'}); no third-party fetch`);
+  console.log(`  card previews: vendored from uploads/card-previews/`);
   console.log(`  vendored: ${react.join(', ')}`);
   console.log(`  fonts  : ${fonts.count} files, latin — ${fonts.families.join(' + ')}`);
   console.log(`  app.js : ${(Buffer.byteLength(code) / 1024).toFixed(1)} KB`);

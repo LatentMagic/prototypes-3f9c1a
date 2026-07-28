@@ -41,30 +41,12 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
         'Shared list, private read-state',
       ];
   return (
-    <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', flex: 'none' }}>
-        {onBack ? <IconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40 }} />}
-        {onCancel ? <IconBtn name="x" label="Exit" onClick={onCancel} /> : <span style={{ width: 40 }} />}
-      </header>
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center', padding: '8px 24px 32px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 408, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
-            textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 14,
-          }}>
-            <span>{refund ? 'Returning champion' : 'New circle'}</span>
-            {spaceName && <MicroDot size={10} />}
-            {spaceName && <span style={{ fontWeight: 700 }}>{spaceName}</span>}
-          </div>
-          <h1 style={{
-            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.2,
-            letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: refund ? '0 0 12px' : '0 0 20px',
-          }}>{refund ? `Re-fund ${spaceName || 'this circle'}` : 'Fund your circle'}</h1>
+    <WizardShell step={1} dots={!refund} onBack={refund ? null : onBack} onExit={onCancel}>
+          <WizardTitle mb={refund ? 12 : 20}>{refund ? `Re-fund ${spaceName || 'this circle'}` : 'Fund your circle'}</WizardTitle>
           {refund && (
             <p style={{
               fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
-              color: 'var(--color-fg-2)', margin: '0 auto 22px', maxWidth: 380,
+              color: 'var(--color-fg-2)', margin: '0 auto 22px',
             }}>{`Pick ${spaceName || 'it'} back up where it left off. \u00a3${PRICE_PER_SPACE} a month brings it back for everyone — your members and history are still here.`}</p>
           )}
           <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8, marginBottom: 22 }}>
@@ -79,7 +61,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
               }}>Founding rate</span>
             )}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 22, width: '100%', maxWidth: 300 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 22, width: '100%', maxWidth: 290 }}>
             {features.map((f) => (
               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
                 <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
@@ -87,15 +69,18 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
               </div>
             ))}
           </div>
-          <Button variant="primary" full size="lg" onClick={onFund} style={{ maxWidth: 320 }}>{refund ? 'Re-fund this circle' : 'Fund this circle'}</Button>
-          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-3)', margin: '12px 0' }}>Billed to {user ? user.email : 'your account'}. Cancel anytime.</div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--color-fg-3)' }}>
-            <Icon name="lock" size={13} />
-            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12 }}>Secure checkout · powered by a payment provider</span>
+          <Button variant="primary" full size="lg" onClick={onFund}>{refund ? 'Re-fund this circle' : 'Fund this circle'}</Button>
+          <div style={{
+            margin: '14px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+            fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', lineHeight: 1.5,
+          }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="lock" size={13} style={{ flex: 'none' }} />
+              <span>Billed to {user ? user.email : 'your account'}</span>
+            </span>
+            <span>Cancel anytime</span>
           </div>
-        </div>
-      </div>
-    </div>
+    </WizardShell>
   );
 };
 

@@ -16,7 +16,8 @@
 const { useState: useCState, useRef: useCRef, useEffect: useCEffect } = React;
 
 const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
-                         platform, onPlatformChange, mobilePayments, onMobilePaymentsChange }) => {
+                         platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
+                         showTest, onShowTestChange }) => {
   const [open, setOpen] = useCState(false);
   // draggable launcher-button position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
@@ -92,6 +93,7 @@ const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayou
           layout={layout} onLayoutChange={onLayoutChange}
           platform={platform} onPlatformChange={onPlatformChange}
           mobilePayments={mobilePayments} onMobilePaymentsChange={onMobilePaymentsChange}
+          showTest={showTest} onShowTestChange={onShowTestChange}
           onClose={closeModal}
         />
       )}
@@ -112,7 +114,8 @@ const ConfigSeg = ({ options, value, onChange }) => (
 
 // ---- The modal itself ----
 const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
-                       platform, onPlatformChange, mobilePayments, onMobilePaymentsChange, onClose }) => {
+                       platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
+                       showTest, onShowTestChange, onClose }) => {
   const isApp = platform === 'app';
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
@@ -184,6 +187,14 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
             ]} />
           </div>
           <div className="circ-config-hint">When on, New circle and Account dead-end in the sign-up gate.</div>
+
+          <div className="circ-config-row">
+            <div className="circ-config-row-label">TEST circles</div>
+            <ConfigSeg value={showTest ? 'on' : 'off'} onChange={(v) => onShowTestChange(v === 'on')} options={[
+              { value: 'on', label: 'Shown' }, { value: 'off', label: 'Hidden' },
+            ]} />
+          </div>
+          <div className="circ-config-hint">Hides the two TEST demo circles from every circle list, for clean screenshots. They stay in state, so the scenarios that use them still work.</div>
 
           <div className="circ-config-row">
             <div className="circ-config-row-label">Seed data</div>

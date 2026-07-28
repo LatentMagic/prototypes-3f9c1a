@@ -4,6 +4,7 @@
 const CIRC_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#047857",
   "layout": "auto",
+  "configBtn": true,
   "pulseDepth": 7.5,
   "spinSpeed": 1.4
 }/*EDITMODE-END*/;
@@ -19,6 +20,9 @@ const CircTweaks = ({ tw, setTweak }) => (
       onChange={(v) => setTweak('pulseDepth', v)} />
     <TweakSlider label="Spin speed" value={tw.spinSpeed} min={0.8} max={2.5} step={0.1} unit="×"
       onChange={(v) => setTweak('spinSpeed', v)} />
+    <TweakSection label="Prototype aids" />
+    <TweakToggle label="Config button" value={tw.configBtn !== false}
+      onChange={(v) => setTweak('configBtn', v)} />
     <TweakSection label="Layout posture" />
     <TweakRadio label="Viewport" value={tw.layout}
       options={["auto", "desktop", "mobile"]}

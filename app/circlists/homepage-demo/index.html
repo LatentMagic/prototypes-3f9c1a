@@ -111,6 +111,19 @@
   .circ-btn-tertiary:hover { text-decoration: underline; }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
+  /* ---- Create → Fund wizard body ----
+     Mobile: safe-centred (the screen is the card, content sits in the middle).
+     Desktop: pinned to a fixed offset from the top, so the title lands at the
+     SAME y on step 1 and step 2 — the flick between steps stops jumping. */
+  /* Every step is top-aligned, so the heading lands at the same y on all of them.
+     No measuring, no reserved height, no hidden steps — one step in the DOM at a
+     time. Only the top offset differs by posture. Posture, not viewport width:
+     a forced-mobile frame on a wide window is mobile. */
+  .circ-wizard-body { justify-content: flex-start; padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  @media (min-width: 760px) { .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; } }
+  [data-circ-posture="mobile"] .circ-wizard-body { padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  [data-circ-posture="desktop"] .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; }
+
   /* ---- card actions: quiet, recessive ---- */
   .circ-cardaction {
     background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
@@ -158,6 +171,15 @@
   .circ-appsheet-row:active { background: var(--color-border-2); }
   .circ-railacct:hover { background: var(--color-surface); }
   .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ---- upsell doors: accent text link, always underlined ----
+     A resting underline is required, not decorative: accent #047857 against
+     fg-3 #6E6E6B is 1.07:1, so colour alone can't distinguish the link from the
+     text around it (WCAG 1.4.1) — and hover doesn't exist on touch. The
+     underline sits at a light tint and deepens to full accent on hover/focus. */
+  .circ-doorlink { color: var(--color-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-accent) 35%, transparent); transition: text-decoration-color var(--duration-base) var(--ease-quiet); }
+  .circ-doorlink:hover, .circ-doorlink:focus-visible { text-decoration-color: var(--color-accent); }
+  @media (prefers-reduced-motion: reduce) { .circ-doorlink { transition: none; } }
 
   /* ---- config launcher (prototype aid) ---- */
   .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }

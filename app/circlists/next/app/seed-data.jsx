@@ -23,8 +23,8 @@ const HEART = '\u2764\uFE0F', FIRE = '\uD83D\uDD25', THUMB = '\uD83D\uDC4D', BUL
 const SEED_META = {
   'https://newsletter.pragmaticengineer.com/p/scaling-on-call': { title: 'Scaling On-Call Without Burning Out the Team', source: 'The Pragmatic Engineer', image: 'uploads/card-previews/pragmatic-engineer.jpg' },
   'https://blog.rust-lang.org/2026/01/async-internals': { title: 'Inside Async: How Rust Schedules Your Futures', source: 'Rust Blog', image: 'uploads/card-previews/blog-overreacted.png' },
-  'https://martinfowler.com/articles/cd-pipeline.html': { title: 'Continuous Delivery Pipelines, End to End', source: 'Martin Fowler' },
-  'https://arxiv.org/abs/2503.04918': { title: 'Learned Index Structures for Time-Series Stores', source: 'arXiv' },
+  'https://martinfowler.com/articles/cd-pipeline.html': { title: 'Continuous Delivery Pipelines, End to End', source: 'Martin Fowler', image: 'uploads/card-previews/martinfowler-cd-pipeline.png' },
+  'https://arxiv.org/abs/2503.04918': { title: 'Learned Index Structures for Time-Series Stores', source: 'arXiv', image: 'uploads/card-previews/arxiv-2503-04918.png' },
   'https://www.youtube.com/watch?v=Kx7Bvksk_qg': { title: 'Simple Made Easy \u2014 Rich Hickey', source: 'YouTube', image: 'uploads/card-previews/youtube-maxres.jpg' },
   'https://danluu.com/percentile-latency/': { title: 'How to Measure Latency, and Why the Percentiles Matter', source: null, hasImage: false, faviconExists: false },
   'https://sqlite.org/whentouse.html': { title: 'Appropriate Uses For SQLite', source: 'SQLite' },
@@ -54,8 +54,9 @@ function seedSpaces(userEmail) {
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
       members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com'), M('Owen D.', 'owen.d@example.com'), M('Freya S.', 'freya.s@example.com')],
       items: [
-        IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by Marcus T.', false, [
+        IT('https://newsletter.pragmaticengineer.com/p/scaling-on-call', 'Added by you', false, [
           { name: 'Priya N.', glyph: FIRE, intensity: 0.9 },
+          { name: 'Marcus T.', glyph: FIRE, intensity: 0.86 },
           { name: 'Sam R.', glyph: FIRE, intensity: 0.84 },
           { name: 'Dev K.', glyph: FIRE, intensity: 0.7 },
           { name: 'Ada L.', glyph: BULB, intensity: 0.55 },

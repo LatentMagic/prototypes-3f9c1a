@@ -49,13 +49,16 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
   const [imgBroken, setImgBroken] = React.useState(false);
 
   const former = /former member/i.test(item.attribution);
+  // The current user always reads lower-case "you" in the shared view; normalise
+  // here so older persisted state ('Added by You') renders the same as new items.
+  const attribution = item.attribution.replace(/^(added by\s+)you\b/i, '$1you');
   // Adaptive attribution: split the "Added by " prefix so a container query can
   // drop it on a very narrow card (see .circ-attrib-pre in circlists.html).
-  const attribPre = /^added by\s+/i.exec(item.attribution);
+  const attribPre = /^added by\s+/i.exec(attribution);
   // Display name parsed out of "Added by Sam R." for the avatar. The line always
   // reads "You" for the current user's own items (shared-view convention); the
   // avatar uses the account's real name + accent, same as the roster.
-  const whoName = item.attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
+  const whoName = attribution.replace(/^added by\s+/i, '').replace(/\.$/, '');
   const isYou = /^you$/i.test(whoName);
   const avatarName = isYou ? displayName(user) : whoName;
 
@@ -89,7 +92,7 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
           <Avatar name={avatarName} size={28} accent={isYou} />
-          <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.attribution}</span>
+          <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{attribution}</span>
           <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, opacity: 0.4, pointerEvents: 'none' }}>
             <span className="circ-cardaction circ-cardaction-icon"><Icon name="check" size={18} /></span>
             <span className="circ-cardaction circ-cardaction-icon"><Icon name="trash" size={17} /></span>
@@ -137,8 +140,8 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
         <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
         <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {attribPre
-            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span><span className="circ-attrib-rest">{item.attribution.slice(attribPre[0].length)}</span></React.Fragment>
-            : item.attribution}
+            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span><span className="circ-attrib-rest">{attribution.slice(attribPre[0].length)}</span></React.Fragment>
+            : attribution}
         </span>
         {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
             optical edge is pulled onto the image's right edge via the -13 nudge;
