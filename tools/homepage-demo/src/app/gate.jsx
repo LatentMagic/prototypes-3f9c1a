@@ -6,7 +6,11 @@
 // Same mount/animate/scrim logic as AddReveal (feed.jsx): mobile gets a
 // bottom sheet + scrim fade, desktop gets a borderless-scrim fixed card in
 // the bottom-right, both easing on --ease-quiet. Copy is identical regardless
-// of which control triggered it — placeholder pending real signup copy.
+// of which control triggered it.
+//
+// Sign up leaves for the real thing rather than dismissing — a gate whose only
+// exit is "away" is the dead CTA the gate exists to avoid. It targets _top so
+// it escapes the marketing site's iframe instead of loading the app inside it.
 // ============================================================================
 
 const GateOverlay = ({ open, isMobile, onClose }) => {
@@ -85,7 +89,7 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         }}>This is a preview of Circlists. Everything past this point needs an account.</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <Button variant="secondary" onClick={onClose}>Not now</Button>
-          <Button variant="primary" onClick={onClose}>Sign up</Button>
+          <Button variant="primary" href="https://app.circlists.com/sign-up" target="_top">Sign up</Button>
         </div>
       </div>
     </>

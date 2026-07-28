@@ -90,7 +90,7 @@ const AppLoading = ({ label = 'Loading' }) => (
 const Button = React.forwardRef((props, ref) => {
   const {
     variant = 'primary', loading = false, icon, children, full = false, size = 'md',
-    type = 'button', onClick, disabled, style, title, autoFocus, name,
+    type = 'button', onClick, disabled, style, title, autoFocus, name, href, target,
   } = props;
   const ariaLabel = props['aria-label'];
   const ariaExpanded = props['aria-expanded'];
@@ -114,6 +114,24 @@ const Button = React.forwardRef((props, ref) => {
     ghost: { background: 'transparent', color: 'var(--color-fg-2)', fontWeight: 500, border: '1px solid var(--color-border-1)' },
   };
   const cls = 'circ-btn circ-btn-' + variant;
+  // An href makes it a real link wearing the same clothes. Needed wherever a
+  // control leaves the app entirely — a button that navigates by script is a
+  // dead end to anything that reads the markup, and cannot be opened in a new
+  // tab. `target` is passed through because the embedded demo has to break out
+  // of its iframe (target="_top") rather than load a whole site inside it.
+  if (href) {
+    return (
+      <a
+        ref={ref} href={href} target={target}
+        rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+        title={title} aria-label={ariaLabel}
+        className={cls}
+        style={{ ...base, ...variants[variant], textDecoration: 'none', ...(style || {}) }}>
+        {icon}
+        {children && <span>{children}</span>}
+      </a>
+    );
+  }
   return (
     <button
       ref={ref} type={type} onClick={onClick} disabled={loading || disabled}
