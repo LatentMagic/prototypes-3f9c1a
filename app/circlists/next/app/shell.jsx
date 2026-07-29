@@ -6,7 +6,8 @@
 
 // ---- Rail contents (shared by desktop rail + mobile drawer) ----------------
 // The account control lives at the FOOT of the rail; its menu opens upward.
-const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate }) => {
+const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate,
+                   refreshingId, settledId, onRefreshSpace }) => {
   const [acctOpen, setAcctOpen] = React.useState(false);
   const acctBtnRef = React.useRef(null);
   return (
@@ -22,8 +23,19 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {spaces.map((s) => {
         const active = s.id === currentId;
+        // One slot, three exclusive states, so a circle never wears two signals.
+        const signal = refreshingId === s.id ? 'busy'
+          : settledId === s.id ? 'settled'
+          : s.unseen ? 'unseen' : null;
+        // Clicking the circle you are ALREADY in is the refresh gesture — there is
+        // no refresh button. It navigates nowhere, so the drawer stays open and the
+        // busy state sits on this entry's own signal slot.
+        const onClick = () => {
+          if (active) { if (onRefreshSpace) onRefreshSpace(s.id); return; }
+          onSelect(s.id); onClose && onClose();
+        };
         return (
-          <button key={s.id} onClick={() => { onSelect(s.id); onClose && onClose(); }} style={{
+          <button key={s.id} onClick={onClick} title={active ? 'Refresh ' + s.name : undefined} style={{
             position: 'relative', textAlign: 'left', cursor: 'pointer',
             background: active ? 'var(--color-surface)' : 'transparent', border: 0,
             padding: '11px 12px 11px 14px', borderRadius: 'var(--radius-md)',
@@ -36,7 +48,8 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
               position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: 3,
               background: 'var(--color-accent)',
             }} />}
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
+            <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
+            <CircleSignal state={signal} />
           </button>
         );
       })}
@@ -260,11 +273,13 @@ const MobileDrawer = ({ open, ...rail }) => {
 // ---- AppShell --------------------------------------------------------------
 const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true,
                     onSelectSpace, onCreateSpace, onMembers,
-                    onManageAccount, onSignOut, onAccountGate, subView = null, children }) => {
+                    onManageAccount, onSignOut, onAccountGate, subView = null,
+                    refreshingId, settledId, onRefreshSpace, children }) => {
   const [drawer, setDrawer] = React.useState(false);
   const rail = {
     spaces, currentId, onSelect: onSelectSpace, onCreate: onCreateSpace, user,
     onManageAccount, onSignOut, onAccountGate,
+    refreshingId, settledId, onRefreshSpace,
   };
   return (
     <div style={{ display: 'flex', minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)' }}>

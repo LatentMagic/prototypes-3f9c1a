@@ -27,42 +27,40 @@ const IconBtn = ({ name, label, onClick }) => (
     borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)',
   }}><Icon name={name} size={20} /></button>
 );
+// ONE screen, two states. The offer is identical either way — same price, same
+// circle, same cap, same champion — so the body does NOT branch. Exactly three
+// things change, and they are all about *where you came from*, never about what
+// you are buying:
+//   1. flow chrome  — mid-flow gets dots + back; standalone gets the circle name
+//                     in the same centre slot the dots vacated
+//   2. copy         — the title names the OUTCOME, the CTA names the ACTION, and
+//                     they never use the same verb twice on one screen
+//   3. exit target  — owned by the caller, not by this file
+// Resist adding a fourth. If a difference wants to live inside the body, that is
+// a signal the two entry points need different *surrounding* screens, not this
+// one forked again.
+const FUND_FEATURES = [
+  'You fund the circle as its champion',
+  'Up to 10 members, all invited free',
+  'Shared list, private read-state',
+];
 const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }) => {
   const refund = mode === 'refund';
-  const features = refund
-    ? [
-        'Your members and reading history are still here',
-        'Up to 10 members — everyone joins free',
-        'Picks up exactly where it left off',
-      ]
-    : [
-        'You fund the circle as its champion',
-        'Up to 10 members, all invited free',
-        'Shared list, private read-state',
-      ];
   return (
-    <WizardShell step={1} dots={!refund} onBack={refund ? null : onBack} onExit={onCancel}>
-          <WizardTitle mb={refund ? 12 : 20}>{refund ? `Re-fund ${spaceName || 'this circle'}` : 'Fund your circle'}</WizardTitle>
-          {refund && (
-            <p style={{
-              fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
-              color: 'var(--color-fg-2)', margin: '0 auto 22px',
-            }}>{`Pick ${spaceName || 'it'} back up where it left off. \u00a3${PRICE_PER_SPACE} a month brings it back for everyone — your members and history are still here.`}</p>
-          )}
+    <WizardShell flow={refund ? null : { step: 1 }} subject={spaceName} onBack={onBack} onExit={onCancel}>
+          <WizardTitle mb={20}>{refund ? 'Bring your circle back' : 'Fund your circle'}</WizardTitle>
           <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8, marginBottom: 22 }}>
             <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
             <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
-            {!refund && (
-              <span style={{
-                fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
-                letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
-                border: '1px solid var(--color-accent)', marginLeft: 6,
-                padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
-              }}>Founding rate</span>
-            )}
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
+              letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
+              border: '1px solid var(--color-accent)', marginLeft: 6,
+              padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
+            }}>Founding rate</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 22, width: '100%', maxWidth: 290 }}>
-            {features.map((f) => (
+            {FUND_FEATURES.map((f) => (
               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
                 <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
                 <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' }}>{f}</span>

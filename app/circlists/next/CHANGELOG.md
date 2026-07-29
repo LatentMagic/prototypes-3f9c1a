@@ -3,6 +3,41 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Funding is one screen — re-funding is a state of it, not a second page — 2026-07-29
+
+- **Re-fund stops being its own page.** The dormant circle's re-fund route and the create
+  flow's final step were one component forked six ways inside its own JSX — chrome, title,
+  lede, price pill, bullets, CTA each branched independently, so the two states had drifted
+  apart without anything saying they should. The offer is identical either way — same price,
+  same circle, same cap, same champion — so the **body no longer branches at all**.
+- **`flow` is the single switch.** `WizardShell` takes `{step, steps}` for "you are inside
+  the create → fund flow" and `null` for the same page reached as a standalone task. Dots
+  and back are consequences of that one prop rather than of a `refund` boolean, so a
+  standalone task can no longer wear a wizard's chrome.
+- **The centre slot has one tenant at a time**, and the shell owns both: progress inside a
+  flow, the **circle name** outside one. A standalone task has no step-one to have named
+  what you are acting on, so the slot that answered *where am I* answers *on what* instead
+  — which is why the name needed no new home in the body.
+- **Title names the outcome, button names the action.** "Bring your circle back" over
+  "Re-fund this circle", never the same verb twice on one screen. The removed lede was
+  saying what the dormant screen one step earlier already says in full.
+- Cancelling a re-fund returns to the **dormant circle you came from**, not the app root.
+
+## Liveliness — the app notices arrivals, and says so quietly — 2026-07-28
+- One **arrival grammar** across all three postures: the **micro dot** beside a circle
+  that holds unseen links (rail, drawer, app home), a **New pill** for arrivals in the
+  circle you are already in, and a **soft sage halo** as revealed cards land. No counts,
+  no badges, no toasts, no status colour. Detection itself is silent.
+- **Accepting is the only thing that moves content.** Opening a circle clears its dot;
+  clicking the pill lands the new cards. Background arrivals never shift the feed
+  underfoot, and the last-seen mark stays frozen for the whole visit.
+- **Reload is clicking the circle you are already in** — there is no refresh button. The
+  busy state sits on that circle's own signal slot, and a refresh that finds nothing
+  answers with the mark coming to rest and fading, never a tick or a status line.
+- Cards gain a **coarse time** on the attribution line, and the feed gains a single
+  hairline rule naming what sits **below** it — everything above landed since the last
+  visit, so the rule never has to say so.
+
 ## Create → Fund — one wizard shell, and desktop stops pretending to be a modal — 2026-07-27
 - Both steps now render through a **single shell** (`app/wizard.jsx`) that owns the
   page ground, the chrome row, and one content column shared by every step and

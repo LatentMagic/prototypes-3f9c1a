@@ -1105,8 +1105,28 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard, and Create/Fund circle now sharing one wizard shell (desktop renders as a page rather than a floating-card modal). Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
+          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard, Create/Fund circle sharing one wizard shell (desktop renders as a page rather than a floating-card modal, and re-funding a dormant circle is now a state of that same shell rather than a second page), and liveliness — a quiet arrival grammar (micro dot, New pill, soft sage halo) marking unseen links across all three postures. Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
           changelog: [
+            {
+              date: '2026-07-29',
+              title: 'Funding is one screen — re-funding is a state of it, not a second page',
+              items: [
+                'Re-fund stops being its own page. The dormant circle\'s re-fund route and the create flow\'s final step were one component forked six ways inside its own JSX; the offer is identical either way, so the body no longer branches at all.',
+                '`flow` is the single switch. WizardShell takes {step, steps} for inside the create → fund flow and null for the same page reached as a standalone task, so a standalone task can no longer wear a wizard\'s chrome.',
+                'The centre slot has one tenant at a time: progress inside a flow, the circle name outside one. Title names the outcome, button names the action, never the same verb twice on one screen.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-28',
+              title: 'Liveliness — the app notices arrivals, and says so quietly',
+              items: [
+                'One arrival grammar across all three postures: a micro dot beside a circle holding unseen links (rail, drawer, app home), a New pill for arrivals in the circle you are already in, and a soft sage halo as revealed cards land. No counts, no badges, no toasts, no status colour.',
+                'Accepting is the only thing that moves content. Opening a circle clears its dot; clicking the pill lands the new cards. Background arrivals never shift the feed underfoot.',
+                'Reload is clicking the circle you are already in — there is no refresh button. Cards gain a coarse time on the attribution line, and the feed gains a hairline rule naming what sits below it.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
             {
               date: '2026-07-27',
               title: 'Create → Fund — one wizard shell, and desktop stops pretending to be a modal',

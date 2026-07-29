@@ -46,6 +46,9 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate }) => (
             <span style={{ display: 'block', fontWeight: 600, fontSize: 15.5, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
             <span style={{ display: 'block', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', marginTop: 3 }}>{circleSummary(s)}</span>
           </span>
+          {/* Unseen items — the same micro dot the web rail carries. Opening the
+              circle is the accept, so home needs no refresh gesture of its own. */}
+          <CircleSignal state={s.unseen ? 'unseen' : null} />
           <Icon name="chevron-right" size={18} color="var(--color-fg-3)" />
         </button>
       ))}

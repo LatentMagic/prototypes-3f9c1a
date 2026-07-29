@@ -41,15 +41,35 @@ const WizardIconBtn = ({ name, label, onClick }) => (
 
 // Body is safe-centred with a scroll fallback: centred on tall screens, top-aligned
 // and scrollable on short ones, so it never clips on the smallest phones.
-const WizardShell = ({ step = 0, steps = WIZARD_STEPS, dots = true, onBack, onExit, children }) => (
+// `flow` is the ONE switch between the two states of a wizard page: {step, steps}
+// means "you are inside the create -> fund flow" (dots + back); null means the
+// same page reached as a standalone task (neither). Nothing else in the page may
+// branch on how you got here.
+//
+// The centre slot has exactly one tenant at a time and the shell owns both:
+// progress when you are in a flow, the SUBJECT (which circle) when you are not.
+// A standalone task has no step-one to have told you what you are acting on, so
+// the slot that answered "where am I" answers "on what" instead. This is why the
+// name needs no new home in the body.
+const WizardSubject = ({ children }) => (
+  <span style={{
+    fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 12,
+    letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)',
+    display: 'inline-flex', alignItems: 'center', padding: 8, minHeight: 40,
+    maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+  }}>{children}</span>
+);
+const WizardShell = ({ flow = null, subject, onBack, onExit, children }) => (
   <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
     <header style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: 'clamp(10px, 1.2vw, 16px) clamp(12px, 1.4vw, 20px)', flex: 'none',
     }}>
-      {onBack ? <WizardIconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40 }} />}
+      {(flow && onBack) ? <WizardIconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40 }} />}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-        {dots && <WizardDots step={step} steps={steps} />}
+        {flow
+          ? <WizardDots step={flow.step} steps={flow.steps || WIZARD_STEPS} />
+          : (subject ? <WizardSubject>{subject}</WizardSubject> : null)}
       </div>
       {onExit ? <WizardIconBtn name="x" label="Exit" onClick={onExit} /> : <span style={{ width: 40 }} />}
     </header>
@@ -71,4 +91,4 @@ const WizardTitle = ({ children, mb = 16 }) => (
   }}>{children}</h1>
 );
 
-Object.assign(window, { WIZARD_COL, WIZARD_STEPS, WizardShell, WizardDots, WizardTitle, WizardIconBtn });
+Object.assign(window, { WIZARD_COL, WIZARD_STEPS, WizardShell, WizardDots, WizardSubject, WizardTitle, WizardIconBtn });

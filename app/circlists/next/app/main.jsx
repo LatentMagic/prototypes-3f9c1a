@@ -20,8 +20,9 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // two-big-huddles collision case. v5 adds extracted card metadata — title,
 // source, and preview image per item (BIZ-80). v8 adds the real Martin Fowler +
 // arXiv OG previews to the Backend Pod's first five. v9 makes the top card
-// yours.)
-const STATE_KEY = 'circ_state_v9';
+// yours. v10 adds liveliness: an `at` per item and lastSeenAt/unseen/pending/
+// queued per circle.)
+const STATE_KEY = 'circ_state_v10';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -127,6 +128,21 @@ const CircApp = () => {
   const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', spaceId: null });
   const [manageIntent, setManageIntent] = useState('manage');
 
+  // ---- Liveliness (BIZ-96) ------------------------------------------------
+  // The arrival grammar itself is not configurable — the card time, the wash, the
+  // New rule and the nothing-new answer are the product. The only knob here is
+  // STAGING: the grammar is silent by design, so a review needs arrivals to fire.
+  //   activity — simulated background arrivals: 'off' | 'slow' | 'fast'
+  const [live, setLive] = useState({ activity: 'off' });
+  const setLiveOpt = (k, v) => setLive((s) => ({ ...s, [k]: v }));
+  const [refreshing, setRefreshing] = useState(null);   // circle id of a running manual refresh
+  const [settledId, setSettledId] = useState(null);     // circle whose mark is coming to rest
+  const [arrived, setArrived] = useState([]);           // item ids wearing the arrival halo
+  // Timers and handlers read state through refs: a setSpaces updater cannot hand
+  // values back to the handler that queued it.
+  const spacesRef = useRef(spaces); spacesRef.current = spaces;
+  const currentRef = useRef(currentId); currentRef.current = currentId;
+
   // open Create-a-space fresh (clears any carried name)
   const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', spaceId: null }); setRoute('create-space'); };
 
@@ -165,12 +181,90 @@ const CircApp = () => {
   // feed-load demo: quiet indicator when entering a funded space
   const enterSpace = useCallback((id) => {
     const target = id || currentId;
+    const leaving = currentId && target !== currentId ? currentId : null;
     if (id) setCurrentId(id);
     setRoute('space');
+    setArrived([]); setSettledId(null);
+    // Leaving a circle re-marks it: anything still waiting behind the New pill is
+    // folded into the feed, and the mark is set just BEFORE the oldest of them, so
+    // they read as new on the next visit rather than silently ageing into the pile.
+    if (leaving) setSpaces(prev => prev.map(s => {
+      if (s.id !== leaving) return s;
+      const p = s.pending || [];
+      return { ...s, items: [...p, ...s.items], pending: [], unseen: p.length > 0,
+        lastSeenAt: p.length ? Math.min(...p.map(i => i.at)) - 1 : Date.now() };
+    }));
     const sp = spaces.find(s => s.id === target);
     if (sp && sp.funded) { setLoadingFeed(true); setTimeout(() => setLoadingFeed(false), 700); }
     else setLoadingFeed(false);
   }, [spaces, currentId]);
+
+  // Opening a circle IS the accept: its dot clears once the feed is on screen.
+  // An effect, not a branch inside enterSpace, so every way in (mount, a Config
+  // scenario, home) clears it identically. lastSeenAt is deliberately untouched —
+  // the Earlier rule must not move while you are reading against it.
+  useEffect(() => {
+    if (route !== 'space' || loadingFeed || !currentId) return;
+    const sp = spacesRef.current.find(s => s.id === currentId);
+    if (sp && sp.unseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, unseen: false } : s));
+  }, [route, loadingFeed, currentId, spaces]);
+
+  // ---- Arrivals -----------------------------------------------------------
+  const peerName = (id) => {
+    const sp = spacesRef.current.find(s => s.id === id);
+    const peers = ((sp && sp.members) || []).filter(m => m.name !== 'You');
+    return peers.length ? peers[Math.floor(Math.random() * peers.length)].name : 'Sam R.';
+  };
+  // A link lands. In the circle you are IN it waits behind the New pill — the feed
+  // never shifts underfoot. Anywhere else it lands in the feed and lights the dot.
+  const landItem = (id, who) => {
+    const item = window.circNextDrop(who || peerName(id));
+    setSpaces(prev => prev.map(s => s.id !== id ? s
+      : (id === currentRef.current
+          ? { ...s, pending: [item, ...(s.pending || [])] }
+          : { ...s, items: [item, ...s.items], unseen: true })));
+  };
+  // Accept: the click is what moves the feed. What lands wears the halo briefly.
+  const revealPending = () => {
+    const id = currentRef.current;
+    const sp = spacesRef.current.find(s => s.id === id);
+    if (!sp || !(sp.pending || []).length) return;
+    const ids = sp.pending.map(i => i.id);
+    setSpaces(prev => prev.map(s => s.id === id ? { ...s, items: [...s.pending, ...s.items], pending: [] } : s));
+    setArrived(a => [...a, ...ids]);
+    setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 2400);
+  };
+  // Manual refresh = clicking the circle you are ALREADY in. There is no refresh
+  // button. Nothing blanks: the busy state sits on that circle's own signal slot,
+  // and whatever it finds surfaces through the same New pill the background check
+  // uses. Finding nothing answers with the mark settling — never a tick.
+  const refreshSpace = (id) => {
+    if (refreshing || loadingFeed) return;
+    setRefreshing(id); setSettledId(null);
+    setTimeout(() => {
+      setRefreshing(null);
+      const sp = spacesRef.current.find(s => s.id === id);
+      if (sp && (sp.queued || []).length) {
+        setSpaces(prev => prev.map(s => s.id === id
+          ? { ...s, pending: [...s.queued, ...(s.pending || [])], queued: [] } : s));
+      } else {
+        setSettledId(id);
+        setTimeout(() => setSettledId(c => (c === id ? null : c)), 1500);
+      }
+    }, 900);
+  };
+
+  // Simulated background activity (Config aid). Detection is silent — the dot and
+  // the pill are its only visible consequences.
+  useEffect(() => {
+    if (live.activity === 'off') return;
+    const ms = live.activity === 'fast' ? 7000 : 20000;
+    const t = setInterval(() => {
+      const open = spacesRef.current.filter(s => s.funded && !isTestSpace(s));
+      if (open.length) landItem(open[Math.floor(Math.random() * open.length)].id);
+    }, ms);
+    return () => clearInterval(t);
+  }, [live.activity]);
 
   // Home is app-posture chrome. The web postures reach their circles through the
   // rail, so a web session must never sit on it while the user holds circles —
@@ -281,6 +375,15 @@ const CircApp = () => {
     }
   };
 
+  // Staging actions for the Config aid's liveliness controls (see app/config.jsx).
+  const liveActions = {
+    here: () => currentId && landItem(currentId),
+    elsewhere: () => {
+      const other = spacesRef.current.find(s => s.funded && !isTestSpace(s) && s.id !== currentId);
+      if (other) landItem(other.id);
+    },
+  };
+
   // ---- config launcher setups ----
   // Data + staging actions live in app/config.jsx (a deletable prototype aid).
   // buildScenarios closes over the setters it needs; drop that file and the
@@ -307,6 +410,7 @@ const CircApp = () => {
       onMembers={gateActive ? onGate : () => setRoute('members')}
       onManageAccount={openAccount}
       onHome={goHome} isHome={!!opts.home}
+      refreshingId={refreshing} settledId={settledId} onRefreshSpace={refreshSpace}
       onAccountGate={gateActive ? onGate : null}
       onSignOut={signOut}
       onAdd={() => setAddOpen(true)} canAdd={!!opts.canAdd}
@@ -343,8 +447,8 @@ const CircApp = () => {
   } else if (route === 'funding') {
     screen = <FundingPage user={user} spaceName={fundFlow.name} mode={fundFlow.mode}
       onFund={() => setRoute('checkout')}
-      onBack={fundFlow.mode === 'new' ? () => setRoute('create-space') : undefined}
-      onCancel={exitToApp} />;
+      onBack={() => setRoute('create-space')}
+      onCancel={fundFlow.mode === 'refund' ? returnToSpace : exitToApp} />;
   } else if (route === 'checkout') {
     screen = <Checkout user={user} spaceName={fundFlow.name} refund={fundFlow.mode === 'refund'}
       onSuccess={onCheckoutSuccess} onCancel={() => setRoute('funding')} />;
@@ -388,6 +492,10 @@ const CircApp = () => {
       );
     } else {
       const visible = tab === 'active' ? activeItems : readItems;
+      const pending = (space && space.pending) || [];
+      // The frozen last-seen rule, Active only — Read is a shelf, not a timeline.
+      const divIdx = tab === 'active'
+        ? window.circDividerIndex(visible, space.lastSeenAt) : -1;
       const feed = loadingFeed ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
@@ -396,18 +504,22 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {tab === 'active' && pending.length > 0 && <NewPill onClick={revealPending} />}
             {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
-              : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {visible.map(item => (
-                    <FeedCard key={item.id} item={item} tab={tab} user={user}
-                      onOpen={openLink}
-                      onMarkRead={(it) => setReacting(it)}
-                      onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />
-                  ))}
-                </div>
-              )}
+              : visible.map((item, i) => {
+                const card = <FeedCard item={item} tab={tab} user={user} showTime
+                  onOpen={openLink}
+                  onMarkRead={(it) => setReacting(it)}
+                  onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;
+                return (
+                  <React.Fragment key={item.id}>
+                    {i === 0 && divIdx > 0 && <FeedDivider />}
+                    {i === divIdx && <FeedSeam />}
+                    {arrived.includes(item.id) ? <div className="circ-arrive">{card}</div> : card}
+                  </React.Fragment>
+                );
+              })}
           </div>
         </main>
       );
@@ -424,8 +536,7 @@ const CircApp = () => {
   }
 
   // dialogs live above whichever screen
-  const overlay = confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />;
-  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
+  const overlay = confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />;  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (
     <SwellReactionFlow
       item={reacting}
@@ -450,6 +561,7 @@ const CircApp = () => {
         platform={platform} onPlatformChange={setPlatform}
         mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}
         showTest={showTest} onShowTestChange={setShowTest}
+        live={live} onLiveChange={setLiveOpt} liveActions={liveActions}
         layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
 
       {/* Tweaks panel — deleting app/circ-tweaks.jsx removes it, no edit here */}

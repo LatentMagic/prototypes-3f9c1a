@@ -17,7 +17,7 @@ const { useState: useCState, useRef: useCRef, useEffect: useCEffect } = React;
 
 const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
                          platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
-                         showTest, onShowTestChange }) => {
+                         showTest, onShowTestChange, live, onLiveChange, liveActions }) => {
   const [open, setOpen] = useCState(false);
   // draggable launcher-button position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
@@ -94,6 +94,7 @@ const ConfigLauncher = ({ groups, onReset, gateOn, onGateChange, layout, onLayou
           platform={platform} onPlatformChange={onPlatformChange}
           mobilePayments={mobilePayments} onMobilePaymentsChange={onMobilePaymentsChange}
           showTest={showTest} onShowTestChange={onShowTestChange}
+          live={live} onLiveChange={onLiveChange} liveActions={liveActions}
           onClose={closeModal}
         />
       )}
@@ -115,7 +116,7 @@ const ConfigSeg = ({ options, value, onChange }) => (
 // ---- The modal itself ----
 const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutChange,
                        platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
-                       showTest, onShowTestChange, onClose }) => {
+                       showTest, onShowTestChange, live, onLiveChange, liveActions, onClose }) => {
   const isApp = platform === 'app';
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
@@ -201,6 +202,36 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
             <button className="circ-config-btn-secondary" onClick={onReset}>Reset to seeded data</button>
           </div>
           <div className="circ-config-hint">Clears local state and restages the default circles.</div>
+
+          <div className="circ-config-sep" />
+
+          {/* ---- Liveliness --------------------------------------------------
+              Staging only. The arrival grammar itself — card time, the wash, the
+              New rule, the nothing-new answer — is the product, not a setting;
+              it is silent by design, so all this does is fire arrivals so the
+              grammar has something to react to. */}
+          {live && (
+            <React.Fragment>
+              <div className="circ-config-eyebrow">Liveliness</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Background activity</div>
+                <ConfigSeg value={live.activity} onChange={(v) => onLiveChange('activity', v)} options={[
+                  { value: 'off', label: 'Off' }, { value: 'slow', label: 'Slow' }, { value: 'fast', label: 'Fast' },
+                ]} />
+              </div>
+              <div className="circ-config-hint">Drops links into random circles on a timer (slow ≈ 20s, fast ≈ 7s). In the circle you are in they wait behind the New pill; elsewhere they land and light the circle’s dot.</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Stage an arrival</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.here(); onClose(); }}>In this circle</button>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.elsewhere(); onClose(); }}>In another</button>
+                </div>
+              </div>
+              <div className="circ-config-hint">One link each. In this circle it waits behind the New pill; in another it lands and lights that circle’s dot.</div>
+            </React.Fragment>
+          )}
 
           <div className="circ-config-sep" />
 

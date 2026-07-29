@@ -37,14 +37,23 @@ const PulseMark = ({ size = 48 }) => (
   </svg>
 );
 
-const BrandSpinner = ({ size = 32 }) => (
-  <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label="Loading"
+// `resolving` closes the arc into a COMPLETE ring: the arc's wrapper fades out
+// while a full ring of the same radius and stroke fades in, so the mark resolves
+// in place instead of being swapped for a different one. The rotor keeps turning
+// underneath — a complete ring rotating is indistinguishable from a still one,
+// which is what lets the transition stay continuous.
+const BrandSpinner = ({ size = 32, resolving = false }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label={resolving ? 'Up to date' : 'Loading'}
     style={{ display: 'block', flexShrink: 0 }}>
     <g className="circ-spinner-rotor">
-      <circle className="circ-spinner-arc" cx="24" cy="24" r="19.05" fill="none"
-        stroke="var(--color-sage)" strokeWidth="5.3" strokeLinecap="round"
-        pathLength="120" strokeDasharray="12 108" />
+      <g className="circ-spinner-arcwrap">
+        <circle className="circ-spinner-arc" cx="24" cy="24" r="19.05" fill="none"
+          stroke="var(--color-sage)" strokeWidth="5.3" strokeLinecap="round"
+          pathLength="120" strokeDasharray="12 108" />
+      </g>
     </g>
+    {resolving && <circle className="circ-spinner-ring" cx="24" cy="24" r="19.05" fill="none"
+      stroke="var(--color-sage)" strokeWidth="5.3" />}
     <circle cx="24" cy="24" r="14.25" fill="var(--color-accent)" />
     <circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" strokeWidth="1.35" />
   </svg>

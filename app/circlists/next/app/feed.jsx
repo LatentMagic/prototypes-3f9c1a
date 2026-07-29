@@ -44,7 +44,7 @@ const FEED_TINTS = [
 const feedHash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
 const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.length]; return 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'; };
 
-const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
+const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDelete }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
 
@@ -68,7 +68,16 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
   const prettyUrl = item.url.replace(/^https?:\/\//, '');
   const showImage = item.hasImage !== false;
   const faviconOk = item.faviconExists !== false && !favBroken;
-  const faviconUrl = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=64';
+  // Favicons: baked-in local files win over Google's live service, so the demo
+  // renders the real mark offline (see uploads/card-favicons/). Host is matched
+  // on the registrable domain, so www./sub. hosts hit the same file.
+  const faviconUrl = (window.CircFavicons && window.CircFavicons(host))
+    || ('https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=64');
+
+  // When it landed — coarse words on the attribution line (never a clock time,
+  // never a count). Derived from the item's own timestamp so it stays honest as
+  // the session ages; absent unless the item carries one.
+  const when = showTime ? (window.circWhen ? window.circWhen(item.at) : null) : null;
 
   const open = () => onOpen && onOpen(item);
   const openLinkProps = { href: item.url, target: '_blank', rel: 'noopener noreferrer', onClick: open };
@@ -138,11 +147,18 @@ const FeedCard = ({ item, tab, user, onOpen, onMarkRead, onDelete }) => {
           image's right edge). On Read, the Swell door takes the tick's place. */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
         <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
-        <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {attribPre
-            ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span><span className="circ-attrib-rest">{attribution.slice(attribPre[0].length)}</span></React.Fragment>
-            : attribution}
-        </span>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 9 }}>
+          <span style={{ minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {attribPre
+              ? <React.Fragment><span className="circ-attrib-pre">{attribPre[0]}</span><span className="circ-attrib-rest">{attribution.slice(attribPre[0].length)}</span></React.Fragment>
+              : attribution}
+          </span>
+          {/* Micro text right after the attribution, separated by space alone — no
+              interpunct. Never shrinks, so a long name ellipses first. */}
+          {when && (
+            <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{when}</span>
+          )}
+        </div>
         {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
             optical edge is pulled onto the image's right edge via the -13 nudge;
             each action keeps a full 44px target with its hover fill inset, and
@@ -271,7 +287,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
     // Extraction is slow + unreliable, so add never blocks on it: the sheet
     // closes at once and the card lands PENDING in the feed. Metadata fills it
     // in place when it resolves (main.jsx schedules the async settle).
-    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: false, pending: true });
+    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: false, pending: true, at: Date.now() });
     onClose();
   };
 

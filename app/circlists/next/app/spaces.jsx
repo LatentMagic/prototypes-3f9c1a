@@ -79,7 +79,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
   };
   // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
   return (
-    <WizardShell step={0} onExit={canCancel === false ? null : onCancel}>
+    <WizardShell flow={{ step: 0 }} onExit={canCancel === false ? null : onCancel}>
       <WizardTitle>Create a circle</WizardTitle>
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,

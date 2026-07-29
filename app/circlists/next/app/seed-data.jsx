@@ -246,9 +246,56 @@ function seedSpaces(userEmail) {
   ];
   // Fold the extracted metadata onto each seed item (see SEED_META).
   spaces.forEach((sp) => sp.items.forEach((it) => { if (SEED_META[it.url]) Object.assign(it, SEED_META[it.url]); }));
+
+  // ---- Liveliness fields (see app/liveliness.jsx) --------------------------
+  // it.at        — when the link landed. Drives the card's time line and the
+  //                position of the feed's frozen last-seen mark.
+  // sp.lastSeenAt — that frozen mark. Items above it landed since the last visit.
+  // sp.unseen    — the circle holds items this member has not seen (rail dot).
+  // sp.pending   — arrivals found while the circle is OPEN, held behind the New
+  //                pill so the feed never shifts underfoot.
+  // sp.queued    — arrivals nothing has surfaced yet; only a manual refresh
+  //                (clicking the circle you are already in) finds them.
+  const HOUR = 3600e3, NOW = Date.now();
+  // How many of a circle's unread items sit above the mark on first entry. Only
+  // Tuesday Book Club stages a return visit, so the landing circle is quiet and
+  // the dot + Earlier rule can be seen arriving on a circle you switch INTO.
+  const NEW_ON_ENTRY = { 'sp-book': 2 };
+  spaces.forEach((sp) => {
+    let unread = 0, read = 0;
+    sp.items.forEach((it) => {
+      it.at = it.read ? NOW - (8 * 24 + read++ * 22) * HOUR : NOW - (unread++ * 5 + 1) * HOUR;
+    });
+    const active = sp.items.filter((i) => !i.read);
+    const n = NEW_ON_ENTRY[sp.id] || 0;
+    sp.lastSeenAt = (n > 0 && active.length > n)
+      ? (active[n].at + active[n - 1].at) / 2
+      : NOW - 400 * HOUR;
+    sp.unseen = n > 0;
+    sp.pending = [];
+    sp.queued = [];
+  });
   return spaces;
 }
 
 const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'sam.rivera@gmail.com' };
 
 window.CircSeed = { M, IT, seedSpaces, DEFAULT_USER };
+
+// ---- Baked-in favicons -----------------------------------------------------
+// Real marks fetched from each site and stored locally, so the demo never
+// depends on Google's live favicon service. Keyed by registrable domain; a
+// host falls back to the live service when it isn't listed here.
+const CIRC_FAVICON_FILES = {
+  'sqlite.org': 'uploads/card-favicons/sqlite.org.ico',
+  'jvns.ca': 'uploads/card-favicons/jvns.ca.ico',
+  'kernel.org': 'uploads/card-favicons/kernel.org.png',
+  'gutenberg.org': 'uploads/card-favicons/gutenberg.org.ico',
+  'newyorker.com': 'uploads/card-favicons/newyorker.com.ico',
+};
+window.CircFavicons = (host) => {
+  const h = String(host || '').toLowerCase().replace(/^www\./, '');
+  if (CIRC_FAVICON_FILES[h]) return CIRC_FAVICON_FILES[h];
+  const key = Object.keys(CIRC_FAVICON_FILES).find(d => h.endsWith('.' + d));
+  return key ? CIRC_FAVICON_FILES[key] : null;
+};

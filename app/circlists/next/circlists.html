@@ -92,6 +92,48 @@
     .circ-micro-halo-static { display: block !important; }
   }
 
+  /* ---- liveliness: the arrival grammar (app/liveliness.jsx) ----
+     Sage here is the MARK's light, never a status colour: the arrival halo is
+     the micro dot's own halo echoing once on the card that just landed, which
+     is why it fades to nothing rather than resting as a state. */
+  .circ-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .circ-sig { display: inline-flex; align-items: center; flex-shrink: 0; }
+  /* A refresh that found nothing: the arc closes into a COMPLETE ring — the arc
+     cross-fades to a full ring of the same radius and stroke while the rotor
+     keeps turning (invisible once the ring is closed), so the mark resolves in
+     place. It then rests a beat and goes. No tick, no words, no second mark. */
+  .circ-sig-settle { animation: circ-settle 1500ms var(--ease-quiet) both; }
+  .circ-sig-settle .circ-spinner-arcwrap { animation: circ-arc-out 380ms var(--ease-quiet) both; }
+  .circ-spinner-ring { opacity: 0; }
+  .circ-sig-settle .circ-spinner-ring { animation: circ-ring-in 380ms var(--ease-quiet) both; }
+  @keyframes circ-arc-out { to { opacity: 0; } }
+  @keyframes circ-ring-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes circ-settle { 0%, 74% { opacity: 1; } 100% { opacity: 0; } }
+  /* Arrival: the card settles in, washes sage, and resolves to its own white.
+     No ring, no halo, nothing that travels — the colour is in the card itself
+     and it leaves. */
+  .circ-arrive { position: relative; border-radius: var(--radius-lg); animation: circ-arrive-rise 380ms var(--ease-quiet) both; }
+  .circ-arrive::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); background: rgba(139,191,173,0.34); pointer-events: none; animation: circ-arrive-wash 1900ms var(--ease-quiet) both; }
+  @keyframes circ-arrive-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes circ-arrive-wash { 0% { opacity: 1; } 22% { opacity: 1; } 100% { opacity: 0; } }
+  /* New pill — the only thing that moves the feed. */
+  .circ-newpill { position: sticky; top: calc(var(--top-bar-height) + 61px); z-index: 40; align-self: center; display: inline-flex; align-items: center; gap: 7px; background: var(--color-surface); border: 1px solid var(--color-border-1); box-shadow: var(--shadow-raised); border-radius: var(--radius-pill); padding: 0 18px; min-height: 44px; cursor: pointer; font: 600 13px/1 var(--font-sans); color: var(--color-accent); animation: circ-newpill-in 240ms var(--ease-quiet) both; }
+  .circ-newpill:hover { background: var(--color-surface-sunken); }
+  @keyframes circ-newpill-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  /* The frozen last-seen mark. NEW heads the arrivals (naming the latest, not
+     the past); the seam closes the group where seen items resume. */
+  .circ-fdiv { display: flex; align-items: center; gap: var(--space-3); padding: 0 0 4px; }
+  .circ-fdiv::after { content: ''; flex: 1; height: 1px; background: var(--color-border-2); }
+  .circ-fdiv-label { font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  .circ-fseam { height: 1px; background: var(--color-border-2); margin: 4px 0 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .circ-arrive, .circ-newpill, .circ-sig-settle { animation: none !important; }
+    .circ-arrive::after { animation: none !important; opacity: 0; }
+    /* The resolve still reads without motion: arc hidden, ring shown. */
+    .circ-sig-settle .circ-spinner-arcwrap { animation: none !important; opacity: 0; }
+    .circ-sig-settle .circ-spinner-ring { animation: none !important; opacity: 1; }
+  }
+
   /* ---- focus rings: first-class ---- */
   button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
     outline: var(--ring-width) solid var(--color-accent);
@@ -330,6 +372,7 @@
 <script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/liveliness.jsx"></script>
 <script type="text/babel" src="app/swell-reactions.jsx"></script>
 <script type="text/babel" src="app/feed.jsx"></script>
 <script type="text/babel" src="app/shell.jsx"></script>
