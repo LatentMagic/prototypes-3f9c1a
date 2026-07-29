@@ -57,6 +57,30 @@ const TextLink = ({ children, onClick }) => (
   }} className="circ-textlink">{children}</button>
 );
 
+// External link out to the homepage / legal pages
+const OutLink = ({ href, children }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-accent)',
+    textDecoration: 'none',
+  }} className="circ-textlink">{children}</a>
+);
+
+// Quiet consent line — both auth surfaces
+const LegalLink = ({ href, children }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-fg-2)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{children}</a>
+);
+const ConsentLine = ({ lead = 'By creating an account you accept our' }) => (
+  <p style={{
+    fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5,
+    color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0', textAlign: 'center',
+  }}>
+    {lead}{' '}
+    <LegalLink href="https://circlists.com/terms">Terms</LegalLink>,{' '}
+    <LegalLink href="https://circlists.com/privacy">Privacy</LegalLink>{' '}and{' '}
+    <LegalLink href="https://circlists.com/refunds">Refund Policy</LegalLink>.
+  </p>
+);
+
 const OrDivider = () => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: 'var(--space-5) 0' }}>
     <span style={{ flex: 1, height: 1, background: 'var(--color-border-2)' }} />
@@ -80,7 +104,7 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
   };
   return (
     <AuthFrame title="Sign in" subtitle="Pick up your list where you left off."
-      footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink></span>}>
+      footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
           value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} autoFocus />
@@ -93,6 +117,7 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
       </form>
       <OrDivider />
       <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
+      <ConsentLine lead="Your use of Circlists is covered by our" />
     </AuthFrame>
   );
 };
@@ -116,7 +141,7 @@ const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
   };
   return (
     <AuthFrame title="Create your account" subtitle="One account, every circle you’re part of."
-      footer={<span>Already have an account? <TextLink onClick={onGoSignin}>Sign in</TextLink></span>}>
+      footer={<span>Already have an account? <TextLink onClick={onGoSignin}>Sign in</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
       <form onSubmit={submit} noValidate>
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -137,6 +162,7 @@ const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
       </form>
       <OrDivider />
       <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
+      <ConsentLine />
     </AuthFrame>
   );
 };
@@ -282,4 +308,4 @@ const Recovery = ({ onDone, onBackToSignin }) => {
   );
 };
 
-Object.assign(window, { EMAIL_RE, AuthFrame, TextLink, SignIn, SignUp, OtcEntry, GoogleReturn, Recovery });
+Object.assign(window, { EMAIL_RE, AuthFrame, TextLink, OutLink, LegalLink, ConsentLine, SignIn, SignUp, OtcEntry, GoogleReturn, Recovery });

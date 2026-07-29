@@ -1109,6 +1109,16 @@
           changelog: [
             {
               date: '2026-07-29',
+              title: 'The auth screens carry a route to the policies',
+              items: [
+                'Sign-in and sign-up gain a quiet consent line at the foot of the card, linking Terms, Privacy and the Refund Policy. The app hosts no copy of its own — the marketing site is the single home for all three, so both screens link out to it.',
+                'Both footers gain a "learn more" out to the marketing site, beside the switch between signing in and creating an account.',
+                'Behind it: payment-provider domain review reads app.circlists.com as an anonymous visitor, and these are the only pages it can reach. Without them the domain offers no navigation to the policies at all.'
+              ],
+              base: 'Built on the Circlists line.'
+            },
+            {
+              date: '2026-07-29',
               title: 'Funding is one screen — re-funding is a state of it, not a second page',
               items: [
                 'Re-fund stops being its own page. The dormant circle\'s re-fund route and the create flow\'s final step were one component forked six ways inside its own JSX; the offer is identical either way, so the body no longer branches at all.',
