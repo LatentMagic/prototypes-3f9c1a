@@ -58,3 +58,6 @@ before reading is a valid register, never punished · the Swell and the Reaction
 - The performance-pressure risk is designed around, not dismissed: `attrib: 'muted'` (02, 06) drops
   the name from a note and leaves the avatar, so how often a member's name appears is not itself a
   per-person scoreboard. Toggle **Names** in the heading to see both.
+- Source Claude Design artifact: https://claude.ai/code/artifact/306ba4a2-0b61-4234-95e1-9601a55718fc
+  ("Circlists — Discourse playground"). `Discourse playground - standalone.html` in this folder is
+  its exported bundle.
