@@ -38,12 +38,48 @@ const PulseMark = ({ size = 48 }) => (
 );
 
 // `resolving` closes the arc into a COMPLETE ring: the arc's wrapper fades out
-// while a full ring of the same radius and stroke fades in, so the mark resolves
-// in place instead of being swapped for a different one. The rotor keeps turning
-// underneath — a complete ring rotating is indistinguishable from a still one,
-// which is what lets the transition stay continuous.
+// — the SAME arc grows until its head meets its tail. No cross-fade and no
+// second element: there is nothing to pop, because nothing appears.
+// Two rules keep it identical every time despite the arc being caught at a
+// random point in its breathe cycle:
+//   • the gap closes at a CONSTANT rate (linear, duration proportional to the
+//     gap left), so the closing never reads faster or slower than last time;
+//   • the rotor is left alone — it keeps its steady CSS turn. A complete ring
+//     rotating is indistinguishable from a still one, so there is no need to
+//     brake it, and braking is what made the end feel like it lurched.
+const useArcClose = (resolving) => {
+  const ref = React.useRef(null);
+  useEffect(() => {
+    const svg = ref.current;
+    if (!resolving || !svg) return;
+    const rotor = svg.querySelector('.circ-spinner-rotor');
+    const arc = svg.querySelector('.circ-spinner-arc');
+    if (!rotor || !arc) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) { arc.style.strokeDasharray = '120 0'; arc.style.strokeDashoffset = '0'; return; }
+    // live dash phase + live rotation angle, so the close starts where the
+    // spinner actually is at this instant
+    const cs = getComputedStyle(arc);
+    const dash = String(cs.strokeDasharray).match(/[\d.]+/g) || ['12', '108'];
+    const d1 = parseFloat(dash[0]) || 12, d2 = parseFloat(dash[1] ?? 108);
+    const off = parseFloat(String(cs.strokeDashoffset)) || 0;
+    // constant closing rate: ~11 path-units per 100ms, whatever the gap. Worst
+    // case (a 12-unit arc) closes in ~1s and still leaves a rest before the fade.
+    const gap = Math.max(0, 120 - d1);
+    const dur = Math.round(gap / 0.11);
+    // the head keeps travelling at the rotor's own pace while it grows, so the
+    // ring completes from behind instead of snapping shut
+    const a = arc.animate(
+      [{ strokeDasharray: `${d1} ${d2}`, strokeDashoffset: off },
+       { strokeDasharray: '120 0', strokeDashoffset: off - dur * 0.06 }],
+      { duration: dur, easing: 'linear', fill: 'forwards' });
+    return () => { try { a.cancel(); } catch (e) {} };
+  }, [resolving]);
+  return ref;
+};
+
 const BrandSpinner = ({ size = 32, resolving = false }) => (
-  <svg width={size} height={size} viewBox="0 0 48 48" role="img" aria-label={resolving ? 'Up to date' : 'Loading'}
+  <svg ref={useArcClose(resolving)} width={size} height={size} viewBox="0 0 48 48" role="img" aria-label={resolving ? 'Up to date' : 'Loading'}
     style={{ display: 'block', flexShrink: 0 }}>
     <g className="circ-spinner-rotor">
       <g className="circ-spinner-arcwrap">
@@ -52,8 +88,6 @@ const BrandSpinner = ({ size = 32, resolving = false }) => (
           pathLength="120" strokeDasharray="12 108" />
       </g>
     </g>
-    {resolving && <circle className="circ-spinner-ring" cx="24" cy="24" r="19.05" fill="none"
-      stroke="var(--color-sage)" strokeWidth="5.3" />}
     <circle cx="24" cy="24" r="14.25" fill="var(--color-accent)" />
     <circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" strokeWidth="1.35" />
   </svg>

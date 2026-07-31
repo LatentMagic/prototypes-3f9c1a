@@ -29,7 +29,7 @@ scenarios only (background activity, *In this circle*, *In another*).
 
 ## Mocks
 
-- `../../../Liveliness playground.html` (project root) + `pg-live-{data,parts,app}.jsx` here — the
+- `../../../liveliness-playground.html` (project root) + `pg-live-{data,parts,app}.jsx` here — the
   exploration that produced the grammar. **Historical.** The app is now the spec; several options
   visible in the playground were rejected and are listed in the handoff.
 

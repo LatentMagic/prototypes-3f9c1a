@@ -1,6 +1,6 @@
 # Discourse — what shape does an exchange take in Circlists?
 
-`Discourse playground.html` (+ `pg-disc-*.jsx`). Built beside the prototype; the prototype is
+`discourse-playground.html` (+ `pg-disc-*.jsx`). Built beside the prototype; the prototype is
 untouched.
 
 **The question.** A contributor wants to attach a thought to what they share; a consumer wants to

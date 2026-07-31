@@ -19,6 +19,12 @@
 These distil the durable essence. For exact tokens, components, and visual style, this project's own `tokens.css` and the brand pack (`brand/circlists-brand.md` + its SVGs) are the binding source — when in doubt on a specific value, they win. (Voice and the destructive-red `#991b1b` are captured in Key reminders below, not the pack.)
 
 ## Key reminders
+- **File naming: kebab-case, always.** Every file this project creates is
+  lowercase kebab-case with no spaces — `discourse-playground-standalone.html`,
+  `pg-disc-app.jsx`, `handoff-2026-07-27-discourse-playground.md`. No spaces, no
+  title case, no ` - ` separators, no underscores. This includes downloadable
+  deliverables and bundled output. Spaces in paths break shell use, URLs and
+  tooling on the user's end.
 - **Name** — the product is **Circlists** (renamed from the earlier working name "LatentPulse"). The group unit is a **circle**.
 - **Accent green `#047857`** = primary actions, active states, focus rings, select brand moments only. Never status, never decoration.
 - **Danger red `#991b1b`** = destructive treatment only. Distinct from accent; never substitute.

@@ -28,14 +28,15 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
           : settledId === s.id ? 'settled'
           : s.unseen ? 'unseen' : null;
         // Clicking the circle you are ALREADY in is the refresh gesture — there is
-        // no refresh button. It navigates nowhere, so the drawer stays open and the
-        // busy state sits on this entry's own signal slot.
+        // no refresh button. The entry gains nothing for it: no hint, no icon, no
+        // distinct cursor, no altered name. It navigates nowhere, so the drawer
+        // stays open and the receipt runs in this entry's own signal slot.
         const onClick = () => {
           if (active) { if (onRefreshSpace) onRefreshSpace(s.id); return; }
           onSelect(s.id); onClose && onClose();
         };
         return (
-          <button key={s.id} onClick={onClick} title={active ? 'Refresh ' + s.name : undefined} style={{
+          <button key={s.id} onClick={onClick} style={{
             position: 'relative', textAlign: 'left', cursor: 'pointer',
             background: active ? 'var(--color-surface)' : 'transparent', border: 0,
             padding: '11px 12px 11px 14px', borderRadius: 'var(--radius-md)',
@@ -234,7 +235,10 @@ const Tabs = ({ active, onChange }) => {
 };
 
 // ---- Mobile drawer ---------------------------------------------------------
-const MobileDrawer = ({ open, ...rail }) => {
+// `children` lets a non-product surface (playground config) reuse this drawer
+// verbatim — same geometry, same easing — instead of forking it; `width` is the
+// app's 272 unless a caller needs more room.
+const MobileDrawer = ({ open, width = 272, children, ...rail }) => {
   // Slides in/out from the left, below the top bar so the toggle that opened it
   // stays visible and doubles as the close control. Same easing as the Add sheet.
   const [render, setRender] = React.useState(open);
@@ -258,13 +262,15 @@ const MobileDrawer = ({ open, ...rail }) => {
         transition: 'opacity var(--duration-slow) ease-in-out',
       }} />
       <aside style={{
-        position: 'fixed', top: 'var(--top-bar-height)', left: 0, bottom: 0, width: 272, zIndex: 111,
+        position: 'fixed', top: 'var(--top-bar-height)', left: 0, bottom: 0, width, maxWidth: '86vw', zIndex: 111,
         background: 'var(--color-surface-sunken)', borderRight: '1px solid var(--color-border-2)',
         padding: '20px 12px',
+        // Taller-than-viewport contents scroll inside the drawer, not the page.
+        overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain',
         transform: shown ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform var(--duration-slow) var(--ease-quiet)',
       }}>
-        <RailBody {...rail} />
+        {children || <RailBody {...rail} />}
       </aside>
     </>
   );
@@ -305,4 +311,4 @@ const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true
   );
 };
 
-Object.assign(window, { AppShell, TopBar, Tabs, RailBody, UserMenu });
+Object.assign(window, { AppShell, TopBar, Tabs, RailBody, UserMenu, MobileDrawer });

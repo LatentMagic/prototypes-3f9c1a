@@ -268,9 +268,12 @@ function seedSpaces(userEmail) {
     });
     const active = sp.items.filter((i) => !i.read);
     const n = NEW_ON_ENTRY[sp.id] || 0;
+    // Everyone else starts caught up: the mark sits at "now", right above every
+    // seeded item, so nothing pre-existing reads as new — only a later Config
+    // arrival (landing with at > NOW) will sit above this mark and draw a divider.
     sp.lastSeenAt = (n > 0 && active.length > n)
       ? (active[n].at + active[n - 1].at) / 2
-      : NOW - 400 * HOUR;
+      : NOW;
     sp.unseen = n > 0;
     sp.pending = [];
     sp.queued = [];

@@ -20,7 +20,7 @@ type: 'spec'
 ## Current Focus
 
 The arrival grammar is **in the product**, all three postures, behind no flag. `app/liveliness.jsx`
-holds it; the playground (`Liveliness playground.html`) is now a **historical artifact**, not the
+holds it; the playground (`liveliness-playground.html`) is now a **historical artifact**, not the
 spec — the app is. Do not port anything else out of it without re-reading this document; several
 playground options were explicitly rejected (see "Rejected" below).
 

@@ -13,19 +13,28 @@
   a:hover { color: var(--color-accent-hover); }
   #root { min-height: 100vh; }
 
-  .pg-page { display: grid; grid-template-columns: 344px minmax(0, 1fr); min-height: 100vh; }
-  .pg-rail { background: var(--color-page); border-right: 1px solid var(--color-border-1); padding: 20px 14px 40px; position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; }
+  /* The app fills the window (no bezel): open this on a phone and it IS the app.
+     The config rail stands in for the circle rail, so it follows the app's rail
+     exactly: permanently docked at ≥ 1024, and below that it lives behind the top
+     bar's circles-menu button in the app's own MobileDrawer (app/shell.jsx). */
+  .pg-page { display: flex; min-height: 100dvh; }
+  .pg-rail { width: 336px; flex-shrink: 0; background: var(--color-page); border-right: 1px solid var(--color-border-1); padding: 20px 14px 40px; position: sticky; top: 0; align-self: flex-start; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; }
   .pg-railitem { display: block; width: 100%; text-align: left; cursor: pointer; border: 0; background: transparent; border-radius: var(--radius-md); padding: 11px 12px; font-family: var(--font-sans); color: var(--color-fg-1); transition: background var(--duration-base); }
   .pg-railitem:hover { background: var(--color-surface); }
-  .pg-stage { display: flex; align-items: flex-start; justify-content: center; padding: 24px 20px 40px; min-width: 0; }
   .pg-ghost { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 7px 11px; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; color: var(--color-fg-1); cursor: pointer; white-space: nowrap; }
   .pg-ghost:hover { background: var(--color-surface-sunken); }
 
-  /* Phone frame — the prototype's geometry. The CLIP layer carries the
-     transform, so fixed overlays pin to the screen, not the bezel. */
-  .pgd-phone { width: 402px; flex-shrink: 0; height: min(880px, calc(100vh - 124px)); background: #050505; border-radius: 52px; padding: 11px; box-shadow: 0 28px 56px rgba(10,10,10,0.28), 0 0 0 2px #2c2c2c; overflow: hidden; }
+  /* The surface carries the transform, so the sheets and the Swell pin to the
+     app surface rather than to the page. */
+  .pgd-surface { position: relative; flex: 1; min-width: 0; height: 100dvh; overflow: hidden; background: var(--color-canvas); transform: translateZ(0); }
+  .pgd-screen { width: 100%; height: 100%; overflow-y: auto; --circ-vh: 100%; }
+
+  /* Forced-mobile posture: the app's own phone frame, copied verbatim from
+     circlists.html. Only ever used when Viewport is set to Mobile by hand. */
+  .circ-stage { flex: 1; min-width: 0; min-height: 100dvh; background: #1c1c1a; background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  .circ-phone { width: 402px; max-width: 100%; height: min(872px, calc(100dvh - 48px)); background: #050505; border-radius: 52px; padding: 11px; box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000; overflow: hidden; }
   .circ-phone-clip { position: relative; width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: var(--color-canvas); transform: translateZ(0); }
-  .circ-phone-screen { width: 100%; height: 100%; overflow-y: auto; --circ-vh: 100%; }
+  .circ-phone-screen { width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; --circ-vh: 100%; }
   .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
 
   /* ---- reused app card + chrome states (copied from circlists.html) ---- */
@@ -59,7 +68,13 @@
   .pgd-back { transform: rotateY(180deg); }
   @media (prefers-reduced-motion: reduce) { .pgd-flipper { transition: none; } }
 
-  @media (max-width: 860px) { .pg-page { grid-template-columns: 1fr; } .pg-rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--color-border-1); } }
+  /* app posture: full-page push layers (copied verbatim from circlists.html) */
+  @keyframes circ-push-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes circ-push-out { from { transform: translateX(0) } to { transform: translateX(100%) } }
+  .circ-push-in { animation: circ-push-in var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
+
 </style>
 </head>
 <body>
@@ -70,7 +85,10 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
 <script type="text/babel" src="app/swell-reactions.jsx"></script>
+<script type="text/babel" src="app/shell.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
 <script type="text/babel" src="app/app-shell.jsx"></script>
 <script type="text/babel" src="docs/specs/discourse/pg-disc-data.jsx"></script>
 <script type="text/babel" src="docs/specs/discourse/pg-disc-parts.jsx"></script>

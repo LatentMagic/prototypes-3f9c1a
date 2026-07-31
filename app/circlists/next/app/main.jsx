@@ -21,8 +21,10 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // source, and preview image per item (BIZ-80). v8 adds the real Martin Fowler +
 // arXiv OG previews to the Backend Pod's first five. v9 makes the top card
 // yours. v10 adds liveliness: an `at` per item and lastSeenAt/unseen/pending/
-// queued per circle.)
-const STATE_KEY = 'circ_state_v10';
+// queued per circle. v11 stamps the last-visit mark on ENTRY, holds the DRAWN
+// waterline outside persisted state, and adds remoteDeleted per circle — the
+// deletions a rail refresh reconciles away.)
+const STATE_KEY = 'circ_state_v11';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -30,6 +32,12 @@ const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) |
 // (circ-tweaks.jsx / tweaks-panel.jsx) are absent — the delete-only homepage-demo
 // derivation drops them. When those files are present they take over.
 const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto', pulseDepth: 7.5, spinSpeed: 1.4 };
+
+// ---- The timed check's cadence ---------------------------------------------
+// Deliberately unhurried: the check serves ALIVENESS, and anyone chasing the
+// latest uses the rail refresh instead. 'slow' is the shipped cadence; Config can
+// hurry it for review or switch it off.
+const CIRC_CHECK_MS = { off: 0, slow: 45000, fast: 7000 };
 const useTweaksSafe = (typeof useTweaks === 'function') ? useTweaks : (d) => [d, () => {}];
 
 // ---- App -------------------------------------------------------------------
@@ -133,15 +141,40 @@ const CircApp = () => {
   // New rule and the nothing-new answer are the product. The only knob here is
   // STAGING: the grammar is silent by design, so a review needs arrivals to fire.
   //   activity — simulated background arrivals: 'off' | 'slow' | 'fast'
-  const [live, setLive] = useState({ activity: 'off' });
+  const [live, setLive] = useState({ activity: 'slow' });
   const setLiveOpt = (k, v) => setLive((s) => ({ ...s, [k]: v }));
-  const [refreshing, setRefreshing] = useState(null);   // circle id of a running manual refresh
-  const [settledId, setSettledId] = useState(null);     // circle whose mark is coming to rest
-  const [arrived, setArrived] = useState([]);           // item ids wearing the arrival halo
+  const [refreshing, setRefreshing] = useState(null);   // circle id whose receipt is running
+  const [settledId, setSettledId] = useState(null);     // circle whose receipt is resolving into the mark
+  const [arrived, setArrived] = useState([]);           // item ids that TRAVEL (pill accept only)
+  // The DRAWN waterline: the stored mark as it was when this visit began. Entry
+  // stamps the mark to now, so the line the member reads against is held here for
+  // the lifetime of the visit and nothing landing afterwards can move it. Visit
+  // state, never persisted — a browser reload is a teardown, so it draws no line.
+  const [dividerAt, setDividerAt] = useState(null);
+  const [announce, setAnnounce] = useState('');
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
   const spacesRef = useRef(spaces); spacesRef.current = spaces;
   const currentRef = useRef(currentId); currentRef.current = currentId;
+  const tabRef = useRef(tab); tabRef.current = tab;
+  // One polite announcement, re-fired cleanly for a repeated gesture: a live
+  // region only speaks when its text CHANGES, so it is cleared first.
+  const announceTimer = useRef(null);
+  const announceOnce = useCallback((msg) => {
+    if (announceTimer.current) clearTimeout(announceTimer.current);
+    setAnnounce('');
+    announceTimer.current = setTimeout(() => {
+      setAnnounce(msg);
+      announceTimer.current = setTimeout(() => setAnnounce(''), 1600);
+    }, 60);
+  }, []);
+  // Carry the member to arrivals that landed at the top of the feed. The window
+  // scrolls on web; the phone screen is the scroller in the app posture.
+  const scrollToArrivals = () => {
+    const el = document.querySelector('.circ-phone-screen');
+    if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // open Create-a-space fresh (clears any carried name)
   const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', spaceId: null }); setRoute('create-space'); };
@@ -178,6 +211,23 @@ const CircApp = () => {
     if (holdLoading && !LOADING_ROUTES.includes(route)) setHoldLoading(false);
   }, [route, holdLoading]);
 
+  // A fresh load of a circle. It finds everything — arrivals nothing had surfaced
+  // yet included — reconciles away what other members deleted, draws the waterline
+  // from the stored mark, and stamps that mark to now. The DRAWN line is held in
+  // dividerAt, so stamping can never move it.
+  const openVisit = useCallback((id) => {
+    const sp = spacesRef.current.find(s => s.id === id);
+    if (!sp || !sp.funded) { setDividerAt(null); return; }
+    setDividerAt(typeof sp.lastSeenAt === 'number' ? sp.lastSeenAt : null);
+    setSpaces(prev => prev.map(s => {
+      if (s.id !== id) return s;
+      const gone = s.remoteDeleted || [];
+      const found = s.queued || [];
+      return { ...s, items: [...found, ...s.items.filter(i => !gone.includes(i.id))],
+        queued: [], remoteDeleted: [], lastSeenAt: Date.now() };
+    }));
+  }, []);
+
   // feed-load demo: quiet indicator when entering a funded space
   const enterSpace = useCallback((id) => {
     const target = id || currentId;
@@ -185,29 +235,33 @@ const CircApp = () => {
     if (id) setCurrentId(id);
     setRoute('space');
     setArrived([]); setSettledId(null);
-    // Leaving a circle re-marks it: anything still waiting behind the New pill is
-    // folded into the feed, and the mark is set just BEFORE the oldest of them, so
-    // they read as new on the next visit rather than silently ageing into the pile.
+    // Leaving with a pill unaccepted folds those arrivals into the feed and leaves
+    // the circle holding unseen items. Nothing records where the member crossed —
+    // the dot's own test (a circle holding unseen items) already covers them.
     if (leaving) setSpaces(prev => prev.map(s => {
       if (s.id !== leaving) return s;
       const p = s.pending || [];
-      return { ...s, items: [...p, ...s.items], pending: [], unseen: p.length > 0,
-        lastSeenAt: p.length ? Math.min(...p.map(i => i.at)) - 1 : Date.now() };
+      return { ...s, items: [...p, ...s.items], pending: [], unseen: s.unseen || p.length > 0 };
     }));
-    const sp = spaces.find(s => s.id === target);
-    if (sp && sp.funded) { setLoadingFeed(true); setTimeout(() => setLoadingFeed(false), 700); }
-    else setLoadingFeed(false);
-  }, [spaces, currentId]);
+    const sp = spacesRef.current.find(s => s.id === target);
+    if (sp && sp.funded) { setLoadingFeed(true); setTimeout(() => setLoadingFeed(false), 700); openVisit(target); }
+    else { setLoadingFeed(false); setDividerAt(null); }
+  }, [currentId, openVisit]);
 
-  // Opening a circle IS the accept: its dot clears once the feed is on screen.
-  // An effect, not a branch inside enterSpace, so every way in (mount, a Config
-  // scenario, home) clears it identically. lastSeenAt is deliberately untouched —
-  // the Earlier rule must not move while you are reading against it.
+  // The session's first circle is reached at mount, not through enterSpace, so
+  // that visit is opened here. A reload lands here too — and since the previous
+  // visit stamped the mark, it draws no line.
+  useEffect(() => { if (route === 'space' && currentId) openVisit(currentId); }, []);
+
+  // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
+  // while the member sits on Read is pointing them AT Active, so it has to survive
+  // until they arrive. An effect, not a branch inside enterSpace, so every way in
+  // (mount, a Config scenario, home, a tab switch) clears it identically.
   useEffect(() => {
-    if (route !== 'space' || loadingFeed || !currentId) return;
+    if (route !== 'space' || tab !== 'active' || loadingFeed || !currentId) return;
     const sp = spacesRef.current.find(s => s.id === currentId);
     if (sp && sp.unseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, unseen: false } : s));
-  }, [route, loadingFeed, currentId, spaces]);
+  }, [route, tab, loadingFeed, currentId, spaces]);
 
   // ---- Arrivals -----------------------------------------------------------
   const peerName = (id) => {
@@ -215,56 +269,106 @@ const CircApp = () => {
     const peers = ((sp && sp.members) || []).filter(m => m.name !== 'You');
     return peers.length ? peers[Math.floor(Math.random() * peers.length)].name : 'Sam R.';
   };
-  // A link lands. In the circle you are IN it waits behind the New pill — the feed
-  // never shifts underfoot. Anywhere else it lands in the feed and lights the dot.
+  // A link lands. In the circle the member is IN, on Active, it waits behind the
+  // New pill — the feed never shifts underfoot. On Read the pill is out of sight,
+  // so the dot lights instead and points them to Active, where the pill is
+  // waiting. Anywhere else it lands in the feed and lights that circle's dot.
   const landItem = (id, who) => {
     const item = window.circNextDrop(who || peerName(id));
+    const here = id === currentRef.current;
+    const onActive = tabRef.current === 'active';
     setSpaces(prev => prev.map(s => s.id !== id ? s
-      : (id === currentRef.current
-          ? { ...s, pending: [item, ...(s.pending || [])] }
+      : (here
+          ? { ...s, pending: [item, ...(s.pending || [])], unseen: onActive ? s.unseen : true }
           : { ...s, items: [item, ...s.items], unseen: true })));
+    signalTab();
   };
-  // Accept: the click is what moves the feed. What lands wears the halo briefly.
+  // An arrival nothing has surfaced yet: only a fresh load or the rail refresh
+  // finds it, so the deliberate gesture has something honest to report.
+  const queueItem = (id, who) => {
+    const item = window.circNextDrop(who || peerName(id));
+    setSpaces(prev => prev.map(s => s.id === id ? { ...s, queued: [item, ...(s.queued || [])] } : s));
+    signalTab();
+  };
+  // One signal for the whole app, outside it: a backgrounded tab wears the
+  // notification icon until it regains focus (app/tab-signal.jsx, droppable).
+  const signalTab = () => {
+    if (window.CircTabSignal) window.CircTabSignal.set();
+  };
+  // Accept: the click is what moves the feed, and it is the one moment a card
+  // travels. It stamps the mark; the drawn line stays exactly where it is.
   const revealPending = () => {
     const id = currentRef.current;
     const sp = spacesRef.current.find(s => s.id === id);
     if (!sp || !(sp.pending || []).length) return;
     const ids = sp.pending.map(i => i.id);
-    setSpaces(prev => prev.map(s => s.id === id ? { ...s, items: [...s.pending, ...s.items], pending: [] } : s));
+    setSpaces(prev => prev.map(s => s.id === id
+      ? { ...s, items: [...s.pending, ...s.items], pending: [], lastSeenAt: Date.now() } : s));
     setArrived(a => [...a, ...ids]);
-    setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 2400);
+    setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
   };
-  // Manual refresh = clicking the circle you are ALREADY in. There is no refresh
-  // button. Nothing blanks: the busy state sits on that circle's own signal slot,
-  // and whatever it finds surfaces through the same New pill the background check
-  // uses. Finding nothing answers with the mark settling — never a tick.
+  // The refresh gesture — selecting the circle already on screen. There is no
+  // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
+  // and resolves into the full mark on BOTH outcomes. What it finds LANDS, with no
+  // pill — the gesture already gave consent — and it reconciles away what other
+  // members deleted. One polite announcement: "Refreshed".
   const refreshSpace = (id) => {
     if (refreshing || loadingFeed) return;
     setRefreshing(id); setSettledId(null);
     setTimeout(() => {
       setRefreshing(null);
+      setSettledId(id);
+      setTimeout(() => setSettledId(c => (c === id ? null : c)), 2000);
       const sp = spacesRef.current.find(s => s.id === id);
-      if (sp && (sp.queued || []).length) {
-        setSpaces(prev => prev.map(s => s.id === id
-          ? { ...s, pending: [...s.queued, ...(s.pending || [])], queued: [] } : s));
-      } else {
-        setSettledId(id);
-        setTimeout(() => setSettledId(c => (c === id ? null : c)), 1500);
-      }
+      // Whatever is waiting is what the member just asked for: arrivals nothing had
+      // surfaced yet AND anything still behind the pill. The gesture makes the pill
+      // moot rather than leaving it up beside the cards it was offering.
+      const found = [...((sp && sp.queued) || []), ...((sp && sp.pending) || [])]
+        .sort((a, b) => (b.at || 0) - (a.at || 0));
+      const gone = (sp && sp.remoteDeleted) || [];
+      const here = id === currentRef.current;
+      const onActive = tabRef.current === 'active';
+      if (found.length || gone.length) setSpaces(prev => prev.map(s => {
+        if (s.id !== id) return s;
+        return { ...s, items: [...found, ...s.items.filter(i => !gone.includes(i.id))],
+          queued: [], pending: [], remoteDeleted: [],
+          lastSeenAt: found.length ? Date.now() : s.lastSeenAt,
+          // Arrivals always enter unread, so a refresh made from Read lands them on
+          // Active, out of sight: the dot carries them, and clears on arrival there.
+          unseen: (found.length && here && !onActive) ? true : s.unseen };
+      }));
+      // Carried to the arrivals only when there are any — scrolling on an empty
+      // refresh would move the member for nothing.
+      if (found.length && here && onActive) requestAnimationFrame(scrollToArrivals);
+      announceOnce('Refreshed');
     }, 900);
   };
 
-  // Simulated background activity (Config aid). Detection is silent — the dot and
-  // the pill are its only visible consequences.
+  // The app's own eyes: an unhurried timed check, with no member gesture. It is
+  // silent — the dot, the pill and the tab icon are its only visible part. Some of
+  // what it finds is deliberately left unsurfaced, so the rail refresh has
+  // something honest to report.
   useEffect(() => {
-    if (live.activity === 'off') return;
-    const ms = live.activity === 'fast' ? 7000 : 20000;
+    const ms = CIRC_CHECK_MS[live.activity] || 0;
+    if (!ms) return;
     const t = setInterval(() => {
       const open = spacesRef.current.filter(s => s.funded && !isTestSpace(s));
-      if (open.length) landItem(open[Math.floor(Math.random() * open.length)].id);
+      if (!open.length) return;
+      const cur = open.find(s => s.id === currentRef.current);
+      if (cur && Math.random() < 0.34) { queueItem(cur.id); return; }
+      landItem(open[Math.floor(Math.random() * open.length)].id);
     }, ms);
     return () => clearInterval(t);
   }, [live.activity]);
+
+  // The pill arrives with no gesture and is the only way to accept arrivals, so a
+  // member who cannot see it is told it is there. Focus does not move.
+  const pendCount = (space && (space.pending || []).length) || 0;
+  const pendPrev = useRef(pendCount);
+  useEffect(() => {
+    if (pendCount > pendPrev.current && tab === 'active') announceOnce('New links');
+    pendPrev.current = pendCount;
+  }, [pendCount, tab, announceOnce]);
 
   // Home is app-posture chrome. The web postures reach their circles through the
   // rail, so a web session must never sit on it while the user holds circles —
@@ -377,11 +481,21 @@ const CircApp = () => {
 
   // Staging actions for the Config aid's liveliness controls (see app/config.jsx).
   const liveActions = {
-    here: () => currentId && landItem(currentId),
-    elsewhere: () => {
+    here: (n = 1) => currentId && Array.from({ length: n }).forEach(() => landItem(currentId)),
+    elsewhere: (n = 1) => {
       const other = spacesRef.current.find(s => s.funded && !isTestSpace(s) && s.id !== currentId);
-      if (other) landItem(other.id);
+      if (other) Array.from({ length: n }).forEach(() => landItem(other.id));
     },
+    queue: (n = 1) => currentId && Array.from({ length: n }).forEach(() => queueItem(currentId)),
+    // Another member deletes a link. It stays on screen until a gesture that
+    // reconciles — a rail refresh, or the next fresh load of the circle.
+    deleteElsewhere: () => setSpaces(prev => prev.map(s => {
+      if (s.id !== currentId) return s;
+      const cand = s.items.filter(i => !(s.remoteDeleted || []).includes(i.id));
+      if (!cand.length) return s;
+      const victim = cand[Math.min(1, cand.length - 1)];
+      return { ...s, remoteDeleted: [...(s.remoteDeleted || []), victim.id] };
+    })),
   };
 
   // ---- config launcher setups ----
@@ -493,9 +607,9 @@ const CircApp = () => {
     } else {
       const visible = tab === 'active' ? activeItems : readItems;
       const pending = (space && space.pending) || [];
-      // The frozen last-seen rule, Active only — Read is a shelf, not a timeline.
-      const divIdx = tab === 'active'
-        ? window.circDividerIndex(visible, space.lastSeenAt) : -1;
+      // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
+      // the visit's own frozen mark, never from the stored one.
+      const divIdx = tab === 'active' ? window.circDividerIndex(visible, dividerAt) : -1;
       const feed = loadingFeed ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
@@ -504,7 +618,7 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
             {tab === 'active' && pending.length > 0 && <NewPill onClick={revealPending} />}
             {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : visible.map((item, i) => {
@@ -512,11 +626,13 @@ const CircApp = () => {
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;
+                // Above the waterline → the glow, played when the card comes into
+                // view. Accepted from the pill → the travel, once.
+                const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
                 return (
                   <React.Fragment key={item.id}>
-                    {i === 0 && divIdx > 0 && <FeedDivider />}
-                    {i === divIdx && <FeedSeam />}
-                    {arrived.includes(item.id) ? <div className="circ-arrive">{card}</div> : card}
+                    {i === divIdx && <FeedDivider />}
+                    <CircGlow glow={fresh} rise={arrived.includes(item.id)}>{card}</CircGlow>
                   </React.Fragment>
                 );
               })}
@@ -545,7 +661,12 @@ const CircApp = () => {
       onClose={() => setReacting(null)} />
   );
   const gateOverlayEl = GateOverlay ? <GateOverlay open={gateOpen} isMobile={isMobile} onClose={() => setGateOpen(false)} /> : null;
-  const appTree = <>{screen}{overlay}{reactOverlay}{gateOverlayEl}</>;
+  // The one polite live region for the whole app: it sits in the page empty from
+  // first render, because a region inserted together with its text announces
+  // nothing. A gesture is acknowledged ("Refreshed"); the pill announces its own
+  // arrival; a state is never announced.
+  const liveRegion = <div className="circ-vh" role="status" aria-live="polite">{announce}</div>;
+  const appTree = <>{screen}{overlay}{reactOverlay}{gateOverlayEl}{liveRegion}</>;
 
   return (
     <>

@@ -118,6 +118,7 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
                        platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
                        showTest, onShowTestChange, live, onLiveChange, liveActions, onClose }) => {
   const isApp = platform === 'app';
+  const [arrivalCount, setArrivalCount] = useCState(1);
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -206,30 +207,48 @@ const ConfigModal = ({ groups, onReset, gateOn, onGateChange, layout, onLayoutCh
           <div className="circ-config-sep" />
 
           {/* ---- Liveliness --------------------------------------------------
-              Staging only. The arrival grammar itself — card time, the wash, the
-              New rule, the nothing-new answer — is the product, not a setting;
-              it is silent by design, so all this does is fire arrivals so the
-              grammar has something to react to. */}
+              Staging only. The grammar itself — the age, the glow, the waterline,
+              the receipt — is the product, not a setting. The timed check ships ON
+              and unhurried; all this does is hurry it, or fire arrivals directly so
+              the grammar has something to react to. */}
           {live && (
             <React.Fragment>
               <div className="circ-config-eyebrow">Liveliness</div>
 
               <div className="circ-config-row">
-                <div className="circ-config-row-label">Background activity</div>
+                <div className="circ-config-row-label">Timed check</div>
                 <ConfigSeg value={live.activity} onChange={(v) => onLiveChange('activity', v)} options={[
                   { value: 'off', label: 'Off' }, { value: 'slow', label: 'Slow' }, { value: 'fast', label: 'Fast' },
                 ]} />
               </div>
-              <div className="circ-config-hint">Drops links into random circles on a timer (slow ≈ 20s, fast ≈ 7s). In the circle you are in they wait behind the New pill; elsewhere they land and light the circle’s dot.</div>
+              <div className="circ-config-hint">The app’s own check (slow ≈ 45s is what ships, fast ≈ 7s for review). In the circle you are in, arrivals wait behind the New pill; elsewhere they land and light that circle’s dot. Some are left unsurfaced, so a rail refresh has something to find.</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Count</div>
+                <div className="circ-config-stepper">
+                  <button type="button" aria-label="Fewer" onClick={() => setArrivalCount(n => Math.max(1, n - 1))}>−</button>
+                  <span>{arrivalCount}</span>
+                  <button type="button" aria-label="More" onClick={() => setArrivalCount(n => Math.min(20, n + 1))}>+</button>
+                </div>
+              </div>
 
               <div className="circ-config-row">
                 <div className="circ-config-row-label">Stage an arrival</div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.here(); onClose(); }}>In this circle</button>
-                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.elsewhere(); onClose(); }}>In another</button>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.here(arrivalCount); onClose(); }}>In this circle</button>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.elsewhere(arrivalCount); onClose(); }}>In another</button>
                 </div>
               </div>
-              <div className="circ-config-hint">One link each. In this circle it waits behind the New pill; in another it lands and lights that circle’s dot.</div>
+              <div className="circ-config-hint">{arrivalCount} link{arrivalCount === 1 ? '' : 's'} each. In this circle {arrivalCount === 1 ? 'it waits' : 'they wait'} behind the New pill on Active — on Read the dot lights instead; in another {arrivalCount === 1 ? 'it lands' : 'they land'} and light that circle’s dot.</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Waiting for a refresh</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.queue(arrivalCount); onClose(); }}>Unsurfaced arrival</button>
+                  <button className="circ-config-btn-secondary" onClick={() => { liveActions.deleteElsewhere(); onClose(); }}>Delete by another member</button>
+                </div>
+              </div>
+              <div className="circ-config-hint">Nothing surfaces either one. Selecting this circle in the rail lands the arrival{arrivalCount === 1 ? '' : 's'} directly and takes the deleted link away — that gesture is the only thing that finds them.</div>
             </React.Fragment>
           )}
 

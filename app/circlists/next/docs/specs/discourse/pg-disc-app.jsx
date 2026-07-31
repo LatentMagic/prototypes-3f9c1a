@@ -10,8 +10,18 @@ const {
   PGD_OPTIONS, PGD_LEVERS, PGD_DEFAULT_CFG, PGD_ITEMS, PGD_USER, PGD_WORDS,
   pgdMergeCfg, pgdResolve, PgdCard, PgdTabs, PgdTableEntry, PgdEmpty,
   PgdMoment, PgdDoorSheet, PgdAddSheet, PGC_RESPOND_LABEL,
-  AppShellNative, SwellReactionFlow,
+  AppShellNative, SwellReactionFlow, TopBar, MobileDrawer, FAB,
 } = window;
+
+// The playground is the app, not a picture of it: no bezel, no forced phone.
+// The config rail IS the circle rail here, so it behaves exactly as the app's
+// rail does at the app's own breakpoint (`main.jsx`: < 1024 = mobile):
+//   ≥ 1024  — permanently docked beside the app, no toggle, nothing to collapse.
+//   < 1024  — behind the top bar's circles-menu button, opening the app's own
+//             MobileDrawer (`app/shell.jsx`, mounted verbatim).
+// Viewport: Mobile switches to the app posture, where the rail is Home, framed
+// in the app's phone frame — the same thing `main.jsx` does for forced mobile.
+const PGD_MOBILE_BREAK = 1024;
 
 const PG_KEY = 'pg_discourse_v1';
 const pgLoad = () => { try { return JSON.parse(localStorage.getItem(PG_KEY)) || {}; } catch (e) { return {}; } };
@@ -45,8 +55,8 @@ const PgSeg = ({ label, value, opts, onChange }) => (
   </div>
 );
 
-// ---- The phone -------------------------------------------------------------
-const PgdPhone = ({ cfg, opt, items, local, onLocal, tab, setTab, jump, onJumpDone }) => {
+// ---- The app surface -------------------------------------------------------
+const PgdSurface = ({ appPosture, isMobile, framed, home, railBody, onGoHome, railOpen, onToggleRail, cfg, opt, items, local, onLocal, tab, setTab, jump, onJumpDone }) => {
   const [overlay, setOverlay] = pgS(null);      // {kind:'add'|'door'|'moment', id}
   const [flow, setFlow] = pgS(null);            // item currently in the Swell
   const committed = pgRef(null);
@@ -128,33 +138,62 @@ const PgdPhone = ({ cfg, opt, items, local, onLocal, tab, setTab, jump, onJumpDo
 
   const ov = overlay && overlay.id ? find(overlay.id) : null;
 
-  return (
-    <div className="pgd-phone">
-      <div className="circ-phone-clip">
-        <div className="circ-phone-screen">
-          <AppShellNative user={PGD_USER} space={{ id: 'sp-backend', name: 'Backend Pod' }} spaces={[]} currentId="sp-backend"
-            canAdd onAdd={() => setOverlay({ kind: 'add' })} onHome={() => {}} onMembers={() => {}}>
-            {body}
-          </AppShellNative>
+  const space = { id: 'sp-backend', name: 'Backend Pod' };
+  const shell = appPosture ? (
+    <AppShellNative user={PGD_USER} space={space} spaces={[]} currentId="sp-backend" isHome={home}
+      canAdd onAdd={() => setOverlay({ kind: 'add' })} onHome={onGoHome} onMembers={() => {}}>
+      {home ? <div style={{ flex: 1, background: 'var(--color-page)', padding: '16px 14px 32px' }}>{railBody}</div> : body}
+    </AppShellNative>
+  ) : (
+    <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)' }}>
+      {/* The app's own TopBar: the circles-menu button appears at exactly the
+          widths the app shows it, because the config rail IS the circle rail. */}
+      <TopBar isMobile={isMobile} space={space} showMembers={false} onMenu={onToggleRail} menuOpen={railOpen} />
+      {body}
+      {FAB && <FAB onClick={() => setOverlay({ kind: 'add' })} expanded={!!(overlay && overlay.kind === 'add')} isMobile={isMobile} />}
+    </div>
+  );
+
+  const overlays = (
+    <React.Fragment>
+      {flow && (
+        <SwellReactionFlow key={flow.id} item={flow}
+          onMarkRead={(item, rx) => commitReaction(flow, rx)}
+          onClose={() => closeFlow(flow)} />
+      )}
+      {overlay && overlay.kind === 'add' && <PgdAddSheet cfg={cfg} opt={opt} onClose={() => setOverlay(null)} />}
+      {overlay && overlay.kind === 'door' && ov && (
+        <PgdDoorSheet item={ov.it} res={ov.res} cfg={cfg} opt={opt} onClose={() => setOverlay(null)}
+          onRespond={() => setOverlay({ kind: 'moment', id: ov.it.id })} />
+      )}
+      {overlay && overlay.kind === 'moment' && ov && (
+        <PgdMoment item={ov.it} res={ov.res} cfg={cfg} opt={opt} glyph={overlay.glyph}
+          withDisc={cfg.reveal === 'swell'} onClose={() => setOverlay(null)}
+          onSend={(r) => sendResponse(ov.it.id, r)} />
+      )}
+    </React.Fragment>
+  );
+
+  // Forced mobile on a wide screen gets the app's own phone frame (the same
+  // classes circlists.html uses) — that is what the product does for this
+  // posture. Auto never frames anything.
+  if (framed) {
+    return (
+      <div className="circ-stage">
+        <div className="circ-phone">
+          <div className="circ-phone-clip">
+            <div className="circ-phone-screen">{shell}</div>
+            {overlays}
+          </div>
         </div>
-
-        {flow && (
-          <SwellReactionFlow key={flow.id} item={flow}
-            onMarkRead={(item, rx) => commitReaction(flow, rx)}
-            onClose={() => closeFlow(flow)} />
-        )}
-
-        {overlay && overlay.kind === 'add' && <PgdAddSheet cfg={cfg} opt={opt} onClose={() => setOverlay(null)} />}
-        {overlay && overlay.kind === 'door' && ov && (
-          <PgdDoorSheet item={ov.it} res={ov.res} cfg={cfg} opt={opt} onClose={() => setOverlay(null)}
-            onRespond={() => setOverlay({ kind: 'moment', id: ov.it.id })} />
-        )}
-        {overlay && overlay.kind === 'moment' && ov && (
-          <PgdMoment item={ov.it} res={ov.res} cfg={cfg} opt={opt} glyph={overlay.glyph}
-            withDisc={cfg.reveal === 'swell'} onClose={() => setOverlay(null)}
-            onSend={(r) => sendResponse(ov.it.id, r)} />
-        )}
       </div>
+    );
+  }
+
+  return (
+    <div className="pgd-surface">
+      <div className="pgd-screen">{shell}</div>
+      {overlays}
     </div>
   );
 };
@@ -196,6 +235,98 @@ const PgdLoop = ({ opt, cfg, onJump }) => {
   );
 };
 
+// ---- The rail body ---------------------------------------------------------
+// Rendered in two places, never forked: the rail on a web posture (docked on a
+// wide window, in the app's MobileDrawer below 1024), and the app posture's Home
+// destination (Home IS the circles list — MOBILE.md — so here it is the
+// directions list).
+const PgdRailBody = ({ opt, optId, cfg, ov, setOv, pane, setPane, pick, dirty, posture, setPosture, onJump, onResetFeed }) => {
+  const paneBtn = (id, label) => (
+    <button onClick={() => setPane(id)} aria-pressed={pane === id} style={{
+      flex: 1, background: pane === id ? 'var(--color-surface)' : 'transparent', border: 0, cursor: 'pointer',
+      boxShadow: pane === id ? 'var(--shadow-raised)' : 'none', borderRadius: 6, padding: '7px 10px', minHeight: 36,
+      fontFamily: 'var(--font-sans)', fontWeight: pane === id ? 600 : 500, fontSize: 13,
+      color: pane === id ? 'var(--color-fg-1)' : 'var(--color-fg-2)',
+    }}>{label}</button>
+  );
+  return (
+    <React.Fragment>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '0 4px 10px' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-accent)' }}>{opt.n}</span>
+        <span style={{ fontWeight: 600, fontSize: 14, letterSpacing: '-0.01em' }}>{opt.name}</span>
+        {dirty && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, color: 'var(--color-fg-3)', marginLeft: 'auto' }}>overridden</span>}
+      </div>
+      <div style={{ display: 'flex', gap: 2, padding: 2, marginBottom: 14, background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-2)', borderRadius: 'var(--radius-md)' }}>
+        {paneBtn('opts', 'Directions')}
+        {paneBtn('cfg', 'Config')}
+        {paneBtn('loop', 'The loop')}
+      </div>
+
+      {pane === 'opts' && (
+        <React.Fragment>
+          <p style={{ margin: '0 4px 16px', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)' }}>
+            Every direction answers the whole loop — thought attached, thought received, response given, exchange kept — and states how it relates to the Swell. None of them builds a thread.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {PGD_OPTIONS.map((o) => {
+              const on = o.id === optId;
+              return (
+                <button key={o.id} onClick={() => pick(o.id)} className="pg-railitem" style={{
+                  background: on ? 'var(--color-surface)' : 'transparent',
+                  borderLeft: on ? '2px solid var(--color-accent)' : '2px solid transparent',
+                  boxShadow: on ? 'var(--shadow-raised)' : 'none',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>{o.n}</span>
+                    <span style={{ fontWeight: 600, fontSize: 13.5 }}>{o.name}</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, lineHeight: 1.45, color: 'var(--color-fg-2)', marginTop: 5 }}>{o.line}</div>
+                  {on && (
+                    <div style={{ marginTop: 9, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-1)' }}>{o.claim}</div>
+                      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)' }}>Trade-off: {o.cost}</div>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </React.Fragment>
+      )}
+
+      {pane === 'cfg' && (
+        <React.Fragment>
+          <p style={{ margin: '0 4px 14px', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)' }}>
+            Every lever defaults to <strong style={{ fontWeight: 600 }}>Auto</strong> — the selected direction’s own intended answer. Override one to A/B it across all of them.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+            {PGD_LEVERS.filter((l) => l.group === 'shape').map((l) => (
+              <PgSeg key={l.key} label={l.label} value={ov[l.key]} opts={l.opts} onChange={(v) => setOv({ ...ov, [l.key]: v })} />
+            ))}
+            <div style={{ height: 1, background: 'var(--color-border-1)', margin: '4px 0' }} />
+            {PGD_LEVERS.filter((l) => l.group === 'state').map((l) => (
+              <PgSeg key={l.key} label={l.label} value={ov[l.key]} opts={l.opts} onChange={(v) => setOv({ ...ov, [l.key]: v })} />
+            ))}
+            <div style={{ height: 1, background: 'var(--color-border-1)', margin: '4px 0' }} />
+            <PgSeg label="Viewport" value={posture} opts={[['auto', 'Auto'], ['mobile', 'Mobile']]} onChange={setPosture} />
+          </div>
+          {dirty && (
+            <div style={{ marginTop: 12, fontSize: 12, lineHeight: 1.5, color: 'var(--color-fg-3)' }}>
+              The app is no longer showing {opt.name}’s own intended answer.
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            {dirty && <button onClick={() => setOv({ ...PGD_DEFAULT_CFG })} className="pg-ghost">Reset to Auto</button>}
+            <button onClick={onResetFeed} className="pg-ghost">Reset feed</button>
+          </div>
+        </React.Fragment>
+      )}
+
+      {pane === 'loop' && <PgdLoop opt={opt} cfg={cfg} onJump={onJump} />}
+    </React.Fragment>
+  );
+};
+
 // ---- App -------------------------------------------------------------------
 const PgdApp = () => {
   const saved = pgLoad();
@@ -205,103 +336,52 @@ const PgdApp = () => {
   const [pane, setPane] = pgS(saved.pane || 'opts');
   const [local, setLocal] = pgS({});
   const [jump, setJump] = pgS(null);
+  const [winW, setWinW] = pgS(window.innerWidth);
+  const [posture, setPosture] = pgS(saved.posture || 'auto');
+  const [railOpen, setRailOpen] = pgS(false);
+  // Where the app posture is standing: the circle, or Home (= the rail).
+  const [route, setRoute] = pgS('circle');
 
-  pgE(() => { try { localStorage.setItem(PG_KEY, JSON.stringify({ optId, ov, pane })); } catch (e) {} }, [optId, ov, pane]);
+  pgE(() => {
+    const on = () => setWinW(window.innerWidth);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
 
+  pgE(() => { try { localStorage.setItem(PG_KEY, JSON.stringify({ optId, ov, pane, posture })); } catch (e) {} }, [optId, ov, pane, posture]);
+
+  // Posture exactly as main.jsx resolves it: forced mobile, else the window.
+  const appPosture = posture === 'mobile';
+  const isMobile = appPosture ? true : winW < PGD_MOBILE_BREAK;
+  // Web posture at desktop width: the rail is permanent, like the app's.
+  const docked = !appPosture && !isMobile;
   const opt = PGD_OPTIONS.find((o) => o.id === optId) || PGD_OPTIONS[0];
   const cfg = pgdMergeCfg(opt, ov);
   const dirty = Object.keys(PGD_DEFAULT_CFG).some((k) => ov[k] !== 'auto');
   const onLocal = (id, patch) => setLocal((m) => ({ ...m, [id]: { ...(m[id] || {}), ...patch } }));
-  const pick = (id) => { setOptId(id); setLocal({}); setTab('active'); };
+  const resetFeed = () => { setLocal({}); setTab('active'); };
+  // Picking a direction enters it, exactly as picking a circle does.
+  const pick = (id) => { setOptId(id); setLocal({}); setTab('active'); setRoute('circle'); if (!docked) setRailOpen(false); };
 
-  const paneBtn = (id, label) => (
-    <button onClick={() => setPane(id)} aria-pressed={pane === id} style={{
-      flex: 1, background: pane === id ? 'var(--color-surface)' : 'transparent', border: 0, cursor: 'pointer',
-      boxShadow: pane === id ? 'var(--shadow-raised)' : 'none', borderRadius: 6, padding: '7px 10px', minHeight: 36,
-      fontFamily: 'var(--font-sans)', fontWeight: pane === id ? 600 : 500, fontSize: 13,
-      color: pane === id ? 'var(--color-fg-1)' : 'var(--color-fg-2)',
-    }}>{label}</button>
+  const railBody = (
+    <PgdRailBody opt={opt} optId={optId} cfg={cfg} ov={ov} setOv={setOv} pane={pane} setPane={setPane}
+      pick={pick} dirty={dirty} posture={posture} setPosture={setPosture} onResetFeed={resetFeed}
+      onJump={(what) => { setJump({ what, at: Date.now() }); setRoute('circle'); if (!docked) setRailOpen(false); }} />
   );
 
   return (
     <div className="pg-page">
-      <aside className="pg-rail">
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '0 4px 10px' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-accent)' }}>{opt.n}</span>
-          <span style={{ fontWeight: 600, fontSize: 14, letterSpacing: '-0.01em' }}>{opt.name}</span>
-          {dirty && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, color: 'var(--color-fg-3)', marginLeft: 'auto' }}>overridden</span>}
-        </div>
-        <div style={{ display: 'flex', gap: 2, padding: 2, marginBottom: 14, background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-2)', borderRadius: 'var(--radius-md)' }}>
-          {paneBtn('opts', 'Directions')}
-          {paneBtn('cfg', 'Config')}
-          {paneBtn('loop', 'The loop')}
-        </div>
-
-        {pane === 'opts' && (
-          <React.Fragment>
-            <p style={{ margin: '0 4px 16px', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)' }}>
-              Every direction answers the whole loop — thought attached, thought received, response given, exchange kept — and states how it relates to the Swell. None of them builds a thread.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {PGD_OPTIONS.map((o) => {
-                const on = o.id === optId;
-                return (
-                  <button key={o.id} onClick={() => pick(o.id)} className="pg-railitem" style={{
-                    background: on ? 'var(--color-surface)' : 'transparent',
-                    borderLeft: on ? '2px solid var(--color-accent)' : '2px solid transparent',
-                    boxShadow: on ? 'var(--shadow-raised)' : 'none',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>{o.n}</span>
-                      <span style={{ fontWeight: 600, fontSize: 13.5 }}>{o.name}</span>
-                    </div>
-                    <div style={{ fontSize: 12.5, lineHeight: 1.45, color: 'var(--color-fg-2)', marginTop: 5 }}>{o.line}</div>
-                    {on && (
-                      <div style={{ marginTop: 9, display: 'flex', flexDirection: 'column', gap: 7 }}>
-                        <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-1)' }}>{o.claim}</div>
-                        <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)' }}>Trade-off: {o.cost}</div>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </React.Fragment>
-        )}
-
-        {pane === 'cfg' && (
-          <React.Fragment>
-            <p style={{ margin: '0 4px 14px', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)' }}>
-              Every lever defaults to <strong style={{ fontWeight: 600 }}>Auto</strong> — the selected direction’s own intended answer. Override one to A/B it across all of them.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-              {PGD_LEVERS.filter((l) => l.group === 'shape').map((l) => (
-                <PgSeg key={l.key} label={l.label} value={ov[l.key]} opts={l.opts} onChange={(v) => setOv({ ...ov, [l.key]: v })} />
-              ))}
-              <div style={{ height: 1, background: 'var(--color-border-1)', margin: '4px 0' }} />
-              {PGD_LEVERS.filter((l) => l.group === 'state').map((l) => (
-                <PgSeg key={l.key} label={l.label} value={ov[l.key]} opts={l.opts} onChange={(v) => setOv({ ...ov, [l.key]: v })} />
-              ))}
-            </div>
-            {dirty && (
-              <div style={{ marginTop: 12, fontSize: 12, lineHeight: 1.5, color: 'var(--color-fg-3)' }}>
-                The phone is no longer showing {opt.name}’s own intended answer.
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-              {dirty && <button onClick={() => setOv({ ...PGD_DEFAULT_CFG })} className="pg-ghost">Reset to Auto</button>}
-              <button onClick={() => { setLocal({}); setTab('active'); }} className="pg-ghost">Reset feed</button>
-            </div>
-          </React.Fragment>
-        )}
-
-        {pane === 'loop' && <PgdLoop opt={opt} cfg={cfg} onJump={(what) => setJump({ what, at: Date.now() })} />}
-      </aside>
-
-      <div className="pg-stage">
-        <PgdPhone key={optId + JSON.stringify(ov)} cfg={cfg} opt={opt} items={PGD_ITEMS}
-          local={local} onLocal={onLocal} tab={tab} setTab={setTab} jump={jump} onJumpDone={() => setJump(null)} />
-      </div>
+      {docked && <aside className="pg-rail">{railBody}</aside>}
+      <PgdSurface key={optId + JSON.stringify(ov)} appPosture={appPosture} isMobile={isMobile} framed={appPosture}
+        home={appPosture && route === 'home'} railBody={railBody} onGoHome={() => setRoute('home')}
+        railOpen={railOpen} onToggleRail={() => setRailOpen((v) => !v)}
+        cfg={cfg} opt={opt} items={PGD_ITEMS}
+        local={local} onLocal={onLocal} tab={tab} setTab={setTab} jump={jump} onJumpDone={() => setJump(null)} />
+      {/* Below 1024 the rail lives behind the top bar's circles-menu button, in
+          the app's own drawer — same geometry, scrim and easing. */}
+      {!appPosture && isMobile && (
+        <MobileDrawer open={railOpen} width={336} onClose={() => setRailOpen(false)}>{railBody}</MobileDrawer>
+      )}
     </div>
   );
 };

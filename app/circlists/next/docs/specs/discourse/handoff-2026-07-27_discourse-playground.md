@@ -25,7 +25,7 @@ Background only: the standalone bundle, the README.
 
 ## Task(s)
 
-Built `docs/specs/discourse/Discourse playground.html` (+ five `pg-disc-*.jsx` modules) from a
+Built `docs/specs/discourse/discourse-playground.html` (+ five `pg-disc-*.jsx` modules) from a
 self-contained brief the user pasted (see "Other Notes" for where the brief lives). The brief asked
 for 5–7 genuinely distinct answers to: *what shape does discourse take in Circlists — the full loop
 from a contributor's attached thought to a consumer's response — without becoming a chat tool?*
@@ -61,7 +61,7 @@ just left. 06 and 07 are our own.
 
 New folder `docs/specs/discourse/`:
 
-- `Discourse playground.html` — shell, copied app CSS, load order.
+- `discourse-playground.html` — shell, copied app CSS, load order.
 - `pg-disc-data.jsx` — options + `def` lever answers, levers, seed cards (real Backend Pod items
   from `app/seed-data.jsx` with discourse content attached), `pgdResolve()` as the single
   derivation point (`pg-disc-data.jsx:~300`).
@@ -71,7 +71,7 @@ New folder `docs/specs/discourse/`:
   flip-to-back, or nothing).
 - `pg-disc-places.jsx` — response moment, reaction door, Add sheet, Table tab, tabs, empty state.
 - `pg-disc-app.jsx` — rail with three panes, phone stage, loop driver.
-- `README.md`, `Discourse playground - standalone.html` (bundled; regenerate, never edit).
+- `README.md`, `discourse-playground-standalone.html` (bundled; regenerate, never edit).
 
 Also edited: `PLAYGROUND.md` (third-playground section + pending-review note).
 **The prototype was not touched.** No `app/` file, no `circlists.html`, no `CHANGELOG.md` entry
@@ -109,8 +109,8 @@ Also edited: `PLAYGROUND.md` (third-playground section + pending-review note).
 
 ## Artifacts
 
-- `docs/specs/discourse/Discourse playground.html` (+ `pg-disc-data|parts|card|places|app.jsx`)
-- `docs/specs/discourse/Discourse playground - standalone.html` — self-contained, 1.7 MB.
+- `docs/specs/discourse/discourse-playground.html` (+ `pg-disc-data|parts|card|places|app.jsx`)
+- `docs/specs/discourse/discourse-playground-standalone.html` — self-contained, 1.7 MB.
   Compiled output: edit the sources and re-run the bundler; never edit it directly.
 - `docs/specs/discourse/README.md`
 - `PLAYGROUND.md` — updated.
@@ -119,8 +119,16 @@ Also edited: `PLAYGROUND.md` (third-playground section + pending-review note).
 
 1. **Choose.** The user opens the playground, picks two or three directions that feel alive, and
    says which to push further or which pair to merge. Nothing is decided yet.
-2. **Review this playground and update `PLAYGROUND.md`** — the user's explicit ask, and the reason
-   for this handoff. Read the pending note already in `PLAYGROUND.md`, use this file and the
+2. ~~**Review this playground and update `PLAYGROUND.md`**~~ — DONE 2026-07-30. `PLAYGROUND.md` was
+   rewritten around six non-negotiables (real app, no bezel, works on a phone, collapsible chrome,
+   1024×720 minimum, real components) plus a "pick the rig" section naming the three shapes
+   (whiteboard / config-at-bottom / config rail). The playground itself was fixed at the same time:
+   the phone bezel is gone (posture follows the window, `< 1024` = app posture, as `main.jsx`), and
+   the three-pane rail now collapses — docked on wide, and the app posture's Home destination on a
+   phone (Home is the circles list, so it is the directions list), reached by the bottom bar's Home
+   slot with the app's own push. The rail replacing the circle rail is settled as correct; a copied disc
+   is acceptable once, export on the second ask; the loop driver generalises to any sequence
+   question. Original wording of the ask, for reference: Read the pending note already in `PLAYGROUND.md`, use this file and the
    playground itself as the evidence, and fold in what actually held up. Open questions to answer
    in that review:
    - Is the three-pane rail right, or should config and options be visible together (which means
