@@ -8,16 +8,15 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 - `index.html` — the **Specimen Console** wrapper: a graphite shell with one tab per prototype.
 - `server.js` — zero-dependency Node static server.
 
-## The working line — `product` and `next`
+## The working line — `canon`
 
-Two conceptual states, not a ticket-per-slug chain:
+One state, not a shipped/coming split: **`canon`** is the single agreed-upon prototype — what's been settled on, whether or not it's built yet. Each new Claude Design export for the live line **replaces `app/circlists/canon/` wholesale** (verbatim, never hand-edited) and gains a `changelog` entry.
 
-- **`product`** — a mirror of what's shipped. Add this tab only when a side-by-side is actually wanted; nothing depends on it existing.
-- **`next`** — one accreting prototype holding everything ahead of product. Each new Claude Design export for the live line **replaces `app/circlists/next/` wholesale** (verbatim, never hand-edited) and gains a `changelog` entry.
+Don't mint ticket-named slugs, and don't split off a separate "shipped" mirror — changes accrete into `canon` alone. Alternatives get explored as **playgrounds** inside Claude Design itself, not as separate console tabs.
 
-Don't mint ticket-named slugs for the working line any more — changes accrete into `next`. `main` is the current shipped snapshot (was `lm-367-369-champion-self-serve`; the older `baseline`/`lm-298-…`/`lm-270-…` chain it superseded is retired) — cut a new `main` from `next` when a line is drawn, rather than minting another ticket-named slug.
+**Commit messages stay feature-flavoured** (`feat(circlists): <feature>`) when it's natural — a hint an agent reads later, not a ledger to maintain.
 
-**Resolution ledger = commit history.** Keep commit messages feature-flavoured (`feat(circlists): <feature>`) when it's natural — they're a hint an agent reads later, not a contract to uphold. Resolving `next` into product is a later agent job: diff `next` against product, re-slice by feature from the code, and land one feature at a time. Nothing is pre-built for it now — the changelog is a human-facing convenience, not the ledger.
+**`next` is retired** as the working-line slug, superseded by `canon`. It's frozen — no new work lands there. LM-593 (in-app liveliness) is the one ticket still in flight against it; once that lands, `next` joins the retired `main`/`baseline`/`lm-298-…`/`lm-270-…` chain.
 
 ## Reference nodes (the brand pack)
 
@@ -41,7 +40,7 @@ The end-to-end process — deriving that node from one working-line prototype (r
 - Each iframe's `src` is set lazily on first tab activation, then tabs toggle with `display`. State survives switching; prototypes don't recompile on every switch.
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
 - Each prototype's optional `changelog` array (same object, in `index.html`) is its actual changelog — rendered in a "recent changes" drawer, per-slug. `README.md`'s one-line-per-prototype summary is documentation, not the changelog; don't confuse the two.
-- Each prototype is deep-linkable at `#<slug>` (e.g. `#main`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
+- Each prototype is deep-linkable at `#<slug>` (e.g. `#next`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
 - The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only, not any individual prototype's own layout handling.
 
 ## Why a server (not file://)
@@ -62,7 +61,7 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 1. Copy its whole export dir into `app/<slug>/` verbatim — the entry HTML (`circlists.html`), `tokens.css`, `favicon.svg`, `app/` with the `.jsx` modules, **any folder the app loads at runtime** (e.g. `brand/`, which holds the lockup/wordmark SVGs the app fetches via `<img>`), and every project doc the export ships (`CLAUDE.md`, `ABOUT.md`, `BRANDING.md`, `CHANGELOG.md`, `DEMO.md`, `INTENT.md`, `docs/`) — they're load-bearing reference material, not clutter. Drop only the authoring-session cruft: `.playwright-mcp/`, `.thumbnail`, `screenshots/`, `skills/`, `scraps/`, and any `uploads/*` subfolder the page itself doesn't fetch. Never strip a folder the browser fetches, or the assets 404.
 2. Add one entry — `{ slug, version, ticket, desc }` — to `APPS.<app>.prototypes` in `index.html`. Order is version order, which is also tab order.
 
-**Updating the working line** — a fresh export for the live line replaces `app/circlists/next/` in place (same verbatim rule as step 1 — copy the whole export, including `brand/`). Don't add a new slug; keep the single `next` entry in `index.html` and append a `changelog` entry to it.
+**Updating the working line** — a fresh export for the live line replaces `app/circlists/canon/` in place (same verbatim rule as step 1 — copy the whole export, including `brand/`). Don't add a new slug; keep the single `canon` entry in `index.html` and append a `changelog` entry to it. `next` no longer takes updates — see "The working line" above.
 
 **Commit gate** — updates here can't be verified by the user. Commit and push once the agent has verified and is happy.
 
