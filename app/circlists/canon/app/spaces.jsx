@@ -569,11 +569,81 @@ const SsoManaged = () => (
   </div>
 );
 
-// ---- Change email — verify the NEW address by code, then switch ------------
-// No password / re-auth step: control of the new address is proven by a code
-// sent to it, and the email only switches AFTER that code is confirmed.
+// ---- Reverification — one prompt, in front of a sensitive act -------------
+// The identity provider requires this before a sensitive action runs; it is not
+// optional and cannot be turned off. It is a re-login in place, not a trip back
+// to sign-in, and because the UI is ours to draw the prototype draws a stand-in:
+// the beat is real, the mechanism is not modelled.
+//   Password account -> re-enter the password. SSO account -> bounce through the
+// provider. Change password does NOT use this: its form already takes the
+// current password, so a prompt for the same password immediately above a field
+// asking for it again communicates nothing and reads as a defect.
+//   It asserts identity only. It never re-argues the decision — the confirm
+// dialog before it already carried the cost.
+const ReverifyDialog = ({ provider, onPass, onCancel }) => {
+  const [pw, setPw] = React.useState('');
+  const [err, setErr] = React.useState(null);
+  const pwRef = React.useRef(null);
+  const cancelRef = React.useRef(null);
+  const invokerRef = React.useRef(null);
+  React.useEffect(() => {
+    invokerRef.current = document.activeElement;
+    const id = setTimeout(() => { const el = provider ? cancelRef.current : pwRef.current; el && el.focus(); }, 40);
+    const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener('keydown', onKey);
+      if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus();
+    };
+  }, []);
+  const submit = (e) => {
+    e.preventDefault();
+    if (!provider && !pw) { setErr('Enter your password.'); return; }
+    onPass && onPass();
+  };
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Confirm it’s you"
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 140, background: 'var(--color-scrim)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+      }} className="circ-anim-fade">
+      <form onSubmit={submit} noValidate style={{
+        background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)',
+      }}>
+        <h2 style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)',
+          lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px',
+        }}>Confirm it’s you</h2>
+        <p style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55,
+          color: 'var(--color-fg-2)', margin: '0 0 var(--space-5)',
+        }}>{provider ? `Continue through ${provider} to confirm it’s you.` : 'Enter your password to continue.'}</p>
+        {!provider && (
+          <Field ref={pwRef} label="Password" name="reverify-password" type="password" autoComplete="current-password" placeholder="••••••••"
+            value={pw} onChange={(e) => { setPw(e.target.value); if (err) setErr(null); }} error={err} />
+        )}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: provider ? 0 : 'var(--space-2)' }}>
+          <Button ref={cancelRef} type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button type="submit" variant="primary">{provider ? `Continue with ${provider}` : 'Continue'}</Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// ---- Change email — reverify, then verify the NEW address by code ----------
+// Two different checks doing two different jobs: reverification proves it is
+// still YOU (the provider requires it before a sensitive act), and the emailed
+// code proves control of the NEW address. The email only switches after the
+// code is confirmed.
+//   AMENDED 2026-08-04 — this previously asserted no re-auth step was needed
+// because the code proved control of the address. That reasoning holds for the
+// address; it does not answer identity, and the provider gates the act either way.
 const ChangeEmail = ({ user, onChangeEmail }) => {
-  const [phase, setPhase] = React.useState('idle'); // idle | verify | done
+  const [phase, setPhase] = React.useState('idle'); // idle | reverify | verify | done
   const [email, setEmail] = React.useState('');
   const [code, setCode] = React.useState('');
   const [err, setErr] = React.useState({});
@@ -588,7 +658,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
     if (!EMAIL_RE.test(v)) next.email = 'Enter a valid email address.';
     else if (v === (user.email || '').toLowerCase()) next.email = 'That’s already your email. Enter a different one.';
     setErr(next);
-    if (Object.keys(next).length === 0) { setCode(''); setPhase('verify'); }
+    if (Object.keys(next).length === 0) { setCode(''); setPhase('reverify'); }
   };
 
   const confirm = (e) => {
@@ -607,6 +677,10 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
       borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)',
     }}>
       <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)', marginBottom: 'var(--space-5)' }}>Change email</div>
+
+      {phase === 'reverify' && (
+        <ReverifyDialog provider={user.ssoProvider} onPass={() => setPhase('verify')} onCancel={() => setPhase('idle')} />
+      )}
 
       {phase === 'verify' ? (
         <form onSubmit={confirm} noValidate>
@@ -665,4 +739,4 @@ const NoSpaceHome = ({ onCreate }) => (
   </main>
 );
 
-Object.assign(window, { SPACE_CAP, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, SsoManaged, InvalidInvite, SpaceFull, SupportLine });
+Object.assign(window, { SPACE_CAP, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, SsoManaged, InvalidInvite, SpaceFull, SupportLine, ReverifyDialog });

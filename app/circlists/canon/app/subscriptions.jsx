@@ -190,9 +190,9 @@ const ManageFunding = ({ user, spaceName, intent = 'manage', onReturn, onCancelS
         }}>Update payment method</button>
         <button onClick={onCancelSub} style={{
           width: '100%', minHeight: 46, border: '1px solid #e2e8f0', borderRadius: 8, cursor: 'pointer',
-          background: intent === 'cancel' ? '#b91c1c' : '#fff', color: intent === 'cancel' ? '#fff' : '#334155',
+          background: '#fff', color: intent === 'cancel' ? 'var(--color-destructive)' : '#334155',
           fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14,
-          ...(intent === 'cancel' ? { borderColor: '#b91c1c', order: 1 } : {}),
+          ...(intent === 'cancel' ? { order: 1 } : {}),
         }}>Cancel this circle&rsquo;s funding</button>
       </div>
       <button onClick={onReturn} style={{

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Favicon badge — refinement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--emerald:#047857;--sage:#8bbfad;--ink:#0A0A0A;--cream:#FAFAF7;--fg-2:#525252;--fg-3:#6E6E6B;--border-1:#DCDCD8;--border-2:#E8E8E5;--font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--font-mono:'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;--font-system:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--font-sans)}
+a{color:var(--emerald)}a:hover{color:#036549}
+.page{max-width:1240px;margin:0 auto;padding:64px 40px 140px}
+h1{font-size:26px;font-weight:600;letter-spacing:-0.01em;margin:0 0 10px}
+.lede{font-size:15px;color:var(--fg-2);margin:0 0 10px;max-width:740px;line-height:1.55;text-wrap:pretty}
+.meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);letter-spacing:.04em;text-transform:uppercase;margin-top:20px}
+section{margin-top:64px;padding-top:34px;border-top:1px solid var(--border-1)}
+section h2{font-size:19px;font-weight:600;margin:0 0 8px;letter-spacing:-0.01em}
+section .q{font-size:14px;color:var(--fg-2);margin:0 0 26px;max-width:720px;line-height:1.55;text-wrap:pretty}
+.note{font-size:12.5px;color:var(--fg-3);font-style:italic;max-width:660px;line-height:1.5;margin-top:12px}
+.row{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start}
+.study{width:172px}
+.study .big{width:172px;height:172px;border:1px solid var(--border-2);border-radius:8px;background:#fff;display:block}
+.study .big svg{width:100%;height:100%;display:block}
+.study h4{font-size:13.5px;font-weight:600;margin:12px 0 4px;display:flex;align-items:center;gap:8px}
+.code{font-family:var(--font-mono);font-size:10px;color:var(--fg-2);background:#eef2f0;border-radius:4px;padding:2px 6px;letter-spacing:.05em;flex:none}
+.ctx-label .code{margin-right:8px}
+.study p{font-size:12.5px;color:var(--fg-3);margin:0;line-height:1.45}
+.sizes{display:flex;gap:8px;margin-top:12px;align-items:center}
+.sw{display:flex;flex-direction:column;align-items:center;gap:5px}
+.sw span.px{width:16px;height:16px;display:block}
+.sw span.px svg{width:100%;height:100%;display:block}
+.sw .bg{padding:5px;border-radius:4px;display:block;line-height:0}
+.sw .lbl{font-family:var(--font-mono);font-size:9px;color:var(--fg-3);letter-spacing:.03em}
+.bg-inact{background:#d9dce1}.bg-act{background:#fff;box-shadow:inset 0 0 0 1px var(--border-2)}.bg-dinact{background:#202124}.bg-dact{background:#35363a}
+.browser{width:600px;border-radius:9px;overflow:hidden;box-shadow:0 1px 2px rgba(10,10,10,.06),0 8px 20px rgba(10,10,10,.06)}
+.browser.light{background:#dee1e6}.browser.dark{background:#202124}
+.browser.crowded{width:760px}.browser.crowded .tab{padding:0 6px;gap:4px}.browser.crowded .tabbar{gap:1px}
+.tabbar{display:flex;align-items:flex-end;gap:2px;padding:9px 8px 0;height:40px}
+.tl{display:flex;gap:6px;align-items:center;margin:0 10px 8px 6px;flex:none}
+.tl span{width:8px;height:8px;border-radius:50%;display:block}
+.tl .r{background:#ff5f57}.tl .y{background:#febc2e}.tl .g{background:#28c840}
+.tab{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:8px 8px 0 0;font-family:var(--font-system);font-size:12px;white-space:nowrap;overflow:hidden;color:#5f6368}
+.tab.active{background:#fff;color:#202124}
+.browser.dark .tab{color:#9aa0a6}.browser.dark .tab.active{background:#35363a;color:#e8eaed}
+.tab .favicon{width:16px;height:16px;flex:none;display:flex}
+.tab .favicon svg{width:100%;height:100%;display:block}
+.tab .title{overflow:hidden;text-overflow:ellipsis}
+.tab.pinned{flex:none;width:34px;justify-content:center;padding:0}
+.nfav{width:16px;height:16px;border-radius:3px;background:#c8c8c5;color:#5a5a57;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;letter-spacing:0}
+.browser.dark .nfav{background:#4a4b4d;color:#d5d5d3}
+.toolbar{height:26px;background:#f1f3f4;display:flex;align-items:center;gap:8px;padding:0 12px}
+.browser.dark .toolbar{background:#202124}
+.toolbar .navdot{width:6px;height:6px;border-radius:50%;background:#bdc1c6}
+.browser.dark .toolbar .navdot{background:#5f6368}
+.toolbar .addr{flex:1;height:16px;border-radius:8px;background:#fff}
+.browser.dark .toolbar .addr{background:#292a2d}
+.cell{display:flex;flex-direction:column;gap:8px}
+.tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3)}
+.tag.alert{color:var(--emerald)}
+.ctx-label{font-size:12px;color:var(--fg-3);font-weight:500;margin-bottom:12px}
+.stack{display:flex;flex-direction:column;gap:28px}
+.spec{font-family:var(--font-mono);font-size:11.5px;color:var(--fg-2);background:#fff;border:1px solid var(--border-2);border-radius:8px;padding:16px 18px;line-height:1.75;max-width:720px;margin-top:6px}
+.spec b{color:var(--ink)}
+.out ul{margin:0;padding-left:18px;max-width:720px}
+.out li{font-size:13.5px;color:var(--fg-2);line-height:1.6;margin-bottom:8px}
+.out li b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Favicon badge — refinement</h1>
+<p class="lede">Two fixes, no new directions. The badge was clipping — v2 drew it at <span style="font-family:var(--font-mono);font-size:13px">cx 39, r 11</span> inside a 48 box, so it ran to 50 and the viewBox cut it. And the cream moat was a foreign object: the mark's own cream is a 1.35 keyline between core and halo, not an 11px gap.</p>
+<p class="lede">So: everything below is inside a proven safe area, and the cream is used at the mark's own weight. The variable is how the badge separates from the halo it sits on.</p>
+<div class="meta">Circlists · favicon only · title unchanged · 48 box, 1.5 margin</div>
+<div id="root"></div>
+</div>
+<script>
+const IDLE = "Circlists — Sunday Papers";
+const N={inbox:"Inbox — mail",atlantic:"The Atlantic — why we share what we read",github:"GitHub — pull requests",calendar:"Calendar",docs:"Docs",aeon:"Aeon",longreads:"Longreads",nautilus:"Nautilus",news:"News",figma:"Figma"};
+const MARK='<circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#FAFAF7" stroke-width="1.35"/>';
+const BX=36, BY=36, BR=9.4; // badge centre + emerald radius. outer at kw=1.35 -> 46.75, inside the 48 box.
+
+/* badge styles. kw = cream keyline weight, 0 = none */
+function badge(style, kw){
+  const ring = kw>0 ? `<circle cx="${BX}" cy="${BY}" r="${(BR+kw/2).toFixed(3)}" fill="none" stroke="#FAFAF7" stroke-width="${kw}"/>` : '';
+  if(style==='solid') return `<circle cx="${BX}" cy="${BY}" r="${BR}" fill="#047857"/>${ring}`;
+  if(style==='mini')  return `<circle cx="${BX}" cy="${BY}" r="${BR}" fill="#8bbfad"/><circle cx="${BX}" cy="${BY}" r="5.3" fill="#047857"/>${ring}`;
+  if(style==='inner') return `<circle cx="${BX}" cy="${BY}" r="${BR}" fill="#047857"/><circle cx="${BX}" cy="${BY}" r="${(BR-kw-0.6).toFixed(3)}" fill="none" stroke="#FAFAF7" stroke-width="${kw}"/>`;
+  return '';
+}
+function svg(inner, guides){
+  return `<svg viewBox="0 0 48 48">${guides||''}${inner}</svg>`;
+}
+function fav(style, kw){ return svg(MARK + (style?badge(style,kw):'')); }
+
+/* ── tab strip plumbing ─────────────────────────────── */
+function renderTab(c){
+  const f = c.type==='c' ? `<span class="favicon">${c.svg}</span>` : `<span class="favicon"><span class="nfav">${c.letter}</span></span>`;
+  return `<div class="tab${c.pinned?' pinned':''}${c.active?' active':''}">${f}${c.pinned?'':`<span class="title">${c.title}</span>`}</div>`;
+}
+function strip(theme, tabs, extra){
+  return `<div class="browser ${theme}${extra?' '+extra:''}"><div class="tabbar"><div class="tl"><span class="r"></span><span class="y"></span><span class="g"></span></div>${tabs.map(renderTab).join('')}</div><div class="toolbar"><span class="navdot"></span><span class="navdot"></span><span class="addr"></span></div></div>`;
+}
+const normal=s=>[{type:'n',letter:'IN',title:N.inbox,active:true},{type:'c',svg:s,title:IDLE},{type:'n',letter:'TA',title:N.atlantic},{type:'n',letter:'GH',title:N.github},{type:'n',letter:'CAL',title:N.calendar}];
+const crowded=s=>[{type:'n',letter:'IN',title:N.inbox,active:true},{type:'n',letter:'DC',title:N.docs},{type:'c',svg:s,title:IDLE},{type:'n',letter:'TA',title:N.atlantic},{type:'n',letter:'GH',title:N.github},{type:'n',letter:'AE',title:N.aeon},{type:'n',letter:'CAL',title:N.calendar},{type:'n',letter:'LR',title:N.longreads},{type:'n',letter:'NT',title:N.nautilus},{type:'n',letter:'NW',title:N.news},{type:'n',letter:'FG',title:N.figma}];
+const pinned=s=>[{type:'c',svg:s,pinned:true},{type:'n',letter:'IN',pinned:true},{type:'n',letter:'CAL',pinned:true},{type:'n',letter:'TA',title:N.atlantic,active:true},{type:'n',letter:'GH',title:N.github}];
+
+/* ── section one — bounds proof ─────────────────────── */
+const GUIDES = '<rect x="0" y="0" width="48" height="48" fill="none" stroke="#c02b2b" stroke-width="0.5"/><rect x="1.5" y="1.5" width="45" height="45" fill="none" stroke="#c02b2b" stroke-width="0.4" stroke-dasharray="2 2"/>';
+const OLD_CLIPPED = MARK + '<circle cx="39" cy="39" r="11" fill="#FAFAF7"/><circle cx="39" cy="39" r="7.5" fill="#047857"/>';
+const boundsRow = `<div class="row">
+<div class="study"><span class="big">${svg(OLD_CLIPPED, GUIDES)}</span><h4>v2, as drawn</h4><p>Badge outer edge lands at 50 in a 48 box. Cut on two sides — visible against the guide.</p></div>
+<div class="study"><span class="big">${svg(MARK+badge('solid',1.35), GUIDES)}</span><h4>Refit</h4><p>Centre 36,36 · emerald r 9.4 · keyline 1.35 → outer edge 46.75. Inside the box, and inside the mark's own 1.5 margin.</p></div>
+<div class="study"><span class="big">${svg(MARK, GUIDES)}</span><h4>Resting mark, for reference</h4><p>Halo outer edge 46.5. The badge now respects the same optical margin the mark does.</p></div>
+</div><div class="note">Solid line is the 48 viewBox. Dashed line is the 1.5 safe margin the resting mark already observes. Nothing may cross the solid line at any size.</div>`;
+
+/* ── section two — how the badge separates ──────────── */
+const OPTS = [
+  {id:'none', c:'A', style:'solid', kw:0, n:'No cream at all', d:'Emerald badge straight onto the sage halo. Separation by hue only.'},
+  {id:'hair', c:'B', style:'solid', kw:0.9, n:'Cream edge, thinner than the mark\'s', d:'Two thirds the weight of the ring inside the mark. Present, nearly gone at 16px.'},
+  {id:'match', c:'C', style:'solid', kw:1.35, n:'Cream edge, same as the mark\'s', d:'Exactly the weight of the cream ring already between the mark\'s core and halo. Nothing new is introduced.'},
+  {id:'heavy', c:'D', style:'solid', kw:2.0, n:'Cream edge, heavier than the mark\'s', d:'Half again as thick. Where the moat starts to come back.'},
+  {id:'mini', c:'E', style:'mini', kw:1.35, n:'Badge as a small mark', d:'Sage halo, emerald core, same cream edge — your "normal halo with a tiny cream edge".'},
+  {id:'inner', c:'F', style:'inner', kw:1.35, n:'Cream edge turned inward', d:'The cream ring sits inside the emerald, so no cream ever touches the sage halo.'}
+];
+const studies = `<div class="row">${OPTS.map(o=>`<div class="study">
+<span class="big">${fav(o.style,o.kw)}</span>
+<h4><span class="code">${o.c}</span>${o.n}</h4><p>${o.d}</p>
+<div class="sizes">
+<span class="sw"><span class="bg bg-inact"><span class="px">${fav(o.style,o.kw)}</span></span><span class="lbl">inact</span></span>
+<span class="sw"><span class="bg bg-act"><span class="px">${fav(o.style,o.kw)}</span></span><span class="lbl">active</span></span>
+<span class="sw"><span class="bg bg-dinact"><span class="px">${fav(o.style,o.kw)}</span></span><span class="lbl">dark</span></span>
+<span class="sw"><span class="bg bg-dact"><span class="px">${fav(o.style,o.kw)}</span></span><span class="lbl">d.act</span></span>
+</div></div>`).join('')}</div>
+<div class="note">The four small squares are true 16px on the four tab backgrounds that actually occur: inactive light, active light (white — where a cream keyline has nothing to separate from), inactive dark, active dark. The 172px study is a lie you will never see; decide on the small ones.</div>`;
+
+/* ── section three — in the strip ───────────────────── */
+const FINAL = ['none','match','mini','inner'].map(id=>OPTS.find(o=>o.id===id));
+const inStrip = `<div class="stack">${FINAL.map(o=>`<div>
+<div class="ctx-label"><span class="code">${o.c}</span>${o.n}</div>
+<div class="row">
+<div class="cell"><span class="tag">Idle</span>${strip('light', normal(fav(null)))}</div>
+<div class="cell"><span class="tag alert">Arrived</span>${strip('light', normal(fav(o.style,o.kw)))}</div>
+</div>
+<div class="row" style="margin-top:14px">
+<div class="cell"><span class="tag">Pinned, idle</span>${strip('light', pinned(fav(null)))}</div>
+<div class="cell"><span class="tag alert">Pinned, arrived</span>${strip('light', pinned(fav(o.style,o.kw)))}</div>
+</div>
+<div class="row" style="margin-top:14px">
+<div class="cell"><span class="tag">Dark, idle</span>${strip('dark', normal(fav(null)))}</div>
+<div class="cell"><span class="tag alert">Dark, arrived</span>${strip('dark', normal(fav(o.style,o.kw)))}</div>
+</div>
+</div>`).join('')}</div>`;
+
+const crowdedRow = `<div class="stack">${FINAL.map(o=>`<div><div class="ctx-label"><span class="code">${o.c}</span>${o.n}</div><div class="row"><div class="cell"><span class="tag alert">Arrived, crowded strip</span>${strip('light', crowded(fav(o.style,o.kw)), 'crowded')}</div></div></div>`).join('')}</div>
+<div class="note">The real test: can you find the tab without being told where it is. Third from the left in each.</div>`;
+
+document.getElementById('root').innerHTML = `
+<section><h2>One — the clipping, fixed</h2><p class="q">You were right, and it wasn't the display. Here is the old geometry against guides, and the refit.</p>${boundsRow}
+<div class="spec"><b>Badge geometry</b> — centre <b>36, 36</b> · emerald radius <b>9.4</b> · cream keyline <b>1.35</b> (the mark's own ring weight), stroked at r 10.075 → outer edge <b>46.75</b> of 48. Badge diameter reads as <b>39%</b> of the tile. Centre-to-centre distance from the mark is 16.97, so the badge crosses the halo edge and breaks the silhouette at 4:30 — detectable peripherally without shrinking or moving the mark.</div></section>
+<section><h2>Two — what the cream does</h2><p class="q">Six treatments of the same badge in the same position. The only variable is how it meets the halo: no cream at all, cream at three weights (thinner than, same as, and heavier than the cream ring already inside the mark), the badge as a small mark, and the cream turned inward so it never touches the sage. Each is lettered A–F — use those letters when you tell me which.</p>${studies}</section>
+<section><h2>Three — in the strip</h2><p class="q">Four finalists, each across normal, pinned and dark. Idle beside arrived.</p>${inStrip}</section>
+<section><h2>Four — crowded</h2><p class="q">Eleven tabs, favicon at true size, no help from the title.</p>${crowdedRow}</section>
+<section class="out"><h2>My read</h2><ul>
+<li><b>C — cream edge, same as the mark's</b> is the one I'd ship. It's the only treatment that uses cream the mark already contains, at the weight it already contains it, so the badge reads as part of how the mark is built rather than something stuck on top.</li>
+<li><b>A — no cream</b> is cleaner at 16px than I expected, but emerald on sage is a shift in hue with almost no shift in lightness. It goes soft on the inactive light tab, which is the most common state of all.</li>
+<li><b>E — badge as a small mark</b> is the most charming and the least legible: at 16px its core lands under 2px and turns to mud. Your idea, drawn honestly.</li>
+<li><b>F — cream edge turned inward</b> solves the white-tab problem, where an outward cream edge has nothing to separate from. It's the only option that behaves identically on all four tab backgrounds — worth comparing against C before you decide.</li>
+</ul></section>`;
+</script>
+</body>
+</html>

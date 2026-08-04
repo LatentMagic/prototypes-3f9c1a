@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="design_doc_mode" content="canvas" />
+<title>Empty-state copy — five options</title>
+<link rel="stylesheet" href="tokens.css" />
+<style>
+html,body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--color-accent);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:2px}
+.frame{position:absolute;width:430px}
+.cap{font-family:var(--font-mono);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:0 0 10px 2px}
+.phone{background:var(--color-page);border:1px solid var(--color-border-1);border-radius:22px;overflow:hidden}
+.bar{height:52px;display:flex;align-items:center;padding:0 16px;background:var(--color-surface);border-bottom:1px solid var(--color-border-1)}
+.bar .nm{font-weight:600;font-size:15px}
+.tabs{display:flex;gap:2px;padding:8px 12px 0;background:var(--color-surface);border-bottom:1px solid var(--color-border-1)}
+.tab{font-size:13.5px;font-weight:500;color:var(--color-fg-3);padding:8px 12px 10px;border-bottom:2px solid transparent}
+.tab.on{color:var(--color-fg-1);border-bottom-color:var(--color-accent)}
+.es{text-align:center;min-height:280px;padding:60px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:var(--space-3)}
+.es h2{font-weight:600;font-size:var(--text-3xl);line-height:1.2;letter-spacing:-.01em;color:var(--color-fg-1);margin:0}
+.es p{font-weight:400;font-size:16px;line-height:1.5;color:var(--color-fg-2);margin:0;max-width:420px;text-wrap:pretty}
+.note{font-size:12.5px;line-height:1.5;color:var(--color-fg-3);margin:12px 2px 0;max-width:400px;text-wrap:pretty}
+</style>
+</head>
+<body>
+
+<div class="frame" style="left:80px;top:80px">
+  <p class="cap">1 — Mechanic only</p>
+  <div class="phone">
+    <div class="bar"><span class="nm">Backend Weekly</span></div>
+    <div class="tabs"><span class="tab on">Active</span><span class="tab">Read</span></div>
+    <div class="es"><h2>Nothing here.</h2><p>Add a link and everyone in the circle sees it.</p></div>
+  </div>
+  <p class="note">One fact, nothing else. Says how things arrive; says nothing about pace or your own list.</p>
+</div>
+
+<div class="frame" style="left:590px;top:80px">
+  <p class="cap">2 — Mechanic + your own list</p>
+  <div class="phone">
+    <div class="bar"><span class="nm">Backend Weekly</span></div>
+    <div class="tabs"><span class="tab on">Active</span><span class="tab">Read</span></div>
+    <div class="es"><h2>Nothing here.</h2><p>Add a link and everyone sees it. Only your own list changes as you go.</p></div>
+  </div>
+  <p class="note">Both halves of the model in two short clauses. Drops the format list entirely.</p>
+</div>
+
+<div class="frame" style="left:1100px;top:80px">
+  <p class="cap">3 — Written from the receiving side</p>
+  <div class="phone">
+    <div class="bar"><span class="nm">Backend Weekly</span></div>
+    <div class="tabs"><span class="tab on">Active</span><span class="tab">Read</span></div>
+    <div class="es"><h2>Nothing here.</h2><p>Links added to this circle appear for everyone, and you each keep your own place.</p></div>
+  </div>
+  <p class="note">Doesn't assume you're the one posting. No instruction to act — the FAB already carries that.</p>
+</div>
+
+<div class="frame" style="left:1610px;top:80px">
+  <p class="cap">4 — Names who can post</p>
+  <div class="phone">
+    <div class="bar"><span class="nm">Backend Weekly</span></div>
+    <div class="tabs"><span class="tab on">Active</span><span class="tab">Read</span></div>
+    <div class="es"><h2>Nothing here.</h2><p>Anyone in the circle can add a link. It lands for all of you, and you each mark your own as you go.</p></div>
+  </div>
+  <p class="note">Teaches that it isn't just you posting — the longest of the five.</p>
+</div>
+
+<div class="frame" style="left:2120px;top:80px">
+  <p class="cap">5 — Format-neutral</p>
+  <div class="phone">
+    <div class="bar"><span class="nm">Backend Weekly</span></div>
+    <div class="tabs"><span class="tab on">Active</span><span class="tab">Read</span></div>
+    <div class="es"><h2>Nothing here.</h2><p>Add something worth reading, watching or listening to. Everyone gets it; only your own list changes.</p></div>
+  </div>
+  <p class="note">The only one that keeps all three formats. Buys that by spending its first sentence on it.</p>
+</div>
+
+</body>
+</html>

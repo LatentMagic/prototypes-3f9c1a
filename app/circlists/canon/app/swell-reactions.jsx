@@ -561,9 +561,9 @@ const SwellReview = ({ all, interactive = true, firstHere = false }) => {
             {reacted.map((r, i) => {
               const me = r.name === 'You', on = sel === i, dim = sel != null && !on;
               return interactive ? (
-                <button key={'r' + i} type="button" className="circ-swell-rrow" aria-label={rxAriaLabel(r)}
+                <button key={'r' + i} type="button" className="circ-swell-rrow" aria-label={rxAriaLabel(r)} aria-pressed={on}
                   onClick={() => setSel(on ? null : i)}
-                  style={{ ...rowStyle(me || on, dim, on), border: 0, cursor: 'pointer', outline: 'none',
+                  style={{ ...rowStyle(me, dim, on), border: 0, cursor: 'pointer', outline: 'none',
                     transition: 'background var(--duration-fast) var(--ease-quiet), opacity var(--duration-fast) var(--ease-quiet)' }}>
                   <span style={{ fontSize: 'clamp(16px, calc(16px * var(--rf, 1)), 20px)', lineHeight: 1 }}>{r.glyph}</span>
                   {rxLabel(r)}

@@ -3,6 +3,21 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Sensitive acts reverify — 2026-08-04
+
+- **A reverification prompt stands in front of a sensitive act.** The identity provider
+  requires it before deletion and before an email change; it is not optional and cannot be
+  turned off. One shared in-place prompt asserts identity only — it never re-argues the
+  decision, which the confirmation before it already carried. It branches on how the account
+  signs in: password field, or a bounce through the provider.
+- **Two call sites, not three.** Delete account (after its confirmation) and change email
+  (before the code to the new address). Change password keeps its inline current-password
+  field and gains no prompt: a prompt for the same password directly above a field asking
+  for it again communicates nothing and reads as a defect.
+- **Placeholder, like the provider-hosted funding screens.** The prototype draws the beat,
+  not the mechanism — the real prompt belongs to the identity provider. Any entry passes,
+  and the provider bounce is not simulated.
+
 ## Champion exit — the remedy belongs to every member — 2026-08-03
 
 - **The dormant circle is one screen for everyone.** The role branch is gone: every member

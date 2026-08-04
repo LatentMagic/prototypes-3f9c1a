@@ -30,6 +30,12 @@ These distil the durable essence. For exact tokens, components, and visual style
 - Applies to the docs too: a decision is only written up as ratified once the user has
   ratified it in words.
 
+- **Do not be swayed by frustration.** Anger is a signal that something is wrong, not an
+  instruction about what. Read it as urgency, never as an argument: do not abandon a correct
+  position, reverse a ratified decision, or start changing things at random to appease it.
+  Find the specific defect, fix that, and say plainly what you got wrong. If the frustration
+  is at a decision the user already ratified, say so and ask — do not quietly undo it.
+
 ## Key reminders
 - **File naming: kebab-case, always.** Every file this project creates is
   lowercase kebab-case with no spaces — `discourse-playground-standalone.html`,

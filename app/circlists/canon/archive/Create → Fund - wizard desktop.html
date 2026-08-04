@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create → Fund — desktop card</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #E7E7E2; }
+  #root { min-height: 100vh; }
+  .circ-btn { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-btn-primary:hover { background: var(--color-accent-hover) !important; }
+  .circ-iconbtn:hover { background: var(--color-surface-sunken) !important; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 44px clamp(20px,4vw,56px) 120px; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-accent); font-weight: 500; margin: 0 0 12px; }
+  .lede h1 { font-family: var(--font-sans); font-weight: 600; font-size: 32px; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0 0 12px; }
+  .lede p { font-family: var(--font-sans); font-size: 15.5px; line-height: 1.6; color: var(--color-fg-2); margin: 0 0 10px; max-width: 800px; }
+  .lede b { color: var(--color-fg-1); }
+
+  .sec { margin-top: 60px; }
+  .sec-head { border-top: 2px solid var(--color-fg-1); padding-top: 16px; margin-bottom: 4px; }
+  .sec-head .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-1); }
+  .sec-head h2 { font-family: var(--font-sans); font-weight: 600; font-size: 22px; letter-spacing: -0.01em; color: var(--color-fg-1); margin: 6px 0 8px; }
+  .sec-head p { font-family: var(--font-sans); font-size: 14px; line-height: 1.55; color: var(--color-fg-2); margin: 0; max-width: 840px; }
+  .subhead { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-2); margin: 30px 0 4px; }
+
+  .rail { display: flex; gap: 40px; overflow-x: auto; padding: 24px 4px 20px; align-items: flex-start; }
+  .caption { text-align: center; margin-top: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-fg-3); }
+
+  .phone { background: #0A0A0A; border-radius: 44px; padding: 7px; box-shadow: 0 24px 48px rgba(10,10,10,.16), 0 6px 16px rgba(10,10,10,.10); flex: 0 0 auto; }
+  .p-screen { position: relative; width: 344px; height: 700px; background: var(--color-page); border-radius: 37px; overflow: hidden; display: flex; flex-direction: column; }
+
+  .win { width: 940px; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 48px rgba(10,10,10,.16), 0 6px 16px rgba(10,10,10,.10); flex: 0 0 auto; border: 1px solid var(--color-border-1); }
+  .win-bar { height: 40px; background: var(--color-surface-sunken); border-bottom: 1px solid var(--color-border-2); display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+  .win-bar .tl { width: 11px; height: 11px; border-radius: 50%; }
+  .win-bar .url { margin-left: 14px; flex: 1; max-width: 320px; height: 22px; border-radius: 6px; background: var(--color-page); border: 1px solid var(--color-border-2); display: flex; align-items: center; padding: 0 10px; font-family: var(--font-mono); font-size: 11px; color: var(--color-fg-3); }
+  .win-body { height: 720px; background: var(--color-page); overflow: hidden; }
+
+  .statusbar { flex: 0 0 auto; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px 0 28px; }
+  .statusbar .time { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-1); }
+  .statusbar .sys { display: flex; align-items: center; gap: 6px; color: var(--color-fg-1); }
+  .app { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+  .note { display: flex; gap: 12px; align-items: flex-start; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 14px 16px; max-width: 840px; margin-top: 20px; }
+  .note .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--color-accent); flex: 0 0 auto; margin-top: 2px; }
+  .note p { font-family: var(--font-sans); font-size: 13px; line-height: 1.55; color: var(--color-fg-2); margin: 0; }
+  .note b { color: var(--color-fg-1); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const ICONS = {
+  check: '<polyline points="20 6 9 17 4 12"></polyline>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
+  'arrow-left': '<line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>',
+  'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+};
+const Icon = ({ name, size = 20, color = 'currentColor', strokeWidth = 1.5, style = {} }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}
+    strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', ...style }} aria-hidden="true"
+    dangerouslySetInnerHTML={{ __html: ICONS[name] || '' }} />
+);
+const Button = ({ children, style = {} }) => (
+  <button className="circ-btn circ-btn-primary" style={{
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1, padding: '14px 24px',
+    borderRadius: 'var(--radius-md)', border: 0, minHeight: 52, width: '100%', cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--color-accent)', color: '#fff', ...style,
+  }}>{children}</button>
+);
+const EMAIL = 'sam.rivera@googlemail.com', SPACE = 'Backend Pod';
+
+const IconBtn = ({ name, label }) => (
+  <button aria-label={label} className="circ-iconbtn" style={{ background: 'transparent', border: 0, padding: 8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40, borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)' }}><Icon name={name} size={20} /></button>
+);
+const Dots = ({ i }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+    {[0, 1].map(k => <span key={k} style={{ width: k === i ? 22 : 7, height: 7, borderRadius: 4, background: k === i ? 'var(--color-accent)' : 'var(--color-border-1)' }} />)}
+  </div>
+);
+// header lives INSIDE the card now, so its controls belong to the wizard, not the page
+const Chrome = ({ back, i }) => (
+  <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 10px 2px', flex: 'none' }}>
+    {back ? <IconBtn name="arrow-left" label="Back" /> : <span style={{ width: 40 }} />}
+    <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}><Dots i={i} /></div>
+    <IconBtn name="x" label="Exit" />
+  </header>
+);
+const Title = ({ children, mb = 20, size = 26 }) => (
+  <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: size, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: `0 0 ${mb}px` }}>{children}</h1>
+);
+const Sub = ({ children, mb = 22 }) => (
+  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: `0 0 ${mb}px`, maxWidth: 340 }}>{children}</p>
+);
+const Field = ({ value = '' }) => (
+  <div style={{ width: '100%', textAlign: 'left', marginBottom: 8 }}>
+    <label style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>Circle name</label>
+    <div style={{ width: '100%', fontFamily: 'var(--font-sans)', fontSize: 16, color: 'var(--color-fg-1)', border: '1px solid var(--color-accent)', boxShadow: '0 0 0 3px var(--color-accent-ring)', borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44, background: 'var(--color-surface)' }}>{value}</div>
+  </div>
+);
+const Price = () => (
+  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8 }}>
+    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>£3</span>
+    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, letterSpacing: '0.02em', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
+    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, letterSpacing: '0.02em', color: 'var(--color-accent)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)', marginLeft: 6, padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>Founding rate</span>
+  </div>
+);
+const Features = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 300, textAlign: 'left' }}>
+    {['You fund the circle as its champion', 'Up to 10 members, all invited free', 'Shared list, private read-state'].map((f, i) => (
+      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
+        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>{f}</span>
+      </div>
+    ))}
+  </div>
+);
+const FinePrint = () => (
+  <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', margin: '12px 0 0', maxWidth: 300 }}>Billed to {EMAIL}. <span style={{ whiteSpace: 'nowrap' }}>Cancel anytime.</span></div>
+);
+
+// Step content — name intentionally NOT shown on step 2. The wizard dots + flow carry it.
+const CreateStep = () => (
+  <>
+    <Title mb={8}>Name your circle</Title>
+    <Sub mb={20}>A shared list for up to 10 — everyone you invite joins free.</Sub>
+    <Field value={SPACE} />
+    <Button style={{ marginTop: 8 }}>Continue<Icon name="arrow-right" size={18} /></Button>
+  </>
+);
+const FundStep = () => (
+  <>
+    <Title mb={22}>Fund your circle</Title>
+    <div style={{ marginBottom: 22 }}><Price /></div>
+    <div style={{ marginBottom: 22 }}><Features /></div>
+    <Button>Fund this circle</Button>
+    <FinePrint />
+  </>
+);
+
+const StatusBar = () => (
+  <div className="statusbar"><span className="time">9:41</span>
+    <span className="sys">
+      <svg width="17" height="11" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity="0.35"/></svg>
+      <svg width="24" height="12" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="21" height="12" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="9" rx="1.5" fill="currentColor"/><rect x="23" y="4" width="2" height="5" rx="1" fill="currentColor" opacity="0.4"/></svg>
+    </span>
+  </div>
+);
+// MOBILE — the phone frame IS the card; content fills it, centered.
+const MobileScreen = ({ back, i, children }) => (
+  <div className="phone"><div className="p-screen">
+    <StatusBar />
+    <div className="app">
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Chrome back={back} i={i} />
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center', padding: '4px 22px 26px', textAlign: 'center' }}>
+          <div style={{ maxWidth: 340, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{children}</div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+);
+// DESKTOP — a contained card, centered in the window. Gives the wizard edges.
+const DeskCard = ({ back, i, children }) => (
+  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+    <div style={{ width: 460, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 20, boxShadow: '0 8px 28px rgba(10,10,10,.08), 0 2px 8px rgba(10,10,10,.05)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Chrome back={back} i={i} />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 48px 44px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 340, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{children}</div>
+      </div>
+    </div>
+  </div>
+);
+const Win = ({ children }) => (
+  <div className="win">
+    <div className="win-bar">
+      <span className="tl" style={{ background: '#f0685f' }} /><span className="tl" style={{ background: '#f5bd4f' }} /><span className="tl" style={{ background: '#61c454' }} />
+      <span className="url">circlists.com/create</span>
+    </div>
+    <div className="win-body">{children}</div>
+  </div>
+);
+
+const App = () => (
+  <div className="wrap">
+    <p className="kicker">Create → Fund · desktop fix · name removed</p>
+    <div className="lede">
+      <h1>Give the wizard edges on desktop</h1>
+      <p>Two decisions locked: <b>the circle name is gone from step 2</b> — the dots and flow already say which circle you're funding, so there's nothing to squeeze in. And on desktop the content no longer floats in an empty window: it sits in a <b>contained card, centered</b>, so it has edges and reads as a deliberate step — not a phone layout stretched wide. Mobile is unchanged (the phone itself is the card).</p>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Desktop</div><h2>Centered card — the same two steps</h2><p>One card, ~460px, vertically and horizontally centered. Back / dots / exit sit in the card's own header. The button spans the card's inner column, never the browser width.</p></div>
+      <div className="subhead">Step 1 · Name</div>
+      <div className="rail"><Win><DeskCard i={0}><CreateStep /></DeskCard></Win></div>
+      <div className="subhead">Step 2 · Fund — no name, nothing to fit</div>
+      <div className="rail"><Win><DeskCard back i={1}><FundStep /></DeskCard></Win></div>
+      <div className="note"><span className="k">Why this works</span><p>The card is the standard home for a focused task on desktop — it isolates the step from the empty page and keeps the exact mobile column width, so <b>one layout serves both</b>. Nothing about the content changes between phone and desktop; only its container does.</p></div>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Mobile</div><h2>Unchanged — full-bleed, centered</h2><p>For reference: on a phone the screen is already the card, so content fills it and centers vertically. Same two steps, same components.</p></div>
+      <div className="rail">
+        <div><MobileScreen i={0}><CreateStep /></MobileScreen><div className="caption">Step 1 · Name</div></div>
+        <div><MobileScreen back i={1}><FundStep /></MobileScreen><div className="caption">Step 2 · Fund</div></div>
+      </div>
+    </div>
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

@@ -125,6 +125,7 @@ const CircApp = () => {
   const [addConfirm, setAddConfirm] = useState(false);
   const addConfirmTimer = useRef(null);
   const [confirm, setConfirm] = useState(null);
+  const [reverify, setReverify] = useState(false);
   // The Swell: mark-as-read opens the reaction flow (no confirm modal). Holds
   // the item being reacted to, or null.
   const [reacting, setReacting] = useState(null);
@@ -436,7 +437,9 @@ const CircApp = () => {
     else if (confirm.kind === 'leave') leaveSpace(confirm.spaceId);
     // The cost is carried BEFORE the hand-off; only then does the provider open.
     else if (confirm.kind === 'cancel-funding') openManageFunding('cancel');
-    else if (confirm.kind === 'delete-account') deleteAccount();
+    // The provider reverifies before a sensitive act runs; the confirm carried
+    // the cost, the prompt only asserts identity.
+    else if (confirm.kind === 'delete-account') setReverify(true);
     setConfirm(null);
   };
 
@@ -664,7 +667,8 @@ const CircApp = () => {
   }
 
   // dialogs live above whichever screen
-  const overlay = confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />;  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
+  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
+    || (reverify && <ReverifyDialog provider={user.ssoProvider} onPass={() => { setReverify(false); deleteAccount(); }} onCancel={() => setReverify(false)} />);  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (
     <SwellReactionFlow
       item={reacting}
