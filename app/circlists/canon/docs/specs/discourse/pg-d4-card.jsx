@@ -49,7 +49,9 @@ const Pg4Card = ({ item, res, cfg, dir, tab, pointed, onPoint, onMarkRead, onDel
   const treat = cfg.treat;
   const invite = treat === 'invite' && res.showThought && res.thought;
   const backable = treat === 'stem' && !res.sealed && (res.count > 0 || res.canRespond);
-  const inline = ['ledger', 'margin', 'qa', 'same', 'epigraph'].indexOf(treat) >= 0;
+  // Which treatments render inside the card body. v5 appends its own treats via
+  // window.PGD_INLINE_TREATS; unset (v4), this is byte-identical to the old list.
+  const inline = (window.PGD_INLINE_TREATS || ['ledger', 'margin', 'qa', 'same', 'epigraph']).indexOf(treat) >= 0;
   const showInline = inline && (res.showThought || (!res.sealed && (res.count > 0 || res.canRespond)));
   const atTable = treat === 'page' && item.onTable;
 
