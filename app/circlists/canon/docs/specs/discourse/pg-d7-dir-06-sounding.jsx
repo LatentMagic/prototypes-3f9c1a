@@ -28,6 +28,34 @@
 // depth — so the ledger holds a short stack of claims worth returning to.
 // Continuation is raising a new proposition or answering an open one; never
 // replying to a reply. There is nowhere in this direction to say "thanks".
+//
+// THE ROUTE — one rule generates all four. WHEREVER A SOUNDING CAN BE ANSWERED,
+// ITS INSTRUMENT IS DRAWN THERE, and no sounding is ever reachable through a
+// control that is not itself the bar.
+//   answering     ON THE CARD, IN THE FEED. The bar under the proposition is
+//                 live on both tabs. No tap-to-open, no modal, no reveal — this
+//                 is the only layer in the set reached by touching nothing but
+//                 the thing itself, and it follows from the claim: the one who
+//                 speaks pays in words, everyone else pays in a pull. A pull
+//                 that first costs a navigation is no longer cheaper than
+//                 words, and the direction's economy dies.
+//   reading       the shipped reveal, then the open soundings beneath the disc,
+//                 pullable in place — how it landed, the circle's replies and
+//                 the input, on one surface.
+//   continuation  raising a new proposition, at the foot of that same stack.
+// The honest consequence of the live card face is that members answer
+// propositions on items they have not read. Sounding tolerates it: a sounding
+// is "how far I go with what Ana said", a claim about the world the item
+// occasioned, answerable from the claim. Locking the bar until you have read
+// would turn the card face's whole treatment — an instrument, visible at rest —
+// into a tease.
+//
+// SCROLL VERSUS PULL. A live bar inside something that scrolls means a scroll
+// that grazes it must never be read as an answer. Every live bar therefore
+// keeps `pan-y` and watches the first movement of a press: it yields to the
+// scroller the moment the gesture is vertical, and commits only once the
+// gesture has declared itself horizontal or ended as a tap. Identical on all
+// three surfaces, because the economy has to read as one gesture.
 // ============================================================================
 
 const { PGD7, Button, Avatar } = window;
@@ -102,7 +130,10 @@ const sdRaise = (ctx, item, text) => sdWrite(ctx, item, (list) => [
 // ============================================================================
 const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWords = false }) => {
   const trackRef = sdR(null);
-  const dragging = sdR(false);
+  // The gesture is shared with whatever is scrolling under it: `armed` means a
+  // press has begun but has not declared itself, and it is abandoned the moment
+  // the movement turns vertical.
+  const armed = sdR(null);
 
   const levelAt = (clientX) => {
     const el = trackRef.current;
@@ -116,9 +147,34 @@ const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWo
     if (level !== mine) onPull(level);
   };
 
+  const down = (e) => {
+    armed.current = { x: e.clientX, y: e.clientY, id: e.pointerId, live: false };
+  };
+  const move = (e) => {
+    const a = armed.current;
+    if (!a) return;
+    if (a.live) { apply(e.clientX); return; }
+    const dx = Math.abs(e.clientX - a.x);
+    const dy = Math.abs(e.clientY - a.y);
+    // Vertical first: this press belongs to the scroller. Let it go entirely.
+    if (dy > 8 && dy > dx) { armed.current = null; return; }
+    if (dx > 8) {
+      a.live = true;
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+      apply(e.clientX);
+    }
+  };
+  const up = (e) => {
+    const a = armed.current;
+    armed.current = null;
+    if (!a) return;
+    // A tap that never travelled is an answer at the rung it landed on.
+    if (!a.live) apply(e.clientX);
+  };
+
   const sdBarPad = {
     padding: interactive ? '16px 0' : 0,
-    touchAction: 'none',
+    touchAction: interactive ? 'pan-y' : 'auto',
     cursor: interactive ? 'pointer' : 'default',
     borderRadius: 'var(--radius-sm)',
   };
@@ -158,14 +214,10 @@ const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWo
       aria-valuemax={interactive ? 3 : undefined}
       aria-valuenow={interactive ? (mine || 0) : undefined}
       aria-valuetext={interactive ? (mine ? sdWord(mine) : 'not answered') : undefined}
-      onPointerDown={interactive ? (e) => {
-        dragging.current = true;
-        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
-        apply(e.clientX);
-      } : undefined}
-      onPointerMove={interactive ? (e) => { if (dragging.current) apply(e.clientX); } : undefined}
-      onPointerUp={interactive ? () => { dragging.current = false; } : undefined}
-      onPointerCancel={interactive ? () => { dragging.current = false; } : undefined}
+      onPointerDown={interactive ? down : undefined}
+      onPointerMove={interactive ? move : undefined}
+      onPointerUp={interactive ? up : undefined}
+      onPointerCancel={interactive ? () => { armed.current = null; } : undefined}
       onKeyDown={interactive ? (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); onPull(Math.min(3, (mine || 0) + 1)); }
         else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); onPull(Math.max(1, (mine || 1) - 1)); }
@@ -314,6 +366,11 @@ const Sd7Stack = ({ ctx, item, live, dense }) => {
 // The card face — below the attribution: the claim, and the bar drawn under it.
 // One line ever. The open proposition if there is one; otherwise the last thing
 // the circle settled, in the quiet register. Nothing at all is a real face.
+//
+// THE BAR HERE IS LIVE. You answer in the feed, on both tabs, without opening
+// anything — the whole access argument of the direction. It goes inert only
+// where there is nothing to answer: a proposition you raised yourself, or one
+// the circle has already settled.
 // ============================================================================
 const SdCard = ({ ctx, item }) => {
   const list = sdList(ctx, item);
@@ -323,6 +380,7 @@ const SdCard = ({ ctx, item }) => {
   const closed = !open.length;
   const settled = sdSettled(s);
   const mine = sdMine(s);
+  const pullable = !closed && s.by !== 'you';
 
   const sdCardWrap = {
     marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)',
@@ -345,7 +403,12 @@ const SdCard = ({ ctx, item }) => {
   return (
     <div style={sdCardWrap}>
       <p style={sdCardLine}>{s.text}</p>
-      <Sd7Bar settled={settled} mine={mine} interactive={false} height={closed ? 6 : 10} />
+      <Sd7Bar
+        settled={settled} mine={mine}
+        interactive={pullable}
+        height={closed ? 6 : 10}
+        label={'How far you go with: ' + s.text}
+        onPull={(level) => sdPull(ctx, item, s.id, level)} />
       <div style={sdCardMeta}>
         <span>{s.by === 'you' ? 'You raised this' : ctx.nameOf(s.by) + ' raised this'}</span>
         {settled ? <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-2)' }}>{sdWord(settled)}</span> : null}

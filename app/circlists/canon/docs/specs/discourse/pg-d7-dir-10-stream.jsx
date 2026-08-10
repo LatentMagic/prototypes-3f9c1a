@@ -26,14 +26,39 @@
 // member who never speaks still answers every item. `landingMerged: false`, so
 // the shipped reveal plays in full and the stream's one affordance follows it.
 //
-// POSTURES, DELIBERATELY DIFFERENT — the point of this direction.
-//   >= 1024  the stream is a PERMANENT right column beside the queue, always
-//            visible, never navigated to. Not a feed you visit; a room you are
-//            in. Registered as `Aside`, which the rig docks at 340px.
-//   < 1024   the same body is a destination, entered from the band above the
-//            tabs (the circle header the stream rides on mobile — the real cost
-//            this direction pays and does not hide) or from a beat.
+// THE ROUTE — PRESENCE, NEVER SUMMONS. The stream is made unforgettable by
+// being ambient rather than reachable, because every alternative route is a
+// summons and each of them reintroduces exactly the mechanic this direction
+// exists to remove.
+//   >= 1024  a PERMANENT right column beside the queue, always visible, never
+//            navigated to. You do not enter the stream; you are in the room
+//            with it. Registered as `Aside`, which the rig docks at 340px.
+//   < 1024   the same posture compressed: the circle header gains a SECOND LINE
+//            at metadata size carrying the last thing said — a fragment, no
+//            name, no count, no emphasis, no affordance drawn on it. Pressing
+//            it opens the stream as a full page. The stream hangs off the
+//            circle's header because THE STREAM IS THE CIRCLE TALKING, which is
+//            also why it must never be a third tab: a tab beside Active and
+//            Read would present it as a third pile of items to get through, and
+//            it is not a pile.
 // ONE BODY, TWO PLACEMENTS, NEVER FORKED.
+//
+// NO SIGNAL EVER POINTS AT THE STREAM. No dot, no pill, no glow, no count —
+// not because the calm floor forbids them, but because this direction's own
+// diagnosis does: feed-reader guilt was traced to EMAIL-BORROWED VISUAL
+// LANGUAGE, which imported the anxiety without the cause, and a dot on a river
+// is exactly that import. So the fragment is presence, not pull: you cannot
+// forget a room whose sound you can hear, and hearing it asks nothing of you.
+// The cost is honest and stated — a header line as a tap target is a weak
+// affordance, discoverable only by trying it. Desktop gets the direction as
+// designed; mobile gets a compromise.
+//
+// THE REACTION DOOR, REACHED FROM INSIDE THE STREAM. Every entry carries its
+// item's header block, and THAT BLOCK CARRIES THE LIVE SWELL DOOR: reading a
+// stretch of talk you can open the disc for the item being discussed without
+// leaving the stream. That makes the stream a second, always-present route to
+// the door — the opposite arrangement to the Dispatch, where the same device is
+// typeset once into a finished document.
 //
 // THE RETURN DEVICE IS SHIPPED. The waterline is the app's own FeedDivider
 // (app/liveliness.jsx), mounted verbatim at the point the last visit ended:
@@ -42,7 +67,7 @@
 // from it. No count, no jump-to-oldest-unread, nothing marked below.
 // ============================================================================
 
-const { PGD7, Button, Avatar, Icon, FeedDivider } = window;
+const { PGD7, Button, Avatar, FeedDivider, SwellDoor } = window;
 const { useState: smS, useEffect: smE, useRef: smR, useMemo: smM } = React;
 
 const smHost = (url) => window.pgd7Host(url);
@@ -134,12 +159,17 @@ const Sm10Favicon = ({ item }) => {
   );
 };
 
-const Sm10Block = ({ item, onPick, held }) => {
-  const smBlockBase = {
-    display: 'flex', gap: 8, alignItems: 'flex-start', width: '100%', textAlign: 'left',
-    background: 'var(--color-surface-sunken)', border: 0, margin: 0,
+const Sm10Block = ({ item, onPick, held, door }) => {
+  const smBlockRow = {
+    display: 'flex', alignItems: 'stretch', gap: 4, width: '100%',
+    background: 'var(--color-surface-sunken)',
     borderLeft: held ? '2px solid var(--color-fg-1)' : '2px solid transparent',
-    padding: '9px 12px', borderRadius: 'var(--radius-md)',
+    borderRadius: 'var(--radius-md)',
+  };
+  const smBlockBase = {
+    display: 'flex', gap: 8, alignItems: 'flex-start', flex: 1, minWidth: 0, textAlign: 'left',
+    background: 'transparent', border: 0, margin: 0,
+    padding: '9px 4px 9px 12px', borderRadius: 'var(--radius-md)',
     cursor: onPick ? 'pointer' : 'default',
     transition: 'background var(--duration-base) var(--ease-quiet)',
   };
@@ -161,11 +191,21 @@ const Sm10Block = ({ item, onPick, held }) => {
       </span>
     </React.Fragment>
   );
-  if (!onPick) return <div style={smBlockBase}>{body}</div>;
+  // The words and the door are two controls, so they are two buttons on one
+  // row — never one nested inside the other.
   return (
-    <button type="button" className="sm10-block" style={smBlockBase}
-      aria-label={'Say something about ' + smTitleOf(item)}
-      onClick={() => onPick(item)}>{body}</button>
+    <div style={smBlockRow}>
+      {onPick
+        ? <button type="button" className="sm10-block" style={smBlockBase}
+            aria-label={'Say something about ' + smTitleOf(item)}
+            onClick={() => onPick(item)}>{body}</button>
+        : <div style={smBlockBase}>{body}</div>}
+      {door && (
+        <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', marginRight: -13 }}>
+          <SwellDoor item={item} />
+        </span>
+      )}
+    </div>
   );
 };
 
@@ -316,7 +356,7 @@ const Sm10Stream = ({ ctx, docked }) => {
     if (newBlock) {
       run.push(
         <Sm10Block key={e.item.id + '-blk-' + e.id} item={e.item} held={head && head.id === e.item.id}
-          onPick={(it) => ctx.setState({ head: it.id })} />
+          door onPick={(it) => ctx.setState({ head: it.id })} />
       );
     }
     run.push(<Sm10Entry key={e.id} ctx={ctx} entry={e} />);
@@ -335,37 +375,39 @@ const Sm10Stream = ({ ctx, docked }) => {
 };
 
 // ============================================================================
-// The band above the tabs, below 1024 only — the circle header the stream rides
-// on mobile. Above it the column is permanent and this returns nothing.
-// One line: the river's latest, and the way in.
+// The circle header's second line, below 1024 only. Above that the column is
+// permanent and this returns nothing.
+// ----------------------------------------------------------------------------
+// One line of the river, leaked into chrome that is already there: the last
+// thing said, at metadata size, no name, no count, no chevron, no mark. It is
+// presence, not pull — nothing here asks for anything, and pressing it is
+// offered by nothing but the words themselves. That weak affordance is the
+// stated cost of the mobile posture, and it is not hidden.
 // ============================================================================
 const Sm10Banner = ({ ctx }) => {
   if (!ctx.isMobile) return null;
   const entries = smEntries(ctx);
   const last = entries[entries.length - 1];
   if (!last) return null;
+  // Flush against the top bar, no rule of its own above it, so it reads as the
+  // circle header's second line rather than a band in its own right.
   const smBannerRow = {
-    display: 'flex', alignItems: 'center', gap: 8, width: '100%', minHeight: 44,
+    display: 'block', width: '100%', minHeight: 30,
     background: 'var(--color-surface)', border: 0,
     borderBottom: '1px solid var(--color-border-2)',
-    padding: '0 16px', cursor: 'pointer', textAlign: 'left',
+    padding: '0 16px 7px', margin: 0, cursor: 'pointer', textAlign: 'left',
     transition: 'background var(--duration-base) var(--ease-quiet)',
   };
-  const smBannerName = {
-    flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5,
-    color: 'var(--color-fg-2)',
-  };
   const smBannerText = {
-    flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13,
-    color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    display: 'block', minWidth: 0,
+    fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, lineHeight: 1.35,
+    color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
   };
   return (
     <button type="button" className="sm10-banner" style={smBannerRow}
       aria-label="Open the stream"
       onClick={() => { ctx.setState({ head: null }); ctx.openAside(); }}>
-      <span style={smBannerName}>{last.by === 'you' ? 'You' : ctx.nameOf(last.by)}</span>
       <span style={smBannerText}>{last.text}</span>
-      <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
     </button>
   );
 };
@@ -395,7 +437,7 @@ const Sm10Say = ({ ctx, item, close }) => {
   const rows = [];
   tail.forEach((e) => {
     if (!prev || prev.item.id !== e.item.id) {
-      rows.push(<Sm10Block key={e.item.id + '-t-' + e.id} item={e.item} />);
+      rows.push(<Sm10Block key={e.item.id + '-t-' + e.id} item={e.item} door />);
     }
     rows.push(<Sm10Entry key={e.id} ctx={ctx} entry={e} />);
     prev = e;

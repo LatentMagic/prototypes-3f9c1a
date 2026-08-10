@@ -27,12 +27,48 @@
 // THE PIN. A seated item is held in Active and does not leave while you hold
 // the seat — so marking it read returns it to the top of the queue instead of
 // filing it away. Taking a seat is the mark; keeping the card is what the mark
-// does. There is no fourth destination and no separate column, which is why
-// this direction registers no Continue page: continuation happens in the feed
-// the reviewer is already looking at.
+// does.
+//
+// THE ROUTE — ONE TAP TARGET, EVERYWHERE, FOREVER: THE SHARER'S OPENING LINE ON
+// THE CARD. Seats adds no affordance to any surface in the app.
+//   contribution  the sharer's line is the talk's first turn and takes seat one
+//                 automatically. There is nothing to press.
+//   reaction      untouched, and deliberately so. The Swell stays open to
+//                 everyone: feeling is universal, words are seated. Putting
+//                 seated talk behind the Swell door would make the app's most
+//                 inclusive surface its most exclusive one, and invert the
+//                 direction's own division. So the door keeps its shipped job
+//                 exactly — the only direction in the set where that is a
+//                 decision rather than an omission.
+//   reading       the shipped reveal, then ONE line beneath the disc: take a
+//                 seat, or, when none remain, read the talk. One control, two
+//                 states, never both.
+//   continuation  tapping the opening line opens THE ROOM — a full page sliding
+//                 in from the right, the container the app already reserves for
+//                 destinations you navigate into. Ordinary chronological talk,
+//                 unlimited turns, unlimited length, a compose field at the
+//                 foot. For a member with no seat the field is ABSENT, not
+//                 disabled: a greyed field is a taunt, and this direction's cost
+//                 is exclusion, honestly drawn.
+// A full page and not a sheet because the content is genuinely unbounded — the
+// claim is that four voices stay legible AT ANY LENGTH, and a sheet that
+// scrolls forever is the anti-pattern the app posture already names. It is not
+// a new location: it has no entry in any chrome, and the only way in is through
+// the words themselves.
+//
+// GETTING BACK is the pin, and nothing else. When turns land in a room you
+// hold, the pinned card carries the shipped micro dot — no count, no badge.
+// Inside the room, the shipped Earlier waterline sits where you left. Both
+// devices already exist; neither is invented for this.
+//
+// THE SEAT MARKS ARE NEVER INTERACTIVE. Four 4px marks rendering state and
+// nothing else. The entry to the room is the WORDS, because the room is made of
+// words. That is what keeps the marks off the wrong side of the no-counts line:
+// a mark you can tap is a control that reports a quantity; a mark you cannot
+// tap is a drawing of a room.
 // ============================================================================
 
-const { PGD7, Button, Avatar } = window;
+const { PGD7, Button, Avatar, FeedDivider, MicroDot } = window;
 const { useState: stS, useEffect: stE, useRef: stR } = React;
 
 const ST_CAP = 4;
@@ -124,12 +160,11 @@ const St7Seating = ({ ctx, item, dot = 4, gap = 7 }) => {
   );
 };
 
-// The room brightens under the pointer where it is a door. A rule inline styles
-// cannot carry, and the only one this direction needs.
+// The words are the door, so the words are what answers the pointer. The marks
+// never do: they are a drawing, and a drawing that lights up is a control.
 const ST_CSS = `
 .st7-door { -webkit-tap-highlight-color: transparent; }
-.st7-door:hover .st7-taken, .st7-door:focus-visible .st7-taken { background: var(--color-fg-1); }
-.st7-door:hover .st7-open, .st7-door:focus-visible .st7-open { border-color: var(--color-fg-3); }
+.st7-door:hover p, .st7-door:focus-visible p { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
 `;
 if (typeof document !== 'undefined' && !document.getElementById('st7-css')) {
   const stStyleEl = document.createElement('style');
@@ -201,115 +236,163 @@ const St7Say = ({ ctx, item }) => {
 };
 
 // ============================================================================
-// The door: what a reader meets under the reveal. Three states, one surface.
-//   seated        the talk, and the field
-//   a seat left   the talk, and the offer — taking it holds the card in Active
-//   full          the talk, entire, and nothing to do with it
+// Reading — the one line beneath the disc. One control, two states, never both:
+// a seat to take, or the talk to read. Taking one holds the card in Active and
+// drops you straight into the room, because the seat and the words are the same
+// act at two moments.
 // ============================================================================
-const St7Foot = ({ ctx, item }) => {
+const stEnter = (ctx, item) => {
+  ctx.setState({ room: item.id });
+  ctx.closeOverlay();
+  ctx.openContinue();
+};
+
+const St7Offer = ({ ctx, item, glyph }) => {
   const seated = stHolds(ctx, item, 'you');
   const free = stFree(ctx, item);
-  const stFootWrap = {
-    display: 'flex', flexDirection: 'column', gap: 12,
+  const stOfferWrap = { display: 'flex', flexDirection: 'column', gap: 16 };
+  const stOfferHead = { display: 'flex', alignItems: 'center', gap: 10, paddingRight: 34 };
+  const stOfferTitle = {
+    minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13,
+    lineHeight: 1.35, color: 'var(--color-fg-2)', textWrap: 'pretty',
+  };
+  const stOfferLine = {
+    display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
     borderTop: '1px solid var(--color-border-2)', paddingTop: 14,
   };
-  const stFootRow = { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' };
-  const stFootWord = {
+  const stOfferWord = {
     fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4,
     color: 'var(--color-fg-2)',
   };
-
-  if (seated) {
-    return (
-      <div style={stFootWrap}>
-        <div style={stFootRow}>
-          <St7Seating ctx={ctx} item={item} dot={5} />
-          <span style={stFootWord}>Your seat is held.</span>
-        </div>
-        <St7Say ctx={ctx} item={item} />
-      </div>
-    );
-  }
-  if (free > 0) {
-    return (
-      <div style={stFootWrap}>
-        <div style={stFootRow}>
-          <St7Seating ctx={ctx} item={item} dot={5} />
-          <span style={stFootWord}>{stLeftWord(free)}.</span>
-          <span style={{ flex: 1 }} />
-          <Button variant="primary" onClick={() => stTake(ctx, item)}>Take a seat</Button>
-        </div>
-      </div>
-    );
-  }
+  const offering = !seated && free > 0;
   return (
-    <div style={stFootWrap}>
-      <div style={stFootRow}>
+    <div style={stOfferWrap}>
+      <div style={stOfferHead}>
+        {glyph ? <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>{glyph}</span> : null}
+        <span style={stOfferTitle}>{item.title || item.url.replace(/^https?:\/\//, '')}</span>
+      </div>
+      <div style={stOfferLine}>
         <St7Seating ctx={ctx} item={item} dot={5} />
-        <span style={stFootWord}>The seats are full.</span>
+        <span style={stOfferWord}>{seated ? 'Your seat is held.' : stLeftWord(free) + '.'}</span>
+        <span style={{ flex: 1 }} />
+        {offering
+          ? <Button variant="primary" onClick={() => { stTake(ctx, item); stEnter(ctx, item); }}>Take a seat</Button>
+          : <Button variant="secondary" onClick={() => stEnter(ctx, item)}>Read the talk</Button>}
       </div>
     </div>
   );
 };
 
 // ============================================================================
-// The talk surface itself — used by both beats that open it. One body, never
-// forked: the item, its turns in order, and whatever the seating leaves you.
+// The room — a full page, entered through the words and nothing else.
+// ----------------------------------------------------------------------------
+// Ordinary chronological talk at whatever length it was said, the shipped
+// waterline where the last visit ended, and a compose field at the foot for a
+// member who holds a seat. For a member with no seat the field is ABSENT: a
+// greyed one is a taunt, and this direction's price is exclusion drawn
+// honestly.
 //
 // The pin is enforced here, where it happens: a card you hold a seat on returns
 // to Active the moment reading would have filed it away.
 // ============================================================================
-const St7Talk = ({ ctx, item, glyph, close }) => {
+const St7Room = ({ ctx }) => {
+  const id = ctx.state && ctx.state.room;
+  const item = id ? ctx.itemById(id) : null;
   const pinned = stR(false);
-  const seated = stHolds(ctx, item, 'you');
-  stE(() => {
-    if (pinned.current) return;
-    if (seated && item.read) { pinned.current = true; ctx.actions.setUnread(item); }
-  });
+  const mark = stR(null);
+  const seated = item ? stHolds(ctx, item, 'you') : false;
 
+  // The waterline is read once, on entry, and then held: it must not creep down
+  // the page as the visit is recorded or as you speak.
+  if (item && mark.current === null) mark.current = ((ctx.state && ctx.state.visited) || {})[item.id] || 0;
+
+  stE(() => {
+    if (!item) return;
+    if (!pinned.current && seated && item.read) { pinned.current = true; ctx.actions.setUnread(item); }
+  });
+  // Being in the room IS the visit, so the mark on the pinned card goes as you
+  // arrive. Recorded once, after the waterline has been taken.
+  stE(() => {
+    if (!id) return;
+    ctx.setState((st) => ({ visited: { ...((st && st.visited) || {}), [id]: Date.now() } }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  if (!item) return null;
   const turns = stTurns(ctx, item);
-  const stTalkWrap = { display: 'flex', flexDirection: 'column', gap: 16 };
-  const stTalkHead = { display: 'flex', alignItems: 'center', gap: 10, paddingRight: 34 };
-  const stTalkTitle = {
-    minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13,
-    lineHeight: 1.35, color: 'var(--color-fg-2)', textWrap: 'pretty',
+  const line = mark.current;
+  const cut = line ? turns.findIndex((t) => (t.at || 0) > line) : -1;
+
+  const stRoomPage = {
+    maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%', boxSizing: 'border-box',
+    padding: ctx.isMobile ? '16px 16px 32px' : '28px 24px 44px',
+    display: 'flex', flexDirection: 'column', gap: 20,
   };
-  const stTalkTurns = { display: 'flex', flexDirection: 'column', gap: 16 };
+  const stRoomHead = { display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 };
+  const stRoomSource = {
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em', color: 'var(--color-fg-3)',
+  };
+  const stRoomTitle = {
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, lineHeight: 1.3,
+    letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty',
+  };
 
   return (
-    <div style={stTalkWrap}>
-      <div style={stTalkHead}>
-        {glyph ? <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>{glyph}</span> : null}
-        <span style={stTalkTitle}>{item.title || item.url.replace(/^https?:\/\//, '')}</span>
-      </div>
+    <div style={stRoomPage}>
+      <header style={stRoomHead}>
+        <span style={stRoomSource}>{item.source || window.pgd7Host(item.url)}</span>
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="circ-cardtitle" style={stRoomTitle}>
+          {item.title || item.url.replace(/^https?:\/\//, '')}
+        </a>
+        <St7Seating ctx={ctx} item={item} dot={5} />
+      </header>
       {turns.length > 0 && (
-        <div style={stTalkTurns}>
-          {turns.map((t) => <St7Turn key={t.id} ctx={ctx} turn={t} />)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {turns.map((t, i) => (
+            <React.Fragment key={t.id}>
+              {i === cut && cut > 0 && <FeedDivider />}
+              <St7Turn ctx={ctx} turn={t} />
+            </React.Fragment>
+          ))}
         </div>
       )}
-      <St7Foot ctx={ctx} item={item} />
+      {seated && (
+        <div style={{ borderTop: '1px solid var(--color-border-2)', paddingTop: 16 }}>
+          <St7Say ctx={ctx} item={item} />
+        </div>
+      )}
     </div>
   );
 };
 
 // ============================================================================
-// The card face — below the attribution: the opening turn, then the room.
-// A first-line indent and no quotation marks, so the line reads as the first
-// turn of a talk rather than a caption hung under a link. An item with nothing
-// attached still draws its seating: the room exists before anyone speaks in it.
+// The card face — below the attribution: the opening turn, then the room drawn
+// under it. A first-line indent and no quotation marks, so the line reads as
+// the first turn of a talk rather than a caption hung under a link.
+//
+// THE LINE IS THE DOOR AND THE ONLY DOOR. Tapping it opens the room. The seat
+// marks under it are a drawing and never a control — they render state, they
+// answer no pointer, and they carry no tap target of their own.
+//
+// An item nobody has spoken on has no room to enter, so there is no line and
+// nothing to tap — the marks alone, which is correct: the room exists before
+// anyone is in it.
 // ============================================================================
-const StCard = ({ ctx, item, tab }) => {
-  const opening = item.thought && item.thought.text ? item.thought.text : null;
-  // The room is a door once you are in it, or once you have read the item —
-  // the two states where the talk is yours to open. On an unread item the way
-  // in is reading, which is the whole mechanic, so the marks stay marks.
-  const openable = stHolds(ctx, item, 'you') || !!item.read;
+const StCard = ({ ctx, item }) => {
+  const turns = stTurns(ctx, item);
+  const opening = turns.length ? turns[0].text : null;
+  const seated = stHolds(ctx, item, 'you');
+  const seen = ((ctx.state && ctx.state.visited) || {})[item.id] || 0;
+  // Turns landed in a room you hold since you were last in it. The shipped
+  // micro dot, one mark, no count — the object is calling, not a number.
+  const landed = seated && turns.some((t) => t.by !== 'you' && (t.at || 0) > seen);
+
   const stCardWrap = {
-    marginTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 8,
+    marginTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 10,
   };
   const stCardDoor = {
     display: 'block', width: '100%', textAlign: 'left',
-    background: 'transparent', border: 0, padding: '10px 0', margin: 0,
+    background: 'transparent', border: 0, padding: '2px 0 0', margin: 0,
     cursor: 'pointer', borderRadius: 'var(--radius-sm)',
   };
   const stCardLine = {
@@ -318,16 +401,29 @@ const StCard = ({ ctx, item, tab }) => {
     color: 'var(--color-fg-1)', textWrap: 'pretty',
     display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden',
   };
+  const stCardMark = {
+    display: 'flex', alignItems: 'center', gap: 7,
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em', color: 'var(--color-fg-3)',
+  };
+
   return (
     <div style={stCardWrap}>
-      {opening && <p style={stCardLine}>{opening}</p>}
-      {openable ? (
+      {opening && (
         <button className="st7-door" style={stCardDoor}
           aria-label={'Open the talk. ' + stLeftWord(stFree(ctx, item)) + '.'}
-          onClick={() => { ctx.openRespond(item); ctx.setTab(tab); }}>
-          <St7Seating ctx={ctx} item={item} />
+          onClick={() => stEnter(ctx, item)}>
+          <p style={stCardLine}>{opening}</p>
         </button>
-      ) : <St7Seating ctx={ctx} item={item} />}
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <St7Seating ctx={ctx} item={item} />
+        {landed && (
+          <span style={stCardMark}>
+            <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
+            Said since you were in
+          </span>
+        )}
+      </div>
     </div>
   );
 };
@@ -416,13 +512,16 @@ PGD7.register({
   // row beneath it. No rule, no quotation marks, no second attribution — the
   // sharer's name is already on the card and the indent does the rest.
   face: { slot: 'below-attribution' },
-  initialState: { seats: ST_SEED, since: {} },
+  initialState: { seats: ST_SEED, since: {}, visited: {}, room: null },
   Card: StCard,
   Compose: StCompose,
-  Landing: St7Talk,
-  Respond: St7Talk,
-  // No Continue page and no Aside: the seat is the mark and Active is the
-  // location, so continuation has nowhere else to be.
+  // Reading is the one line under the disc; continuation is the room behind the
+  // words. Two surfaces, two jobs, and no Aside — the room belongs to an item,
+  // not to the circle, so it is never a standing column.
+  Landing: St7Offer,
+  Respond: St7Offer,
+  Continue: St7Room,
+  continueTitle: 'The talk',
   order: (items, ctx) => {
     if (ctx.tab !== 'active') return items;
     const mine = (i) => stHolds(ctx, i, 'you');
@@ -439,22 +538,23 @@ PGD7.register({
       api.setTab('active');
       api.openSwell(t);
     },
-    // A Read item you passed on: a seat is still there, taking it lets you
-    // speak, and the card comes back to the top of Active as you do.
+    // A Read item whose seats are gone: the other state of the same line —
+    // read the talk, and nothing to do with it.
     respond: (api) => {
-      const t = api.readItems.find((i) => !stHolds(api, i, 'you') && stFree(api, i) > 0)
+      const t = api.readItems.find((i) => !stHolds(api, i, 'you') && stFree(api, i) === 0)
+        || api.readItems.find((i) => !stHolds(api, i, 'you'))
         || api.firstRead();
       if (!t) return;
+      api.setTab('read');
       api.openRespond(t);
     },
-    // Continuation is the pinned card in Active and the talk behind it: four
-    // voices, running for as long as they want, and your turn whenever.
+    // Continuation is the room: four voices, running for as long as they want,
+    // the waterline where you left, and your turn whenever.
     continue: (api) => {
       const t = api.items.find((i) => stHolds(api, i, 'you') && stTurns(api, i).length > 2)
         || api.items.find((i) => stHolds(api, i, 'you'));
       if (!t) { api.setTab('active'); return; }
-      api.openRespond(t);
-      api.setTab(t.read ? 'read' : 'active');
+      stEnter(api, t);
     },
   },
 });

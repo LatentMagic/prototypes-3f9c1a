@@ -409,6 +409,7 @@ button { font-family: inherit; }
     padding: 20px 12px; height: 100dvh; overflow-y: auto; overscroll-behavior: contain;
   }
   .pg7-railitem:hover { background: var(--color-surface); }
+  .pg7-aboutbtn:hover { color: var(--color-fg-1); background: var(--color-surface-sunken); }
   .pg7-col { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100dvh; }
   .pg7-body { flex: 1; min-height: 0; display: flex; }
 
@@ -2468,7 +2469,11 @@ const swellDoorGlyphs = (all) => {
   return seen;
 };
 
-const SwellDoor = ({ item }) => {
+// `onOpen` is optional and defaults to the shipped behaviour: the door opens
+// the review itself. A caller passes it only to host the review somewhere of
+// its own — the door keeps its geometry, glyph huddle and hit target either
+// way, so nothing is ever re-drawn.
+const SwellDoor = ({ item, onOpen }) => {
   const [open, setOpen] = rxState(false);
   const all = (item && item.reactions) || [];
   if (all.length === 0) return null;              // nobody has read it yet -> no door
@@ -2480,7 +2485,7 @@ const SwellDoor = ({ item }) => {
   // the arrows relax to a full 44px touch target.
   return (
     <React.Fragment>
-      <button type="button" onClick={() => setOpen(true)} className="circ-swell-door"
+      <button type="button" onClick={() => (onOpen ? onOpen(item) : setOpen(true))} className="circ-swell-door"
         aria-label="How the circle landed" aria-haspopup="dialog"
         style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer', border: 0,
           background: 'transparent', padding: 0, minHeight: 44, flexShrink: 0 }}>
@@ -4343,6 +4348,70 @@ const D7_BEATS = [
   ['continue', 'Continue'],
 ];
 
+// ============================================================================
+// What each direction IS — one line, its claim, its cost.
+// ----------------------------------------------------------------------------
+// Taken from FINAL-TEN.md, the reconciled ideation set, and trimmed to what
+// reads on a phone. Substance verbatim; nothing here is new argument.
+//
+// PLAYGROUND.md says theory stays out of the reviewer's path. The product owner
+// has overridden that for this rig: the intention of a direction was not
+// legible from playing alone. It is therefore CLOSED by default and opened on
+// a tap — playing still comes first, explanation is there when asked for.
+// ============================================================================
+const D7_ABOUT = {
+  question: {
+    one: 'The only authored text in the product is interrogative. The sharer attaches a question with the link; readers answer in one line; anyone may ask the next question, which puts the card back in Active for everyone who has read it.',
+    claim: 'Conversation does not continue because people have more to say — it continues because someone asks. Build the ask and continuation comes free from two tabs that already exist.',
+    cost: 'Mandating the interrogative is rigid structure, and rigid structure lowers perceived empathy. Reopening imposes a cost on everyone else: a card that keeps returning becomes a chore. Some members have a thought and no question — this direction tells them to keep it.',
+  },
+  depths: {
+    one: 'The Reaction door grown into a room whose geography is the Swell: you enter at the depth you gave, and you speak among the people who felt as you did.',
+    claim: 'Discourse is another axis of the Swell, never a system beside it. Three strata in the shipped rung vocabulary, your thought landing at your own depth. Adjust your Swell later and your words travel with it.',
+    cost: 'Total invention: no product treats a graded non-verbal reaction as the address for text. On mobile your stratum is found by scroll position rather than layout. It is the most expensive build in the set.',
+  },
+  countercard: {
+    one: 'You do not reply to a link. You answer it with another object, and the two stand together on the shelf.',
+    claim: 'Continuation needs no new place, no new column, no follow switch. A response is itself a card. Cast cards hang off the root strictly flat; nothing ever hangs off a cast card.',
+    cost: 'Queue inflation is real: a lively circle multiplies its Active tab, and the mass lands on the tab looked at most. It privileges people with another link to hand.',
+  },
+  seal: {
+    one: 'Nothing anyone says on a card is readable until the card opens — and then it all opens at once.',
+    claim: 'Simultaneity is the rhythm. If every thought lands in the same instant, nobody is first, nobody is anchored by what came before, and there is no stream to fall behind.',
+    cost: 'Everyone waits on everyone; the fastest reader is held by the slowest, and a quiet circle can hang a seal. Sealing the sharer’s thought removes the invitation the product leans toward.',
+  },
+  'pulled-line': {
+    one: 'The sharer writes nothing. They pull a sentence out of the thing they share, and every reader who marks read pulls one too.',
+    claim: 'A quotation is not the hard typographic problem prose is: it has its own tradition, it is self-evidently from the source, and it needs no attribution design. Selection is the cheapest substantive utterance.',
+    cost: 'The sharer who wants to say why they shared it has nowhere to say it. Sources that resist quotation — video, podcast, chart, tool — degrade to a caption. Juxtaposition is a thin language.',
+  },
+  sounding: {
+    one: 'A member raises one proposition about the item and the circle answers it by pull alone — a single unipolar pressure bar, no glyphs, no words.',
+    claim: 'The one who speaks pays in words; everyone who answers pays in a pull. The response instrument is deliberately not the disc: it says not how it landed, but how far I go with you.',
+    cost: 'It is strict and will feel strict. One proposition per member per item is a hard budget people will hit and resent. It risks reading as polling — a survey wearing a conversation’s clothes.',
+  },
+  seats: {
+    one: 'An item’s conversation has four seats. Taking one is permanent and unlimited; when they are full, later readers may read the talk and never enter it.',
+    claim: 'What makes a conversation unenterable is the number of voices in it. Cap the speakers and everything else can be free — unlimited turns, unlimited length, unlimited time.',
+    cost: 'It excludes members of a small trusted circle from talking about a thing they read. Seat marks sit at the edge of the no-counts invariant. Seats hoard: taken and never spoken from.',
+  },
+  dispatch: {
+    one: 'The circle’s talk does not trickle onto cards — it compiles, on a cadence, into one finite artefact that arrives for everyone at once.',
+    claim: 'Discourse is not a property of a card. It is a property of a period. A shelf of dated dispatches gives the conversation a beginning, an end, and a bottom of the page.',
+    cost: 'Latency is the whole product: a thought written Monday is public Sunday. Batching makes returning cheap and replying in place hard. A composed periodical is a typography problem.',
+  },
+  palimpsest: {
+    one: 'One line of text per card, owned by nobody, and any reader may write over it — the strata are kept.',
+    claim: 'Each card carries exactly one line, ever. It belongs to the object, not to a speaker, which is why it can be overwritten without insult. Continuation is succession, not accumulation.',
+    cost: 'Overwriting is socially hot. Between close ties it reads as correction, and the calm floor is genuinely at risk. One line per card leaves seven silent members and one author per item.',
+  },
+  stream: {
+    one: 'The circle gets one continuous chronological talk surface, permanently open, and items are its punctuation.',
+    claim: 'A river has no unread state. You enter at now; nothing below the waterline is presented as owed. Flat, chronological, unbounded — and items are the punctuation: you post from a card, and your words land at the bottom carrying that card as a header block.',
+    cost: 'It is a feed, and it is unfinishable. It gives the app a second attention centre where the queue has been the only one. It is the direction most exposed to the "not WhatsApp, not Slack" invariant.',
+  },
+};
+
 // ---- Persistence (sessionStorage) ------------------------------------------
 const d7Load = () => { try { return JSON.parse(sessionStorage.getItem(D7_KEY)) || {}; } catch (e) { return {}; } };
 const d7Save = (v) => { try { sessionStorage.setItem(D7_KEY, JSON.stringify(v)); } catch (e) {} };
@@ -4394,7 +4463,7 @@ const d7Tint = (k) => { const g = D7_TINTS[d7Hash(k) % D7_TINTS.length]; return 
 const d7HostOf = (url) => window.pgd7Host(url);
 const d7DeriveTitle = (url) => window.pgd7TitleFromUrl(url);
 
-const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) => {
+const PGD7Card = ({ item, tab, ctx, spec, face, Slot, onOpen, onMarkRead, onDelete }) => {
   const [favBroken, setFavBroken] = d7S(false);
   const [imgBroken, setImgBroken] = d7S(false);
   const slot = (where) => (Slot ? <Slot ctx={ctx} item={item} tab={tab} where={where} /> : null);
@@ -4476,7 +4545,19 @@ const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) 
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13 }}>
           {tab === 'read'
-            ? <SwellDoor item={item} />
+            // A direction may claim the door, or hide it. `doorOpens` on the
+            // spec decides: 'respond' routes the shipped door into the
+            // direction's own surface (the door keeps its geometry, glyph
+            // huddle and hit target — it is never re-drawn); a function may
+            // return 'none' per item, so a direction that seals a card cannot
+            // leak its glyphs before the seal opens. Absent: shipped behaviour.
+            ? (() => {
+              const rule = spec && spec.doorOpens;
+              const mode = typeof rule === 'function' ? rule(item, ctx) : rule;
+              if (mode === 'none') return null;
+              if (mode === 'respond') return <SwellDoor item={item} onOpen={() => ctx.openRespond(item)} />;
+              return <SwellDoor item={item} />;
+            })()
             : (
               <button className="circ-cardaction circ-cardaction-icon" onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
                 <Icon name="check" size={18} />
@@ -4494,11 +4575,46 @@ const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) 
 };
 
 // ============================================================================
+// The explanation. Opened on a tap, never on hover — this is reviewed on a
+// phone, where hover does not exist. It is the rig's own sheet primitive
+// (PGD7Sheet), rendered at the page root so it is never inside the app column
+// and never obstructs the app while closed.
+// ============================================================================
+const Pg7AboutIcon = ({ size = 16 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
+    style={{ stroke: 'currentColor', strokeWidth: 1.9, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' }}>
+    <circle cx="12" cy="12" r="9" /><line x1="12" y1="11" x2="12" y2="16.5" /><line x1="12" y1="7.6" x2="12" y2="7.7" />
+  </svg>
+);
+
+const Pg7AboutBody = ({ id }) => {
+  const about = D7_ABOUT[id];
+  const spec = PGD7_SPECS[id];
+  const n = D7_ORDER.indexOf(id);
+  if (!about) return null;
+  const head = { fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 4 };
+  const body = { fontFamily: 'var(--font-sans)', fontSize: 14.5, lineHeight: 1.55, color: 'var(--color-fg-2)', textWrap: 'pretty' };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginRight: 34 }}>
+      <div>
+        <div style={{ ...head, marginBottom: 2 }}>{String(n + 1).padStart(2, '0')} / {D7_ORDER.length}</div>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 19, letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>
+          {spec ? spec.name : id}
+        </div>
+      </div>
+      <div style={{ ...body, fontSize: 15.5, color: 'var(--color-fg-1)' }}>{about.one}</div>
+      <div><div style={head}>Claim</div><div style={body}>{about.claim}</div></div>
+      <div><div style={head}>Cost</div><div style={body}>{about.cost}</div></div>
+    </div>
+  );
+};
+
+// ============================================================================
 // The rail body — the flat list of ten names. ONE body, rendered in three
 // places and never forked: the docked aside, the app's MobileDrawer, and the
 // app posture's Home destination.
 // ============================================================================
-const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
+const Pg7Rail = ({ dirId, onPick, posture, onPosture, onAbout }) => {
   const specs = PGD7.list();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -4511,25 +4627,43 @@ const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
           const spec = PGD7_SPECS[id];
           const on = id === dirId;
           const missing = !spec;
+          // A row, not a button: the name enters the direction and the mark
+          // beside it explains it. Nesting the second control inside the first
+          // is not legal, so the row carries the surface and holds both.
           return (
-            <button key={id} onClick={() => !missing && onPick(id)} disabled={missing} style={{
-              position: 'relative', textAlign: 'left', cursor: missing ? 'default' : 'pointer',
-              background: on ? 'var(--color-surface)' : 'transparent', border: 0,
-              padding: '11px 12px 11px 14px', borderRadius: 'var(--radius-md)',
-              fontFamily: 'var(--font-sans)', fontWeight: on ? 600 : 500, fontSize: 14,
-              color: missing ? 'var(--color-fg-3)' : 'var(--color-fg-1)', minHeight: 44,
+            <div key={id} style={{
+              position: 'relative', display: 'flex', alignItems: 'center',
+              background: on ? 'var(--color-surface)' : 'transparent',
+              borderRadius: 'var(--radius-md)',
               boxShadow: on ? 'var(--shadow-raised)' : 'none',
               opacity: missing ? 0.4 : 1,
-              display: 'flex', alignItems: 'center', gap: 10,
             }} className={missing ? undefined : 'pg7-railitem'}>
               {on && <span style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: 3, background: 'var(--color-accent)' }} />}
-              <span style={{ flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {spec ? spec.name : '—'}
-              </span>
-            </button>
+              <button onClick={() => !missing && onPick(id)} disabled={missing} style={{
+                flex: 1, minWidth: 0, textAlign: 'left', cursor: missing ? 'default' : 'pointer',
+                background: 'transparent', border: 0,
+                padding: '11px 4px 11px 14px', borderRadius: 'var(--radius-md)',
+                fontFamily: 'var(--font-sans)', fontWeight: on ? 600 : 500, fontSize: 14,
+                color: missing ? 'var(--color-fg-3)' : 'var(--color-fg-1)', minHeight: 44,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <span style={{ flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {spec ? spec.name : '—'}
+                </span>
+              </button>
+              {!missing && D7_ABOUT[id] && (
+                <button onClick={() => onAbout(id)} aria-label={'What ' + (spec ? spec.name : id) + ' is'}
+                  className="pg7-aboutbtn" style={{
+                    flexShrink: 0, width: 40, minHeight: 44, marginRight: 2,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'transparent', border: 0, borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer', color: 'var(--color-fg-3)',
+                  }}><Pg7AboutIcon size={16} /></button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -4563,7 +4697,7 @@ const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
 // hand, unmistakably not product — and collapsible, because it stands in for
 // nothing in the app.
 // ============================================================================
-const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, beat }) => (
+const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, beat, onAbout }) => (
   <div className="pg7-strip">
     <div className="pg7-striprow">
       <button className="pg7-nav" onClick={onPrev} aria-label="Previous direction">
@@ -4574,6 +4708,12 @@ const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, be
         <span className="pg7-title">{spec ? spec.name : 'No direction loaded'}</span>
         <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style={{ transform: open ? 'none' : 'rotate(180deg)', transition: 'transform var(--duration-base)' }}><polyline points="6 15 12 9 18 15" /></svg>
       </button>
+      {spec && D7_ABOUT[spec.id] && (
+        <button className="pg7-nav" onClick={() => onAbout(spec.id)}
+          aria-label={'What ' + spec.name + ' is'} style={{ strokeWidth: 1.9 }}>
+          <Pg7AboutIcon size={17} />
+        </button>
+      )}
       <button className="pg7-nav" onClick={onNext} aria-label="Next direction">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
       </button>
@@ -4663,6 +4803,10 @@ const Pg7Surface = ({
   // ---- the driver ----------------------------------------------------------
   d7E(() => {
     if (!jump) return;
+    // A beat puts the app in THAT state, not that state plus whatever the last
+    // beat left open. Clear every transient overlay first; the beat's own opens
+    // run after this in the same batch, so they win.
+    setFlow(null); setAddOpen(false); setOverlay(null); setConfirm(null);
     const run = (spec && spec.beats && spec.beats[jump.what]) || null;
     if (run) run(api);
     else if (jump.what === 'attach') api.openAdd();
@@ -4715,7 +4859,7 @@ const Pg7Surface = ({
     }
     // Every surface a direction registers is handed the SAME ctx — the one with
     // navigation and the derived lists on it, not the bare root object.
-    return <PGD7Card {...common} ctx={api} face={face} Slot={Slot} />;
+    return <PGD7Card {...common} ctx={api} spec={spec} face={face} Slot={Slot} />;
   };
 
   const feed = (
@@ -4856,6 +5000,7 @@ const Pg7App = () => {
   const [home, setHome] = d7S(false);
   const [jump, setJump] = d7S(null);
   const [beat, setBeat] = d7S(null);
+  const [about, setAbout] = d7S(null);   // the direction whose explanation is open
 
   d7E(() => {
     const on = () => setWinW(window.innerWidth);
@@ -4940,7 +5085,7 @@ const Pg7App = () => {
     if (!docked) setRailOpen(false);
   };
 
-  const railBody = <Pg7Rail dirId={dirId} onPick={pick} posture={posture} onPosture={setPosture} />;
+  const railBody = <Pg7Rail dirId={dirId} onPick={pick} posture={posture} onPosture={setPosture} onAbout={setAbout} />;
 
   return (
     <div className="pg-page">
@@ -4957,10 +5102,18 @@ const Pg7App = () => {
         <Pg7Strip spec={spec} index={index} total={D7_ORDER.length}
           open={stripOpen} onOpen={setStripOpen}
           onPrev={() => step(-1)} onNext={() => step(1)}
-          onBeat={fire} beat={beat} />
+          onBeat={fire} beat={beat} onAbout={setAbout} />
       </div>
       {!appPosture && isMobile && (
         <MobileDrawer open={railOpen} width={264} onClose={() => setRailOpen(false)}>{railBody}</MobileDrawer>
+      )}
+      {/* Rig chrome, so it sits at the page root and not inside .pgd-surface —
+          it explains the direction, it is not part of the app being reviewed.
+          Closed by default; Escape, the scrim and the close control all end it. */}
+      {about && (
+        <PGD7Sheet label="What this direction is" onClose={() => setAbout(null)}>
+          {() => <Pg7AboutBody id={about} />}
+        </PGD7Sheet>
       )}
     </div>
   );
@@ -5003,7 +5156,7 @@ Object.assign(window, { PGD7Card, Pg7Rail, Pg7Strip, Pg7Surface, Pg7App });
 // inside the door.
 // ============================================================================
 
-const { PGD7, Button, Field, FeedDivider } = window;
+const { PGD7, Button, Field, FeedDivider, SwellDoor } = window;
 const { useState: q1S, useEffect: q1E, useRef: q1R } = React;
 
 // ---- The ask -----------------------------------------------------------------
@@ -5194,6 +5347,14 @@ const Q1Composer = ({ name, label, ariaLabel, placeholder, ask, submitLabel, onS
 // the rig. Ranged left, no quotation marks, no attribution. Where nothing has
 // been asked, the slot holds the open invitation instead — the same act every
 // member may perform, reachable from the feed.
+//
+// THE ROUTE. On Active the question is text: the tick beneath it is already the
+// way in, and nothing else should compete with it. On Read the tick's slot has
+// gone to the Reaction door, so the question itself becomes the control — tap it
+// and the rounds open, live question first, earlier rounds filed beneath, the
+// ask at the foot. The reactions are not left behind: that surface carries the
+// shipped door at its head, so the scatter and the roster are one tap further in
+// rather than somewhere else entirely.
 // ============================================================================
 const q1CardStyles = {
   q: {
@@ -5210,6 +5371,13 @@ const q1CardStyles = {
     fontSize: 'clamp(15px, 2.4cqi, 17px)', lineHeight: 1.3,
     letterSpacing: '-0.01em', color: 'var(--color-fg-3)',
   },
+  // The same question, made the control. Type is identical to the resting face —
+  // a question you can open must not read as a different kind of question.
+  qBtn: {
+    display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
+    background: 'transparent', border: 0, padding: 0,
+    margin: '0 0 var(--space-3)', minHeight: 44,
+  },
   askMark: { fontFamily: 'var(--font-mono)', fontSize: 15, color: 'var(--color-fg-3)', flexShrink: 0 },
   sheet: { display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' },
   sheetTitle: {
@@ -5218,9 +5386,26 @@ const q1CardStyles = {
   },
 };
 
-const Q1Card = ({ ctx, item }) => {
+const Q1Card = ({ ctx, item, tab }) => {
   const [asking, setAsking] = q1S(false);
   const q = q1Live(ctx, item);
+  const read = tab === 'read';
+
+  // Read: the question is the door to its own rounds.
+  if (read) {
+    return (
+      <button type="button" style={q1CardStyles.qBtn} onClick={() => ctx.openRespond(item)}>
+        {q
+          ? <span style={{ ...q1CardStyles.q, display: 'block', margin: 0 }}>{q}</span>
+          : (
+            <span style={{ ...q1CardStyles.ask, margin: 0 }}>
+              <span style={q1CardStyles.askMark} aria-hidden="true">?</span>
+              <span>Ask the circle</span>
+            </span>
+          )}
+      </button>
+    );
+  }
 
   if (q) return <div style={q1CardStyles.q}>{q}</div>;
 
@@ -5319,6 +5504,10 @@ const Q1Landing = ({ ctx, item, glyph, close }) => {
 const q1RespondStyles = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' },
   head: { paddingRight: 34 },
+  // The eyebrow on the left, the shipped Reaction door on the right: how it
+  // landed and what is being asked are two axes of one subject, so they share a
+  // line rather than living on two surfaces.
+  headRow: { display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, marginBottom: 2 },
   earlier: { display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' },
   roundQ: {
     fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, lineHeight: 1.35,
@@ -5339,7 +5528,10 @@ const Q1Respond = ({ ctx, item, close }) => {
     return (
       <div style={q1RespondStyles.wrap}>
         <div style={q1RespondStyles.head}>
-          <Q1Eyebrow>the question</Q1Eyebrow>
+          <div style={q1RespondStyles.headRow}>
+            <span style={{ flex: 1, minWidth: 0 }}><Q1Eyebrow>the question</Q1Eyebrow></span>
+            <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+          </div>
           <p style={q1QuestionStyle}>{item.title || item.url.replace(/^https?:\/\//, '')}</p>
         </div>
         <Q1Composer
@@ -5353,7 +5545,10 @@ const Q1Respond = ({ ctx, item, close }) => {
   return (
     <div style={q1RespondStyles.wrap}>
       <div style={q1RespondStyles.head}>
-        <Q1Eyebrow>the question</Q1Eyebrow>
+        <div style={q1RespondStyles.headRow}>
+          <span style={{ flex: 1, minWidth: 0 }}><Q1Eyebrow>the question</Q1Eyebrow></span>
+          <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+        </div>
         <p style={q1QuestionStyle}>{q}</p>
       </div>
 
@@ -5643,6 +5838,52 @@ const DpLintel = ({ ctx, item }) => {
 };
 
 // ============================================================================
+// The card face — the room's front wall, and the only thing this direction ever
+// puts on a card.
+// ----------------------------------------------------------------------------
+// It is a MARK, not a line: three rungs drawn as bars, the one you stand on
+// accented, carrying the glyph you gave. No words from the room, no names, no
+// count of who is in it. It sits directly beneath the attribution, alongside the
+// Reaction door, because the door's glyph huddle and this mark answer the same
+// question from two sides — who felt what, and where that puts them.
+//
+// Read only. On Active there is no room yet: the tick is the way in, and a
+// second control beside it would compete with the one act that matters.
+// ============================================================================
+const DP_MARK_BTN = {
+  display: 'flex', alignItems: 'center', gap: 11, width: '100%', minHeight: 44,
+  background: 'transparent', border: 0, padding: '4px 0 0', margin: 0,
+  cursor: 'pointer', textAlign: 'left',
+};
+const DP_MARK_W = [14, 20, 26];
+
+const DpMark = ({ ctx, item, tab }) => {
+  if (tab !== 'read') return null;
+  const standing = dpStanding(ctx, item);
+  if (!Object.keys(standing).length) return null;   // nobody has a depth — no room
+  const my = standing.you || null;
+  const myLevel = my ? dpLevelOf(my.intensity) : null;
+
+  return (
+    <button type="button" style={DP_MARK_BTN} onClick={() => ctx.openRespond(item)}
+      aria-label="Open the room">
+      <span aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+        {[1, 2, 3].map((L) => (
+          <span key={L} style={{
+            display: 'block', height: 2, borderRadius: 2, width: DP_MARK_W[L - 1],
+            background: myLevel === L ? 'var(--color-accent)' : 'var(--color-border-1)',
+          }} />
+        ))}
+      </span>
+      <span style={{ ...DP_RUNG_LABEL, color: myLevel ? 'var(--color-accent)' : 'var(--color-fg-3)', fontWeight: myLevel ? 600 : 400 }}>
+        {myLevel ? DP_DEPTH_WORDS[myLevel - 1] : 'Enter the room'}
+      </span>
+      {my && my.glyph && <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>{my.glyph}</span>}
+    </button>
+  );
+};
+
+// ============================================================================
 // The rungs, drawn as geography. Used by the compose surface (nothing marked
 // yet) and by the continuation page (your own rung marked, carrying your
 // glyph). One motif, two placements.
@@ -5675,6 +5916,7 @@ const DpRungs = ({ marked, glyph }) => (
 const DpLine = ({ ctx, r }) => {
   const [editing, setEditing] = dpS(false);
   const [draft, setDraft] = dpS('');
+  if (!r) return null;                             // belt and braces: never render a hole
   const mine = r.by === 'you';
   const body = dpText(ctx, r);
 
@@ -5717,6 +5959,7 @@ const DpLine = ({ ctx, r }) => {
 const DpStratum = ({ ctx, item, level, standing, lines, mine, bandRef, draft, setDraft, onSay }) => {
   const here = Object.keys(standing).filter((id) => dpLevelOf(standing[id].intensity) === level);
   const said = lines.filter((r) => {
+    if (!r) return false;
     const s = standing[r.by];
     return s && dpLevelOf(s.intensity) === level;
   });
@@ -5808,7 +6051,15 @@ const DpRoom = ({ ctx, item, close }) => {
 
   // Changing your Swell is a full-screen flow that sits UNDER this sheet, so
   // the sheet leaves first and the flow opens behind it.
-  const changeSwell = () => { close(); setTimeout(() => ctx.openSwell(item), 260); };
+  // Moving your puck is the continuation act, so it is the room's own foot
+  // control. The flow is full-screen and sits UNDER this sheet, so the sheet
+  // leaves first. A Read card stays on its own tab while the flow runs —
+  // openSwell reaches for Active, and re-asserting the tab after it keeps the
+  // card where the member left it.
+  const changeSwell = () => {
+    close();
+    setTimeout(() => { ctx.openSwell(item); if (item.read) ctx.setTab('read'); }, 260);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -5939,9 +6190,12 @@ const DpDepth = ({ ctx }) => {
 PGD7.register({
   id: 'depths',
   name: 'The Depths',
-  // The card face is nothing: no slot, no Card, so the rig mounts the shipped
-  // FeedCard untouched. Everything this direction has to say is past the door.
+  // The card carries a MARK, never a line: the strata with your rung on them,
+  // under the attribution beside the Reaction door. Every word this direction
+  // has is still past the door.
+  face: { slot: 'below-attribution' },
   initialState: { revised: {}, focus: null },
+  Card: DpMark,
   Compose: DpCompose,
   Landing: DpRoom,
   Respond: DpRoom,
@@ -6174,10 +6428,15 @@ const CcCard = ({ ctx, item }) => {
   const rootName = root ? (root.title || window.pgd7Host(root.url)) : null;
   if (!rootName) return null;
 
-  const go = () => {
-    if (!!root.read !== (ctx.tab === 'read')) ctx.setTab(root.read ? 'read' : 'active');
-    ctx.setState({ focus: root.id });
-  };
+  // The gather. Tapping the spine lifts the root above its answers as one
+  // contiguous run; tapping it again lets them disperse back into the queue's
+  // own order. It is the direction's single new interaction and it is
+  // feed-local and tab-local: no panel, no tab switch, no destination. Where the
+  // root has already left Active its answers still gather, on their own, at the
+  // top of the tab you are standing in — the run is what the gather is for, and
+  // the root is part of it only where the root is.
+  const gathered = ctx.state.focus === root.id;
+  const go = () => ctx.setState({ focus: gathered ? null : root.id });
 
   return (
     <div style={ccSpineWrap}>
@@ -6185,12 +6444,12 @@ const CcCard = ({ ctx, item }) => {
         <path d="M1.5 -2 V8 a4 4 0 0 0 4 4 H12" fill="none"
           stroke="var(--color-border-1)" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
-      <button type="button" onClick={go} className="circ-cardaction" style={{
+      <button type="button" onClick={go} className="circ-cardaction" aria-pressed={gathered} style={{
         display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0, flex: 1,
         background: 'transparent', border: 0, padding: 0, textAlign: 'left', cursor: 'pointer',
       }}>
         <span style={ccSpineLabel}>Answers</span>
-        <span style={ccSpineRoot}>{rootName}</span>
+        <span style={{ ...ccSpineRoot, color: gathered ? 'var(--color-fg-1)' : ccSpineRoot.color, fontWeight: gathered ? 600 : 500 }}>{rootName}</span>
       </button>
     </div>
   );
@@ -6494,7 +6753,7 @@ PGD7.register({
 // the words — one event, both things, never one before the other.
 // ============================================================================
 
-const { PGD7, Button, Icon, Avatar } = window;
+const { PGD7, Button, Icon, Avatar, SwellDoor, CircGlow } = window;
 const { useState: slS, useEffect: slE } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -6521,7 +6780,10 @@ const SL_PLAN = {
   a6: { r1: { in: 5 * SL_HOUR } },
   a7: { r1: 'open' },
   r1: { r1: 'open' },
-  r2: { r1: 'open' },
+  // A card already on your shelf, sealed again and about to open. This is the
+  // one the direction's route exists for: reading enrolled you, the card never
+  // came back to Active, and the opening arrives on Read while you are here.
+  r2: { r1: 'open', rounds: 2, r2: { in: 100e3 } },
   r3: { r1: 'open' },
   r4: { r1: 'open', rounds: 2, r2: { in: 2 * SL_HOUR } },
 };
@@ -6626,6 +6888,32 @@ const slUseWindows = (ctx, item) => {
 };
 
 // ============================================================================
+// The arrival — the one place this direction extends the shipped grammar.
+// ----------------------------------------------------------------------------
+// An opening lands on the READ tab, because reading enrolled you and the card
+// never became unread. The shipped grammar is Active-only, so it is stretched by
+// exactly two things and no more: an opened card sorts to the top of the shelf,
+// and its band plays the shipped one-shot glow when it comes into view. No
+// waterline — an opening is a now-event on a shelf, not a position in a
+// timeline — and no count anywhere.
+//
+// An opening counts as arrived only when it landed while the member was here:
+// a card seeded already-open is history, and history does not glow.
+// ============================================================================
+const slArrived = (ctx, item) => {
+  const count = slRoundCount(ctx, item);
+  for (let n = 1; n <= count; n++) if (slOpenedAt(ctx, item, n) != null) return true;
+  return false;
+};
+
+const slOrder = (items, ctx) => {
+  if (ctx.tab !== 'read') return items;
+  const up = items.filter((i) => slArrived(ctx, i));
+  if (!up.length) return items;
+  return [...up, ...items.filter((i) => !slArrived(ctx, i))];
+};
+
+// ============================================================================
 // Shared parts.
 // ============================================================================
 const SL_META = {
@@ -6720,8 +7008,12 @@ const SlCard = ({ ctx, item }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '12px 0 2px' }}>
-      {live.map((round) => (
-        <button key={round.n} type="button" onClick={go} style={{
+      {live.map((round) => {
+      // An opening that landed while the member was here plays the shipped
+      // one-shot glow, on the band rather than the card: the card was already
+      // theirs, the opening is what arrived.
+      const band = (
+        <button type="button" onClick={go} style={{
           appearance: 'none', textAlign: 'left', cursor: 'pointer', width: '100%',
           background: round.open ? 'transparent' : 'var(--color-surface-sunken)',
           border: '1px solid ' + (round.open ? 'var(--color-border-2)' : 'var(--color-border-1)'),
@@ -6751,7 +7043,11 @@ const SlCard = ({ ctx, item }) => {
             </React.Fragment>
           )}
         </button>
-      ))}
+      );
+      return round.open && round.openedAt != null
+        ? <CircGlow key={round.n} glow>{band}</CircGlow>
+        : <React.Fragment key={round.n}>{band}</React.Fragment>;
+      })}
     </div>
   );
 };
@@ -6816,7 +7112,16 @@ const SlOpening = ({ ctx, item, glyph, close }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <div style={{ paddingRight: 34 }}>
-        <div style={{ ...SL_META, marginBottom: 3 }}>{item.source || 'Link'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <div style={{ ...SL_META, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.source || 'Link'}</div>
+          {/* The door has two states, and the transition is this direction's
+              whole rhythm. Sealed: nothing — the swell shapes are sealed with
+              the words, so there is nothing to look at yet. Opened: the shipped
+              door, the shapes and the words revealed in the same instant. */}
+          {last && last.open && (
+            <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+          )}
+        </div>
         <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textWrap: 'pretty' }}>
           {item.title || item.url.replace(/^https?:\/\//, '')}
         </div>
@@ -6875,6 +7180,16 @@ const SlOpening = ({ ctx, item, glyph, close }) => {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="primary" onClick={startNext}>Seal another round</Button>
           </div>
+        </div>
+      )}
+
+      {/* A card two bands deep has more than a sheet can hold at a glance, so
+          the rounds get their own page — and only then. One band needs none. */}
+      {rounds.length > 1 && (
+        <div style={{ borderTop: '1px solid var(--color-border-2)', paddingTop: 'var(--space-4)' }}>
+          <Button variant="tertiary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
+            See every round
+          </Button>
         </div>
       )}
     </div>
@@ -6971,6 +7286,11 @@ PGD7.register({
     // The one card already carrying a second seal, so a running round is
     // inhabited rather than empty. Sealed, so none of it is readable yet.
     seedR2: {
+      r2: [
+        { id: 'r2s1', by: 'marcus', text: 'Six months on, the part I use daily is the failure taxonomy, not the retries.' },
+        { id: 'r2s2', by: 'dev', text: 'We adopted the naming and dropped the rest. The naming was the whole value.' },
+        { id: 'r2s3', by: 'ada', text: 'Still think the middle third is padding.' },
+      ],
       r4: [
         { id: 'r4s1', by: 'ada', text: 'Second time through I stopped skipping the cetology chapters and they turned out to be the book.' },
         { id: 'r4s2', by: 'priya', text: 'Got as far as the try-works. Reporting back in a fortnight.' },
@@ -6983,6 +7303,9 @@ PGD7.register({
   Respond: SlOpening,
   Continue: SlRounds,
   continueTitle: 'Rounds',
+  // An opening sorts to the top of the shelf until the next visit. Read only —
+  // Active keeps the order it ships with.
+  order: slOrder,
   beats: {
     // Land on the card whose window is about to elapse: the Swell commits into
     // a running seal, and the opening arrives while you are still standing there.
@@ -7046,7 +7369,7 @@ PGD7.register({
 // convergence on one passage, disagreement as distance between passages.
 // ============================================================================
 
-const { PGD7, Button } = window;
+const { PGD7, Button, SwellDoor } = window;
 const { useState: plS } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -7253,9 +7576,18 @@ const PlDepth = ({ rx }) => (rx ? (
   </span>
 ) : null);
 
+// The reactions sit above the piece, keyed to the line each member stopped at.
+// The door is the shipped one, unpromoted: this direction reframes it rather
+// than growing it, so the scatter stays exactly what it is and the marked copy
+// is what sits below.
 const PlHead = ({ item }) => (
   <div style={{ paddingRight: 34, minWidth: 0 }}>
-    <div style={{ ...PL_META, marginBottom: 3 }}>{item.source || window.pgd7Host(item.url)}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+      <div style={{ ...PL_META, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {item.source || window.pgd7Host(item.url)}
+      </div>
+      <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+    </div>
     <div style={PL_TITLE}>{item.title || item.url.replace(/^https?:\/\//, '')}</div>
   </div>
 );
@@ -7471,13 +7803,22 @@ const PlReading = ({ ctx, item, glyph, close }) => {
               </div>
             </div>
           ))}
-          {done && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button variant="secondary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
-                See the column
-              </Button>
-            </div>
-          )}
+        </div>
+      )}
+
+      {/* The continuation object, always one tap from the piece: the source with
+          the circle's pulls standing in the margin, in SOURCE order. Offered
+          whether you pulled, passed, or have not decided — a marked-up article
+          is the same object however late you arrive at it. */}
+      {all.length > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'flex-end',
+          borderTop: (done || passed) ? 0 : '1px solid var(--color-border-2)',
+          paddingTop: (done || passed) ? 0 : 'var(--space-4)',
+        }}>
+          <Button variant="secondary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
+            See the column
+          </Button>
         </div>
       )}
     </div>
@@ -7673,6 +8014,34 @@ PGD7.register({
 // depth — so the ledger holds a short stack of claims worth returning to.
 // Continuation is raising a new proposition or answering an open one; never
 // replying to a reply. There is nowhere in this direction to say "thanks".
+//
+// THE ROUTE — one rule generates all four. WHEREVER A SOUNDING CAN BE ANSWERED,
+// ITS INSTRUMENT IS DRAWN THERE, and no sounding is ever reachable through a
+// control that is not itself the bar.
+//   answering     ON THE CARD, IN THE FEED. The bar under the proposition is
+//                 live on both tabs. No tap-to-open, no modal, no reveal — this
+//                 is the only layer in the set reached by touching nothing but
+//                 the thing itself, and it follows from the claim: the one who
+//                 speaks pays in words, everyone else pays in a pull. A pull
+//                 that first costs a navigation is no longer cheaper than
+//                 words, and the direction's economy dies.
+//   reading       the shipped reveal, then the open soundings beneath the disc,
+//                 pullable in place — how it landed, the circle's replies and
+//                 the input, on one surface.
+//   continuation  raising a new proposition, at the foot of that same stack.
+// The honest consequence of the live card face is that members answer
+// propositions on items they have not read. Sounding tolerates it: a sounding
+// is "how far I go with what Ana said", a claim about the world the item
+// occasioned, answerable from the claim. Locking the bar until you have read
+// would turn the card face's whole treatment — an instrument, visible at rest —
+// into a tease.
+//
+// SCROLL VERSUS PULL. A live bar inside something that scrolls means a scroll
+// that grazes it must never be read as an answer. Every live bar therefore
+// keeps `pan-y` and watches the first movement of a press: it yields to the
+// scroller the moment the gesture is vertical, and commits only once the
+// gesture has declared itself horizontal or ended as a tap. Identical on all
+// three surfaces, because the economy has to read as one gesture.
 // ============================================================================
 
 const { PGD7, Button, Avatar } = window;
@@ -7747,7 +8116,10 @@ const sdRaise = (ctx, item, text) => sdWrite(ctx, item, (list) => [
 // ============================================================================
 const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWords = false }) => {
   const trackRef = sdR(null);
-  const dragging = sdR(false);
+  // The gesture is shared with whatever is scrolling under it: `armed` means a
+  // press has begun but has not declared itself, and it is abandoned the moment
+  // the movement turns vertical.
+  const armed = sdR(null);
 
   const levelAt = (clientX) => {
     const el = trackRef.current;
@@ -7761,9 +8133,34 @@ const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWo
     if (level !== mine) onPull(level);
   };
 
+  const down = (e) => {
+    armed.current = { x: e.clientX, y: e.clientY, id: e.pointerId, live: false };
+  };
+  const move = (e) => {
+    const a = armed.current;
+    if (!a) return;
+    if (a.live) { apply(e.clientX); return; }
+    const dx = Math.abs(e.clientX - a.x);
+    const dy = Math.abs(e.clientY - a.y);
+    // Vertical first: this press belongs to the scroller. Let it go entirely.
+    if (dy > 8 && dy > dx) { armed.current = null; return; }
+    if (dx > 8) {
+      a.live = true;
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+      apply(e.clientX);
+    }
+  };
+  const up = (e) => {
+    const a = armed.current;
+    armed.current = null;
+    if (!a) return;
+    // A tap that never travelled is an answer at the rung it landed on.
+    if (!a.live) apply(e.clientX);
+  };
+
   const sdBarPad = {
     padding: interactive ? '16px 0' : 0,
-    touchAction: 'none',
+    touchAction: interactive ? 'pan-y' : 'auto',
     cursor: interactive ? 'pointer' : 'default',
     borderRadius: 'var(--radius-sm)',
   };
@@ -7803,14 +8200,10 @@ const Sd7Bar = ({ settled, mine, interactive, onPull, label, height = 12, rungWo
       aria-valuemax={interactive ? 3 : undefined}
       aria-valuenow={interactive ? (mine || 0) : undefined}
       aria-valuetext={interactive ? (mine ? sdWord(mine) : 'not answered') : undefined}
-      onPointerDown={interactive ? (e) => {
-        dragging.current = true;
-        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
-        apply(e.clientX);
-      } : undefined}
-      onPointerMove={interactive ? (e) => { if (dragging.current) apply(e.clientX); } : undefined}
-      onPointerUp={interactive ? () => { dragging.current = false; } : undefined}
-      onPointerCancel={interactive ? () => { dragging.current = false; } : undefined}
+      onPointerDown={interactive ? down : undefined}
+      onPointerMove={interactive ? move : undefined}
+      onPointerUp={interactive ? up : undefined}
+      onPointerCancel={interactive ? () => { armed.current = null; } : undefined}
       onKeyDown={interactive ? (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); onPull(Math.min(3, (mine || 0) + 1)); }
         else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); onPull(Math.max(1, (mine || 1) - 1)); }
@@ -7959,6 +8352,11 @@ const Sd7Stack = ({ ctx, item, live, dense }) => {
 // The card face — below the attribution: the claim, and the bar drawn under it.
 // One line ever. The open proposition if there is one; otherwise the last thing
 // the circle settled, in the quiet register. Nothing at all is a real face.
+//
+// THE BAR HERE IS LIVE. You answer in the feed, on both tabs, without opening
+// anything — the whole access argument of the direction. It goes inert only
+// where there is nothing to answer: a proposition you raised yourself, or one
+// the circle has already settled.
 // ============================================================================
 const SdCard = ({ ctx, item }) => {
   const list = sdList(ctx, item);
@@ -7968,6 +8366,7 @@ const SdCard = ({ ctx, item }) => {
   const closed = !open.length;
   const settled = sdSettled(s);
   const mine = sdMine(s);
+  const pullable = !closed && s.by !== 'you';
 
   const sdCardWrap = {
     marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)',
@@ -7990,7 +8389,12 @@ const SdCard = ({ ctx, item }) => {
   return (
     <div style={sdCardWrap}>
       <p style={sdCardLine}>{s.text}</p>
-      <Sd7Bar settled={settled} mine={mine} interactive={false} height={closed ? 6 : 10} />
+      <Sd7Bar
+        settled={settled} mine={mine}
+        interactive={pullable}
+        height={closed ? 6 : 10}
+        label={'How far you go with: ' + s.text}
+        onPull={(level) => sdPull(ctx, item, s.id, level)} />
       <div style={sdCardMeta}>
         <span>{s.by === 'you' ? 'You raised this' : ctx.nameOf(s.by) + ' raised this'}</span>
         {settled ? <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-2)' }}>{sdWord(settled)}</span> : null}
@@ -8233,12 +8637,48 @@ PGD7.register({
 // THE PIN. A seated item is held in Active and does not leave while you hold
 // the seat — so marking it read returns it to the top of the queue instead of
 // filing it away. Taking a seat is the mark; keeping the card is what the mark
-// does. There is no fourth destination and no separate column, which is why
-// this direction registers no Continue page: continuation happens in the feed
-// the reviewer is already looking at.
+// does.
+//
+// THE ROUTE — ONE TAP TARGET, EVERYWHERE, FOREVER: THE SHARER'S OPENING LINE ON
+// THE CARD. Seats adds no affordance to any surface in the app.
+//   contribution  the sharer's line is the talk's first turn and takes seat one
+//                 automatically. There is nothing to press.
+//   reaction      untouched, and deliberately so. The Swell stays open to
+//                 everyone: feeling is universal, words are seated. Putting
+//                 seated talk behind the Swell door would make the app's most
+//                 inclusive surface its most exclusive one, and invert the
+//                 direction's own division. So the door keeps its shipped job
+//                 exactly — the only direction in the set where that is a
+//                 decision rather than an omission.
+//   reading       the shipped reveal, then ONE line beneath the disc: take a
+//                 seat, or, when none remain, read the talk. One control, two
+//                 states, never both.
+//   continuation  tapping the opening line opens THE ROOM — a full page sliding
+//                 in from the right, the container the app already reserves for
+//                 destinations you navigate into. Ordinary chronological talk,
+//                 unlimited turns, unlimited length, a compose field at the
+//                 foot. For a member with no seat the field is ABSENT, not
+//                 disabled: a greyed field is a taunt, and this direction's cost
+//                 is exclusion, honestly drawn.
+// A full page and not a sheet because the content is genuinely unbounded — the
+// claim is that four voices stay legible AT ANY LENGTH, and a sheet that
+// scrolls forever is the anti-pattern the app posture already names. It is not
+// a new location: it has no entry in any chrome, and the only way in is through
+// the words themselves.
+//
+// GETTING BACK is the pin, and nothing else. When turns land in a room you
+// hold, the pinned card carries the shipped micro dot — no count, no badge.
+// Inside the room, the shipped Earlier waterline sits where you left. Both
+// devices already exist; neither is invented for this.
+//
+// THE SEAT MARKS ARE NEVER INTERACTIVE. Four 4px marks rendering state and
+// nothing else. The entry to the room is the WORDS, because the room is made of
+// words. That is what keeps the marks off the wrong side of the no-counts line:
+// a mark you can tap is a control that reports a quantity; a mark you cannot
+// tap is a drawing of a room.
 // ============================================================================
 
-const { PGD7, Button, Avatar } = window;
+const { PGD7, Button, Avatar, FeedDivider, MicroDot } = window;
 const { useState: stS, useEffect: stE, useRef: stR } = React;
 
 const ST_CAP = 4;
@@ -8330,12 +8770,11 @@ const St7Seating = ({ ctx, item, dot = 4, gap = 7 }) => {
   );
 };
 
-// The room brightens under the pointer where it is a door. A rule inline styles
-// cannot carry, and the only one this direction needs.
+// The words are the door, so the words are what answers the pointer. The marks
+// never do: they are a drawing, and a drawing that lights up is a control.
 const ST_CSS = `
 .st7-door { -webkit-tap-highlight-color: transparent; }
-.st7-door:hover .st7-taken, .st7-door:focus-visible .st7-taken { background: var(--color-fg-1); }
-.st7-door:hover .st7-open, .st7-door:focus-visible .st7-open { border-color: var(--color-fg-3); }
+.st7-door:hover p, .st7-door:focus-visible p { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
 `;
 if (typeof document !== 'undefined' && !document.getElementById('st7-css')) {
   const stStyleEl = document.createElement('style');
@@ -8407,115 +8846,163 @@ const St7Say = ({ ctx, item }) => {
 };
 
 // ============================================================================
-// The door: what a reader meets under the reveal. Three states, one surface.
-//   seated        the talk, and the field
-//   a seat left   the talk, and the offer — taking it holds the card in Active
-//   full          the talk, entire, and nothing to do with it
+// Reading — the one line beneath the disc. One control, two states, never both:
+// a seat to take, or the talk to read. Taking one holds the card in Active and
+// drops you straight into the room, because the seat and the words are the same
+// act at two moments.
 // ============================================================================
-const St7Foot = ({ ctx, item }) => {
+const stEnter = (ctx, item) => {
+  ctx.setState({ room: item.id });
+  ctx.closeOverlay();
+  ctx.openContinue();
+};
+
+const St7Offer = ({ ctx, item, glyph }) => {
   const seated = stHolds(ctx, item, 'you');
   const free = stFree(ctx, item);
-  const stFootWrap = {
-    display: 'flex', flexDirection: 'column', gap: 12,
+  const stOfferWrap = { display: 'flex', flexDirection: 'column', gap: 16 };
+  const stOfferHead = { display: 'flex', alignItems: 'center', gap: 10, paddingRight: 34 };
+  const stOfferTitle = {
+    minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13,
+    lineHeight: 1.35, color: 'var(--color-fg-2)', textWrap: 'pretty',
+  };
+  const stOfferLine = {
+    display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
     borderTop: '1px solid var(--color-border-2)', paddingTop: 14,
   };
-  const stFootRow = { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' };
-  const stFootWord = {
+  const stOfferWord = {
     fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4,
     color: 'var(--color-fg-2)',
   };
-
-  if (seated) {
-    return (
-      <div style={stFootWrap}>
-        <div style={stFootRow}>
-          <St7Seating ctx={ctx} item={item} dot={5} />
-          <span style={stFootWord}>Your seat is held.</span>
-        </div>
-        <St7Say ctx={ctx} item={item} />
-      </div>
-    );
-  }
-  if (free > 0) {
-    return (
-      <div style={stFootWrap}>
-        <div style={stFootRow}>
-          <St7Seating ctx={ctx} item={item} dot={5} />
-          <span style={stFootWord}>{stLeftWord(free)}.</span>
-          <span style={{ flex: 1 }} />
-          <Button variant="primary" onClick={() => stTake(ctx, item)}>Take a seat</Button>
-        </div>
-      </div>
-    );
-  }
+  const offering = !seated && free > 0;
   return (
-    <div style={stFootWrap}>
-      <div style={stFootRow}>
+    <div style={stOfferWrap}>
+      <div style={stOfferHead}>
+        {glyph ? <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>{glyph}</span> : null}
+        <span style={stOfferTitle}>{item.title || item.url.replace(/^https?:\/\//, '')}</span>
+      </div>
+      <div style={stOfferLine}>
         <St7Seating ctx={ctx} item={item} dot={5} />
-        <span style={stFootWord}>The seats are full.</span>
+        <span style={stOfferWord}>{seated ? 'Your seat is held.' : stLeftWord(free) + '.'}</span>
+        <span style={{ flex: 1 }} />
+        {offering
+          ? <Button variant="primary" onClick={() => { stTake(ctx, item); stEnter(ctx, item); }}>Take a seat</Button>
+          : <Button variant="secondary" onClick={() => stEnter(ctx, item)}>Read the talk</Button>}
       </div>
     </div>
   );
 };
 
 // ============================================================================
-// The talk surface itself — used by both beats that open it. One body, never
-// forked: the item, its turns in order, and whatever the seating leaves you.
+// The room — a full page, entered through the words and nothing else.
+// ----------------------------------------------------------------------------
+// Ordinary chronological talk at whatever length it was said, the shipped
+// waterline where the last visit ended, and a compose field at the foot for a
+// member who holds a seat. For a member with no seat the field is ABSENT: a
+// greyed one is a taunt, and this direction's price is exclusion drawn
+// honestly.
 //
 // The pin is enforced here, where it happens: a card you hold a seat on returns
 // to Active the moment reading would have filed it away.
 // ============================================================================
-const St7Talk = ({ ctx, item, glyph, close }) => {
+const St7Room = ({ ctx }) => {
+  const id = ctx.state && ctx.state.room;
+  const item = id ? ctx.itemById(id) : null;
   const pinned = stR(false);
-  const seated = stHolds(ctx, item, 'you');
-  stE(() => {
-    if (pinned.current) return;
-    if (seated && item.read) { pinned.current = true; ctx.actions.setUnread(item); }
-  });
+  const mark = stR(null);
+  const seated = item ? stHolds(ctx, item, 'you') : false;
 
+  // The waterline is read once, on entry, and then held: it must not creep down
+  // the page as the visit is recorded or as you speak.
+  if (item && mark.current === null) mark.current = ((ctx.state && ctx.state.visited) || {})[item.id] || 0;
+
+  stE(() => {
+    if (!item) return;
+    if (!pinned.current && seated && item.read) { pinned.current = true; ctx.actions.setUnread(item); }
+  });
+  // Being in the room IS the visit, so the mark on the pinned card goes as you
+  // arrive. Recorded once, after the waterline has been taken.
+  stE(() => {
+    if (!id) return;
+    ctx.setState((st) => ({ visited: { ...((st && st.visited) || {}), [id]: Date.now() } }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  if (!item) return null;
   const turns = stTurns(ctx, item);
-  const stTalkWrap = { display: 'flex', flexDirection: 'column', gap: 16 };
-  const stTalkHead = { display: 'flex', alignItems: 'center', gap: 10, paddingRight: 34 };
-  const stTalkTitle = {
-    minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13,
-    lineHeight: 1.35, color: 'var(--color-fg-2)', textWrap: 'pretty',
+  const line = mark.current;
+  const cut = line ? turns.findIndex((t) => (t.at || 0) > line) : -1;
+
+  const stRoomPage = {
+    maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%', boxSizing: 'border-box',
+    padding: ctx.isMobile ? '16px 16px 32px' : '28px 24px 44px',
+    display: 'flex', flexDirection: 'column', gap: 20,
   };
-  const stTalkTurns = { display: 'flex', flexDirection: 'column', gap: 16 };
+  const stRoomHead = { display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 };
+  const stRoomSource = {
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em', color: 'var(--color-fg-3)',
+  };
+  const stRoomTitle = {
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, lineHeight: 1.3,
+    letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty',
+  };
 
   return (
-    <div style={stTalkWrap}>
-      <div style={stTalkHead}>
-        {glyph ? <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>{glyph}</span> : null}
-        <span style={stTalkTitle}>{item.title || item.url.replace(/^https?:\/\//, '')}</span>
-      </div>
+    <div style={stRoomPage}>
+      <header style={stRoomHead}>
+        <span style={stRoomSource}>{item.source || window.pgd7Host(item.url)}</span>
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="circ-cardtitle" style={stRoomTitle}>
+          {item.title || item.url.replace(/^https?:\/\//, '')}
+        </a>
+        <St7Seating ctx={ctx} item={item} dot={5} />
+      </header>
       {turns.length > 0 && (
-        <div style={stTalkTurns}>
-          {turns.map((t) => <St7Turn key={t.id} ctx={ctx} turn={t} />)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {turns.map((t, i) => (
+            <React.Fragment key={t.id}>
+              {i === cut && cut > 0 && <FeedDivider />}
+              <St7Turn ctx={ctx} turn={t} />
+            </React.Fragment>
+          ))}
         </div>
       )}
-      <St7Foot ctx={ctx} item={item} />
+      {seated && (
+        <div style={{ borderTop: '1px solid var(--color-border-2)', paddingTop: 16 }}>
+          <St7Say ctx={ctx} item={item} />
+        </div>
+      )}
     </div>
   );
 };
 
 // ============================================================================
-// The card face — below the attribution: the opening turn, then the room.
-// A first-line indent and no quotation marks, so the line reads as the first
-// turn of a talk rather than a caption hung under a link. An item with nothing
-// attached still draws its seating: the room exists before anyone speaks in it.
+// The card face — below the attribution: the opening turn, then the room drawn
+// under it. A first-line indent and no quotation marks, so the line reads as
+// the first turn of a talk rather than a caption hung under a link.
+//
+// THE LINE IS THE DOOR AND THE ONLY DOOR. Tapping it opens the room. The seat
+// marks under it are a drawing and never a control — they render state, they
+// answer no pointer, and they carry no tap target of their own.
+//
+// An item nobody has spoken on has no room to enter, so there is no line and
+// nothing to tap — the marks alone, which is correct: the room exists before
+// anyone is in it.
 // ============================================================================
-const StCard = ({ ctx, item, tab }) => {
-  const opening = item.thought && item.thought.text ? item.thought.text : null;
-  // The room is a door once you are in it, or once you have read the item —
-  // the two states where the talk is yours to open. On an unread item the way
-  // in is reading, which is the whole mechanic, so the marks stay marks.
-  const openable = stHolds(ctx, item, 'you') || !!item.read;
+const StCard = ({ ctx, item }) => {
+  const turns = stTurns(ctx, item);
+  const opening = turns.length ? turns[0].text : null;
+  const seated = stHolds(ctx, item, 'you');
+  const seen = ((ctx.state && ctx.state.visited) || {})[item.id] || 0;
+  // Turns landed in a room you hold since you were last in it. The shipped
+  // micro dot, one mark, no count — the object is calling, not a number.
+  const landed = seated && turns.some((t) => t.by !== 'you' && (t.at || 0) > seen);
+
   const stCardWrap = {
-    marginTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 8,
+    marginTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 10,
   };
   const stCardDoor = {
     display: 'block', width: '100%', textAlign: 'left',
-    background: 'transparent', border: 0, padding: '10px 0', margin: 0,
+    background: 'transparent', border: 0, padding: '2px 0 0', margin: 0,
     cursor: 'pointer', borderRadius: 'var(--radius-sm)',
   };
   const stCardLine = {
@@ -8524,16 +9011,29 @@ const StCard = ({ ctx, item, tab }) => {
     color: 'var(--color-fg-1)', textWrap: 'pretty',
     display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden',
   };
+  const stCardMark = {
+    display: 'flex', alignItems: 'center', gap: 7,
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em', color: 'var(--color-fg-3)',
+  };
+
   return (
     <div style={stCardWrap}>
-      {opening && <p style={stCardLine}>{opening}</p>}
-      {openable ? (
+      {opening && (
         <button className="st7-door" style={stCardDoor}
           aria-label={'Open the talk. ' + stLeftWord(stFree(ctx, item)) + '.'}
-          onClick={() => { ctx.openRespond(item); ctx.setTab(tab); }}>
-          <St7Seating ctx={ctx} item={item} />
+          onClick={() => stEnter(ctx, item)}>
+          <p style={stCardLine}>{opening}</p>
         </button>
-      ) : <St7Seating ctx={ctx} item={item} />}
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <St7Seating ctx={ctx} item={item} />
+        {landed && (
+          <span style={stCardMark}>
+            <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
+            Said since you were in
+          </span>
+        )}
+      </div>
     </div>
   );
 };
@@ -8622,13 +9122,16 @@ PGD7.register({
   // row beneath it. No rule, no quotation marks, no second attribution — the
   // sharer's name is already on the card and the indent does the rest.
   face: { slot: 'below-attribution' },
-  initialState: { seats: ST_SEED, since: {} },
+  initialState: { seats: ST_SEED, since: {}, visited: {}, room: null },
   Card: StCard,
   Compose: StCompose,
-  Landing: St7Talk,
-  Respond: St7Talk,
-  // No Continue page and no Aside: the seat is the mark and Active is the
-  // location, so continuation has nowhere else to be.
+  // Reading is the one line under the disc; continuation is the room behind the
+  // words. Two surfaces, two jobs, and no Aside — the room belongs to an item,
+  // not to the circle, so it is never a standing column.
+  Landing: St7Offer,
+  Respond: St7Offer,
+  Continue: St7Room,
+  continueTitle: 'The talk',
   order: (items, ctx) => {
     if (ctx.tab !== 'active') return items;
     const mine = (i) => stHolds(ctx, i, 'you');
@@ -8645,22 +9148,23 @@ PGD7.register({
       api.setTab('active');
       api.openSwell(t);
     },
-    // A Read item you passed on: a seat is still there, taking it lets you
-    // speak, and the card comes back to the top of Active as you do.
+    // A Read item whose seats are gone: the other state of the same line —
+    // read the talk, and nothing to do with it.
     respond: (api) => {
-      const t = api.readItems.find((i) => !stHolds(api, i, 'you') && stFree(api, i) > 0)
+      const t = api.readItems.find((i) => !stHolds(api, i, 'you') && stFree(api, i) === 0)
+        || api.readItems.find((i) => !stHolds(api, i, 'you'))
         || api.firstRead();
       if (!t) return;
+      api.setTab('read');
       api.openRespond(t);
     },
-    // Continuation is the pinned card in Active and the talk behind it: four
-    // voices, running for as long as they want, and your turn whenever.
+    // Continuation is the room: four voices, running for as long as they want,
+    // the waterline where you left, and your turn whenever.
     continue: (api) => {
       const t = api.items.find((i) => stHolds(api, i, 'you') && stTurns(api, i).length > 2)
         || api.items.find((i) => stHolds(api, i, 'you'));
       if (!t) { api.setTab('active'); return; }
-      api.openRespond(t);
-      api.setTab(t.read ? 'read' : 'active');
+      stEnter(api, t);
     },
   },
 });
@@ -8692,12 +9196,44 @@ PGD7.register({
 // many issues it has run, as a stack of hairlines, never a number. A long spine
 // is a conversation.
 //
-// THE APP-POSTURE HOME, stated under the constraint. MOBILE.md fixes three
+// THE ROUTE — THE DISPATCH IS NOT A PLACE YOU GO. IT IS A THING THAT ARRIVES,
+// and the app already has one grammar for that. MOBILE.md fixes three
 // circle-local bar slots and says a fourth does not earn its place, so
-// Dispatches cannot be a bar slot. Its home is a single band above the
-// Active/Read tabs announcing the current issue, pushing to a full page. On
-// desktop the page takes a reading measure with the shelf and the entry list as
-// a sidebar, where that cost does not arise.
+// Dispatches can never be a bar slot — and a slot dark six days in seven would
+// be a worse lie than a hairline anyway. Its home is ONE SLOT ABOVE THE
+// ACTIVE/READ TABS, with three states:
+//   1  between issues   a single hairline row carrying the last issue's date at
+//                       metadata size. One line. No mark, no word, no emphasis.
+//   2  an issue lands   the same row becomes a BAND — the issue's title and
+//                       date at reading weight, standing where the New pill
+//                       stands for cards. Its PRESENCE is the signal; there is
+//                       no second one and it needs none, because a periodical
+//                       either has landed or it has not.
+//   3  you open it      the band collapses back to the hairline and stays.
+// Pressing either state opens the current issue as a full page whose masthead
+// carries the spine of previous issues — the shelf hangs off the newest issue,
+// not off the app's chrome, which is why the app grows one row and not a
+// section.
+//
+// THE PRICE, STATED. The chrome does not vanish. The app gains ONE PERMANENT
+// HAIRLINE ROW above the tabs, in every circle, on every posture, forever. That
+// is what buys an issue that can never become unreachable and a shelf that
+// accrues no dead chrome beyond one line. Judge it as the price it is.
+//
+// CARRYING — the real continuation act — happens INSIDE the issue, on an entry,
+// while reading it. There is no other place to press it and no notification
+// that invites you to. Continuation and reading are one visit, which is what it
+// means for discourse to be a property of a period rather than of a card.
+//
+// THE REACTION DOOR, REACHED FROM INSIDE THE ISSUE. Each entry is headed by its
+// item, set inline, CARRYING ITS OWN SWELL DOOR: opening it gives the disc for
+// that item without leaving the issue. The door keeps the reactions and loses
+// the words, but the two are the same material in two registers, and this makes
+// that literal — the dispatch becomes a second, unmissable route to the door,
+// arriving on a cadence rather than waiting on the Read tab to be visited.
+//
+// On desktop the page takes a reading measure with the shelf and the entry list
+// as a sidebar, where the phone's cost largely does not arise.
 //
 // A composed periodical is a typography problem, so the setting here is the
 // design: mono kickers, a double rule under the masthead, one measure, a lead
@@ -8705,59 +9241,60 @@ PGD7.register({
 // ============================================================================
 
 // No Avatar here on purpose: a printed issue attributes in type, not in faces.
-const { PGD7, Button, Icon } = window;
-const { useState: dpS, useEffect: dpE, useRef: dpR } = React;
+// The Swell door is the shipped one, mounted — never a second drawing of it.
+const { PGD7, Button, Icon, SwellDoor } = window;
+const { useState: dsS, useEffect: dsE, useRef: dsR } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
 // Copied once from app/swell-reactions.jsx, which keeps DEPTH_WORDS and
 // levelFromIntensity internal. PLAYGROUND.md allows the copy; this is the
 // pointer to its source. Verbatim — never "improved", or it stops being
 // evidence of what the product actually says.
-const DP_DEPTH_WORDS = ['a little', 'moderately', 'deeply'];
-const dpLevel = (i) => { const v = i == null ? 0.42 : i; return v < 0.34 ? 1 : v < 0.67 ? 2 : 3; };
+const DS_DEPTH_WORDS = ['a little', 'moderately', 'deeply'];
+const dsLevel = (i) => { const v = i == null ? 0.42 : i; return v < 0.34 ? 1 : v < 0.67 ? 2 : 3; };
 
 // ---- The swell, drawn as a shape --------------------------------------------
 // The geometry below is COPIED from app/swell-reactions.jsx (glyphAngle, iv,
 // swellJitterR, swellLayout), which keeps all of it internal. Same allowance,
 // same rule: it carries this pointer and is not tuned. The entry header renders
 // it PASSIVE and unlabelled — a shape, with no roster, no names and no count.
-const DP_GLYPHS = window.RX_GLYPHS || [];
-const DP_MAXR = 0.46;
-const dpGlyphIndex = (g) => DP_GLYPHS.indexOf(g);
-const dpAngle = (idx) => (-90 + idx * (360 / (DP_GLYPHS.length || 5))) * Math.PI / 180;
-const dpIv = (r) => (r && r.intensity != null ? r.intensity : 0.42);
-const DP_GAP = 0.075;
-const dpLayout = (list) => {
+const DS_GLYPHS = window.RX_GLYPHS || [];
+const DS_MAXR = 0.46;
+const dsGlyphIndex = (g) => DS_GLYPHS.indexOf(g);
+const dsAngle = (idx) => (-90 + idx * (360 / (DS_GLYPHS.length || 5))) * Math.PI / 180;
+const dsIv = (r) => (r && r.intensity != null ? r.intensity : 0.42);
+const DS_GAP = 0.075;
+const dsLayout = (list) => {
   const arr = list || [];
   const groups = {};
-  arr.forEach((r, i) => { const idx = r && r.glyph ? dpGlyphIndex(r.glyph) : -1; (groups[idx] = groups[idx] || []).push(i); });
+  arr.forEach((r, i) => { const idx = r && r.glyph ? dsGlyphIndex(r.glyph) : -1; (groups[idx] = groups[idx] || []).push(i); });
   const anchor = {};
   Object.keys(groups).forEach((key) => {
     const idx = Number(key);
     const ids = groups[idx];
-    const mean = ids.reduce((s, i) => s + dpIv(arr[i]), 0) / ids.length;
+    const mean = ids.reduce((s, i) => s + dsIv(arr[i]), 0) / ids.length;
     let rr = idx >= 0 ? 0.13 + mean * 0.20 : 0.05;
     rr = Math.max(0.1, Math.min(0.34, rr));
     anchor[idx] = { rr, mean };
   });
   const seen = {};
   const pts = arr.map((r) => {
-    const idx = r && r.glyph ? dpGlyphIndex(r.glyph) : -1;
+    const idx = r && r.glyph ? dsGlyphIndex(r.glyph) : -1;
     const n = (groups[idx] || []).length;
     const k = (seen[idx] = (seen[idx] == null ? 0 : seen[idx] + 1));
-    const base = idx >= 0 ? dpAngle(idx) : -Math.PI / 2;
-    const A = anchor[idx] || { rr: 0.13 + dpIv(r) * 0.20, mean: dpIv(r) };
+    const base = idx >= 0 ? dsAngle(idx) : -Math.PI / 2;
+    const A = anchor[idx] || { rr: 0.13 + dsIv(r) * 0.20, mean: dsIv(r) };
     const ax = 0.5 + Math.cos(base) * A.rr, ay = 0.5 + Math.sin(base) * A.rr;
     if (n === 1) return { x: ax, y: ay };
     const ur = [Math.cos(base), Math.sin(base)];
     const ut = [-Math.sin(base), Math.cos(base)];
     const ang = k * 2.399963;
-    const pr = DP_GAP * 0.95 * Math.sqrt(k);
+    const pr = DS_GAP * 0.95 * Math.sqrt(k);
     const tan = Math.cos(ang) * pr;
-    const rad = Math.sin(ang) * pr + (dpIv(r) - A.mean) * 0.16;
+    const rad = Math.sin(ang) * pr + (dsIv(r) - A.mean) * 0.16;
     return { x: ax + ut[0] * tan + ur[0] * rad, y: ay + ut[1] * tan + ur[1] * rad };
   });
-  const halfOf = (r) => 0.05 + dpIv(r) * 0.045;
+  const halfOf = (r) => 0.05 + dsIv(r) * 0.045;
   for (let it = 0; it < 26; it++) {
     let moved = false;
     for (let a = 0; a < pts.length; a++) {
@@ -8774,7 +9311,7 @@ const dpLayout = (list) => {
         }
       }
     }
-    for (const p of pts) { const cx = p.x - 0.5, cy = p.y - 0.5, dd = Math.hypot(cx, cy); if (dd > DP_MAXR) { p.x = 0.5 + cx * DP_MAXR / dd; p.y = 0.5 + cy * DP_MAXR / dd; } }
+    for (const p of pts) { const cx = p.x - 0.5, cy = p.y - 0.5, dd = Math.hypot(cx, cy); if (dd > DS_MAXR) { p.x = 0.5 + cx * DS_MAXR / dd; p.y = 0.5 + cy * DS_MAXR / dd; } }
     if (!moved) break;
   }
   return pts;
@@ -8784,28 +9321,28 @@ const dpLayout = (list) => {
 // One issue a week. Three have printed; the fourth is still open, and everything
 // written now goes into it. Dates are relative to the session so the shelf is
 // always inhabited and the pending issue always has a date still ahead of it.
-const DP_DAY = 864e5;
-const DP_T0 = Date.now();
-const dpAt = (days) => DP_T0 + days * DP_DAY;
-const dpDateLabel = (ms) => new Date(ms).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const DS_DAY = 864e5;
+const DS_T0 = Date.now();
+const dsAt = (days) => DS_T0 + days * DS_DAY;
+const dsDateLabel = (ms) => new Date(ms).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
 // Seeded issues, oldest first. `items` is the period's running order — the
 // entries the issue printed. `r1` prints twice: it was carried once already, so
 // a spine exists before the reviewer touches anything.
-const DP_ISSUES = [
-  { id: 'i-3', at: dpAt(-15), items: ['r4', 'r3'] },
-  { id: 'i-2', at: dpAt(-8), items: ['r1', 'r2'] },
-  { id: 'i-1', at: dpAt(-1), items: ['a4', 'a5', 'a7', 'a2', 'a1', 'r1'] },
+const DS_ISSUES = [
+  { id: 'i-3', at: dsAt(-15), items: ['r4', 'r3'] },
+  { id: 'i-2', at: dsAt(-8), items: ['r1', 'r2'] },
+  { id: 'i-1', at: dsAt(-1), items: ['a4', 'a5', 'a7', 'a2', 'a1', 'r1'] },
 ];
-const DP_PENDING = { id: 'pending', at: dpAt(6), items: [] };
-const DP_SEQ = [...DP_ISSUES.map((i) => i.id), DP_PENDING.id];
-const dpIssue = (id) => (id === DP_PENDING.id ? DP_PENDING : DP_ISSUES.find((i) => i.id === id) || null);
-const DP_CURRENT = 'i-1';
+const DS_PENDING = { id: 'pending', at: dsAt(6), items: [] };
+const DS_SEQ = [...DS_ISSUES.map((i) => i.id), DS_PENDING.id];
+const dsIssue = (id) => (id === DS_PENDING.id ? DS_PENDING : DS_ISSUES.find((i) => i.id === id) || null);
+const DS_CURRENT = 'i-1';
 
 // ---- Lines -------------------------------------------------------------------
 // A line is one thing a member said in a period: the sharer's thought (the
 // entry's opening line) or a reader's line given back on reading.
-const dpLines = (item) => {
+const dsLines = (item) => {
   const out = [];
   if (item.thought) {
     out.push({
@@ -8821,17 +9358,17 @@ const dpLines = (item) => {
 
 // Which issues an entry has run in, in cadence order. Seeded runs, plus anything
 // the reviewer has carried, plus the pending issue once a line is set for it.
-const dpRuns = (ctx, item) => {
+const dsRuns = (ctx, item) => {
   const carried = ((ctx.state && ctx.state.carried) || {})[item.id] || [];
-  const pendingLine = dpLines(item).some((l) => l.issue === DP_PENDING.id);
+  const pendingLine = dsLines(item).some((l) => l.issue === DS_PENDING.id);
   const set = {};
-  DP_ISSUES.forEach((is) => { if (is.items.indexOf(item.id) >= 0) set[is.id] = true; });
+  DS_ISSUES.forEach((is) => { if (is.items.indexOf(item.id) >= 0) set[is.id] = true; });
   carried.forEach((id) => { set[id] = true; });
-  if (pendingLine) set[DP_PENDING.id] = true;
-  const runs = DP_SEQ.filter((id) => set[id]);
+  if (pendingLine) set[DS_PENDING.id] = true;
+  const runs = DS_SEQ.filter((id) => set[id]);
   // Nothing seeded and nothing carried — a link the reviewer added themselves.
   // Its thought was written this period, so it prints in the next issue.
-  return runs.length ? runs : [DP_PENDING.id];
+  return runs.length ? runs : [DS_PENDING.id];
 };
 
 // Which of an entry's runs a line prints in. An explicit issue wins — that is
@@ -8839,28 +9376,28 @@ const dpRuns = (ctx, item) => {
 // has not printed yet. Everything else resolves against the PRINTED runs: the
 // period that contains it, clamped to the nearest end so no line is ever
 // silently dropped, and never pulled forward out of an issue that has landed.
-const dpRunFor = (line, runs) => {
+const dsRunFor = (line, runs) => {
   if (line.issue) return line.issue;
-  const real = runs.filter((id) => id !== DP_PENDING.id);
-  if (!real.length) return DP_PENDING.id;
+  const real = runs.filter((id) => id !== DS_PENDING.id);
+  if (!real.length) return DS_PENDING.id;
   for (let i = 0; i < real.length; i++) {
-    const is = dpIssue(real[i]);
-    if (is && line.at > is.at - 7 * DP_DAY && line.at <= is.at) return real[i];
+    const is = dsIssue(real[i]);
+    if (is && line.at > is.at - 7 * DS_DAY && line.at <= is.at) return real[i];
   }
-  const first = dpIssue(real[0]);
+  const first = dsIssue(real[0]);
   if (first && line.at <= first.at) return real[0];
   return real[real.length - 1];
 };
 
-const dpLinesIn = (ctx, item, issueId) => {
-  const runs = dpRuns(ctx, item);
-  return dpLines(item).filter((l) => dpRunFor(l, runs) === issueId);
+const dsLinesIn = (ctx, item, issueId) => {
+  const runs = dsRuns(ctx, item);
+  return dsLines(item).filter((l) => dsRunFor(l, runs) === issueId);
 };
 
 // The entries an issue carries, in the period's running order.
-const dpEntries = (ctx, issueId) => {
-  const seeded = (dpIssue(issueId) || { items: [] }).items;
-  const carrying = ctx.items.filter((it) => dpRuns(ctx, it).indexOf(issueId) >= 0);
+const dsEntries = (ctx, issueId) => {
+  const seeded = (dsIssue(issueId) || { items: [] }).items;
+  const carrying = ctx.items.filter((it) => dsRuns(ctx, it).indexOf(issueId) >= 0);
   const bySeed = [];
   seeded.forEach((id) => { const hit = carrying.find((it) => it.id === id); if (hit) bySeed.push(hit); });
   carrying.forEach((it) => { if (bySeed.indexOf(it) < 0) bySeed.push(it); });
@@ -8868,42 +9405,42 @@ const dpEntries = (ctx, issueId) => {
 };
 
 // A member's reaction on an item — the rung their lines print under.
-const dpReactionOf = (ctx, item, by) => {
+const dsReactionOf = (ctx, item, by) => {
   const name = by === 'you' ? 'You' : ctx.nameOf(by);
   let hit = null;
   (item.reactions || []).forEach((r) => { if (r && r.name === name) hit = r; });
   return hit;
 };
-const dpRungOf = (ctx, item, by) => {
-  const rx = dpReactionOf(ctx, item, by);
-  return rx && rx.glyph ? dpLevel(rx.intensity) : 0;
+const dsRungOf = (ctx, item, by) => {
+  const rx = dsReactionOf(ctx, item, by);
+  return rx && rx.glyph ? dsLevel(rx.intensity) : 0;
 };
 
 // Rung sections, deepest first. A section with nothing in it does not print.
-const DP_RUNGS = [
+const DS_RUNGS = [
   [3, 'Deeply'], [2, 'Moderately'], [1, 'A little'], [0, 'Read, no reaction'],
 ];
 
 // ============================================================================
 // Shared setting.
 // ============================================================================
-const DP_KICKER = {
+const DS_KICKER = {
   fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.14em',
   textTransform: 'uppercase', color: 'var(--color-fg-3)',
 };
-const DP_META = {
+const DS_META = {
   fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.03em',
   color: 'var(--color-fg-3)',
 };
-const DP_LEAD = {
+const DS_LEAD = {
   fontFamily: 'var(--font-sans)', fontSize: 17, lineHeight: 1.58,
   color: 'var(--color-fg-1)', textWrap: 'pretty', minWidth: 0,
 };
-const DP_BODY = {
+const DS_BODY = {
   fontFamily: 'var(--font-sans)', fontSize: 15, lineHeight: 1.6,
   color: 'var(--color-fg-1)', textWrap: 'pretty', minWidth: 0,
 };
-const DP_TEXTAREA = {
+const DS_TEXTAREA = {
   width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-sans)',
   fontSize: 16, lineHeight: 1.5, color: 'var(--color-fg-1)',
   padding: '10px 12px', borderRadius: 'var(--radius-md)',
@@ -8913,10 +9450,10 @@ const DP_TEXTAREA = {
 
 // The circle's settled swell, as a shape. Passive: no roster, no names, nothing
 // countable. Nobody has reacted, or everyone skipped -> no shape at all.
-const DpShape = ({ item, size = 74 }) => {
+const DsShape = ({ item, size = 74 }) => {
   const live = (item.reactions || []).filter((r) => r && r.glyph);
   if (!live.length) return null;
-  const pts = dpLayout(live);
+  const pts = dsLayout(live);
   return (
     <div aria-hidden="true" style={{
       position: 'relative', width: size, height: size, flexShrink: 0,
@@ -8927,7 +9464,7 @@ const DpShape = ({ item, size = 74 }) => {
         <span key={i} style={{
           position: 'absolute', left: pts[i].x * size, top: pts[i].y * size,
           transform: 'translate(-50%, -50%)', lineHeight: 1,
-          fontSize: 10 + dpIv(r) * 6,
+          fontSize: 10 + dsIv(r) * 6,
         }}>{r.glyph}</span>
       ))}
     </div>
@@ -8935,7 +9472,7 @@ const DpShape = ({ item, size = 74 }) => {
 };
 
 // How many issues an entry has run, as a stack of hairlines. Never a number.
-const DpSpine = ({ runs }) => (
+const DsSpine = ({ runs }) => (
   <span aria-hidden="true" style={{ display: 'inline-flex', flexDirection: 'column', gap: 3, paddingTop: 5, flexShrink: 0 }}>
     {runs.map((id) => (
       <span key={id} style={{ display: 'block', width: 16, height: 1, background: 'var(--color-fg-3)' }} />
@@ -8944,24 +9481,24 @@ const DpSpine = ({ runs }) => (
 );
 
 // The app's own divider treatment, carrying the rung's name.
-const DpRule = ({ label }) => (
+const DsRule = ({ label }) => (
   <div className="circ-fdiv" role="separator" aria-label={label}>
     <span className="circ-fdiv-label">{label}</span>
   </div>
 );
 
 // One printed line: who said it, the glyph they gave the item, the words.
-const DpLine = ({ ctx, item, line }) => {
-  const rx = dpReactionOf(ctx, item, line.by);
+const DsLine = ({ ctx, item, line }) => {
+  const rx = dsReactionOf(ctx, item, line.by);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
-        <span style={{ ...DP_KICKER, color: 'var(--color-fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ ...DS_KICKER, color: 'var(--color-fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {ctx.nameOf(line.by)}
         </span>
         {rx && rx.glyph && <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1, flexShrink: 0 }}>{rx.glyph}</span>}
       </div>
-      <div style={DP_BODY}>{line.text}</div>
+      <div style={DS_BODY}>{line.text}</div>
     </div>
   );
 };
@@ -8970,18 +9507,18 @@ const DpLine = ({ ctx, item, line }) => {
 // An entry. The item, the circle's shape, the sharer's opening line, and the
 // readers' lines grouped under the rung they gave it.
 // ============================================================================
-const DpEntry = ({ ctx, issueId, item, wide }) => {
-  const [draft, setDraft] = dpS('');
-  const runs = dpRuns(ctx, item);
-  const pending = issueId === DP_PENDING.id;
+const DsEntry = ({ ctx, issueId, item, wide }) => {
+  const [draft, setDraft] = dsS('');
+  const runs = dsRuns(ctx, item);
+  const pending = issueId === DS_PENDING.id;
   // An issue that has not printed shows you your own words and nobody else's.
   // Nothing anyone has set for it is readable until it lands, for everyone, at
   // the same moment — which is the whole of the direction's answer to the
   // early passer.
-  const lines = dpLinesIn(ctx, item, issueId).filter((l) => !pending || l.by === 'you');
+  const lines = dsLinesIn(ctx, item, issueId).filter((l) => !pending || l.by === 'you');
   const lead = pending ? null : (lines.find((l) => l.lead) || null);
   const rest = lines.filter((l) => l !== lead);
-  const carriedOn = runs.indexOf(DP_PENDING.id) >= 0;
+  const carriedOn = runs.indexOf(DS_PENDING.id) >= 0;
   const source = item.source || (window.pgd7Host ? window.pgd7Host(item.url) : item.url);
   const title = item.title || (window.pgd7TitleFromUrl ? window.pgd7TitleFromUrl(item.url) : null) || item.url.replace(/^https?:\/\//, '');
 
@@ -8989,43 +9526,54 @@ const DpEntry = ({ ctx, issueId, item, wide }) => {
     ctx.setState((s) => {
       const map = (s && s.carried) || {};
       const had = map[item.id] || [];
-      if (had.indexOf(DP_PENDING.id) >= 0) return {};
-      return { carried: { ...map, [item.id]: [...had, DP_PENDING.id] }, open: DP_PENDING.id };
+      if (had.indexOf(DS_PENDING.id) >= 0) return {};
+      return { carried: { ...map, [item.id]: [...had, DS_PENDING.id] }, open: DS_PENDING.id };
     });
   };
   const write = () => {
     const t = draft.trim();
     if (!t) return;
-    ctx.actions.respond(item.id, { text: t, register: 'takeaway', issue: DP_PENDING.id });
+    ctx.actions.respond(item.id, { text: t, register: 'takeaway', issue: DS_PENDING.id });
     setDraft('');
   };
 
   return (
-    <article id={'dp-entry-' + issueId + '-' + item.id} style={{
+    <article id={'ds-entry-' + issueId + '-' + item.id} style={{
       display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0,
       paddingTop: 22, borderTop: '1px solid var(--color-border-2)',
     }}>
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', minWidth: 0 }}>
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <span style={{ ...DP_KICKER, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</span>
-            {runs.length > 1 && <DpSpine runs={runs} />}
+            <span style={{ ...DS_KICKER, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{source}</span>
+            {runs.length > 1 && <DsSpine runs={runs} />}
           </div>
           <a href={item.url} target="_blank" rel="noopener noreferrer" className="circ-cardtitle" style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: wide ? 21 : 19,
             lineHeight: 1.25, letterSpacing: '-0.015em', color: 'var(--color-fg-1)',
             textDecoration: 'none', textWrap: 'pretty',
           }}>{title}</a>
+          {/* The item's own attribution row, set in type rather than faces —
+              and at its right edge the SHIPPED Swell door, mounted, so the disc
+              for this item opens without leaving the issue. The door renders
+              nothing until somebody has read the item, exactly as it does on a
+              card, so a fresh entry simply has none. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, marginTop: 2 }}>
+            <span style={{ ...DS_META, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {item.attribution || ('Added by ' + ctx.nameOf(item.by))}
+            </span>
+            <span style={{ flexShrink: 0, marginRight: -13 }}><SwellDoor item={item} /></span>
+          </div>
         </div>
-        <DpShape item={item} size={wide ? 82 : 68} />
+        <DsShape item={item} size={wide ? 82 : 68} />
       </div>
 
       {lead && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-          <div style={DP_LEAD}>{lead.text}</div>
+          <div style={DS_LEAD}>{lead.text}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <span style={DP_KICKER}>{ctx.nameOf(lead.by)}</span>
-            {(() => { const rx = dpReactionOf(ctx, item, lead.by); return rx && rx.glyph
+            <span style={DS_KICKER}>{ctx.nameOf(lead.by)}</span>
+            {(() => { const rx = dsReactionOf(ctx, item, lead.by); return rx && rx.glyph
               ? <span aria-hidden="true" style={{ fontSize: 12, lineHeight: 1 }}>{rx.glyph}</span> : null; })()}
           </div>
         </div>
@@ -9036,14 +9584,14 @@ const DpEntry = ({ ctx, issueId, item, wide }) => {
           periodical view of the Swell rather than a system beside it. An issue
           still open holds only your own lines, so it has nothing to group. */}
       {pending
-        ? rest.map((l) => <DpLine key={l.key} ctx={ctx} item={item} line={l} />)
-        : DP_RUNGS.map(([level, label]) => {
-          const group = rest.filter((l) => dpRungOf(ctx, item, l.by) === level);
+        ? rest.map((l) => <DsLine key={l.key} ctx={ctx} item={item} line={l} />)
+        : DS_RUNGS.map(([level, label]) => {
+          const group = rest.filter((l) => dsRungOf(ctx, item, l.by) === level);
           if (!group.length) return null;
           return (
             <div key={level} style={{ display: 'flex', flexDirection: 'column', gap: 13, minWidth: 0 }}>
-              <DpRule label={label} />
-              {group.map((l) => <DpLine key={l.key} ctx={ctx} item={item} line={l} />)}
+              <DsRule label={label} />
+              {group.map((l) => <DsLine key={l.key} ctx={ctx} item={item} line={l} />)}
             </div>
           );
         })}
@@ -9051,13 +9599,13 @@ const DpEntry = ({ ctx, issueId, item, wide }) => {
       {pending ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <textarea rows={2} value={draft} placeholder="Write under it."
-            onChange={(e) => setDraft(e.target.value)} style={DP_TEXTAREA} />
+            onChange={(e) => setDraft(e.target.value)} style={DS_TEXTAREA} />
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="primary" size="sm" onClick={write}>Set it</Button>
           </div>
         </div>
       ) : carriedOn ? (
-        <div style={DP_META}>Carried to the next issue</div>
+        <div style={DS_META}>Carried to the next issue</div>
       ) : (
         <div><Button variant="ghost" size="sm" onClick={carry}>Carry to the next issue</Button></div>
       )}
@@ -9070,15 +9618,15 @@ const DpEntry = ({ ctx, issueId, item, wide }) => {
 // end — a printed issue has a bottom of the page. The pending one has no end,
 // because it has not been printed.
 // ============================================================================
-const DpIssue = ({ ctx, issueId, wide }) => {
-  const issue = dpIssue(issueId);
+const DsIssue = ({ ctx, issueId, wide }) => {
+  const issue = dsIssue(issueId);
   if (!issue) return null;
-  const pending = issueId === DP_PENDING.id;
-  const entries = dpEntries(ctx, issueId);
+  const pending = issueId === DS_PENDING.id;
+  const entries = dsEntries(ctx, issueId);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
       <header style={{ display: 'flex', flexDirection: 'column', gap: 9, minWidth: 0 }}>
-        <span style={DP_KICKER}>{pending ? 'Next issue' : 'Dispatch'}</span>
+        <span style={DS_KICKER}>{pending ? 'Next issue' : 'Dispatch'}</span>
         <div style={{
           fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: wide ? 30 : 25,
           lineHeight: 1.1, letterSpacing: '-0.025em', color: 'var(--color-fg-1)', textWrap: 'balance',
@@ -9088,19 +9636,19 @@ const DpIssue = ({ ctx, issueId, wide }) => {
           <div style={{ height: 3 }} />
           <div style={{ height: 1, background: 'var(--color-border-1)' }} />
         </div>
-        <div style={{ ...DP_META, color: 'var(--color-fg-2)' }}>
-          {pending ? 'Prints ' + dpDateLabel(issue.at) : dpDateLabel(issue.at)}
+        <div style={{ ...DS_META, color: 'var(--color-fg-2)' }}>
+          {pending ? 'Prints ' + dsDateLabel(issue.at) : dsDateLabel(issue.at)}
         </div>
       </header>
 
       {entries.map((item) => (
-        <DpEntry key={item.id} ctx={ctx} issueId={issueId} item={item} wide={wide} />
+        <DsEntry key={item.id} ctx={ctx} issueId={issueId} item={item} wide={wide} />
       ))}
 
       {!pending && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 6 }}>
           <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)' }} />
-          <div style={{ ...DP_KICKER, textAlign: 'center' }}>The issue ends</div>
+          <div style={{ ...DS_KICKER, textAlign: 'center' }}>The issue ends</div>
         </div>
       )}
     </div>
@@ -9112,14 +9660,14 @@ const DpIssue = ({ ctx, issueId, wide }) => {
 // issues sit here and are never pushed — a late joiner is handed one bounded
 // document, not a history.
 // ============================================================================
-const DpShelf = ({ ctx, openId, onOpen }) => {
-  const rows = [DP_PENDING, ...DP_ISSUES.slice().reverse()];
+const DsShelf = ({ ctx, openId, onOpen }) => {
+  const rows = [DS_PENDING, ...DS_ISSUES.slice().reverse()];
   return (
     <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-      <DpRule label="The shelf" />
+      <DsRule label="The shelf" />
       {rows.map((is) => {
         const on = is.id === openId;
-        const pending = is.id === DP_PENDING.id;
+        const pending = is.id === DS_PENDING.id;
         return (
           <button key={is.id} type="button" onClick={() => onOpen(is.id)} style={{
             position: 'relative', textAlign: 'left', cursor: 'pointer', border: 0,
@@ -9132,7 +9680,7 @@ const DpShelf = ({ ctx, openId, onOpen }) => {
               fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.02em',
               color: on ? 'var(--color-fg-1)' : 'var(--color-fg-2)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1,
-            }}>{pending ? 'Prints ' + dpDateLabel(is.at) : dpDateLabel(is.at)}</span>
+            }}>{pending ? 'Prints ' + dsDateLabel(is.at) : dsDateLabel(is.at)}</span>
           </button>
         );
       })}
@@ -9142,15 +9690,15 @@ const DpShelf = ({ ctx, openId, onOpen }) => {
 
 // The entries of the open issue, as a running order you can jump into. Sidebar
 // only — the narrow page is one scroll with a last page, and needs no index.
-const DpContents = ({ ctx, issueId }) => {
-  const entries = dpEntries(ctx, issueId);
+const DsContents = ({ ctx, issueId }) => {
+  const entries = dsEntries(ctx, issueId);
   if (!entries.length) return null;
   return (
     <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-      <DpRule label="In this issue" />
+      <DsRule label="In this issue" />
       {entries.map((item) => (
         <button key={item.id} type="button" onClick={() => {
-          const el = document.getElementById('dp-entry-' + issueId + '-' + item.id);
+          const el = document.getElementById('ds-entry-' + issueId + '-' + item.id);
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }} style={{
           textAlign: 'left', cursor: 'pointer', border: 0, background: 'transparent',
@@ -9176,10 +9724,10 @@ const DpContents = ({ ctx, issueId }) => {
 // document keeps a reading measure; without it, one scroll, and the shelf sits
 // after the end where it is opt-in rather than pushed.
 // ============================================================================
-const DpPage = ({ ctx }) => {
-  const hostRef = dpR(null);
-  const [w, setW] = dpS(0);
-  dpE(() => {
+const DsPage = ({ ctx }) => {
+  const hostRef = dsR(null);
+  const [w, setW] = dsS(0);
+  dsE(() => {
     const el = hostRef.current;
     if (!el) return undefined;
     const read = () => setW(el.getBoundingClientRect().width);
@@ -9193,7 +9741,7 @@ const DpPage = ({ ctx }) => {
     return () => ro.disconnect();
   }, []);
 
-  const openId = (ctx.state && ctx.state.open) || DP_CURRENT;
+  const openId = (ctx.state && ctx.state.open) || DS_CURRENT;
   const setOpen = (id) => ctx.setState({ open: id });
   // 740 is the width at which a 200px sidebar and a reading measure both fit
   // inside the app column at the desktop minimum (1024 less the rail).
@@ -9207,13 +9755,13 @@ const DpPage = ({ ctx }) => {
       }}>
         {wide && (
           <div style={{ width: 200, flexShrink: 0, position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <DpShelf ctx={ctx} openId={openId} onOpen={setOpen} />
-            <DpContents ctx={ctx} issueId={openId} />
+            <DsShelf ctx={ctx} openId={openId} onOpen={setOpen} />
+            <DsContents ctx={ctx} issueId={openId} />
           </div>
         )}
         <div style={{ flex: 1, minWidth: 0, maxWidth: 660, display: 'flex', flexDirection: 'column', gap: 30 }}>
-          <DpIssue ctx={ctx} issueId={openId} wide={wide} />
-          {!wide && <DpShelf ctx={ctx} openId={openId} onOpen={setOpen} />}
+          <DsIssue ctx={ctx} issueId={openId} wide={wide} />
+          {!wide && <DsShelf ctx={ctx} openId={openId} onOpen={setOpen} />}
         </div>
       </div>
     </div>
@@ -9221,39 +9769,85 @@ const DpPage = ({ ctx }) => {
 };
 
 // ============================================================================
-// The band above the tabs. MOBILE.md leaves no fourth bar slot, so this is the
-// dispatch's home in every posture: one line, announcing the current issue,
-// pushing to the page.
+// The slot above the tabs — the dispatch's whole home, in three states.
+// ----------------------------------------------------------------------------
+//   band      an issue has landed and you have not opened it. Title and date at
+//             reading weight. Its presence is the signal: no mark, no count, no
+//             word for how many. A periodical either has landed or it has not.
+//   hairline  everything else. One line, the last issue's date, metadata size,
+//             no emphasis. This is the permanent front door, so an issue is
+//             never unreachable — and it is the honest price of the route.
+// Both press through to the same page. Opening the issue collapses the band and
+// it does not come back for that issue.
 // ============================================================================
-const DpBanner = ({ ctx }) => {
-  const issue = dpIssue(DP_CURRENT);
+const DsBanner = ({ ctx }) => {
+  const issue = dsIssue(DS_CURRENT);
+  const opened = ((ctx.state && ctx.state.opened) || {})[DS_CURRENT];
+  const landed = !opened;
+  const open = () => ctx.setState((st) => ({
+    open: DS_CURRENT,
+    opened: { ...((st && st.opened) || {}), [DS_CURRENT]: true },
+  }));
+
+  const dsSlotBase = {
+    display: 'flex', alignItems: 'center', width: '100%',
+    cursor: 'pointer', textAlign: 'left',
+    background: 'var(--color-surface)', border: 0,
+    borderBottom: '1px solid var(--color-border-2)',
+  };
+
+  if (landed) {
+    return (
+      <button type="button" onClick={() => { open(); ctx.openContinue(); }} className="ds8-slot"
+        style={{ ...dsSlotBase, gap: 12, minHeight: 60, padding: '10px 16px' }}>
+        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <span style={{
+            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, lineHeight: 1.3,
+            letterSpacing: '-0.01em', color: 'var(--color-fg-1)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{ctx.circle.name}</span>
+          <span style={{ ...DS_META, color: 'var(--color-fg-2)' }}>{dsDateLabel(issue.at)}</span>
+        </span>
+        <span style={{ flexShrink: 0, color: 'var(--color-fg-3)' }}><Icon name="chevron-right" size={16} /></span>
+      </button>
+    );
+  }
+
   return (
-    <button type="button" onClick={() => { ctx.setState({ open: DP_CURRENT }); ctx.openContinue(); }} style={{
-      display: 'flex', alignItems: 'center', gap: 10, width: '100%', minHeight: 44,
-      padding: '0 16px', cursor: 'pointer', textAlign: 'left',
-      background: 'var(--color-surface)', border: 0,
-      borderBottom: '1px solid var(--color-border-2)',
-    }}>
-      <span style={DP_KICKER}>Dispatch</span>
+    <button type="button" onClick={() => { open(); ctx.openContinue(); }} className="ds8-slot"
+      aria-label={'Dispatch, ' + dsDateLabel(issue.at)}
+      style={{ ...dsSlotBase, gap: 8, minHeight: 30, padding: '0 16px' }}>
+      <span style={{ ...DS_KICKER, flexShrink: 0 }}>Dispatch</span>
       <span style={{
-        flex: 1, minWidth: 0, fontFamily: 'var(--font-mono)', fontSize: 12,
-        color: 'var(--color-fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-      }}>{dpDateLabel(issue.at)}</span>
-      <span style={{ flexShrink: 0, color: 'var(--color-fg-3)' }}><Icon name="chevron-right" size={16} /></span>
+        flex: 1, minWidth: 0, ...DS_META,
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}>{dsDateLabel(issue.at)}</span>
     </button>
   );
 };
+
+// The one rule inline styles cannot carry: the slot answers the pointer,
+// because it is pressable in both of its states.
+const DS_CSS = `
+.ds8-slot:hover { background: var(--color-surface-sunken); }
+`;
+if (typeof document !== 'undefined' && !document.getElementById('ds8-css')) {
+  const dsStyleEl = document.createElement('style');
+  dsStyleEl.id = 'ds8-css';
+  dsStyleEl.textContent = DS_CSS;
+  document.head.appendChild(dsStyleEl);
+}
 
 // ============================================================================
 // The card face — a mark, not a line. A thin rule and the word Thought under the
 // attribution, at metadata size. No content, no preview, no author beyond the
 // attribution the card already carries. Nothing attached, nothing printed.
 // ============================================================================
-const DpCard = ({ item }) => {
+const DsCard = ({ item }) => {
   if (!item.thought) return null;
   return (
     <div style={{ marginTop: 11, paddingTop: 9, borderTop: '1px solid var(--color-border-2)' }}>
-      <span style={DP_KICKER}>Thought</span>
+      <span style={DS_KICKER}>Thought</span>
     </div>
   );
 };
@@ -9262,11 +9856,11 @@ const DpCard = ({ item }) => {
 // Beat 1 — attach. Written at share, held. The field says where the words go and
 // when, and the card will show only that they exist.
 // ============================================================================
-const DpCompose = ({ draft, setDraft, submit }) => (
+const DsCompose = ({ draft, setDraft, submit }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
     <textarea rows={3} value={draft.text} placeholder="Say what you make of it."
-      onChange={(e) => setDraft({ ...draft, text: e.target.value })} style={DP_TEXTAREA} />
-    <div style={DP_META}>Prints {dpDateLabel(DP_PENDING.at)}</div>
+      onChange={(e) => setDraft({ ...draft, text: e.target.value })} style={DS_TEXTAREA} />
+    <div style={DS_META}>Prints {dsDateLabel(DS_PENDING.at)}</div>
     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
       <Button variant="secondary" onClick={() => submit(null)}>Skip</Button>
       <Button variant="primary" onClick={() => submit(draft.text.trim() ? { text: draft.text.trim(), register: 'gist' } : null)}>Attach</Button>
@@ -9284,20 +9878,20 @@ const DpCompose = ({ draft, setDraft, submit }) => (
 // The line prints under the rung you just gave the item, which is where the
 // reaction layer and the words meet.
 // ============================================================================
-const DpAdd = ({ ctx, item, close }) => {
-  const [draft, setDraft] = dpS('');
-  const mine = dpReactionOf(ctx, item, 'you');
-  const rung = mine && mine.glyph ? DP_DEPTH_WORDS[dpLevel(mine.intensity) - 1] : null;
-  const runs = dpRuns(ctx, item);
-  const held = dpLinesIn(ctx, item, DP_PENDING.id).filter((l) => l.by === 'you');
-  const printed = runs.filter((id) => id !== DP_PENDING.id);
+const DsAdd = ({ ctx, item, close }) => {
+  const [draft, setDraft] = dsS('');
+  const mine = dsReactionOf(ctx, item, 'you');
+  const rung = mine && mine.glyph ? DS_DEPTH_WORDS[dsLevel(mine.intensity) - 1] : null;
+  const runs = dsRuns(ctx, item);
+  const held = dsLinesIn(ctx, item, DS_PENDING.id).filter((l) => l.by === 'you');
+  const printed = runs.filter((id) => id !== DS_PENDING.id);
   const source = item.source || (window.pgd7Host ? window.pgd7Host(item.url) : '');
   const title = item.title || item.url.replace(/^https?:\/\//, '');
 
   const set = () => {
     const t = draft.trim();
     if (!t) return;
-    ctx.actions.respond(item.id, { text: t, register: 'reflection', issue: DP_PENDING.id });
+    ctx.actions.respond(item.id, { text: t, register: 'reflection', issue: DS_PENDING.id });
     setDraft('');
     close();
   };
@@ -9305,7 +9899,7 @@ const DpAdd = ({ ctx, item, close }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <div style={{ paddingRight: 34, display: 'flex', flexDirection: 'column', gap: 5 }}>
-        <span style={DP_KICKER}>{source}</span>
+        <span style={DS_KICKER}>{source}</span>
         <div style={{
           fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, lineHeight: 1.28,
           letterSpacing: '-0.015em', color: 'var(--color-fg-1)', textWrap: 'pretty',
@@ -9313,13 +9907,13 @@ const DpAdd = ({ ctx, item, close }) => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <span style={DP_META}>Prints {dpDateLabel(DP_PENDING.at)}</span>
+        <span style={DS_META}>Prints {dsDateLabel(DS_PENDING.at)}</span>
         {rung && (
           <React.Fragment>
-            <span aria-hidden="true" style={{ ...DP_META, color: 'var(--color-border-strong)' }}>·</span>
+            <span aria-hidden="true" style={{ ...DS_META, color: 'var(--color-border-strong)' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span aria-hidden="true" style={{ fontSize: 13, lineHeight: 1 }}>{mine.glyph}</span>
-              <span style={DP_META}>under {rung}</span>
+              <span style={DS_META}>under {rung}</span>
             </span>
           </React.Fragment>
         )}
@@ -9331,13 +9925,13 @@ const DpAdd = ({ ctx, item, close }) => {
           background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
           borderRadius: 'var(--radius-md)', padding: '12px 12px 11px',
         }}>
-          <span style={DP_KICKER}>Yours</span>
-          {held.map((l) => <div key={l.key} style={DP_BODY}>{l.text}</div>)}
+          <span style={DS_KICKER}>Yours</span>
+          {held.map((l) => <div key={l.key} style={DS_BODY}>{l.text}</div>)}
         </div>
       )}
 
       <textarea rows={3} value={draft} placeholder="Say what you carry away."
-        onChange={(e) => setDraft(e.target.value)} style={DP_TEXTAREA} />
+        onChange={(e) => setDraft(e.target.value)} style={DS_TEXTAREA} />
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
         <Button variant="secondary" onClick={close}>Say nothing</Button>
@@ -9367,13 +9961,13 @@ PGD7.register({
   // reaction is immediate and on the card; the words are on a cadence, and this
   // is where the direction pays for that separation.
   landingMerged: false,
-  initialState: { open: DP_CURRENT, carried: {} },
-  Card: DpCard,
-  Banner: DpBanner,
-  Compose: DpCompose,
-  Landing: DpAdd,
-  Respond: DpAdd,
-  Continue: DpPage,
+  initialState: { open: DS_CURRENT, carried: {}, opened: {} },
+  Card: DsCard,
+  Banner: DsBanner,
+  Compose: DsCompose,
+  Landing: DsAdd,
+  Respond: DsAdd,
+  Continue: DsPage,
   continueTitle: 'Dispatch',
   beats: {
     // Land on a card whose circle has already reacted, so the reveal has a shape
@@ -9393,9 +9987,10 @@ PGD7.register({
       api.setTab('read');
       api.openRespond(t);
     },
-    // The issue that landed this week, where an entry is carried forward.
+    // The issue that landed this week, where an entry is carried forward. The
+    // band collapses as it opens, exactly as it does when a member presses it.
     continue: (api) => {
-      api.setState({ open: DP_CURRENT });
+      api.setState((st) => ({ open: DS_CURRENT, opened: { ...((st && st.opened) || {}), [DS_CURRENT]: true } }));
       api.openContinue();
     },
   },
@@ -9424,16 +10019,45 @@ PGD7.register({
 // the write-over affordance sits directly under the depth just committed, on
 // the surface the Swell hands over to.
 //
+// THE ROUTE — THE LINE IS THE AFFORDANCE. There is no destination, no overlay,
+// and no button anywhere.
+//   contribution  the sharer writes the line at share; it is unowned the
+//                 instant it lands.
+//   reaction      untouched.
+//   reading       the shipped reveal, then the current line beneath the disc
+//                 with one affordance: write over it.
+//   continuation  ON THE CARD, IN THE FEED. On a Read card the line sits in the
+//                 description slot, framed by hairlines, unattributed. TAPPING
+//                 IT TURNS IT INTO A FIELD IN PLACE, current text present,
+//                 caret at the end. You edit one line and commit. NOTHING
+//                 OPENS. On an Active card the line is present but inert: you
+//                 have not read the item, so it reads as the object's
+//                 description, which is exactly what it is.
+// Giving succession a modal was rejected. Overwriting one line needs one line
+// of surface, and ceremony around the act would make it feel like an edit war
+// when the whole social permission of the direction is that improving a
+// description is casual and unremarkable. An inline field on a Read card is
+// also the one shape that cannot violate the Read-tab invariant — one line is
+// not a floating mass of conversation. Nothing is destroyable: the previous
+// line is in the strata the moment you commit, which is what makes editing in
+// place safe enough to sit in a feed.
+//
 // THE RETURN DEVICE — when your line is written over, the object comes back to
-// you quietly, in the shipped liveliness grammar (MicroDot, one word, no
-// count). No surface is held open; the erasure does the calling back.
+// you quietly, in the shipped liveliness grammar (MicroDot, the shipped glow as
+// the card comes into view, one word, no count). No surface is held open; the
+// erasure does the calling back. A CHANGED CARD RISES TO THE TOP OF READ — that
+// is ordering, not signalling: no count, no badge, nothing owed. It follows
+// from the claim, too. The object's latest state is what matters, so the tab
+// shows objects by latest state. The sharpest cost in the direction is exactly
+// here: Read is the pile you finished with, and a pile that rearranges itself
+// is unsettling in a product whose floor is calm.
 //
 // PRIVATE STATE — `strata[itemId]` is the whole succession, oldest first, the
 // last entry being the line the card currently carries. Seeded from each item's
 // own thought plus the amendments the circle has already made.
 // ============================================================================
 
-const { PGD7, Button } = window;
+const { PGD7, Button, CircGlow, MicroDot } = window;
 const { useState: pmS, useRef: pmR, useEffect: pmE } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -9661,28 +10285,90 @@ const PmWriteOver = ({ ctx, item, covering, onDone, onCancel, autoFocus = false 
 };
 
 // ============================================================================
+// Writing over, IN PLACE — the continuation act, on the card, in the feed.
+// ----------------------------------------------------------------------------
+// The plate becomes a field with the line already in it and the caret at the
+// end. No sheet, no page, no ceremony: you improve the description of the
+// object while looking at the object. Escape leaves it, Enter commits, and the
+// line you covered is in the strata the moment you do.
+// ============================================================================
+const PmInline = ({ ctx, item, line, onDone }) => {
+  const [text, setText] = pmS(line ? line.text : '');
+  const ref = pmR(null);
+  pmE(() => {
+    const el = ref.current;
+    if (!el) return;
+    // GOTCHA #1 — a focus inside a feed must never scroll the feed under the
+    // reader's thumb.
+    el.focus({ preventScroll: true });
+    const n = el.value.length;
+    try { el.setSelectionRange(n, n); } catch (e) {}
+  }, []);
+  const ready = !!text.trim() && text.trim() !== (line ? line.text : '');
+  const commit = () => { if (ready) pmWrite(ctx, item, text); onDone(); };
+  return (
+    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <textarea ref={ref} rows={3} value={text}
+        onChange={(e) => setText(e.target.value.replace(/\s*\n+\s*/g, ' '))}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') { e.preventDefault(); onDone(); }
+          else if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        }}
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 14,
+          lineHeight: 1.5, letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-1)',
+          padding: '8px 10px', borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border-1)', background: 'var(--color-surface)',
+          resize: 'vertical',
+        }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        <Button variant="secondary" size="sm" onClick={onDone}>Leave it</Button>
+        <Button variant="primary" size="sm" disabled={!ready} onClick={commit}>Write over it</Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // The card face — the museum plate, in the description slot, under the title.
-// Tapping it goes where the object goes: the Swell if it is unread, the plate
-// itself if it is not.
+// ----------------------------------------------------------------------------
+// On a Read card the plate is the field waiting to be opened: tap it and it
+// becomes one, in place. On an Active card it is inert — you have not read the
+// item, so the line is simply the object's description, which is what it is.
+//
+// A card whose line has moved carries the shipped glow as it comes into view,
+// the same treatment an arriving card gets, for the same reason: something
+// landed.
 // ============================================================================
 const PmCard = ({ ctx, item, tab }) => {
   const line = pmCurrent(ctx, item);
-  const back = tab === 'read' && pmSucceeded(ctx, item);
-  const { MicroDot } = window;
-  if (!line) return null;                       // nothing written on it yet — a bare card
+  const back = pmSucceeded(ctx, item);
+  const editing = (ctx.state && ctx.state.editing) === item.id;
+  const done = () => ctx.setState({ editing: null });
+
+  if (!line && !editing) return null;             // nothing written on it yet — a bare card
+
+  if (editing) return <PmInline ctx={ctx} item={item} line={line} onDone={done} />;
+
+  const plate = <PmPlate text={line.text} size={14} clamp={3} />;
+
   return (
     <div style={{ marginTop: 8 }}>
-      <button type="button" className="pm7-plate"
-        onClick={() => (item.read ? ctx.openRespond(item) : ctx.openSwell(item))}
-        style={{
-          appearance: 'none', background: 'transparent', border: 0, padding: 0, margin: 0,
-          textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%', minWidth: 0,
-        }}>
-        <PmPlate text={line.text} size={14} clamp={3} />
-      </button>
+      {tab === 'read' ? (
+        <button type="button" className="pm7-plate"
+          aria-label="Write over this line"
+          onClick={() => ctx.setState({ editing: item.id })}
+          style={{
+            appearance: 'none', background: 'transparent', border: 0, padding: 0, margin: 0,
+            textAlign: 'left', cursor: 'text', display: 'block', width: '100%', minWidth: 0,
+          }}>
+          {back ? <CircGlow glow>{plate}</CircGlow> : plate}
+        </button>
+      ) : plate}
       {/* The return device, in the shipped liveliness grammar: a quiet mark,
           one word, no count. It reports the object, never a person. */}
-      {back && (
+      {back && tab === 'read' && (
         <div style={{ ...PM_META, marginTop: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
           Written over
@@ -9785,67 +10471,6 @@ const PmReading = ({ ctx, item, glyph, close }) => {
   );
 };
 
-// ============================================================================
-// Beat 4 — continuation. Succession, gathered: every object whose description
-// has moved, latest state on top, the layers it covered beneath it. The object
-// your line was written over on comes first, because that is the one that
-// called you back — and the way to carry on is to write the next line.
-// ============================================================================
-const PmLayersPage = ({ ctx }) => {
-  const [writing, setWriting] = pmS(null);
-  const focus = ctx.state.focus;
-  const moved = ctx.items
-    .filter((i) => pmLayers(ctx, i).length > 1)
-    .sort((a, b) => (a.id === focus ? -1 : b.id === focus ? 1 : 0));
-
-  return (
-    <div style={{
-      maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%', boxSizing: 'border-box',
-      padding: ctx.isMobile ? '16px 16px 32px' : '28px 24px 40px',
-      display: 'flex', flexDirection: 'column', gap: 'var(--space-6)',
-    }}>
-      {moved.map((item) => {
-        const layers = pmLayers(ctx, item);
-        const line = layers[layers.length - 1];
-        const under = layers.slice(0, -1);
-        const back = pmSucceeded(ctx, item);
-        const open = writing === item.id;
-        return (
-          <section key={item.id} style={{
-            background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-            borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
-            display: 'flex', flexDirection: 'column', gap: 'var(--space-4)',
-          }}>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ ...PM_META, marginBottom: 4 }}>{item.source || window.pgd7Host(item.url)}</div>
-              <a href={item.url} target="_blank" rel="noopener noreferrer" className="circ-cardtitle" style={{
-                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, lineHeight: 1.3,
-                letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none',
-                textWrap: 'pretty', display: 'block',
-              }}>{item.title || item.url.replace(/^https?:\/\//, '')}</a>
-            </div>
-
-            {open ? (
-              <PmWriteOver ctx={ctx} item={item} covering={line} autoFocus
-                onCancel={() => setWriting(null)} onDone={() => setWriting(null)} />
-            ) : (
-              <React.Fragment>
-                <PmPlate text={line.text} size={15} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                  <Button variant="secondary" size="sm" onClick={() => setWriting(item.id)}>Write over it</Button>
-                  {back && <span style={PM_META}>Yours is underneath</span>}
-                </div>
-              </React.Fragment>
-            )}
-
-            <PmStack ctx={ctx} layers={under} />
-          </section>
-        );
-      })}
-    </div>
-  );
-};
-
 // ---- The states inline styles cannot carry ---------------------------------
 const PM_CSS = `
 .pm7-plate:hover > div { border-color: var(--color-border-1); }
@@ -9866,13 +10491,22 @@ PGD7.register({
   // The description slot: under the title, inside the text column, where an
   // object's description belongs. Never attributed, never a person's utterance.
   face: { slot: 'description' },
-  initialState: { strata: pmSeedStrata(), focus: null },
+  initialState: { strata: pmSeedStrata(), focus: null, editing: null },
   Card: PmCard,
   Compose: PmCompose,
   Landing: PmReading,
   Respond: PmReading,
-  Continue: PmLayersPage,
-  continueTitle: 'The layers',
+  // NO Continue and NO Aside. This is the one direction that opens nothing at
+  // all — no page, no sheet, no new band. Continuation is the line itself,
+  // edited where it stands.
+  //
+  // The Read tab is ordered by the object's LATEST STATE, so a card whose
+  // description has just moved rises to the top. Ordering, never signalling.
+  order: (items, ctx) => {
+    if (ctx.tab !== 'read') return items;
+    const moved = (i) => { const l = pmLayers(ctx, i); return l.length ? (l[l.length - 1].at || 0) : 0; };
+    return items.slice().sort((a, b) => moved(b) - moved(a));
+  },
   beats: {
     // Land on an object whose description has already been written over once,
     // so the Swell hands over to a plate with strata under it.
@@ -9892,12 +10526,15 @@ PGD7.register({
       api.setTab('read');
       api.openRespond(t);
     },
-    // The succession, with the object your own line was written over on first.
+    // Continuation, where it actually happens: the Read tab, the object your
+    // line was written over on standing at the top of it because its
+    // description moved last, and its line already open as a field.
     continue: (api) => {
-      const mine = api.items.find((i) => pmSucceeded(api, i));
-      const t = mine || api.items.find((i) => pmLayers(api, i).length > 1);
-      api.setState({ focus: t ? t.id : null });
-      api.openContinue();
+      const mine = api.readItems.find((i) => pmSucceeded(api, i));
+      const t = mine || api.readItems.find((i) => pmLayers(api, i).length > 1) || api.firstRead();
+      api.setRoute('feed');
+      api.setTab('read');
+      api.setState({ focus: t ? t.id : null, editing: t ? t.id : null });
     },
   },
 });
@@ -9932,14 +10569,39 @@ PGD7.register({
 // member who never speaks still answers every item. `landingMerged: false`, so
 // the shipped reveal plays in full and the stream's one affordance follows it.
 //
-// POSTURES, DELIBERATELY DIFFERENT — the point of this direction.
-//   >= 1024  the stream is a PERMANENT right column beside the queue, always
-//            visible, never navigated to. Not a feed you visit; a room you are
-//            in. Registered as `Aside`, which the rig docks at 340px.
-//   < 1024   the same body is a destination, entered from the band above the
-//            tabs (the circle header the stream rides on mobile — the real cost
-//            this direction pays and does not hide) or from a beat.
+// THE ROUTE — PRESENCE, NEVER SUMMONS. The stream is made unforgettable by
+// being ambient rather than reachable, because every alternative route is a
+// summons and each of them reintroduces exactly the mechanic this direction
+// exists to remove.
+//   >= 1024  a PERMANENT right column beside the queue, always visible, never
+//            navigated to. You do not enter the stream; you are in the room
+//            with it. Registered as `Aside`, which the rig docks at 340px.
+//   < 1024   the same posture compressed: the circle header gains a SECOND LINE
+//            at metadata size carrying the last thing said — a fragment, no
+//            name, no count, no emphasis, no affordance drawn on it. Pressing
+//            it opens the stream as a full page. The stream hangs off the
+//            circle's header because THE STREAM IS THE CIRCLE TALKING, which is
+//            also why it must never be a third tab: a tab beside Active and
+//            Read would present it as a third pile of items to get through, and
+//            it is not a pile.
 // ONE BODY, TWO PLACEMENTS, NEVER FORKED.
+//
+// NO SIGNAL EVER POINTS AT THE STREAM. No dot, no pill, no glow, no count —
+// not because the calm floor forbids them, but because this direction's own
+// diagnosis does: feed-reader guilt was traced to EMAIL-BORROWED VISUAL
+// LANGUAGE, which imported the anxiety without the cause, and a dot on a river
+// is exactly that import. So the fragment is presence, not pull: you cannot
+// forget a room whose sound you can hear, and hearing it asks nothing of you.
+// The cost is honest and stated — a header line as a tap target is a weak
+// affordance, discoverable only by trying it. Desktop gets the direction as
+// designed; mobile gets a compromise.
+//
+// THE REACTION DOOR, REACHED FROM INSIDE THE STREAM. Every entry carries its
+// item's header block, and THAT BLOCK CARRIES THE LIVE SWELL DOOR: reading a
+// stretch of talk you can open the disc for the item being discussed without
+// leaving the stream. That makes the stream a second, always-present route to
+// the door — the opposite arrangement to the Dispatch, where the same device is
+// typeset once into a finished document.
 //
 // THE RETURN DEVICE IS SHIPPED. The waterline is the app's own FeedDivider
 // (app/liveliness.jsx), mounted verbatim at the point the last visit ended:
@@ -9948,7 +10610,7 @@ PGD7.register({
 // from it. No count, no jump-to-oldest-unread, nothing marked below.
 // ============================================================================
 
-const { PGD7, Button, Avatar, Icon, FeedDivider } = window;
+const { PGD7, Button, Avatar, FeedDivider, SwellDoor } = window;
 const { useState: smS, useEffect: smE, useRef: smR, useMemo: smM } = React;
 
 const smHost = (url) => window.pgd7Host(url);
@@ -10040,12 +10702,17 @@ const Sm10Favicon = ({ item }) => {
   );
 };
 
-const Sm10Block = ({ item, onPick, held }) => {
-  const smBlockBase = {
-    display: 'flex', gap: 8, alignItems: 'flex-start', width: '100%', textAlign: 'left',
-    background: 'var(--color-surface-sunken)', border: 0, margin: 0,
+const Sm10Block = ({ item, onPick, held, door }) => {
+  const smBlockRow = {
+    display: 'flex', alignItems: 'stretch', gap: 4, width: '100%',
+    background: 'var(--color-surface-sunken)',
     borderLeft: held ? '2px solid var(--color-fg-1)' : '2px solid transparent',
-    padding: '9px 12px', borderRadius: 'var(--radius-md)',
+    borderRadius: 'var(--radius-md)',
+  };
+  const smBlockBase = {
+    display: 'flex', gap: 8, alignItems: 'flex-start', flex: 1, minWidth: 0, textAlign: 'left',
+    background: 'transparent', border: 0, margin: 0,
+    padding: '9px 4px 9px 12px', borderRadius: 'var(--radius-md)',
     cursor: onPick ? 'pointer' : 'default',
     transition: 'background var(--duration-base) var(--ease-quiet)',
   };
@@ -10067,11 +10734,21 @@ const Sm10Block = ({ item, onPick, held }) => {
       </span>
     </React.Fragment>
   );
-  if (!onPick) return <div style={smBlockBase}>{body}</div>;
+  // The words and the door are two controls, so they are two buttons on one
+  // row — never one nested inside the other.
   return (
-    <button type="button" className="sm10-block" style={smBlockBase}
-      aria-label={'Say something about ' + smTitleOf(item)}
-      onClick={() => onPick(item)}>{body}</button>
+    <div style={smBlockRow}>
+      {onPick
+        ? <button type="button" className="sm10-block" style={smBlockBase}
+            aria-label={'Say something about ' + smTitleOf(item)}
+            onClick={() => onPick(item)}>{body}</button>
+        : <div style={smBlockBase}>{body}</div>}
+      {door && (
+        <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', marginRight: -13 }}>
+          <SwellDoor item={item} />
+        </span>
+      )}
+    </div>
   );
 };
 
@@ -10222,7 +10899,7 @@ const Sm10Stream = ({ ctx, docked }) => {
     if (newBlock) {
       run.push(
         <Sm10Block key={e.item.id + '-blk-' + e.id} item={e.item} held={head && head.id === e.item.id}
-          onPick={(it) => ctx.setState({ head: it.id })} />
+          door onPick={(it) => ctx.setState({ head: it.id })} />
       );
     }
     run.push(<Sm10Entry key={e.id} ctx={ctx} entry={e} />);
@@ -10241,37 +10918,39 @@ const Sm10Stream = ({ ctx, docked }) => {
 };
 
 // ============================================================================
-// The band above the tabs, below 1024 only — the circle header the stream rides
-// on mobile. Above it the column is permanent and this returns nothing.
-// One line: the river's latest, and the way in.
+// The circle header's second line, below 1024 only. Above that the column is
+// permanent and this returns nothing.
+// ----------------------------------------------------------------------------
+// One line of the river, leaked into chrome that is already there: the last
+// thing said, at metadata size, no name, no count, no chevron, no mark. It is
+// presence, not pull — nothing here asks for anything, and pressing it is
+// offered by nothing but the words themselves. That weak affordance is the
+// stated cost of the mobile posture, and it is not hidden.
 // ============================================================================
 const Sm10Banner = ({ ctx }) => {
   if (!ctx.isMobile) return null;
   const entries = smEntries(ctx);
   const last = entries[entries.length - 1];
   if (!last) return null;
+  // Flush against the top bar, no rule of its own above it, so it reads as the
+  // circle header's second line rather than a band in its own right.
   const smBannerRow = {
-    display: 'flex', alignItems: 'center', gap: 8, width: '100%', minHeight: 44,
+    display: 'block', width: '100%', minHeight: 30,
     background: 'var(--color-surface)', border: 0,
     borderBottom: '1px solid var(--color-border-2)',
-    padding: '0 16px', cursor: 'pointer', textAlign: 'left',
+    padding: '0 16px 7px', margin: 0, cursor: 'pointer', textAlign: 'left',
     transition: 'background var(--duration-base) var(--ease-quiet)',
   };
-  const smBannerName = {
-    flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5,
-    color: 'var(--color-fg-2)',
-  };
   const smBannerText = {
-    flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13,
-    color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    display: 'block', minWidth: 0,
+    fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, lineHeight: 1.35,
+    color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
   };
   return (
     <button type="button" className="sm10-banner" style={smBannerRow}
       aria-label="Open the stream"
       onClick={() => { ctx.setState({ head: null }); ctx.openAside(); }}>
-      <span style={smBannerName}>{last.by === 'you' ? 'You' : ctx.nameOf(last.by)}</span>
       <span style={smBannerText}>{last.text}</span>
-      <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
     </button>
   );
 };
@@ -10301,7 +10980,7 @@ const Sm10Say = ({ ctx, item, close }) => {
   const rows = [];
   tail.forEach((e) => {
     if (!prev || prev.item.id !== e.item.id) {
-      rows.push(<Sm10Block key={e.item.id + '-t-' + e.id} item={e.item} />);
+      rows.push(<Sm10Block key={e.item.id + '-t-' + e.id} item={e.item} door />);
     }
     rows.push(<Sm10Entry key={e.id} ctx={ctx} entry={e} />);
     prev = e;

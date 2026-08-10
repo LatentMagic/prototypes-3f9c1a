@@ -19,16 +19,45 @@
 // the write-over affordance sits directly under the depth just committed, on
 // the surface the Swell hands over to.
 //
+// THE ROUTE — THE LINE IS THE AFFORDANCE. There is no destination, no overlay,
+// and no button anywhere.
+//   contribution  the sharer writes the line at share; it is unowned the
+//                 instant it lands.
+//   reaction      untouched.
+//   reading       the shipped reveal, then the current line beneath the disc
+//                 with one affordance: write over it.
+//   continuation  ON THE CARD, IN THE FEED. On a Read card the line sits in the
+//                 description slot, framed by hairlines, unattributed. TAPPING
+//                 IT TURNS IT INTO A FIELD IN PLACE, current text present,
+//                 caret at the end. You edit one line and commit. NOTHING
+//                 OPENS. On an Active card the line is present but inert: you
+//                 have not read the item, so it reads as the object's
+//                 description, which is exactly what it is.
+// Giving succession a modal was rejected. Overwriting one line needs one line
+// of surface, and ceremony around the act would make it feel like an edit war
+// when the whole social permission of the direction is that improving a
+// description is casual and unremarkable. An inline field on a Read card is
+// also the one shape that cannot violate the Read-tab invariant — one line is
+// not a floating mass of conversation. Nothing is destroyable: the previous
+// line is in the strata the moment you commit, which is what makes editing in
+// place safe enough to sit in a feed.
+//
 // THE RETURN DEVICE — when your line is written over, the object comes back to
-// you quietly, in the shipped liveliness grammar (MicroDot, one word, no
-// count). No surface is held open; the erasure does the calling back.
+// you quietly, in the shipped liveliness grammar (MicroDot, the shipped glow as
+// the card comes into view, one word, no count). No surface is held open; the
+// erasure does the calling back. A CHANGED CARD RISES TO THE TOP OF READ — that
+// is ordering, not signalling: no count, no badge, nothing owed. It follows
+// from the claim, too. The object's latest state is what matters, so the tab
+// shows objects by latest state. The sharpest cost in the direction is exactly
+// here: Read is the pile you finished with, and a pile that rearranges itself
+// is unsettling in a product whose floor is calm.
 //
 // PRIVATE STATE — `strata[itemId]` is the whole succession, oldest first, the
 // last entry being the line the card currently carries. Seeded from each item's
 // own thought plus the amendments the circle has already made.
 // ============================================================================
 
-const { PGD7, Button } = window;
+const { PGD7, Button, CircGlow, MicroDot } = window;
 const { useState: pmS, useRef: pmR, useEffect: pmE } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -256,28 +285,90 @@ const PmWriteOver = ({ ctx, item, covering, onDone, onCancel, autoFocus = false 
 };
 
 // ============================================================================
+// Writing over, IN PLACE — the continuation act, on the card, in the feed.
+// ----------------------------------------------------------------------------
+// The plate becomes a field with the line already in it and the caret at the
+// end. No sheet, no page, no ceremony: you improve the description of the
+// object while looking at the object. Escape leaves it, Enter commits, and the
+// line you covered is in the strata the moment you do.
+// ============================================================================
+const PmInline = ({ ctx, item, line, onDone }) => {
+  const [text, setText] = pmS(line ? line.text : '');
+  const ref = pmR(null);
+  pmE(() => {
+    const el = ref.current;
+    if (!el) return;
+    // GOTCHA #1 — a focus inside a feed must never scroll the feed under the
+    // reader's thumb.
+    el.focus({ preventScroll: true });
+    const n = el.value.length;
+    try { el.setSelectionRange(n, n); } catch (e) {}
+  }, []);
+  const ready = !!text.trim() && text.trim() !== (line ? line.text : '');
+  const commit = () => { if (ready) pmWrite(ctx, item, text); onDone(); };
+  return (
+    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <textarea ref={ref} rows={3} value={text}
+        onChange={(e) => setText(e.target.value.replace(/\s*\n+\s*/g, ' '))}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') { e.preventDefault(); onDone(); }
+          else if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        }}
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 14,
+          lineHeight: 1.5, letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-1)',
+          padding: '8px 10px', borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border-1)', background: 'var(--color-surface)',
+          resize: 'vertical',
+        }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        <Button variant="secondary" size="sm" onClick={onDone}>Leave it</Button>
+        <Button variant="primary" size="sm" disabled={!ready} onClick={commit}>Write over it</Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // The card face — the museum plate, in the description slot, under the title.
-// Tapping it goes where the object goes: the Swell if it is unread, the plate
-// itself if it is not.
+// ----------------------------------------------------------------------------
+// On a Read card the plate is the field waiting to be opened: tap it and it
+// becomes one, in place. On an Active card it is inert — you have not read the
+// item, so the line is simply the object's description, which is what it is.
+//
+// A card whose line has moved carries the shipped glow as it comes into view,
+// the same treatment an arriving card gets, for the same reason: something
+// landed.
 // ============================================================================
 const PmCard = ({ ctx, item, tab }) => {
   const line = pmCurrent(ctx, item);
-  const back = tab === 'read' && pmSucceeded(ctx, item);
-  const { MicroDot } = window;
-  if (!line) return null;                       // nothing written on it yet — a bare card
+  const back = pmSucceeded(ctx, item);
+  const editing = (ctx.state && ctx.state.editing) === item.id;
+  const done = () => ctx.setState({ editing: null });
+
+  if (!line && !editing) return null;             // nothing written on it yet — a bare card
+
+  if (editing) return <PmInline ctx={ctx} item={item} line={line} onDone={done} />;
+
+  const plate = <PmPlate text={line.text} size={14} clamp={3} />;
+
   return (
     <div style={{ marginTop: 8 }}>
-      <button type="button" className="pm7-plate"
-        onClick={() => (item.read ? ctx.openRespond(item) : ctx.openSwell(item))}
-        style={{
-          appearance: 'none', background: 'transparent', border: 0, padding: 0, margin: 0,
-          textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%', minWidth: 0,
-        }}>
-        <PmPlate text={line.text} size={14} clamp={3} />
-      </button>
+      {tab === 'read' ? (
+        <button type="button" className="pm7-plate"
+          aria-label="Write over this line"
+          onClick={() => ctx.setState({ editing: item.id })}
+          style={{
+            appearance: 'none', background: 'transparent', border: 0, padding: 0, margin: 0,
+            textAlign: 'left', cursor: 'text', display: 'block', width: '100%', minWidth: 0,
+          }}>
+          {back ? <CircGlow glow>{plate}</CircGlow> : plate}
+        </button>
+      ) : plate}
       {/* The return device, in the shipped liveliness grammar: a quiet mark,
           one word, no count. It reports the object, never a person. */}
-      {back && (
+      {back && tab === 'read' && (
         <div style={{ ...PM_META, marginTop: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
           Written over
@@ -380,67 +471,6 @@ const PmReading = ({ ctx, item, glyph, close }) => {
   );
 };
 
-// ============================================================================
-// Beat 4 — continuation. Succession, gathered: every object whose description
-// has moved, latest state on top, the layers it covered beneath it. The object
-// your line was written over on comes first, because that is the one that
-// called you back — and the way to carry on is to write the next line.
-// ============================================================================
-const PmLayersPage = ({ ctx }) => {
-  const [writing, setWriting] = pmS(null);
-  const focus = ctx.state.focus;
-  const moved = ctx.items
-    .filter((i) => pmLayers(ctx, i).length > 1)
-    .sort((a, b) => (a.id === focus ? -1 : b.id === focus ? 1 : 0));
-
-  return (
-    <div style={{
-      maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%', boxSizing: 'border-box',
-      padding: ctx.isMobile ? '16px 16px 32px' : '28px 24px 40px',
-      display: 'flex', flexDirection: 'column', gap: 'var(--space-6)',
-    }}>
-      {moved.map((item) => {
-        const layers = pmLayers(ctx, item);
-        const line = layers[layers.length - 1];
-        const under = layers.slice(0, -1);
-        const back = pmSucceeded(ctx, item);
-        const open = writing === item.id;
-        return (
-          <section key={item.id} style={{
-            background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-            borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
-            display: 'flex', flexDirection: 'column', gap: 'var(--space-4)',
-          }}>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ ...PM_META, marginBottom: 4 }}>{item.source || window.pgd7Host(item.url)}</div>
-              <a href={item.url} target="_blank" rel="noopener noreferrer" className="circ-cardtitle" style={{
-                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, lineHeight: 1.3,
-                letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none',
-                textWrap: 'pretty', display: 'block',
-              }}>{item.title || item.url.replace(/^https?:\/\//, '')}</a>
-            </div>
-
-            {open ? (
-              <PmWriteOver ctx={ctx} item={item} covering={line} autoFocus
-                onCancel={() => setWriting(null)} onDone={() => setWriting(null)} />
-            ) : (
-              <React.Fragment>
-                <PmPlate text={line.text} size={15} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                  <Button variant="secondary" size="sm" onClick={() => setWriting(item.id)}>Write over it</Button>
-                  {back && <span style={PM_META}>Yours is underneath</span>}
-                </div>
-              </React.Fragment>
-            )}
-
-            <PmStack ctx={ctx} layers={under} />
-          </section>
-        );
-      })}
-    </div>
-  );
-};
-
 // ---- The states inline styles cannot carry ---------------------------------
 const PM_CSS = `
 .pm7-plate:hover > div { border-color: var(--color-border-1); }
@@ -461,13 +491,22 @@ PGD7.register({
   // The description slot: under the title, inside the text column, where an
   // object's description belongs. Never attributed, never a person's utterance.
   face: { slot: 'description' },
-  initialState: { strata: pmSeedStrata(), focus: null },
+  initialState: { strata: pmSeedStrata(), focus: null, editing: null },
   Card: PmCard,
   Compose: PmCompose,
   Landing: PmReading,
   Respond: PmReading,
-  Continue: PmLayersPage,
-  continueTitle: 'The layers',
+  // NO Continue and NO Aside. This is the one direction that opens nothing at
+  // all — no page, no sheet, no new band. Continuation is the line itself,
+  // edited where it stands.
+  //
+  // The Read tab is ordered by the object's LATEST STATE, so a card whose
+  // description has just moved rises to the top. Ordering, never signalling.
+  order: (items, ctx) => {
+    if (ctx.tab !== 'read') return items;
+    const moved = (i) => { const l = pmLayers(ctx, i); return l.length ? (l[l.length - 1].at || 0) : 0; };
+    return items.slice().sort((a, b) => moved(b) - moved(a));
+  },
   beats: {
     // Land on an object whose description has already been written over once,
     // so the Swell hands over to a plate with strata under it.
@@ -487,12 +526,15 @@ PGD7.register({
       api.setTab('read');
       api.openRespond(t);
     },
-    // The succession, with the object your own line was written over on first.
+    // Continuation, where it actually happens: the Read tab, the object your
+    // line was written over on standing at the top of it because its
+    // description moved last, and its line already open as a field.
     continue: (api) => {
-      const mine = api.items.find((i) => pmSucceeded(api, i));
-      const t = mine || api.items.find((i) => pmLayers(api, i).length > 1);
-      api.setState({ focus: t ? t.id : null });
-      api.openContinue();
+      const mine = api.readItems.find((i) => pmSucceeded(api, i));
+      const t = mine || api.readItems.find((i) => pmLayers(api, i).length > 1) || api.firstRead();
+      api.setRoute('feed');
+      api.setTab('read');
+      api.setState({ focus: t ? t.id : null, editing: t ? t.id : null });
     },
   },
 });
