@@ -272,6 +272,7 @@ const SlCard = ({ ctx, item }) => {
             </React.Fragment>
           ) : (
             <React.Fragment>
+              {rounds.length > 1 && <SlRoundLabel round={round} item={item} />}
               <SlVeil />
               <SlSealCaption left={slLeft(round.openAt - Date.now())} />
             </React.Fragment>

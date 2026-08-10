@@ -248,6 +248,23 @@ const PlHead = ({ item }) => (
 // performed against the text itself, which is the only way the act means what
 // the direction says it means.
 // ============================================================================
+// A sentence has to be a genuine inline box, or the prose stops being prose: a
+// <button> is laid out as an inline-block whatever its display says, so a long
+// sentence pushes itself onto its own line and the paragraph reads as a list.
+const PlSentence = ({ text, on, marked, onPick, style }) => (
+  <span role="button" tabIndex={0} aria-pressed={on} className="pl7-sent"
+    onClick={() => onPick(on ? null : text)}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(on ? null : text); } }}
+    style={{
+      cursor: 'pointer', padding: '2px 3px', margin: '0 -3px', borderRadius: 4,
+      WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone',
+      background: on ? 'var(--color-accent)' : (marked ? 'var(--color-surface-sunken)' : 'transparent'),
+      color: on ? 'var(--color-fg-inverse)' : (marked ? 'var(--color-fg-1)' : undefined),
+      fontWeight: marked && !on ? 500 : undefined,
+      ...(style || {}),
+    }}>{text}</span>
+);
+
 const PlPicker = ({ item, taken, value, onChange, height = 250 }) => {
   const sentences = plSentences(item);
   if (!sentences.length) return null;
@@ -258,22 +275,13 @@ const PlPicker = ({ item, taken, value, onChange, height = 250 }) => {
       padding: '4px 4px', background: 'var(--color-surface)',
     }}>
       {plParagraphs(item).map((para) => (
-        <p key={para.p} style={{ margin: '6px 0 12px' }}>
-          {para.sentences.map((sn) => {
-            const on = value === sn.text;
-            const had = taken.indexOf(sn.text) >= 0;
-            return (
-              <button key={sn.key} type="button" className="pl7-sent" onClick={() => onChange(on ? null : sn.text)}
-                aria-pressed={on} style={{
-                  appearance: 'none', display: 'inline', textAlign: 'left', cursor: 'pointer',
-                  border: 0, padding: '2px 3px', margin: '0 -3px', borderRadius: 4,
-                  background: on ? 'var(--color-accent)' : (had ? 'var(--color-surface-sunken)' : 'transparent'),
-                  color: on ? 'var(--color-fg-inverse)' : 'var(--color-fg-1)',
-                  ...PL_EXCERPT,
-                  fontSize: 14.5,
-                }}>{sn.text}{' '}</button>
-            );
-          })}
+        <p key={para.p} style={{ ...PL_EXCERPT, fontSize: 14.5, margin: '8px 6px 14px' }}>
+          {para.sentences.map((sn) => (
+            <React.Fragment key={sn.key}>
+              <PlSentence text={sn.text} on={value === sn.text}
+                marked={taken.indexOf(sn.text) >= 0} onPick={onChange} />{' '}
+            </React.Fragment>
+          ))}
         </p>
       ))}
     </div>
@@ -367,13 +375,18 @@ const PlCompose = ({ ctx, item, submit }) => {
 const PlReading = ({ ctx, item, glyph, close }) => {
   const [line, setLine] = plS(null);
   const [typed, setTyped] = plS('');
+  const [passed, setPassed] = plS(false);
   const met = plSharerLine(item);
   const sentences = plSentences(item);
   const byHand = !sentences.length;
   const chosen = byHand ? typed.trim() : line;
   const done = plMinePulled(item);
-  const column = plColumn(item);
-  const taken = column.map((r) => r.text);
+  const all = plColumn(item);
+  const taken = all.map((r) => r.text);
+  // The line you met is already at the top of this surface with your depth on
+  // it; the column below is where everybody else stopped.
+  const column = all.filter((r) => !met || r.text !== met.text);
+  const metRow = met ? all.find((r) => r.text === met.text) : null;
   const mine = plSwellOf(ctx, item, 'you');
   const rx = mine || (glyph ? { glyph } : null);
 
@@ -393,7 +406,7 @@ const PlReading = ({ ctx, item, glyph, close }) => {
             <div style={{ ...PL_EXCERPT, fontSize: 16 }}>{met.text}</div>
           </PlLine>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', paddingLeft: 17, marginTop: 8 }}>
-            <span style={PL_META}>{plCaption(ctx, [met.by])}</span>
+            <span style={PL_META}>{plCaption(ctx, (metRow && metRow.by) || [met.by])}</span>
             {rx && rx.glyph && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ ...PL_META, color: 'var(--color-fg-2)' }}>You</span>
@@ -404,7 +417,7 @@ const PlReading = ({ ctx, item, glyph, close }) => {
         </div>
       )}
 
-      {!done && (
+      {!done && !passed && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div style={{ ...PL_META, color: 'var(--color-fg-2)' }}>Take your own line</div>
           {byHand ? (
@@ -419,13 +432,13 @@ const PlReading = ({ ctx, item, glyph, close }) => {
             <PlPicker item={item} taken={taken} value={line} onChange={setLine} height={228} />
           )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
-            <Button variant="secondary" onClick={close}>Pass</Button>
+            <Button variant="secondary" onClick={() => setPassed(true)}>Pass</Button>
             <Button variant="primary" disabled={!chosen} onClick={pull}>Pull it</Button>
           </div>
         </div>
       )}
 
-      {(done || column.length > 1) && (
+      {(done || (passed && column.length > 0)) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', borderTop: '1px solid var(--color-border-2)', paddingTop: 'var(--space-4)' }}>
           {column.map((row) => (
             <div key={row.key}>
@@ -497,20 +510,14 @@ const PlColumnPage = ({ ctx }) => {
         return (
           <div key={para.p} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div className="pl7-para">
-              <p style={{ margin: 0, minWidth: 0 }}>
+              <p style={{ ...PL_EXCERPT, color: 'var(--color-fg-3)', margin: 0, minWidth: 0 }}>
                 {para.sentences.map((sn) => {
                   const row = rowFor(sn.text);
                   const on = line === sn.text;
                   return (
-                    <button key={sn.key} type="button" className="pl7-sent" aria-pressed={on}
-                      onClick={() => setLine(on ? null : sn.text)} style={{
-                        appearance: 'none', display: 'inline', textAlign: 'left', cursor: 'pointer',
-                        border: 0, padding: '2px 3px', margin: '0 -3px', borderRadius: 4,
-                        ...PL_EXCERPT,
-                        color: on ? 'var(--color-fg-inverse)' : (row ? 'var(--color-fg-1)' : 'var(--color-fg-3)'),
-                        background: on ? 'var(--color-accent)' : (row ? 'var(--color-surface-sunken)' : 'transparent'),
-                        boxShadow: !on && row ? 'inset 2px 0 0 var(--color-border-strong)' : 'none',
-                      }}>{sn.text}{' '}</button>
+                    <React.Fragment key={sn.key}>
+                      <PlSentence text={sn.text} on={on} marked={!!row} onPick={setLine} />{' '}
+                    </React.Fragment>
                   );
                 })}
               </p>
