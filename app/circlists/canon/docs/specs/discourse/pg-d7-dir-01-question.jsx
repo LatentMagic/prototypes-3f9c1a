@@ -16,7 +16,7 @@
 // inside the door.
 // ============================================================================
 
-const { PGD7, Button, Field, FeedDivider } = window;
+const { PGD7, Button, Field, FeedDivider, SwellDoor } = window;
 const { useState: q1S, useEffect: q1E, useRef: q1R } = React;
 
 // ---- The ask -----------------------------------------------------------------
@@ -207,6 +207,14 @@ const Q1Composer = ({ name, label, ariaLabel, placeholder, ask, submitLabel, onS
 // the rig. Ranged left, no quotation marks, no attribution. Where nothing has
 // been asked, the slot holds the open invitation instead — the same act every
 // member may perform, reachable from the feed.
+//
+// THE ROUTE. On Active the question is text: the tick beneath it is already the
+// way in, and nothing else should compete with it. On Read the tick's slot has
+// gone to the Reaction door, so the question itself becomes the control — tap it
+// and the rounds open, live question first, earlier rounds filed beneath, the
+// ask at the foot. The reactions are not left behind: that surface carries the
+// shipped door at its head, so the scatter and the roster are one tap further in
+// rather than somewhere else entirely.
 // ============================================================================
 const q1CardStyles = {
   q: {
@@ -223,6 +231,13 @@ const q1CardStyles = {
     fontSize: 'clamp(15px, 2.4cqi, 17px)', lineHeight: 1.3,
     letterSpacing: '-0.01em', color: 'var(--color-fg-3)',
   },
+  // The same question, made the control. Type is identical to the resting face —
+  // a question you can open must not read as a different kind of question.
+  qBtn: {
+    display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
+    background: 'transparent', border: 0, padding: 0,
+    margin: '0 0 var(--space-3)', minHeight: 44,
+  },
   askMark: { fontFamily: 'var(--font-mono)', fontSize: 15, color: 'var(--color-fg-3)', flexShrink: 0 },
   sheet: { display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' },
   sheetTitle: {
@@ -231,9 +246,26 @@ const q1CardStyles = {
   },
 };
 
-const Q1Card = ({ ctx, item }) => {
+const Q1Card = ({ ctx, item, tab }) => {
   const [asking, setAsking] = q1S(false);
   const q = q1Live(ctx, item);
+  const read = tab === 'read';
+
+  // Read: the question is the door to its own rounds.
+  if (read) {
+    return (
+      <button type="button" style={q1CardStyles.qBtn} onClick={() => ctx.openRespond(item)}>
+        {q
+          ? <span style={{ ...q1CardStyles.q, display: 'block', margin: 0 }}>{q}</span>
+          : (
+            <span style={{ ...q1CardStyles.ask, margin: 0 }}>
+              <span style={q1CardStyles.askMark} aria-hidden="true">?</span>
+              <span>Ask the circle</span>
+            </span>
+          )}
+      </button>
+    );
+  }
 
   if (q) return <div style={q1CardStyles.q}>{q}</div>;
 
@@ -332,6 +364,10 @@ const Q1Landing = ({ ctx, item, glyph, close }) => {
 const q1RespondStyles = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' },
   head: { paddingRight: 34 },
+  // The eyebrow on the left, the shipped Reaction door on the right: how it
+  // landed and what is being asked are two axes of one subject, so they share a
+  // line rather than living on two surfaces.
+  headRow: { display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, marginBottom: 2 },
   earlier: { display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' },
   roundQ: {
     fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, lineHeight: 1.35,
@@ -352,7 +388,10 @@ const Q1Respond = ({ ctx, item, close }) => {
     return (
       <div style={q1RespondStyles.wrap}>
         <div style={q1RespondStyles.head}>
-          <Q1Eyebrow>the question</Q1Eyebrow>
+          <div style={q1RespondStyles.headRow}>
+            <span style={{ flex: 1, minWidth: 0 }}><Q1Eyebrow>the question</Q1Eyebrow></span>
+            <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+          </div>
           <p style={q1QuestionStyle}>{item.title || item.url.replace(/^https?:\/\//, '')}</p>
         </div>
         <Q1Composer
@@ -366,7 +405,10 @@ const Q1Respond = ({ ctx, item, close }) => {
   return (
     <div style={q1RespondStyles.wrap}>
       <div style={q1RespondStyles.head}>
-        <Q1Eyebrow>the question</Q1Eyebrow>
+        <div style={q1RespondStyles.headRow}>
+          <span style={{ flex: 1, minWidth: 0 }}><Q1Eyebrow>the question</Q1Eyebrow></span>
+          <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+        </div>
         <p style={q1QuestionStyle}>{q}</p>
       </div>
 

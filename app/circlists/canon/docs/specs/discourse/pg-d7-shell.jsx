@@ -58,6 +58,70 @@ const D7_BEATS = [
   ['continue', 'Continue'],
 ];
 
+// ============================================================================
+// What each direction IS — one line, its claim, its cost.
+// ----------------------------------------------------------------------------
+// Taken from FINAL-TEN.md, the reconciled ideation set, and trimmed to what
+// reads on a phone. Substance verbatim; nothing here is new argument.
+//
+// PLAYGROUND.md says theory stays out of the reviewer's path. The product owner
+// has overridden that for this rig: the intention of a direction was not
+// legible from playing alone. It is therefore CLOSED by default and opened on
+// a tap — playing still comes first, explanation is there when asked for.
+// ============================================================================
+const D7_ABOUT = {
+  question: {
+    one: 'The only authored text in the product is interrogative. The sharer attaches a question with the link; readers answer in one line; anyone may ask the next question, which puts the card back in Active for everyone who has read it.',
+    claim: 'Conversation does not continue because people have more to say — it continues because someone asks. Build the ask and continuation comes free from two tabs that already exist.',
+    cost: 'Mandating the interrogative is rigid structure, and rigid structure lowers perceived empathy. Reopening imposes a cost on everyone else: a card that keeps returning becomes a chore. Some members have a thought and no question — this direction tells them to keep it.',
+  },
+  depths: {
+    one: 'The Reaction door grown into a room whose geography is the Swell: you enter at the depth you gave, and you speak among the people who felt as you did.',
+    claim: 'Discourse is another axis of the Swell, never a system beside it. Three strata in the shipped rung vocabulary, your thought landing at your own depth. Adjust your Swell later and your words travel with it.',
+    cost: 'Total invention: no product treats a graded non-verbal reaction as the address for text. On mobile your stratum is found by scroll position rather than layout. It is the most expensive build in the set.',
+  },
+  countercard: {
+    one: 'You do not reply to a link. You answer it with another object, and the two stand together on the shelf.',
+    claim: 'Continuation needs no new place, no new column, no follow switch. A response is itself a card. Cast cards hang off the root strictly flat; nothing ever hangs off a cast card.',
+    cost: 'Queue inflation is real: a lively circle multiplies its Active tab, and the mass lands on the tab looked at most. It privileges people with another link to hand.',
+  },
+  seal: {
+    one: 'Nothing anyone says on a card is readable until the card opens — and then it all opens at once.',
+    claim: 'Simultaneity is the rhythm. If every thought lands in the same instant, nobody is first, nobody is anchored by what came before, and there is no stream to fall behind.',
+    cost: 'Everyone waits on everyone; the fastest reader is held by the slowest, and a quiet circle can hang a seal. Sealing the sharer’s thought removes the invitation the product leans toward.',
+  },
+  'pulled-line': {
+    one: 'The sharer writes nothing. They pull a sentence out of the thing they share, and every reader who marks read pulls one too.',
+    claim: 'A quotation is not the hard typographic problem prose is: it has its own tradition, it is self-evidently from the source, and it needs no attribution design. Selection is the cheapest substantive utterance.',
+    cost: 'The sharer who wants to say why they shared it has nowhere to say it. Sources that resist quotation — video, podcast, chart, tool — degrade to a caption. Juxtaposition is a thin language.',
+  },
+  sounding: {
+    one: 'A member raises one proposition about the item and the circle answers it by pull alone — a single unipolar pressure bar, no glyphs, no words.',
+    claim: 'The one who speaks pays in words; everyone who answers pays in a pull. The response instrument is deliberately not the disc: it says not how it landed, but how far I go with you.',
+    cost: 'It is strict and will feel strict. One proposition per member per item is a hard budget people will hit and resent. It risks reading as polling — a survey wearing a conversation’s clothes.',
+  },
+  seats: {
+    one: 'An item’s conversation has four seats. Taking one is permanent and unlimited; when they are full, later readers may read the talk and never enter it.',
+    claim: 'What makes a conversation unenterable is the number of voices in it. Cap the speakers and everything else can be free — unlimited turns, unlimited length, unlimited time.',
+    cost: 'It excludes members of a small trusted circle from talking about a thing they read. Seat marks sit at the edge of the no-counts invariant. Seats hoard: taken and never spoken from.',
+  },
+  dispatch: {
+    one: 'The circle’s talk does not trickle onto cards — it compiles, on a cadence, into one finite artefact that arrives for everyone at once.',
+    claim: 'Discourse is not a property of a card. It is a property of a period. A shelf of dated dispatches gives the conversation a beginning, an end, and a bottom of the page.',
+    cost: 'Latency is the whole product: a thought written Monday is public Sunday. Batching makes returning cheap and replying in place hard. A composed periodical is a typography problem.',
+  },
+  palimpsest: {
+    one: 'One line of text per card, owned by nobody, and any reader may write over it — the strata are kept.',
+    claim: 'Each card carries exactly one line, ever. It belongs to the object, not to a speaker, which is why it can be overwritten without insult. Continuation is succession, not accumulation.',
+    cost: 'Overwriting is socially hot. Between close ties it reads as correction, and the calm floor is genuinely at risk. One line per card leaves seven silent members and one author per item.',
+  },
+  stream: {
+    one: 'The circle gets one continuous chronological talk surface, permanently open, and items are its punctuation.',
+    claim: 'A river has no unread state. You enter at now; nothing below the waterline is presented as owed. Flat, chronological, unbounded — and items are the punctuation: you post from a card, and your words land at the bottom carrying that card as a header block.',
+    cost: 'It is a feed, and it is unfinishable. It gives the app a second attention centre where the queue has been the only one. It is the direction most exposed to the "not WhatsApp, not Slack" invariant.',
+  },
+};
+
 // ---- Persistence (sessionStorage) ------------------------------------------
 const d7Load = () => { try { return JSON.parse(sessionStorage.getItem(D7_KEY)) || {}; } catch (e) { return {}; } };
 const d7Save = (v) => { try { sessionStorage.setItem(D7_KEY, JSON.stringify(v)); } catch (e) {} };
@@ -109,7 +173,7 @@ const d7Tint = (k) => { const g = D7_TINTS[d7Hash(k) % D7_TINTS.length]; return 
 const d7HostOf = (url) => window.pgd7Host(url);
 const d7DeriveTitle = (url) => window.pgd7TitleFromUrl(url);
 
-const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) => {
+const PGD7Card = ({ item, tab, ctx, spec, face, Slot, onOpen, onMarkRead, onDelete }) => {
   const [favBroken, setFavBroken] = d7S(false);
   const [imgBroken, setImgBroken] = d7S(false);
   const slot = (where) => (Slot ? <Slot ctx={ctx} item={item} tab={tab} where={where} /> : null);
@@ -191,7 +255,19 @@ const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) 
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13 }}>
           {tab === 'read'
-            ? <SwellDoor item={item} />
+            // A direction may claim the door, or hide it. `doorOpens` on the
+            // spec decides: 'respond' routes the shipped door into the
+            // direction's own surface (the door keeps its geometry, glyph
+            // huddle and hit target — it is never re-drawn); a function may
+            // return 'none' per item, so a direction that seals a card cannot
+            // leak its glyphs before the seal opens. Absent: shipped behaviour.
+            ? (() => {
+              const rule = spec && spec.doorOpens;
+              const mode = typeof rule === 'function' ? rule(item, ctx) : rule;
+              if (mode === 'none') return null;
+              if (mode === 'respond') return <SwellDoor item={item} onOpen={() => ctx.openRespond(item)} />;
+              return <SwellDoor item={item} />;
+            })()
             : (
               <button className="circ-cardaction circ-cardaction-icon" onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
                 <Icon name="check" size={18} />
@@ -209,11 +285,46 @@ const PGD7Card = ({ item, tab, ctx, face, Slot, onOpen, onMarkRead, onDelete }) 
 };
 
 // ============================================================================
+// The explanation. Opened on a tap, never on hover — this is reviewed on a
+// phone, where hover does not exist. It is the rig's own sheet primitive
+// (PGD7Sheet), rendered at the page root so it is never inside the app column
+// and never obstructs the app while closed.
+// ============================================================================
+const Pg7AboutIcon = ({ size = 16 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true"
+    style={{ stroke: 'currentColor', strokeWidth: 1.9, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' }}>
+    <circle cx="12" cy="12" r="9" /><line x1="12" y1="11" x2="12" y2="16.5" /><line x1="12" y1="7.6" x2="12" y2="7.7" />
+  </svg>
+);
+
+const Pg7AboutBody = ({ id }) => {
+  const about = D7_ABOUT[id];
+  const spec = PGD7_SPECS[id];
+  const n = D7_ORDER.indexOf(id);
+  if (!about) return null;
+  const head = { fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 4 };
+  const body = { fontFamily: 'var(--font-sans)', fontSize: 14.5, lineHeight: 1.55, color: 'var(--color-fg-2)', textWrap: 'pretty' };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginRight: 34 }}>
+      <div>
+        <div style={{ ...head, marginBottom: 2 }}>{String(n + 1).padStart(2, '0')} / {D7_ORDER.length}</div>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 19, letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>
+          {spec ? spec.name : id}
+        </div>
+      </div>
+      <div style={{ ...body, fontSize: 15.5, color: 'var(--color-fg-1)' }}>{about.one}</div>
+      <div><div style={head}>Claim</div><div style={body}>{about.claim}</div></div>
+      <div><div style={head}>Cost</div><div style={body}>{about.cost}</div></div>
+    </div>
+  );
+};
+
+// ============================================================================
 // The rail body — the flat list of ten names. ONE body, rendered in three
 // places and never forked: the docked aside, the app's MobileDrawer, and the
 // app posture's Home destination.
 // ============================================================================
-const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
+const Pg7Rail = ({ dirId, onPick, posture, onPosture, onAbout }) => {
   const specs = PGD7.list();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -226,25 +337,43 @@ const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
           const spec = PGD7_SPECS[id];
           const on = id === dirId;
           const missing = !spec;
+          // A row, not a button: the name enters the direction and the mark
+          // beside it explains it. Nesting the second control inside the first
+          // is not legal, so the row carries the surface and holds both.
           return (
-            <button key={id} onClick={() => !missing && onPick(id)} disabled={missing} style={{
-              position: 'relative', textAlign: 'left', cursor: missing ? 'default' : 'pointer',
-              background: on ? 'var(--color-surface)' : 'transparent', border: 0,
-              padding: '11px 12px 11px 14px', borderRadius: 'var(--radius-md)',
-              fontFamily: 'var(--font-sans)', fontWeight: on ? 600 : 500, fontSize: 14,
-              color: missing ? 'var(--color-fg-3)' : 'var(--color-fg-1)', minHeight: 44,
+            <div key={id} style={{
+              position: 'relative', display: 'flex', alignItems: 'center',
+              background: on ? 'var(--color-surface)' : 'transparent',
+              borderRadius: 'var(--radius-md)',
               boxShadow: on ? 'var(--shadow-raised)' : 'none',
               opacity: missing ? 0.4 : 1,
-              display: 'flex', alignItems: 'center', gap: 10,
             }} className={missing ? undefined : 'pg7-railitem'}>
               {on && <span style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: 3, background: 'var(--color-accent)' }} />}
-              <span style={{ flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {spec ? spec.name : '—'}
-              </span>
-            </button>
+              <button onClick={() => !missing && onPick(id)} disabled={missing} style={{
+                flex: 1, minWidth: 0, textAlign: 'left', cursor: missing ? 'default' : 'pointer',
+                background: 'transparent', border: 0,
+                padding: '11px 4px 11px 14px', borderRadius: 'var(--radius-md)',
+                fontFamily: 'var(--font-sans)', fontWeight: on ? 600 : 500, fontSize: 14,
+                color: missing ? 'var(--color-fg-3)' : 'var(--color-fg-1)', minHeight: 44,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <span style={{ flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 11, color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {spec ? spec.name : '—'}
+                </span>
+              </button>
+              {!missing && D7_ABOUT[id] && (
+                <button onClick={() => onAbout(id)} aria-label={'What ' + (spec ? spec.name : id) + ' is'}
+                  className="pg7-aboutbtn" style={{
+                    flexShrink: 0, width: 40, minHeight: 44, marginRight: 2,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'transparent', border: 0, borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer', color: 'var(--color-fg-3)',
+                  }}><Pg7AboutIcon size={16} /></button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -278,7 +407,7 @@ const Pg7Rail = ({ dirId, onPick, posture, onPosture }) => {
 // hand, unmistakably not product — and collapsible, because it stands in for
 // nothing in the app.
 // ============================================================================
-const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, beat }) => (
+const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, beat, onAbout }) => (
   <div className="pg7-strip">
     <div className="pg7-striprow">
       <button className="pg7-nav" onClick={onPrev} aria-label="Previous direction">
@@ -289,6 +418,12 @@ const Pg7Strip = ({ spec, index, total, open, onOpen, onPrev, onNext, onBeat, be
         <span className="pg7-title">{spec ? spec.name : 'No direction loaded'}</span>
         <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style={{ transform: open ? 'none' : 'rotate(180deg)', transition: 'transform var(--duration-base)' }}><polyline points="6 15 12 9 18 15" /></svg>
       </button>
+      {spec && D7_ABOUT[spec.id] && (
+        <button className="pg7-nav" onClick={() => onAbout(spec.id)}
+          aria-label={'What ' + spec.name + ' is'} style={{ strokeWidth: 1.9 }}>
+          <Pg7AboutIcon size={17} />
+        </button>
+      )}
       <button className="pg7-nav" onClick={onNext} aria-label="Next direction">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
       </button>
@@ -378,6 +513,10 @@ const Pg7Surface = ({
   // ---- the driver ----------------------------------------------------------
   d7E(() => {
     if (!jump) return;
+    // A beat puts the app in THAT state, not that state plus whatever the last
+    // beat left open. Clear every transient overlay first; the beat's own opens
+    // run after this in the same batch, so they win.
+    setFlow(null); setAddOpen(false); setOverlay(null); setConfirm(null);
     const run = (spec && spec.beats && spec.beats[jump.what]) || null;
     if (run) run(api);
     else if (jump.what === 'attach') api.openAdd();
@@ -430,7 +569,7 @@ const Pg7Surface = ({
     }
     // Every surface a direction registers is handed the SAME ctx — the one with
     // navigation and the derived lists on it, not the bare root object.
-    return <PGD7Card {...common} ctx={api} face={face} Slot={Slot} />;
+    return <PGD7Card {...common} ctx={api} spec={spec} face={face} Slot={Slot} />;
   };
 
   const feed = (
@@ -571,6 +710,7 @@ const Pg7App = () => {
   const [home, setHome] = d7S(false);
   const [jump, setJump] = d7S(null);
   const [beat, setBeat] = d7S(null);
+  const [about, setAbout] = d7S(null);   // the direction whose explanation is open
 
   d7E(() => {
     const on = () => setWinW(window.innerWidth);
@@ -655,7 +795,7 @@ const Pg7App = () => {
     if (!docked) setRailOpen(false);
   };
 
-  const railBody = <Pg7Rail dirId={dirId} onPick={pick} posture={posture} onPosture={setPosture} />;
+  const railBody = <Pg7Rail dirId={dirId} onPick={pick} posture={posture} onPosture={setPosture} onAbout={setAbout} />;
 
   return (
     <div className="pg-page">
@@ -672,10 +812,18 @@ const Pg7App = () => {
         <Pg7Strip spec={spec} index={index} total={D7_ORDER.length}
           open={stripOpen} onOpen={setStripOpen}
           onPrev={() => step(-1)} onNext={() => step(1)}
-          onBeat={fire} beat={beat} />
+          onBeat={fire} beat={beat} onAbout={setAbout} />
       </div>
       {!appPosture && isMobile && (
         <MobileDrawer open={railOpen} width={264} onClose={() => setRailOpen(false)}>{railBody}</MobileDrawer>
+      )}
+      {/* Rig chrome, so it sits at the page root and not inside .pgd-surface —
+          it explains the direction, it is not part of the app being reviewed.
+          Closed by default; Escape, the scrim and the close control all end it. */}
+      {about && (
+        <PGD7Sheet label="What this direction is" onClose={() => setAbout(null)}>
+          {() => <Pg7AboutBody id={about} />}
+        </PGD7Sheet>
       )}
     </div>
   );

@@ -193,6 +193,14 @@ Skip the driver entirely when the question is about how one surface looks.
   the playground actually mounts — load order is dependency order.
 - Babel scripts DON'T share scope: put everything shared on `window`, and read
   deps from `window` at the top of each file.
+- **But they DO share one global namespace, and it fails silently.**
+  babel-standalone compiles each `<script type="text/babel">` to ES5, so every
+  top-level `const` becomes a `var` on `window`. Two modules declaring the same
+  name is therefore not a redeclaration error — the later one silently wins, and
+  the earlier module renders the later module's component with the wrong props.
+  **Give every module a unique identifier prefix** (`q1`/`Q1_`, `dp`/`DP_`,
+  `cc`/`CC_`) and check for collisions before shipping:
+  `grep -oP '^const \K[A-Za-z0-9_$]+' pg-*.jsx | sort | uniq -d`.
 - Name style objects per-component; never `const styles = {}`.
 - Copy the app's hover/focus CSS classes the mounted components rely on
   (`.circ-cardaction`, `.circ-cardtitle`, focus rings) — they live in

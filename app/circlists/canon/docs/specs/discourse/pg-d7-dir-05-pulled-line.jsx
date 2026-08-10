@@ -29,7 +29,7 @@
 // convergence on one passage, disagreement as distance between passages.
 // ============================================================================
 
-const { PGD7, Button } = window;
+const { PGD7, Button, SwellDoor } = window;
 const { useState: plS } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -236,9 +236,18 @@ const PlDepth = ({ rx }) => (rx ? (
   </span>
 ) : null);
 
+// The reactions sit above the piece, keyed to the line each member stopped at.
+// The door is the shipped one, unpromoted: this direction reframes it rather
+// than growing it, so the scatter stays exactly what it is and the marked copy
+// is what sits below.
 const PlHead = ({ item }) => (
   <div style={{ paddingRight: 34, minWidth: 0 }}>
-    <div style={{ ...PL_META, marginBottom: 3 }}>{item.source || window.pgd7Host(item.url)}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+      <div style={{ ...PL_META, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {item.source || window.pgd7Host(item.url)}
+      </div>
+      <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+    </div>
     <div style={PL_TITLE}>{item.title || item.url.replace(/^https?:\/\//, '')}</div>
   </div>
 );
@@ -454,13 +463,22 @@ const PlReading = ({ ctx, item, glyph, close }) => {
               </div>
             </div>
           ))}
-          {done && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button variant="secondary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
-                See the column
-              </Button>
-            </div>
-          )}
+        </div>
+      )}
+
+      {/* The continuation object, always one tap from the piece: the source with
+          the circle's pulls standing in the margin, in SOURCE order. Offered
+          whether you pulled, passed, or have not decided — a marked-up article
+          is the same object however late you arrive at it. */}
+      {all.length > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'flex-end',
+          borderTop: (done || passed) ? 0 : '1px solid var(--color-border-2)',
+          paddingTop: (done || passed) ? 0 : 'var(--space-4)',
+        }}>
+          <Button variant="secondary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
+            See the column
+          </Button>
         </div>
       )}
     </div>

@@ -196,10 +196,15 @@ const CcCard = ({ ctx, item }) => {
   const rootName = root ? (root.title || window.pgd7Host(root.url)) : null;
   if (!rootName) return null;
 
-  const go = () => {
-    if (!!root.read !== (ctx.tab === 'read')) ctx.setTab(root.read ? 'read' : 'active');
-    ctx.setState({ focus: root.id });
-  };
+  // The gather. Tapping the spine lifts the root above its answers as one
+  // contiguous run; tapping it again lets them disperse back into the queue's
+  // own order. It is the direction's single new interaction and it is
+  // feed-local and tab-local: no panel, no tab switch, no destination. Where the
+  // root has already left Active its answers still gather, on their own, at the
+  // top of the tab you are standing in — the run is what the gather is for, and
+  // the root is part of it only where the root is.
+  const gathered = ctx.state.focus === root.id;
+  const go = () => ctx.setState({ focus: gathered ? null : root.id });
 
   return (
     <div style={ccSpineWrap}>
@@ -207,12 +212,12 @@ const CcCard = ({ ctx, item }) => {
         <path d="M1.5 -2 V8 a4 4 0 0 0 4 4 H12" fill="none"
           stroke="var(--color-border-1)" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
-      <button type="button" onClick={go} className="circ-cardaction" style={{
+      <button type="button" onClick={go} className="circ-cardaction" aria-pressed={gathered} style={{
         display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0, flex: 1,
         background: 'transparent', border: 0, padding: 0, textAlign: 'left', cursor: 'pointer',
       }}>
         <span style={ccSpineLabel}>Answers</span>
-        <span style={ccSpineRoot}>{rootName}</span>
+        <span style={{ ...ccSpineRoot, color: gathered ? 'var(--color-fg-1)' : ccSpineRoot.color, fontWeight: gathered ? 600 : 500 }}>{rootName}</span>
       </button>
     </div>
   );

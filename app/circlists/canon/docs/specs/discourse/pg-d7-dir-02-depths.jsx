@@ -139,6 +139,52 @@ const DpLintel = ({ ctx, item }) => {
 };
 
 // ============================================================================
+// The card face — the room's front wall, and the only thing this direction ever
+// puts on a card.
+// ----------------------------------------------------------------------------
+// It is a MARK, not a line: three rungs drawn as bars, the one you stand on
+// accented, carrying the glyph you gave. No words from the room, no names, no
+// count of who is in it. It sits directly beneath the attribution, alongside the
+// Reaction door, because the door's glyph huddle and this mark answer the same
+// question from two sides — who felt what, and where that puts them.
+//
+// Read only. On Active there is no room yet: the tick is the way in, and a
+// second control beside it would compete with the one act that matters.
+// ============================================================================
+const DP_MARK_BTN = {
+  display: 'flex', alignItems: 'center', gap: 11, width: '100%', minHeight: 44,
+  background: 'transparent', border: 0, padding: '4px 0 0', margin: 0,
+  cursor: 'pointer', textAlign: 'left',
+};
+const DP_MARK_W = [14, 20, 26];
+
+const DpMark = ({ ctx, item, tab }) => {
+  if (tab !== 'read') return null;
+  const standing = dpStanding(ctx, item);
+  if (!Object.keys(standing).length) return null;   // nobody has a depth — no room
+  const my = standing.you || null;
+  const myLevel = my ? dpLevelOf(my.intensity) : null;
+
+  return (
+    <button type="button" style={DP_MARK_BTN} onClick={() => ctx.openRespond(item)}
+      aria-label="Open the room">
+      <span aria-hidden="true" style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+        {[1, 2, 3].map((L) => (
+          <span key={L} style={{
+            display: 'block', height: 2, borderRadius: 2, width: DP_MARK_W[L - 1],
+            background: myLevel === L ? 'var(--color-accent)' : 'var(--color-border-1)',
+          }} />
+        ))}
+      </span>
+      <span style={{ ...DP_RUNG_LABEL, color: myLevel ? 'var(--color-accent)' : 'var(--color-fg-3)', fontWeight: myLevel ? 600 : 400 }}>
+        {myLevel ? DP_DEPTH_WORDS[myLevel - 1] : 'Enter the room'}
+      </span>
+      {my && my.glyph && <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>{my.glyph}</span>}
+    </button>
+  );
+};
+
+// ============================================================================
 // The rungs, drawn as geography. Used by the compose surface (nothing marked
 // yet) and by the continuation page (your own rung marked, carrying your
 // glyph). One motif, two placements.
@@ -171,6 +217,7 @@ const DpRungs = ({ marked, glyph }) => (
 const DpLine = ({ ctx, r }) => {
   const [editing, setEditing] = dpS(false);
   const [draft, setDraft] = dpS('');
+  if (!r) return null;                             // belt and braces: never render a hole
   const mine = r.by === 'you';
   const body = dpText(ctx, r);
 
@@ -213,6 +260,7 @@ const DpLine = ({ ctx, r }) => {
 const DpStratum = ({ ctx, item, level, standing, lines, mine, bandRef, draft, setDraft, onSay }) => {
   const here = Object.keys(standing).filter((id) => dpLevelOf(standing[id].intensity) === level);
   const said = lines.filter((r) => {
+    if (!r) return false;
     const s = standing[r.by];
     return s && dpLevelOf(s.intensity) === level;
   });
@@ -304,7 +352,15 @@ const DpRoom = ({ ctx, item, close }) => {
 
   // Changing your Swell is a full-screen flow that sits UNDER this sheet, so
   // the sheet leaves first and the flow opens behind it.
-  const changeSwell = () => { close(); setTimeout(() => ctx.openSwell(item), 260); };
+  // Moving your puck is the continuation act, so it is the room's own foot
+  // control. The flow is full-screen and sits UNDER this sheet, so the sheet
+  // leaves first. A Read card stays on its own tab while the flow runs —
+  // openSwell reaches for Active, and re-asserting the tab after it keeps the
+  // card where the member left it.
+  const changeSwell = () => {
+    close();
+    setTimeout(() => { ctx.openSwell(item); if (item.read) ctx.setTab('read'); }, 260);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -435,9 +491,12 @@ const DpDepth = ({ ctx }) => {
 PGD7.register({
   id: 'depths',
   name: 'The Depths',
-  // The card face is nothing: no slot, no Card, so the rig mounts the shipped
-  // FeedCard untouched. Everything this direction has to say is past the door.
+  // The card carries a MARK, never a line: the strata with your rung on them,
+  // under the attribution beside the Reaction door. Every word this direction
+  // has is still past the door.
+  face: { slot: 'below-attribution' },
   initialState: { revised: {}, focus: null },
+  Card: DpMark,
   Compose: DpCompose,
   Landing: DpRoom,
   Respond: DpRoom,

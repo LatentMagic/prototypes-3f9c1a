@@ -694,7 +694,11 @@ const swellDoorGlyphs = (all) => {
   return seen;
 };
 
-const SwellDoor = ({ item }) => {
+// `onOpen` is optional and defaults to the shipped behaviour: the door opens
+// the review itself. A caller passes it only to host the review somewhere of
+// its own — the door keeps its geometry, glyph huddle and hit target either
+// way, so nothing is ever re-drawn.
+const SwellDoor = ({ item, onOpen }) => {
   const [open, setOpen] = rxState(false);
   const all = (item && item.reactions) || [];
   if (all.length === 0) return null;              // nobody has read it yet -> no door
@@ -706,7 +710,7 @@ const SwellDoor = ({ item }) => {
   // the arrows relax to a full 44px touch target.
   return (
     <React.Fragment>
-      <button type="button" onClick={() => setOpen(true)} className="circ-swell-door"
+      <button type="button" onClick={() => (onOpen ? onOpen(item) : setOpen(true))} className="circ-swell-door"
         aria-label="How the circle landed" aria-haspopup="dialog"
         style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer', border: 0,
           background: 'transparent', padding: 0, minHeight: 44, flexShrink: 0 }}>

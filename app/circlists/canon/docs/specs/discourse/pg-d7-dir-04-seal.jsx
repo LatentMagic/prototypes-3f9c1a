@@ -21,7 +21,7 @@
 // the words — one event, both things, never one before the other.
 // ============================================================================
 
-const { PGD7, Button, Icon, Avatar } = window;
+const { PGD7, Button, Icon, Avatar, SwellDoor, CircGlow } = window;
 const { useState: slS, useEffect: slE } = React;
 
 // ---- The depth vocabulary ---------------------------------------------------
@@ -48,7 +48,10 @@ const SL_PLAN = {
   a6: { r1: { in: 5 * SL_HOUR } },
   a7: { r1: 'open' },
   r1: { r1: 'open' },
-  r2: { r1: 'open' },
+  // A card already on your shelf, sealed again and about to open. This is the
+  // one the direction's route exists for: reading enrolled you, the card never
+  // came back to Active, and the opening arrives on Read while you are here.
+  r2: { r1: 'open', rounds: 2, r2: { in: 100e3 } },
   r3: { r1: 'open' },
   r4: { r1: 'open', rounds: 2, r2: { in: 2 * SL_HOUR } },
 };
@@ -153,6 +156,32 @@ const slUseWindows = (ctx, item) => {
 };
 
 // ============================================================================
+// The arrival — the one place this direction extends the shipped grammar.
+// ----------------------------------------------------------------------------
+// An opening lands on the READ tab, because reading enrolled you and the card
+// never became unread. The shipped grammar is Active-only, so it is stretched by
+// exactly two things and no more: an opened card sorts to the top of the shelf,
+// and its band plays the shipped one-shot glow when it comes into view. No
+// waterline — an opening is a now-event on a shelf, not a position in a
+// timeline — and no count anywhere.
+//
+// An opening counts as arrived only when it landed while the member was here:
+// a card seeded already-open is history, and history does not glow.
+// ============================================================================
+const slArrived = (ctx, item) => {
+  const count = slRoundCount(ctx, item);
+  for (let n = 1; n <= count; n++) if (slOpenedAt(ctx, item, n) != null) return true;
+  return false;
+};
+
+const slOrder = (items, ctx) => {
+  if (ctx.tab !== 'read') return items;
+  const up = items.filter((i) => slArrived(ctx, i));
+  if (!up.length) return items;
+  return [...up, ...items.filter((i) => !slArrived(ctx, i))];
+};
+
+// ============================================================================
 // Shared parts.
 // ============================================================================
 const SL_META = {
@@ -247,8 +276,12 @@ const SlCard = ({ ctx, item }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '12px 0 2px' }}>
-      {live.map((round) => (
-        <button key={round.n} type="button" onClick={go} style={{
+      {live.map((round) => {
+      // An opening that landed while the member was here plays the shipped
+      // one-shot glow, on the band rather than the card: the card was already
+      // theirs, the opening is what arrived.
+      const band = (
+        <button type="button" onClick={go} style={{
           appearance: 'none', textAlign: 'left', cursor: 'pointer', width: '100%',
           background: round.open ? 'transparent' : 'var(--color-surface-sunken)',
           border: '1px solid ' + (round.open ? 'var(--color-border-2)' : 'var(--color-border-1)'),
@@ -278,7 +311,11 @@ const SlCard = ({ ctx, item }) => {
             </React.Fragment>
           )}
         </button>
-      ))}
+      );
+      return round.open && round.openedAt != null
+        ? <CircGlow key={round.n} glow>{band}</CircGlow>
+        : <React.Fragment key={round.n}>{band}</React.Fragment>;
+      })}
     </div>
   );
 };
@@ -343,7 +380,16 @@ const SlOpening = ({ ctx, item, glyph, close }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <div style={{ paddingRight: 34 }}>
-        <div style={{ ...SL_META, marginBottom: 3 }}>{item.source || 'Link'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <div style={{ ...SL_META, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.source || 'Link'}</div>
+          {/* The door has two states, and the transition is this direction's
+              whole rhythm. Sealed: nothing — the swell shapes are sealed with
+              the words, so there is nothing to look at yet. Opened: the shipped
+              door, the shapes and the words revealed in the same instant. */}
+          {last && last.open && (
+            <span style={{ flexShrink: 0, marginRight: -10 }}><SwellDoor item={item} /></span>
+          )}
+        </div>
         <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textWrap: 'pretty' }}>
           {item.title || item.url.replace(/^https?:\/\//, '')}
         </div>
@@ -402,6 +448,16 @@ const SlOpening = ({ ctx, item, glyph, close }) => {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="primary" onClick={startNext}>Seal another round</Button>
           </div>
+        </div>
+      )}
+
+      {/* A card two bands deep has more than a sheet can hold at a glance, so
+          the rounds get their own page — and only then. One band needs none. */}
+      {rounds.length > 1 && (
+        <div style={{ borderTop: '1px solid var(--color-border-2)', paddingTop: 'var(--space-4)' }}>
+          <Button variant="tertiary" onClick={() => { close(); ctx.setState({ focus: item.id }); ctx.openContinue(); }}>
+            See every round
+          </Button>
         </div>
       )}
     </div>
@@ -498,6 +554,11 @@ PGD7.register({
     // The one card already carrying a second seal, so a running round is
     // inhabited rather than empty. Sealed, so none of it is readable yet.
     seedR2: {
+      r2: [
+        { id: 'r2s1', by: 'marcus', text: 'Six months on, the part I use daily is the failure taxonomy, not the retries.' },
+        { id: 'r2s2', by: 'dev', text: 'We adopted the naming and dropped the rest. The naming was the whole value.' },
+        { id: 'r2s3', by: 'ada', text: 'Still think the middle third is padding.' },
+      ],
       r4: [
         { id: 'r4s1', by: 'ada', text: 'Second time through I stopped skipping the cetology chapters and they turned out to be the book.' },
         { id: 'r4s2', by: 'priya', text: 'Got as far as the try-works. Reporting back in a fortnight.' },
@@ -510,6 +571,9 @@ PGD7.register({
   Respond: SlOpening,
   Continue: SlRounds,
   continueTitle: 'Rounds',
+  // An opening sorts to the top of the shelf until the next visit. Read only —
+  // Active keeps the order it ships with.
+  order: slOrder,
   beats: {
     // Land on the card whose window is about to elapse: the Swell commits into
     // a running seal, and the opening arrives while you are still standing there.
