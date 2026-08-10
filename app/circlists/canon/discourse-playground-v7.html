@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Circlists — Discourse playground v7</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  :root { --circ-vh: 100vh; }
+  html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); }
+  body { min-height: 100dvh; -webkit-font-smoothing: antialiased; overflow: hidden; }
+  #root { min-height: 100dvh; }
+
+  /* ==========================================================================
+     The rig's own chrome. Everything below the next banner is copied verbatim
+     from circlists.html, because the mounted app components rely on it and it
+     lives in that file rather than in the modules.
+     ========================================================================== */
+
+  /* The page is the app: open it on a phone and there is no bezel, no frame,
+     nothing drawn around it. The direction list stands where the circle rail
+     stands, so it follows the app's rail exactly — docked at >= 1024, and below
+     that behind the top bar's circles-menu button in the app's own MobileDrawer. */
+  .pg-page { display: flex; height: 100dvh; overflow: hidden; }
+  .pg-rail {
+    width: var(--rail-width); flex-shrink: 0;
+    background: var(--color-surface-sunken); border-right: 1px solid var(--color-border-2);
+    padding: 20px 12px; height: 100dvh; overflow-y: auto; overscroll-behavior: contain;
+  }
+  .pg7-railitem:hover { background: var(--color-surface); }
+  .pg7-col { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100dvh; }
+  .pg7-body { flex: 1; min-height: 0; display: flex; }
+
+  /* The transform lives here, so position:fixed sheets and the FAB pin to the
+     app column and not to the page. GOTCHA #5. */
+  .pgd-surface {
+    position: relative; flex: 1; min-width: 0; height: 100%;
+    overflow: hidden; background: var(--color-canvas); transform: translateZ(0);
+  }
+  .pgd-screen { width: 100%; height: 100%; overflow-y: auto; overscroll-behavior: contain; --circ-vh: 100%; }
+
+  /* A permanent second column, for the one direction that asks for one. Only
+     ever rendered at >= 1024; below that the same body is a destination. */
+  .pg7-aside {
+    width: 340px; flex-shrink: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--color-surface); border-left: 1px solid var(--color-border-2);
+  }
+
+  /* The driver strip. Unmistakably not product, always to hand, costs no width,
+     and collapses on every viewport because it stands in for nothing in the app. */
+  .pg7-strip {
+    flex-shrink: 0; background: #1c1c1a; color: #FAFAF7;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -1px 0 rgba(10,10,10,0.25);
+  }
+  .pg7-striprow { display: flex; align-items: stretch; gap: 4px; padding: 6px 6px 0; }
+  .pg7-nav, .pg7-name, .pg7-beat {
+    background: transparent; border: 0; cursor: pointer; color: #FAFAF7;
+    font-family: var(--font-sans); border-radius: var(--radius-md);
+  }
+  .pg7-nav {
+    width: 44px; min-height: 44px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .pg7-nav:hover, .pg7-name:hover, .pg7-beat:hover { background: rgba(250,250,247,0.10); }
+  .pg7-name {
+    flex: 1; min-width: 0; min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .pg7-num { font-family: var(--font-mono); font-size: 11px; color: rgba(250,250,247,0.55); flex-shrink: 0; }
+  .pg7-title { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg7-beats { display: flex; gap: 4px; padding: 2px 6px 6px; }
+  .pg7-beat {
+    flex: 1; min-height: 40px; padding: 0 6px;
+    font-weight: 600; font-size: 12.5px; color: rgba(250,250,247,0.72);
+    border: 1px solid rgba(250,250,247,0.16);
+  }
+  .pg7-beat-on { background: rgba(250,250,247,0.14); color: #FAFAF7; border-color: rgba(250,250,247,0.34); }
+
+  /* ==========================================================================
+     Copied verbatim from circlists.html — the app's own hover, focus, card and
+     chrome states. The mounted components need these; they are not in the
+     modules. Do not tune them here.
+     ========================================================================== */
+  .circ-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .circ-sig { display: inline-flex; align-items: center; flex-shrink: 0; }
+  .circ-sig-settle { animation: circ-settle 2000ms linear both; }
+  @keyframes circ-settle { 0%, 74% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes circ-spin { to { transform: rotate(360deg); } }
+  .circ-spin { display: inline-block; border-style: solid; border-width: 2px; border-radius: 50%; animation: circ-spin 700ms linear infinite; flex-shrink: 0; }
+  @keyframes circ-fade { from { opacity: 0; } to { opacity: 1; } }
+  .circ-anim-fade { animation: circ-fade var(--duration-slow) var(--ease-quiet) both; }
+
+  .circ-glow { position: relative; border-radius: var(--radius-lg); }
+  .circ-glow::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); background: rgba(139,191,173,0.34); pointer-events: none; animation: circ-glow-wash 2400ms ease-in-out both; }
+  @keyframes circ-glow-wash { 0%, 58% { opacity: 1; } 100% { opacity: 0; } }
+  .circ-rise { animation: circ-rise 560ms var(--ease-quiet) both; }
+  @keyframes circ-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .circ-newpill { position: sticky; top: calc(var(--top-bar-height) + 49px + 16px); margin-top: calc(16px - var(--circ-feed-pad-top, 16px)); z-index: 40; align-self: center; display: inline-flex; align-items: center; gap: 7px; background: var(--color-surface); border: 1px solid var(--color-border-1); box-shadow: var(--shadow-raised); border-radius: var(--radius-pill); padding: 0 18px; min-height: 44px; cursor: pointer; font: 600 13px/1 var(--font-sans); color: var(--color-accent); }
+  .circ-newpill:hover { background: var(--color-surface-sunken); }
+  .circ-fdiv { display: flex; align-items: center; gap: var(--space-3); padding: 0 0 4px; }
+  .circ-fdiv::after { content: ''; flex: 1; height: 1px; background: var(--color-border-2); }
+  .circ-fdiv-label { font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+
+  /* focus rings: first-class */
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+    outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset);
+  }
+  input:focus-visible, textarea:focus-visible { outline-offset: 0; border-color: var(--color-accent) !important; }
+
+  /* button hover/press */
+  .circ-btn-primary:hover:not(:disabled) { background: var(--color-accent-hover) !important; }
+  .circ-btn-primary:active:not(:disabled) { background: var(--color-accent-press) !important; }
+  .circ-btn-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+  .circ-btn-secondary:active:not(:disabled) { background: #E8E8E5 !important; }
+  .circ-btn-destructive:hover:not(:disabled) { background: var(--color-destructive-hover) !important; }
+  .circ-btn-destructive:active:not(:disabled) { background: var(--color-destructive-press) !important; }
+  .circ-btn-tertiary:hover { text-decoration: underline; }
+  .circ-btn-destructive-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+
+  /* card actions: quiet, recessive */
+  .circ-cardaction {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; min-height: 44px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  .circ-card { container-type: inline-size; }
+  .circ-skel { background: linear-gradient(90deg, var(--color-surface-sunken) 25%, var(--color-border-2) 50%, var(--color-surface-sunken) 75%); background-size: 200% 100%; animation: circ-skel 1.4s ease-in-out infinite; }
+  @keyframes circ-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  @container (max-width: 380px) { .circ-attrib-pre { display: none; } .circ-attrib-rest { display: inline-block; } .circ-attrib-rest::first-letter { text-transform: capitalize; } }
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
+
+  /* menus / links / app-posture chrome */
+  .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
+  .circ-topaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }
+  .circ-appnav-add:active:not(:disabled) .circ-appnav-adddot { background: var(--color-accent-press) !important; }
+  .circ-appsheet-row:hover { background: var(--color-surface-sunken); }
+  .circ-appsheet-row:active { background: var(--color-border-2); }
+  .circ-railacct:hover { background: var(--color-surface); }
+  .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .circ-doorlink { color: var(--color-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-accent) 35%, transparent); transition: text-decoration-color var(--duration-base) var(--ease-quiet); }
+  .circ-doorlink:hover, .circ-doorlink:focus-visible { text-decoration-color: var(--color-accent); }
+  .circ-swell-door:hover, .circ-rx-close:hover { background: var(--color-surface-sunken); border-radius: var(--radius-md); }
+
+  /* mobile phone frame — only ever the deliberately FORCED posture (Viewport →
+     Mobile). Auto never frames anything. Verbatim from circlists.html. */
+  .circ-stage {
+    flex: 1; min-width: 0; height: 100%; width: 100%;
+    background: #1c1c1a;
+    background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%);
+    display: flex; align-items: center; justify-content: center; padding: 20px 16px;
+  }
+  .circ-phone {
+    width: 402px; max-width: 100%;
+    height: min(872px, 100%);
+    background: #050505; border-radius: 52px; padding: 11px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
+    overflow: hidden;
+  }
+  .circ-phone-clip {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden; background: var(--color-canvas);
+    transform: translateZ(0);
+  }
+  .circ-phone-screen { width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; --circ-vh: 100%; }
+  .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* app posture: full-page push layers */
+  @keyframes circ-push-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes circ-push-out { from { transform: translateX(0) } to { transform: translateX(100%) } }
+  .circ-push-in { animation: circ-push-in var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+
+  @media (prefers-reduced-motion: reduce) {
+    .circ-push-in, .circ-push-out { animation-duration: 1ms }
+    .circ-rise, .circ-newpill, .circ-sig-settle, .circ-skel { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- The app's own modules, in dependency order. The rig mounts these; it does
+     not copy them. -->
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/liveliness.jsx"></script>
+<script type="text/babel" src="app/swell-reactions.jsx"></script>
+<script type="text/babel" src="app/shell.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="app/app-shell.jsx"></script>
+
+<!-- The rig. -->
+<script type="text/babel" src="docs/specs/discourse/pg-d7-data.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-addlink.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-shell.jsx"></script>
+
+<!-- The ten directions. Each registers itself against pg-d7-CONTRACT.md; the
+     rig boots once they have all run, and boots anyway if one is absent. Order
+     here is rail order. -->
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-01-question.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-02-depths.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-03-countercard.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-04-seal.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-05-pulled-line.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-06-sounding.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-07-seats.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-08-dispatch.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-09-palimpsest.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-d7-dir-10-stream.jsx"></script>
+</body>
+</html>
