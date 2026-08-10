@@ -622,7 +622,8 @@ const Pg7Surface = ({
   ) : (
     <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)' }}>
       <TopBar isMobile={isMobile} space={D7.circle} showMembers={false}
-        onMenu={onToggleRail} menuOpen={railOpen} subView={subView} />
+        onMenu={onToggleRail} menuOpen={railOpen} subView={subView}
+        subtitle={!subView && spec && spec.TopSubtitle ? <spec.TopSubtitle ctx={api} /> : null} />
       {page}
     </div>
   );

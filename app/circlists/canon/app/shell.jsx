@@ -148,7 +148,11 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
 // The space's own header: space name, with a ⚙ Space settings affordance below
 // that opens the members/settings surface. No account identity lives here — that
 // moved to the foot of the rail. With no space, the name slot is absent entirely.
-const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false }) => {
+// `subtitle` is optional and absent in the product: a second line under the
+// circle name, for a caller that needs the bar to carry a living fragment
+// rather than a static name. The bar keeps its height and its baseline row
+// when nothing is passed, so the shipped look is untouched.
+const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false, subtitle = null }) => {
   // A sub-view (settings/account) replaces the leading slot with a back arrow +
   // section title, and hides the gear (it brought you here — showing it again is
   // redundant). The space feed shows the hamburger/space name + gear.
@@ -180,11 +184,14 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
           }}>{subView.title}</span>
         </div>
       ) : space ? (
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <span style={{
-            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{space.name}</span>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, minWidth: 0 }}>
+            <span style={{
+              fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: subtitle ? 15 : 16, color: 'var(--color-fg-1)',
+              lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>{space.name}</span>
+          </div>
+          {subtitle}
         </div>
       ) : <div style={{ flex: 1 }} />}
 

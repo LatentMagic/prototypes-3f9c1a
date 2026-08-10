@@ -2840,7 +2840,11 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
 // The space's own header: space name, with a ⚙ Space settings affordance below
 // that opens the members/settings surface. No account identity lives here — that
 // moved to the foot of the rail. With no space, the name slot is absent entirely.
-const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false }) => {
+// `subtitle` is optional and absent in the product: a second line under the
+// circle name, for a caller that needs the bar to carry a living fragment
+// rather than a static name. The bar keeps its height and its baseline row
+// when nothing is passed, so the shipped look is untouched.
+const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false, subtitle = null }) => {
   // A sub-view (settings/account) replaces the leading slot with a back arrow +
   // section title, and hides the gear (it brought you here — showing it again is
   // redundant). The space feed shows the hamburger/space name + gear.
@@ -2872,11 +2876,14 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
           }}>{subView.title}</span>
         </div>
       ) : space ? (
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <span style={{
-            fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{space.name}</span>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, minWidth: 0 }}>
+            <span style={{
+              fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: subtitle ? 15 : 16, color: 'var(--color-fg-1)',
+              lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>{space.name}</span>
+          </div>
+          {subtitle}
         </div>
       ) : <div style={{ flex: 1 }} />}
 
@@ -4912,7 +4919,8 @@ const Pg7Surface = ({
   ) : (
     <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)' }}>
       <TopBar isMobile={isMobile} space={D7.circle} showMembers={false}
-        onMenu={onToggleRail} menuOpen={railOpen} subView={subView} />
+        onMenu={onToggleRail} menuOpen={railOpen} subView={subView}
+        subtitle={!subView && spec && spec.TopSubtitle ? <spec.TopSubtitle ctx={api} /> : null} />
       {page}
     </div>
   );
@@ -9030,7 +9038,7 @@ const StCard = ({ ctx, item }) => {
         {landed && (
           <span style={stCardMark}>
             <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
-            Said since you were in
+            Talk since you were in
           </span>
         )}
       </div>
@@ -10479,10 +10487,10 @@ const PM_CSS = `
 .pm7-lift:hover { color: var(--color-fg-2); }
 `;
 if (typeof document !== 'undefined' && !document.getElementById('pm7-css')) {
-  const el = document.createElement('style');
-  el.id = 'pm7-css';
-  el.textContent = PM_CSS;
-  document.head.appendChild(el);
+  const pmStyleEl = document.createElement('style');
+  pmStyleEl.id = 'pm7-css';
+  pmStyleEl.textContent = PM_CSS;
+  document.head.appendChild(pmStyleEl);
 }
 
 PGD7.register({
@@ -10491,7 +10499,7 @@ PGD7.register({
   // The description slot: under the title, inside the text column, where an
   // object's description belongs. Never attributed, never a person's utterance.
   face: { slot: 'description' },
-  initialState: { strata: pmSeedStrata(), focus: null, editing: null },
+  initialState: { strata: pmSeedStrata(), editing: null },
   Card: PmCard,
   Compose: PmCompose,
   Landing: PmReading,
@@ -10534,7 +10542,7 @@ PGD7.register({
       const t = mine || api.readItems.find((i) => pmLayers(api, i).length > 1) || api.firstRead();
       api.setRoute('feed');
       api.setTab('read');
-      api.setState({ focus: t ? t.id : null, editing: t ? t.id : null });
+      api.setState({ editing: t ? t.id : null });
     },
   },
 });
@@ -10955,6 +10963,27 @@ const Sm10Banner = ({ ctx }) => {
   );
 };
 
+// The same fragment, set as the circle name's second line INSIDE the top bar
+// rather than in a row beneath it. It is the circle's current murmur, so it
+// belongs to the circle's own title block — and sitting there keeps it clear
+// of the row The Dispatch uses for its band.
+const Sm10TopLine = ({ ctx }) => {
+  if (!ctx.isMobile) return null;
+  const entries = smEntries(ctx);
+  const last = entries[entries.length - 1];
+  if (!last) return null;
+  return (
+    <button type="button" className="sm10-banner" onClick={() => { ctx.setState({ head: null }); ctx.openAside(); }}
+      aria-label="Open the stream"
+      style={{
+        display: 'block', width: '100%', textAlign: 'left', background: 'transparent',
+        border: 0, padding: 0, cursor: 'pointer', minWidth: 0,
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 11.5, lineHeight: 1.25,
+        color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>{last.text}</button>
+  );
+};
+
 // ============================================================================
 // Beats 2 and 3 — one surface. What the reader meets after the shipped reveal,
 // and what a Read card opens: the stream AT NOW, whatever it happens to be
@@ -11074,7 +11103,7 @@ PGD7.register({
   Landing: Sm10Say,
   Respond: Sm10Say,
   Aside: Sm10Stream,
-  Banner: Sm10Banner,
+  TopSubtitle: Sm10TopLine,
   asideTitle: 'The stream',
   // The shipped reveal plays in full, and the stream's one affordance follows
   // it. The reaction layer is untouched, which is the whole pairing argument.

@@ -412,6 +412,27 @@ const Sm10Banner = ({ ctx }) => {
   );
 };
 
+// The same fragment, set as the circle name's second line INSIDE the top bar
+// rather than in a row beneath it. It is the circle's current murmur, so it
+// belongs to the circle's own title block — and sitting there keeps it clear
+// of the row The Dispatch uses for its band.
+const Sm10TopLine = ({ ctx }) => {
+  if (!ctx.isMobile) return null;
+  const entries = smEntries(ctx);
+  const last = entries[entries.length - 1];
+  if (!last) return null;
+  return (
+    <button type="button" className="sm10-banner" onClick={() => { ctx.setState({ head: null }); ctx.openAside(); }}
+      aria-label="Open the stream"
+      style={{
+        display: 'block', width: '100%', textAlign: 'left', background: 'transparent',
+        border: 0, padding: 0, cursor: 'pointer', minWidth: 0,
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 11.5, lineHeight: 1.25,
+        color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>{last.text}</button>
+  );
+};
+
 // ============================================================================
 // Beats 2 and 3 — one surface. What the reader meets after the shipped reveal,
 // and what a Read card opens: the stream AT NOW, whatever it happens to be
@@ -531,7 +552,7 @@ PGD7.register({
   Landing: Sm10Say,
   Respond: Sm10Say,
   Aside: Sm10Stream,
-  Banner: Sm10Banner,
+  TopSubtitle: Sm10TopLine,
   asideTitle: 'The stream',
   // The shipped reveal plays in full, and the stream's one affordance follows
   // it. The reaction layer is untouched, which is the whole pairing argument.
