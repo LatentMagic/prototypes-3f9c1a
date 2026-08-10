@@ -581,8 +581,13 @@ const Pg7Surface = ({
       item, tab, onOpen: () => {}, onMarkRead: (it) => setFlow(it),
       onDelete: (it) => setConfirm({ kind: 'delete', item: it }),
     };
-    // Nothing of the direction's goes inside the border → mount the shipped card.
-    if (item.pending || (!Slot && !face.demoteTitle)) {
+    // Nothing of the direction's goes inside the border → mount the shipped
+    // card. `doorOpens` is the exception: it is honoured by the rig's own card
+    // copy, so a direction that claims the door but draws nothing inside the
+    // border still gets the copy. Without this the door silently falls back to
+    // the shipped Swell modal and the direction loses its response surface —
+    // a failure that only shows on a click, never at mount.
+    if (item.pending || (!Slot && !face.demoteTitle && !(spec && spec.doorOpens))) {
       return <FeedCard {...common} user={{ firstName: 'Sam', lastName: 'Rivera', name: 'You', email: D7.me.email }} showTime />;
     }
     // Every surface a direction registers is handed the SAME ctx — the one with

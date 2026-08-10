@@ -4340,12 +4340,15 @@ const {
 const D7_BREAK = 1024;
 const D7_KEY = 'pg_d7_v1';
 
-// The canonical order of the ten. A module registers itself; this list decides
-// where it sits and what the rail shows when a module is missing. Order is the
-// FINAL-TEN order, chosen so consecutive versions feel like different products.
+// The canonical order. A module registers itself; this list decides where it
+// sits and what the rail shows when a module is missing. 01–10 are the FINAL-TEN
+// order, chosen so consecutive versions feel like different products. 11–13 are
+// the v1 revisit — three directions built from the features the v1 reviewers
+// liked most and the ten walked past. See v1-revisit-THREE.md.
 const D7_ORDER = [
   'question', 'depths', 'countercard', 'seal', 'pulled-line',
   'sounding', 'seats', 'dispatch', 'palimpsest', 'stream',
+  'record', 'echo', 'note',
 ];
 
 const D7_BEATS = [
@@ -4416,6 +4419,21 @@ const D7_ABOUT = {
     one: 'The circle gets one continuous chronological talk surface, permanently open, and items are its punctuation.',
     claim: 'A river has no unread state. You enter at now; nothing below the waterline is presented as owed. Flat, chronological, unbounded — and items are the punctuation: you post from a card, and your words land at the bottom carrying that card as a header block.',
     cost: 'It is a feed, and it is unfinishable. It gives the app a second attention centre where the queue has been the only one. It is the direction most exposed to the "not WhatsApp, not Slack" invariant.',
+  },
+  record: {
+    one: 'Reaction and words are one act: you drag the Swell and leave your line in the same breath, and the Reaction door holds the whole record — every glyph, the rung it landed on in its spoken word, and every line, merged.',
+    claim: 'Discourse needs no new place. The door is the place. Merging reactions and words in one record makes the depth a member gave part of what they said.',
+    cost: 'The least novel direction in the set — a record behind a door is a thread with a lid on it. Nothing bounds how many lines a record takes; the lid is the only thing keeping it off the Read tab.',
+  },
+  echo: {
+    one: 'You never write a line someone has already written. You point at theirs, and it becomes both of yours — carrying the depth you gave on the pad.',
+    claim: 'Most of what a circle wants to say has already been said by the first person to speak. Writing it again is performance; agreeing is honest and free. Speaking costs words, agreeing costs a tap, and the line the circle stands behind carries the card.',
+    cost: 'It makes the first speaker the author of everyone else’s position — a real power asymmetry in a small circle. And an echo looks like a like button to anyone arriving from a social product.',
+  },
+  note: {
+    one: 'The sharer’s note is visible before you read, and it is the only thing that is. Everything the circle says after reading stays behind the door.',
+    claim: 'Both v1 reviewers asked for the contributor’s thought up front and it was never built. This is the balance: the note is context for whether to read, so it is public; the conversation is not. Reveal-on-read protects the conversation, not the invitation.',
+    cost: 'A visible note is a small stage, and the member who never has a good line for it will feel it. Two notes per card is a hard budget. A note that oversells steers reading in a way a bare card does not.',
   },
 };
 
@@ -4860,8 +4878,13 @@ const Pg7Surface = ({
       item, tab, onOpen: () => {}, onMarkRead: (it) => setFlow(it),
       onDelete: (it) => setConfirm({ kind: 'delete', item: it }),
     };
-    // Nothing of the direction's goes inside the border → mount the shipped card.
-    if (item.pending || (!Slot && !face.demoteTitle)) {
+    // Nothing of the direction's goes inside the border → mount the shipped
+    // card. `doorOpens` is the exception: it is honoured by the rig's own card
+    // copy, so a direction that claims the door but draws nothing inside the
+    // border still gets the copy. Without this the door silently falls back to
+    // the shipped Swell modal and the direction loses its response surface —
+    // a failure that only shows on a click, never at mount.
+    if (item.pending || (!Slot && !face.demoteTitle && !(spec && spec.doorOpens))) {
       return <FeedCard {...common} user={{ firstName: 'Sam', lastName: 'Rivera', name: 'You', email: D7.me.email }} showTime />;
     }
     // Every surface a direction registers is handed the SAME ctx — the one with
@@ -11138,6 +11161,1483 @@ PGD7.register({
     continue: (api) => {
       api.setState({ head: null, goto: Date.now() });
       api.openAside();
+    },
+  },
+});
+
+</script>
+<script type="text/babel" data-src="docs/specs/discourse/pg-d7-dir-11-record.jsx">
+// ============================================================================
+// Discourse v7 — direction 11, The Record.
+// ----------------------------------------------------------------------------
+// The easiest thing, done properly. Reaction and words are ONE act, and the
+// Reaction door holds the whole of it.
+//
+// THE CARD FACE — none. Nothing of this direction's sits inside the card's
+// border on either tab: `face.slot` is 'none' and the registered face renders
+// null for every item. The door is the whole affordance.
+//
+// ONE BREATH — you drag the Swell and leave your line in the SAME SHEET. The
+// shipped SwellReactionFlow commits, unmounts, and this record takes the
+// sheet's place with the composer already focused and the glyph you just gave
+// sitting beside it in its rung word. No second step, no second navigation.
+//
+// TWO REGISTERS, NEVER ONE FLAT LIST — a member who left words renders as a
+// full entry carrying their glyph and its rung; a member who only reacted stays
+// as a roster chip underneath. Flattening an eight-reactor item into equal rows
+// is unreadable, and that lesson is already paid for.
+//
+// THE DEPTH IS PART OF WHAT WAS SAID — every entry prints the glyph its author
+// gave and the rung it landed on in the app's own spoken word ('a little',
+// 'moderately', 'deeply'). What a member gave on the pad and what they said in
+// words are one utterance, shown as one thing.
+//
+// CONTINUATION IS BOUNDED BY STRUCTURE — any entry may be answered directly
+// beneath it, and nothing hangs off a reply. One level, ever. That is the whole
+// continuation mechanism: no rule shown to the reader, no depth to police.
+//
+// FIXING A SKIP ON READ — a member who skipped the pad is offered it back from
+// the composer, on the same surface, whenever they open the record.
+//
+// ROUTE TO EVERY LAYER WITHOUT THE DRIVER. Attach: the FAB, the app's own add
+// flow. Reaction + reading: mark read on any Active card. The record and its
+// continuation: the door on any Read card (`doorOpens: 'respond'`). Nothing
+// else added anywhere.
+// ============================================================================
+
+const { PGD7, Button, Avatar } = window;
+const { useState: rcS, useEffect: rcE, useRef: rcR } = React;
+
+// ---- The depth vocabulary ---------------------------------------------------
+// Copied once from app/swell-reactions.jsx, which keeps DEPTH_WORDS and
+// levelFromIntensity internal. PLAYGROUND.md allows the copy; this is the
+// pointer to its source. Verbatim — never "improved", or it stops being
+// evidence of what the product actually says.
+const RC_DEPTH_WORDS = ['a little', 'moderately', 'deeply'];
+const rcLevel = (i) => { const v = i == null ? 0.42 : i; return v < 0.34 ? 1 : v < 0.67 ? 2 : 3; };
+const rcRung = (r) => RC_DEPTH_WORDS[rcLevel(r && r.intensity) - 1];
+
+// ---- Who ---------------------------------------------------------------------
+const rcWho = (ctx, id) => (id === 'you' ? 'You' : ctx.nameOf(id));
+// The card's own avatar rule: the viewer's roster identity is 'You', their face
+// carries their real initials, in accent.
+const rcFace = (ctx, id) => (id === 'you' ? ctx.me.realName : ctx.nameOf(id));
+const rcWhen = (at) => (window.circWhen ? window.circWhen(at) : null);
+
+// Reactions are keyed by roster NAME, words by member id. This is the one place
+// the two halves of an utterance are joined.
+const rcIdOfName = (ctx, name) => {
+  const m = (ctx.members || []).find((x) => x.name === name);
+  return m ? m.id : null;
+};
+const rcReactionOf = (ctx, item, id) => {
+  const m = ctx.memberById(id);
+  if (!m) return null;
+  return ((item && item.reactions) || []).find((r) => r && r.name === m.name && r.glyph) || null;
+};
+const rcSkipped = (ctx, item, id) => {
+  const m = ctx.memberById(id);
+  if (!m) return false;
+  return ((item && item.reactions) || []).some((r) => r && r.name === m.name && !r.glyph);
+};
+
+// ---- The record ---------------------------------------------------------------
+// Every line anybody has left on this item, in arrival order. The sharer's own
+// attached thought is the first of them — it is a line a member left, and the
+// record holds all of them. An item nobody has written on has no entries, which
+// is a legitimate state, not an empty box.
+const rcEntries = (item) => {
+  const out = [];
+  if (item && item.thought && item.thought.text) {
+    out.push({ key: 'thought', by: item.thought.by, text: item.thought.text, at: item.thought.at || item.at });
+  }
+  ((item && item.responses) || []).forEach((r) => {
+    out.push({ key: r.id, by: r.by, text: r.text, at: r.at });
+  });
+  return out.sort((a, b) => (a.at || 0) - (b.at || 0));
+};
+
+// The second register: members who reacted (or read and skipped) and left no
+// words. They stay as chips, never as rows.
+const rcRoster = (ctx, item) => {
+  const spoke = {};
+  rcEntries(item).forEach((e) => { spoke[e.by] = true; });
+  const out = [];
+  ((item && item.reactions) || []).forEach((r) => {
+    const id = rcIdOfName(ctx, r.name);
+    if (id && spoke[id]) return;
+    // One chip per member: a reaction given after a skip replaces the ring.
+    const at = out.findIndex((x) => x.name === r.name);
+    if (at < 0) out.push(r);
+    else if (r.glyph) out[at] = r;
+  });
+  return out;
+};
+
+// ---- Replies: one level, and no more -----------------------------------------
+const rcRepliesOf = (ctx, item, key) => (((ctx.state.replies || {})[item.id] || {})[key] || []);
+const rcReply = (ctx, item, key, text) => {
+  const t = String(text || '').trim();
+  if (!t) return;
+  const forItem = (ctx.state.replies || {})[item.id] || {};
+  ctx.setState((s) => ({
+    replies: {
+      ...(s.replies || {}),
+      [item.id]: { ...forItem, [key]: [...(forItem[key] || []), { by: 'you', text: t, at: Date.now() }] },
+    },
+  }));
+};
+
+// ============================================================================
+// Type. Deliberately the plainest in the rig: body prose, one mono meta line,
+// no invented vocabulary and no decoration.
+// ============================================================================
+const RC_META = {
+  fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em',
+  lineHeight: 1.5, color: 'var(--color-fg-3)',
+};
+const RC_LINE = {
+  fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 14.5,
+  lineHeight: 1.55, color: 'var(--color-fg-1)', textWrap: 'pretty', margin: 0,
+};
+const RC_FIELD = {
+  width: '100%', boxSizing: 'border-box',
+  fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 16,
+  lineHeight: 1.5, color: 'var(--color-fg-1)',
+  padding: '11px 13px', borderRadius: 'var(--radius-md)',
+  border: '1px solid var(--color-border-1)', background: 'var(--color-surface)',
+  resize: 'vertical',
+};
+
+// What a member gave on the pad, said the way the product says it: the glyph,
+// then the rung it landed on, in words. Never a number. A member who skipped
+// the pad and spoke carries their words alone — the line is the utterance, and
+// there is no depth to print beside it.
+const RcRung = ({ rx }) => {
+  if (!rx || !rx.glyph) return null;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+      <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>{rx.glyph}</span>
+      <span>{rcRung(rx)}</span>
+    </span>
+  );
+};
+
+// ============================================================================
+// One entry — a member's line, carrying the depth they gave beside their name,
+// its replies beneath it, and the single control that adds one.
+// ============================================================================
+const RcEntry = ({ ctx, item, entry, replyOpen, onReply, onReplyDone }) => {
+  const [text, setText] = rcS('');
+  const ref = rcR(null);
+  rcE(() => {
+    // GOTCHA #1 — a focus inside a sheet that mounts off-screen must not scroll.
+    if (replyOpen && ref.current) ref.current.focus({ preventScroll: true });
+  }, [replyOpen]);
+
+  const rx = rcReactionOf(ctx, item, entry.by);
+  const mine = entry.by === 'you';
+  const replies = rcRepliesOf(ctx, item, entry.key);
+  const when = rcWhen(entry.at);
+
+  return (
+    <li style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <Avatar name={rcFace(ctx, entry.by)} size={28} accent={mine} />
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
+        <div style={{ ...RC_META, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 13, letterSpacing: 0, color: mine ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>
+            {rcWho(ctx, entry.by)}
+          </span>
+          <RcRung rx={rx} />
+          {when && <span style={{ opacity: 0.8 }}>{when}</span>}
+        </div>
+        <p style={RC_LINE}>{entry.text}</p>
+
+        {replies.length > 0 && (
+          <ul style={{ listStyle: 'none', margin: '4px 0 0', padding: '0 0 0 12px', borderLeft: '1px solid var(--color-border-2)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {replies.map((r, i) => {
+              const rrx = rcReactionOf(ctx, item, r.by);
+              const rmine = r.by === 'you';
+              return (
+                <li key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ ...RC_META, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 12.5, letterSpacing: 0, color: rmine ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>
+                      {rcWho(ctx, r.by)}
+                    </span>
+                    <RcRung rx={rrx} />
+                    {rcWhen(r.at) && <span style={{ opacity: 0.8 }}>{rcWhen(r.at)}</span>}
+                  </div>
+                  <p style={{ ...RC_LINE, fontSize: 13.5 }}>{r.text}</p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {replyOpen ? (
+          <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <textarea ref={ref} rows={2} value={text} placeholder={'Answer ' + rcWho(ctx, entry.by) + '.'}
+              onChange={(e) => setText(e.target.value.replace(/\s*\n+\s*/g, ' '))}
+              style={{ ...RC_FIELD, fontSize: 15, minHeight: 62 }} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+              <Button variant="secondary" size="sm" onClick={() => { setText(''); onReplyDone(); }}>Leave it</Button>
+              <Button variant="primary" size="sm" disabled={!text.trim()}
+                onClick={() => { rcReply(ctx, item, entry.key, text); setText(''); onReplyDone(); }}>Answer</Button>
+            </div>
+          </div>
+        ) : (
+          <button type="button" className="rc7-reply" onClick={onReply} style={{
+            ...RC_META, appearance: 'none', background: 'transparent', border: 0,
+            padding: '6px 0', margin: 0, textAlign: 'left', cursor: 'pointer',
+            alignSelf: 'flex-start', minHeight: 32,
+          }}>Answer</button>
+        )}
+      </div>
+    </li>
+  );
+};
+
+// ============================================================================
+// The second register — members who only reacted. The shipped roster chip,
+// copied once from SwellReview in app/swell-reactions.jsx (which does not
+// export it): glyph, or the read-ring for a skip, then the name. Same weight as
+// any other member; only the mark differs.
+// ============================================================================
+const RcReadRing = ({ me }) => (
+  <svg viewBox="0 0 24 24" width={15} height={15} aria-hidden="true"
+    style={{ stroke: me ? 'var(--color-accent)' : 'var(--color-fg-3)', strokeWidth: 1.6, fill: 'none' }}>
+    <circle cx="12" cy="12" r="8" />
+  </svg>
+);
+
+const RcRoster = ({ ctx, list }) => {
+  if (!list.length) return null;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 2 }}>
+      {list.map((r, i) => {
+        const label = r.name || 'Former member';
+        const me = r.name === 'You';
+        return (
+          <span key={i} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+            padding: '6px 12px 6px 10px', borderRadius: 'var(--radius-md)',
+            fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14,
+            whiteSpace: 'nowrap', color: me ? 'var(--color-accent)' : 'var(--color-fg-1)',
+          }} aria-label={r.glyph ? (label + ', ' + rcRung(r)) : (label + ', read, no reaction')}>
+            {r.glyph
+              ? <span aria-hidden="true" style={{ fontSize: 16, lineHeight: 1 }}>{r.glyph}</span>
+              : <span aria-hidden="true" style={{ display: 'inline-flex', width: 15, justifyContent: 'center' }}><RcReadRing me={me} /></span>}
+            {label}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
+// Your line — the composer, at the top, in the same sheet the reaction just
+// committed in. The glyph you gave sits beside it in its rung word, so you can
+// see what you are attaching your line to. Skipped the pad? It is offered back
+// here, which is the one place you would want it.
+// ============================================================================
+const RcComposer = ({ ctx, item, focus, close }) => {
+  const [text, setText] = rcS('');
+  const ref = rcR(null);
+  rcE(() => {
+    // GOTCHA #1 — the sheet mounts at translateY(100%); focus must not scroll.
+    if (focus && ref.current) ref.current.focus({ preventScroll: true });
+  }, [focus]);
+
+  const rx = rcReactionOf(ctx, item, 'you');
+  const skipped = !rx && rcSkipped(ctx, item, 'you');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 32 }}>
+        <Avatar name={ctx.me.realName} size={28} accent />
+        {rx ? (
+          <span style={{ ...RC_META, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <span aria-hidden="true" style={{ fontSize: 15, lineHeight: 1 }}>{rx.glyph}</span>
+            <span>{rcRung(rx)}</span>
+          </span>
+        ) : skipped ? (
+          <Button variant="secondary" size="sm"
+            onClick={() => { ctx.openSwell(item); ctx.setTab('read'); close(); }}>Add a reaction</Button>
+        ) : null}
+      </div>
+      <textarea ref={ref} rows={2} value={text} placeholder="Leave a line."
+        onChange={(e) => setText(e.target.value.replace(/\s*\n+\s*/g, ' '))}
+        style={{ ...RC_FIELD, minHeight: 74 }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button variant="primary" disabled={!text.trim()}
+          onClick={() => { ctx.actions.respond(item.id, { text: text.trim(), register: 'gist' }); setText(''); }}>
+          Attach
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// The record itself — the door, and the moment after the Swell, are the SAME
+// component. That identity is the direction: there is nowhere else to go.
+// ============================================================================
+const RcRecord = ({ ctx, item, close, landing = false }) => {
+  const pinned = ctx.state.replyOn && ctx.state.replyOn.item === item.id ? ctx.state.replyOn.key : null;
+  const [replyOn, setReplyOn] = rcS(pinned);
+  // The sheet is not remounted when the driver moves the record from one item
+  // to another, so the pinned answer has to be followed, not just read once.
+  rcE(() => { setReplyOn(pinned); }, [pinned, item.id]);
+  const entries = rcEntries(item);
+  const roster = rcRoster(ctx, item);
+  const clearPin = () => { setReplyOn(null); if (pinned) ctx.setState({ replyOn: null }); };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+      <div style={{ paddingRight: 34, minWidth: 0 }}>
+        <div style={{ ...RC_META, marginBottom: 4 }}>{item.source || window.pgd7Host(item.url)}</div>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3,
+          letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textWrap: 'pretty',
+        }}>{item.title || item.url.replace(/^https?:\/\//, '')}</div>
+      </div>
+
+      <RcComposer ctx={ctx} item={item} focus={landing} close={close} />
+
+      {(entries.length > 0 || roster.length > 0) && (
+        <div style={{
+          display: 'flex', flexDirection: 'column', gap: 'var(--space-4)',
+          borderTop: '1px solid var(--color-border-2)', paddingTop: 'var(--space-4)',
+        }}>
+          {entries.length > 0 && (
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              {entries.map((e) => (
+                <RcEntry key={e.key} ctx={ctx} item={item} entry={e}
+                  replyOpen={replyOn === e.key}
+                  onReply={() => setReplyOn(e.key)}
+                  onReplyDone={clearPin} />
+              ))}
+            </ul>
+          )}
+          <RcRoster ctx={ctx} list={roster} />
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button variant="tertiary" onClick={close}>Done</Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// The card face — nothing, and deliberately nothing. This direction puts no
+// content inside the card's border on either tab.
+// ----------------------------------------------------------------------------
+// It is registered all the same, because claiming the door is what `doorOpens`
+// does and the rig only reads that on its own slotted copy of the card. So the
+// face is declared and renders null for every item: the card is the rig's
+// verbatim FeedCard copy, with no slot filled, and the only thing that changes
+// about it is where its door leads.
+// ============================================================================
+const RcFace = () => null;
+
+// The two surfaces are one component; only the landing focuses the composer,
+// because only there did the reader just finish an act.
+const RcLanding = (props) => <RcRecord {...props} landing />;
+const RcRespond = (props) => <RcRecord {...props} />;
+
+// ============================================================================
+// Beat 1 — attach. The plainest thing in the rig: one line, prose, no register
+// picker, no guidance, no character policing. Skipping is a real state.
+// ============================================================================
+const RcCompose = ({ draft, setDraft, submit }) => {
+  const text = draft.text;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+      <textarea rows={2} value={text} placeholder="Leave a line."
+        onChange={(e) => setDraft({ ...draft, text: e.target.value.replace(/\s*\n+\s*/g, ' '), register: 'gist' })}
+        style={{ ...RC_FIELD, minHeight: 74 }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+        <Button variant="secondary" onClick={() => submit(null)}>Skip</Button>
+        <Button variant="primary" disabled={!text.trim()}
+          onClick={() => submit({ text: text.trim(), register: 'gist' })}>Attach</Button>
+      </div>
+    </div>
+  );
+};
+
+// ---- Seeded replies ---------------------------------------------------------
+// The circle has already answered a couple of lines directly, so the one level
+// the record allows is visible the first time it is opened. Keyed by the entry
+// they answer, which is a response id in the seed.
+const RC_SEED_REPLIES = {
+  r1: { r1r2: [{ by: 'marcus', text: 'Same, and both times in my own code.', at: Date.now() - 4 * 24 * 3600e3 }] },
+  r4: { r4r1: [{ by: 'dev', text: 'Mine is the second paragraph, for the same reason.', at: Date.now() - 9 * 24 * 3600e3 }] },
+};
+
+// ---- The states inline styles cannot carry ---------------------------------
+const RC_CSS = `
+.rc7-reply:hover { color: var(--color-fg-1); }
+.rc7-reply:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); border-radius: var(--radius-sm); }
+`;
+if (typeof document !== 'undefined' && !document.getElementById('rc7-css')) {
+  const rcStyleEl = document.createElement('style');
+  rcStyleEl.id = 'rc7-css';
+  rcStyleEl.textContent = RC_CSS;
+  document.head.appendChild(rcStyleEl);
+}
+
+PGD7.register({
+  id: 'record',
+  name: 'The Record',
+  // No card face. The shipped FeedCard, untouched, on both tabs — the door is
+  // the whole affordance.
+  face: { slot: 'none' },
+  initialState: { replies: RC_SEED_REPLIES, replyOn: null },
+  Card: RcFace,
+  Compose: RcCompose,
+  Landing: RcLanding,
+  Respond: RcRespond,
+  // The door on a Read card opens the record. The door keeps its own geometry,
+  // glyph huddle and hit target; only what it opens onto changes.
+  doorOpens: 'respond',
+  beats: {
+    // Land on an item whose record already has BOTH registers in it — members
+    // who spoke, and a member who only reacted — so the shape is on screen the
+    // moment the Swell hands over.
+    land: (api) => {
+      const two = (i) => {
+        const spoke = {};
+        rcEntries(i).forEach((e) => { spoke[e.by] = true; });
+        const chips = (i.reactions || []).filter((r) => { const id = rcIdOfName(api, r.name); return !id || !spoke[id]; });
+        return rcEntries(i).length > 1 && chips.length > 0;
+      };
+      const t = api.activeItems.find(two) || api.activeItems.find((i) => rcEntries(i).length) || api.firstUnread();
+      if (!t) return;
+      api.setTab('active');
+      api.openSwell(t);
+    },
+    // The door, on a read item whose record carries both registers: three lines
+    // with their depths, and one member who read it and left no words.
+    respond: (api) => {
+      const t = api.itemById('r2')
+        || api.readItems.find((i) => rcEntries(i).length > 1) || api.firstRead();
+      if (!t) return;
+      api.setTab('read');
+      api.openRespond(t);
+    },
+    // Continuation is the reply, one level deep. Open the record with the most
+    // in it, with the answer field already open under one of its lines.
+    continue: (api) => {
+      const t = api.readItems.slice().sort((a, b) => rcEntries(b).length - rcEntries(a).length)[0] || api.firstRead();
+      if (!t) return;
+      const es = rcEntries(t);
+      api.setState({ replyOn: es.length ? { item: t.id, key: es[es.length - 1].key } : null });
+      api.setTab('read');
+      api.openRespond(t);
+    },
+  },
+});
+
+</script>
+<script type="text/babel" data-src="docs/specs/discourse/pg-d7-dir-12-echo.jsx">
+// ============================================================================
+// Discourse v7 — direction 12, Said the Same.
+// ----------------------------------------------------------------------------
+// You never write a line someone has already written. You point at theirs, and
+// it becomes both of yours.
+//
+// THE SECOND UTTERANCE IS NOT TEXT. Speaking costs words; agreeing costs a tap.
+// Behind the door, every line the circle has said stands with a control beside
+// it and the faces of everyone who has pointed at it. Your own composer sits
+// under them, secondary, because the intended path is to read first and point.
+// Pointing dismisses the composer: once you have said the same, there is
+// nothing left for you to write.
+//
+// THE ECHO CARRIES DEPTH. An echo is not a like, because it is not uniform. It
+// carries the rung you gave on the Swell for that item — the app's own three,
+// in the app's own spoken words — so one line stands DEEPLY with one member and
+// A LITTLE with another, and the faces are weighted by it. A member who skipped
+// the pad echoes without a rung, and that is a real state, not a gap.
+//
+// THE STANDING LINE. The line the most of the circle has echoed carries the
+// card on the Read tab, in quotation, with its author named and the faces of
+// everyone standing with it underneath. Avatars, never a count. Nothing is
+// tallied anywhere in this direction.
+//
+// SUCCESSION BY CONSENT. A standing line is overtaken when the circle's echoes
+// move — never by anybody writing over it. That is the whole distance between
+// this and Palimpsest: there, one member replaces the line unilaterally; here,
+// a line only rises because more people pointed at it, and moving your own echo
+// is the only power you hold over anybody else's words.
+//
+// THE ROUTE — every layer reachable without the driver.
+//   attach        the FAB, and the app's own add flow, untouched. There is NO
+//                 Compose here: contribution is deliberately unchanged, and the
+//                 direction says so by omission. The invention is entirely in
+//                 the second utterance.
+//   reaction      mark read on any Active card. The Swell runs as shipped, and
+//                 the rung it commits is what your echo will carry.
+//   record        the door on any Read card opens the same surface as the
+//                 landing (doorOpens: 'respond').
+//   standing      a Banner above the tabs on the Read tab — the most recently
+//                 moved standing line, one line tall, tappable into the page.
+// ============================================================================
+
+const { PGD7: ecPGD7, Button: EcButton, Avatar: EcAvatar } = window;
+const { useState: ecS } = React;
+
+// ---- The depth vocabulary ---------------------------------------------------
+// Copied once from app/swell-reactions.jsx, which keeps DEPTH_WORDS and its
+// quantiser internal. PLAYGROUND.md allows the copy; this is the pointer to its
+// source. Verbatim — never "improved", or the echo stops carrying what the pad
+// actually said.
+const EC_DEPTH_WORDS = ['a little', 'moderately', 'deeply'];
+const ecLevelFromIntensity = (i) => { const v = i == null ? 0.42 : i; return v < 0.34 ? 1 : v < 0.67 ? 2 : 3; };
+const ecRungWord = (level) => (level ? EC_DEPTH_WORDS[Math.max(1, Math.min(3, level)) - 1] : null);
+
+// ---- Who a reaction belongs to ---------------------------------------------
+// Reactions carry a display name, not a member id, and the rig APPENDS yours on
+// mark-read — so a fresh reaction has to win over anything the seed left behind.
+// Read from the end.
+const ecReactionOf = (ctx, item, who) => {
+  const name = who === 'you' ? 'You' : ctx.nameOf(who);
+  const all = (item && item.reactions) || [];
+  for (let i = all.length - 1; i >= 0; i--) if (all[i].name === name) return all[i];
+  return null;
+};
+// The rung a member gave on this item, or null when they skipped the pad or
+// have not met it yet. Never invented: no reaction means no depth.
+const ecRungOf = (ctx, item, who) => {
+  const r = ecReactionOf(ctx, item, who);
+  if (!r || !r.glyph) return null;
+  return ecLevelFromIntensity(r.intensity);
+};
+
+// ---- The lines of an item ---------------------------------------------------
+// The sharer's thought is a line like any other — it is simply the first one
+// said, which is exactly the asymmetry this direction is built on. An item with
+// neither a thought nor a response has no lines, and that is a real state.
+const ecLines = (item) => {
+  const out = [];
+  if (item.thought && item.thought.text) {
+    out.push({ id: item.id + '-t', by: item.thought.by || item.by, text: item.thought.text, at: item.thought.at || item.at });
+  }
+  (item.responses || []).forEach((r) => out.push({ id: r.id, by: r.by, text: r.text, at: r.at }));
+  return out;
+};
+
+// ---- Echoes -----------------------------------------------------------------
+// state.echoes[itemId][lineId] = [memberId, ...] — everyone who pointed at that
+// line. The author is NOT in it: they wrote it, they did not echo it. So the
+// faces under a line are exactly the people who said the same.
+const ecMap = (ctx, item) => ((ctx.state && ctx.state.echoes) || {})[item.id] || {};
+const ecEchoersOf = (ctx, item, lineId) => ecMap(ctx, item)[lineId] || [];
+const ecMineOn = (ctx, item) => {
+  const m = ecMap(ctx, item);
+  return Object.keys(m).find((k) => (m[k] || []).indexOf('you') >= 0) || null;
+};
+
+// One echo per member per item, movable. Pointing at the line you already stand
+// with takes your echo back off it — the same tap, the other way.
+const ecEcho = (ctx, item, lineId) => {
+  ctx.setState((s) => {
+    const all = (s && s.echoes) || {};
+    const cur = { ...(all[item.id] || {}) };
+    let had = false;
+    Object.keys(cur).forEach((k) => {
+      const next = (cur[k] || []).filter((m) => m !== 'you');
+      if (next.length !== (cur[k] || []).length && k === lineId) had = true;
+      cur[k] = next;
+    });
+    if (!had) cur[lineId] = [...(cur[lineId] || []), 'you'];
+    return {
+      echoes: { ...all, [item.id]: cur },
+      moved: { ...((s && s.moved) || {}), [item.id]: Date.now() },
+    };
+  });
+};
+
+// The standing line: the one the most of the circle has echoed. A tie holds
+// with the line that was said first — a newcomer never displaces an equal on
+// nothing but recency, so overtaking always costs an actual echo.
+const ecStanding = (ctx, item) => {
+  const lines = ecLines(item);
+  let best = null, bestN = 0;
+  lines.forEach((l) => {
+    const n = ecEchoersOf(ctx, item, l.id).length;
+    if (n > bestN) { best = l; bestN = n; }
+  });
+  return best;
+};
+
+// ============================================================================
+// The faces. Weighted by the rung each member gave on the pad — so the same
+// line visibly stands deeply with one person and a little with another. Size
+// and weight only; no colour carries any of it.
+// ============================================================================
+const EC_FACE_SIZE = { 0: 20, 1: 21, 2: 25, 3: 29 };
+
+const EcFaces = ({ ctx, item, who, max, small }) => {
+  if (!who || !who.length) return null;
+  const shown = max ? who.slice(0, max) : who;
+  const label = who.map((m) => {
+    const w = ecRungWord(ecRungOf(ctx, item, m));
+    const name = m === 'you' ? 'You' : ctx.nameOf(m);
+    return w ? name + ', ' + w : name;
+  }).join('; ');
+  return (
+    <span role="img" aria-label={label} style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+      {shown.map((m, i) => {
+        const lvl = ecRungOf(ctx, item, m) || 0;
+        const size = small ? 20 : EC_FACE_SIZE[lvl];
+        return (
+          <span key={m} style={{
+            display: 'inline-flex', borderRadius: '50%', marginLeft: i === 0 ? 0 : -6,
+            boxShadow: '0 0 0 2px var(--color-surface)', zIndex: shown.length - i,
+          }}>
+            <EcAvatar name={m === 'you' ? ctx.me.realName : ctx.nameOf(m)} size={size} accent={m === 'you'} />
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
+// The named form, used behind the door: face, name, and the rung that member
+// gave, in the pad's own word. This is where the depth is legible rather than
+// merely weighted.
+const EcStanders = ({ ctx, item, who }) => {
+  if (!who || !who.length) return null;
+  const ecChip = {
+    display: 'inline-flex', alignItems: 'center', gap: 7,
+    padding: '3px 10px 3px 3px', borderRadius: 999,
+    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-2)',
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 12.5, lineHeight: 1.2,
+    color: 'var(--color-fg-1)', maxWidth: '100%', minWidth: 0,
+  };
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      {who.map((m) => {
+        const word = ecRungWord(ecRungOf(ctx, item, m));
+        const mine = m === 'you';
+        return (
+          <span key={m} style={{ ...ecChip, color: mine ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>
+            <EcAvatar name={mine ? ctx.me.realName : ctx.nameOf(m)} size={22} accent={mine} />
+            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {mine ? 'You' : ctx.nameOf(m)}
+            </span>
+            {word && (
+              <span style={{ flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 10.5, fontWeight: 400, color: 'var(--color-fg-3)' }}>
+                {word}
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
+// A quoted line with its author named. Quotation marks and an em-dash
+// attribution, because a line that belongs to somebody else is a quotation and
+// the typography for that is already settled.
+// ============================================================================
+const EcQuote = ({ ctx, line, size = 15, clamp }) => {
+  const ecQuoteText = {
+    margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: size,
+    lineHeight: 1.5, color: 'var(--color-fg-1)', textWrap: 'pretty',
+    display: clamp ? '-webkit-box' : 'block',
+    WebkitLineClamp: clamp, WebkitBoxOrient: 'vertical', overflow: clamp ? 'hidden' : 'visible',
+  };
+  const ecQuoteBy = {
+    marginTop: 4, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12,
+    lineHeight: 1.4, color: 'var(--color-fg-3)',
+  };
+  return (
+    <div style={{ minWidth: 0 }}>
+      <p style={ecQuoteText}>{'“' + line.text + '”'}</p>
+      <div style={ecQuoteBy}>{'— ' + (line.by === 'you' ? 'You' : ctx.nameOf(line.by))}</div>
+    </div>
+  );
+};
+
+// ============================================================================
+// One line behind the door: the quote, who already said the same, and the tap.
+// ----------------------------------------------------------------------------
+// Your own line carries no control — you cannot agree with yourself. Every
+// other line carries one, and pressing it puts your face under that line
+// carrying the rung you gave the item on the pad.
+// ============================================================================
+const EcLineRow = ({ ctx, item, line, standing }) => {
+  const who = ecEchoersOf(ctx, item, line.id);
+  const yours = line.by === 'you';
+  const echoed = who.indexOf('you') >= 0;
+  const myWord = ecRungWord(ecRungOf(ctx, item, 'you'));
+
+  const ecRowWrap = {
+    display: 'flex', flexDirection: 'column', gap: 10,
+    padding: '14px 0 16px', borderTop: '1px solid var(--color-border-2)',
+  };
+  const ecRowStand = {
+    fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.1em',
+    textTransform: 'uppercase', color: 'var(--color-fg-3)',
+  };
+  return (
+    <div style={ecRowWrap}>
+      {standing && <div style={ecRowStand}>Standing</div>}
+      <EcQuote ctx={ctx} line={line} />
+      <EcStanders ctx={ctx} item={item} who={who} />
+      {!yours && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <EcButton variant={echoed ? 'primary' : 'secondary'} size="sm"
+            onClick={() => ecEcho(ctx, item, line.id)}>
+            {echoed ? 'You said the same' : 'Said the same'}
+          </EcButton>
+          {echoed && myWord && (
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-fg-3)' }}>{myWord}</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// Speaking, when nobody has said it for you. Secondary and last, under every
+// line already there — and gone entirely the moment you point at one of them.
+// ============================================================================
+const EcSay = ({ ctx, item, sole }) => {
+  const [text, setText] = ecS('');
+  const ecSayField = {
+    width: '100%', boxSizing: 'border-box',
+    fontFamily: 'var(--font-sans)', fontSize: 16, lineHeight: 1.5,
+    color: 'var(--color-fg-1)', background: 'var(--color-surface)',
+    padding: '10px 12px', borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--color-border-1)', resize: 'vertical',
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: sole ? 0 : 14, borderTop: sole ? 'none' : '1px solid var(--color-border-2)' }}>
+      <textarea rows={2} value={text} placeholder="Say something nobody has said."
+        style={ecSayField} onChange={(e) => setText(e.target.value)} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <EcButton variant={sole ? 'primary' : 'secondary'} disabled={!text.trim()}
+          onClick={() => { ctx.actions.respond(item.id, { text: text.trim(), register: 'gist' }); setText(''); }}>
+          Say it
+        </EcButton>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// Beats 2 and 3 — the record, from the reveal and from the door. One surface:
+// the circle's lines, each with the faces already under it and one tap to join
+// them, and your own field last of all.
+// ============================================================================
+const EcRecord = ({ ctx, item, glyph }) => {
+  const lines = ecLines(item);
+  const standing = ecStanding(ctx, item);
+  const mine = ecMineOn(ctx, item);
+
+  const ecRecHead = { display: 'flex', alignItems: 'center', gap: 10, paddingRight: 34 };
+  const ecRecTitle = {
+    minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13,
+    lineHeight: 1.35, color: 'var(--color-fg-2)', textWrap: 'pretty',
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={ecRecHead}>
+        {glyph ? <span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>{glyph}</span> : null}
+        <span style={ecRecTitle}>{item.title || item.url.replace(/^https?:\/\//, '')}</span>
+      </div>
+      {lines.map((l) => (
+        <EcLineRow key={l.id} ctx={ctx} item={item} line={l}
+          standing={!!standing && standing.id === l.id} />
+      ))}
+      {!mine && <EcSay ctx={ctx} item={item} sole={lines.length === 0} />}
+    </div>
+  );
+};
+
+// ============================================================================
+// The card face — Read tab only, below the attribution: the standing line in
+// quotation, its author named, and the faces of everyone standing with it.
+//
+// Seats holds this slot with MARKS — four 4px dots under an unquoted, indented
+// opening turn. This is the other thing entirely: a quotation with an
+// attribution and a row of weighted faces. No dots, no drawing, no state
+// diagram; a line and the people who said it too.
+//
+// A card the circle has not converged on carries nothing. A bare card is a
+// legitimate face, and there is no chatter standing in for one.
+// ============================================================================
+const EcCard = ({ ctx, item, tab }) => {
+  if (tab !== 'read') return null;
+  const line = ecStanding(ctx, item);
+  if (!line) return null;
+  const who = ecEchoersOf(ctx, item, line.id);
+  const ecCardWrap = {
+    marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)',
+    borderTop: '1px solid var(--color-border-2)',
+    display: 'flex', flexDirection: 'column', gap: 10,
+  };
+  return (
+    <div style={ecCardWrap}>
+      <EcQuote ctx={ctx} line={line} clamp={4} />
+      <EcFaces ctx={ctx} item={item} who={who} />
+    </div>
+  );
+};
+
+// ============================================================================
+// Beat 4 — Standing. One line per item: the line that circle currently stands
+// behind, newest movement first. Tapping one re-enters that item's record,
+// where the echo can be moved to a different line — which is how a line is
+// overtaken here, and the only way it can be.
+// ============================================================================
+// Read items only. A standing line is something a member wrote after reading,
+// so listing an unread item here would put the circle's conversation in front
+// of someone who has not read the thing — reveal-on-read protects the
+// conversation, and Standing is conversation.
+const ecOrderForStanding = (ctx) => {
+  const moved = (ctx.state && ctx.state.moved) || {};
+  return ctx.readItems
+    .filter((i) => !!ecStanding(ctx, i))
+    .sort((a, b) => ((moved[b.id] || 0) - (moved[a.id] || 0)) || ((b.at || 0) - (a.at || 0)));
+};
+
+const EcStandingPage = ({ ctx }) => {
+  const rows = ecOrderForStanding(ctx);
+  const ecPage = {
+    maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%', boxSizing: 'border-box',
+    padding: ctx.isMobile ? '16px 16px 32px' : '28px 24px 44px',
+    display: 'flex', flexDirection: 'column', gap: 12,
+  };
+  const ecRow = {
+    display: 'flex', flexDirection: 'column', gap: 10, width: '100%', textAlign: 'left',
+    background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+    borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+    cursor: 'pointer', boxSizing: 'border-box',
+  };
+  const ecRowSource = {
+    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em',
+    color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+  };
+  return (
+    <div style={ecPage}>
+      {rows.map((item) => {
+        const line = ecStanding(ctx, item);
+        const who = ecEchoersOf(ctx, item, line.id);
+        return (
+          <button key={item.id} className="ec7-row" style={ecRow}
+            onClick={() => { ctx.setRoute('feed'); ctx.openRespond(item); }}>
+            <span style={ecRowSource}>{item.source || window.pgd7Host(item.url)}</span>
+            <EcQuote ctx={ctx} line={line} size={15} clamp={3} />
+            <EcFaces ctx={ctx} item={item} who={who} />
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
+// The Banner — one line tall, on the Read tab: the standing line that moved
+// most recently, and the way into the page. Standing is reachable without ever
+// touching the driver.
+// ============================================================================
+const EcBanner = ({ ctx }) => {
+  if (ctx.tab !== 'read') return null;
+  const item = ecOrderForStanding(ctx)[0];
+  if (!item) return null;
+  const line = ecStanding(ctx, item);
+  const who = ecEchoersOf(ctx, item, line.id);
+  const ecBanner = {
+    display: 'flex', alignItems: 'center', gap: 10, width: '100%', minHeight: 44,
+    padding: '8px 16px', boxSizing: 'border-box', textAlign: 'left',
+    background: 'transparent', border: 0, borderBottom: '1px solid var(--color-border-2)',
+    cursor: 'pointer',
+  };
+  const ecBannerTag = {
+    flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: 10.5, letterSpacing: '0.1em',
+    textTransform: 'uppercase', color: 'var(--color-fg-3)',
+  };
+  const ecBannerLine = {
+    flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+    fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, color: 'var(--color-fg-1)',
+  };
+  return (
+    <button className="ec7-row" style={ecBanner} onClick={() => ctx.openContinue()}>
+      <span style={ecBannerTag}>Standing</span>
+      <span style={ecBannerLine}>{'“' + line.text + '”'}</span>
+      <EcFaces ctx={ctx} item={item} who={who} max={3} small />
+    </button>
+  );
+};
+
+// ---- The one rule inline styles cannot carry -------------------------------
+const EC_CSS = `
+.ec7-row { -webkit-tap-highlight-color: transparent; }
+.ec7-row:hover, .ec7-row:focus-visible { background: var(--color-surface-sunken); }
+`;
+if (typeof document !== 'undefined' && !document.getElementById('ec7-css')) {
+  const ecStyleEl = document.createElement('style');
+  ecStyleEl.id = 'ec7-css';
+  ecStyleEl.textContent = EC_CSS;
+  document.head.appendChild(ecStyleEl);
+}
+
+// ============================================================================
+// The circle's echoes, seeded. Keyed by item, then by line, holding everyone
+// who pointed at that line — never its author.
+//   a5   two lines one echo apart, tied and held by the earlier: pointing at
+//        the second overtakes the first, which is the land beat
+//   r1   the same shape on a Read item, reached through the door
+//   a7 · r4   your own line standing, and a long line standing, so the measure
+//        and the you-case are both on screen somewhere
+//   a6   a line nobody has echoed: no standing line, and a bare card
+//   r3   no lines at all — nothing to echo, and the record is your field alone
+// ============================================================================
+const EC_SEED = {
+  a1: { 'a1-t': ['marcus', 'ada'] },
+  a2: { a2r1: ['marcus'], a2r2: ['dev'] },
+  a3: { 'a3-t': ['ada'], a3r1: ['priya', 'dev'] },
+  a4: { 'a4-t': ['marcus', 'dev'], a4r1: ['priya'] },
+  a5: { 'a5-t': ['marcus'], a5r1: ['priya'] },
+  a6: {},
+  a7: { 'a7-t': ['dev'], a7r2: ['ada', 'marcus'] },
+  r1: { 'r1-t': ['priya'], r1r2: ['dev'] },
+  r2: { 'r2-t': ['ada', 'dev'] },
+  r3: {},
+  r4: { 'r4-t': ['priya'], r4r3: ['ada', 'marcus'] },
+};
+
+ecPGD7.register({
+  id: 'echo',
+  name: 'Said the Same',
+  // The standing line sits below the attribution, quoted and attributed, with
+  // the faces of everyone standing with it under it. Read tab only — on Active
+  // there is nothing the circle has converged on yet.
+  face: { slot: 'below-attribution' },
+  initialState: { echoes: EC_SEED, moved: {} },
+  Card: EcCard,
+  // No Compose. Contribution is untouched; the invention is the second
+  // utterance, and the omission is the statement.
+  Landing: EcRecord,
+  Respond: EcRecord,
+  doorOpens: 'respond',
+  Continue: EcStandingPage,
+  continueTitle: 'Standing',
+  Banner: EcBanner,
+  beats: {
+    // Land on an item whose two lines are one echo apart, so the Swell commits
+    // the rung, the record takes the sheet, and one tap visibly moves which
+    // line the circle stands behind.
+    land: (api) => {
+      const t = api.itemById('a5') || api.activeItems.find((i) => ecLines(i).length > 1) || api.firstUnread();
+      if (!t) return;
+      api.setTab('active');
+      api.openSwell(t);
+    },
+    // The same shape on a Read item, so the door's surface is met with a real
+    // succession available in it.
+    respond: (api) => {
+      const t = api.itemById('r1') || api.readItems.find((i) => ecLines(i).length > 1) || api.firstRead();
+      if (!t) return;
+      api.setTab('read');
+      api.openRespond(t);
+    },
+  },
+});
+
+</script>
+<script type="text/babel" data-src="docs/specs/discourse/pg-d7-dir-13-note.jsx">
+// ============================================================================
+// Discourse v7 — direction 13, The Note.
+// ----------------------------------------------------------------------------
+// The sharer's note is visible before you read, and it is the only thing that
+// is. A note is context for WHETHER TO READ, so it is public from the moment of
+// sharing; everything the circle says after reading stays behind the door.
+// Reveal-on-read protects the conversation, never the invitation.
+//
+// THE CARD FACE — the description slot, where the source's own description
+// would sit, because that is the product logic for it. The note is AUTHORED
+// PROSE CARRYING A NAME: a byline above the line, the name and the kind of
+// thing being said (gist · trust · reflection · takeaway), then the prose. The
+// register is on the card because the note is the only authored thing there and
+// its kind changes how it should be read — a vouch is not a summary.
+//
+// ON READ THE FACE IS A PAIR. The before-note keeps its place and the
+// after-note stacks beneath it, quieter: smaller, one step back in the ink.
+// Before and after, one above the other, both named. A card carries two lines
+// of authored text in its life, ever.
+//
+// CONTINUATION IS THE AFTER-NOTE AND ONLY THAT. One per item, written once,
+// permanent — and the field is gone the moment it exists. There is no second
+// pass, no amendment, no thread.
+//
+// THE ROUTE — every layer reachable without the driver.
+//   contribution  the FAB, the app's own add flow, then the note and its kind.
+//   reaction      untouched: mark read on any Active card.
+//   reading       the Swell hands over to the note you already read, then what
+//                 the circle said after reading, then your own line.
+//   conversation  the door on any Read card opens that same surface.
+//   continuation  the after-note, from the door's own footer on a read item
+//                 that has none — and from the band above the Read tab, which
+//                 opens the page holding every item still open to one.
+// ============================================================================
+
+const NtPGD7 = window.PGD7;
+const NtButton = window.Button;
+const NtField = window.Field;
+const NtDivider = window.FeedDivider;
+const { useState: ntS, useRef: ntR, useEffect: ntE } = React;
+
+// ---- Type registers ---------------------------------------------------------
+// The byline sits in the app's own review-header register (mono 11, tracked);
+// the note itself is body prose. Nothing here is a new type scale.
+const NT_BYLINE = {
+  fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.04em',
+  lineHeight: 1.5, color: 'var(--color-fg-3)',
+  display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap',
+};
+const NT_PROSE = {
+  fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)',
+  color: 'var(--color-fg-1)', textWrap: 'pretty', margin: 0,
+};
+const NT_TITLE = {
+  fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3,
+  letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textWrap: 'pretty',
+};
+
+const ntWho = (ctx, by) => (by === 'you' ? 'You' : ctx.nameOf(by));
+const ntTitleOf = (item) => item.title || item.url.replace(/^https?:\/\//, '');
+const ntSourceOf = (item) => item.source || window.pgd7Host(item.url);
+
+// ---- The two notes an item can carry ----------------------------------------
+// The before-note is the sharer's thought, which in this direction IS the note.
+// The after-note is private to the direction: what the circle came to, written
+// once, kept in state keyed by item (CONTRACT §6).
+const ntBefore = (item) => (item.thought && item.thought.text ? item.thought : null);
+const ntAfter = (ctx, item) => ((ctx.state && ctx.state.after) || {})[item.id] || null;
+
+const ntWriteAfter = (ctx, item, text, register) => {
+  const t = String(text || '').trim();
+  if (!t) return;
+  if (ntAfter(ctx, item)) return;                 // one per item, ever
+  ctx.setState((s) => ({
+    after: {
+      ...(s.after || {}),
+      [item.id]: { text: t, register: register || 'takeaway', by: 'you', at: Date.now() },
+    },
+  }));
+};
+
+// The items still open to an after-note: read, and none written yet.
+const ntOpenToAfter = (ctx) => ctx.items.filter((i) => i.read && !ntAfter(ctx, i));
+const ntClosed = (ctx) => ctx.items.filter((i) => i.read && ntAfter(ctx, i));
+
+// Seeded after-notes. Two read items have already arrived somewhere, so the
+// pair is on the Read tab from the first look; the other two are open, which is
+// what continuation acts on.
+const NT_SEED_AFTER = {
+  r1: { text: 'We came out of it agreeing the hard part is ownership, not scheduling. Close from the sending side.',
+    register: 'takeaway', by: 'ada', at: Date.now() - 3 * 3600e3 },
+  r2: { text: 'Four resolvers, and the bug is always two of them disagreeing about how long an answer stays true.',
+    register: 'gist', by: 'marcus', at: Date.now() - 26 * 3600e3 },
+};
+
+// ============================================================================
+// The note, rendered. One treatment, two weights.
+// ----------------------------------------------------------------------------
+// A rule down the left edge holds the note as an annotation on the object
+// rather than a line of the object's own description. The byline is above it,
+// never under it: you learn whose thought this is before you read the thought.
+// ============================================================================
+const NtNote = ({ who, register, text, size = 14, quiet = false, clamp = 0 }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+    <div style={{ ...NT_BYLINE, opacity: quiet ? 0.85 : 1 }}>
+      <span style={{ fontWeight: 500, color: quiet ? 'var(--color-fg-3)' : 'var(--color-fg-2)' }}>{who}</span>
+      {register && <span aria-hidden="true">·</span>}
+      {register && <span>{register}</span>}
+    </div>
+    <p style={{
+      ...NT_PROSE, fontSize: size, lineHeight: 1.5,
+      color: quiet ? 'var(--color-fg-2)' : 'var(--color-fg-1)',
+      ...(clamp ? { display: '-webkit-box', WebkitLineClamp: clamp, WebkitBoxOrient: 'vertical', overflow: 'hidden' } : {}),
+    }}>{text}</p>
+  </div>
+);
+
+// The rail the pair hangs off. Both notes share one rule, which is what makes
+// them read as one card's authored life rather than two utterances.
+const NtRail = ({ children, style }) => (
+  <div style={{
+    borderLeft: '2px solid var(--color-border-2)', paddingLeft: 11,
+    display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0, ...(style || {}),
+  }}>{children}</div>
+);
+
+// ============================================================================
+// The register picker. Present on the two authored surfaces and nowhere else,
+// because the note is the only authored thing on the card and its kind changes
+// how it should be read.
+// ============================================================================
+const NtRegisters = ({ value, onChange, ctx }) => (
+  <div role="group" aria-label="Kind of note" style={{
+    display: 'flex', gap: 2, flexWrap: 'wrap',
+    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-2)',
+    borderRadius: 'var(--radius-md)', padding: 2,
+  }}>
+    {ctx.REGISTERS.map((r) => {
+      const on = r === value;
+      return (
+        <button key={r} type="button" onClick={() => onChange(r)} aria-pressed={on}
+          className="nt7-reg" style={{
+            flex: '1 1 auto', minWidth: 64, minHeight: 36, padding: '7px 9px',
+            background: on ? 'var(--color-surface)' : 'transparent', border: 0,
+            boxShadow: on ? 'var(--shadow-raised)' : 'none', borderRadius: 6, cursor: 'pointer',
+            fontFamily: 'var(--font-sans)', fontWeight: on ? 600 : 500, fontSize: 12.5,
+            color: on ? 'var(--color-fg-1)' : 'var(--color-fg-2)',
+          }}>{r}</button>
+      );
+    })}
+  </div>
+);
+
+// ============================================================================
+// Writing a note. One composer, used at share and again at the after-note.
+// ============================================================================
+const NtWriter = ({ ctx, value, setValue, register, setRegister, placeholder,
+  submitLabel, onSubmit, onSkip, skipLabel, autoFocus }) => {
+  const ref = ntR(null);
+  ntE(() => {
+    // GOTCHA #1 — focus inside a sheet that mounts off-screen must not scroll.
+    if (autoFocus && ref.current) ref.current.focus({ preventScroll: true });
+  }, [autoFocus]);
+  const ready = !!String(value || '').trim();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+      <textarea ref={ref} rows={3} value={value} placeholder={placeholder}
+        aria-label={placeholder}
+        onChange={(e) => setValue(e.target.value)}
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 16,
+          lineHeight: 1.5, color: 'var(--color-fg-1)',
+          padding: '11px 13px', borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border-1)', background: 'var(--color-surface)',
+          resize: 'vertical', minHeight: 84,
+        }} />
+      <NtRegisters ctx={ctx} value={register} onChange={setRegister} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        {onSkip && <NtButton variant="secondary" onClick={onSkip}>{skipLabel || 'Skip'}</NtButton>}
+        <NtButton variant="primary" disabled={!ready}
+          onClick={() => onSubmit(String(value).trim(), register)}>{submitLabel}</NtButton>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// The card face — the description slot.
+// ----------------------------------------------------------------------------
+// Active: the before-note alone, which is the whole claim — you decide whether
+// to read on the strength of somebody's named line. Read: the pair.
+// An item with nothing attached renders nothing at all. A bare card is a
+// legitimate face and never carries a word about its own emptiness.
+// ============================================================================
+const NtCard = ({ ctx, item, tab }) => {
+  const before = ntBefore(item);
+  const after = tab === 'read' ? ntAfter(ctx, item) : null;
+  if (!before && !after) return null;
+
+  return (
+    <div style={{ marginTop: 8 }}>
+      <NtRail>
+        {before && (
+          <NtNote who={ntWho(ctx, before.by)} register={before.register}
+            text={before.text} size={14} clamp={4} />
+        )}
+        {after && (
+          <NtNote who={ntWho(ctx, after.by)} register={after.register}
+            text={after.text} size={13} quiet clamp={3} />
+        )}
+      </NtRail>
+    </div>
+  );
+};
+
+// ============================================================================
+// Beat 1 — attach. The note goes up with the link and is public immediately.
+// Skipping is a real product state: the card lands bare.
+// ============================================================================
+const NtCompose = ({ ctx, draft, setDraft, submit }) => (
+  <NtWriter ctx={ctx} autoFocus
+    value={draft.text} setValue={(t) => setDraft({ ...draft, text: t })}
+    register={draft.register || 'gist'} setRegister={(r) => setDraft({ ...draft, register: r })}
+    placeholder="Say what this is, before anyone reads it."
+    submitLabel="Attach" onSkip={() => submit(null)} skipLabel="Skip"
+    onSubmit={(text, register) => submit({ text, register })} />
+);
+
+// ============================================================================
+// One response. What the circle said AFTER reading — which is why it is here,
+// behind the door, and never on the card.
+// ============================================================================
+const NtResponse = ({ ctx, r }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+    <div style={NT_BYLINE}>
+      <span style={{ fontWeight: 500, color: 'var(--color-fg-2)' }}>{ntWho(ctx, r.by)}</span>
+      <span aria-hidden="true">·</span>
+      <span>{r.register}</span>
+    </div>
+    <p style={{ ...NT_PROSE, fontSize: 15, lineHeight: 1.5 }}>{r.text}</p>
+  </div>
+);
+
+// ---- Your line back. One line, plain: the register belongs to the note. -----
+const NtReply = ({ ctx, item, glyph, close }) => {
+  const [v, setV] = ntS('');
+  const send = () => {
+    if (!v.trim()) return;
+    ctx.actions.respond(item.id, { text: v.trim(), register: 'reflection' });
+    setV('');
+    if (close) close();
+  };
+  return (
+    <div>
+      <div style={{ ...NT_BYLINE, marginBottom: 6 }}>
+        {glyph && <span aria-hidden="true" style={{ fontSize: 15, lineHeight: 1 }}>{glyph}</span>}
+        <span style={{ fontWeight: 500, color: 'var(--color-fg-2)' }}>You</span>
+      </div>
+      <NtField name={'nt-reply-' + item.id} aria-label="Say something back"
+        placeholder="One line" value={v} autoComplete="off"
+        onChange={(e) => setV(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); send(); } }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <NtButton variant="primary" disabled={!v.trim()} onClick={send}>Say it</NtButton>
+      </div>
+    </div>
+  );
+};
+
+// ---- The after-note, written where you already are --------------------------
+const NtAfterField = ({ ctx, item, autoFocus, onDone }) => {
+  const [v, setV] = ntS('');
+  const [reg, setReg] = ntS('takeaway');
+  return (
+    <NtWriter ctx={ctx} autoFocus={autoFocus}
+      value={v} setValue={setV} register={reg} setRegister={setReg}
+      placeholder="What the circle came to."
+      submitLabel="Write the after-note"
+      onSubmit={(text, register) => { ntWriteAfter(ctx, item, text, register); setV(''); if (onDone) onDone(); }} />
+  );
+};
+
+// ============================================================================
+// Beats 2 and 3 — the note you already read, then the conversation.
+// ----------------------------------------------------------------------------
+// The invention of this direction is on the card, so the sheet is deliberately
+// ordinary: the note at the top (where it was before you read, unchanged), what
+// the circle said after reading beneath it, then your own line. Reached at
+// commit from the Swell, and again from the door on any Read card.
+//
+// Its footer is the second route to continuation: a read item with no
+// after-note yet carries the one field that writes it. Once written the pair is
+// shown instead, and the field never returns.
+// ============================================================================
+const NtRead = ({ ctx, item, glyph, close }) => {
+  const [writing, setWriting] = ntS(false);
+  const before = ntBefore(item);
+  const after = ntAfter(ctx, item);
+  const responses = item.responses || [];
+  const mine = responses.some((r) => r.by === 'you');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+      <div style={{ paddingRight: 34, minWidth: 0 }}>
+        <div style={{ ...NT_BYLINE, marginBottom: 4 }}>{ntSourceOf(item)}</div>
+        <div style={NT_TITLE}>{ntTitleOf(item)}</div>
+      </div>
+
+      {before && (
+        <NtRail>
+          <NtNote who={ntWho(ctx, before.by)} register={before.register} text={before.text} size={15} />
+        </NtRail>
+      )}
+
+      {responses.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {responses.map((r) => <NtResponse key={r.id} ctx={ctx} r={r} />)}
+        </div>
+      )}
+
+      {!mine && <NtReply ctx={ctx} item={item} glyph={glyph} close={null} />}
+
+      {item.read && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <NtDivider />
+          {after ? (
+            <NtRail>
+              <NtNote who={ntWho(ctx, after.by)} register={after.register} text={after.text} size={14} quiet />
+            </NtRail>
+          ) : writing ? (
+            <NtAfterField ctx={ctx} item={item} autoFocus onDone={() => setWriting(false)} />
+          ) : (
+            <div>
+              <NtButton variant="secondary" onClick={() => setWriting(true)}>Add an after-note</NtButton>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <NtButton variant="tertiary" onClick={close}>Done</NtButton>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// Beat 4 — continue. The after-note, as a page.
+// ----------------------------------------------------------------------------
+// Every read item still open to one, each showing the note it went up with and
+// the single field that closes it. Writing moves the item down the page into
+// the pairs, permanently: the field is gone and there is no second one.
+// ============================================================================
+const NtContinue = ({ ctx }) => {
+  const open = ntOpenToAfter(ctx);
+  const closed = ntClosed(ctx);
+  const head = {
+    fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.35,
+    color: 'var(--color-fg-3)', textWrap: 'pretty',
+  };
+  return (
+    <div style={{
+      maxWidth: 'var(--max-feed-width)', margin: '0 auto',
+      padding: '24px 20px 40px', display: 'flex', flexDirection: 'column', gap: 'var(--space-6)',
+    }}>
+      {open.map((item) => {
+        const before = ntBefore(item);
+        return (
+          <div key={item.id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ ...NT_BYLINE, marginBottom: 4 }}>{ntSourceOf(item)}</div>
+              <div style={NT_TITLE}>{ntTitleOf(item)}</div>
+            </div>
+            {before && (
+              <NtRail>
+                <NtNote who={ntWho(ctx, before.by)} register={before.register} text={before.text} size={14} />
+              </NtRail>
+            )}
+            <NtAfterField ctx={ctx} item={item} />
+          </div>
+        );
+      })}
+
+      {open.length > 0 && closed.length > 0 && <NtDivider />}
+
+      {closed.map((item) => {
+        const before = ntBefore(item);
+        const after = ntAfter(ctx, item);
+        return (
+          <div key={item.id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <div style={head}>{ntTitleOf(item)}</div>
+            <NtRail>
+              {before && <NtNote who={ntWho(ctx, before.by)} register={before.register} text={before.text} size={14} />}
+              <NtNote who={ntWho(ctx, after.by)} register={after.register} text={after.text} size={13} quiet />
+            </NtRail>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
+// The band above the Read tab — the page's other way in, so continuation is
+// reachable without the driver. One line, and only while something is open to
+// an after-note. It reports nothing and counts nothing.
+// ============================================================================
+const NtBanner = ({ ctx }) => {
+  if (ctx.tab !== 'read') return null;
+  if (!ntOpenToAfter(ctx).length) return null;
+  return (
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0 16px' }}>
+      <div style={{ width: '100%', maxWidth: 'var(--max-feed-width)' }}>
+        <button type="button" className="nt7-band" onClick={() => ctx.openContinue()} style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%', minHeight: 44,
+          background: 'transparent', border: 0, padding: '8px 0', cursor: 'pointer',
+          textAlign: 'left', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13.5,
+          color: 'var(--color-fg-2)',
+        }}>
+          <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            Write an after-note
+          </span>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style={{
+            stroke: 'currentColor', strokeWidth: 2, fill: 'none',
+            strokeLinecap: 'round', strokeLinejoin: 'round', flexShrink: 0,
+          }}><polyline points="9 18 15 12 9 6" /></svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ---- The states inline styles cannot carry ---------------------------------
+const NT_CSS = `
+.nt7-reg:focus-visible,
+.nt7-band:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); border-radius: var(--radius-sm); }
+.nt7-reg:hover { color: var(--color-fg-1); }
+.nt7-band:hover { color: var(--color-fg-1); }
+`;
+if (typeof document !== 'undefined' && !document.getElementById('nt7-css')) {
+  const ntStyleEl = document.createElement('style');
+  ntStyleEl.id = 'nt7-css';
+  ntStyleEl.textContent = NT_CSS;
+  document.head.appendChild(ntStyleEl);
+}
+
+NtPGD7.register({
+  id: 'note',
+  name: 'The Note',
+  // The description slot: where the source's own description would stand, which
+  // is the product logic for a line that tells you whether to read.
+  face: { slot: 'description' },
+  initialState: { after: { ...NT_SEED_AFTER } },
+  Card: NtCard,
+  Compose: NtCompose,
+  Landing: NtRead,
+  Respond: NtRead,
+  Continue: NtContinue,
+  continueTitle: 'The after-note',
+  Banner: NtBanner,
+  // The shipped door keeps its geometry and its glyph huddle and opens the
+  // conversation — the same surface reading hands over to.
+  doorOpens: 'respond',
+  beats: {
+    // Land on the vouch: an item shared before reading, whose note is the only
+    // reason anyone would open it.
+    land: (api) => {
+      const t = api.activeItems.find((i) => i.thought && i.thought.register === 'trust')
+        || api.activeItems.find((i) => i.thought) || api.firstUnread();
+      if (!t) return;
+      api.setTab('active');
+      api.openSwell(t);
+    },
+    // A read item carrying a note, a full conversation behind the door, and no
+    // after-note yet — so the footer holds the act that closes it.
+    respond: (api) => {
+      const t = api.readItems.find((i) => i.thought && (i.responses || []).length && !((api.state.after || {})[i.id]))
+        || api.readItems.find((i) => i.thought) || api.firstRead();
+      if (!t) return;
+      api.setTab('read');
+      api.openRespond(t);
     },
   },
 });
