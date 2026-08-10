@@ -479,10 +479,10 @@ const PM_CSS = `
 .pm7-lift:hover { color: var(--color-fg-2); }
 `;
 if (typeof document !== 'undefined' && !document.getElementById('pm7-css')) {
-  const el = document.createElement('style');
-  el.id = 'pm7-css';
-  el.textContent = PM_CSS;
-  document.head.appendChild(el);
+  const pmStyleEl = document.createElement('style');
+  pmStyleEl.id = 'pm7-css';
+  pmStyleEl.textContent = PM_CSS;
+  document.head.appendChild(pmStyleEl);
 }
 
 PGD7.register({
@@ -491,7 +491,7 @@ PGD7.register({
   // The description slot: under the title, inside the text column, where an
   // object's description belongs. Never attributed, never a person's utterance.
   face: { slot: 'description' },
-  initialState: { strata: pmSeedStrata(), focus: null, editing: null },
+  initialState: { strata: pmSeedStrata(), editing: null },
   Card: PmCard,
   Compose: PmCompose,
   Landing: PmReading,
@@ -534,7 +534,7 @@ PGD7.register({
       const t = mine || api.readItems.find((i) => pmLayers(api, i).length > 1) || api.firstRead();
       api.setRoute('feed');
       api.setTab('read');
-      api.setState({ focus: t ? t.id : null, editing: t ? t.id : null });
+      api.setState({ editing: t ? t.id : null });
     },
   },
 });

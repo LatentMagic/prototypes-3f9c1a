@@ -420,7 +420,7 @@ const StCard = ({ ctx, item }) => {
         {landed && (
           <span style={stCardMark}>
             <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={8} /></span>
-            Said since you were in
+            Talk since you were in
           </span>
         )}
       </div>
