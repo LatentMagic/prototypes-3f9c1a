@@ -354,9 +354,13 @@ const EcCard = ({ ctx, item, tab }) => {
 // where the echo can be moved to a different line — which is how a line is
 // overtaken here, and the only way it can be.
 // ============================================================================
+// Read items only. A standing line is something a member wrote after reading,
+// so listing an unread item here would put the circle's conversation in front
+// of someone who has not read the thing — reveal-on-read protects the
+// conversation, and Standing is conversation.
 const ecOrderForStanding = (ctx) => {
   const moved = (ctx.state && ctx.state.moved) || {};
-  return ctx.items
+  return ctx.readItems
     .filter((i) => !!ecStanding(ctx, i))
     .sort((a, b) => ((moved[b.id] || 0) - (moved[a.id] || 0)) || ((b.at || 0) - (a.at || 0)));
 };
