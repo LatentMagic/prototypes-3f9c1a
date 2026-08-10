@@ -4,8 +4,9 @@
 // The easiest thing, done properly. Reaction and words are ONE act, and the
 // Reaction door holds the whole of it.
 //
-// THE CARD FACE — none. The shipped FeedCard, untouched, on both tabs. The door
-// is the whole affordance, so `face.slot` stays 'none' and there is no Card.
+// THE CARD FACE — none. Nothing of this direction's sits inside the card's
+// border on either tab: `face.slot` is 'none' and the registered face renders
+// null for every item. The door is the whole affordance.
 //
 // ONE BREATH — you drag the Swell and leave your line in the SAME SHEET. The
 // shipped SwellReactionFlow commits, unmounts, and this record takes the
@@ -140,18 +141,17 @@ const RC_FIELD = {
 };
 
 // What a member gave on the pad, said the way the product says it: the glyph,
-// then the rung it landed on, in words. Never a number.
-const RcRung = ({ rx, skipped }) => {
-  if (rx && rx.glyph) {
-    return (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-        <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>{rx.glyph}</span>
-        <span>{rcRung(rx)}</span>
-      </span>
-    );
-  }
-  if (skipped) return <span>read</span>;
-  return null;
+// then the rung it landed on, in words. Never a number. A member who skipped
+// the pad and spoke carries their words alone — the line is the utterance, and
+// there is no depth to print beside it.
+const RcRung = ({ rx }) => {
+  if (!rx || !rx.glyph) return null;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+      <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>{rx.glyph}</span>
+      <span>{rcRung(rx)}</span>
+    </span>
+  );
 };
 
 // ============================================================================
@@ -167,7 +167,6 @@ const RcEntry = ({ ctx, item, entry, replyOpen, onReply, onReplyDone }) => {
   }, [replyOpen]);
 
   const rx = rcReactionOf(ctx, item, entry.by);
-  const skipped = rcSkipped(ctx, item, entry.by);
   const mine = entry.by === 'you';
   const replies = rcRepliesOf(ctx, item, entry.key);
   const when = rcWhen(entry.at);
@@ -180,7 +179,7 @@ const RcEntry = ({ ctx, item, entry, replyOpen, onReply, onReplyDone }) => {
           <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 13, letterSpacing: 0, color: mine ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>
             {rcWho(ctx, entry.by)}
           </span>
-          <RcRung rx={rx} skipped={skipped} />
+          <RcRung rx={rx} />
           {when && <span style={{ opacity: 0.8 }}>{when}</span>}
         </div>
         <p style={RC_LINE}>{entry.text}</p>
@@ -196,7 +195,7 @@ const RcEntry = ({ ctx, item, entry, replyOpen, onReply, onReplyDone }) => {
                     <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 12.5, letterSpacing: 0, color: rmine ? 'var(--color-accent)' : 'var(--color-fg-1)' }}>
                       {rcWho(ctx, r.by)}
                     </span>
-                    <RcRung rx={rrx} skipped={rcSkipped(ctx, item, r.by)} />
+                    <RcRung rx={rrx} />
                     {rcWhen(r.at) && <span style={{ opacity: 0.8 }}>{rcWhen(r.at)}</span>}
                   </div>
                   <p style={{ ...RC_LINE, fontSize: 13.5 }}>{r.text}</p>
@@ -363,6 +362,18 @@ const RcRecord = ({ ctx, item, close, landing = false }) => {
   );
 };
 
+// ============================================================================
+// The card face — nothing, and deliberately nothing. This direction puts no
+// content inside the card's border on either tab.
+// ----------------------------------------------------------------------------
+// It is registered all the same, because claiming the door is what `doorOpens`
+// does and the rig only reads that on its own slotted copy of the card. So the
+// face is declared and renders null for every item: the card is the rig's
+// verbatim FeedCard copy, with no slot filled, and the only thing that changes
+// about it is where its door leads.
+// ============================================================================
+const RcFace = () => null;
+
 // The two surfaces are one component; only the landing focuses the composer,
 // because only there did the reader just finish an act.
 const RcLanding = (props) => <RcRecord {...props} landing />;
@@ -416,6 +427,7 @@ PGD7.register({
   // the whole affordance.
   face: { slot: 'none' },
   initialState: { replies: RC_SEED_REPLIES, replyOn: null },
+  Card: RcFace,
   Compose: RcCompose,
   Landing: RcLanding,
   Respond: RcRespond,
