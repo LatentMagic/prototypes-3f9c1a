@@ -1,12 +1,19 @@
-# Discourse v7 — the ten-direction rig
+# Discourse v7 — the thirteen-direction rig
 
-Ten complete versions of the app, one per direction. Entry HTML at the project
-root (`discourse-playground-v7.html`); modules here as `pg-d7-*.jsx`.
+Thirteen complete versions of the app, one per direction. Entry HTML at the
+project root (`discourse-playground-v7.html`); modules here as `pg-d7-*.jsx`.
 
 The directions and their specs live in the business-ops context space —
 `work/apps/circlists/discourse/_resources/ideation/`. `FINAL-TEN.md` is the
-reconciled set; `routes-01-05.md` and `routes-06-10.md` carry how each layer is
-reached, which is a design axis in its own right, not plumbing.
+reconciled set for 01–10; `routes-01-05.md` and `routes-06-10.md` carry how each
+layer is reached, which is a design axis in its own right, not plumbing.
+
+**11–13 are the v1 revisit** — `v1-revisit-THREE.md`. After playing the ten the
+product owner judged that the exploration had walked past the features the v1
+reviewers liked most, and asked for three more directions built from them: the
+conversation living behind the Reaction door, reactions and words merged in one
+record, and Echo ("said the same"). They are deliberately the simplest
+directions in the rig.
 
 ## Build and verify
 
@@ -16,9 +23,16 @@ port 4321) and use the pre-installed Chromium at
 `playwright install`.
 
 ```
-node pg-d7-bundle.js          # → discourse-playground-v7-standalone.html
-node pg-d7-verify-beats.js    # walks all ten × four beats, prints a table
+node pg-d7-bundle.js               # → discourse-playground-v7-standalone.html
+node pg-d7-verify-beats.js         # walks all thirteen × four beats, at 1024x720
+node pg-d7-verify-beats.js 390 844 # the same walk on a phone
 ```
+
+The verifier navigates with the driver strip's own prev/next and asserts the
+strip's title at every step, so it walks identically at both viewports and a
+click that silently fails is a hard failure rather than a row of repeated
+hashes. It exits non-zero on any direction that does not reach four distinct
+beat states.
 
 `pg-d7-bundle.js` inlines everything — React, ReactDOM, Babel, tokens, fonts as
 base64, every module, every `uploads/` asset — and neutralises the Google

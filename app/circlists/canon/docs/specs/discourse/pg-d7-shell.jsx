@@ -43,12 +43,15 @@ const {
 const D7_BREAK = 1024;
 const D7_KEY = 'pg_d7_v1';
 
-// The canonical order of the ten. A module registers itself; this list decides
-// where it sits and what the rail shows when a module is missing. Order is the
-// FINAL-TEN order, chosen so consecutive versions feel like different products.
+// The canonical order. A module registers itself; this list decides where it
+// sits and what the rail shows when a module is missing. 01–10 are the FINAL-TEN
+// order, chosen so consecutive versions feel like different products. 11–13 are
+// the v1 revisit — three directions built from the features the v1 reviewers
+// liked most and the ten walked past. See v1-revisit-THREE.md.
 const D7_ORDER = [
   'question', 'depths', 'countercard', 'seal', 'pulled-line',
   'sounding', 'seats', 'dispatch', 'palimpsest', 'stream',
+  'record', 'echo', 'note',
 ];
 
 const D7_BEATS = [
@@ -119,6 +122,21 @@ const D7_ABOUT = {
     one: 'The circle gets one continuous chronological talk surface, permanently open, and items are its punctuation.',
     claim: 'A river has no unread state. You enter at now; nothing below the waterline is presented as owed. Flat, chronological, unbounded — and items are the punctuation: you post from a card, and your words land at the bottom carrying that card as a header block.',
     cost: 'It is a feed, and it is unfinishable. It gives the app a second attention centre where the queue has been the only one. It is the direction most exposed to the "not WhatsApp, not Slack" invariant.',
+  },
+  record: {
+    one: 'Reaction and words are one act: you drag the Swell and leave your line in the same breath, and the Reaction door holds the whole record — every glyph, the rung it landed on in its spoken word, and every line, merged.',
+    claim: 'Discourse needs no new place. The door is the place. Merging reactions and words in one record makes the depth a member gave part of what they said.',
+    cost: 'The least novel direction in the set — a record behind a door is a thread with a lid on it. Nothing bounds how many lines a record takes; the lid is the only thing keeping it off the Read tab.',
+  },
+  echo: {
+    one: 'You never write a line someone has already written. You point at theirs, and it becomes both of yours — carrying the depth you gave on the pad.',
+    claim: 'Most of what a circle wants to say has already been said by the first person to speak. Writing it again is performance; agreeing is honest and free. Speaking costs words, agreeing costs a tap, and the line the circle stands behind carries the card.',
+    cost: 'It makes the first speaker the author of everyone else’s position — a real power asymmetry in a small circle. And an echo looks like a like button to anyone arriving from a social product.',
+  },
+  note: {
+    one: 'The sharer’s note is visible before you read, and it is the only thing that is. Everything the circle says after reading stays behind the door.',
+    claim: 'Both v1 reviewers asked for the contributor’s thought up front and it was never built. This is the balance: the note is context for whether to read, so it is public; the conversation is not. Reveal-on-read protects the conversation, not the invitation.',
+    cost: 'A visible note is a small stage, and the member who never has a good line for it will feel it. Two notes per card is a hard budget. A note that oversells steers reading in a way a bare card does not.',
   },
 };
 
