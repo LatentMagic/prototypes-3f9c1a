@@ -780,7 +780,17 @@
       transform: translateX(0);
       box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
     }
-    .brand { padding: calc(16px + env(safe-area-inset-top)) 18px 14px; }
+    /* The drawer is the scroll container, and the close (x) is absolutely
+       positioned inside .brand — so without this the x scrolls out of view and
+       the only way out is the sliver of scrim beside the drawer. Sticky pins
+       the header (and its x) to the top however far the drawer is scrolled. */
+    .brand {
+      padding: calc(16px + env(safe-area-inset-top)) 18px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--raised);
+    }
 
     /* close (x) button, top-right of the drawer header */
     .rail-close {
@@ -822,7 +832,16 @@
       font-size: 12px;
       padding: 2px 0;
     }
-    .rail-meta .meta-desc { max-width: none; }
+    /* Backstop: a description is meant to be a couple of sentences of identity
+       (feature history belongs in Recent changes). Clamp anyway, so a long one
+       can never take the drawer over again. */
+    .rail-meta .meta-desc {
+      max-width: none;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+      overflow: hidden;
+    }
 
     /* ---- stage: drop the desktop meta header + toggle; iframe goes full-bleed ---- */
     .meta { display: none; }
@@ -876,10 +895,12 @@
       <div class="rail-meta-row"><span class="meta-k">VERSION</span><span class="meta-v" id="rm-version"></span></div>
       <div class="rail-meta-row"><span class="meta-k">SLUG</span><span class="meta-v" id="rm-slug"></span></div>
       <div class="rail-meta-row"><span class="meta-k">TICKET</span><span class="meta-v" id="rm-ticket"></span></div>
-      <p class="meta-desc" id="rm-desc"></p>
+      <!-- changes sits ABOVE the desc: it's the actionable thing, and must never
+           be pushed off the bottom of the drawer by a long description. -->
       <button type="button" class="rail-changes-btn" id="changes-btn-m" hidden aria-haspopup="dialog" aria-controls="cl-panel">
         <span class="changes-dot" aria-hidden="true"></span>Recent changes
       </button>
+      <p class="meta-desc" id="rm-desc"></p>
     </div>
   </aside>
 
@@ -983,7 +1004,7 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The Circlists working line — the current prototype ahead of product. Changes accrete here rather than into new ticket tabs. This build lands the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs (confirmed by a tick redraw on the FAB itself), feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously so adding a link never blocks), The Swell loop-closure reaction (finish a link and you leave the circle a glyph and how hard it landed; the circle\'s responses re-open on the Read card), £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), a third presentation posture — app (native mobile), thumb-first and bottom-anchored, with a home screen at account level and web-only payments guard, Create/Fund circle sharing one wizard shell (desktop renders as a page rather than a floating-card modal, and re-funding a dormant circle is now a state of that same shell rather than a second page), and liveliness — a quiet arrival grammar (micro dot, New pill, soft sage halo, a waterline marking where the last visit ended) marking unseen links across all three postures, now reaching the browser tab itself via a notification-badged favicon (Safari: a title-bar dot). Champion self-serve and change-email carry in from the shipped line. Web postures are frozen and unchanged by the app work.',
+          desc: 'The retired working line, frozen at the point canon took over. Kept for reference only — no new work lands here. What it carries is in Recent changes.',
           changelog: [
             {
               date: '2026-07-31',
@@ -1219,7 +1240,7 @@
           version: 'v1',
           ticket: '—',
           html: 'circlists.html',
-          desc: 'The agreed Circlists line — the first canon build, replacing the shipped/`next` split with one working prototype; alternatives are explored as playgrounds in Claude Design rather than as console tabs. Carries the LatentPulse → Circlists rebrand (concentric-circle mark, "space" → "circle" throughout), the add-link FAB on both Active and Read tabs, feed cards carrying extracted metadata (title, source, preview image, resolved asynchronously), The Swell loop-closure reaction, £3 introductory circle pricing, a support-contact link in settings, three passive upsell doors to starting your own circle (feed empty states, the non-champion crown line, the champion\'s cap-full panel), a third presentation posture — app (native mobile) — with a home screen at account level and a bottom bar scoped to the open circle, Create/Fund circle sharing one wizard shell (desktop as a page rather than a floating-card modal, re-funding a dormant circle as a state of that same shell), liveliness — a quiet arrival grammar (micro dot, New pill, soft sage halo, a waterline marking where the last visit ended) reaching the browser tab itself via a notification-badged favicon, champion exit — every member of a dormant or suspended circle sees the same role-neutral screen, funding passes the champion role to whoever funds next, leaving a circle is now possible from the roster or the dormant screen, cancelling funding confirms the hand-off before it happens, and account deletion sits in settings, and a reverification prompt in front of every sensitive act — one shared in-place prompt asserting identity only, standing before account deletion and before an email change, branching on password field or a provider bounce. Champion self-serve and change-email carry in from the shipped line.',
+          desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds in Claude Design. What it carries is in Recent changes.',
           changelog: [
             {
               date: '2026-08-04',
