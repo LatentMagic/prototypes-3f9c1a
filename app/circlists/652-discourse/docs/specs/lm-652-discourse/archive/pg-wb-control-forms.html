@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Circlists — whiteboard: ten forms for the talking control</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--color-page);color:var(--color-fg-1)}
+.wrap{max-width:1120px;margin:0 auto;padding:36px 20px 90px}
+.head{display:flex;flex-direction:column;gap:8px;padding-bottom:24px;border-bottom:1px solid var(--color-border-1)}
+.kicker{font:500 11px/1 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.25 var(--font-sans);letter-spacing:-.02em;margin:0}
+.lede{font:400 14.5px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:74ch;text-wrap:pretty}
+.fam{padding:34px 0 4px}
+.fam-h{display:flex;flex-direction:column;gap:5px;padding-bottom:6px}
+.fam-n{font:600 19px/1.3 var(--font-sans);letter-spacing:-.01em}
+.fam-s{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-3);max-width:74ch;text-wrap:pretty}
+.dir{padding:24px 0;border-bottom:1px solid var(--color-border-2)}
+.dir-h{display:flex;align-items:baseline;gap:11px;margin-bottom:4px}
+.num{font:500 11px/1 var(--font-mono);color:var(--color-accent);flex-shrink:0;padding-top:3px}
+.dir-n{font:600 17px/1.3 var(--font-sans);letter-spacing:-.01em}
+.dir-b{display:flex;flex-direction:column;gap:5px;padding:0 0 16px 26px;max-width:78ch}
+.st{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.ct{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);text-wrap:pretty}
+.ct b{font-weight:600;color:var(--color-fg-2)}
+.cells{display:flex;flex-direction:column;gap:16px;padding-left:26px}
+.cell{display:flex;flex-direction:column;gap:7px;min-width:0}
+.lab{font:500 10.5px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.scroll{overflow-x:auto;padding-bottom:2px}
+.frame{border:1px solid var(--color-border-1);border-radius:var(--radius-md);background:var(--color-surface)}
+.w980{width:100%;min-width:640px}
+.w390{width:390px;max-width:100%}
+.under{height:30px;background:var(--color-page);border-top:1px solid var(--color-border-2);border-radius:0 0 var(--radius-md) var(--radius-md)}
+/* ---- the shipped bar ---- */
+.barwrap{position:relative}
+.bar{height:56px;background:var(--color-surface);display:flex;align-items:center;gap:10px;padding:0 16px 0 20px;border-radius:var(--radius-md) var(--radius-md) 0 0}
+.bar.lead{padding-left:8px}
+.bar.app{padding:0 16px;gap:8px}
+.bar.app.lead{padding-left:10px}
+.nm{flex:1;min-width:0;font:600 16px/1 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar.app .nm{font-size:17px;letter-spacing:-.01em}
+.gear{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--color-border-1);padding:8px 12px;border-radius:var(--radius-md);min-height:40px;font:500 13px/1 var(--font-sans);color:var(--color-fg-1);flex-shrink:0}
+.gear.ico{padding:8px;width:40px;justify-content:center}
+.gearbare{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--radius-md);color:var(--color-fg-1);flex-shrink:0}
+/* ---- shared bits ---- */
+.rule{display:inline-block;width:3px;border-radius:2px;background:var(--color-sage);flex-shrink:0}
+.n{font-variant-numeric:tabular-nums;font-weight:600}
+.w{font-weight:500;color:var(--color-fg-2)}
+.chev{color:var(--color-fg-3);display:inline-flex;flex-shrink:0}
+.chev.strong{color:var(--color-fg-2)}
+/* N1 */
+.stack{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sub{display:inline-flex;align-items:center;gap:6px;font:600 11.5px/1 var(--font-sans);color:var(--color-accent);white-space:nowrap}
+/* N2 */
+.tile{width:36px;height:36px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:4px;border:1px solid var(--color-border-1);border-radius:var(--radius-md);font:600 13px/1 var(--font-sans)}
+/* N3 */
+.inline{display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
+.mono{font:600 14px/1 var(--font-mono);color:var(--color-fg-1)}
+/* N4 */
+.hang{position:absolute;left:20px;top:47px;display:inline-flex;align-items:center;gap:7px;background:var(--color-surface);border:1px solid var(--color-border-1);border-top-color:var(--color-surface);border-radius:0 0 var(--radius-md) var(--radius-md);padding:0 12px;height:32px;font:600 12.5px/1 var(--font-sans);box-shadow:var(--shadow-raised)}
+.bar.app+.hang{left:16px}
+/* N5 */
+.namebtn{min-width:0;display:inline-flex;align-items:center;gap:9px;padding:0 10px;height:44px;border-radius:var(--radius-md)}
+/* S family */
+.merged{display:inline-flex;align-items:stretch;border:1px solid var(--color-border-1);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0;min-height:40px}
+.merged>span{display:inline-flex;align-items:center;gap:7px;padding:0 11px;font:600 13px/1 var(--font-sans);color:var(--color-fg-1)}
+.merged>span+span{border-left:1px solid var(--color-border-1);font-weight:500}
+.merged .ear{padding:0 9px;gap:5px}
+.bare{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;font:600 13px/1 var(--font-sans);color:var(--color-fg-1);padding:0 4px}
+.tk{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--color-border-1);padding:8px 11px;border-radius:var(--radius-md);min-height:40px;font:600 13px/1 var(--font-sans);color:var(--color-fg-1);flex-shrink:0}
+.tail{padding-top:28px;display:flex;flex-direction:column;gap:8px}
+.tail p{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:78ch;margin:0;text-wrap:pretty}
+.note{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+a{color:var(--color-fg-1)}
+a:hover{text-decoration-color:var(--color-fg-1)}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FAFAF7"/><rect x="14" y="34" width="72" height="18" rx="4" fill="#fff" stroke="#DCDCD8" stroke-width="2"/><rect x="20" y="39" width="3" height="8" rx="1.5" fill="#8BBFAD"/><rect x="14" y="58" width="34" height="12" rx="3" fill="#fff" stroke="#DCDCD8" stroke-width="2"/></svg></template>
+<div class="wrap">
+<div class="head">
+<span class="kicker">whiteboard · return v12 · the control’s form</span>
+<h1>Ten forms for the talking control</h1>
+<p class="lede">Two places survived and both were judged on a single guess at the object. So the object is the variable here: five different forms for a control that belongs to the circle’s name, and five for one that lives in the settings corner. Not five fillings of the same box — different shapes, different anchors, different amounts of the bar consumed. The web bars fill the page, standing in for the width the bar gets beside the 240px rail, and the name is long enough to show what each form costs it. The app bar is drawn at 390px for the name family; the settings family has no host in the app bar at all, which is its standing cost.</p>
+</div>
+
+<section class="fam">
+<div class="fam-h"><span class="fam-n">Family N · it belongs to the name</span><span class="fam-s">The leading end of the bar. Everything here is either inside the name slot or in the empty space before it.</span></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">N1</span><span class="dir-n">A second line under the name</span></div>
+<div class="dir-b"><span class="st">The name slot becomes two lines: the name, and beneath it the sage rule with a short phrase. Nothing is added horizontally; the whole slot is the target. This is B5 as first drawn, kept so the rest have something to beat.</span><span class="ct"><b>Costs:</b> The bar stops being a fixed frame for one line of type, the name shifts up whenever something starts talking, and the phrase sits so close to the name that the two read as one wrapped title.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="stack"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="sub"><i class="rule" style="height:11px"></i>Still talking<span class="chev "><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div></div><div class="cell narrow"><span class="lab">app bar · 390px</span><div class="frame w390"><div class="bar app"><span class="stack"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="sub"><i class="rule" style="height:11px"></i>Still talking<span class="chev "><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></span></div><div class="under"></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">N2</span><span class="dir-n">A tile in the leading slot</span></div>
+<div class="dir-b"><span class="st">The web bar’s leading slot is empty at desktop width and holds the hamburger on mobile. A 36px square tile goes there — rule and numeral, no words — so the control sits before the name instead of taking room from it, and the name keeps every character.</span><span class="ct"><b>Costs:</b> It is where the circles menu lives below 1024px, so at that width the two collide and one has to move. A tile before the name also reads as a badge on the whole bar rather than a thing you press.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar lead"><span class="tile"><i class="rule" style="height:12px"></i><span class="n">3</span></span><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div></div><div class="cell narrow"><span class="lab">app bar · 390px</span><div class="frame w390"><div class="bar app lead"><span class="tile"><i class="rule" style="height:12px"></i><span class="n">3</span></span><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span></div><div class="under"></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">N3</span><span class="dir-n">The name is the menu, count in the name line</span></div>
+<div class="dir-b"><span class="st">No box anywhere. The count is typeset into the name line in mono at the name’s own colour, with a chevron after it, and the whole row is pressable — the bar gains a behaviour, not an object.</span><span class="ct"><b>Costs:</b> Nothing but the chevron says the row does anything, and a number sitting inside a title reads as part of the circle’s name until you have learnt otherwise.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm" style="flex:0 1 auto">Longform Reading &amp; Essays Club (Thursdays)</span><span class="inline"><i class="rule" style="height:12px"></i><span class="mono">3</span></span><span class="chev strong"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span><span style="flex:1"></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div></div><div class="cell narrow"><span class="lab">app bar · 390px</span><div class="frame w390"><div class="bar app"><span class="nm" style="flex:0 1 auto">Longform Reading &amp; Essays Club (Thursdays)</span><span class="inline"><i class="rule" style="height:12px"></i><span class="mono">3</span></span><span class="chev strong"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></div><div class="under"></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">N4</span><span class="dir-n">A tab hanging off the bar’s edge</span></div>
+<div class="dir-b"><span class="st">The control is not in the bar at all: a small tab hangs from the bar’s bottom border, aligned to the name, overlapping the hairline so it reads as attached to the chrome rather than sitting in the feed. It is not the full-width band — it is name-width and it only exists while something is talking.</span><span class="ct"><b>Costs:</b> A shape the product has nowhere else, and it overlaps the boundary between chrome and content, which is the one line the app keeps clean. It also covers the first few pixels of whatever is beneath.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="barwrap"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><span class="hang"><i class="rule" style="height:11px"></i><span class="n">3</span><span class="w">talking</span><span class="chev "><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div></div><div class="cell narrow"><span class="lab">app bar · 390px</span><div class="frame w390"><div class="barwrap"><div class="bar app"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span></div><span class="hang"><i class="rule" style="height:11px"></i><span class="n">3</span><span class="w">talking</span><span class="chev "><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">N5</span><span class="dir-n">The name carries a rule and turns down</span></div>
+<div class="dir-b"><span class="st">The circle’s name takes the fold’s own logic: a sage rule to its left and the name in its normal weight, the entire slot pressable, with the count only appearing inside the popover. The card marking and the circle marking become one idea.</span><span class="ct"><b>Costs:</b> It gives no quantity at all in the bar, so there is nothing to judge before opening it, and the rule at the leading edge is easily read as a decorative accent on the header.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar lead"><span class="namebtn"><i class="rule" style="height:18px"></i><span class="nm" style="flex:0 1 auto">Longform Reading &amp; Essays Club (Thursdays)</span><span class="chev strong"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span style="flex:1"></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div></div><div class="cell narrow"><span class="lab">app bar · 390px</span><div class="frame w390"><div class="bar app lead"><span class="namebtn"><i class="rule" style="height:18px"></i><span class="nm" style="flex:0 1 auto">Longform Reading &amp; Essays Club (Thursdays)</span><span class="chev strong"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div></div>
+</section>
+
+<section class="fam">
+<div class="fam-h"><span class="fam-n">Family S · it lives in the settings corner</span><span class="fam-s">The trailing end. Everything here has to survive standing next to a permanent control, and none of it exists in the app bar, where circle settings is a bottom-bar slot.</span></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">S1</span><span class="dir-n">Two equal halves</span></div>
+<div class="dir-b"><span class="st">One bordered object split down the middle by a hairline: the count on the left, the gear and its label on the right. This is B2 as first drawn.</span><span class="ct"><b>Costs:</b> The two halves do unrelated things at equal visual weight, so the object claims the count and settings are the same kind of thing. It is also the widest form in the corner.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="merged"><span><i class="rule" style="height:13px"></i><span class="n">3</span></span><span class="gearhalf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></span></div><div class="under"></div></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">S2</span><span class="dir-n">A narrow ear on the settings box</span></div>
+<div class="dir-b"><span class="st">Same joined object, but the count segment is a 34px ear rather than half the control: settings stays plainly the main thing in the corner and the count is a small addition attached to it.</span><span class="ct"><b>Costs:</b> An ear is still a second target inside one box, and at 34px it is under the 44px minimum unless the whole bar height is used for the hit area.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="merged"><span class="ear"><i class="rule" style="height:12px"></i><span class="n">3</span></span><span class="gearhalf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></span></div><div class="under"></div></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">S3</span><span class="dir-n">Unboxed count, boxed settings</span></div>
+<div class="dir-b"><span class="st">Nothing is joined. The count sits bare to the left of the settings box — rule, numeral, chevron, no border — tight enough to read as one corner group, so the corner keeps exactly one bordered object.</span><span class="ct"><b>Costs:</b> An unboxed control beside a boxed one reads as a label, not a button, which is the failure the earlier round already named on the timestamp.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="bare"><i class="rule" style="height:13px"></i><span class="n">3</span><span class="chev "><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">S4</span><span class="dir-n">The emphasis flips</span></div>
+<div class="dir-b"><span class="st">Settings drops its label and becomes the icon-only box it already is on mobile web, and the freed width goes to a fully labelled talking control. Two boxes, but the corner now says which of them is the live one.</span><span class="ct"><b>Costs:</b> It demotes a permanent control to make room for a transient one, and desktop loses the words “Circle settings”, which is a change to a shipped surface this exploration is not meant to make.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="tk"><i class="rule" style="height:13px"></i><span class="n">3</span><span class="w">talking</span><span class="chev "><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span class="gear ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></div><div class="under"></div></div></div></div></div>
+</section>
+<section class="dir">
+<div class="dir-h"><span class="num">S5</span><span class="dir-n">One box in the corner, and it is not settings</span></div>
+<div class="dir-b"><span class="st">The corner holds a single bordered control and it is the talking one; the gear becomes a bare glyph beside it, the way the account button already is. The box in the corner always means “something is happening here”.</span><span class="ct"><b>Costs:</b> When nothing is talking the corner has no box at all, so the bar’s right end changes shape between states — and settings, a permanent thing, ends up looking less pressable than a temporary one.</span></div>
+<div class="cells"><div class="cell"><span class="lab">desktop web · beside the rail</span><div class="scroll"><div class="frame w980"><div class="bar"><span class="nm">Longform Reading &amp; Essays Club (Thursdays)</span><span class="tk"><i class="rule" style="height:13px"></i><span class="n">3</span><span class="w">talking</span><span class="chev "><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span class="gearbare"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></div><div class="under"></div></div></div></div></div>
+</section>
+
+<section class="tail">
+<span class="note">how to read them</span>
+<p>On the desktop bar none of the ten costs the name a character — there is room for all of them. The name family is decided at 390px, where the name wants more room than the bar has: every form there truncates it, so the question is not whether but how much, and whether what is lost still identifies the circle.</p>
+<p>The settings family is not decided by width at all. It is decided by what the corner claims: whether the count and circle settings are one object, two, or one plus an ornament — and what happens to the corner’s shape on the ordinary day when nothing is talking.</p>
+</section>
+</div>
+</body>
+</html>

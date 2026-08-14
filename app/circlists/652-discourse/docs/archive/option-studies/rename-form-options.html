@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Circle rename — modal variations</title>
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#EDEDEA;color:var(--color-fg-1);font-family:var(--font-sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+  a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+
+  .pg{max-width:1320px;margin:0 auto;padding:48px 32px 96px}
+  .pg-head{max-width:760px;margin:0 0 40px}
+  .pg-kicker{font-family:var(--font-mono);font-weight:500;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-fg-3);margin:0 0 12px}
+  .pg-title{font-family:var(--font-sans);font-weight:600;font-size:var(--text-3xl);letter-spacing:-0.02em;line-height:1.15;margin:0 0 12px}
+  .pg-lede{font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:1.6;color:var(--color-fg-2);margin:0}
+  .pg-lede strong{color:var(--color-fg-1);font-weight:600}
+  .pg-note{font-family:var(--font-sans);font-weight:500;font-size:13px;line-height:1.5;color:var(--color-fg-3);margin:16px 0 0}
+
+  .grid{display:flex;flex-wrap:wrap;gap:40px 32px;align-items:flex-start}
+  .opt{width:390px;max-width:100%}
+  .opt-cap{margin:0 0 16px}
+  .opt-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:var(--radius-pill);background:var(--color-accent);color:#fff;font-family:var(--font-mono);font-weight:600;font-size:12px;margin-right:10px;vertical-align:middle}
+  .opt-name{font-family:var(--font-sans);font-weight:600;font-size:17px;color:var(--color-fg-1)}
+  .opt-why{font-family:var(--font-sans);font-weight:400;font-size:13.5px;line-height:1.55;color:var(--color-fg-2);margin:8px 0 0}
+
+  .phone{position:relative;width:390px;max-width:100%;height:560px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:24px;box-shadow:0 18px 40px rgba(10,10,10,0.10),0 4px 10px rgba(10,10,10,0.05);overflow:hidden;display:flex;flex-direction:column}
+  .phone-bar{height:56px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--color-surface);border-bottom:1px solid var(--color-border-2)}
+  .phone-bar-title{font-family:var(--font-sans);font-weight:600;font-size:16px;color:var(--color-fg-1)}
+  .phone-body{flex:1;min-height:0;overflow-y:auto;padding:24px 20px 32px;background:var(--color-canvas)}
+  .phone-body::-webkit-scrollbar{width:0}
+
+  .iconbtn{background:transparent;border:0;padding:10px;cursor:pointer;color:var(--color-fg-1);display:inline-flex;border-radius:var(--radius-sm)}
+  .iconbtn:hover{background:var(--color-surface-sunken)}
+
+  .circle-h1{font-family:var(--font-sans);font-weight:600;font-size:var(--text-2xl);line-height:1.25;letter-spacing:-0.01em;color:var(--color-fg-1);margin:0;overflow-wrap:anywhere}
+  .name-row{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+  .pencil{width:40px;height:40px;min-width:40px;background:transparent;border:0;cursor:pointer;color:var(--color-fg-3);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-sm)}
+  .pencil:hover{background:var(--color-surface-sunken);color:var(--color-fg-1)}
+  .meta-line{font-family:var(--font-sans);font-weight:400;font-size:14px;color:var(--color-fg-2);margin:0 0 24px}
+
+  .field-label{display:block;margin-bottom:6px;font-family:var(--font-sans);font-weight:500;font-size:13px;color:var(--color-fg-2)}
+  .field-input{width:100%;box-sizing:border-box;font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:1.4;color:var(--color-fg-1);border:1px solid var(--color-border-1);border-radius:var(--radius-md);padding:12px 14px;min-height:44px;background:var(--color-surface);transition:border-color var(--duration-base)}
+  .field-input:focus{outline:none;border-color:var(--color-accent);box-shadow:0 0 0 3px var(--color-accent-ring)}
+  textarea.field-input{resize:none;overflow:hidden;display:block;white-space:pre-wrap;overflow-wrap:anywhere;min-height:44px;font-family:var(--font-sans)}
+
+
+  .btn{font-family:var(--font-sans);font-weight:600;font-size:14px;line-height:1;padding:11px 18px;border-radius:var(--radius-md);border:0;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;transition:background var(--duration-base) var(--ease-quiet),opacity var(--duration-base)}
+  .btn-primary{background:var(--color-accent);color:#fff}
+  .btn-primary:hover{background:var(--color-accent-hover)}
+  .btn-primary:active{background:var(--color-accent-press)}
+  .btn-primary:disabled{opacity:0.45;cursor:default}
+  .btn-secondary{background:var(--color-surface);color:var(--color-fg-1);border:1px solid var(--color-border-1);font-weight:500}
+  .btn-secondary:hover{background:var(--color-surface-sunken)}
+  .btn-ghost{background:transparent;color:var(--color-fg-2);font-weight:500}
+  .btn-ghost:hover{background:var(--color-surface-sunken);color:var(--color-fg-1)}
+  .btn-row{display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-4)}
+
+  .ctx-label{font-family:var(--font-sans);font-weight:600;font-size:13px;color:var(--color-fg-2);margin:0 0 12px}
+  .ctx-card{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);overflow:hidden}
+  .ctx-row{display:flex;align-items:center;gap:12px;padding:12px 16px}
+  .ctx-row+.ctx-row{border-top:1px solid var(--color-border-2)}
+  .avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:600;font-size:12px;background:var(--color-surface-sunken);color:var(--color-fg-1);border:1px solid var(--color-border-1)}
+  .avatar.accent{background:var(--color-accent);color:#fff;border:0}
+  .ctx-name{font-family:var(--font-sans);font-weight:600;font-size:14px;color:var(--color-fg-1)}
+
+  .modal-scrim{position:absolute;inset:0;z-index:20;background:var(--color-scrim);display:none;padding:16px}
+  .modal-open .modal-scrim{display:flex}
+  .modal{background:var(--color-surface);border-radius:var(--radius-lg);padding:var(--space-6);width:100%;max-width:344px;box-shadow:var(--shadow-overlay);margin:auto}
+  .modal-title{font-family:var(--font-sans);font-weight:600;font-size:var(--text-xl);letter-spacing:-0.01em;color:var(--color-fg-1);margin:0 0 var(--space-5)}
+
+  /* counter */
+  .field-foot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:6px;min-height:16px}
+  .hint{font-family:var(--font-sans);font-weight:400;font-size:12.5px;line-height:1.4;color:var(--color-fg-3);margin:0}
+  .counter{font-family:var(--font-mono);font-weight:500;font-size:12px;color:var(--color-fg-3);margin-left:auto;flex-shrink:0;transition:color var(--duration-base),opacity var(--duration-base)}
+  .counter.near{color:var(--color-fg-2)}
+  .counter.at{color:var(--color-fg-1);font-weight:600}
+  .counter.hide{opacity:0}
+
+  /* variation 3: bottom sheet */
+  .sheet-scrim{align-items:flex-end}
+  .sheet{max-width:none;border-radius:16px 16px 0 0;margin:0;padding:var(--space-5) var(--space-5) var(--space-6)}
+  .sheet-grip{width:36px;height:4px;border-radius:2px;background:var(--color-border-1);margin:0 auto var(--space-4)}
+  .sheet .btn-row{flex-direction:column-reverse;gap:8px;margin-top:var(--space-5)}
+  .sheet .btn{width:100%}
+
+  :focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:var(--ring-offset)}
+</style>
+</head>
+<body>
+<div class="pg">
+  <header class="pg-head">
+    <p class="pg-kicker">Circle settings · champion</p>
+    <h1 class="pg-title">Rename circle — three takes on the modal</h1>
+    <p class="pg-lede">All three open from the pencil, use a real <strong>16px form field</strong>, and drop the X and the explanatory subline — Cancel, Esc and scrim-tap all dismiss. Each enforces a <strong>60-character cap</strong> with trim-on-save; they differ only in how the limit surfaces. Type past ~50 to see the counter behave.</p>
+    <p class="pg-note">Variation 3 is the mobile bottom-sheet form of the same dialog — the pattern the app already uses for the Add-link and Swell sheets.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- V1 -->
+    <section class="opt" data-rename data-max="30">
+      <div class="opt-cap">
+        <div><span class="opt-num">1</span><span class="opt-name">Counter on approach</span></div>
+        <p class="opt-why">The chosen direction. A plain single-line field — with a 30-char cap a name fits one line, so no wrapping needed. The cap is enforced silently; Save trims whitespace, Enter saves.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-bar"><button class="iconbtn" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button><span class="phone-bar-title">Settings</span></div>
+        <div class="phone-body">
+          <div class="name-row">
+            <h1 class="circle-h1" data-name>Backend Pod</h1>
+            <button class="pencil" data-act="open" aria-label="Rename circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          </div>
+          <p class="meta-line">8 of 10 members</p>
+          <div class="ctx-label">Members</div>
+          <div class="ctx-card">
+            <div class="ctx-row"><span class="avatar accent">YO</span><span class="ctx-name">You</span></div>
+            <div class="ctx-row"><span class="avatar">MR</span><span class="ctx-name">Mara Reyes</span></div>
+          </div>
+        </div>
+        <div class="modal-scrim" data-scrim>
+          <div class="modal">
+            <h2 class="modal-title">Rename circle</h2>
+            <input class="field-input" id="v1-in" data-input maxlength="30" value="Backend Pod" aria-label="Circle name" />
+            <div class="btn-row">
+              <button class="btn btn-secondary" data-act="close">Cancel</button>
+              <button class="btn btn-primary" data-act="save">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- V2 -->
+    <section class="opt" data-rename data-max="30">
+      <div class="opt-cap">
+        <div><span class="opt-num">2</span><span class="opt-name">Persistent counter + hint</span></div>
+        <p class="opt-why">Always shows remaining count beside a one-line hint on what the name is for. Most explicit — the limit is never a surprise, and there's room for guidance.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-bar"><button class="iconbtn" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button><span class="phone-bar-title">Settings</span></div>
+        <div class="phone-body">
+          <div class="name-row">
+            <h1 class="circle-h1" data-name>Backend Pod</h1>
+            <button class="pencil" data-act="open" aria-label="Rename circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          </div>
+          <p class="meta-line">8 of 10 members</p>
+          <div class="ctx-label">Members</div>
+          <div class="ctx-card">
+            <div class="ctx-row"><span class="avatar accent">YO</span><span class="ctx-name">You</span></div>
+            <div class="ctx-row"><span class="avatar">MR</span><span class="ctx-name">Mara Reyes</span></div>
+          </div>
+        </div>
+        <div class="modal-scrim" data-scrim>
+          <div class="modal">
+            <h2 class="modal-title">Rename circle</h2>
+            <label class="field-label" for="v2-in">Circle name</label>
+            <input class="field-input" id="v2-in" data-input maxlength="30" value="Backend Pod" />
+            <div class="field-foot">
+              <p class="hint">Everyone in the circle sees this.</p>
+              <span class="counter" data-counter data-mode="always">49</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" data-act="close">Cancel</button>
+              <button class="btn btn-primary" data-act="save">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- V3 -->
+    <section class="opt" data-rename data-max="30">
+      <div class="opt-cap">
+        <div><span class="opt-num">3</span><span class="opt-name">Bottom sheet (mobile-native)</span></div>
+        <p class="opt-why">The dialog as the app's bottom sheet: grip, full-width stacked Save / Cancel sized for thumbs, counter appearing on approach. Matches Add-link and Swell.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-bar"><button class="iconbtn" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button><span class="phone-bar-title">Settings</span></div>
+        <div class="phone-body">
+          <div class="name-row">
+            <h1 class="circle-h1" data-name>Backend Pod</h1>
+            <button class="pencil" data-act="open" aria-label="Rename circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg></button>
+          </div>
+          <p class="meta-line">8 of 10 members</p>
+          <div class="ctx-label">Members</div>
+          <div class="ctx-card">
+            <div class="ctx-row"><span class="avatar accent">YO</span><span class="ctx-name">You</span></div>
+            <div class="ctx-row"><span class="avatar">MR</span><span class="ctx-name">Mara Reyes</span></div>
+          </div>
+        </div>
+        <div class="modal-scrim sheet-scrim" data-scrim>
+          <div class="modal sheet">
+            <div class="sheet-grip"></div>
+            <h2 class="modal-title">Rename circle</h2>
+            <label class="field-label" for="v3-in">Circle name</label>
+            <input class="field-input" id="v3-in" data-input maxlength="30" value="Backend Pod" />
+            <div class="field-foot"><span class="counter hide" data-counter data-mode="near">60</span></div>
+            <div class="btn-row">
+              <button class="btn btn-primary" data-act="save">Save</button>
+              <button class="btn btn-ghost" data-act="close">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const NEAR = 10; // show/emphasise counter within this many chars of the cap
+function grow(el){ if(el.tagName!=='TEXTAREA')return; el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+function paint(frame){
+  const max = +frame.getAttribute('data-max');
+  const input = frame.querySelector('[data-input]');
+  const counter = frame.querySelector('[data-counter]');
+  grow(input);
+  if (!counter) return;
+  const remaining = max - input.value.length;
+  const mode = counter.getAttribute('data-mode');
+  if (mode === 'always'){
+    counter.textContent = String(remaining);
+    counter.classList.remove('hide');
+  } else {
+    if (remaining <= NEAR){ counter.classList.remove('hide'); counter.textContent = String(remaining); }
+    else counter.classList.add('hide');
+  }
+  counter.classList.toggle('near', remaining <= NEAR && remaining > 0);
+  counter.classList.toggle('at', remaining <= 0);
+}
+document.querySelectorAll('[data-rename]').forEach(frame => { paint(frame); frame.querySelector('[data-input]').addEventListener('input', () => paint(frame)); });
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-act]');
+  const scrim = e.target.closest('[data-scrim]');
+  if (scrim && !btn && e.target === scrim){ scrim.closest('[data-rename]').classList.remove('modal-open'); return; }
+  if (!btn) return;
+  const frame = btn.closest('[data-rename]');
+  const act = btn.getAttribute('data-act');
+  const input = frame.querySelector('[data-input]');
+  const nameEl = frame.querySelector('[data-name]');
+  if (act === 'open'){ frame.classList.add('modal-open'); input.value = nameEl.textContent; paint(frame); setTimeout(() => { input.focus(); grow(input); if(input.tagName==='TEXTAREA'){const n=input.value.length;input.setSelectionRange(n,n);}else{input.select();} }, 30); }
+  else if (act === 'close'){ frame.classList.remove('modal-open'); }
+  else if (act === 'save'){ const v = input.value.trim(); if (v) nameEl.textContent = v; frame.classList.remove('modal-open'); }
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal-open').forEach(f => f.classList.remove('modal-open')); });
+document.querySelectorAll('textarea[data-input]').forEach(t => t.addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); const f=t.closest('[data-rename]'); const v=t.value.trim(); if(v) f.querySelector('[data-name]').textContent=v; f.classList.remove('modal-open'); } }));
+</script>
+</body>
+</html>

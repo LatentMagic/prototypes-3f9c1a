@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Circlists — Liveliness playground</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--color-page); }
+  a { color: var(--color-accent); }
+  a:hover { color: var(--color-accent-hover); }
+  #root { min-height: 100vh; }
+  .pgl-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  :root { --pgl-tabs-h: 48px; }
+
+  /* ---- brand motion base (copied from circlists.html — the keyframes live
+     with the page, the components in app/brand-motion.jsx) ---- */
+  .circ-micro-halo-static { display: none; }
+  .circ-micro-reveal { animation: circ-micro-reveal 3800ms cubic-bezier(0.45, 0, 0.15, 1) infinite; }
+  @keyframes circ-micro-reveal { 0% { transform: translateX(0); } 64% { transform: translateX(86px); } 100% { transform: translateX(86px); } }
+  @keyframes circ-spinner-rotor { to { transform: rotate(360deg); } }
+  .circ-spinner-rotor { animation: circ-spinner-rotor 1370ms linear infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes circ-spinner-arc { 0% { stroke-dasharray: 12 108; stroke-dashoffset: 0; } 50% { stroke-dasharray: 78 42; stroke-dashoffset: -22; } 100% { stroke-dasharray: 12 108; stroke-dashoffset: -120; } }
+  .circ-spinner-arc { animation: circ-spinner-arc 1786ms linear infinite; }
+  @keyframes circ-pulse-halo { 0% { transform: scale(1); filter: brightness(1); } 34% { transform: scale(1.075); filter: brightness(1.09); } 62% { transform: scale(1.0435); filter: brightness(1.0522); } 100% { transform: scale(1); filter: brightness(1); } }
+  .circ-pulse-halo { animation: circ-pulse-halo 3000ms linear infinite; transform-box: fill-box; transform-origin: center; }
+
+  /* ---- shell: rail (app/shell.jsx geometry) ---- */
+  .pgl-page { display: grid; grid-template-columns: var(--rail-width) minmax(0, 1fr); min-height: 100vh; }
+  .pgl-rail { background: var(--color-surface-sunken); border-right: 1px solid var(--color-border-2); padding: 20px 12px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
+  .pgl-raillockup { display: flex; align-items: center; padding: 4px 8px 20px; }
+  .pgl-railhead { font: 600 11px/1 var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); padding: 0 14px 10px; }
+  .pgl-raillist { display: flex; flex-direction: column; gap: 2px; }
+  .pgl-railitem { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer; background: transparent; border: 0; padding: 11px 12px 11px 14px; border-radius: var(--radius-md); min-height: 44px; font: 500 14px/1.3 var(--font-sans); color: var(--color-fg-1); transition: background var(--duration-base); }
+  .pgl-railitem:hover { background: rgba(255,255,255,0.6); }
+  .pgl-railitem-on { background: var(--color-surface); font-weight: 600; box-shadow: var(--shadow-raised); }
+  .pgl-railitem-on:hover { background: var(--color-surface); }
+  .pgl-railbar { position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 3px; background: var(--color-accent); }
+  .pgl-railname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pgl-railbusy { display: inline-flex; color: var(--color-fg-3); }
+  .pgl-railfoot { margin-top: auto; border-top: 1px solid var(--color-border-1); padding-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .pgl-acctname { font: 600 13px/1.3 var(--font-sans); color: var(--color-fg-1); }
+  .pgl-acctmail { font: 400 12px/1.3 var(--font-sans); color: var(--color-fg-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ---- shell: top bar + tabs ---- */
+  .pgl-main { min-width: 0; padding-bottom: 96px; }
+  .pgl-topbar { height: var(--top-bar-height); background: var(--color-surface); border-bottom: 1px solid var(--color-border-2); display: flex; align-items: center; gap: 4px; padding: 0 12px 0 20px; position: sticky; top: 0; z-index: 50; }
+  .pgl-circlename { flex: 1; min-width: 0; font: 600 16px/1.3 var(--font-sans); color: var(--color-fg-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pgl-iconbtn { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; border-radius: var(--radius-md); cursor: pointer; color: var(--color-fg-1); transition: background var(--duration-base); }
+  .pgl-iconbtn:hover { background: var(--color-surface-sunken); }
+  .pgl-utd { font: 500 13px/1 var(--font-sans); color: var(--color-fg-3); white-space: nowrap; animation: pgl-utd 2300ms var(--ease-quiet) both; }
+  @keyframes pgl-utd { 0% { opacity: 0; } 12% { opacity: 1; } 74% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes pgl-rot { to { transform: rotate(360deg); } }
+  .pgl-rot { animation: pgl-rot 800ms cubic-bezier(0.45, 0, 0.15, 1) both; }
+  .pgl-tabs { background: var(--color-surface); border-bottom: 1px solid var(--color-border-2); padding: 0 16px; display: flex; gap: 4px; position: sticky; top: var(--top-bar-height); z-index: 49; }
+  .pgl-tab { background: transparent; border: 0; padding: 15px 14px; min-height: var(--pgl-tabs-h); cursor: pointer; font: 500 14px/1 var(--font-sans); color: var(--color-fg-2); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color var(--duration-base), border-color var(--duration-base); }
+  .pgl-tab-on { font-weight: 600; color: var(--color-accent); border-bottom-color: var(--color-accent); }
+
+  /* ---- shipped card chrome (copied verbatim from circlists.html — the card
+     itself is app/feed.jsx's FeedCard, mounted as-is) ---- */
+  .circ-card { container-type: inline-size; }
+  .circ-cardaction { background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; min-height: 44px; font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2); transition: background var(--duration-base), color var(--duration-base); }
+  .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
+  .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
+  .circ-skel { background: linear-gradient(90deg, var(--color-surface-sunken) 25%, var(--color-border-2) 50%, var(--color-surface-sunken) 75%); background-size: 200% 100%; animation: circ-skel 1.4s ease-in-out infinite; }
+  @keyframes circ-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  @keyframes circ-fade { from { opacity: 0; } to { opacity: 1; } }
+  .circ-settled { animation: circ-fade 300ms var(--ease-quiet); }
+  .circ-doorlink { color: var(--color-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-accent) 35%, transparent); transition: text-decoration-color var(--duration-base); }
+  .circ-doorlink:hover, .circ-doorlink:focus-visible { text-decoration-color: var(--color-accent); }
+  @container (max-width: 380px) { .circ-attrib-pre { display: none; } .circ-attrib-rest { display: inline-block; } .circ-attrib-rest::first-letter { text-transform: capitalize; } }
+  @media (prefers-reduced-motion: reduce) { .circ-skel { animation: none !important; } }
+
+  /* ---- feed ---- */
+  .pgl-feed { max-width: var(--max-feed-width); margin: 0 auto; padding: var(--space-6) var(--space-5) var(--space-12); display: flex; flex-direction: column; gap: var(--space-3); }
+  .pgl-loading { min-height: 420px; display: flex; align-items: center; justify-content: center; }
+
+  /* ---- arrival motion: settle-in + a sweep of light echoing the dot ---- */
+  .pgl-arrive { position: relative; border-radius: var(--radius-lg); overflow: hidden; animation: pgl-rise 400ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @keyframes pgl-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .pgl-arrive::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 42%; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(139,191,173,0) 0%, rgba(139,191,173,0.22) 50%, rgba(139,191,173,0) 100%); animation: pgl-sweep 900ms cubic-bezier(0.45, 0, 0.15, 1) both; }
+  @keyframes pgl-sweep { from { transform: translateX(-110%); } to { transform: translateX(340%); } }
+
+  /* ---- last-seen divider ---- */
+  .pgl-div { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-2) 0; }
+  .pgl-divrule { flex: 1; height: 1px; background: var(--color-border-1); }
+  .pgl-divlabel { font: 500 12px/1 var(--font-sans); color: var(--color-fg-3); white-space: nowrap; }
+
+  /* ---- reveal pill ---- */
+  .pgl-pill { position: sticky; top: calc(var(--top-bar-height) + var(--pgl-tabs-h) + 12px); z-index: 40; align-self: center; display: inline-flex; align-items: center; gap: 7px; margin-bottom: calc(var(--space-2) * -1); background: var(--color-surface); border: 1px solid var(--color-border-1); box-shadow: var(--shadow-raised); border-radius: var(--radius-pill); padding: 9px 18px; cursor: pointer; font: 600 13px/1 var(--font-sans); color: var(--color-accent); animation: pgl-pillin 240ms var(--ease-quiet) both; }
+  .pgl-pill:hover { background: var(--color-surface-sunken); }
+  @keyframes pgl-pillin { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .pgl-pill-out { animation: pgl-pillout 180ms var(--ease-quiet) both; }
+  @keyframes pgl-pillout { from { opacity: 1; } to { opacity: 0; } }
+
+  /* ---- demo control strip: tooling, deliberately not product ---- */
+  .pgl-strip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; background: #101010; border-top: 1px solid #2b2b2b; padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pgl-striplabel { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: #8a8a86; margin-right: 6px; }
+  .pgl-tool { font: 500 12px/1 var(--font-mono); background: #1d1d1c; border: 1px solid #343432; color: #E8E8E5; border-radius: var(--radius-sm); padding: 9px 11px; min-height: 34px; cursor: pointer; transition: background var(--duration-base), border-color var(--duration-base); }
+  .pgl-tool:hover { background: #292928; border-color: #4a4a47; }
+  .pgl-tool[aria-pressed="true"] { background: #E8E8E5; border-color: #E8E8E5; color: #101010; }
+  .pgl-strip :focus-visible { outline: 2px solid #E8E8E5; outline-offset: 2px; }
+
+  /* ---- reduced motion: the toggle mirrors the OS preference exactly. Every
+     state change still completes; only the movement freezes. ---- */
+  .pg-rm .circ-micro-reveal, .pg-rm .circ-pulse-halo, .pg-rm .circ-spinner-rotor { animation: none !important; }
+  .pg-rm .circ-micro-reveal { display: none !important; }
+  .pg-rm .circ-micro-halo-static { display: block !important; }
+  .pg-rm .circ-spinner-arc { animation: none !important; stroke-dasharray: 120 0 !important; }
+  .pg-rm .pgl-arrive { animation: none !important; }
+  .pg-rm .pgl-arrive::after { display: none !important; }
+  .pg-rm .pgl-pill, .pg-rm .pgl-pill-out, .pg-rm .pgl-utd { animation: none !important; }
+  .pg-rm .pgl-rot { animation: none !important; opacity: 0.45; }
+  @media (prefers-reduced-motion: reduce) {
+    .circ-micro-reveal { animation: none !important; display: none !important; }
+    .circ-micro-halo-static { display: block !important; }
+    .circ-spinner-arc { animation: none !important; stroke-dasharray: 120 0 !important; }
+    .pgl-arrive::after { display: none !important; }
+    .pgl-rot { opacity: 0.45; }
+  }
+
+  /* Desktop is the intended read; below the rail breakpoint the switcher sits
+     above the circle surface rather than beside it. */
+  @media (max-width: 900px) {
+    .pgl-page { grid-template-columns: 1fr; }
+    .pgl-rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--color-border-2); }
+    .pgl-railfoot { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#FAFAF7"/><circle cx="60" cy="60" r="30" fill="#8BBFAD"/><circle cx="60" cy="60" r="19" fill="#047857"/><circle cx="60" cy="60" r="20" fill="none" stroke="#FFFFFF" stroke-width="1.8"/></svg></template>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/swell-reactions.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-593-liveliness/pg-live-data.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-593-liveliness/pg-live-parts.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-593-liveliness/pg-live-app.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="design_doc_mode" content="canvas">
+<title>Reaction door — empty-skip options</title>
+<style>
+  :root {
+    --color-surface: #FFFFFF;
+    --color-page: #FAFAF7;
+    --color-fg-1: #0A0A0A;
+    --color-fg-2: #525252;
+    --color-fg-3: #8A8A87;
+    --color-border-1: #DCDCD8;
+    --color-border-2: #E8E8E5;
+    --color-surface-sunken: #F5F5F2;
+    --color-accent: #047857;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --radius-pill: 999px;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-sans); color: var(--color-fg-1); margin: 0; }
+  a { color: var(--color-accent); }
+  a:hover { color: #036549; }
+
+  .frame { position: absolute; background: var(--color-page); padding: 28px 32px 32px; border-radius: 16px; }
+  .frame-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); margin: 0 0 4px; }
+  .frame-note { font-size: 13px; color: var(--color-fg-2); margin: 0 0 18px; max-width: 520px; line-height: 1.5; }
+
+  /* --- card --- */
+  .card { width: 560px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); overflow: hidden; }
+  .card-url { font-family: var(--font-mono); font-size: 13px; color: var(--color-fg-1); padding: 18px 20px 0; word-break: break-all; }
+  .card-attr { display: flex; align-items: center; gap: 12px; padding: 12px 20px 18px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--color-surface-sunken); border: 1px solid var(--color-border-1); display: inline-flex; align-items: center; justify-content: center; color: var(--color-fg-3); font-size: 14px; letter-spacing: 1px; flex-shrink: 0; }
+  .attr-name { font-size: 15px; font-weight: 600; color: var(--color-fg-1); }
+  .spacer { flex: 1; }
+
+  /* --- door affordances --- */
+  .door { display: inline-flex; align-items: center; gap: 8px; padding: 8px; margin: -8px -8px -8px 0; border-radius: var(--radius-md); }
+  .huddle { display: inline-flex; align-items: center; }
+  .glyph { font-size: 16px; line-height: 1; width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center; }
+  .glyph + .glyph { margin-left: -4px; }
+  .ring { width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center; }
+  .ring + .ring { margin-left: -4px; }
+  .arrows { flex-shrink: 0; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--color-border-1); border-radius: var(--radius-pill); background: var(--color-surface); }
+  .pill-label { font-size: 12px; color: var(--color-fg-2); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- Reference: a reacted door, for comparison -->
+<div class="frame" style="left: 40px; top: 40px;">
+  <p class="frame-label">Reference · people reacted</p>
+  <p class="frame-note">What the door looks like today when the circle left reactions. The glyphs preview the landing; the arrows-out cue means "opens a view."</p>
+  <div class="card">
+    <div class="card-url">https://www.kernel.org/doc/html/latest/process/submitting-patches.html</div>
+    <div class="card-attr">
+      <span class="avatar">SR</span>
+      <span class="attr-name">Added by Sam R.</span>
+      <span class="spacer"></span>
+      <span class="door">
+        <span class="huddle"><span class="glyph">👍</span><span class="glyph">🔥</span></span>
+        <svg class="arrows" viewBox="0 0 24 24" width="13" height="13" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- A: two rings (current) -->
+<div class="frame" style="left: 40px; top: 300px;">
+  <p class="frame-label">A · two rings (current)</p>
+  <p class="frame-note">Two empty skip-rings. Reads as a fake reaction huddle — muddy.</p>
+  <div class="card">
+    <div class="card-url">https://martinfowler.com/bliki/CircuitBreaker.html</div>
+    <div class="card-attr">
+      <span class="avatar">··</span>
+      <span class="attr-name">Added by former member.</span>
+      <span class="spacer"></span>
+      <span class="door">
+        <span class="huddle">
+          <span class="ring"><svg viewBox="0 0 24 24" width="16" height="16" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none;"><circle cx="12" cy="12" r="8"></circle></svg></span>
+          <span class="ring"><svg viewBox="0 0 24 24" width="16" height="16" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none;"><circle cx="12" cy="12" r="8"></circle></svg></span>
+        </span>
+        <svg class="arrows" viewBox="0 0 24 24" width="13" height="13" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- B: one ring -->
+<div class="frame" style="left: 40px; top: 560px;">
+  <p class="frame-label">B · one ring</p>
+  <p class="frame-note">A single skip-ring. Honest — it's the same mark the roster uses for "read, no reaction" — but still leans reaction-shaped.</p>
+  <div class="card">
+    <div class="card-url">https://martinfowler.com/bliki/CircuitBreaker.html</div>
+    <div class="card-attr">
+      <span class="avatar">··</span>
+      <span class="attr-name">Added by former member.</span>
+      <span class="spacer"></span>
+      <span class="door">
+        <span class="huddle"><span class="ring"><svg viewBox="0 0 24 24" width="16" height="16" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none;"><circle cx="12" cy="12" r="8"></circle></svg></span></span>
+        <svg class="arrows" viewBox="0 0 24 24" width="13" height="13" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- C: arrows only, stronger -->
+<div class="frame" style="left: 660px; top: 40px;">
+  <p class="frame-label">C · view cue only</p>
+  <p class="frame-note">No fake glyph at all — just the arrows-out affordance, made a touch stronger so it reads as a real "open" control. Honest: there's nothing to preview, only a view to open.</p>
+  <div class="card">
+    <div class="card-url">https://martinfowler.com/bliki/CircuitBreaker.html</div>
+    <div class="card-attr">
+      <span class="avatar">··</span>
+      <span class="attr-name">Added by former member.</span>
+      <span class="spacer"></span>
+      <span class="door">
+        <svg class="arrows" viewBox="0 0 24 24" width="16" height="16" style="stroke: var(--color-fg-2); stroke-width: 1.7; fill: none; stroke-linecap: round; stroke-linejoin: round;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- D: labelled pill -->
+<div class="frame" style="left: 660px; top: 300px;">
+  <p class="frame-label">D · labelled pill</p>
+  <p class="frame-note">Persistent bordered chrome so it unmistakably reads as a control, with a quiet word instead of a fake reaction. Copy is a placeholder — "how it landed" mirrors the modal header.</p>
+  <div class="card">
+    <div class="card-url">https://martinfowler.com/bliki/CircuitBreaker.html</div>
+    <div class="card-attr">
+      <span class="avatar">··</span>
+      <span class="attr-name">Added by former member.</span>
+      <span class="spacer"></span>
+      <span class="pill">
+        <span class="pill-label">how it landed</span>
+        <svg class="arrows" viewBox="0 0 24 24" width="12" height="12" style="stroke: var(--color-fg-3); stroke-width: 1.7; fill: none; stroke-linecap: round; stroke-linejoin: round;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- E: one ring + count word -->
+<div class="frame" style="left: 660px; top: 560px;">
+  <p class="frame-label">E · ring + count</p>
+  <p class="frame-note">One skip-ring standing for the read, paired with a quiet count so the ring reads as "people, no reaction" rather than a lone shape. Count is illustrative.</p>
+  <div class="card">
+    <div class="card-url">https://martinfowler.com/bliki/CircuitBreaker.html</div>
+    <div class="card-attr">
+      <span class="avatar">··</span>
+      <span class="attr-name">Added by former member.</span>
+      <span class="spacer"></span>
+      <span class="door">
+        <span class="huddle"><span class="ring"><svg viewBox="0 0 24 24" width="16" height="16" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none;"><circle cx="12" cy="12" r="8"></circle></svg></span></span>
+        <span class="pill-label" style="margin-left: 2px;">5</span>
+        <svg class="arrows" viewBox="0 0 24 24" width="13" height="13" style="stroke: var(--color-fg-3); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; margin-left: 4px;"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

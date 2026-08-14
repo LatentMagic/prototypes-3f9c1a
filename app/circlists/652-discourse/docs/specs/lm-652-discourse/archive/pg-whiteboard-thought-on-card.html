@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Thought on a card — ten ideations</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--color-page);color:var(--color-fg-1)}
+#wb{max-width:880px;margin:0 auto;padding:48px 24px 96px}
+.wb-eyebrow{font:500 var(--text-xs)/1 var(--font-mono);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-fg-3);margin-bottom:12px}
+.wb-title{font:600 var(--text-3xl)/1.12 var(--font-sans);letter-spacing:var(--tracking-tight);color:var(--color-fg-1);margin:0 0 14px;text-wrap:balance}
+.wb-sub{font:400 var(--text-md)/1.6 var(--font-sans);color:var(--color-fg-2);max-width:62ch;margin:0 0 10px;text-wrap:pretty}
+.wb-note{font:400 var(--text-sm)/1.6 var(--font-sans);color:var(--color-fg-3);max-width:62ch;margin:0;text-wrap:pretty}
+.wb-rule{height:1px;background:var(--color-border-1);margin:40px 0 0}
+.opt{padding-top:40px}
+.opt-head{display:flex;align-items:baseline;gap:12px}
+.opt-n{font:600 var(--text-sm)/1 var(--font-mono);color:var(--color-accent);flex-shrink:0;min-width:26px}
+.opt-name{font:600 var(--text-lg)/1.2 var(--font-sans);color:var(--color-fg-1);margin:0}
+.opt-body{margin-left:38px}
+.opt-stance{font:400 var(--text-sm)/1.6 var(--font-sans);color:var(--color-fg-2);margin:6px 0 0;max-width:64ch;text-wrap:pretty}
+.opt-cost{font:400 var(--text-sm)/1.6 var(--font-sans);color:var(--color-fg-3);margin:4px 0 0;max-width:64ch;text-wrap:pretty}
+.opt-cost b{font-weight:500;color:var(--color-fg-2)}
+.pair{display:flex;flex-direction:column;gap:16px;max-width:700px;margin-top:18px}
+.cap{font:500 10.5px/1 var(--font-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--color-fg-3);margin-bottom:9px;display:block}
+.tag{display:inline-block;font:500 10.5px/1 var(--font-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--color-fg-3);border:1px solid var(--color-border-1);border-radius:var(--radius-sm);padding:5px 7px;margin-left:10px;vertical-align:2px}
+
+/* ---- the shipped card, static (copy of app/feed.jsx FeedCard geometry) ---- */
+.tc-card{position:relative;z-index:1;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:16px 20px;display:flex;flex-direction:column;overflow:hidden}
+.tc-top{display:flex;gap:16px;align-items:flex-start}
+.tc-head{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.tc-src{display:flex;align-items:center;gap:8px;min-width:0}
+.tc-fav{width:15px;height:15px;border-radius:3px;overflow:hidden;flex-shrink:0;border:1px solid var(--color-border-2);display:inline-flex}
+.tc-fav img{width:100%;height:100%;object-fit:cover;display:block}
+.tc-srcname{font:600 13px/1.3 var(--font-sans);color:var(--color-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tc-title{font:600 16px/1.3 var(--font-sans);letter-spacing:-.01em;color:var(--color-fg-1);text-decoration:none;text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tc-title:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--color-border-strong)}
+.tc-thumb{flex-shrink:0;width:60px;height:60px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--color-border-2);display:block}
+.tc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.tc-tint{background:linear-gradient(135deg,#33413f,#54655f)}
+.tc-foot{display:flex;align-items:center;gap:12px;margin-top:8px}
+.tc-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--color-surface-sunken);border:1px solid var(--color-border-1);color:var(--color-fg-1);display:inline-flex;align-items:center;justify-content:center;font:600 10px/1 var(--font-sans);letter-spacing:.01em}
+.tc-attrib{flex:1;min-width:0;display:flex;align-items:baseline;gap:9px}
+.tc-who{min-width:0;font:600 14px/1.3 var(--font-sans);letter-spacing:-.005em;color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-meta{flex-shrink:0;font:500 11px/1.3 var(--font-sans);color:var(--color-fg-3);white-space:nowrap}
+.tc-acts{display:flex;align-items:center;margin-right:-13px}
+.tc-ic{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;color:var(--color-fg-2)}
+.tc-ic svg{display:block;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- 01 set plain ---- */
+.t-plain{margin:0;font:400 14.5px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-sign{font:500 10.5px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3);white-space:nowrap;margin-left:7px}
+/* ---- 02 on the attribution line ---- */
+.t-online{flex:1;min-width:0;font:400 13.5px/1.3 var(--font-sans);color:var(--color-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-attrib.t-attribline .tc-who{flex-shrink:0}
+/* ---- 03 the circle speaks first ---- */
+.t-first{margin:0 0 2px;font:400 14.5px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-first b{font-weight:600}
+/* ---- 04 in the preview's place ---- */
+.t-col{flex-shrink:0;width:38%;max-width:158px;align-self:stretch;border-left:1px solid var(--color-border-2);padding-left:13px;font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+/* ---- 05 tucked under ---- */
+.t-tuckwrap{display:flex;flex-direction:column}
+.t-tuck{position:relative;z-index:0;margin:-12px 12px 0;padding:20px 15px 13px;background:var(--color-surface-sunken);border:1px solid var(--color-border-1);border-top:0;border-radius:0 0 var(--radius-lg) var(--radius-lg);font:400 13.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.t-tuck em{font-style:normal;font-weight:600;color:var(--color-fg-1)}
+/* ---- 06 one line and the stack ---- */
+.t-oneline{display:flex;align-items:baseline;gap:10px;min-width:0}
+.t-clamp{flex:1;min-width:0;font:400 14px/1.5 var(--font-sans);color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-count{flex-shrink:0;font:500 10.5px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+/* ---- 07 spoken ---- */
+.t-bub{position:relative;align-self:flex-start;max-width:100%;margin:2px 0 6px;background:var(--color-fg-1);color:#fff;border-radius:12px;padding:9px 13px 10px;font:400 13.5px/1.5 var(--font-sans);text-wrap:pretty}
+.t-bub::after{content:'';position:absolute;left:15px;bottom:-6px;width:11px;height:7px;background:var(--color-fg-1);clip-path:polygon(0 0,100% 0,18% 100%)}
+/* ---- 08 the foot strip ---- */
+.t-strip{margin:12px -20px -16px;padding:11px 20px 13px;background:var(--color-surface-sunken);border-top:1px solid var(--color-border-2);font:400 13.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.t-strip b{font-weight:600;color:var(--color-fg-1)}
+/* ---- 09 the gutter quote ---- */
+.t-quote{display:flex;gap:11px}
+.t-qmark{flex-shrink:0;font:600 32px/.72 var(--font-sans);color:var(--color-border-1)}
+.t-qtext{margin:0;font:400 15px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+/* ---- 10 over the preview ---- */
+.t-hero{position:relative;margin:-16px -20px 12px;height:140px;overflow:hidden}
+.t-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.t-hero .tc-tint{width:100%;height:100%;display:block}
+.t-cap{position:absolute;left:0;right:0;bottom:0;padding:34px 20px 13px;color:#fff;font:400 13.5px/1.5 var(--font-sans);text-wrap:pretty;background:linear-gradient(to top,rgba(10,10,10,.95),rgba(10,10,10,.82) 45%,rgba(10,10,10,.56) 86%,rgba(10,10,10,0))}
+.t-cap span{display:block;margin-bottom:4px;font:500 10.5px/1 var(--font-mono);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+
+/* ---- reference: the five already built ---- */
+.t-margin{border-left:2px solid var(--color-sage);padding-left:12px}
+.t-margin p{margin:0;font:400 14.5px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-margin span{display:block;margin-top:4px;font:600 12.5px/1.3 var(--font-sans);color:var(--color-fg-2)}
+.t-said{background:var(--color-surface-sunken);border-radius:12px;padding:10px 12px 11px;display:flex;flex-direction:column;gap:5px}
+.t-said-who{display:flex;align-items:center;gap:7px;font:600 12.5px/1.3 var(--font-sans);color:var(--color-fg-2)}
+.t-said p{margin:0;font:400 14.5px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-hand-eye{display:block;font:500 10.5px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--color-fg-3)}
+.t-hand p{margin:5px 0 0;font:400 15px/1.6 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-plate{border:1px solid var(--color-border-2);border-radius:var(--radius-md);padding:10px 12px 10px 11px;display:flex;gap:10px;align-items:flex-start}
+.t-plate p{margin:0;font:400 14px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.t-plate span{display:block;margin-top:3px;font:600 12px/1.3 var(--font-sans);color:var(--color-fg-2)}
+.t-ring{flex-shrink:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--color-sage);margin-top:4px}
+.t-spine{margin:0;font:600 17px/1.4 var(--font-sans);letter-spacing:-.01em;color:var(--color-fg-1);text-wrap:pretty}
+
+.wb-foot{margin-top:56px;padding-top:24px;border-top:1px solid var(--color-border-1);font:400 var(--text-sm)/1.6 var(--font-sans);color:var(--color-fg-3);max-width:64ch;text-wrap:pretty}
+a{color:var(--color-fg-1)}
+a:hover{text-decoration-color:var(--color-fg-1)}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FAFAF7"/><rect x="18" y="30" width="64" height="40" rx="6" fill="#fff" stroke="#DCDCD8" stroke-width="2"/><rect x="26" y="39" width="34" height="4" rx="2" fill="#0A0A0A"/><rect x="26" y="49" width="48" height="3" rx="1.5" fill="#8BBFAD"/><rect x="26" y="56" width="40" height="3" rx="1.5" fill="#DCDCD8"/></svg></template>
+<div id="wb">
+  <div class="wb-eyebrow">LM-652 · discourse · whiteboard</div>
+  <h1 class="wb-title">Thought on a card — ten ideations</h1>
+  <p class="wb-sub">Ten places a contributor's thought can live inside the shipped card, and ten claims about what a thought is. Static renders only: nothing here is interactive, and no option changes anything outside the card's border.</p>
+  <p class="wb-note">Every option is rendered as a run of the Active tab: real card, real feed width, the Active tab's own controls — mark as read, then delete. Three cards each, held constant so only the treatment varies: an 80-character thought over a preview, a thought at the 220-character bound with no preview, and a card nobody attached a thought to, because most of the shelf looks like that. Narrow the window for the app-posture read, where the space is scarcest.</p>
+  <p class="wb-note" style="margin-top:8px">On Read the same slot sits beside the Reaction door instead of the check. Nothing here changes anything outside the card's border.</p>
+  <div class="wb-rule"></div>
+  <div id="opts"></div>
+  <div id="refs"></div>
+  <p class="wb-foot">Numbers are how we refer to these out loud. Say which ones to take further, and which pair up.</p>
+</div>
+<script>
+const CARDS = [
+  { key: 'a', cap: 'with a preview · 80 characters',
+    url: 'https://newsletter.pragmaticengineer.com/p/scaling-on-call', src: 'The Pragmatic Engineer', fav: null,
+    title: 'Scaling On-Call Without Burning Out the Team', img: 'uploads/card-previews/pragmatic-engineer.jpg',
+    by: 'Ada L.', ini: 'AL', when: '3d', said: 2,
+    thought: 'We already do about half of this. The half we do not is the half that is hurting.' },
+  { key: 'b', cap: 'no preview · a thought at the 220-character bound',
+    url: 'https://jvns.ca/blog/2026/02/dns-resolvers/', src: 'Julia Evans', fav: 'uploads/card-favicons/jvns.ca.ico',
+    title: 'How DNS Resolvers Actually Work', img: null,
+    by: 'Priya N.', ini: 'PN', when: '10d', said: 4,
+    thought: 'Read this before you touch the resolver config again — the section on where the resolver actually lives cleared up something I had been getting wrong for years, and the diagrams are the only ones I can hold in my head.' },
+  { key: 'c', cap: 'no thought at all · the rest of the shelf',
+    url: 'https://martinfowler.com/articles/cd-pipeline.html', src: 'Martin Fowler', fav: null,
+    title: 'Continuous Delivery Pipelines, End to End', img: 'uploads/card-previews/martinfowler-cd-pipeline.png',
+    by: 'Sam R.', ini: 'SR', when: '2h', said: 0, thought: null },
+];
+
+const CHECK = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+const TRASH = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fav = (c) => c.fav ? '<span class="tc-fav"><img src="' + c.fav + '" alt=""></span>' : '';
+const srcRow = (c) => '<div class="tc-src">' + fav(c) + '<span class="tc-srcname">' + esc(c.src) + '</span></div>';
+const titleEl = (c) => '<a class="tc-title" href="' + c.url + '" target="_blank" rel="noopener noreferrer">' + esc(c.title) + '</a>';
+const thumb = (c) => c.img
+  ? '<span class="tc-thumb"><img src="' + c.img + '" alt=""></span>'
+  : '<span class="tc-thumb tc-tint"></span>';
+const acts = () => '<div class="tc-acts"><span class="tc-ic" aria-hidden="true">' + CHECK + '</span><span class="tc-ic" aria-hidden="true">' + TRASH + '</span></div>';
+const attrib = (c, inner) => '<div class="tc-foot"><span class="tc-av">' + c.ini + '</span>' + (inner ||
+  ('<div class="tc-attrib"><span class="tc-who">Added by ' + esc(c.by) + '</span><span class="tc-meta">' + c.when + '</span></div>')) + acts() + '</div>';
+
+// One card. s = the option's slots: above / head / right / attribInner / below / hero / noThumb / wrap
+function card(c, s) {
+  s = c.thought ? (s || {}) : {};
+  const head = (s.above || '') + (s.hero ? '' : srcRow(c)) + titleEl(c) + (s.head || '');
+  const right = s.right !== undefined ? s.right : (s.noThumb ? '' : thumb(c));
+  const top = '<div class="tc-top"><div class="tc-head">' + head + '</div>' + right + '</div>';
+  const body = (s.hero || '') + top + attrib(c, s.attribInner) + (s.below || '');
+  const art = '<article class="tc-card">' + body + '</article>';
+  return s.wrap ? s.wrap(art) : art;
+}
+
+const hero = (c, thoughtHtml) => '<div class="t-hero">' + (c.img
+  ? '<img src="' + c.img + '" alt="">'
+  : '<span class="tc-tint"></span>') + '<div class="t-cap">' + thoughtHtml + '</div></div>';
+
+const OPTIONS = [
+  { n: '01', name: 'Set plain',
+    stance: 'The thought is body copy under the title, signed in the margin at the end. Nothing frames it.',
+    cost: 'At full title width it can still read as a standfirst written by the publisher rather than a line said by a person.',
+    slots: (c) => ({ head: '<p class="t-plain">' + esc(c.thought) + '<span class="t-sign">' + esc(c.by) + '</span></p>' }) },
+  { n: '02', name: 'On the attribution line',
+    stance: 'Who added it and what they said are one line. The thought costs the card no height at all.',
+    cost: 'One line is the whole budget, and the long thoughts are usually the ones worth reading.',
+    slots: (c) => ({ attribInner: '<div class="tc-attrib t-attribline"><span class="tc-who">' + esc(c.by) + '</span><span class="t-online">' + esc(c.thought) + '</span><span class="tc-meta">' + c.when + '</span></div>' }) },
+  { n: '03', name: 'The circle speaks first',
+    stance: 'The thought sits above the source, opened by the speaker\u2019s name: the circle leads and the publisher follows.',
+    cost: 'Inverts the card. Scanning the shelf for an article means reading past a person on every one that has words.',
+    slots: (c) => ({ above: '<p class="t-first"><b>' + esc(c.by) + '</b> — ' + esc(c.thought) + '</p>' }) },
+  { n: '04', name: 'In the preview\u2019s place',
+    stance: 'The thought takes the thumbnail\u2019s column. A card shows you either what the thing looks like or what somebody thought of it.',
+    cost: 'Gives up the preview, which is what makes a long shelf scannable, and holds five short lines at most.',
+    slots: (c) => ({ right: '<div class="t-col">' + esc(c.thought) + '</div>' }) },
+  { n: '05', name: 'Tucked under',
+    stance: 'A slip of paper behind the card, showing below its foot. The card stays the card and the thought is a separate object on the shelf.',
+    cost: 'Adds a second edge to every card that carries words, so the shelf\u2019s rhythm goes uneven.',
+    slots: (c) => ({ wrap: (art) => '<div class="t-tuckwrap">' + art + '<div class="t-tuck"><em>' + esc(c.by) + '</em> — ' + esc(c.thought) + '</div></div>' }) },
+  { n: '06', name: 'One line and the stack',
+    stance: 'One line of the thought, and how much has been said since. The thought is the top of the conversation, not a caption on the link.',
+    cost: 'Truncates everybody, and puts a count on the card face — a number the shelf does not carry anywhere else.',
+    slots: (c) => ({ head: '<div class="t-oneline"><span class="t-clamp">' + esc(c.thought) + '</span><span class="t-count">' + c.said + ' said</span></div>' }) },
+  { n: '07', name: 'Spoken',
+    stance: 'A dark bubble tailed to the contributor\u2019s face. The words are said, by that person, in this room — and they are plainly not the article\u2019s.',
+    cost: 'The heaviest object on the shelf. Ten cards carrying bubbles read as a chat log with links in it.',
+    slots: (c) => ({ head: '<div class="t-bub">' + esc(c.thought) + '</div>' }) },
+  { n: '08', name: 'The foot strip',
+    stance: 'Below the action row, full-bleed to the card\u2019s edge. The head is exactly the shipped card; the thought is its footing.',
+    cost: 'Puts the words furthest from the title they are about, and underneath the controls.',
+    slots: (c) => ({ below: '<div class="t-strip"><b>' + esc(c.by) + '</b> ' + esc(c.thought) + '</div>' }) },
+  { n: '09', name: 'The gutter quote',
+    stance: 'A quote mark in the gutter and nothing else. Unsigned, because the attribution row directly beneath already says whose card it is.',
+    cost: 'Only true while the contributor is the one person who can attach a thought. The moment anyone else can, it needs a name.',
+    slots: (c) => ({ head: '<div class="t-quote"><span class="t-qmark" aria-hidden="true">\u201C</span><p class="t-qtext">' + esc(c.thought) + '</p></div>' }) },
+  { n: '10', name: 'Over the preview',
+    stance: 'The preview grows to a strip and the thought sits on it. The words cost the card no height of their own.',
+    cost: 'Legibility depends on somebody else\u2019s image, and a card with no preview falls back to a flat panel of colour.',
+    slots: (c) => ({ hero: hero(c, '<span>' + esc(c.by) + ' said</span>' + esc(c.thought)), noThumb: true, above: srcRow(c) }) },
+];
+
+const REFS = [
+  { name: 'The margin', note: 'Sage rule, words, trailing byline.',
+    slots: (c) => ({ head: '<div class="t-margin"><p>' + esc(c.thought) + '</p><span>' + esc(c.by) + '</span></div>' }) },
+  { name: 'Said aloud', note: 'Warm ground with the contributor\u2019s face on it.',
+    slots: (c) => ({ head: '<div class="t-said"><span class="t-said-who"><span class="tc-av" style="width:20px;height:20px;font-size:8px">' + c.ini + '</span>' + esc(c.by) + '</span><p>' + esc(c.thought) + '</p></div>' }) },
+  { name: 'In their hand', note: 'Mono eyebrow above the line, no container.',
+    slots: (c) => ({ head: '<div class="t-hand"><span class="t-hand-eye">' + esc(c.by) + ' said</span><p>' + esc(c.thought) + '</p></div>' }) },
+  { name: 'The plate', note: 'Bordered leaf with the mark\u2019s ring in the gutter.',
+    slots: (c) => ({ head: '<div class="t-plate"><span class="t-ring"></span><div><p>' + esc(c.thought) + '</p><span>' + esc(c.by) + '</span></div></div>' }) },
+  { name: 'The spine', note: 'The thought is the headline; the article steps back.',
+    slots: (c) => ({ head: '<p class="t-spine">' + esc(c.thought) + '</p>' }) },
+];
+
+const optHtml = (o) =>
+  '<section class="opt"><div class="opt-head"><span class="opt-n">' + o.n + '</span><h2 class="opt-name">' + o.name + '</h2></div>' +
+  '<div class="opt-body"><p class="opt-stance">' + o.stance + '</p><p class="opt-cost"><b>Cost.</b> ' + o.cost + '</p>' +
+  '<div class="pair">' + CARDS.map(c => '<div><span class="cap">' + c.cap + '</span>' + card(c, o.slots(c)) + '</div>').join('') + '</div></div></section>';
+
+document.getElementById('opts').innerHTML = OPTIONS.map(optHtml).join('');
+document.getElementById('refs').innerHTML =
+  '<div class="wb-rule"></div><section class="opt"><div class="opt-head"><span class="opt-n">—</span><h2 class="opt-name">Already built<span class="tag">context, not options</span></h2></div>' +
+  '<div class="opt-body"><p class="opt-stance">The five treatments v9 and v10 already carry, at the same width, so the ten above can be judged against them rather than in the abstract.</p>' +
+  '<div class="pair">' + REFS.map(r => '<div><span class="cap">' + r.name + ' · ' + r.note + '</span>' + card(CARDS[0], r.slots(CARDS[0])) + '</div>').join('') + '</div></div></section>';
+</script>
+</body>
+</html>

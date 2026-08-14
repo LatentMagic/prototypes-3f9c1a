@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Circlists — breathing mark">
+  
+  <circle class="cl-halo" cx="24" cy="24" r="22.5" fill="#8BBFAD"></circle>
+  <circle cx="24" cy="24" r="15.2" fill="#047857"></circle>
+  <circle cx="24" cy="24" r="15.875" fill="none" stroke="#FFFFFF" stroke-width="1.35"></circle>
+</svg>

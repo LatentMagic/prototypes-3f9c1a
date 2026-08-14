@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create → Fund — wizard playground</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #E7E7E2; }
+  #root { min-height: 100vh; }
+  @keyframes circ-micro-reveal { 0% { transform: translateX(0);} 64% { transform: translateX(86px);} 100% { transform: translateX(86px);} }
+  .circ-micro-halo-static { display: none; }
+  .circ-micro-reveal { animation: circ-micro-reveal 3800ms cubic-bezier(0.45,0,0.15,1) infinite; }
+  @media (prefers-reduced-motion: reduce) { .circ-micro-reveal { animation: none !important; display: none !important; } .circ-micro-halo-static { display: block !important; } }
+  .circ-btn { transition: background var(--duration-base) var(--ease-quiet), opacity var(--duration-base); }
+  .circ-btn-primary:hover { background: var(--color-accent-hover) !important; }
+  .circ-iconbtn:hover { background: var(--color-surface-sunken) !important; }
+  input { font-family: inherit; }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 44px clamp(20px,4vw,56px) 120px; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-accent); font-weight: 500; margin: 0 0 12px; }
+  .lede h1 { font-family: var(--font-sans); font-weight: 600; font-size: 32px; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0 0 12px; }
+  .lede p { font-family: var(--font-sans); font-size: 15.5px; line-height: 1.6; color: var(--color-fg-2); margin: 0 0 10px; max-width: 760px; }
+
+  .sec { margin-top: 64px; }
+  .sec-head { border-top: 2px solid var(--color-fg-1); padding-top: 16px; margin-bottom: 8px; }
+  .sec-head .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-1); }
+  .sec-head h2 { font-family: var(--font-sans); font-weight: 600; font-size: 22px; letter-spacing: -0.01em; color: var(--color-fg-1); margin: 6px 0 8px; }
+  .sec-head p { font-family: var(--font-sans); font-size: 14px; line-height: 1.55; color: var(--color-fg-2); margin: 0; max-width: 820px; }
+
+  .rail { display: flex; gap: 40px; overflow-x: auto; padding: 32px 4px 20px; align-items: flex-start; }
+  .opt { flex: 0 0 auto; }
+  .opt-head { max-width: 360px; margin: 0 0 16px; }
+  .opt-head .n { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--color-fg-1); margin-bottom: 8px; }
+  .opt-head .n b { width: 22px; height: 22px; border-radius: 50%; background: var(--color-fg-1); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-sans); font-weight: 700; font-size: 12px; }
+  .opt-head h3 { font-family: var(--font-sans); font-weight: 600; font-size: 17px; color: var(--color-fg-1); margin: 0 0 5px; letter-spacing: -0.01em; }
+  .opt-head p { font-family: var(--font-sans); font-size: 13px; line-height: 1.5; color: var(--color-fg-2); margin: 0 0 8px; }
+  .trade { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+  .trade span { font-family: var(--font-sans); font-size: 12px; line-height: 1.4; padding-left: 18px; position: relative; color: var(--color-fg-2); }
+  .trade .up::before { content: '+'; position: absolute; left: 4px; color: var(--color-accent); font-weight: 700; }
+  .trade .dn::before { content: '−'; position: absolute; left: 4px; color: #92600b; font-weight: 700; }
+
+  .pair { display: flex; align-items: center; gap: 14px; }
+  .arrow { flex: 0 0 auto; color: var(--color-fg-3); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .arrow .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--color-fg-3); white-space: nowrap; }
+
+  .phone { background: #0A0A0A; border-radius: 44px; padding: 7px; box-shadow: 0 26px 52px rgba(10,10,10,.18), 0 6px 16px rgba(10,10,10,.10); flex: 0 0 auto; }
+  .screen { position: relative; width: 372px; height: 760px; background: var(--color-page); border-radius: 37px; overflow: hidden; display: flex; flex-direction: column; }
+  .statusbar { flex: 0 0 auto; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 26px 0 30px; }
+  .statusbar .time { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-1); }
+  .statusbar .sys { display: flex; align-items: center; gap: 6px; color: var(--color-fg-1); }
+  .app { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .caption { text-align: center; margin-top: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-fg-3); }
+
+  .note { display: flex; gap: 10px; align-items: flex-start; background: #fdf6e3; border: 1px solid #e0b64a; border-radius: var(--radius-md); padding: 12px 14px; max-width: 760px; margin-top: 18px; }
+  .note .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #92600b; flex: 0 0 auto; margin-top: 2px; }
+  .note p { font-family: var(--font-sans); font-size: 13px; line-height: 1.5; color: var(--color-fg-2); margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const ICONS = {
+  check: '<polyline points="20 6 9 17 4 12"></polyline>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
+  'arrow-left': '<line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>',
+  'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>',
+  edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>',
+};
+const Icon = ({ name, size = 20, color = 'currentColor', strokeWidth = 1.5, style = {} }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}
+    strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', ...style }} aria-hidden="true"
+    dangerouslySetInnerHTML={{ __html: ICONS[name] || '' }} />
+);
+const MicroDot = ({ size = 10 }) => {
+  const uid = React.useId().replace(/:/g, '');
+  const clipId = `mc-${uid}`, gradId = `mg-${uid}`;
+  return (
+    <svg width={size} height={size} viewBox="-2 -2 52 52" aria-hidden="true" style={{ display: 'block', flexShrink: 0 }}>
+      <defs>
+        <clipPath id={clipId}><circle cx="24" cy="24" r="22.5" /></clipPath>
+        <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="var(--color-sage)" stopOpacity="0" /><stop offset="0.5" stopColor="var(--color-sage)" stopOpacity="1" /><stop offset="1" stopColor="var(--color-sage)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle className="circ-micro-halo-static" cx="24" cy="24" r="22.5" fill="var(--color-sage)" />
+      <g clipPath={`url(#${clipId})`}><rect className="circ-micro-reveal" x="-32" y="-10" width="26" height="68" fill={`url(#${gradId})`} /></g>
+      <circle cx="24" cy="24" r="14.25" fill="var(--color-accent)" />
+      <circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" strokeWidth="1.35" />
+    </svg>
+  );
+};
+const Button = ({ onClick, children, variant = 'primary', disabled, style = {} }) => {
+  const vs = variant === 'primary'
+    ? { background: 'var(--color-accent)', color: '#fff' }
+    : { background: 'var(--color-surface)', color: 'var(--color-fg-1)', border: '1px solid var(--color-border-1)', fontWeight: 500 };
+  return (
+    <button onClick={onClick} disabled={disabled} className={'circ-btn circ-btn-' + variant} style={{
+      fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1, padding: '14px 22px',
+      borderRadius: 'var(--radius-md)', border: 0, minHeight: 52, width: '100%', cursor: disabled ? 'default' : 'pointer',
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: disabled ? 0.45 : 1, ...vs, ...style,
+    }}>{children}</button>
+  );
+};
+const EMAIL = 'sam.rivera@googlemail.com';
+const SPACE = 'Backend Pod';
+
+// shared chrome
+const Chrome = ({ onBack, onClose, center }) => (
+  <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', flex: 'none' }}>
+    {onBack ? <IconBtn name="arrow-left" label="Back" /> : <span style={{ width: 40 }} />}
+    {center}
+    {onClose ? <IconBtn name="x" label="Exit" /> : <span style={{ width: 40 }} />}
+  </header>
+);
+const IconBtn = ({ name, label }) => (
+  <button aria-label={label} className="circ-iconbtn" style={{ background: 'transparent', border: 0, padding: 8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40, borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)' }}><Icon name={name} size={20} /></button>
+);
+const StepDots = ({ i }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+    {[0, 1].map(k => <span key={k} style={{ width: k === i ? 22 : 7, height: 7, borderRadius: 4, background: k === i ? 'var(--color-accent)' : 'var(--color-border-1)', transition: 'all .2s' }} />)}
+  </div>
+);
+const Price = ({ big = 44, badge = true }) => (
+  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8 }}>
+    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: big, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>£3</span>
+    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, letterSpacing: '0.02em', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
+    {badge && <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, letterSpacing: '0.02em', color: 'var(--color-accent)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)', marginLeft: 6, padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>Founding rate</span>}
+  </div>
+);
+const FEATURES = ['You fund the circle as its champion', 'Up to 10 members, all invited free', 'Shared list, private read-state'];
+const Features = ({ items = FEATURES, max = 300 }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: max, textAlign: 'left' }}>
+    {items.map((f, i) => (
+      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
+        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>{f}</span>
+      </div>
+    ))}
+  </div>
+);
+// billed line + secure line, with "Cancel anytime." kept unbroken
+const FinePrint = () => (
+  <>
+    <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', margin: '12px 0', maxWidth: 280 }}>Billed to {EMAIL}. <span style={{ whiteSpace: 'nowrap' }}>Cancel anytime.</span></div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--color-fg-3)' }}>
+      <Icon name="lock" size={13} />
+      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12 }}>Secure checkout · powered by a payment provider</span>
+    </div>
+  </>
+);
+const Body = ({ children, justify = 'safe center' }) => (
+  <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: justify, padding: '8px 24px 28px', textAlign: 'center' }}>
+    <div style={{ maxWidth: 340, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>{children}</div>
+  </div>
+);
+const Field = ({ label, value = '', placeholder, big, autoFocusRing }) => (
+  <div style={{ width: '100%', textAlign: 'left', marginBottom: 8 }}>
+    {label && <label style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>{label}</label>}
+    <div style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-sans)', fontWeight: big ? 600 : 400, fontSize: big ? 22 : 16, color: value ? 'var(--color-fg-1)' : 'var(--color-fg-3)', border: '1px solid ' + (autoFocusRing ? 'var(--color-accent)' : 'var(--color-border-1)'), boxShadow: autoFocusRing ? '0 0 0 3px var(--color-accent-ring)' : 'none', borderRadius: 'var(--radius-md)', padding: big ? '14px 16px' : '12px 14px', minHeight: 44, background: 'var(--color-surface)', textAlign: big ? 'center' : 'left' }}>{value || placeholder}</div>
+  </div>
+);
+const Title = ({ children, size = 26, mb = 20 }) => (
+  <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: size, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: `0 0 ${mb}px` }}>{children}</h1>
+);
+const Sub = ({ children, mb = 22 }) => (
+  <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: `0 0 ${mb}px`, maxWidth: 320 }}>{children}</p>
+);
+const CircleChip = ({ name = SPACE }) => (
+  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-pill)', padding: '6px 14px 6px 8px' }}>
+    <MicroDot size={16} /><span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{name}</span>
+  </div>
+);
+
+const Phone = ({ children }) => (
+  <div className="phone"><div className="screen">
+    <div className="statusbar">
+      <span className="time">9:41</span>
+      <span className="sys">
+        <svg width="17" height="11" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity="0.35"/></svg>
+        <svg width="24" height="12" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="21" height="12" rx="3" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="16" height="9" rx="1.5" fill="currentColor"/><rect x="23" y="4" width="2" height="5" rx="1" fill="currentColor" opacity="0.4"/></svg>
+      </span>
+    </div>
+    <div className="app">{children}</div>
+  </div></div>
+);
+
+/* ============================ THE PROBLEM TODAY ============================ */
+// Current create — left-aligned, X only, no relation to fund.
+const CurCreate = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose />
+    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 22px 28px' }}>
+      <div style={{ maxWidth: 440 }}>
+        <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 30, lineHeight: 1.15, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: '8px 0 8px' }}>Create a circle</h1>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: 16, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: '0 0 32px' }}>A circle is a shared list for a small, trusted group of up to 10 people. You'll fund it as its champion; everyone joins free.</p>
+        <Field label="Circle name" value={SPACE} />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}><Button style={{ width: 'auto', padding: '14px 28px' }}>Continue</Button></div>
+      </div>
+    </div>
+  </div>
+);
+// Current fund — centered, the ugly eyebrow.
+const CurFund = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onBack onClose />
+    <Body>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: 14 }}>
+        <span>New circle</span><MicroDot size={10} /><span style={{ fontWeight: 700 }}>{SPACE}</span>
+      </div>
+      <Title>Fund your circle</Title>
+      <div style={{ marginBottom: 22 }}><Price /></div>
+      <div style={{ marginBottom: 22 }}><Features /></div>
+      <Button style={{ maxWidth: 320 }}>Fund this circle</Button>
+      <FinePrint />
+    </Body>
+  </div>
+);
+
+/* ===================== PATH A — ALIGNED TWO-STEP WIZARD ==================== */
+// A1: shared centered shell + step dots + connective copy; eyebrow → step label
+const A1Create = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose center={<StepDots i={0} />} />
+    <Body>
+      <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 12 }}>Step 1 of 2 · Name</div>
+      <Title>Name your circle</Title>
+      <Sub>A shared list for up to 10 people. You'll fund it next — everyone you invite joins free.</Sub>
+      <Field label="Circle name" value={SPACE} />
+      <Button style={{ maxWidth: 320, marginTop: 8 }}>Continue<Icon name="arrow-right" size={18} /></Button>
+    </Body>
+  </div>
+);
+const A1Fund = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onBack onClose center={<StepDots i={1} />} />
+    <Body>
+      <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 12 }}>Step 2 of 2 · Fund</div>
+      <div style={{ marginBottom: 16 }}><CircleChip /></div>
+      <Title mb={20}>Fund your circle</Title>
+      <div style={{ marginBottom: 22 }}><Price /></div>
+      <div style={{ marginBottom: 22 }}><Features /></div>
+      <Button style={{ maxWidth: 320 }}>Fund this circle</Button>
+      <FinePrint />
+    </Body>
+  </div>
+);
+
+// A2: the named circle IS the shared motif (mark + name carried); no step dots
+const A2Create = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose />
+    <Body>
+      <div style={{ marginBottom: 20 }}><MicroDot size={40} /></div>
+      <Title size={24} mb={8}>Name your circle</Title>
+      <Sub mb={24}>You'll fund it as its champion. Everyone you invite joins free.</Sub>
+      <Field value={SPACE} placeholder="e.g. Backend Pod" big autoFocusRing />
+      <Button style={{ maxWidth: 320, marginTop: 12 }}>Continue<Icon name="arrow-right" size={18} /></Button>
+    </Body>
+  </div>
+);
+const A2Fund = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onBack onClose />
+    <Body>
+      <div style={{ marginBottom: 14 }}><MicroDot size={40} /></div>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 20, letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>{SPACE}</span>
+        <span className="circ-iconbtn" style={{ color: 'var(--color-fg-3)', display: 'inline-flex', padding: 4, borderRadius: 6 }}><Icon name="edit" size={15} /></span>
+      </div>
+      <Title size={24} mb={20}>Fund it to bring it to life</Title>
+      <div style={{ marginBottom: 22 }}><Price /></div>
+      <div style={{ marginBottom: 22 }}><Features /></div>
+      <Button style={{ maxWidth: 320 }}>Fund this circle</Button>
+      <FinePrint />
+    </Body>
+  </div>
+);
+
+// A3: persistent wizard frame — "Create a circle" stays, segmented progress,
+// content area swaps (Details ↔ Funding). Details shows room to grow.
+const SegBar = ({ i }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 0, width: '100%', maxWidth: 300, marginInline: 'auto' }}>
+    {['Details', 'Funding'].map((s, k) => (
+      <React.Fragment key={s}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+          <span style={{ width: 22, height: 22, borderRadius: '50%', background: k <= i ? 'var(--color-accent)' : 'var(--color-surface)', border: k <= i ? 'none' : '1px solid var(--color-border-1)', color: k <= i ? '#fff' : 'var(--color-fg-3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 12 }}>{k + 1}</span>
+          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: k === i ? 600 : 500, fontSize: 13, color: k === i ? 'var(--color-fg-1)' : 'var(--color-fg-3)' }}>{s}</span>
+        </div>
+        {k === 0 && <span style={{ flex: 1, height: 1, background: 'var(--color-border-1)', margin: '0 10px' }} />}
+      </React.Fragment>
+    ))}
+  </div>
+);
+const A3Wrap = ({ i, children }) => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onBack={i === 1} onClose={i === 0} center={<span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-fg-1)' }}>Create a circle</span>} />
+    <div style={{ padding: '4px 16px 16px', flex: 'none' }}><SegBar i={i} /></div>
+    <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 22px 24px' }}>{children}</div>
+  </div>
+);
+const A3Details = () => (
+  <div style={{ maxWidth: 340, margin: '0 auto' }}>
+    <Field label="Circle name" value={SPACE} />
+    <Field label="Description (optional)" placeholder="What's this circle for?" />
+    <div style={{ border: '1px dashed var(--color-border-1)', borderRadius: 'var(--radius-md)', padding: '14px', display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-fg-3)', marginBottom: 16 }}>
+      <Icon name="plus" size={18} /><span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14 }}>Invite members (coming soon)</span>
+    </div>
+    <Button>Next: Funding<Icon name="arrow-right" size={18} /></Button>
+    <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12.5, color: 'var(--color-fg-3)', textAlign: 'center', margin: '12px 0 0' }}>Up to 10 members, all invited free.</p>
+  </div>
+);
+const A3Funding = () => (
+  <div style={{ maxWidth: 340, margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ marginBottom: 8 }}><CircleChip /></div>
+    <Title size={22} mb={18}>Fund your circle</Title>
+    <div style={{ marginBottom: 20 }}><Price /></div>
+    <div style={{ marginBottom: 22 }}><Features /></div>
+    <Button style={{ maxWidth: 320 }}>Fund this circle</Button>
+    <FinePrint />
+  </div>
+);
+
+/* ===================== PATH B — CONSOLIDATED ONE SCREEN ==================== */
+// B1: one form — name + funding summary, single CTA
+const B1 = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose />
+    <Body>
+      <Title size={26} mb={8}>Create your circle</Title>
+      <Sub mb={22}>A shared list for up to 10 people — everyone you invite joins free.</Sub>
+      <Field label="Circle name" value={SPACE} />
+      <div style={{ width: '100%', height: 1, background: 'var(--color-border-2)', margin: '16px 0 20px' }} />
+      <div style={{ marginBottom: 18 }}><Price /></div>
+      <div style={{ marginBottom: 22 }}><Features /></div>
+      <Button style={{ maxWidth: 320 }}>Create &amp; fund · £3/mo</Button>
+      <FinePrint />
+    </Body>
+  </div>
+);
+// B2: name-led, funding as an attached card (the future slide-across surface)
+const B2 = () => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose />
+    <Body>
+      <Title size={26} mb={8}>Create your circle</Title>
+      <Sub mb={20}>Name it, then fund it as its champion.</Sub>
+      <Field value={SPACE} placeholder="e.g. Backend Pod" big autoFocusRing />
+      <div style={{ width: '100%', maxWidth: 320, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-raised)', padding: '18px', marginTop: 16, textAlign: 'left' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--color-fg-2)' }}>What you're funding</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, letterSpacing: '0.02em', color: 'var(--color-accent)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Founding rate</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 30, letterSpacing: '-0.02em', color: 'var(--color-accent)' }}>£3</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-fg-2)' }}>per circle / month</span>
+        </div>
+        <Features max={280} />
+      </div>
+      <Button style={{ maxWidth: 320, marginTop: 18 }}>Create circle</Button>
+      <FinePrint />
+    </Body>
+  </div>
+);
+// B3: progressive reveal — one screen, funding unlocks after naming
+const B3 = ({ revealed }) => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Chrome onClose />
+    <Body justify={revealed ? 'safe center' : 'flex-start'}>
+      {!revealed && <div style={{ height: 40 }} />}
+      <Title size={26} mb={8}>Create your circle</Title>
+      <Sub mb={20}>A shared list for up to 10 people — everyone you invite joins free.</Sub>
+      <Field label="Circle name" value={revealed ? SPACE : ''} placeholder="e.g. Backend Pod" autoFocusRing={!revealed} />
+      {revealed ? (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'circ-anim-fade .25s ease' }}>
+          <div style={{ width: '100%', height: 1, background: 'var(--color-border-2)', margin: '18px 0 18px' }} />
+          <div style={{ marginBottom: 16 }}><Price /></div>
+          <div style={{ marginBottom: 22 }}><Features /></div>
+          <Button style={{ maxWidth: 320 }}>Create &amp; fund · £3/mo</Button>
+          <FinePrint />
+        </div>
+      ) : (
+        <Button disabled style={{ maxWidth: 320, marginTop: 12 }}>Continue</Button>
+      )}
+    </Body>
+  </div>
+);
+
+/* ================================ LAYOUT ================================== */
+const Opt = ({ n, title, desc, up = [], dn = [], children }) => (
+  <div className="opt">
+    <div className="opt-head">
+      <div className="n"><b>{n}</b> Option {n}</div>
+      <h3>{title}</h3>
+      <p>{desc}</p>
+      <div className="trade">
+        {up.map((t, i) => <span key={'u' + i} className="up">{t}</span>)}
+        {dn.map((t, i) => <span key={'d' + i} className="dn">{t}</span>)}
+      </div>
+    </div>
+    {children}
+  </div>
+);
+const Flow = ({ a, b, la = 'Create', lb = 'Fund' }) => (
+  <div className="pair">
+    <div><Phone>{a}</Phone><div className="caption">{la}</div></div>
+    <div className="arrow"><Icon name="arrow-right" size={22} /><span className="lbl">then</span></div>
+    <div><Phone>{b}</Phone><div className="caption">{lb}</div></div>
+  </div>
+);
+const Single = ({ el, cap }) => <div><Phone>{el}</Phone><div className="caption">{cap}</div></div>;
+
+const App = () => (
+  <div className="wrap">
+    <p className="kicker">Create → Fund · wizard playground</p>
+    <div className="lede">
+      <h1>Make Create → Fund feel like one thing</h1>
+      <p>Two questions, pictured side by side. First: <b>the problem today</b> — Create and Fund don't share a shell, a step language, or connective copy, so the "New circle · name" eyebrow has to reintroduce context out of nowhere. Then two ways to resolve it: <b>Path A</b> keeps two steps but binds them into one wizard; <b>Path B</b> consolidates naming + funding onto one screen. The Fund page's look is treated as settled — the eyebrow is the only part reworked, and "Cancel anytime." now wraps as a unit.</p>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">The problem today</div><h2>Two screens that don't know about each other</h2><p>Create is left-aligned with an X only; Fund is centered with a back arrow, a mono all-caps eyebrow, and a price. Different alignment, different rhythm, no progress, and the copy doesn't hand off — "You'll fund it as its champion" on the left never reappears on the right.</p></div>
+      <div className="rail"><Flow a={<CurCreate />} b={<CurFund />} /></div>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Path A · keep two steps, make them one wizard</div><h2>Aligned wizard</h2><p>Both steps share the centered shell, the back+X chrome, and a step indicator. Funding stays its own surface (room to become the slide-across funding page later). The named circle is carried forward as the deliberate replacement for the eyebrow.</p></div>
+      <div className="rail">
+        <Opt n="A1" title="Step dots + connective copy" desc="Shared centered layout, two step dots in the header, and copy that hands off: “You'll fund it next” → “Fund your circle”. Eyebrow becomes a quiet “Step 2 of 2” label plus a circle chip." up={["Minimal change to Fund", "Clear sense of progress", "Keeps homepage 'Create a circle' language nearby"]} dn={["Step dots add chrome", "Create still fairly sparse"]}>
+          <Flow a={<A1Create />} b={<A1Fund />} />
+        </Opt>
+        <Opt n="A2" title="Carried circle identity" desc="The circle mark + the name you typed is the constant across both steps — no step dots, continuity through identity. On Fund the name sits at top (editable), replacing the eyebrow entirely." up={["Strongest 'same thing' feeling", "Eyebrow problem fully dissolved", "Brand mark does the connective work"]} dn={["Less explicit about being 2 steps", "Leans on the mark reading as identity"]}>
+          <Flow a={<A2Create />} b={<A2Fund />} />
+        </Opt>
+        <Opt n="A3" title="Persistent wizard frame" desc="One framed flow titled “Create a circle” (homepage-safe) with a segmented Details → Funding progress. Details already holds description + an invites slot, so it grows gracefully. Fund lives inside the same frame." up={["Explicitly a wizard", "Room for description / auto-invites now visible", "Title matches the homepage"]} dn={["Most chrome of the three", "Fund feels a touch more 'contained'"]}>
+          <Flow a={<A3Wrap i={0}><A3Details /></A3Wrap>} b={<A3Wrap i={1}><A3Funding /></A3Wrap>} lb="Fund (same frame)" />
+        </Opt>
+      </div>
+      <div className="note"><span className="k">Keep in mind</span><p>Path A protects the idea of funding as its own expandable surface — but Create still needs enough substance to justify being its own step. A3 is the only one that shows where description + auto-invites live today.</p></div>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Path B · consolidate to one screen</div><h2>One screen</h2><p>Naming and funding on a single surface. Simplest flow, no hand-off to get wrong — but this rewrites copy that also lives on the homepage, and it collapses the “funding as its own thing” future.</p></div>
+      <div className="rail">
+        <Opt n="B1" title="One form, funding summary" desc="Name field at top, a divider, then the £3 summary + features, and one “Create & fund” button. Everything visible at once." up={["Fewest taps", "Nothing to mis-hand-off"]} dn={["Funding loses its own moment", "Diverges from homepage copy", "Gets tall as Create grows"]}>
+          <Single el={<B1 />} cap="Single screen" />
+        </Opt>
+        <Opt n="B2" title="Name-led + funding card" desc="Big name field as the hero; funding sits in a distinct bordered card (“What you're funding”) — the seed of the future slide-across funding surface, but on one screen." up={["Funding stays a distinct object", "Card can evolve later", "One decision, one CTA"]} dn={["Two visual registers on one screen", "Still one long scroll on small phones"]}>
+          <Single el={<B2 />} cap="Single screen" />
+        </Opt>
+        <Opt n="B3" title="Progressive reveal" desc="Starts as just naming (room for description/invites); once a valid name is entered, funding reveals beneath and the CTA activates. Sequence-in-one-screen — the bridge between A and B." up={["Feels like one screen, keeps a moment", "Naming area can grow", "No dead-end empty step"]} dn={["Reveal motion to get right", "Funding no longer a separate route"]}>
+          <div className="pair">
+            <div><Phone><B3 revealed={false} /></Phone><div className="caption">Before naming</div></div>
+            <div className="arrow"><Icon name="arrow-right" size={22} /><span className="lbl">reveal</span></div>
+            <div><Phone><B3 revealed={true} /></Phone><div className="caption">After naming</div></div>
+          </div>
+        </Opt>
+      </div>
+      <div className="note"><span className="k">The copy tension</span><p>“Create a circle” and “You'll fund it as its champion; everyone joins free” already appear on the homepage. Path B's consolidated titles (“Create your circle” + “Create &amp; fund”) drift from that shared language — worth deciding whether the homepage moves with it.</p></div>
+    </div>
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

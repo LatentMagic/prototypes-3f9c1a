@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create → Fund — desktop container options</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #E7E7E2; }
+  #root { min-height: 100vh; }
+  .circ-btn { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-btn-primary:hover { background: var(--color-accent-hover) !important; }
+  .circ-iconbtn:hover { background: var(--color-surface-sunken) !important; }
+  a { color: var(--color-accent); } a:hover { color: var(--color-accent-hover); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 44px clamp(20px,4vw,56px) 120px; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-accent); font-weight: 500; margin: 0 0 12px; }
+  .lede h1 { font-family: var(--font-sans); font-weight: 600; font-size: 32px; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0 0 12px; }
+  .lede p { font-family: var(--font-sans); font-size: 15.5px; line-height: 1.6; color: var(--color-fg-2); margin: 0; max-width: 820px; }
+  .lede b { color: var(--color-fg-1); }
+
+  .sec { margin-top: 56px; }
+  .sec-head { border-top: 2px solid var(--color-fg-1); padding-top: 16px; margin-bottom: 4px; }
+  .sec-head .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-1); }
+  .sec-head h2 { font-family: var(--font-sans); font-weight: 600; font-size: 22px; letter-spacing: -0.01em; color: var(--color-fg-1); margin: 6px 0 8px; }
+  .sec-head p { font-family: var(--font-sans); font-size: 14px; line-height: 1.55; color: var(--color-fg-2); margin: 0; max-width: 860px; }
+  .sec-head .seen { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .02em; color: var(--color-accent); margin: 10px 0 0; }
+  .subhead { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-3); margin: 26px 0 0; }
+
+  .rail { display: flex; gap: 32px; overflow-x: auto; padding: 16px 4px 8px; align-items: flex-start; }
+
+  .win { width: 860px; border-radius: 12px; overflow: hidden; box-shadow: 0 24px 48px rgba(10,10,10,.16), 0 6px 16px rgba(10,10,10,.10); flex: 0 0 auto; border: 1px solid var(--color-border-1); }
+  .win-bar { height: 38px; background: var(--color-surface-sunken); border-bottom: 1px solid var(--color-border-2); display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+  .win-bar .tl { width: 11px; height: 11px; border-radius: 50%; }
+  .win-bar .url { margin-left: 14px; flex: 1; max-width: 300px; height: 22px; border-radius: 6px; background: var(--color-page); border: 1px solid var(--color-border-2); display: flex; align-items: center; padding: 0 10px; font-family: var(--font-mono); font-size: 11px; color: var(--color-fg-3); }
+  .win-body { height: 560px; background: var(--color-page); overflow: hidden; position: relative; }
+  .caption { text-align: center; margin-top: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-fg-3); }
+
+  .note { display: flex; gap: 12px; align-items: flex-start; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 14px 16px; max-width: 860px; margin-top: 22px; }
+  .note .k { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--color-accent); flex: 0 0 auto; margin-top: 2px; }
+  .note p { font-family: var(--font-sans); font-size: 13px; line-height: 1.55; color: var(--color-fg-2); margin: 0; }
+  .note b { color: var(--color-fg-1); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const ICONS = {
+  check: '<polyline points="20 6 9 17 4 12"></polyline>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
+  'arrow-left': '<line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>',
+  'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+};
+const Icon = ({ name, size = 20, color = 'currentColor', strokeWidth = 1.5, style = {} }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}
+    strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', ...style }} aria-hidden="true"
+    dangerouslySetInnerHTML={{ __html: ICONS[name] || '' }} />
+);
+const EMAIL = 'sam.rivera@googlemail.com', NAME = 'Backend Pod';
+
+// Fixed, sensible button width — never grows with the viewport. This is the core fix.
+const Button = ({ children }) => (
+  <button className="circ-btn circ-btn-primary" style={{
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.2, padding: '14px 24px',
+    borderRadius: 'var(--radius-md)', border: 0, minHeight: 52, width: '100%', maxWidth: 300, cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--color-accent)', color: '#fff',
+  }}>{children}</button>
+);
+const IconBtn = ({ name, label }) => (
+  <button aria-label={label} className="circ-iconbtn" style={{ background: 'transparent', border: 0, padding: 8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 40, minHeight: 40, borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)' }}><Icon name={name} size={20} /></button>
+);
+const Dots = ({ i }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+    {[0, 1].map(k => <span key={k} style={{ width: k === i ? 22 : 7, height: 7, borderRadius: 4, background: k === i ? 'var(--color-accent)' : 'var(--color-border-1)' }} />)}
+  </div>
+);
+const Title = ({ children, mb = 20 }) => (
+  <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 26, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: `0 0 ${mb}px` }}>{children}</h1>
+);
+const Sub = ({ children }) => (
+  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: '0 0 22px', maxWidth: 320 }}>{children}</p>
+);
+const Field = () => (
+  <div style={{ width: '100%', textAlign: 'left', marginBottom: 16 }}>
+    <label style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>Circle name</label>
+    <div style={{ width: '100%', fontFamily: 'var(--font-sans)', fontSize: 16, color: 'var(--color-fg-1)', border: '1px solid var(--color-accent)', boxShadow: '0 0 0 3px var(--color-accent-ring)', borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44, background: 'var(--color-surface)' }}>{NAME}</div>
+  </div>
+);
+const Price = () => (
+  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8 }}>
+    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>£3</span>
+    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, letterSpacing: '0.02em', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
+    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, letterSpacing: '0.02em', color: 'var(--color-accent)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)', marginLeft: 6, padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>Founding rate</span>
+  </div>
+);
+const Features = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 290, textAlign: 'left' }}>
+    {['You fund the circle as its champion', 'Up to 10 members, all invited free', 'Shared list, private read-state'].map((f, i) => (
+      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
+        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>{f}</span>
+      </div>
+    ))}
+  </div>
+);
+const Footer = () => (
+  <div style={{ margin: '14px 0 0', display: 'flex', justifyContent: 'center' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'flex-start', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', lineHeight: 1.55, maxWidth: 300 }}>
+      <span style={{ marginTop: 1 }}><Icon name="lock" size={13} style={{ color: 'var(--color-fg-3)', flex: 'none' }} /></span>
+      <span>Billed to {EMAIL} · cancel anytime</span>
+    </span>
+  </div>
+);
+
+// The two approved steps — identical content everywhere; only the container differs.
+const CreateContent = () => (<><Title mb={8}>Create a circle</Title><Sub>A shared list for up to 10 people. You fund it as champion; everyone joins free.</Sub><Field /><Button>Continue<Icon name="arrow-right" size={18} /></Button></>);
+const FundContent = () => (<><Title mb={22}>Fund your circle</Title><div style={{ marginBottom: 22 }}><Price /></div><div style={{ marginBottom: 22 }}><Features /></div><Button>Fund this circle</Button><Footer /></>);
+
+const Column = ({ children }) => (
+  <div style={{ maxWidth: 300, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>{children}</div>
+);
+
+/* ================= OPTION A — centered column, page-corner chrome ================= */
+// Non-modal full page. Back top-left, dots top-centre, X top-right, pinned to the page.
+const OptA = ({ step }) => (
+  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', flex: 'none' }}>
+      {step === 1 ? <IconBtn name="arrow-left" label="Back" /> : <span style={{ width: 40 }} />}
+      <Dots i={step} />
+      <IconBtn name="x" label="Exit" />
+    </header>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px 40px' }}>
+      <Column>{step === 0 ? <CreateContent /> : <FundContent />}</Column>
+    </div>
+  </div>
+);
+
+/* ================= OPTION B — centered contained panel ================= */
+// Non-modal: the page IS cream, no dimmed backdrop. A surface panel gives the step edges.
+const OptB = ({ step }) => (
+  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+    <div style={{ width: 404, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 20, boxShadow: '0 8px 28px rgba(10,10,10,.07), 0 2px 8px rgba(10,10,10,.05)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 12px 2px', flex: 'none' }}>
+        {step === 1 ? <IconBtn name="arrow-left" label="Back" /> : <span style={{ width: 40 }} />}
+        <Dots i={step} />
+        <IconBtn name="x" label="Exit" />
+      </header>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 48px 44px' }}>
+        <Column>{step === 0 ? <CreateContent /> : <FundContent />}</Column>
+      </div>
+    </div>
+  </div>
+);
+
+/* ================= OPTION C — full-width top bar + centered content ================= */
+const OptC = ({ step }) => (
+  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, flex: 'none', padding: '0 16px', borderBottom: '1px solid var(--color-border-2)', background: 'var(--color-surface)' }}>
+      {step === 1 ? <IconBtn name="arrow-left" label="Back" /> : <span style={{ width: 40 }} />}
+      <Dots i={step} />
+      <IconBtn name="x" label="Exit" />
+    </header>
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px 40px' }}>
+      <Column>{step === 0 ? <CreateContent /> : <FundContent />}</Column>
+    </div>
+  </div>
+);
+
+const Win = ({ children }) => (
+  <div className="win">
+    <div className="win-bar">
+      <span className="tl" style={{ background: '#f0685f' }} /><span className="tl" style={{ background: '#f5bd4f' }} /><span className="tl" style={{ background: '#61c454' }} />
+      <span className="url">circlists.com/create</span>
+    </div>
+    <div className="win-body">{children}</div>
+  </div>
+);
+const Row = ({ Opt }) => (
+  <>
+    <div className="subhead">Step 1 · Create</div>
+    <div className="rail"><Win><Opt step={0} /></Win></div>
+    <div className="subhead">Step 2 · Fund — no name</div>
+    <div className="rail"><Win><Opt step={1} /></Win></div>
+  </>
+);
+
+const App = () => (
+  <div className="wrap">
+    <p className="kicker">Create → Fund · desktop · what contains the wizard</p>
+    <div className="lede">
+      <h1>Same full-screen wizard — three ways to hold it</h1>
+      <p>The experience is unchanged and non-negotiable: a <b>full-screen page</b> (never a modal over the app) with the approved two steps, back / step-dots / exit, and a <b>fixed-width button that no longer stretches</b>. The only variable is what contains the centred column on a wide canvas. All three below are <b>established conventions, not invented affordances</b> — each is labelled with where it's used so you can judge that yourself.</p>
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Option A</div><h2>Centered column · chrome at the page corners</h2><p>No container. The column sits at the mobile width, centred in the page; back / dots / exit are pinned to the page's own corners. The most minimal, most clearly "full-screen page" reading — the risk is the surrounding space can feel bare.</p><p className="seen">Seen in: Stripe hosted checkout · full-page product onboarding steps</p></div>
+      <Row Opt={OptA} />
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Option B</div><h2>Centered contained panel · the "card," chosen on purpose</h2><p>The same column, given a surface + soft border so the step reads as a discrete object. Still a full page on cream — no dimmed backdrop, so it is not a modal. The surrounding space becomes deliberate page margin around the panel rather than emptiness.</p><p className="seen">Seen in: Slack / Notion / Linear "create a workspace" · setup wizards</p></div>
+      <Row Opt={OptB} />
+    </div>
+
+    <div className="sec">
+      <div className="sec-head"><div className="tag">Option C</div><h2>Full-width top bar · content centered below</h2><p>A real app bar carries back / dots / exit across the top with a divider; the column centres in the space beneath. Anchors the top edge so the page feels structured, while the content stays a calm centred column.</p><p className="seen">Seen in: multi-step signup flows · Typeform-style wizards</p></div>
+      <Row Opt={OptC} />
+    </div>
+
+    <div className="note"><span className="k">The shared fix</span><p>In all three the button is capped at 300px and the content column at 340px — so nothing balloons with the viewport, which was the actual defect. The choice between A, B and C is only about how the wide canvas reads: <b>bare and honest (A)</b>, <b>a contained object (B)</b>, or <b>structured by a top bar (C)</b>.</p></div>
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
