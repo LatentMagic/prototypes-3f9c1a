@@ -1366,11 +1366,14 @@
   }
 
   // Render an app: set it active, label the rail node, (re)build its prototypes.
-  // Default landing skips reference nodes (brand pack, homepage, homepage demo) so the
-  // console opens on the working line, not a reference sheet — even though those
-  // nodes sit top-of-rail.
+  // Default landing opens on the WORKING LINE — never a reference sheet, never a
+  // candidate, and never a retired slug. Anything carrying a `kind` is not the
+  // working line by definition, which leaves the version nodes; of those, the
+  // working line is the LAST, because tab order is version order and the retired
+  // chain accumulates above it. Scanning forwards instead lands on the oldest
+  // retired slug, which is what this used to do.
   function defaultIndex() {
-    for (var i = 0; i < PROTOTYPES.length; i++) {
+    for (var i = PROTOTYPES.length - 1; i >= 0; i--) {
       if (!PROTOTYPES[i].kind) return i;
     }
     return 0;
