@@ -31,7 +31,6 @@
     --brand:    #C99A2E;   /* Amber — the Branding node ONLY; marks it as reference, not a version */
     --motion:   #D4AE58;   /* Lighter amber — the Branding Motion node ONLY; a sibling reference to Branding, one shade up */
     --homepage: #7C3AED;   /* Strong violet — the Homepage node ONLY; the marketing page itself, a reference not a version */
-    --demo:     #B9A6F0;   /* Light violet — the Homepage-demo node ONLY; the build embedded INSIDE the homepage, a lighter shade to read as its subtype */
 
     --tab-active-bg: rgba(255, 255, 255, 0.035);
     --tab-hover-bg:  rgba(255, 255, 255, 0.02);
@@ -343,32 +342,6 @@
     box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(124, 58, 237, 0.28);
   }
   .tab--homepage:focus-visible { outline-color: var(--homepage); }
-
-  /* ---- Homepage-demo node: the stripped live build embedded INSIDE the homepage.
-     Same reference-node treatment as Branding, but in a LIGHTER violet + an italic
-     label so it reads as the Homepage node's subtype, not a peer. Off the spine. */
-  .tab--demo {
-    background: rgba(185, 166, 240, 0.06);
-    border-bottom: 1px solid var(--hairline);
-  }
-  .tab--demo:hover { background: rgba(185, 166, 240, 0.10); }
-  .tab--demo .tab-label { font-style: italic; }    /* subtype of the Homepage node */
-  .tab--demo[aria-selected="false"] .tab-label,
-  .tab--demo[aria-selected="true"]  .tab-label { color: var(--demo); }
-  .tab--demo .tab-version { color: rgba(185, 166, 240, 0.7); }
-  .tab--demo .dot { background: var(--demo); opacity: 0.9; }
-  .tab--demo .dot-col::before { display: none; }   /* off the version ladder */
-  .tab--demo + .tab .dot-col::before { top: 50%; } /* spine resumes at the next tab */
-  .tab--demo[aria-selected="true"] {
-    background: rgba(185, 166, 240, 0.13);
-    box-shadow: inset 2px 0 0 0 var(--demo);
-  }
-  .tab--demo[aria-selected="true"] .dot {
-    background: var(--demo);
-    opacity: 1;
-    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(185, 166, 240, 0.28);
-  }
-  .tab--demo:focus-visible { outline-color: var(--demo); }
 
   /* ============================================================= STAGE */
   .stage {
@@ -988,16 +961,7 @@
           ticket: 'LM-163',
           html: 'index.html',
           kind: 'homepage',
-          desc: 'The Circlists public marketing homepage — the rebrand front page. A reference node, not a prototype version: hero, who-it\'s-for, pricing, and an interactable product demo embedded in an iframe (the Embedded Demo, gated behind a pre-launch preview notice) so a visitor can feel the app before it opens. Copied as a curated runtime subset of the Design export; the embedded demo lives self-contained at uploads/homepage-demo/. Expect it to be stale — the live site is public-sites/apps/circlists at www.circlists.com; this node is kept for grounding, not as a mirror.'
-        },
-        {
-          slug: 'homepage-demo',
-          label: 'Embedded Demo',
-          version: 'preview',
-          ticket: 'LM-163',
-          html: 'index.html',
-          kind: 'demo',
-          desc: 'The marketing-site product demo — a stripped, self-contained build of the working line, made to embed in the homepage as an iframe. Only the core loop is live (add a link, read it, react, see how the circle responded); New circle, circle settings, and the account control open a sign-up gate instead of routing on. Derived from the working line by deletion + a bundling step (no babel, no per-module fetch), rebuilt from tools/homepage-demo/. A point-in-time build, not the canonical app.'
+          desc: 'The Circlists public marketing homepage — the rebrand front page. A reference node, not a prototype version: hero, who-it\'s-for, pricing, and an interactable product demo embedded in an iframe, gated behind a pre-launch preview notice, so a visitor can feel the app before it opens. Copied as a curated runtime subset of the Design export; the embedded demo lives self-contained at uploads/homepage-demo/. Expect it to be stale — the live site is public-sites/apps/circlists at www.circlists.com; this node is kept for grounding, not as a mirror.'
         },
         {
           slug: 'next',
