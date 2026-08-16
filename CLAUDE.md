@@ -26,9 +26,15 @@ The Circlists brand pack is the first: `app/circlists/brand/` holds `circlists-b
 
 The console's favicon is the canonical Circlists mark, shipped from the brand pack as the standard icon set held at the repo root — `favicon.ico` (universal fallback), `circlists-mark.svg` (modern browsers), `apple-touch-icon.png` (iOS) — referenced by `index.html`. Root placement keeps them console-owned, not borrowed from a shell-copied prototype dir a re-export could change; refresh by re-copying from the wiki brand pack's `assets/`. The rail title is the brand pack's **reversed** (light-on-dark) lockup — `app/circlists/brand/circlists-lockup-reversed.svg` — referenced by the active app's `logo`, so it refreshes with the rest of the brand pack. Both are brand assets the console owns, not borrowed from a prototype dir a re-export could change.
 
-The **homepage** node (`kind: 'homepage'`, strong violet, `#homepage`) is a third reference node — the Circlists public marketing page itself. It's copied like any other node — same rule as step 1 below: every runtime file and project doc the export ships, minus authoring-session cruft. The one `uploads/*` subfolder that's genuinely runtime-fetched is `uploads/homepage-demo/` (`demo-embed.html` loads the embedded app from it) — sibling folders like `uploads/brand` or `uploads/motion` are Design-session reference uploads and don't travel. Refresh by re-copying from a fresh export. Read [DEMO.md](app/circlists/homepage/DEMO.md) before touching the embed — it covers the vendored-app-never-edit rule, the `demo-embed.html` seam, and the iframe-width layout gotcha.
+## Candidate nodes
 
-The live marketing site lives in `public-sites/apps/circlists`, published at `www.circlists.com` — that is the source of truth. **Expect this node to be stale.** It's kept for grounding — the shape the page was designed in — not as a mirror of what's live. Don't treat a divergence from the live site as a bug, and don't refresh on a schedule — re-copy only if a fresh export is actually wanted.
+A **candidate** is an unratified proposal for the working line — a second state of the app, built in Claude Design as its own entry over the shared `app/`, offered as an answer to a ticket. `652-discourse` is one.
+
+It is not a reference node and not a version. A reference node lifts off the version spine because it is a different kind of thing; a candidate **stays on the spine**, because it is a state of the app proposing a position on that line. What marks it is the periwinkle accent (`--candidate`) and a **hollow dot** — the ring says a position has been proposed and not yet filled.
+
+Register one with `kind: 'candidate'`, a `version` naming what it proposes (`proposal`, not a version number), and the `ticket` it answers. The `kind` also keeps it out of the default landing, so the console still opens on the working line.
+
+**A candidate is temporary by design.** Once ratified, the design folds into `canon` and the node goes — slug, entry and all. A candidate that has outlived its ticket is stale, not history: delete it rather than leaving it on the rail, and let `canon`'s changelog carry what landed.
 
 ## How the console works
 

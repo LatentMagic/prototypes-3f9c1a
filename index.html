@@ -30,7 +30,7 @@
     --signal:   #047857;   /* Pulse Green — active dot + active-tab marker ONLY */
     --brand:    #C99A2E;   /* Amber — the Branding node ONLY; marks it as reference, not a version */
     --motion:   #D4AE58;   /* Lighter amber — the Branding Motion node ONLY; a sibling reference to Branding, one shade up */
-    --homepage: #7C3AED;   /* Strong violet — the Homepage node ONLY; the marketing page itself, a reference not a version */
+    --candidate: #8B93F8;  /* Periwinkle — CANDIDATE nodes ONLY; an unratified proposal for canon, on the spine but not yet part of it */
 
     --tab-active-bg: rgba(255, 255, 255, 0.035);
     --tab-hover-bg:  rgba(255, 255, 255, 0.02);
@@ -317,31 +317,35 @@
   }
   .tab--motion:focus-visible { outline-color: var(--motion); }
 
-  /* ---- Homepage node: the marketing page itself, in strong violet. A reference
-     node like Branding — the public front page that embeds the Homepage-demo in an
-     iframe — so it lifts off the version spine, coloured throughout. Sits above the
-     Homepage-demo, which is its (lighter, italic) subtype. */
-  .tab--homepage {
-    background: rgba(124, 58, 237, 0.06);
-    border-bottom: 1px solid var(--hairline);
+  /* ---- Candidate nodes: an unratified proposal for the working line.
+     Unlike a reference node, a candidate IS a state of the app — so it stays ON
+     the version spine rather than lifting off it. What marks it is the accent
+     and a HOLLOW dot: the ring says a position on the line has been proposed
+     and not yet filled. Once ratified the design folds into canon and the node
+     goes; nothing here is meant to persist. */
+  .tab--candidate[aria-selected="false"] .tab-label,
+  .tab--candidate[aria-selected="true"]  .tab-label { color: var(--candidate); }
+  .tab--candidate .tab-version {
+    color: rgba(139, 147, 248, 0.7);
+    font-style: italic;                              /* provisional, like the version word itself */
   }
-  .tab--homepage:hover { background: rgba(124, 58, 237, 0.10); }
-  .tab--homepage[aria-selected="false"] .tab-label,
-  .tab--homepage[aria-selected="true"]  .tab-label { color: var(--homepage); }
-  .tab--homepage .tab-version { color: rgba(124, 58, 237, 0.7); }
-  .tab--homepage .dot { background: var(--homepage); opacity: 0.9; }
-  .tab--homepage .dot-col::before { display: none; }   /* off the version ladder */
-  .tab--homepage + .tab .dot-col::before { top: 50%; } /* spine resumes at the next tab */
-  .tab--homepage[aria-selected="true"] {
-    background: rgba(124, 58, 237, 0.13);
-    box-shadow: inset 2px 0 0 0 var(--homepage);
-  }
-  .tab--homepage[aria-selected="true"] .dot {
-    background: var(--homepage);
+  .tab--candidate .dot {
+    background: transparent;                         /* hollow — proposed, not landed */
+    box-shadow: inset 0 0 0 1.5px var(--candidate);
     opacity: 1;
-    box-shadow: 0 0 0 4px var(--raised), 0 0 0 6px rgba(124, 58, 237, 0.28);
   }
-  .tab--homepage:focus-visible { outline-color: var(--homepage); }
+  .tab--candidate:hover { background: rgba(139, 147, 248, 0.06); }
+  .tab--candidate[aria-selected="true"] {
+    background: rgba(139, 147, 248, 0.10);
+    box-shadow: inset 2px 0 0 0 var(--candidate);
+  }
+  .tab--candidate[aria-selected="true"] .dot {
+    box-shadow:
+      inset 0 0 0 2px var(--candidate),
+      0 0 0 4px var(--raised),
+      0 0 0 6px rgba(139, 147, 248, 0.28);
+  }
+  .tab--candidate:focus-visible { outline-color: var(--candidate); }
 
   /* ============================================================= STAGE */
   .stage {
@@ -955,15 +959,6 @@
           desc: 'The Circlists mark in motion — pulse (hero / marketing), spinner (loading), and micro (the ~10px live-signal dot), each a self-contained animated SVG with its reduced-motion fallback baked in. A reference sheet like Branding, not a prototype version: sourced from the wiki motion pack, this is a point-in-time copy.'
         },
         {
-          slug: 'homepage',
-          label: 'Homepage',
-          version: 'rebrand',
-          ticket: 'LM-163',
-          html: 'index.html',
-          kind: 'homepage',
-          desc: 'The Circlists public marketing homepage — the rebrand front page. A reference node, not a prototype version: hero, who-it\'s-for, pricing, and an interactable product demo embedded in an iframe, gated behind a pre-launch preview notice, so a visitor can feel the app before it opens. Copied as a curated runtime subset of the Design export; the embedded demo lives self-contained at uploads/homepage-demo/. Expect it to be stale — the live site is public-sites/apps/circlists at www.circlists.com; this node is kept for grounding, not as a mirror.'
-        },
-        {
           slug: 'next',
           version: 'v1',
           ticket: '—',
@@ -1233,6 +1228,7 @@
           version: 'proposal',
           ticket: 'LM-652',
           html: 'circlists-lm652.html',
+          kind: 'candidate',
           desc: 'Temporary proposal slug for the discourse round — not canon. Disappears once the design is ratified and folded into canon.'
         }
       ]
