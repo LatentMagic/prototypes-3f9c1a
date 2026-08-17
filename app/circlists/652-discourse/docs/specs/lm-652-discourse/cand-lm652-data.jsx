@@ -95,6 +95,12 @@
     acm.thought = { by: 'You', text: 'Sharing after our own incident review on Tuesday. The section on blameless language is where I want us to raise our bar.', at: NOW - 60 * H };
     acm.talk = [
       T('ac1', 'Priya N.', 50, 'The \u201csecond story\u201d framing is the whole thing. The first story always ends at a person; the second one ends at a system.'),
+      // A long tail on one turn — the volume the collapse exists for.
+      T('ac1a', 'Marcus T.', 49, 'That is the line I keep coming back to. Our reviews end at a person every time and we call it a root cause.', { replyTo: 'ac1' }),
+      T('ac1b', 'Ada L.', 48, 'The second story needs someone to ask for it in the room, though. Nobody volunteers it.', { replyTo: 'ac1' }),
+      T('ac1c', 'You', 47, 'That is the facilitator\u2019s job and we have never named who does it.', { replyTo: 'ac1', edited: true }),
+      T('ac1d', 'Dev K.', 45, 'We tried rotating it. It works when the facilitator was not on call that week.', { replyTo: 'ac1' }),
+      T('ac1e', 'Lena P.', 43, 'Rotating it also stops the same two people carrying every review.', { replyTo: 'ac1' }),
       T('ac2', 'Marcus T.', 46, 'I want the incident channel template rewritten around their four questions. Happy to draft it.'),
       T('ac3', 'You', 44, 'Please do \u2014 bring it to Thursday.', { replyTo: 'ac2' }),
       T('ac4', 'Ada L.', 40, 'The maths on recurrence rates is thin, but the practice holds. The appendix checklist alone is worth the read.', { edited: true }),
@@ -116,6 +122,9 @@
     mid.thought = { by: 'You', text: 'Second time through and it is a different book. Sharing for the Dorothea chapter alone.', at: NOW - 90 * H };
     mid.talk = [
       T('bc1', 'Joe M.', 80, 'The marriage chapters landed harder at forty than they did at twenty. Casaubon stopped being a villain.'),
+      // Exactly two replies: both show whole, no control appears.
+      T('bc1a', 'Priya N.', 78, 'He is not a villain, he is a warning. That is worse.', { replyTo: 'bc1' }),
+      T('bc1b', 'Sam R.', 76, 'Dorothea marries the idea of him. Eliot is very clear about that and I missed it entirely first time.', { replyTo: 'bc1' }),
       T('bc2', 'Priya N.', 70, 'Reading the essay before the book this time. It spoils nothing \u2014 Eliot tells you everything and it still surprises.'),
       T('bc3', 'Sam R.', 60, 'Adding the audiobook to my week. Juliet Stevenson\u2019s narration is the one.'),
       T('bc4', 'Joe M.', 30, 'Chapter 20 is the hinge. When we get there, slow down.'),

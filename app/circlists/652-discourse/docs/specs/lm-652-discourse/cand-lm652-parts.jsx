@@ -7,7 +7,10 @@
 
 // The thought's paper (working decision 2026-08-14; not a token yet).
 const CAND_PAPER = { bg: '#F2F1EB', bd: '#DEDCD3', bdHover: '#CFCDC2' };
-const CAND_OWN_MIN = 1; // PLACEHOLDER — the item-7 minimum is unset upstream; picked for the mock only.
+// PLACEHOLDER — the item-7 minimum is unset upstream. Three is the founder's
+// stated lean, said as a question rather than a ruling; it AWAITS RATIFICATION.
+// The counter excludes the contributor, so three means three other people.
+const CAND_OWN_MIN = 3;
 
 const candWhen = (at) => (window.circWhen ? window.circWhen(at) : null);
 const candTitleOf = (item) => item.title || String(item.url || '').replace(/^https?:\/\//, '');
@@ -47,6 +50,30 @@ const CandFold = () => (
     <path d="M0 0 H13 A11 11 0 0 1 24 11 V24 Z" fill="color-mix(in oklab, var(--color-accent) 30%, var(--color-surface))" />
   </svg>
 );
+
+// The fold as the CONTROL, on the conversation surface only. The mechanism and
+// the signal become one thing, which takes a labelled toggle out of the card's
+// action row. Watching = the emerald fold; not watching = the same corner in a
+// faint grey, so there is something to press rather than an invisible target.
+// Known cost: a 32px hit area, under the 44px house minimum — a 44px square in
+// this corner would cover the top-right of the preview thumbnail, which is an
+// open target. Flagged, not resolved.
+const CandFoldToggle = ({ item, api }) => {
+  const on = !!item.watching;
+  return (
+    <button type="button" className="cand-foldtoggle" onClick={() => candToggleWatch(api, item)} aria-pressed={on}
+      aria-label={on ? 'Watching this card' : 'Watch this card'}
+      title={on ? 'Watching \u2014 turn the corner back down' : 'Watch this card'}
+      style={{ position: 'absolute', top: 0, right: 0, width: 32, height: 32, padding: 0, border: 0,
+        background: 'transparent', cursor: 'pointer', zIndex: 1 }}>
+      <svg viewBox="0 0 24 24" width={24} height={24} aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, display: 'block' }}>
+        <path d="M0 0 H13 A11 11 0 0 1 24 11 V24 Z"
+          fill={on ? 'color-mix(in oklab, var(--color-accent) 30%, var(--color-surface))'
+                   : 'color-mix(in oklab, var(--color-fg-3) 16%, var(--color-surface))'} />
+      </svg>
+    </button>
+  );
+};
 
 // Page-with-a-folded-corner — the watching control's glyph, echoing the fold.
 const CandFoldGlyph = ({ size = 15, filled = false }) => (
@@ -134,6 +161,11 @@ const candDeleteTurn = (api, item, turnId) => candUpdateItem(api, item.id, i => 
 const candToggleWatch = (api, item) => candUpdateItem(api, item.id, i => ({ ...i,
   watching: !i.watching, ...(i.watching ? {} : { talkSeenAt: Date.now() }) }));
 
-Object.assign(window, { CAND_PAPER, CAND_OWN_MIN, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph,
+// Set on the conversation surface, so the pieces the feed card mounts can tell
+// they are already there — the way-through withdraws rather than pointing at the
+// page it is drawn on.
+const CandSurfaceCtx = React.createContext(false);
+
+Object.assign(window, { CAND_PAPER, CAND_OWN_MIN, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
   CandBubbleIcon, CandWayIcon, CandSwitch, CandWrite, CandEyebrow, candUpdateItem, candTurns, candFresh, candResponses,
   candNames, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch });

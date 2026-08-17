@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists — LM-652 candidate</title>
+<title>Circlists — C4 · the thought field</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -385,18 +385,8 @@
   @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
 
   /* ---- LM-652 candidate (cand-lm652-*.jsx) ---- */
-  .cand-bandbtn:hover { background: #EEEDE5; }
-  .cand-paper:has(.cand-bandbtn:hover) { border-color: #CFCDC2; }
-  .cand-bandbtn:hover .cand-bandchev { color: var(--color-fg-1); }
-  .cand-bandbtn .cand-bandlines { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-bandbtn:hover .cand-bandlines, .cand-bandbtn:focus-visible .cand-bandlines { color: var(--color-fg-1); }
-  /* The swap: both cards travel, so both carry the same transition. Height and
-     margin are what move — the widths trade, the link card shrinks to a sliver,
-     and the thought card grows into the front. The z-index flip is discrete and
-     happens mid-travel, inside the 15px of overlap. */
-  .cand-swap { transition: box-shadow 400ms cubic-bezier(0.32, 0.72, 0, 1), border-radius 400ms cubic-bezier(0.32, 0.72, 0, 1), background 400ms cubic-bezier(0.32, 0.72, 0, 1), border-color 400ms cubic-bezier(0.32, 0.72, 0, 1); }
-  .cand-face { transition: opacity 220ms ease; }
-  @media (prefers-reduced-motion: reduce) { .cand-swap, .cand-face { transition: none !important; } }
+  .cand-band:hover { border-color: #CFCDC2; background: #EEEDE5; }
+  .cand-band:hover .cand-bandchev { color: var(--color-fg-1); }
   .cand-altclose { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
   .cand-altclose:hover, .cand-altclose:focus-visible { color: var(--color-fg-1); }
   /* The alt face's own actions take the cross's treatment: the house icon-button
@@ -406,29 +396,27 @@
   .cand-altaction:hover, .cand-altaction:focus-visible { color: var(--color-fg-1); }
   .cand-altaction:hover::before { background: transparent !important; }
   .cand-write:focus-visible { outline: none; }
-  /* The head of the conversation surface mounts the real FeedCard and takes its
-     chrome onto the wrapper, so card + reaction record read as one object. */
-  .cand-watchglyph { transition: color var(--duration-base) ease; }
-  .cand-watchglyph:hover, .cand-watchglyph:focus-visible { color: var(--color-fg-1); }
-  .cand-watchglyph[aria-pressed="true"]:hover, .cand-watchglyph[aria-pressed="true"]:focus-visible { color: var(--color-accent-hover); }
-  .cand-foldtoggle { transition: filter var(--duration-base) ease; clip-path: polygon(0 0, 100% 0, 100% 100%); }
-  /* On the surface the action cluster can be reduced to Delete alone (the
-     way-through withdraws here). A lone button has no cluster to edge-lock, so
-     it centres under the preview instead of hanging off the content edge. */
-  /* Arrival wash on a row that carries a tucked-under card. The shipped glow
-     paints ONE rect over the whole row, so it washed the band's paper as well —
-     and only showed above it. The wash belongs to the link card alone: the row's
-     own wash is suppressed and the same keyframe is played on the link card box,
-     which owns the radius the wash should take. */
-  .circ-glow:has(.cand-swap)::after { display: none; }
-  .circ-glow > div > .cand-swap:first-child::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); background: rgba(139,191,173,0.34); pointer-events: none; animation: circ-glow-wash 2400ms ease-in-out both; }
-  .cand-headcard article.circ-card > div:last-of-type > div:last-of-type:has(> :only-child) { margin-right: 8px !important; }
-  .cand-glyphbtn:hover { background: var(--color-surface-sunken); }
-  .cand-foldtoggle:hover, .cand-foldtoggle:focus-visible { filter: brightness(0.95); }
-  .cand-foldtoggle:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; border-radius: 0 var(--radius-lg) 0 0; }
   [data-cand-listrow]:first-child { border-top-color: transparent !important; }
   .cand-watch[aria-pressed="true"]:hover { color: var(--color-accent-strong, var(--color-accent)); }
   .cand-quiet:hover { color: var(--color-fg-1); text-decoration: underline; text-underline-offset: 2px; }
+
+
+  .pgc2-fold:hover path[stroke] { stroke: var(--color-fg-3); }
+  .pgc2-fold:focus-visible { border-radius: 0 var(--radius-lg) 0 0; }
+  .pgc2-line:hover span { color: var(--color-fg-1) !important; }
+  .pgc2-inv::before { display: none; }
+
+  /* ---- C1 playground shell ----------------------------------------------
+     The page's own header bar is FIXED above a stage that owns the app's scroll.
+     The stage carries transform: translateZ(0), so it is the containing block
+     for the app's position:fixed overlays (the same trick .circ-phone-clip uses)
+     — sheets, scrims and the FAB pin to the app's own bounds rather than riding
+     over the bar. */
+  #pgbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; background: #1A1917; border-bottom: 1px solid #302F2C; }
+  #pgstage { position: fixed; inset: var(--pgbar-h, 132px) 0 0 0; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateZ(0); background: var(--color-canvas); --circ-vh: 100%; }
+  #root { min-height: 100%; }
+  #pgstage .circ-stage { min-height: 100%; }
+  #pgstage .circ-phone { height: min(872px, calc(100% - 48px)); }
 
   /* ---- entrance animations ----
      Overlays rest at their visible end-state with NO entrance keyframe, so they
@@ -439,14 +427,15 @@
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="pgbar"></div>
+<div id="pgstage"><div id="root"></div></div>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<!-- Candidate build: its own persisted-state key, so it never mixes with the main app's. -->
-<script>window.CIRC_STATE_KEY = 'circ_lm652_state_v1';</script>
+<!-- Playground: its own persisted-state key, so it never mixes with the candidate's. -->
+<script>window.CIRC_STATE_KEY = 'circ_pgc4_state_v1';</script>
 
 <script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
@@ -466,7 +455,7 @@
 <script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/gate.jsx"></script>
 
-<!-- LM-652 candidate overlay set: loads AFTER the app files it re-publishes over
+<!-- The real candidate, mounted whole. Loads AFTER the app files it re-publishes over
      (seed-data, feed, swell-reactions) and BEFORE main.jsx, so the first render
      already sees the candidate names. Delete these lines + the cand files to
      tear the candidate down; app/* stays the app. -->
@@ -478,6 +467,11 @@
 <script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-surface.jsx"></script>
 <script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-return.jsx"></script>
 <script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-main.jsx"></script>
+<!-- C4 option set: re-publishes CandWrite only, and only for the Add popover's
+     thought field. Every other writing surface keeps the shipped component. -->
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-c4-field.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-c4-wire.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-cx-bar.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

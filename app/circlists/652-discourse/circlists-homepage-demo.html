@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists — LM-652 candidate</title>
+<title>Circlists — homepage demo</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -384,52 +384,6 @@
   .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
   @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
 
-  /* ---- LM-652 candidate (cand-lm652-*.jsx) ---- */
-  .cand-bandbtn:hover { background: #EEEDE5; }
-  .cand-paper:has(.cand-bandbtn:hover) { border-color: #CFCDC2; }
-  .cand-bandbtn:hover .cand-bandchev { color: var(--color-fg-1); }
-  .cand-bandbtn .cand-bandlines { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-bandbtn:hover .cand-bandlines, .cand-bandbtn:focus-visible .cand-bandlines { color: var(--color-fg-1); }
-  /* The swap: both cards travel, so both carry the same transition. Height and
-     margin are what move — the widths trade, the link card shrinks to a sliver,
-     and the thought card grows into the front. The z-index flip is discrete and
-     happens mid-travel, inside the 15px of overlap. */
-  .cand-swap { transition: box-shadow 400ms cubic-bezier(0.32, 0.72, 0, 1), border-radius 400ms cubic-bezier(0.32, 0.72, 0, 1), background 400ms cubic-bezier(0.32, 0.72, 0, 1), border-color 400ms cubic-bezier(0.32, 0.72, 0, 1); }
-  .cand-face { transition: opacity 220ms ease; }
-  @media (prefers-reduced-motion: reduce) { .cand-swap, .cand-face { transition: none !important; } }
-  .cand-altclose { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-altclose:hover, .cand-altclose:focus-visible { color: var(--color-fg-1); }
-  /* The alt face's own actions take the cross's treatment: the house icon-button
-     state layer is mixed for a white surface and reads as a smudge on the warm
-     paper, so ink darkens instead of a fill appearing. */
-  .cand-altaction { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-altaction:hover, .cand-altaction:focus-visible { color: var(--color-fg-1); }
-  .cand-altaction:hover::before { background: transparent !important; }
-  .cand-write:focus-visible { outline: none; }
-  /* The head of the conversation surface mounts the real FeedCard and takes its
-     chrome onto the wrapper, so card + reaction record read as one object. */
-  .cand-watchglyph { transition: color var(--duration-base) ease; }
-  .cand-watchglyph:hover, .cand-watchglyph:focus-visible { color: var(--color-fg-1); }
-  .cand-watchglyph[aria-pressed="true"]:hover, .cand-watchglyph[aria-pressed="true"]:focus-visible { color: var(--color-accent-hover); }
-  .cand-foldtoggle { transition: filter var(--duration-base) ease; clip-path: polygon(0 0, 100% 0, 100% 100%); }
-  /* On the surface the action cluster can be reduced to Delete alone (the
-     way-through withdraws here). A lone button has no cluster to edge-lock, so
-     it centres under the preview instead of hanging off the content edge. */
-  /* Arrival wash on a row that carries a tucked-under card. The shipped glow
-     paints ONE rect over the whole row, so it washed the band's paper as well —
-     and only showed above it. The wash belongs to the link card alone: the row's
-     own wash is suppressed and the same keyframe is played on the link card box,
-     which owns the radius the wash should take. */
-  .circ-glow:has(.cand-swap)::after { display: none; }
-  .circ-glow > div > .cand-swap:first-child::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); background: rgba(139,191,173,0.34); pointer-events: none; animation: circ-glow-wash 2400ms ease-in-out both; }
-  .cand-headcard article.circ-card > div:last-of-type > div:last-of-type:has(> :only-child) { margin-right: 8px !important; }
-  .cand-glyphbtn:hover { background: var(--color-surface-sunken); }
-  .cand-foldtoggle:hover, .cand-foldtoggle:focus-visible { filter: brightness(0.95); }
-  .cand-foldtoggle:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; border-radius: 0 var(--radius-lg) 0 0; }
-  [data-cand-listrow]:first-child { border-top-color: transparent !important; }
-  .cand-watch[aria-pressed="true"]:hover { color: var(--color-accent-strong, var(--color-accent)); }
-  .cand-quiet:hover { color: var(--color-fg-1); text-decoration: underline; text-underline-offset: 2px; }
-
   /* ---- entrance animations ----
      Overlays rest at their visible end-state with NO entrance keyframe, so they
      render correctly under prefers-reduced-motion AND under capture tools that
@@ -445,10 +399,32 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<!-- Candidate build: its own persisted-state key, so it never mixes with the main app's. -->
-<script>window.CIRC_STATE_KEY = 'circ_lm652_state_v1';</script>
+<!-- ============================================================================
+     THE ENTRY IS THE MANIFEST. The downstream build reads these script tags to
+     know which modules to compile and in what order, so a module that is not
+     listed here is simply not in the demo — omission replaces a hand-kept
+     delete-list. Read HOMEPAGE-DEMO.md before changing this list.
 
-<script type="text/babel" src="app/seed-data.jsx"></script>
+     Left out, and why it is unreachable:
+       app/seed-data.jsx    replaced by demo/demo-seed.jsx (the demo's own seed)
+       app/config.jsx       the Config aid + its scenarios; main.jsx guards on
+                            window.ConfigLauncher / window.buildScenarios
+       app/tweaks-panel.jsx \ the Tweaks aids; main.jsx falls back to
+       app/circ-tweaks.jsx  / CIRC_TWEAK_FALLBACK when they are absent
+       app/auth.jsx         sign-in / sign-up / OTC / recovery. Reached only from
+                            the 'signin' route, which needs Sign out or Delete
+                            account — both behind the account control, which the
+                            gate takes over
+       app/wizard.jsx       the Create -> Fund wizard chrome. Rendered only by
+                            CreateSpace / FundingPage, both behind New circle
+       app/subscriptions.jsx funding, checkout, provider, dormant, web-handoff.
+                            Every entry point is New circle, circle settings, or
+                            an unfunded circle — gated, gated, and absent from
+                            the demo seed (both circles are funded)
+     ============================================================================ -->
+<script type="text/babel" src="demo/demo-overlay.jsx"></script>
+<script type="text/babel" src="demo/demo-seed.jsx"></script>
+
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/brand-motion.jsx"></script>
 <script type="text/babel" src="app/liveliness.jsx"></script>
@@ -457,27 +433,11 @@
 <script type="text/babel" src="app/shell.jsx"></script>
 <script type="text/babel" src="app/home.jsx"></script>
 <script type="text/babel" src="app/app-shell.jsx"></script>
-<script type="text/babel" src="app/auth.jsx"></script>
-<script type="text/babel" src="app/wizard.jsx"></script>
+<!-- spaces.jsx looks droppable and is not: main.jsx renders NoSpaceHome and
+     ReverifyDialog unconditionally from it, and its ContentPage frames the
+     in-shell pages. -->
 <script type="text/babel" src="app/spaces.jsx"></script>
-<script type="text/babel" src="app/subscriptions.jsx"></script>
-<script type="text/babel" src="app/tweaks-panel.jsx"></script>
-<script type="text/babel" src="app/circ-tweaks.jsx"></script>
-<script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/gate.jsx"></script>
-
-<!-- LM-652 candidate overlay set: loads AFTER the app files it re-publishes over
-     (seed-data, feed, swell-reactions) and BEFORE main.jsx, so the first render
-     already sees the candidate names. Delete these lines + the cand files to
-     tear the candidate down; app/* stays the app. -->
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-parts.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-data.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-add.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-card.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-reveal.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-surface.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-return.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-main.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

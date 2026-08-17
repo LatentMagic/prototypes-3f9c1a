@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The returned state — four answers</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--color-page);color:var(--color-fg-1)}
+/* app rules the surfaces depend on, verbatim from circlists.html */
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:var(--ring-offset)}
+input:focus-visible{outline-offset:0;border-color:var(--color-accent) !important}
+.circ-btn-primary:hover:not(:disabled){background:var(--color-accent-hover) !important}
+.circ-btn-primary:active:not(:disabled){background:var(--color-accent-press) !important}
+.circ-btn-secondary:hover:not(:disabled){background:var(--color-surface-sunken) !important}
+.circ-btn-secondary:active:not(:disabled){background:#E8E8E5 !important}
+/* board chrome — deliberately not product */
+.wb-head{background:#141413;color:#E8E8E5;padding:22px 28px}
+.wb-head h1{font:600 15px/1.3 var(--font-mono);color:#fff;margin:0 0 8px}
+.wb-head p{font:400 13px/1.65 var(--font-sans);color:#9C9C97;margin:0;max-width:88ch}
+.wb-head p+p{margin-top:7px}.wb-head b{color:#CFCDC2;font-weight:600}
+.circ-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.wb-lever{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:16px;padding-top:14px;border-top:1px solid #2A2A27}
+.wb-lever-lbl{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:#7E7E79}
+.wb-lever-note{flex:1 1 100%;font:400 12.5px/1.6 var(--font-sans);color:#9C9C97;margin-top:8px;max-width:88ch}
+.wb-opt{border-bottom:1px solid var(--color-border-1)}
+.wb-bar{background:#1E1E1C;padding:13px 28px;display:flex;flex-wrap:wrap;align-items:center;gap:0 13px}
+.wb-n{font:600 12px/1 var(--font-mono);color:#141413;background:#8BBFAD;border-radius:3px;padding:5px 8px}
+.wb-name{font:600 15px/1.3 var(--font-sans);color:#fff}
+.wb-seg{margin-left:auto;display:flex;gap:2px;background:#2A2A27;border-radius:var(--radius-md);padding:3px}
+.wb-lever .wb-seg{margin-left:0}
+.wb-seg button{background:transparent;border:0;cursor:pointer;border-radius:var(--radius-sm);padding:6px 10px;min-height:30px;font:500 12px/1 var(--font-sans);color:#9C9C97}
+.wb-seg button:hover{color:#E8E8E5}
+.wb-seg button[data-on]{background:#E8E8E5;color:#141413}
+.wb-notes{flex:1 1 100%;display:flex;flex-direction:column;gap:4px;margin-top:9px}
+.wb-notes span{font:400 12.5px/1.6 var(--font-sans);color:#9C9C97;max-width:96ch;text-wrap:pretty}
+.wb-notes b{font-weight:600;color:#CFCDC2}
+.wb-notes .wb-len{font:400 12px/1.5 var(--font-mono);color:#7E7E79}
+.wb-row{display:flex;flex-wrap:wrap;gap:24px;padding:26px 28px 34px;align-items:flex-start}
+.wb-cell{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wb-cap{font:500 10.5px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em;text-transform:uppercase}
+.wb-frame{position:relative;height:680px;max-width:100%;background:var(--color-page);border:1px solid var(--color-border-1);border-radius:12px;overflow:hidden;flex-shrink:0}
+.wb-ta::placeholder{color:var(--color-fg-3)}
+.wb-ta::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/swell-reactions.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-parts.jsx"></script>
+<script type="text/babel" src="docs/specs/add-surface/wb-add-parts.jsx"></script>
+<script type="text/babel" src="docs/specs/add-surface/wb-returned.jsx"></script>
+</body>
+</html>

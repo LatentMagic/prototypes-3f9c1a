@@ -11,9 +11,11 @@
 - `github.md` — the four-repo working context this project sits in: business-ops (where intent is refined into the prompts that arrive here), the monorepo (the stable project specs *and* the governance standards, including the binding `specs/governance/standards/ui-design.md`), the wiki (voice, positioning, brand), and prototypes-3f9c1a (where this project is published as `app/circlists/canon/`). Read it before looking for a spec, the PRD, copy voice, positioning, or the reasoning behind a prompt: those are read **live** from GitHub, not held here.
 - `docs/BRANDING.md` — thin pointer to `brand/`, noting it's a manual copy of the wiki's brand directory.
 - `brand/motion/circlists-motion.md` — spec for the mark's motion (pulse/spinner/micro keyframes, timings, curves). The `<style>`/`@keyframes` block gets stripped from the SVGs on upload, so the shipped `brand/motion/*.svg` files are static — do not treat that as a defect and do not edit them. When you need the motion, refer to this markdown spec as the source of truth for the curves, timings, and keyframes.
+- `HOMEPAGE-DEMO.md` — the **homepage demo**: the app state a stranger plays with on `circlists.com`. It is part of the working line's output and **ships with every export** (`circlists-homepage-demo.html` + `demo/`). Read it before touching the demo entry, its overlay, its seed, or the module list either entry carries — and whenever a module is added to or removed from `circlists.html`.
 - `GOTCHA.md` — hard-won, non-obvious traps (overlay/sheet motion, sandbox verification pitfalls). Read before touching animated overlays or "verifying" a mount transition.
   - **Editing rule:** only add an entry when the user approves it — do not append gotchas unprompted. Keep each entry terse: symptom → cause → fix → rule.
 - `skills/build-playground/SKILL.md` (+ `references/`) — how to build a playground: the intent, the non-negotiables, picking the rig shape, then config/driver patterns and wiring in its references. Supersedes the old `PLAYGROUND.md`. Keep it current: when a playground teaches you something durable, add it here.
+- `skills/build-candidate/SKILL.md` — how to build a **candidate build**: a second, unratified state of the app that *is* the app, carried by an overlay set over the one shared `app/` rather than a fork or a playground. The philosophy and the invariants; read before building any delta that has to be played as the product. Supersedes `docs/specs/candidate-builds/README.md` as the standard (that file stays as the reasoning record).
 - `skills/frontend-ui-engineering/SKILL.md` (+ `references/accessibility-checklist.md`) — code-quality bar for building or reorganising the `app/` UI: composition, focused components (split past ~200 lines), state-management fit, WCAG 2.1 AA, and the anti-AI-aesthetic rules. Read before non-trivial UI work or refactors. It reinforces conventions the app already follows — deletable aids, `window`-based module decoupling, container/presentation split — so keep those intact when editing.
 
 These distil the durable essence. For exact tokens, components, and visual style, this project's own `tokens.css` and the brand pack (`brand/circlists-brand.md` + its SVGs) are the binding source — when in doubt on a specific value, they win. (Voice and the destructive-red `#991b1b` are captured in Key reminders below, not the pack.)
@@ -42,6 +44,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Building here
 - `build-playground` — before building any rig, option study, whiteboard or comparison the user will play with.
+- `build-candidate` — before building a delta that has to *be* the app rather than sit beside it as options; and before touching an existing `circlists-<ticket>.html` entry or its `cand-*` overlays.
 - `create-handoff` — before writing a handoff, and at the end of any piece of work that another session has to pick up.
 - `frontend-ui-engineering` — before non-trivial `app/` UI work or any refactor.
 
@@ -49,11 +52,11 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ## Where files live
 - **Upstream first.** Product behaviour lives in the monorepo spec, cross-app design law in `specs/governance/standards/ui-design.md`, brand and voice in the wiki, and the reasoning behind any prompt that arrives here in business-ops `work/apps/circlists/<ticket>/` — read that ticket's `CONTEXT.md` before building against its prompt, since the prompt is the tip of a much larger record. The ticket convention there is the same as ours, so the folder names line up. Read all of it live; the only thing mirrored into this project is `brand/`, because the app loads `brand/assets/*` at runtime. Details and paths in `github.md`. Never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
-- **Root** holds only what must be there: `circlists.html`, `app/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
+- **Root** holds only what must be there: `circlists.html`, `circlists-homepage-demo.html`, `app/`, `demo/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `HOMEPAGE-DEMO.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
 - **`docs/`** holds durable docs only (`ABOUT.md`, `BRANDING.md`).
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the monorepo — `lm-###` for changes, `circ-###` for requirements, `biz-##` for business-ops work. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
-- **One exception:** a playground *entry* HTML must sit at the project root for `app/*`, `tokens.css` and `brand/` to resolve. Name it `pg-<slug>.html`; its modules still live in the spec folder. On archive, delete the entry and keep the standalone bundle.
+- **One exception:** an *entry* HTML must sit at the project root for `app/*`, `tokens.css` and `brand/` to resolve — a playground entry (`pg-<slug>.html`) or a candidate-build entry (`circlists-<ticket>.html`). Its modules still live in the spec folder. On archive, delete the entry and keep the standalone bundle. (The homepage demo is not task-scoped: its entry and its `demo/` modules are permanent root fixtures — see `HOMEPAGE-DEMO.md`.)
 
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a
@@ -90,4 +93,10 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 - **Three presentation postures, one shared core.** Desktop web, mobile web, and **app** (native mobile). `main.jsx` routes every in-shell surface through `inShell()`, which swaps ONLY the chrome; everything inside is the same shared component, so a shared-surface change must land in all three with no per-posture edit — never fork a surface for the app. Web is frozen. Mechanism and module rules in `ARCHITECTURE.md`; the app posture's own IA in `MOBILE.md`.
 
 ## Replying in chat (not product copy)
+- **CRITICAL: keep every turn digestible.** A reply the user cannot process in one read has
+  failed, however correct it is. Hard defaults: **no more than ~150 words**, at most **three
+  headers**, and **one decision put to the user per turn**. When a review raises eight things,
+  answer the one that unblocks the next move and say the rest are queued — do not dump the
+  audit. Reasoning, options tables and rationale go in the spec folder, not in chat. If the
+  reply needs headers to be navigable, it is already too long.
 - **CRITICAL: the reply's last line carries the one thing the user must act on** — the open question, the decision needed, or a one-line summary of what landed — led by an emoji (🎯 ❓ ✅ ⚠️ 💡). User scans bottom-up; never bury the ask or takeaway above it, never hide it mid-paragraph. (This governs chat replies only — the product's "no emoji, ever" rule still holds for all UI copy.)

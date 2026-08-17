@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Whiteboard — the thought's voice, v2</title><link rel="stylesheet" href="tokens.css"><style>
+*{box-sizing:border-box}body{margin:0;background:var(--color-page)}
+.wb-head{background:#141413;color:#E8E8E5;padding:22px 28px 20px}
+.wb-head h1{font:600 16px/1.3 var(--font-mono);color:#fff;margin:0 0 8px}
+.wb-head p{font:400 13px/1.6 var(--font-sans);color:#9C9C97;margin:0;max-width:80ch}
+.wb-head b{color:#CFCDC2;font-weight:600}
+.wb-opt{border-bottom:1px solid var(--color-border-1)}
+.wb-bar{background:#1E1E1C;padding:13px 28px;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 13px}
+.wb-n{font:600 12px/1 var(--font-mono);color:#141413;background:#8BBFAD;border-radius:3px;padding:5px 7px}
+.wb-name{font:600 15px/1.3 var(--font-sans);color:#fff}
+.wb-lines{flex:1 1 100%;display:flex;flex-direction:column;gap:3px;margin-top:7px}
+.wb-lines span{font:400 12.5px/1.55 var(--font-sans);color:#9C9C97;max-width:84ch}
+.wb-lines b{font-weight:600;color:#CFCDC2}
+.wb-grid{display:grid;grid-template-columns:repeat(3,minmax(300px,1fr));gap:26px;padding:26px 28px 32px;align-items:start}
+@media(max-width:1040px){.wb-grid{grid-template-columns:1fr;max-width:460px}}
+.wb-cell{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wb-cap{font:500 10.5px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em;text-transform:uppercase}
+.c{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:var(--space-4);box-shadow:var(--shadow-raised);display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.c-src{display:flex;align-items:center;gap:8px;min-width:0}
+.c-src img{width:15px;height:15px;border-radius:3px;border:1px solid var(--color-border-2);object-fit:cover;flex-shrink:0}
+.c-src i{font:600 13px/1.3 var(--font-sans);color:var(--color-fg-2);font-style:normal}
+.c-title{font:600 16px/1.3 var(--font-sans);letter-spacing:-.01em;color:var(--color-fg-1);text-decoration:none;text-wrap:pretty}
+.c-foot{display:flex;align-items:center;gap:8px}
+.av{border-radius:var(--radius-pill);border:1px solid var(--color-border-1);display:inline-flex;align-items:center;justify-content:center;font:600 8.5px/1 var(--font-sans);color:var(--color-fg-3);flex-shrink:0;width:22px;height:22px;background:var(--color-surface)}
+.c-by{font:600 13px/1.3 var(--font-sans);color:var(--color-fg-2)}
+.c-at{font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.c-acts{margin-left:auto;display:flex;gap:14px;color:var(--color-fg-3)}
+.c-band{display:flex;align-items:center;gap:10px;margin:2px -16px -16px;padding:11px 16px;border-top:1px solid var(--color-border-2);min-width:0}
+.bw{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:400 13px/1.5 var(--font-sans);color:var(--color-fg-2)}
+.mk{flex-shrink:0;display:flex;flex-direction:column;gap:2.5px;width:14px}
+.mk i{display:block;height:1.5px;background:var(--color-fg-3);border-radius:1px;opacity:.75}
+.mk i:nth-child(2){width:11px}.mk i:nth-child(3){width:7px}
+.k{display:flex;flex-direction:column;gap:16px}
+.k-eyebrow{font:500 10.5px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.k-turn{display:flex;gap:10px}.k-turn p{font:400 13.5px/1.55 var(--font-sans);color:var(--color-fg-2);margin:0}
+.k-turn b{font:600 13px/1.3 var(--font-sans);color:var(--color-fg-2);display:block;margin-bottom:2px}
+.k-rule{height:1px;background:var(--color-border-2)}
+/* ---- the thought block: base ---- */
+.th{font:400 13.5px/1.75 var(--font-sans);color:var(--color-fg-2)}
+.th p{font:inherit;color:inherit;margin:0}.th ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.th .nm{font:600 13px/1.3 var(--font-sans);color:var(--color-fg-1)}
+.th .tm{font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+/* 1 gutter */
+.o1 .th{display:flex;gap:11px}.o1 .th>div{min-width:0}
+.o1 .th .nm{display:block;margin-bottom:3px}
+/* 2 name leads */
+.o2 .th .nm{display:block;font:600 19px/1.25 var(--font-sans);letter-spacing:-.015em;margin-bottom:5px}
+.o2 .th{font-size:13px;line-height:1.7}
+/* 3 hanging name */
+.o3 .th{padding-left:76px;text-indent:-76px;font-size:13.5px;line-height:1.7}
+.o3 .th ul{text-indent:0;padding-left:18px}
+.o3 .th .nm{display:inline-block;width:68px;margin-right:8px;vertical-align:top;color:var(--color-fg-3);font-weight:500;text-align:right}
+/* 4 annex */
+.o4 .th{font-size:12.5px;line-height:1.8}
+.o4 .anx{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.o4 .anx .nm{font-size:11.5px;font-weight:600;color:var(--color-fg-2)}
+/* 5 island */
+.o5 .th{margin:6px 26px 6px 22px;font-size:14px;line-height:1.8;max-width:38ch}
+.o5 .th .sig{display:block;margin-top:9px}
+/* 6 stamp */
+.o6 .th .av{float:left;margin:2px 10px 4px 0;width:28px;height:28px;font-size:10px}
+.o6 .th{font-size:13.5px;line-height:1.7;overflow:hidden}
+/* 7 mark */
+.o7 .th .cm{display:block;margin-bottom:8px}
+.o7 .th{font-size:13.5px;line-height:1.7}
+/* 8 lowered */
+.o8 .th{font-size:12.5px;line-height:1.95;letter-spacing:.004em;max-width:52ch}
+.o8 .th .sig{display:block;text-align:right;margin-top:10px}
+</style></head><body>
+<div class="wb-head"><h1>LM-652 · the thought's voice — v2</h1>
+<p>Eight composed answers to one question: what makes the contributed thought read as <b>Priya, speaking to the circle</b> — never as a pull-quote, extract or subheading from the article. Each is type register <i>and</i> device <i>and</i> placement decided together, and they are meant to be told apart from across the room before any rationale is read.</p>
+<p>One font family throughout. No mono, no second paper, no bare black, nothing at title size. The domain question is untouched.</p></div>
+<div id="wb"></div>
+<script>
+const AV = (i,c)=>'<span class="av"'+(c?' style="'+c+'"':'')+'>'+i+'</span>';
+const LEAD = "Before Thursday\u2019s review, the three things I want us to agree on:";
+const BULL = ['when a future is allowed to block','who owns the waker in our executor wrapper','whether we keep the custom runtime at all'];
+const BODY = '<p>'+LEAD+'</p><ul>'+BULL.map(b=>'<li>'+b+'</li>').join('')+'</ul>';
+const CM = '<svg class="cm" width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="none" stroke="#8BBFAD" stroke-width="1.5"/><circle cx="6" cy="6" r="2" fill="#047857"/></svg>';
+const TICK='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const BIN='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';
+const SRC='<div class="c-src"><img src="uploads/card-favicons/jvns.ca.ico" alt=""><i>Julia Evans</i></div>';
+const TITLE='<a class="c-title" href="#">How DNS Resolvers Actually Work</a>';
+const FOOT=(showBy)=>'<div class="c-foot">'+(showBy?AV('PN')+'<span class="c-by">Priya N.</span><span class="c-at">6h</span>':'')+'<span class="c-acts">'+TICK+BIN+'</span></div>';
+
+const OPTS=[
+{n:1,name:'Gutter',
+ stance:'The words step off the card\u2019s left edge into a column of their own, with the contributor standing beside them. The indent alone says these words are not the card\u2019s matter \u2014 someone put them here.',
+ cost:'It is the setting a turn gets on the conversation surface, so it can read as the first reply rather than the thing the conversation started from. Below 420px the gutter has to collapse.',
+ block:'<div class="th">'+AV('PN')+'<div><span class="nm">Priya N. <span class="tm">6h</span></span>'+BODY+'</div></div>',
+ band:AV('PN','width:17px;height:17px;font-size:7px')+'<span class="bw">'+LEAD+'</span>', foot:false},
+
+{n:2,name:'Name leads',
+ stance:'The person is the headline and the thought is the body under it. The words go small and grey; the name goes large and black, above them, where a byline never sits.',
+ cost:'A second piece of large black type on a card whose title is supposed to own that role \u2014 on a short title the name can out-shout the link.',
+ block:'<div class="th"><span class="nm">Priya N. <span class="tm">6h</span></span>'+BODY+'</div>',
+ band:'<span class="bw"><b style="font:600 14px/1.3 var(--font-sans);color:var(--color-fg-1)">Priya N.</b>&ensp;'+LEAD+'</span>', foot:false},
+
+{n:3,name:'Hanging name',
+ stance:'The name hangs out in the margin and the whole thought is indented past it \u2014 the shape of a transcript or a letterhead, where the speaker is set apart from what they said rather than dropped into it.',
+ cost:'The hanging column costs real width, and a long name either wraps or truncates. The block is visibly indented from everything else on the card.',
+ block:'<div class="th"><span class="nm">Priya N.</span>'+LEAD+'<ul>'+BULL.map(b=>'<li>'+b+'</li>').join('')+'</ul></div>',
+ band:'<span class="bw"><span style="color:var(--color-fg-3);font-weight:500">Priya N.</span>&emsp;'+LEAD+'</span>', foot:false},
+
+{n:4,name:'Annex',
+ stance:'A hairline runs the full width of the card and everything below it is a different register \u2014 smaller, looser, quieter. Structurally annexed to the card rather than printed inside it.',
+ cost:'Quiet to the point of being missable, and it makes the card two-part in a shelf where cards are one object.',
+ block:'<div class="k-rule" style="margin:2px -16px 12px"></div><div class="th"><div class="anx">'+AV('PN','width:18px;height:18px;font-size:7px')+'<span class="nm">Priya N.</span><span class="tm">6h</span></div>'+BODY+'</div>',
+ band:'<span class="bw" style="font-size:12.5px;line-height:1.8">'+LEAD+'</span>', foot:false},
+
+{n:5,name:'Island',
+ stance:'Air does the work. The thought is inset from both edges on a short measure with space above and below, so it sits as an object placed on the card rather than a paragraph flowing in it.',
+ cost:'The most vertical space of the eight, and the short measure makes a long thought much taller. Nothing marks it as a person\u2019s words except where it sits.',
+ block:'<div class="th">'+BODY+'<span class="sig"><span class="nm" style="font-weight:500;color:var(--color-fg-3)">Priya N.</span> <span class="tm">6h</span></span></div>',
+ band:'<span class="bw" style="padding-left:14px">'+LEAD+'</span>', foot:false},
+
+{n:6,name:'Stamp',
+ stance:'The contributor is set into the text itself \u2014 the avatar sits in the first lines and the words wrap around it, so the person and the words are one object and cannot be read apart.',
+ cost:'A wrapped image is an editorial idiom, and on a one-line thought the avatar is taller than the text it sits in.',
+ block:'<div class="th">'+AV('PN')+BODY+'</div>',
+ band:AV('PN','width:17px;height:17px;font-size:7px')+'<span class="bw">'+LEAD+'</span>', foot:true},
+
+{n:7,name:'The mark',
+ stance:'One small object stands above the words \u2014 the circle mark, sage ring and green centre, at 11px. It is the product\u2019s own mark saying this came from inside the circle, and it belongs to no article anywhere.',
+ cost:'It introduces the brand mark into card content, where it has never appeared, and green in the body is a colour this product rations hard.',
+ block:'<div class="th">'+CM+BODY+'<span class="sig" style="display:block;margin-top:9px"><span class="nm" style="font-weight:500;color:var(--color-fg-3)">Priya N.</span> <span class="tm">6h</span></span></div>',
+ band:'<span style="flex-shrink:0;display:flex">'+CM+'</span><span class="bw">'+LEAD+'</span>', foot:false},
+
+{n:8,name:'Lowered voice',
+ stance:'No device at all, and the register carries it: two steps down in size, opened right out in leading, held to a short measure, and signed small at the right. Quieter than anything else on the card, which is what a person\u2019s aside sounds like.',
+ cost:'12.5px is at the floor of what the standard allows, and \u201cquiet\u201d is the same signal a caption gives \u2014 nothing here says <i>somebody wrote this</i> except the signature at the end.',
+ block:'<div class="th">'+BODY+'<span class="sig"><span class="nm" style="font-weight:500;color:var(--color-fg-3)">Priya N.</span> <span class="tm">6h</span></span></div>',
+ band:'<span class="bw" style="font-size:12.5px;letter-spacing:.004em">'+LEAD+'</span>', foot:false},
+];
+
+document.getElementById('wb').innerHTML = OPTS.map(o=>`
+<section class="wb-opt o${o.n}">
+ <div class="wb-bar"><span class="wb-n">${o.n}</span><span class="wb-name">${o.name}</span>
+  <div class="wb-lines"><span><b>Direction.</b> ${o.stance}</span><span><b>Cost.</b> ${o.cost}</span></div></div>
+ <div class="wb-grid">
+  <div class="wb-cell"><span class="wb-cap">tucked under</span>
+   <div class="c">${SRC}${TITLE}<div class="c-band">${o.band}<span class="mk"><i></i><i></i><i></i></span></div></div></div>
+  <div class="wb-cell"><span class="wb-cap">open</span>
+   <div class="c">${TITLE}${SRC}${o.block}${FOOT(o.foot)}</div></div>
+  <div class="wb-cell"><span class="wb-cap">conversation</span>
+   <div class="k"><span class="k-eyebrow">the conversation</span>${o.block}
+    <div class="k-rule"></div>
+    <div class="k-turn">${AV('MT')}<div><b>Marcus T.</b><p>Agreed on the first two. The third we settle after the migration.</p></div></div></div></div>
+ </div></section>`).join('');
+</script></body></html>

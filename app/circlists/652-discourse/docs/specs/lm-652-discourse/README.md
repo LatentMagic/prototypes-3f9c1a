@@ -81,7 +81,8 @@ precedent for it yet.
 
 | File | For |
 |---|---|
-| [`handoff-2026-08-14-return-button-and-prebuild-decisions.md`](handoff-2026-08-14-return-button-and-prebuild-decisions.md) | **Latest — start here.** The working decisions above, and why. |
+| [`handoff-2026-08-17_conversation-surface.md`](handoff-2026-08-17_conversation-surface.md) | **Latest — start here.** The conversation surface audit: the head card rebuilt as the shelf card, the fold as the watching control, the roster door restored, glyphs off the turns. Carries the **ratified problem** C5 exists to answer. |
+| [`handoff-2026-08-14-return-button-and-prebuild-decisions.md`](handoff-2026-08-14-return-button-and-prebuild-decisions.md) | The working decisions above, and why. |
 | [`handoff-2026-08-12-discourse-v8-return.md`](handoff-2026-08-12-discourse-v8-return.md) | The v8 return round. |
 | [`handoff-2026-08-12-discourse-v8-playground.md`](handoff-2026-08-12-discourse-v8-playground.md) | Carries the **verbatim v8 prompt**. Still the brief. |
 | [`handoff-2026-08-11-discourse-v7-processing.md`](handoff-2026-08-11-discourse-v7-processing.md) | The v7 review and the four ratified laws. |

@@ -97,6 +97,20 @@ repointed.
 
 ## Action Items & Next Steps
 
+0. **THE REVEAL IS NOT DONE — outstanding, top of the list.** The prompt asked for the
+   conversation to be introduced at the reveal (up to three of the opening turns, on the way to
+   the surface). What ships today is only the Swell disc plus a primary "Go to the conversation"
+   button: the conversation is never introduced, so the reveal does not do the job the prompt
+   set. A first attempt at it (excerpts beside the disc, panel widening to 760px, an
+   additive `wideOnReveal` hook in `app/swell-reactions.jsx`) was **rejected on sight by the
+   owner and fully reverted** — `app/swell-reactions.jsx` is back to 420/348 with no hook, and
+   `cand-lm652-reveal.jsx` back to disc + button. Do not re-propose that shape.
+   Constraints it has to satisfy, from the owner: it must hold three conversation excerpts
+   **without overspilling the viewport** (the pre-revert version ran off-screen), the resize has
+   to be a fluid transition rather than a jump, the ✕ top-right is right and stays, and "Go to
+   the conversation" as a primary button is right and stays. **Bring options and get them
+   ratified before building this one — it has now been got wrong twice.**
+
 1. **Take the owner's review notes** on the live build; change only what is named. The nine flagged
    choices above are the likeliest targets.
 2. **After it survives review**: write `skills/build-candidate/SKILL.md` from this handoff's

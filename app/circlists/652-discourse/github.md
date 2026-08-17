@@ -98,6 +98,27 @@ is never stale.
 
 ## Last sync
 
+date: 2026-08-17T11:22:03Z
+wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for the add
+surface's writing-face placeholder). Nothing mirrored; no tree/commit resolved this turn.
+
+### Updated in this project
+- Add-surface direction 2: the writing face's placeholder is now
+  "Say why you're sharing it, or leave it blank." — the Swell caption's own
+  command + command construction, which is what makes it parse.
+
+## Previous sync
+
+date: 2026-08-17T10:25:35Z
+wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for the
+add surface's Swell caption). Nothing mirrored; no tree/commit resolved this turn.
+
+### Updated in this project
+- Add-surface whiteboard: The Swell's framing lever resolved to a single caption
+  under the disc, no heading. Copy vetted against the wiki's voice rules.
+
+## Previous sync
+
 date: 2026-08-14T15:34:00Z
 monorepo tree: 3a7d49e49ac9
 wiki tree: f77c6f4e1789 (wiki/products/circlists/)

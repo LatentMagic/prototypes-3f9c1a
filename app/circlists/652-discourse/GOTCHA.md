@@ -7,6 +7,9 @@ Entries 1–5 are code traps. **Entries 6–11 are judgement traps** — the mis
 that cost the most time on this project were not wrong code, they were wrong
 intent. Read those before starting design work, not while debugging it.
 
+Entry 12 is a code trap; it sits after the judgement traps because it was found
+later, not because it matters less.
+
 ---
 
 ## 1. `.focus()` on an element in an off-screen sheet heaves the whole screen
@@ -236,3 +239,44 @@ state explicitly (and say what ends it).
 
 **Rule.** Never let a prototype collapse "appears" into "works". Where they can
 separate, name both.
+
+---
+
+## 12. A CSS transition never fires if the `transition` property arrives in the same commit as the value
+
+**Symptom.** The tucked-under card's swap snapped open with no motion. The class
+carrying the transition was on the element, `transition-duration` computed as
+`0.4s`, the inline height changed from `146px` to `12px` — and nothing travelled.
+No console error, nothing to grep for.
+
+**Cause.** A transition is only generated when the property is transitionable in
+the **before** style. Arming it at the moment of the change — `setMoving(true)`
+alongside `setOpen(true)`, so the class and the new height land in one React
+commit — means the before-style had no transition, so the browser has nothing to
+interpolate from and applies the new value directly.
+
+The obvious workaround is worse: an "arm on mount" effect
+(`requestAnimationFrame` → `setArmed(true)`) is a race that fails silently under
+StrictMode's double-invoked effects and any remount, leaving the class off
+entirely. Two rounds were spent on variants of the same wrong idea.
+
+**Fix.** Either the transition property is **permanently present** on the
+element, or the motion is driven explicitly. The candidate does the second: the
+geometry runs through `element.animate()` from known from/to values in a
+`useLayoutEffect`, guarded by `prefers-reduced-motion`
+(`docs/specs/lm-652-discourse/cand-lm652-card.jsx`, `CandCardRow`). Only the soft
+properties — shadow, radius, background, border colour — stay on a CSS
+transition, where a miss is invisible.
+
+**Two related traps in the same family.**
+- **`auto` is not interpolatable.** A card sitting at `height: auto` snaps on the
+  first frame and only then travels. Heights must be explicit at rest — which
+  also means the initial `auto` → measured-px step is free, because it cannot
+  animate.
+- **A discrete `z-index` flip is visible wherever the two elements overlap.**
+  Flip it where they do not touch, not halfway through.
+
+**Rule.** Never gate a transition behind a class you switch on at the moment you
+use it. And when motion matters, drive it — a silent no-op is the worst failure
+mode there is, because the code reads as correct and only the user can see that
+it is not (see entry 2: you cannot verify this from a screenshot).
