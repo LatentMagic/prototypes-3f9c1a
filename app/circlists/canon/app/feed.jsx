@@ -385,12 +385,37 @@ const FAB = ({ onClick, expanded, isMobile, confirm }) => {
   );
 };
 
+// ---- The viewer's own view of the circles (LM-666, "delete for me") --------
+// State: `hiddenForMe: [itemId]` per circle, carried inside the space object so
+// it persists with everything else. Leaving drops the circle, so a rejoin
+// reseeds it whole — the same grain on which read state is seeded per join.
+//
+// The read side is ONE function, run over the RENDERED circles in main.jsx, so
+// both tabs, the New pill, the waterline, the empty state, the rail dot and the
+// home rows all derive from it and a hidden link cannot leak through one surface
+// while being gone from another. Mutations still run against the raw state.
+const circHiddenForMe = (s) => (s && s.hiddenForMe) || [];
+// Who holds "Delete for everyone": the link's contributor, and the circle's
+// champion. Read off what the product already carries.
+const circIsContributor = (item) => /^added by\s+you\b/i.test((item && item.attribution) || '');
+const circHoldsForEveryone = (item, space) => circIsContributor(item) || (!!space && space.champion === 'You');
+const circViewerSpaces = (spaces) => spaces.map((s) => {
+  const hid = circHiddenForMe(s);
+  if (!hid.length) return s;
+  const items = s.items.filter((i) => !hid.includes(i.id));
+  const pending = (s.pending || []).filter((i) => !hid.includes(i.id));
+  const mark = s.lastSeenAt || 0;
+  // Honest dot: something unread AND newer than the mark has to be left to see.
+  const arrivals = pending.length > 0 || items.some((i) => !i.read && i.at && i.at > mark);
+  return { ...s, items, pending, unseen: !!s.unseen && arrivals };
+});
+
 // ---- ConfirmDialog — one primitive; destructive delete. (Mark-as-read no
 // longer confirms: it opens the Swell reaction flow — see SwellReactionFlow.)
 const CONFIRM = {
   'delete': {
     title: 'Delete this link?',
-    body: 'It\u2019s removed from the circle for everyone, and can\u2019t be undone.',
+    body: 'It goes from your list. Everyone else keeps it.',
     primary: 'Delete', variant: 'destructive', role: 'alertdialog',
   },
   // Leaving a circle. Written to the Remove-a-member dialog's shape: three
@@ -424,7 +449,78 @@ const CONFIRM = {
     primary: 'Delete account', variant: 'destructive', role: 'alertdialog',
   },
 };
-const ConfirmDialog = ({ kind, onConfirm, onCancel }) => {
+// ---- Delete: one panel, two reaches (LM-666) --------------------------------
+// The house confirm shell with its single primary replaced by a stack of the
+// app's own full-width buttons. NO DEFAULT ACT — a destructive act is never the
+// default one, so neither reach is filled: both take the house
+// destructive-secondary, and the plain secondary Cancel beneath them holds the
+// focus, so Return dismisses. A member who holds only "Delete for me" gets the
+// same panel with the second button absent, and the body line changes from the
+// choice to the consequence. Order is escalating reach.
+const DELETE_COPY = {
+  title: 'Delete this link?',
+  choose: 'Choose how far this goes.',
+  me: { label: 'Delete for me', line: 'It goes from your list. Everyone else keeps it.' },
+  all: { label: 'Delete for everyone', line: 'It goes from the whole circle, for good.' },
+};
+const DeleteDialog = ({ item, space, onDeleteForMe, onDeleteForEveryone, onClose }) => {
+  const wide = circHoldsForEveryone(item, space);
+  const panelRef = React.useRef(null);
+  const cancelRef = React.useRef(null);
+  const invokerRef = React.useRef(null);
+  const committed = React.useRef(false);
+  React.useEffect(() => {
+    invokerRef.current = document.activeElement;
+    const id = setTimeout(() => cancelRef.current && cancelRef.current.focus({ preventScroll: true }), 40);
+    const onKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab') return;
+      const p = panelRef.current;
+      if (!p) return;
+      const f = p.querySelectorAll('button');
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus({ preventScroll: true }); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus({ preventScroll: true }); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener('keydown', onKey);
+      // Dismissed → focus returns to the trigger. Taken → the trigger went with
+      // the card, so focus lands on the feed rather than falling to the document.
+      if (committed.current) {
+        const m = document.querySelector('main');
+        if (m) { m.setAttribute('tabindex', '-1'); m.focus({ preventScroll: true }); }
+      } else if (invokerRef.current && invokerRef.current.focus) {
+        invokerRef.current.focus({ preventScroll: true });
+      }
+    };
+  }, []);
+  const take = (fn) => { committed.current = true; fn(); };
+  return (
+    <div className="circ-confirm-scrim" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div ref={panelRef} className="circ-confirm-panel" role="alertdialog" aria-modal="true"
+        aria-labelledby="circ-confirm-title" aria-describedby="circ-confirm-sub">
+        <h2 id="circ-confirm-title" className="circ-confirm-title">{DELETE_COPY.title}</h2>
+        <p id="circ-confirm-sub" className="circ-confirm-sub">{wide ? DELETE_COPY.choose : DELETE_COPY.me.line}</p>
+        <div className="circ-confirm-stack">
+          <Button variant="destructive-secondary" full
+            onClick={() => take(() => { onDeleteForMe(item); onClose(); })}>{DELETE_COPY.me.label}</Button>
+          {wide && <Button variant="destructive-secondary" full
+            onClick={() => take(() => onDeleteForEveryone())}>{DELETE_COPY.all.label}</Button>}
+          <Button ref={cancelRef} variant="secondary" full onClick={onClose}>Cancel</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }) => {
+  if (kind === 'delete' && item) {
+    return <DeleteDialog item={item} space={space} onDeleteForMe={onDeleteForMe}
+      onDeleteForEveryone={onConfirm} onClose={onCancel} />;
+  }
   const v = CONFIRM[kind];
   const cancelRef = React.useRef(null);
   const invokerRef = React.useRef(null);
@@ -469,4 +565,5 @@ const ConfirmDialog = ({ kind, onConfirm, onCancel }) => {
   );
 };
 
-Object.assign(window, { FeedCard, FeedLoading, EmptyState, AddReveal, FAB, ConfirmDialog });
+Object.assign(window, { FeedCard, FeedLoading, EmptyState, AddReveal, FAB, ConfirmDialog, DeleteDialog,
+  circViewerSpaces, circHiddenForMe, circHoldsForEveryone });

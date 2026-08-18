@@ -219,8 +219,17 @@ const CircApp = () => {
   }, [route, user, spaces, currentId, tab]);
 
   const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
-  const listSpaces = useMemo(() => showTest ? spaces : spaces.filter(s => !isTestSpace(s)), [spaces, showTest]);
-  const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
+  // ---- The viewer's own view of the circles --------------------------------
+  // Scopes what THIS member sees inside each circle (LM-666's delete for me);
+  // app/feed.jsx owns the rule. A cand-* overlay may still override it by
+  // publishing window.CircViewerSpaces. Mutations run against the raw `spaces` /
+  // spacesRef; only what is RENDERED goes through here.
+  const viewSpaces = useMemo(() => {
+    const f = window.CircViewerSpaces || window.circViewerSpaces;
+    return f ? f(spaces, user) : spaces;
+  }, [spaces, user]);
+  const listSpaces = useMemo(() => showTest ? viewSpaces : viewSpaces.filter(s => !isTestSpace(s)), [viewSpaces, showTest]);
+  const space = useMemo(() => viewSpaces.find(s => s.id === currentId) || null, [viewSpaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
   const isChampion = (s) => !!s && s.champion === 'You';
 
@@ -449,6 +458,15 @@ const CircApp = () => {
   // Account deletion. Circles this member champions run to the end of their paid
   // period unmanaged and then go dormant — nothing here announces that to anyone.
   const deleteAccount = () => { setSpaces([]); setCurrentId(null); setUser(DEFAULT_USER); setRoute('signin'); };
+  // Delete for me: lands at once in this member's own session, nothing anywhere
+  // records that it happened. The circle keeps the link whole for everyone else,
+  // and this member's reaction on it still stands for the circle.
+  const deleteItemForMe = (item) => {
+    if (!item) return;
+    setSpaces((prev) => prev.map((s) => (s.id === currentId
+      ? { ...s, hiddenForMe: [...((s.hiddenForMe) || []), item.id] }
+      : s)));
+  };
   const onConfirm = () => {
     if (!confirm) return;
     if (confirm.kind === 'delete') deleteItem(confirm.item);
@@ -723,7 +741,9 @@ const CircApp = () => {
   }
 
   // dialogs live above whichever screen
-  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
+  // `item` and `space` are carried because the delete confirm offers two reaches
+  // and has to know which link, in which circle, it is about (LM-666).
+  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
     || (reverify && <ReverifyDialog provider={user.ssoProvider} onPass={() => { setReverify(false); deleteAccount(); }} onCancel={() => setReverify(false)} />);  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (
     <SwellReactionFlow

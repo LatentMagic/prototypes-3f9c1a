@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="../../../../" />
+<title>Circlists — whiteboard: the button that opens the talking popover</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--color-page);color:var(--color-fg-1)}
+.wrap{max-width:1180px;margin:0 auto;padding:36px 20px 90px}
+.head{display:flex;flex-direction:column;gap:8px;padding-bottom:26px;border-bottom:1px solid var(--color-border-1)}
+.kicker{font:500 11px/1 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.25 var(--font-sans);letter-spacing:-.02em;margin:0}
+.lede{font:400 14.5px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:72ch;text-wrap:pretty}
+.dir{padding:30px 0;border-bottom:1px solid var(--color-border-2)}
+.dir-h{display:flex;align-items:baseline;gap:11px;margin-bottom:4px}
+.num{font:500 11px/1 var(--font-mono);color:var(--color-accent);flex-shrink:0;padding-top:3px}
+.dir-n{font:600 17px/1.3 var(--font-sans);letter-spacing:-.01em}
+.dir-b{display:flex;flex-direction:column;gap:5px;padding:0 0 18px 26px;max-width:76ch}
+.st{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.ct{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);text-wrap:pretty}
+.ct b{font-weight:600;color:var(--color-fg-2)}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;padding-left:26px}
+.cell{display:flex;flex-direction:column;gap:7px;min-width:0}
+.lab{font:500 10.5px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.lab em{font-style:normal;color:var(--color-border-strong);opacity:.55}
+.frame{border:1px solid var(--color-border-1);border-radius:var(--radius-md);overflow:hidden;background:var(--color-surface)}
+.under{height:34px;background:var(--color-page);border-top:1px solid var(--color-border-2)}
+/* ---- the real top bar, both postures ---- */
+.bar{height:56px;background:var(--color-surface);display:flex;align-items:center;gap:10px;padding:0 16px 0 20px}
+.bar.app{padding:0 16px;gap:8px}
+.nm{flex:1;min-width:0;font:600 16px/1 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar.app .nm{font-size:17px;letter-spacing:-.01em}
+.gear{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--color-border-1);padding:8px 12px;border-radius:var(--radius-md);min-height:40px;font:500 13px/1 var(--font-sans);color:var(--color-fg-1);flex-shrink:0}
+.gear.ico{padding:8px;width:40px;justify-content:center}
+.rule{display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--color-sage);flex-shrink:0}
+/* the candidate control, in the same box vocabulary as circle settings */
+.tk{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--color-border-1);padding:8px 11px;border-radius:var(--radius-md);min-height:40px;font:600 13px/1 var(--font-sans);color:var(--color-fg-1);flex-shrink:0}
+.tk .n{font-variant-numeric:tabular-nums}
+.chev{color:var(--color-fg-3);display:inline-flex}
+.merged{display:inline-flex;align-items:stretch;border:1px solid var(--color-border-1);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0;min-height:40px}
+.merged>span{display:inline-flex;align-items:center;gap:7px;padding:0 11px;font:600 13px/1 var(--font-sans)}
+.merged>span+span{border-left:1px solid var(--color-border-1);padding:0 11px;color:var(--color-fg-1)}
+.badge{position:absolute;top:1px;right:1px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:var(--color-sage);color:#fff;font:600 9.5px/15px var(--font-sans);text-align:center}
+.rel{position:relative;display:inline-flex;flex-shrink:0}
+.stack{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.sub{display:inline-flex;align-items:center;gap:6px;font:600 11.5px/1 var(--font-sans);color:var(--color-accent);white-space:nowrap}
+.dead{color:var(--color-fg-3)}
+/* menu sketch for B3 */
+.menu{margin:6px 12px 12px auto;width:212px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);box-shadow:var(--shadow-overlay);padding:4px}
+.mi{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--radius-sm);font:500 13px/1 var(--font-sans)}
+.mi .n{margin-left:auto;font:600 11.5px/1 var(--font-mono);color:var(--color-fg-3)}
+.pop{margin:6px 12px 12px auto;width:236px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);box-shadow:var(--shadow-overlay);padding:9px 11px;display:flex;flex-direction:column;gap:7px}
+.navbar{display:flex;align-items:flex-end;background:var(--color-surface);border-top:1px solid var(--color-border-2);padding:0 4px 6px;position:relative}
+.navitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;padding:7px 4px;color:var(--color-fg-2)}
+.navlab{font:500 10.5px/1 var(--font-sans);letter-spacing:.01em;color:var(--color-fg-3)}
+.navadd{flex:1;display:flex;justify-content:center;align-items:flex-start}
+.adddot{width:46px;height:46px;margin-top:-16px;border-radius:50%;background:var(--color-accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font:400 26px/1 var(--font-sans);box-shadow:var(--shadow-raised)}
+.pop .t{font:500 10.5px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.pl{height:9px;border-radius:2px;background:var(--color-border-2)}
+.pl.s{width:62%}
+.ref{padding-top:30px}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;padding-top:14px}
+.refc{display:flex;flex-direction:column;gap:7px}
+.refb{border:1px dashed var(--color-border-1);border-radius:var(--radius-md);background:var(--color-surface);height:56px;display:flex;align-items:center;gap:8px;padding:0 12px}
+.refn{font:400 12px/1.5 var(--font-sans);color:var(--color-fg-3)}
+.grey{width:3px;height:13px;border-radius:2px;background:var(--color-border-strong);opacity:.3}
+.note{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+a{color:var(--color-fg-1)}
+a:hover{text-decoration-color:var(--color-fg-1)}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FAFAF7"/><rect x="20" y="40" width="60" height="20" rx="4" fill="#fff" stroke="#DCDCD8" stroke-width="2"/><rect x="27" y="45" width="3" height="10" rx="1.5" fill="#8BBFAD"/></svg></template>
+<div class="wrap">
+<div class="head">
+<span class="kicker">whiteboard · return v12 · the button, not the popover</span>
+<h1>Five ways to put a talking control in the top bar</h1>
+<p class="lede">The popover is settled. The question is the button: what it looks like, where it sits, and how it lives beside circle settings without the bar reading as clutter. Every direction uses the boxed control vocabulary the bar already has — 8px radius, 1px border, 40px tall — and the sage rule as its only mark. No brand mark, no new icon family. Each is drawn idle (nothing talking) beside changed (three cards talking), in both the web bar and the app bar, because the app bar has no gear to sit beside.</p>
+</div>
+
+<section class="dir">
+<div class="dir-h"><span class="num">B1</span><span class="dir-n">Twinned box, left of settings</span></div>
+<div class="dir-b">
+<span class="st">A second box in the right corner, identical in shape to circle settings, carrying the sage rule and the count and nothing else. No word, no icon — the rule is the circle's mark for "something was said here", and the number says how much.</span>
+<span class="ct"><b>Costs:</b> two boxes in one corner. On the web bar the pair reads as a toolbar, and settings loses its status as the only thing there. In the app bar there is no gear, so the box stands alone at the right end and its "beside settings" logic evaporates.</span>
+</div>
+<div class="pairs">
+<div class="cell"><span class="lab">web · idle</span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">web · <em>changed</em></span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="tk"><i class="rule"></i><span class="n">3</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">app · <em>changed</em></span><div class="frame"><div class="bar app"><span class="nm">Longform Reading</span><span class="tk"><i class="rule"></i><span class="n">3</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div>
+</div>
+</section>
+
+<section class="dir">
+<div class="dir-h"><span class="num">B2</span><span class="dir-n">One box, split in two</span></div>
+<div class="dir-b">
+<span class="st">Not two controls but one object with two halves, divided by a hairline: the count on the left, the gear on the right. The corner keeps a single silhouette, and the count is plainly part of this circle's chrome rather than a stray thing parked next to it.</span>
+<span class="ct"><b>Costs:</b> a split control is a new pattern for the app, and the two halves do unrelated things, which is exactly what split buttons are criticised for. When nothing is talking the left half must vanish and the box changes width — the corner moves. In the app posture there is no gear here at all, so the split cannot exist and it falls back to B1.</span>
+</div>
+<div class="pairs">
+<div class="cell"><span class="lab">web · idle</span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="merged"><span class="gearhalf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">web · <em>changed</em></span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="merged"><span><i class="rule"></i><span class="n">3</span></span><span class="gearhalf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">app · <em>changed</em> — no gear to split</span><div class="frame"><div class="bar app"><span class="nm">Longform Reading</span><span class="tk"><i class="rule"></i><span class="n">3</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div>
+</div>
+</section>
+
+<section class="dir">
+<div class="dir-h"><span class="num">B3</span><span class="dir-n">Nothing new: the count rides the gear</span></div>
+<div class="dir-b">
+<span class="st">No second control anywhere. Circle settings carries a small sage count, and pressing it opens a short menu whose first row is the talking list and whose second is settings. The corner never changes shape, and the bar gains no clutter at all.</span>
+<span class="ct"><b>Costs:</b> settings becomes two taps to reach, and a gear that opens a menu is a lie about what the gear is. The count also has to sit as a badge on the glyph — the one shape the earlier round ruled out for looking like an alert.</span>
+</div>
+<div class="pairs">
+<div class="cell"><span class="lab">web · idle</span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="rel"><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">web · <em>changed</em></span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="rel"><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span><span class="badge">3</span></span></div><div class="menu"><div class="mi"><i class="rule"></i><span>Still talking</span><span class="n">3</span></div><div class="mi"><span style="color:var(--color-fg-2);display:inline-flex"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Circle settings</span></div></div></div></div>
+<div class="cell"><span class="lab">app · <em>changed</em> — the count lands on the bottom bar's gear</span><div class="frame"><div class="bar app"><span class="nm">Longform Reading</span></div><div class="under" style="height:60px;border-top:0;border-bottom:1px solid var(--color-border-2)"></div><nav class="navbar"><span class="navitem"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.2V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.2"/></svg><span class="navlab">Home</span></span><span class="navadd"><span class="adddot">+</span></span><span class="navitem"><span class="rel"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="badge" style="top:-3px;right:-7px">3</span></span><span class="navlab">Settings</span></span></nav></div></div>
+</div>
+</section>
+
+<section class="dir">
+<div class="dir-h"><span class="num">B4</span><span class="dir-n">Boxed, straight after the name</span></div>
+<div class="dir-b">
+<span class="st">Same box, other end of the bar: it follows the circle's name, so it reads as a fact about this circle rather than a tool for operating it, and the list drops directly beneath it. It is identical in both postures, because the name is the one thing every top bar has.</span>
+<span class="ct"><b>Costs:</b> the bar now has a control at each end and a truncating name between them, so a long name loses characters to make room. It also puts a pressable box in a slot that has only ever been a label.</span>
+</div>
+<div class="pairs">
+<div class="cell"><span class="lab">web · idle</span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">web · <em>changed</em></span><div class="frame"><div class="bar"><span class="nm" style="flex:0 1 auto">Longform Reading</span><span class="tk"><i class="rule"></i><span class="n">3</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span><span style="flex:1"></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="pop"><span class="t">still talking</span><div class="pl"></div><div class="pl s"></div><div class="pl"></div></div></div></div>
+<div class="cell"><span class="lab">app · <em>changed</em></span><div class="frame"><div class="bar app"><span class="nm" style="flex:0 1 auto">Longform Reading</span><span class="tk"><i class="rule"></i><span class="n">3</span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></div><div class="under"></div></div></div>
+</div>
+</section>
+
+<section class="dir">
+<div class="dir-h"><span class="num">B5</span><span class="dir-n">The name gains a second line</span></div>
+<div class="dir-b">
+<span class="st">No horizontal room is taken at all. The name slot becomes two lines — the circle's name, and under it the sage rule with a short line of words — and the whole slot is the control. The bar is 56px tall and the name occupies one line of it, so the space is already there.</span>
+<span class="ct"><b>Costs:</b> the bar's height stops being a fixed frame for one line of text, and the second line only exists sometimes, so the name shifts up when something starts talking. Words return here, and a word has to be chosen.</span>
+</div>
+<div class="pairs">
+<div class="cell"><span class="lab">web · idle</span><div class="frame"><div class="bar"><span class="nm">Longform Reading</span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">web · <em>changed</em></span><div class="frame"><div class="bar"><span class="stack"><span class="nm">Longform Reading</span><span class="sub"><i class="rule"></i>3 cards still talking<span class="chev"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></span><span class="gear"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Circle settings</span></span></div><div class="under"></div></div></div>
+<div class="cell"><span class="lab">app · <em>changed</em></span><div class="frame"><div class="bar app"><span class="stack"><span class="nm">Longform Reading</span><span class="sub"><i class="rule"></i>3 cards still talking<span class="chev"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg></span></span></span></div><div class="under"></div></div></div>
+</div>
+</section>
+
+<section class="ref">
+<span class="note">for context, not options</span>
+<div class="refgrid">
+<div class="refc"><div class="refb"><span style="font:600 14px/1 var(--font-sans)">Inbox</span><span style="flex:1"></span><span class="rel"><span style="display:inline-flex;color:var(--color-fg-2)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span class="badge" style="background:var(--color-border-strong);opacity:.72">3</span></span></div><span class="refn">Badge on a bell. Reads as an alert queue you must clear — the shape ruled out in v8.</span></div>
+<div class="refc"><div class="refb"><span style="font:600 14px/1 var(--font-sans)">Channel</span><span style="flex:1"></span><span style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--color-border-1);border-radius:var(--radius-md);padding:8px 10px;font:600 12.5px/1 var(--font-sans)"><i class="grey"></i>4 threads</span></div><span class="refn">Boxed control with a word and a count. Same vocabulary as B1/B4; the word is the cost.</span></div>
+<div class="refc"><div class="refb"><span style="font:600 14px/1 var(--font-sans)">Document</span><span style="display:inline-flex;align-items:center;gap:5px;font:500 12.5px/1 var(--font-sans);color:var(--color-fg-2)"><i class="grey"></i>2 open</span><span style="flex:1"></span></div><span class="refn">Bare count beside the title, no box. Quietest, and the least visible as a control.</span></div>
+<div class="refc"><div class="refb" style="align-items:flex-end;padding:0 12px"><span style="display:inline-flex;align-items:center;gap:7px;padding-bottom:9px;font:600 13px/1 var(--font-sans)">Active</span><span style="display:inline-flex;align-items:center;gap:6px;padding-bottom:9px;font:500 13px/1 var(--font-sans);color:var(--color-fg-2)">Talking<i style="width:6px;height:6px;border-radius:50%;background:var(--color-border-strong);opacity:.3;display:inline-block"></i></span></div><span class="refn">A third tab with a dot. Where v12's W3 sat; out, and drawn here only to show the family.</span></div>
+</div>
+</section>
+</div>
+</body>
+</html>

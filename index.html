@@ -967,6 +967,16 @@
           changelog: [
             {
               date: '2026-08-18',
+              title: 'Deleting a link has two reaches',
+              items: [
+                'Delete is no longer one act. A link can go from your own list or from the whole circle. `hiddenForMe` sits on the circle, so the link stays whole for everyone else and your reaction on it still stands. Nothing records that a member hid something.',
+                'One read path, so nothing leaks. Every rendered surface — both tabs, the New pill, the waterline, the empty state, the rail dot, the home rows — derives from a single scoping of the circles; mutations still run against raw state. A circle\'s dot only stands while a visible unread item is left to see.',
+                'The confirm has no default act. Both reaches take the house destructive-secondary and Cancel holds the focus, so Return dismisses. A member who holds only the narrow act gets the same panel with one button.',
+                'Landed as a candidate build first (LM-666), merged after ratification; the candidate is archived.'
+              ]
+            },
+            {
+              date: '2026-08-18',
               title: 'Every state has an address',
               items: [
                 'One register, not a section inside a settings panel: `app/states.jsx` holds every staged state of the app as `{ group, id, label, stage }` — the staging that used to be Config\'s Scenarios list. Config now holds review settings only. A setting is a mode you hold; a state is an address you open, and mixing the two is what made the old list confusing.',

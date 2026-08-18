@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="../../../../" />
+<title>Circlists — the thought on a card</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  :root { --circ-vh: 100vh; }
+  html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); }
+  body { min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  #root { min-height: 100vh; }
+
+  /* ---- spinner ---- */
+  .circ-spin {
+    display: inline-block; border-style: solid; border-width: 2px;
+    border-radius: 50%; animation: circ-spin 700ms linear infinite; flex-shrink: 0;
+  }
+  @keyframes circ-spin { to { transform: rotate(360deg); } }
+  @keyframes circ-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes circ-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes circ-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+  /* ---- brand motion: pulse (rail mark) / spinner (loading) / micro (live dot) ----
+     Reproduces brand/motion/circlists-motion.md's breath curve (linear, apex at
+     34%) sampled onto scale + brightness for pulse, onto scale only (two
+     amplitudes) for micro, plus the spinner's own rotor + arc timings. Classes
+     are scoped per-treatment (unlike the source .svg files) since more than one
+     can be mounted on this page at once.
+     Pulse SCALE depth is driven by --circ-pulse-amp (peak scale) so it can be
+     dialled live from the Tweaks panel; the spec's value is 1.065 (+6.5%), the
+     app default sits a touch deeper (see :root below). Each stop is
+     1 + (amp-1)*frac, frac from the spec's breath table. Brightness (tone) is
+     the spec's fixed curve and is not tied to the depth control. */
+  :root { --circ-pulse-amp: 1.075; --circ-spin-speed: 1.4; }
+  @keyframes circ-pulse-halo {
+    0%   { transform: scale(1);                                                  filter: brightness(1); }
+    6%   { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.10)); filter: brightness(1.009); }
+    14%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.40)); filter: brightness(1.036); }
+    22%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.75)); filter: brightness(1.0675); }
+    30%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.95)); filter: brightness(1.0755); }
+    34%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 1.00)); filter: brightness(1.09); }
+    42%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.94)); filter: brightness(1.0846); }
+    52%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.78)); filter: brightness(1.0702); }
+    62%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.58)); filter: brightness(1.0522); }
+    72%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.38)); filter: brightness(1.0342); }
+    80%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.22)); filter: brightness(1.0198); }
+    87%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.12)); filter: brightness(1.0108); }
+    93%  { transform: scale(calc(1 + (var(--circ-pulse-amp, 1.075) - 1) * 0.05)); filter: brightness(1.0045); }
+    100% { transform: scale(1);                                                  filter: brightness(1); }
+  }
+  .circ-pulse-halo { animation: circ-pulse-halo 3000ms linear infinite; transform-box: fill-box; transform-origin: center; }
+
+  /* Micro — ~10px live-signal dot. The core (disc + ring) holds dead still; a
+     soft sage light-band sweeps across the halo (clipped to r22.5), painting a
+     ring of sage into view then resting off-frame for the rest of the cycle — a
+     sweep of light, not a breath (a scale won't read at this size). Band travels
+     translateX 0→86 (viewBox units) over the first 64% of a 3.8s cycle, then
+     holds. Spec: brand/motion/circlists-motion.md §Micro. */
+  @keyframes circ-micro-reveal {
+    0%   { transform: translateX(0); }
+    64%  { transform: translateX(86px); }
+    100% { transform: translateX(86px); }
+  }
+  .circ-micro-halo-static { display: none; }
+  .circ-micro-reveal { animation: circ-micro-reveal 3800ms cubic-bezier(0.45, 0, 0.15, 1) infinite; }
+
+  @keyframes circ-spinner-rotor { to { transform: rotate(360deg); } }
+  /* Rotation + arc-breathe pace scale together by --circ-spin-speed (a live
+     multiplier; 1 = the spec's tempo) so a quick load still reads as loading.
+     Spec base: rotor 1.917s, arc 2.5s. */
+  .circ-spinner-rotor { animation: circ-spinner-rotor calc(1917ms / var(--circ-spin-speed, 1.4)) linear infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes circ-spinner-arc {
+    0%   { stroke-dasharray: 12 108; stroke-dashoffset: 0; }
+    50%  { stroke-dasharray: 78 42;  stroke-dashoffset: -22; }
+    100% { stroke-dasharray: 12 108; stroke-dashoffset: -120; }
+  }
+  .circ-spinner-arc { animation: circ-spinner-arc calc(2500ms / var(--circ-spin-speed, 1.4)) linear infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .circ-pulse-halo, .circ-spinner-rotor { animation: none !important; }
+    .circ-spinner-arc { animation: none !important; stroke-dasharray: 120 0 !important; }
+    /* Micro settles to the full resting mark: hide the sweep, show the sage disc. */
+    .circ-micro-reveal { animation: none !important; display: none !important; }
+    .circ-micro-halo-static { display: block !important; }
+  }
+
+  /* ---- liveliness: the arrival grammar (app/liveliness.jsx) ----
+     Sage here is the MARK's light, never a status colour: the arrival halo is
+     the micro dot's own halo echoing once on the card that just landed, which
+     is why it fades to nothing rather than resting as a state. */
+  .circ-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .circ-sig { display: inline-flex; align-items: center; flex-shrink: 0; }
+  /* The refresh receipt resolving: the SAME arc grows shut into a complete ring
+     at a constant rate (app/brand-motion.jsx) — nothing fades in, so nothing
+     pops, and it closes at the same pace every time. The closed mark rests a
+     beat, then simply fades. No tick, no words, no second mark, and no scale or
+     brake at the end. It runs on BOTH outcomes: the gesture is acknowledged. */
+  .circ-sig-settle { animation: circ-settle 2000ms linear both; }
+  @keyframes circ-settle { 0%, 74% { opacity: 1; } 100% { opacity: 0; } }
+  /* Newness, two treatments, one trigger each.
+     GLOW — any card above the waterline, played when it comes into view: the card
+     washes sage and resolves to its own white. No ring, nothing that travels, and
+     the colour never rests.
+     RISE — the brief upward settle, on accepting the pill alone. */
+  .circ-glow { position: relative; border-radius: var(--radius-lg); }
+  .circ-glow::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); background: rgba(139,191,173,0.34); pointer-events: none; animation: circ-glow-wash 2400ms ease-in-out both; }
+  @keyframes circ-glow-wash { 0%, 58% { opacity: 1; } 100% { opacity: 0; } }
+  .circ-rise { animation: circ-rise 560ms var(--ease-quiet) both; }
+  @keyframes circ-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* New pill — the only thing that moves the feed. */
+  /* The pill sits in an even 16px slot: the negative margin cancels whatever top
+     padding the feed carries (28px on desktop, 16px on mobile) so the space above
+     it matches the 16px feed gap below it, and the sticky offset equals that same
+     resting position — so it is already parked where it sticks and never travels
+     as the feed scrolls under it. */
+  .circ-newpill { position: sticky; top: calc(var(--top-bar-height) + 49px + 16px); margin-top: calc(16px - var(--circ-feed-pad-top, 16px)); z-index: 40; align-self: center; display: inline-flex; align-items: center; gap: 7px; background: var(--color-surface); border: 1px solid var(--color-border-1); box-shadow: var(--shadow-raised); border-radius: var(--radius-pill); padding: 0 18px; min-height: 44px; cursor: pointer; font: 600 13px/1 var(--font-sans); color: var(--color-accent); animation: circ-newpill-in 240ms var(--ease-quiet) both; }
+  .circ-newpill:hover { background: var(--color-surface-sunken); }
+  @keyframes circ-newpill-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  /* The waterline. "Earlier" names the older side beneath the line — no count, no
+     arrow, no affordance, and no rule or seam closing off the items below it. */
+  .circ-fdiv { display: flex; align-items: center; gap: var(--space-3); padding: 0 0 4px; }
+  .circ-fdiv::after { content: ''; flex: 1; height: 1px; background: var(--color-border-2); }
+  .circ-fdiv-label { font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    /* The card does not travel; the glow still plays — it is the cue, and removing
+       it would leave a reduced-motion reader with no arrival treatment at all. */
+    .circ-rise, .circ-newpill, .circ-sig-settle { animation: none !important; }
+  }
+
+  /* ---- focus rings: first-class ---- */
+  button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: var(--ring-width) solid var(--color-accent);
+    outline-offset: var(--ring-offset);
+  }
+  input:focus-visible {
+    outline-offset: 0; border-color: var(--color-accent) !important;
+  }
+
+  /* ---- button hover/press (4% / 8% darken on accent) ---- */
+  .circ-btn-primary:hover:not(:disabled) { background: var(--color-accent-hover) !important; }
+  .circ-btn-primary:active:not(:disabled) { background: var(--color-accent-press) !important; }
+  .circ-btn-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+  .circ-btn-secondary:active:not(:disabled) { background: #E8E8E5 !important; }
+  .circ-btn-destructive:hover:not(:disabled) { background: var(--color-destructive-hover) !important; }
+  .circ-btn-destructive:active:not(:disabled) { background: var(--color-destructive-press) !important; }
+  .circ-btn-tertiary:hover { text-decoration: underline; }
+  /* destructive-secondary: the house secondary box, danger colour in the label */
+  .circ-btn-destructive-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+  .circ-btn-destructive-secondary:active:not(:disabled) { background: #E8E8E5 !important; }
+
+  /* ---- dormant circle (LM-626) ----
+     Two boxed buttons of equal height, so every gap is literal — no optical
+     compensation, no negative margins. Row when the canvas has room (Leave
+     left, Fund right), stacked with Fund on top when it does not. The switch is
+     a CONTAINER QUERY, so the same component holds at 320, in the app frame and
+     on any desktop canvas without a posture flag. */
+  .circ-dormant { flex: 1; width: 100%; display: flex; flex-direction: column; container-type: inline-size; }
+  .circ-dormant-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px 20px; text-align: center; }
+  .circ-dormant-col { width: 100%; max-width: 470px; display: flex; flex-direction: column; align-items: center; }
+  .circ-dormant-title { font-family: var(--font-sans); font-weight: 600; font-size: clamp(23px, 7cqi, 32px); line-height: 1.18; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0; text-wrap: balance; }
+  .circ-dormant-body { font-family: var(--font-sans); font-weight: 400; font-size: clamp(14.5px, 4.2cqi, 16px); line-height: 1.6; color: var(--color-fg-2); margin: 12px 0 0; text-wrap: balance; }
+  .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 52ch; text-wrap: pretty; }
+  /* DOM order is Leave then Fund: the row uses it as-is (Leave left), the stack
+     reverses it so Fund sits on top. One markup path, no second component. */
+  .circ-dormant-actions { display: flex; flex-direction: column-reverse; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  .circ-dormant-foot { display: flex; justify-content: center; padding: 0 20px 24px; }
+  .circ-dormant-foot > p { margin: 0 !important; }
+  @container (min-width: 520px) {
+    .circ-dormant-actions { flex-direction: row; justify-content: center; width: auto; gap: var(--space-3); }
+    .circ-dormant-actions > .circ-btn { width: auto; }
+  }
+  .circ-iconbtn:hover { background: var(--color-surface-sunken); }
+
+  /* ---- Create → Fund wizard body ----
+     Mobile: safe-centred (the screen is the card, content sits in the middle).
+     Desktop: pinned to a fixed offset from the top, so the title lands at the
+     SAME y on step 1 and step 2 — the flick between steps stops jumping. */
+  /* Every step is top-aligned, so the heading lands at the same y on all of them.
+     No measuring, no reserved height, no hidden steps — one step in the DOM at a
+     time. Only the top offset differs by posture. Posture, not viewport width:
+     a forced-mobile frame on a wide window is mobile. */
+  .circ-wizard-body { justify-content: flex-start; padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  @media (min-width: 760px) { .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; } }
+  [data-circ-posture="mobile"] .circ-wizard-body { padding: clamp(16px, 4vh, 44px) 22px 32px; }
+  [data-circ-posture="desktop"] .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; }
+
+  /* ---- card actions: quiet, recessive ---- */
+  .circ-cardaction {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 10px; min-height: 44px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  /* Icon actions keep the full 44px hit target; the hover fill is an INSET state
+     layer (Material/HIG icon-button spec) so adjacent controls read as separate
+     without moving glyphs or breaking edge alignment. */
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  /* enriched card is a container so the footer can adapt to its own width */
+  .circ-card { container-type: inline-size; }
+  /* ---- Pending card (extraction still resolving) — quiet skeleton, no spinner ---- */
+  .circ-skel { background: linear-gradient(90deg, var(--color-surface-sunken) 25%, var(--color-border-2) 50%, var(--color-surface-sunken) 75%); background-size: 200% 100%; animation: circ-skel 1.4s ease-in-out infinite; }
+  @keyframes circ-skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .circ-settled { animation: circ-fade 300ms var(--ease-quiet); }
+  @media (prefers-reduced-motion: reduce) { .circ-skel { animation: none !important; } }
+  /* very narrow card: drop the "Added by " prefix (avatar already carries who) */
+  @container (max-width: 380px) { .circ-attrib-pre { display: none; } .circ-attrib-rest { display: inline-block; } .circ-attrib-rest::first-letter { text-transform: capitalize; } }
+  .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
+
+  /* ---- enriched card: open affordance = title + image only ---- */
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
+
+  /* ---- menus / links ---- */
+  .circ-menuitem { transition: background var(--duration-base) var(--ease-quiet); }
+  .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
+  .circ-topaction:hover { background: var(--color-surface-sunken); }
+  .circ-topaction:hover { color: var(--color-fg-1); }
+
+  /* ---- app posture (native mobile) chrome ---- */
+  .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }
+  .circ-appnav-add:active:not(:disabled) .circ-appnav-adddot { background: var(--color-accent-press) !important; }
+  .circ-appsheet-row:hover { background: var(--color-surface-sunken); }
+  .circ-appsheet-row:active { background: var(--color-border-2); }
+  .circ-railacct:hover { background: var(--color-surface); }
+  .circ-textlink:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ---- upsell doors: accent text link, always underlined ----
+     A resting underline is required, not decorative: accent #047857 against
+     fg-3 #6E6E6B is 1.07:1, so colour alone can't distinguish the link from the
+     text around it (WCAG 1.4.1) — and hover doesn't exist on touch. The
+     underline sits at a light tint and deepens to full accent on hover/focus. */
+  .circ-doorlink { color: var(--color-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-accent) 35%, transparent); transition: text-decoration-color var(--duration-base) var(--ease-quiet); }
+  .circ-doorlink:hover, .circ-doorlink:focus-visible { text-decoration-color: var(--color-accent); }
+  @media (prefers-reduced-motion: reduce) { .circ-doorlink { transition: none; } }
+
+  /* ---- config launcher (prototype aid) ---- */
+  .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
+  .circ-config-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--color-fg-1); color: #fff; border: 0; cursor: pointer;
+    padding: 9px 14px; border-radius: var(--radius-pill);
+    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
+    box-shadow: var(--shadow-overlay);
+  }
+
+  /* ---- config modal (prototype aid) ---- */
+  .circ-config-scrim {
+    position: fixed; inset: 0; z-index: 400;
+    background: var(--color-scrim);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    transition: opacity var(--duration-slow) ease-in-out;
+    overscroll-behavior: contain;
+  }
+  .circ-config-modal {
+    width: min(760px, 100%); max-height: min(84vh, 720px);
+    display: flex; flex-direction: column;
+    background: var(--color-surface); border: 1px solid var(--color-border-1);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
+    transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
+  }
+  .circ-config-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    border-bottom: 1px solid var(--color-border-2); flex-shrink: 0;
+  }
+  .circ-config-title {
+    font-family: var(--font-sans); font-weight: 600; font-size: var(--text-xl);
+    letter-spacing: -0.01em; color: var(--color-fg-1);
+  }
+  .circ-config-subtitle {
+    font-family: var(--font-sans); font-weight: 400; font-size: var(--text-sm);
+    color: var(--color-fg-3); margin-top: 2px;
+  }
+  .circ-config-close {
+    background: transparent; border: 0; padding: 8px; margin: -8px; cursor: pointer;
+    color: var(--color-fg-2); border-radius: var(--radius-sm); display: inline-flex; flex-shrink: 0;
+  }
+  .circ-config-close:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-config-body { padding: var(--space-5); overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-height: 0; overscroll-behavior: contain; }
+  .circ-config-eyebrow {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    margin-bottom: var(--space-3);
+  }
+  .circ-config-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    min-height: 44px; padding: 6px 0;
+  }
+  .circ-config-row-label {
+    font-family: var(--font-sans); font-weight: 500; font-size: var(--text-sm); color: var(--color-fg-1);
+  }
+  .circ-config-hint {
+    font-family: var(--font-sans); font-weight: 400; font-size: 12.5px; line-height: 1.5;
+    color: var(--color-fg-3); margin: -2px 0 var(--space-3);
+  }
+  .circ-config-sep { height: 1px; background: var(--color-border-2); margin: var(--space-2) 0 var(--space-5); }
+  .circ-config-btn-secondary {
+    background: var(--color-surface); color: var(--color-fg-1); border: 1px solid var(--color-border-1);
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; cursor: pointer;
+    padding: 8px 14px; border-radius: var(--radius-md); min-height: 36px;
+  }
+  .circ-config-btn-secondary:hover { background: var(--color-surface-sunken); }
+  .circ-config-stepper { display: inline-flex; align-items: center; gap: 2px; background: var(--color-surface-sunken); border-radius: var(--radius-md); padding: 3px; flex-shrink: 0; }
+  .circ-config-stepper button { width: 28px; height: 28px; border: none; background: var(--color-surface); border-radius: calc(var(--radius-md) - 3px); font: 600 14px/1 var(--font-sans); color: var(--color-fg-1); cursor: pointer; }
+  .circ-config-stepper button:hover { background: var(--color-surface-raised, var(--color-surface)); }
+  .circ-config-stepper span { min-width: 24px; text-align: center; font: 600 13px/1 var(--font-sans); color: var(--color-fg-1); }
+  .circ-config-seg {
+    display: inline-flex; padding: 3px; gap: 2px;
+    background: var(--color-surface-sunken); border-radius: var(--radius-md); flex-shrink: 0;
+  }
+  .circ-config-seg-btn {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    padding: 7px 12px; min-height: 30px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .circ-config-seg-btn[data-active] { background: var(--color-accent); color: #fff; }
+  .circ-config-seg-btn:not([data-active]):hover { background: var(--color-border-2); }
+  .circ-config-groups { columns: 220px 2; column-gap: 24px; }
+  .circ-config-group { break-inside: avoid; margin-bottom: var(--space-4); }
+  .circ-config-group-title {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    padding: 4px 0 6px;
+  }
+  .circ-config-item {
+    display: block; width: 100%; text-align: left; background: transparent; border: 0; cursor: pointer;
+    padding: 9px 10px; border-radius: var(--radius-sm);
+    font-family: var(--font-sans); font-weight: 500; font-size: 13.5px; color: var(--color-fg-1);
+  }
+  .circ-config-item:hover { background: var(--color-surface-sunken); }
+
+  /* ---- side whiteboard pointer (tooling, not product) ---- */
+  .pg-wb { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; padding: 18px 20px calc(18px + env(safe-area-inset-bottom)); background: var(--color-fg-1); font: 500 12.5px/1.5 var(--font-mono); color: rgba(255,255,255,0.62); }
+  .pg-wb a { color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.45); text-underline-offset: 3px; }
+  .pg-wb a:hover { text-decoration-color: #fff; }
+
+  /* ---- mobile phone frame (forced-mobile posture) ---- */
+  .circ-stage {
+    min-height: 100vh; width: 100%;
+    background: #1c1c1a;
+    background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%);
+    display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  }
+  .circ-phone {
+    width: 402px; max-width: 100%;
+    height: min(872px, calc(100vh - 48px));
+    background: #050505; border-radius: 52px; padding: 11px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
+    overflow: hidden;
+  }
+  .circ-phone-clip {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden; background: var(--color-canvas);
+    transform: translateZ(0); /* containing block for position:fixed overlays — a
+       NON-scrolling wrapper with exactly the screen's bounds + corner radius, so
+       sheets/scrims pin to the phone screen (and get clipped by its corners)
+       instead of bleeding onto the bezel or riding the scrolled feed */
+  }
+  .circ-phone-screen {
+    width: 100%; height: 100%;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    --circ-vh: 100%;
+  }
+  .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* app posture: full-page push layers (app/app-shell.jsx, useNativePush).
+     Keyframes, not transitions — the layer mounts and animates in the same
+     commit, so there is no painted from-state for a transition to start from. */
+  @keyframes circ-push-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes circ-push-out { from { transform: translateX(0) } to { transform: translateX(100%) } }
+  .circ-push-in { animation: circ-push-in var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
+
+  /* ---- entrance animations ----
+     Overlays rest at their visible end-state with NO entrance keyframe, so they
+     render correctly under prefers-reduced-motion AND under capture tools that
+     freeze CSS animations at frame 0. Motion lives in transitions (FAB, tabs,
+     buttons) which reveal from a real prior value and never hide content. */
+
+</style>
+<style>
+  /* ---- the rig's bar: tooling, dark, unmistakably not product ---- */
+  .pg-bar{position:sticky;top:0;z-index:200;background:var(--color-fg-1);color:#fff}
+  .pg-bar-in{max-width:1100px;margin:0 auto;padding:14px 20px 16px;display:flex;flex-direction:column;gap:14px}
+  .pg-bar-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .pg-eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  .pg-title{font:600 15px/1.3 var(--font-sans);letter-spacing:-.01em;color:#fff}
+  .pg-collapse{margin-left:auto;background:rgba(255,255,255,.1);color:#fff;border-width:0;border-radius:var(--radius-md);padding:8px 12px;min-height:36px;font:600 12.5px/1 var(--font-sans);cursor:pointer}
+  .pg-collapse:hover{background:rgba(255,255,255,.2)}
+  .pg-opts{display:flex;flex-wrap:wrap;gap:6px}
+  .pg-opt{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-width:0;border-radius:var(--radius-md);padding:9px 13px;min-height:42px;cursor:pointer;color:rgba(255,255,255,.72)}
+  .pg-opt:hover{background:rgba(255,255,255,.18)}
+  .pg-opt[data-on]{background:#fff;color:var(--color-fg-1)}
+  .pg-opt-n{font:500 11px/1 var(--font-mono);opacity:.65}
+  .pg-opt-name{font:600 13.5px/1 var(--font-sans)}
+  .pg-say{display:flex;flex-direction:column;gap:5px;max-width:80ch}
+  .pg-say p{margin:0;font:400 13px/1.55 var(--font-sans);color:rgba(255,255,255,.8);text-wrap:pretty}
+  .pg-say p.pg-cost{color:rgba(255,255,255,.55)}
+  .pg-say p.pg-cost b{color:rgba(255,255,255,.75);font-weight:600}
+  .pg-ctrls{display:flex;flex-wrap:wrap;gap:8px 20px}
+  .pg-lab{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+  .pg-seg{display:inline-flex;gap:2px;padding:3px;background:rgba(255,255,255,.09);border-radius:var(--radius-md);flex-wrap:wrap}
+  .pg-seg button{background:transparent;border-width:0;border-radius:var(--radius-sm);padding:7px 11px;min-height:32px;font:500 12.5px/1 var(--font-sans);color:rgba(255,255,255,.72);cursor:pointer}
+  .pg-seg button:hover{background:rgba(255,255,255,.14)}
+  .pg-seg button[data-on]{background:#fff;color:var(--color-fg-1);font-weight:600}
+  .pg-bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  @media (max-width:520px){.pg-bar-in{padding:12px 14px 14px;gap:12px}}
+
+  /* ---- the reveals. Keyframes, not transitions: the layer mounts and animates
+     in the same commit, so there is no painted from-state to start from. ---- */
+  @keyframes t11-lift{from{opacity:.5;transform:scale(.986) translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes t11-scrim{from{opacity:0}to{opacity:1}}
+  @keyframes t11-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes t11-fwd{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .circ-t11-lift{animation:t11-lift 240ms var(--ease-quiet) both}
+  .circ-t11-scrim{animation:t11-scrim 200ms ease-in-out both}
+  .circ-t11-rise{animation:t11-rise 260ms var(--ease-quiet) both}
+  .circ-t11-fwd{animation:t11-fwd 240ms var(--ease-quiet) both}
+  @media (prefers-reduced-motion:reduce){.circ-t11-lift,.circ-t11-scrim,.circ-t11-rise,.circ-t11-fwd{animation-duration:1ms}}
+
+  /* ---- the ways in each option adds ---- */
+  .circ-t11-open:focus-visible,.circ-t11-slip:focus-visible,.circ-t11-band:focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:2px;border-radius:var(--radius-md)}
+  /* the background card: a card, not a slot. Hover lifts its white a hair only. */
+  .circ-t11-band:hover>div{background:#FCFCFA}
+  @keyframes t11-over{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .circ-t11-over{animation:t11-over 280ms var(--ease-quiet) both}
+  .circ-t11-flip{transform-style:preserve-3d;transition:transform 420ms var(--ease-quiet),height 420ms var(--ease-quiet)}
+  .circ-t11-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  @media (prefers-reduced-motion:reduce){.circ-t11-over{animation-duration:1ms}.circ-t11-flip{transition-duration:1ms}}
+  .circ-t11-slip[style*="pointer"]:hover>div{background:#F0F0EC}
+  .circ-t11-liftclose:hover{background:var(--color-surface-sunken)}
+  a{color:var(--color-fg-1)}
+  a:hover{text-decoration-color:var(--color-fg-1)}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FAFAF7"/><rect x="18" y="30" width="64" height="34" rx="5" fill="#fff" stroke="#DCDCD8" stroke-width="1.5"/><rect x="24" y="60" width="52" height="12" rx="4" fill="#F5F5F2" stroke="#DCDCD8" stroke-width="1.5"/><rect x="24" y="37" width="3" height="18" fill="#8BBFAD"/></svg></template>
+<div id="root"></div>
+<footer class="pg-wb"><span>alongside this rig</span><a href="pg-whiteboard-thought-on-card.html">Thought on a card — ten ideations (whiteboard)</a><a href="pg-discourse-v10.html">Discourse v10 — three questions</a></footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- the app, unchanged -->
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/liveliness.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-d9-swell.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="app/shell.jsx"></script>
+
+<!-- the shipped feed card, with the slots discourse needs (v9's copy) -->
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-d9-card.jsx"></script>
+
+<!-- v11: the shelf, the shared parts, the two families, the bar, the app -->
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-data.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-words.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-margin.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-back.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-bar.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-652-discourse/pg-t11-app.jsx"></script>
+</body>
+</html>

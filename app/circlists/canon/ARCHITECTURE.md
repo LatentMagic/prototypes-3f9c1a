@@ -55,6 +55,15 @@ A ticket in the real build links to this prototype, so a reviewer has to be able
 state the ticket is about — leaving a circle, a dormant circle, a payment retrying — without knowing
 a click path.
 
+Upstream law: monorepo
+[`specs/governance/process/design-prototypes.md`](https://github.com/LatentMagic/monorepo/blob/main/specs/governance/process/design-prototypes.md)
+— read it live (see `github.md`). It sets how our output is treated downstream, and two clauses bear
+directly on the register. Validation compares the rendered surface against the prototype **live in a
+browser, side by side** — which is what an address is for: the reviewer opens the state rather than
+navigating to it. And it already uses the word *state* for something else: the console-level states
+of a prototype (`canon/`, `next/`), read at the console, not tracked in the monorepo. Ours is a finer
+register **inside** one of those. Keep the two senses apart when citing either.
+
 `app/states.jsx` is the **register**: one entry per staged state, `{ group, id, label, stage }`. The
 `id` is the state's address (`dormant-circle`, `funding-retrying`); `stage` is the staging function
 (these moved out of Config, which now holds review settings only). Everything else is derived from
@@ -70,6 +79,14 @@ that one list and cannot drift from it:
 - **`window.CIRC_STATES`** — ids, labels and groups, published on the page for anything inspecting
   it. No staging functions, nothing runnable. A sibling JSON file would not survive the single-file
   export, which is why it is a global.
+
+A state earns an entry by being hard to reach — a situation the app has to be staged into (a circle
+you do not champion, a dormant circle, a retrying payment). A screen you can click to from a state
+already in the register does not get one; the register is not a sitemap, and doubling the app as a
+second index leaves two things to keep in step.
+
+An id names the situation, not the app's internals — `members-non-champion`, never
+`sp-book-settings`. Internals move; the situation is what a ticket was written about.
 
 An `id` is **public** once a ticket links to it: renaming or removing one breaks those links, and the
 index is the only thing that catches it.

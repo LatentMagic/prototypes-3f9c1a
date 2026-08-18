@@ -52,11 +52,34 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ## Where files live
 - **Upstream first.** Product behaviour lives in the monorepo spec, cross-app design law in `specs/governance/standards/ui-design.md`, brand and voice in the wiki, and the reasoning behind any prompt that arrives here in business-ops `work/apps/circlists/<ticket>/` — read that ticket's `CONTEXT.md` before building against its prompt, since the prompt is the tip of a much larger record. The ticket convention there is the same as ours, so the folder names line up. Read all of it live; the only thing mirrored into this project is `brand/`, because the app loads `brand/assets/*` at runtime. Details and paths in `github.md`. Never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
-- **Root** holds only what must be there: `circlists.html`, `circlists-homepage-demo.html`, `app/`, `demo/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `HOMEPAGE-DEMO.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
+- **Root** holds only what must be there: `circlists.html`, `circlists-homepage-demo.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `demo/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `HOMEPAGE-DEMO.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
 - **`docs/`** holds durable docs only (`ABOUT.md`, `BRANDING.md`).
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the monorepo — `lm-###` for changes, `circ-###` for requirements, `biz-##` for business-ops work. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
-- **One exception:** an *entry* HTML must sit at the project root for `app/*`, `tokens.css` and `brand/` to resolve — a playground entry (`pg-<slug>.html`) or a candidate-build entry (`circlists-<ticket>.html`). Its modules still live in the spec folder. On archive, delete the entry and keep the standalone bundle. (The homepage demo is not task-scoped: its entry and its `demo/` modules are permanent root fixtures — see `HOMEPAGE-DEMO.md`.)
+- **A candidate build lives in its ticket folder**, next to its `cand-*` modules: `docs/specs/<ticket>/circlists-<ticket>.html`. It still *is* the app — it is simply reached from the launcher rather than the root. (The homepage demo is not task-scoped: its entry and its `demo/` modules are permanent root fixtures — see `HOMEPAGE-DEMO.md`.)
+
+## Playgrounds — placement and the launcher
+- **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product, or a candidate of it".
+- **Making a nested entry load** (corrected 2026-08-18 against 55 live entries; the earlier longhand rule was wrong):
+  - `<base href="../../../" />` in `<head>`, one `../` per level of nesting. That is the whole mechanism.
+  - **Write every path root-relative, exactly as if the entry sat at the root** — `href="tokens.css"`, `src="app/main.jsx"`, and `src="docs/specs/<ticket>/pg-foo.jsx"` for the rig's own modules. Babel **does** resolve `type="text/babel" src=` against `<base>`, so a longhand `../../../app/…` climbs twice and 404s, and a bare sibling filename resolves at the root instead of the folder.
+  - The preview warns "referenced file not found" for base-relative paths. False positive; the page loads.
+- **`playgrounds.html` at the root is the launcher**, and **`playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's candidate build and rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved, or archived, or a ticket folder moves.** If it drifts, rebuild it from the tree rather than patching it.
+- **Hiding, not deleting.** Every manifest entry renders unless it carries `"on": false`, which keeps the row on the record and off the page (with an `"off"` line saying why). Only the user's word flips one.
+- **No config surface.** State is where the folder lives; anything else the user wants changed is a one-line instruction, and it lands in this file permanently. Do not add in-page controls backed by `localStorage` — a fragile parallel truth was considered and rejected.
+
+## Sweep on session end — the standing rule
+- `uploads/` is filled by the platform whenever the user drops a file; it is a
+  drop history, not a store. **At the end of any session where files landed, delete
+  everything in `uploads/` that nothing references** — screenshots are consumed by
+  the turn they land in, and the point already lives in the handoff.
+- **Never leave a standalone bundle in the project.** It inlines React, Babel and
+  fonts, so each one costs 1.7–6 MB and dominates the download. Generate it, hand
+  it over, delete it in the same session.
+- **Load-bearing exception:** `uploads/card-previews/` and `uploads/card-favicons/`
+  are referenced by `app/seed-data.jsx`, `app/liveliness.jsx` and
+  `demo/demo-seed.jsx`. They live in `uploads/` for historical reasons and must
+  never be swept.
 
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a
