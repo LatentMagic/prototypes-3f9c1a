@@ -1043,8 +1043,11 @@
   // app switcher can repoint to another app (data-driven; Circlists + Commentape).
   var ACTIVE_APP, APP, PROTOTYPES;
 
-  function srcFor(app, slug, html) {
-    return 'app/' + app + '/' + slug + '/' + (html || 'latentpulse.html');
+  // A prototype may address a state of its own (canon reads `?state=<id>` against
+  // its states register). The console never interprets that query — it only hands
+  // it through to the iframe, so a state the console has never heard of still works.
+  function srcFor(app, slug, html, query) {
+    return 'app/' + app + '/' + slug + '/' + (html || 'latentpulse.html') + (query ? '?' + query : '');
   }
 
   var tablist = document.querySelector('.prototypes');
@@ -1118,16 +1121,30 @@
     });
   }
 
-  function activate(i, moveFocus) {
+  // `query` is the prototype-owned part of a deep link (see parseHash). It arrives
+  // only from the hash; a tab click passes none, so switching tabs never carries
+  // one prototype's state onto another.
+  function activate(i, moveFocus, query) {
     activeIndex = i;
+    query = query || '';
     PROTOTYPES.forEach(function (spec, j) {
       var selected = j === i;
       tabs[j].setAttribute('aria-selected', selected ? 'true' : 'false');
       tabs[j].tabIndex = selected ? 0 : -1;
       frames[j].wrap.classList.toggle('is-active', selected);
-      if (selected && !frames[j].loaded) {
-        frames[j].iframe.src = srcFor(ACTIVE_APP, spec.slug, spec.html);   // lazy: set src on first activation
-        frames[j].loaded = true;
+      if (selected) {
+        // Each frame remembers its own query, so a tab keeps the state it was
+        // opened at and switching tabs shows each prototype at its own address.
+        if (query) frames[j].query = query;
+        var want = srcFor(ACTIVE_APP, spec.slug, spec.html, frames[j].query);
+        // lazy: set src on first activation. Already loaded and a *different*
+        // address asked for → reload it, so pasting a new state into the hash of
+        // an open console works as it does on a cold load.
+        if (!frames[j].loaded || frames[j].srcNow !== want) {
+          frames[j].iframe.src = want;
+          frames[j].loaded = true;
+          frames[j].srcNow = want;
+        }
       }
     });
     var spec = PROTOTYPES[i];
@@ -1146,7 +1163,8 @@
     // (#<app>/<slug>) — the app segment scopes the slug so two apps can share a
     // slug (both have `next`) without colliding. replaceState = no history spam,
     // and no hashchange event so this never loops back on us.
-    var wantHash = '#' + ACTIVE_APP + '/' + spec.slug;
+    var activeQuery = frames[i].query || '';
+    var wantHash = '#' + ACTIVE_APP + '/' + spec.slug + (activeQuery ? '?' + activeQuery : '');
     if (location.hash !== wantHash) history.replaceState(null, '', wantHash);
     if (moveFocus) tabs[i].focus();
   }
@@ -1409,6 +1427,12 @@
   // hash to its app + tab. A bare #<slug> with no app segment still resolves for
   // back-compat — the first app that owns the slug wins, as it did before
   // scoping — and activate() then rewrites the URL to the scoped form.
+  //
+  // Anything after a `?` belongs to the prototype, not the console: at
+  // #<app>/<slug>?state=<id> the console resolves the slug and passes `state=<id>`
+  // to the iframe untouched. It is one address, so a ticket can link a state the
+  // same way it links a prototype, and the console needs no knowledge of what any
+  // prototype's states are.
   function findBySlug(slug) {
     var keys = Object.keys(APPS);
     for (var k = 0; k < keys.length; k++) {
@@ -1424,9 +1448,12 @@
     try { raw = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim(); }
     catch (e) { raw = ''; }
     if (!raw) return null;
+    var query = '';
+    var qi = raw.indexOf('?');
+    if (qi !== -1) { query = raw.slice(qi + 1); raw = raw.slice(0, qi); }   // the prototype's half
     var slash = raw.indexOf('/');
-    if (slash === -1) return { appKey: null, slug: raw };          // bare slug (legacy)
-    return { appKey: raw.slice(0, slash), slug: raw.slice(slash + 1) };
+    if (slash === -1) return { appKey: null, slug: raw, query: query };    // bare slug (legacy)
+    return { appKey: raw.slice(0, slash), slug: raw.slice(slash + 1), query: query };
   }
   function resolveTarget(h) {
     if (!h) return null;
@@ -1434,16 +1461,18 @@
       var app = APPS[h.appKey];
       if (!app) return null;                                       // unknown app → leave default
       for (var i = 0; i < app.prototypes.length; i++) {
-        if (app.prototypes[i].slug === h.slug) return { appKey: h.appKey, index: i };
+        if (app.prototypes[i].slug === h.slug) return { appKey: h.appKey, index: i, query: h.query };
       }
       return null;                                                 // unknown slug in that app
     }
-    return findBySlug(h.slug);                                     // legacy bare slug
+    var found = findBySlug(h.slug);                                // legacy bare slug
+    if (found) found.query = h.query;
+    return found;
   }
   function selectTarget(t) {
     if (!t) return false;                       // unresolved → leave default
     if (t.appKey !== ACTIVE_APP) renderApp(t.appKey);
-    activate(t.index, false);
+    activate(t.index, false, t.query);
     return true;
   }
 
