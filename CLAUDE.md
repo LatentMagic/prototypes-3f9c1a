@@ -16,7 +16,7 @@ Don't mint ticket-named slugs, and don't split off a separate "shipped" mirror �
 
 **Commit messages stay feature-flavoured** (`feat(circlists): <feature>`) when it's natural — a hint an agent reads later, not a ledger to maintain.
 
-**`next` is retired** as the working-line slug, superseded by `canon`. It's frozen — no new work lands there. LM-593 (in-app liveliness) is the one ticket still in flight against it; once that lands, `next` joins the retired `main`/`baseline`/`lm-298-…`/`lm-270-…` chain.
+**`next` is retired** as the working-line slug, superseded by `canon`. It has joined the retired `main`/`baseline`/`lm-298-…`/`lm-270-…` chain — removed from the console and the repo, not archived.
 
 ## Reference nodes (the brand pack)
 
@@ -43,7 +43,7 @@ Register one with `kind: 'candidate'`, a `version` naming what it proposes (`pro
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
 - **`desc` says what a node *is*, in one or two sentences — never what it carries.** It renders untruncated in the desktop info bar and again at the foot of the mobile drawer, so every feature appended to it is stage space taken from the prototype. Feature history has exactly one home: the `changelog` array behind the Changes button. When a fresh export lands, append a `changelog` entry and leave `desc` alone.
 - Each prototype's optional `changelog` array (same object, in `index.html`) is its actual changelog — rendered in a "recent changes" drawer, per-slug. `README.md`'s one-line-per-prototype summary is documentation, not the changelog; don't confuse the two.
-- Each prototype is deep-linkable at `#<slug>` (e.g. `#next`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
+- Each prototype is deep-linkable at `#<slug>` (e.g. `#canon`): activating a tab writes the slug to the URL hash (via `replaceState`, so no history spam), and an incoming hash — on load or back/forward — selects that tab. An unknown or empty hash falls back to the first tab. The slug is therefore the shareable link, so pick slugs accordingly.
 - The shell is responsive: at ≤640px the rail collapses into an off-canvas drawer opened from a top bar. Console responsiveness lives in `index.html` only, not any individual prototype's own layout handling.
 
 ## Why a server (not file://)
