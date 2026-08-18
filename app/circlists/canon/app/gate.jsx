@@ -4,9 +4,11 @@
 // is embedded as an unauthenticated, click-around preview.
 //
 // Same mount/animate/scrim logic as AddReveal (feed.jsx): mobile gets a
-// bottom sheet + scrim fade, desktop gets a borderless-scrim fixed card in
-// the bottom-right, both easing on --ease-quiet. Copy is identical regardless
-// of which control triggered it — placeholder pending real signup copy.
+// bottom sheet, desktop gets a CENTRED modal over the scrim, both easing on
+// --ease-quiet. Centred, not anchored to whichever control was pressed: this is
+// a dead end for the whole session, not a menu belonging to one button, and a
+// card hung off a gear icon reads as a tooltip. Copy is identical regardless of
+// which control triggered it — placeholder pending real signup copy.
 // ============================================================================
 
 const GateOverlay = ({ open, isMobile, onClose }) => {
@@ -46,18 +48,19 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 121,
         background: 'var(--color-surface)',
         borderTopLeftRadius: 16, borderTopRightRadius: 16,
-        padding: 'var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
+        padding: 'var(--space-5) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom, 0px))',
         boxShadow: 'var(--shadow-overlay)',
         transform: shown ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform var(--duration-slow) var(--ease-quiet)',
       }
     : {
-        position: 'fixed', right: 32, bottom: 32, width: 380, zIndex: 121,
+        position: 'fixed', left: '50%', top: '50%', width: 'min(400px, calc(100vw - 48px))', zIndex: 121,
         background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--color-border-1)',
         padding: 'var(--space-5)', boxShadow: 'var(--shadow-overlay)',
         opacity: shown ? 1 : 0,
-        transition: 'opacity var(--duration-base) var(--ease-quiet)',
+        transform: shown ? 'translate(-50%, -50%)' : 'translate(-50%, calc(-50% + 6px))',
+        transition: 'opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet)',
       };
 
   return (
@@ -68,7 +71,7 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         opacity: shown ? 1 : 0,
         transition: 'opacity var(--duration-slow) ease-in-out',
       }} />
-      <div role="dialog" aria-label="Sign up" style={surface}>
+      <div role="dialog" aria-modal="true" aria-label="Sign up" style={surface}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
           <h2 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-lg)',

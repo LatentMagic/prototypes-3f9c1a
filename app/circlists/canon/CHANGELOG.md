@@ -3,6 +3,39 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Every state has an address — 2026-08-18
+
+- **One register, not a section inside a settings panel.** `app/states.jsx` holds every staged
+  state of the app as `{ group, id, label, stage }` — the staging that used to be Config's
+  Scenarios list. Config now holds review settings only. A setting is a mode you hold; a state
+  is an address you open, and mixing the two is what made the old list confusing.
+- **`?state=<id>` opens the app at that state**, overriding the restored local state, so a
+  ticket in the real build can link straight to the screen it is about instead of leaving the
+  reader to guess a click path. Nothing in the address still opens the top circle, as the real
+  app does. A name the register does not hold lands on the states index — that is how a stale
+  ticket link shows itself rather than opening the wrong screen.
+- **Everything else is derived from the register and cannot drift from it:** the palette in the
+  launcher (jump, or copy a link), the index page, and `window.CIRC_STATES` for anything
+  reading the page. The launcher became one pill with two halves — settings, and states.
+
+## Workspace reorganised onto specs-and-archive — 2026-08-14
+
+- **One place for task-scoped work, one place for finished work.** Everything a piece of
+  work produces — prompt, playground modules, handoffs, option studies — lives in
+  `docs/specs/<id>-<topic>/` from its first file, and moves wholesale to `docs/archive/`
+  when it finishes. Ids come from the monorepo. The root keeps only what must be there;
+  `docs/` keeps only durable docs. The single exception is a playground *entry* HTML, which
+  must sit at the root to resolve `app/`, `tokens.css` and `brand/`, and is named
+  `pg-<slug>.html`.
+- **Upstream is read live, not mirrored.** The project is downstream of three repos — the
+  monorepo spec, the wiki's brand and voice, business-ops — recorded in `github.md` with one
+  rule: mirror only what the app loads at runtime, which is `brand/` and nothing else. The
+  local wiki mirror and the local PRD copy are gone; a copy of a spec is stale the day after
+  it lands.
+- **Playground practice became a skill.** `PLAYGROUND.md` is now
+  `skills/build-playground/`, so the intent, the non-negotiables and picking the rig shape
+  are what gets read, with config, driver, fidelity and wiring detail behind references.
+
 ## Sensitive acts reverify — 2026-08-04
 
 - **A reverification prompt stands in front of a sensitive act.** The identity provider

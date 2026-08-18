@@ -16,11 +16,11 @@ it.
 
 ## Mocks
 
-- `Create → Fund - desktop container options.html` — four full-page desktop containers with the
+- `create-fund-desktop-container-options.html` — four full-page desktop containers with the
   modal-read diagnosis. **Option A (bare page) chosen.**
 
-Earlier exploration mocks live in `archive/` at the project root; the handoff lists them newest
-first. `Create → Fund - mobile agreed.html` is the agreed reference design.
+Earlier exploration mocks live in `docs/archive/option-studies/`; the handoff lists them newest
+first. `create-fund-mobile-agreed.html` there is the agreed reference design.
 
 ## The one-line rule
 

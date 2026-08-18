@@ -170,12 +170,17 @@
   .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 52ch; text-wrap: pretty; }
   /* DOM order is Leave then Fund: the row uses it as-is (Leave left), the stack
      reverses it so Fund sits on top. One markup path, no second component. */
-  .circ-dormant-actions { display: flex; flex-direction: column-reverse; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  .circ-dormant-actions { display: flex; flex-direction: column-reverse; align-items: center; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  /* Suspended: same row, same boxed exit as asleep — one treatment of Leave.
+     The right-hand slot holds the contact link (a mailto is not a primary). */
+  .circ-dormant-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; font-family: var(--font-sans); font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .circ-dormant-link:hover { background: var(--color-surface-sunken); }
   .circ-dormant-foot { display: flex; justify-content: center; padding: 0 20px 24px; }
   .circ-dormant-foot > p { margin: 0 !important; }
   @container (min-width: 520px) {
     .circ-dormant-actions { flex-direction: row; justify-content: center; width: auto; gap: var(--space-3); }
     .circ-dormant-actions > .circ-btn { width: auto; }
+    .circ-dormant-actions > .circ-dormant-link { margin-left: var(--space-2); }
   }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
@@ -251,13 +256,15 @@
 
   /* ---- config launcher (prototype aid) ---- */
   .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
-  .circ-config-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--color-fg-1); color: #fff; border: 0; cursor: pointer;
-    padding: 9px 14px; border-radius: var(--radius-pill);
-    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
-    box-shadow: var(--shadow-overlay);
-  }
+  /* One pill, two halves: settings you HOLD (Config) and states you GO to
+     (States, app/states-ui.jsx). Icon-only keeps it out of the way; each half
+     keeps its own 44px hit target, and the whole pill still drags. */
+  .circ-launcher { display: inline-flex; align-items: stretch; background: var(--color-fg-1); border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); overflow: hidden; }
+  .circ-launcher-half { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 44px; padding: 0; background: transparent; border: 0; color: #fff; cursor: inherit; }
+  .circ-launcher-half + .circ-launcher-half { box-shadow: inset 1px 0 0 rgba(255,255,255,0.2); }
+  .circ-launcher-half:hover { background: rgba(255,255,255,0.1); }
+  .circ-launcher-half[data-open] { color: var(--color-accent); background: rgba(255,255,255,0.08); }
+  .circ-launcher-half:focus-visible { outline-offset: -3px; }
 
   /* ---- config modal (prototype aid) ---- */
   .circ-config-scrim {
@@ -346,6 +353,35 @@
   }
   .circ-config-item:hover { background: var(--color-surface-sunken); }
 
+  /* ---- states palette + index (prototype aid; register in app/states.jsx) ----
+     Both are derived views of the register and share their row: the label, the
+     address under it, and the copy-a-link control. The palette borrows the config
+     modal's shell so the two aids read as siblings. */
+  .circ-states-search { width: 100%; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 10px 12px; min-height: 40px; font: 400 13.5px var(--font-sans); color: var(--color-fg-1); margin-bottom: var(--space-4); }
+  .circ-states-groups { columns: 260px 2; column-gap: 28px; }
+  .circ-states-group { break-inside: avoid; margin-bottom: var(--space-4); }
+  .circ-states-item { break-inside: avoid; }
+  .circ-states-row { display: flex; align-items: center; gap: 4px; }
+  .circ-states-jump { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: transparent; border: 0; cursor: pointer; padding: 7px 10px; border-radius: var(--radius-sm); }
+  .circ-states-jump:hover { background: var(--color-surface-sunken); }
+  .circ-states-label { font: 500 13.5px/1.3 var(--font-sans); color: var(--color-fg-1); }
+  .circ-states-id { font: 400 11px/1.3 var(--font-mono); color: var(--color-fg-3); }
+  .circ-states-copy { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; background: transparent; border: 0; border-radius: var(--radius-sm); color: var(--color-fg-3); cursor: pointer; }
+  .circ-states-copy:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-states-copied { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; }
+  .circ-states-copied > span { font: 500 11px var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  .circ-states-copied > input { flex: 1; min-width: 0; background: var(--color-surface-sunken); border: 1px solid var(--color-border-2); border-radius: var(--radius-sm); padding: 5px 7px; font: 400 11px var(--font-mono); color: var(--color-fg-2); }
+  .circ-states-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--color-border-2); margin-top: var(--space-4); padding-top: var(--space-4); }
+  .circ-index { min-height: 100vh; background: var(--color-canvas); padding: clamp(32px, 7vh, 72px) 20px 96px; }
+  .circ-index-inner { max-width: 860px; margin: 0 auto; }
+  .circ-index-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
+  .circ-index-title { font: 600 clamp(28px, 5vw, 38px)/1.1 var(--font-sans); letter-spacing: -0.02em; color: var(--color-fg-1); margin: 10px 0 0; }
+  .circ-index-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 0; max-width: 62ch; text-wrap: pretty; }
+  .circ-index-note { font: 400 14px/1.6 var(--font-sans); color: var(--color-fg-2); background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 12px 14px; margin: var(--space-4) 0 0; max-width: 62ch; }
+  .circ-index code { font: 400 0.92em var(--font-mono); color: var(--color-fg-1); background: var(--color-surface-sunken); border-radius: 3px; padding: 1px 5px; }
+  .circ-index-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: var(--space-5) 0 var(--space-4); }
+  .circ-index-bar > .circ-states-search { flex: 1; min-width: 200px; margin: 0; }
+
   /* ---- mobile phone frame (forced-mobile posture) ---- */
   .circ-stage {
     min-height: 100vh; width: 100%;
@@ -393,6 +429,25 @@
 </style>
 </head>
 <body>
+<!-- ============================================================================
+     ADDRESSABLE STATES. This prototype can be opened AT a named state:
+
+         circlists.html?state=dormant-circle
+
+     The names live in the register, app/states.jsx (one entry per state, its id
+     is its address). They are also published on the page as window.CIRC_STATES
+     — ids, labels and groups, nothing runnable.
+
+         ?state=index   the catalogue: every state, grouped, each one linkable
+         ?state=<name>  that state, overriding whatever local state was restored
+         a name the register does not hold  ->  the index, so a stale link shows
+                                               itself instead of opening the
+                                               wrong screen
+         nothing        the top circle, on Active, exactly as the real app opens
+
+     Details, and why the resolver looks inert in a design tool, are in
+     ARCHITECTURE.md -> Addressable states.
+     ============================================================================ -->
 <div id="root"></div>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -414,6 +469,8 @@
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/tweaks-panel.jsx"></script>
 <script type="text/babel" src="app/circ-tweaks.jsx"></script>
+<script type="text/babel" src="app/states.jsx"></script>
+<script type="text/babel" src="app/states-ui.jsx"></script>
 <script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/gate.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>

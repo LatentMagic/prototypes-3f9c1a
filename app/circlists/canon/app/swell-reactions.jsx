@@ -766,6 +766,11 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   // Bottom sheet on mobile (or the forced-mobile phone frame); centred dialog on
   // desktop. narrow must be known before useSheetMount, so it's computed up here.
   const narrow = vw < 520 || (typeof document !== 'undefined' && !!document.querySelector('.circ-phone-screen'));
+  // Candidate-build hook (droppable): when a cand-* overlay publishes
+  // window.CircSwellReveal, it REPLACES the passive reveal step — static, its own
+  // content, closed by the panel's x/Esc/scrim instead of a timer. Absent -> the
+  // shipped auto-fading reveal runs unchanged.
+  const RevealOverride = window.CircSwellReveal || null;
   const { shown, requestClose } = useSheetMount(narrow, onClose);
   rxEffect(() => lockScroll(), []);
   // Move focus into the dialog on open, to the HEADING — not a glyph — so no
@@ -825,7 +830,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
 
   // the reveal is a passive glimpse: it fades on its own
   rxEffect(() => {
-    if (step !== 'reveal') return;
+    if (step !== 'reveal' || RevealOverride) return;
     const hold = 5000;
     // Mobile: hold, then slide the sheet away. Desktop: hold, fade content, close.
     if (narrow) { const d = setTimeout(requestClose, hold); return () => clearTimeout(d); }
@@ -868,7 +873,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
         padding: 'var(--space-6)', boxShadow: 'var(--shadow-overlay)',
         maxWidth: 420, width: 348, minWidth: 288,
       }}>
-        {step === 'input' && (
+        {(step === 'input' || RevealOverride) && (
           <button type="button" onClick={requestClose} aria-label="Close" className="circ-rx-close"
             style={{ position: 'absolute', top: 10, right: 10, width: 36, height: 36, zIndex: 2,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -896,6 +901,9 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
                 <RxActions onSkip={commitSkip} done={swellTouched ? commitSwell : null} />
               </div>
             </div>
+          ) : RevealOverride ? (
+            <RevealOverride item={item} all={[...others, ...(mine ? [mine] : [])]}
+              firstHere={others.length === 0} onClose={requestClose} narrow={narrow} />
           ) : (
             <div aria-hidden="true" style={{ opacity: fading ? 0 : 1, transition: 'opacity 460ms var(--ease-quiet)' }}>
               <SwellReview all={[...others, ...(mine ? [mine] : [])]} interactive={false} firstHere={others.length === 0} />
@@ -907,4 +915,10 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
   );
 };
 
-Object.assign(window, { RX_GLYPHS, SwellDoor, SwellReviewModal, SwellReactionFlow });
+// The internals are exported too (additive, candidate-build route): the Swell
+// input trio + review body + helpers, so an overlay can host the real component
+// instead of photocopying its geometry.
+Object.assign(window, { RX_GLYPHS, SwellDoor, SwellReviewModal, SwellReactionFlow,
+  SwellReview, SwellScatter, SwellPad, SwellPalette, SwellGlyphRadios, RxActions,
+  levelFromIntensity, intensityFromLevel, glyphAngle, glyphIndexOf, SWELL_MAX,
+  rxIsSkip, rxLabel, glyphName, depthWord, useSheetMount, lockScroll, trapTab, CloseX });

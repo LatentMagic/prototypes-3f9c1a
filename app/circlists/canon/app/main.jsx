@@ -24,7 +24,9 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // queued per circle. v11 stamps the last-visit mark on ENTRY, holds the DRAWN
 // waterline outside persisted state, and adds remoteDeleted per circle — the
 // deletions a rail refresh reconciles away.)
-const STATE_KEY = 'circ_state_v11';
+// A candidate-build entry sets window.CIRC_STATE_KEY before app scripts load so
+// its persisted state never mixes with the main app's. Absent -> unchanged.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v11';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -35,8 +37,8 @@ const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto', pulseDepth: 7.5
 
 // ---- The timed check's cadence ---------------------------------------------
 // Deliberately unhurried: the check serves ALIVENESS, and anyone chasing the
-// latest uses the rail refresh instead. 'slow' is the shipped cadence; Config can
-// hurry it for review or switch it off.
+// latest uses the rail refresh instead. It ships OFF; Config can switch it on
+// and choose the cadence for review.
 const CIRC_CHECK_MS = { off: 0, slow: 45000, fast: 7000 };
 const useTweaksSafe = (typeof useTweaks === 'function') ? useTweaks : (d) => [d, () => {}];
 
@@ -89,6 +91,10 @@ const CircApp = () => {
   const ConfigLauncher = window.ConfigLauncher;
   const CircTweaks = window.CircTweaks;
   const GateOverlay = window.GateOverlay;
+  // Candidate-build hooks (droppable, like the aids above): a cand-* overlay set
+  // may publish window.CircCandidate = { bind, matchRoute, renderRoute, CardRow,
+  // FeedLead }. Absent in the main app, so every use below no-ops.
+  const Cand = window.CircCandidate || null;
 
   // ---- Preview gate (dormant hook; lit only when app/gate.jsx is present) ----
   // New circle + the account control dead-end in an unauthenticated preview. When
@@ -112,6 +118,18 @@ const CircApp = () => {
   const [spaces, setSpaces] = useState(SAVED?.spaces || seedSpaces(DEFAULT_USER.email));
   const [currentId, setCurrentId] = useState(SAVED?.currentId || 'sp-backend');
   const [tab, setTab] = useState(SAVED?.tab || 'active');
+
+  // ---- The address --------------------------------------------------------
+  // Read ONCE at mount: `?state=<name>` names a state in the register
+  // (app/states.jsx), and a ticket in the real build links straight to it. A
+  // resolved name is staged below, overriding the state restored above; `index`
+  // or a name the register does not hold renders the catalogue instead of the
+  // app. Nothing in the address -> null, and the app opens where the real app
+  // does: the top circle, on Active.
+  // The register is a deletable aid, so absent -> null -> shipped behaviour.
+  // NOTE: no link can be handed to this page inside the design tool, so this
+  // whole path looks INERT in preview. See ARCHITECTURE.md -> Addressable states.
+  const [landing, setLanding] = useState(() => (window.circResolveState ? window.circResolveState() : null));
 
   // ephemeral
   const [loadingFeed, setLoadingFeed] = useState(false);
@@ -142,7 +160,7 @@ const CircApp = () => {
   // New rule and the nothing-new answer are the product. The only knob here is
   // STAGING: the grammar is silent by design, so a review needs arrivals to fire.
   //   activity — simulated background arrivals: 'off' | 'slow' | 'fast'
-  const [live, setLive] = useState({ activity: 'slow' });
+  const [live, setLive] = useState({ activity: 'off' });
   const setLiveOpt = (k, v) => setLive((s) => ({ ...s, [k]: v }));
   const [refreshing, setRefreshing] = useState(null);   // circle id whose receipt is running
   const [settledId, setSettledId] = useState(null);     // circle whose receipt is resolving into the mark
@@ -257,7 +275,7 @@ const CircApp = () => {
   // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
   // while the member sits on Read is pointing them AT Active, so it has to survive
   // until they arrive. An effect, not a branch inside enterSpace, so every way in
-  // (mount, a Config scenario, home, a tab switch) clears it identically.
+  // (mount, a staged state, home, a tab switch) clears it identically.
   useEffect(() => {
     if (route !== 'space' || tab !== 'active' || loadingFeed || !currentId) return;
     const sp = spacesRef.current.find(s => s.id === currentId);
@@ -512,18 +530,38 @@ const CircApp = () => {
     })),
   };
 
-  // ---- config launcher setups ----
-  // Data + staging actions live in app/config.jsx (a deletable prototype aid).
-  // buildScenarios closes over the setters it needs; drop that file and the
-  // launcher + these setups vanish together, leaving the product core clean.
-  const { groups: SCENARIO_GROUPS, reset } = (window.buildScenarios
-    ? window.buildScenarios({
+  // ---- the states register (app/states.jsx, a deletable aid) --------------
+  // Every staged state of the app, with its address. The register feeds all
+  // three of its surfaces from one list: the palette in the launcher, the index,
+  // and `?state=` above. Drop app/states.jsx + app/states-ui.jsx and the states
+  // half of the launcher, the index and the address reading all vanish together,
+  // leaving the product core clean.
+  const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
+    ? window.buildStates({
         spaces, STATE_KEY,
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
       })
-    : { groups: [], reset: () => {} });
+    : { byId: {}, groups: [], reset: null });
+  const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
+
+  // A named state wins over whatever was restored. Staged once, after mount, so
+  // the stagers run against a fully built app rather than during hydration.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current || !landing || landing.kind !== 'state') return;
+    const st = STATE_BY_ID[landing.id];
+    if (!st) return;
+    deepLinked.current = true;
+    st.go();
+  }, [landing]);
+
+  // The catalogue: what `?state=index` opens, and where a name the register does
+  // not hold lands — the reader sees a list that does not contain the name they
+  // came for. Dismissing it leaves the app exactly where it booted.
+  const StatesIndexView = window.StatesIndex;
+  const showIndex = !!StatesIndexView && !!landing && (landing.kind === 'index' || landing.kind === 'unresolved');
 
   // ---- shared shell wrapper ----
   // App posture swaps ONLY the persistent chrome (AppShellNative): the children
@@ -546,10 +584,19 @@ const CircApp = () => {
     >{content}</Shell>
   );
 
+  // Candidate-build API — the one bridge a cand-* overlay reads app state and
+  // mutations through. Assembled per render; bind() hands it over.
+  const candApi = Cand ? { user, spaces, space, currentId, tab, isMobile, isApp,
+    route, setRoute, setSpaces, returnToSpace, openLink,
+    requestDelete: (item) => setConfirm({ kind: 'delete', item }),
+    requestMarkRead: (item) => setReacting(item),
+    isChampion, startCircle: gateActive ? onGate : openCreateSpace } : null;
+  if (Cand && Cand.bind) Cand.bind(candApi);
+
   // ---- render route ----
   // App posture + mobile payments OFF: every path that would reach the funding /
   // checkout / provider surfaces lands on the finish-on-web handoff instead. One
-  // render-level guard covers ALL entry points (real flows AND Config scenarios),
+  // render-level guard covers ALL entry points (real flows AND staged states),
   // so no checkout, price-entry, or provider surface is reachable in-app while
   // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
@@ -593,6 +640,11 @@ const CircApp = () => {
     screen = <InvalidInvite onHome={() => goSpace('sp-backend')} />;
   } else if (route === 'space-full') {
     screen = <SpaceFull onHome={() => goSpace('sp-backend')} />;
+  } else if (Cand && Cand.matchRoute && Cand.matchRoute(route)) {
+    // Candidate-build route (e.g. a card's own surface). The overlay hands back
+    // the body and the shell opts; the chrome is still inShell's.
+    const r = Cand.renderRoute(route, candApi);
+    screen = inShell(r.body, r.opts || {});
   } else if (route === 'members') {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
       onInvite={inviteEmail} onManageFunding={openManageFunding} onCancelFunding={() => setConfirm({ kind: 'cancel-funding' })}
@@ -634,6 +686,7 @@ const CircApp = () => {
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
           <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {Cand && Cand.FeedLead && <Cand.FeedLead api={candApi} tab={tab} />}
             {tab === 'active' && pending.length > 0 && <NewPill onClick={revealPending} />}
             {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : visible.map((item, i) => {
@@ -641,13 +694,16 @@ const CircApp = () => {
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;
+                const row = (Cand && Cand.CardRow)
+                  ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
+                  : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
                 const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
                 return (
                   <React.Fragment key={item.id}>
                     {i === divIdx && <FeedDivider />}
-                    <CircGlow glow={fresh} rise={arrived.includes(item.id)}>{card}</CircGlow>
+                    <CircGlow glow={fresh} rise={arrived.includes(item.id)}>{row}</CircGlow>
                   </React.Fragment>
                 );
               })}
@@ -686,14 +742,21 @@ const CircApp = () => {
 
   return (
     <>
-      {forcedMobile ? (
+      {showIndex ? (
+        <StatesIndexView reason={landing} groups={STATE_GROUPS}
+          onGo={(id) => { goState(id); setLanding(null); }}
+          onDismiss={() => setLanding(null)} />
+      ) : forcedMobile ? (
         <div className="circ-stage">
           <div className="circ-phone"><div className="circ-phone-clip"><div className="circ-phone-screen">{appTree}</div></div></div>
         </div>
       ) : appTree}
 
-      {/* Config launcher — prototype aid; deleting app/config.jsx removes it, no edit here */}
-      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
+      {/* Launcher — prototype aid; leaving app/config.jsx out removes it, no edit here */}
+      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher
+        statesGroups={STATE_GROUPS} onGoState={goState}
+        onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
+        onReset={reset}
         gateOn={gateOverride} onGateChange={setGateOverride}
         platform={platform} onPlatformChange={setPlatform}
         mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}

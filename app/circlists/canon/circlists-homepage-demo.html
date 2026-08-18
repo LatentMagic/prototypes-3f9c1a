@@ -1,11 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<base href="../../../">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Whiteboard — the dormant screen, round three (LM-626)</title>
+<title>Circlists — homepage demo</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="brand/assets/favicon-16.png" />
+<link rel="apple-touch-icon" href="brand/assets/apple-touch-icon.png" />
 <link rel="stylesheet" href="tokens.css" />
 <link rel="stylesheet" href="swell.css" />
 <style>
@@ -149,6 +152,31 @@
   .circ-btn-destructive:hover:not(:disabled) { background: var(--color-destructive-hover) !important; }
   .circ-btn-destructive:active:not(:disabled) { background: var(--color-destructive-press) !important; }
   .circ-btn-tertiary:hover { text-decoration: underline; }
+  /* destructive-secondary: the house secondary box, danger colour in the label */
+  .circ-btn-destructive-secondary:hover:not(:disabled) { background: var(--color-surface-sunken) !important; }
+  .circ-btn-destructive-secondary:active:not(:disabled) { background: #E8E8E5 !important; }
+
+  /* ---- dormant circle (LM-626) ----
+     Two boxed buttons of equal height, so every gap is literal — no optical
+     compensation, no negative margins. Row when the canvas has room (Leave
+     left, Fund right), stacked with Fund on top when it does not. The switch is
+     a CONTAINER QUERY, so the same component holds at 320, in the app frame and
+     on any desktop canvas without a posture flag. */
+  .circ-dormant { flex: 1; width: 100%; display: flex; flex-direction: column; container-type: inline-size; }
+  .circ-dormant-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px 20px; text-align: center; }
+  .circ-dormant-col { width: 100%; max-width: 470px; display: flex; flex-direction: column; align-items: center; }
+  .circ-dormant-title { font-family: var(--font-sans); font-weight: 600; font-size: clamp(23px, 7cqi, 32px); line-height: 1.18; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0; text-wrap: balance; }
+  .circ-dormant-body { font-family: var(--font-sans); font-weight: 400; font-size: clamp(14.5px, 4.2cqi, 16px); line-height: 1.6; color: var(--color-fg-2); margin: 12px 0 0; text-wrap: balance; }
+  .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 52ch; text-wrap: pretty; }
+  /* DOM order is Leave then Fund: the row uses it as-is (Leave left), the stack
+     reverses it so Fund sits on top. One markup path, no second component. */
+  .circ-dormant-actions { display: flex; flex-direction: column-reverse; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  .circ-dormant-foot { display: flex; justify-content: center; padding: 0 20px 24px; }
+  .circ-dormant-foot > p { margin: 0 !important; }
+  @container (min-width: 520px) {
+    .circ-dormant-actions { flex-direction: row; justify-content: center; width: auto; gap: var(--space-3); }
+    .circ-dormant-actions > .circ-btn { width: auto; }
+  }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
   /* ---- Create → Fund wizard body ----
@@ -363,137 +391,58 @@
      buttons) which reveal from a real prior value and never hide content. */
 
 </style>
-<style>
-  /* ---- whiteboard chrome (not product) ---- */
-  .wb-page { max-width: 1000px; margin: 0 auto; padding: 40px 20px 96px; }
-  .wb-head { margin: 0 0 44px; }
-  .wb-eyebrow { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); margin-bottom: 12px; }
-  .wb-title { font-family: var(--font-sans); font-weight: 600; font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0 0 12px; }
-  .wb-lede { font-family: var(--font-sans); font-weight: 400; font-size: 15.5px; line-height: 1.6; color: var(--color-fg-2); margin: 0; max-width: 68ch; text-wrap: pretty; }
-  .wb-inv { margin-top: 22px; padding: 16px 18px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); }
-  .wb-inv-t { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-1); margin-bottom: 8px; }
-  .wb-inv-l { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; padding: 0; list-style: none; }
-  .wb-inv-l li { display: flex; gap: 7px; font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-2); }
-  .wb-inv-l li::before { content: '•'; color: var(--color-border-strong); }
-  .wb-sec { margin: 0 0 52px; }
-  .wb-sec-h { display: flex; align-items: center; gap: 10px; font-family: var(--font-sans); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; color: var(--color-fg-1); margin: 0 0 16px; }
-  .wb-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-fg-1); color: var(--color-canvas); font-family: var(--font-mono); font-weight: 600; font-size: 12px; flex: none; }
-  .wb-row { display: grid; grid-template-columns: minmax(0, 1fr) 402px; gap: 32px; align-items: start; }
-  .wb-cap { display: flex; flex-direction: column; gap: 14px; }
-  .wb-pitch { font-family: var(--font-sans); font-weight: 400; font-size: 14.5px; line-height: 1.6; color: var(--color-fg-2); margin: 0; text-wrap: pretty; }
-  .wb-cost, .wb-susp { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.55; color: var(--color-fg-3); margin: 0; text-wrap: pretty; }
-  .wb-cost span { display: block; font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-destructive); margin-bottom: 3px; }
-  .wb-note { font-family: var(--font-sans); font-weight: 400; font-size: 14px; line-height: 1.6; color: var(--color-fg-2); margin: -6px 0 20px; max-width: 68ch; }
-  .wb-deskwrap { margin: 0 0 26px; }
-  .wb-desklabel { display: flex; align-items: center; gap: 10px; font-family: var(--font-sans); font-weight: 500; font-size: 13.5px; color: var(--color-fg-2); margin: 0 0 8px; }
-  .wb-desk { height: 560px; overflow: hidden; border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); background: var(--color-canvas); }
-  @media (max-width: 880px) {
-    .wb-row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-    .wb-title { font-size: 25px; }
-  }
-</style>
-<style>
-  /* The board sits on its own ground so the mounted app reads as the app. */
-  html, body { background: var(--color-surface-sunken); }
-  body { min-height: 100dvh; }
-  #board { min-height: 100dvh; }
-</style>
-<style>
-  /* ---- round-two board chrome ---- */
-  .wb2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
-  .wb2-cols .wb-inv { margin-top: 0; }
-  .wb-inv-l.wb2-stack { flex-direction: column; gap: 5px; }
-  .wb-row:has(.wb2-pair) { grid-template-columns: minmax(0, 1fr); }
-  .wb2-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; }
-  .wb2-plabel { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); margin: 0 0 8px; }
-  .wb2-weights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-  @media (max-width: 1040px) { .wb2-weights { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .wb2-weights.wb2-pairstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .wb2-wt { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-1); margin-bottom: 8px; }
-  .wb2-wstage { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 12px 24px; background: var(--color-canvas); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); }
-  .wb2-wcap { font-family: var(--font-sans); font-weight: 400; font-size: 12px; line-height: 1.5; color: var(--color-fg-3); margin: 12px 0 0; max-width: 220px; }
-  .wb2-wn { font-family: var(--font-sans); font-weight: 400; font-size: 12.5px; line-height: 1.55; color: var(--color-fg-3); margin: 10px 0 0; text-wrap: pretty; }
-  .wb2-words { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-  .wb2-word { padding: 24px 20px; background: var(--color-canvas); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); }
-  .wb2-wordh { font-family: var(--font-sans); font-weight: 600; font-size: 24px; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-fg-1); }
-  .wb2-divider { display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); margin: 8px 0 40px; }
-  .wb2-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-border-1); }
-  .wb2-copy { display: flex; flex-direction: column; gap: 12px; }
-  .wb2-copyrow { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 24px; align-items: center; }
-  .wb2-copystage { padding: 22px 24px; background: var(--color-canvas); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); text-align: center; }
-  .wb2-copyh { font-family: var(--font-sans); font-weight: 600; font-size: var(--text-3xl); line-height: 1.18; letter-spacing: -0.02em; color: var(--color-fg-1); }
-  .wb2-copyb { font-family: var(--font-sans); font-weight: 400; font-size: 16px; line-height: 1.6; color: var(--color-fg-2); margin-top: 12px; }
-  .wb2-copynone { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-border-strong); margin-top: 14px; }
-  .wb2-copyn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--color-border-1); font-family: var(--font-mono); font-size: 11px; color: var(--color-fg-2); margin-right: 9px; vertical-align: -4px; }
-  @media (max-width: 880px) { .wb2-copyrow { grid-template-columns: minmax(0, 1fr); } }
-  /* the desktop frame becomes a containing block so the shipped fixed-position
-     dialog pins inside the 560px board frame instead of the whole page */
-  .wb2-fixhost { transform: translateZ(0); position: relative; }
-  .wb2-tint .circ-btn-tertiary:hover { text-decoration: none; background: color-mix(in oklab, var(--color-destructive) 8%, transparent); }
-  .wb2-tint .circ-btn-tertiary:active { background: color-mix(in oklab, var(--color-destructive) 14%, transparent); }
-  .wb2-trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-  @media (max-width: 1040px) { .wb2-trio { grid-template-columns: minmax(0, 1fr); } }
-  /* ---- round three: the dormant candidates. Container queries throughout —
-     the screen adapts to the width it is HANDED, so 320, the phone frame, the
-     app posture and any desktop canvas are all the same component. ---- */
-  .d3 { position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; container-type: inline-size; }
-  .wb-inv-l li.d3-bullet { display: list-item; list-style: none; }
-  .wb-inv-l li.d3-bullet::before { content: none; }
-  .d3-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px 20px; text-align: center; }
-  .d3-col { width: 100%; max-width: 470px; display: flex; flex-direction: column; align-items: center; }
-  .d3-title { font-family: var(--font-sans); font-weight: 600; font-size: clamp(23px, 7cqi, 32px); line-height: 1.18; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0; text-wrap: balance; }
-  .d3-sub { font-family: var(--font-sans); font-weight: 400; font-size: clamp(14.5px, 4.2cqi, 16px); line-height: 1.6; color: var(--color-fg-2); margin: 10px 0 0; text-wrap: pretty; }
-  .d3-quiet { color: var(--color-fg-3); font-size: clamp(13.5px, 3.9cqi, 15px); max-width: 40ch; }
-  .d3-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 42ch; text-wrap: pretty; }
-  .d3-actions { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; margin-top: var(--space-7, 28px); }
-  .d3-foot { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: 0 20px 24px; }
-  .d3-addr { font-family: var(--font-mono); font-weight: 500; font-size: 13px; color: var(--color-fg-3); text-decoration: underline; text-underline-offset: 2px; }
-  /* wide enough for a row: the pair goes side by side, Leave LEFT (row-reverse
-     over a DOM order of Fund-then-Leave, so the stack keeps Fund on top). */
-  @container (min-width: 520px) {
-    .d3-actions { flex-direction: row-reverse; justify-content: center; width: auto; gap: var(--space-4); }
-    .d3-actions > .circ-btn { width: auto; }
-    .d3-actions-one > .circ-btn { min-width: 220px; }
-  }
-  .d3-menu { position: absolute; top: 12px; right: 16px; z-index: 5; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); box-shadow: var(--shadow-overlay); padding: 4px; display: flex; flex-direction: column; min-width: 190px; }
-  .d3-menuitem { background: transparent; border: 0; cursor: pointer; text-align: left; padding: 10px 12px; border-radius: var(--radius-sm); font: 500 13.5px/1 var(--font-sans); color: var(--color-fg-1); min-height: 40px; }
-  .d3-menuitem-danger { color: var(--color-destructive); }
-  /* board chrome */
-  .d3-caps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; margin: 0 0 18px; }
-  .d3-row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-  .d3-frame { display: flex; flex-direction: column; gap: 8px; }
-  .d3-framelabel { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); }
-  .d3-screen { position: relative; overflow: hidden; border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); background: var(--color-canvas); }
-  .d3-copytable { display: flex; flex-direction: column; border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); overflow: hidden; }
-  .d3-copytable > div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 12px 16px; background: var(--color-canvas); font-family: var(--font-sans); font-size: 14.5px; color: var(--color-fg-1); border-bottom: 1px solid var(--color-border-2); }
-  .d3-copytable > div:last-child { border-bottom: 0; }
-  .d3-copytable span { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); align-self: center; }
-  @media (max-width: 880px) { .d3-caps { grid-template-columns: minmax(0, 1fr); } }
-  .wb2-leave:hover { text-decoration: underline; text-underline-offset: 3px; }
-  .wb2-inline-danger { background: transparent; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--color-destructive); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: color-mix(in oklab, var(--color-destructive) 35%, transparent); }
-  .wb2-inline-danger:hover { text-decoration-color: var(--color-destructive); }
-  @media (max-width: 880px) {
-    .wb2-cols, .wb2-weights, .wb2-words, .wb2-pair { grid-template-columns: minmax(0, 1fr); }
-  }
-</style>
 </head>
 <body>
-<div id="board"></div>
+<div id="root"></div>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<!-- the app's own modules, in the app's own load order -->
-<script type="text/babel" src="app/seed-data.jsx"></script>
+<!-- ============================================================================
+     THE ENTRY IS THE MANIFEST. The downstream build reads these script tags to
+     know which modules to compile and in what order, so a module that is not
+     listed here is simply not in the demo — omission replaces a hand-kept
+     delete-list. Read HOMEPAGE-DEMO.md before changing this list.
+
+     Left out, and why it is unreachable:
+       app/seed-data.jsx    replaced by demo/demo-seed.jsx (the demo's own seed)
+       app/config.jsx       the launcher + its review settings; main.jsx guards on
+                            window.ConfigLauncher
+       app/states.jsx       \ the states register (the `?state=` address, the
+       app/states-ui.jsx    / palette, the index). Review aids: main.jsx guards on
+                            window.buildStates / window.StatesIndex, so with them
+                            absent the demo reads no address and opens where the
+                            app opens
+       app/tweaks-panel.jsx \ the Tweaks aids; main.jsx falls back to
+       app/circ-tweaks.jsx  / CIRC_TWEAK_FALLBACK when they are absent
+       app/auth.jsx         sign-in / sign-up / OTC / recovery. Reached only from
+                            the 'signin' route, which needs Sign out or Delete
+                            account — both behind the account control, which the
+                            gate takes over
+       app/wizard.jsx       the Create -> Fund wizard chrome. Rendered only by
+                            CreateSpace / FundingPage, both behind New circle
+       app/subscriptions.jsx funding, checkout, provider, dormant, web-handoff.
+                            Every entry point is New circle, circle settings, or
+                            an unfunded circle — gated, gated, and absent from
+                            the demo seed (both circles are funded)
+     ============================================================================ -->
+<script type="text/babel" src="demo/demo-overlay.jsx"></script>
+<script type="text/babel" src="demo/demo-seed.jsx"></script>
+
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/brand-motion.jsx"></script>
 <script type="text/babel" src="app/liveliness.jsx"></script>
+<script type="text/babel" src="app/swell-reactions.jsx"></script>
 <script type="text/babel" src="app/feed.jsx"></script>
 <script type="text/babel" src="app/shell.jsx"></script>
-
-<!-- candidates + board -->
-<script type="text/babel" src="docs/specs/lm-626-champion-exit/pg-wb3-dormant.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-626-champion-exit/pg-wb3-board.jsx"></script>
+<script type="text/babel" src="app/home.jsx"></script>
+<script type="text/babel" src="app/app-shell.jsx"></script>
+<!-- spaces.jsx looks droppable and is not: main.jsx renders NoSpaceHome and
+     ReverifyDialog unconditionally from it, and its ContentPage frames the
+     in-shell pages. -->
+<script type="text/babel" src="app/spaces.jsx"></script>
+<script type="text/babel" src="app/gate.jsx"></script>
+<script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

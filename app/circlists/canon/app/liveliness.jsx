@@ -118,8 +118,14 @@ const NewPill = ({ onClick }) => {
 // on that boundary is read as a header for what follows it, so the label names
 // the past — "Earlier" — and never claims the new cards above. No count, no
 // arrow, no affordance, and nothing closing off the items beneath it.
+//
+// Expressed as a labelled member of the feed's own sequence, not a separator
+// laid across it — role="separator" is invalid inside a list (a list may only
+// contain list items), so it can't survive the feed carrying list semantics.
+// role="listitem" holds the same label and stays valid either way: inert, not
+// focusable, closes off nothing.
 const FeedDivider = () => (
-  <div className="circ-fdiv" role="separator" aria-label="Earlier — before your last visit">
+  <div className="circ-fdiv" role="listitem" aria-label="Earlier — before your last visit">
     <span className="circ-fdiv-label">Earlier</span>
   </div>
 );

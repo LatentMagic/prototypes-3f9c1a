@@ -966,6 +966,15 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds in Claude Design. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-08-18',
+              title: 'Every state has an address',
+              items: [
+                'One register, not a section inside a settings panel: `app/states.jsx` holds every staged state of the app as `{ group, id, label, stage }` — the staging that used to be Config\'s Scenarios list. Config now holds review settings only. A setting is a mode you hold; a state is an address you open, and mixing the two is what made the old list confusing.',
+                '`?state=<id>` opens the app at that state, overriding the restored local state, so a ticket in the real build can link straight to the screen it is about instead of leaving the reader to guess a click path. Nothing in the address still opens the top circle, as the real app does. A name the register does not hold lands on the states index — that is how a stale ticket link shows itself rather than opening the wrong screen.',
+                'Everything else is derived from the register and cannot drift from it: the palette in the launcher (jump, or copy a link), the index page, and `window.CIRC_STATES` for anything reading the page. The launcher became one pill with two halves — settings, and states.'
+              ]
+            },
+            {
               date: '2026-08-04',
               title: 'Sensitive acts reverify',
               items: [
