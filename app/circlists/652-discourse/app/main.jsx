@@ -119,6 +119,18 @@ const CircApp = () => {
   const [currentId, setCurrentId] = useState(SAVED?.currentId || 'sp-backend');
   const [tab, setTab] = useState(SAVED?.tab || 'active');
 
+  // ---- The address --------------------------------------------------------
+  // Read ONCE at mount: `?state=<name>` names a state in the register
+  // (app/states.jsx), and a ticket in the real build links straight to it. A
+  // resolved name is staged below, overriding the state restored above; `index`
+  // or a name the register does not hold renders the catalogue instead of the
+  // app. Nothing in the address -> null, and the app opens where the real app
+  // does: the top circle, on Active.
+  // The register is a deletable aid, so absent -> null -> shipped behaviour.
+  // NOTE: no link can be handed to this page inside the design tool, so this
+  // whole path looks INERT in preview. See ARCHITECTURE.md -> Addressable states.
+  const [landing, setLanding] = useState(() => (window.circResolveState ? window.circResolveState() : null));
+
   // ephemeral
   const [loadingFeed, setLoadingFeed] = useState(false);
   // Review-only: freeze a loading interstitial so it can be vetted at rest.
@@ -207,8 +219,17 @@ const CircApp = () => {
   }, [route, user, spaces, currentId, tab]);
 
   const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
-  const listSpaces = useMemo(() => showTest ? spaces : spaces.filter(s => !isTestSpace(s)), [spaces, showTest]);
-  const space = useMemo(() => spaces.find(s => s.id === currentId) || null, [spaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
+  // ---- The viewer's own view of the circles --------------------------------
+  // Scopes what THIS member sees inside each circle (LM-666's delete for me);
+  // app/feed.jsx owns the rule. A cand-* overlay may still override it by
+  // publishing window.CircViewerSpaces. Mutations run against the raw `spaces` /
+  // spacesRef; only what is RENDERED goes through here.
+  const viewSpaces = useMemo(() => {
+    const f = window.CircViewerSpaces || window.circViewerSpaces;
+    return f ? f(spaces, user) : spaces;
+  }, [spaces, user]);
+  const listSpaces = useMemo(() => showTest ? viewSpaces : viewSpaces.filter(s => !isTestSpace(s)), [viewSpaces, showTest]);
+  const space = useMemo(() => viewSpaces.find(s => s.id === currentId) || null, [viewSpaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
   const isChampion = (s) => !!s && s.champion === 'You';
 
@@ -263,7 +284,7 @@ const CircApp = () => {
   // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
   // while the member sits on Read is pointing them AT Active, so it has to survive
   // until they arrive. An effect, not a branch inside enterSpace, so every way in
-  // (mount, a Config scenario, home, a tab switch) clears it identically.
+  // (mount, a staged state, home, a tab switch) clears it identically.
   useEffect(() => {
     if (route !== 'space' || tab !== 'active' || loadingFeed || !currentId) return;
     const sp = spacesRef.current.find(s => s.id === currentId);
@@ -437,6 +458,15 @@ const CircApp = () => {
   // Account deletion. Circles this member champions run to the end of their paid
   // period unmanaged and then go dormant — nothing here announces that to anyone.
   const deleteAccount = () => { setSpaces([]); setCurrentId(null); setUser(DEFAULT_USER); setRoute('signin'); };
+  // Delete for me: lands at once in this member's own session, nothing anywhere
+  // records that it happened. The circle keeps the link whole for everyone else,
+  // and this member's reaction on it still stands for the circle.
+  const deleteItemForMe = (item) => {
+    if (!item) return;
+    setSpaces((prev) => prev.map((s) => (s.id === currentId
+      ? { ...s, hiddenForMe: [...((s.hiddenForMe) || []), item.id] }
+      : s)));
+  };
   const onConfirm = () => {
     if (!confirm) return;
     if (confirm.kind === 'delete') deleteItem(confirm.item);
@@ -518,18 +548,38 @@ const CircApp = () => {
     })),
   };
 
-  // ---- config launcher setups ----
-  // Data + staging actions live in app/config.jsx (a deletable prototype aid).
-  // buildScenarios closes over the setters it needs; drop that file and the
-  // launcher + these setups vanish together, leaving the product core clean.
-  const { groups: SCENARIO_GROUPS, reset } = (window.buildScenarios
-    ? window.buildScenarios({
+  // ---- the states register (app/states.jsx, a deletable aid) --------------
+  // Every staged state of the app, with its address. The register feeds all
+  // three of its surfaces from one list: the palette in the launcher, the index,
+  // and `?state=` above. Drop app/states.jsx + app/states-ui.jsx and the states
+  // half of the launcher, the index and the address reading all vanish together,
+  // leaving the product core clean.
+  const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
+    ? window.buildStates({
         spaces, STATE_KEY,
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
       })
-    : { groups: [], reset: () => {} });
+    : { byId: {}, groups: [], reset: null });
+  const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
+
+  // A named state wins over whatever was restored. Staged once, after mount, so
+  // the stagers run against a fully built app rather than during hydration.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current || !landing || landing.kind !== 'state') return;
+    const st = STATE_BY_ID[landing.id];
+    if (!st) return;
+    deepLinked.current = true;
+    st.go();
+  }, [landing]);
+
+  // The catalogue: what `?state=index` opens, and where a name the register does
+  // not hold lands — the reader sees a list that does not contain the name they
+  // came for. Dismissing it leaves the app exactly where it booted.
+  const StatesIndexView = window.StatesIndex;
+  const showIndex = !!StatesIndexView && !!landing && (landing.kind === 'index' || landing.kind === 'unresolved');
 
   // ---- shared shell wrapper ----
   // App posture swaps ONLY the persistent chrome (AppShellNative): the children
@@ -564,7 +614,7 @@ const CircApp = () => {
   // ---- render route ----
   // App posture + mobile payments OFF: every path that would reach the funding /
   // checkout / provider surfaces lands on the finish-on-web handoff instead. One
-  // render-level guard covers ALL entry points (real flows AND Config scenarios),
+  // render-level guard covers ALL entry points (real flows AND staged states),
   // so no checkout, price-entry, or provider surface is reachable in-app while
   // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
@@ -691,7 +741,9 @@ const CircApp = () => {
   }
 
   // dialogs live above whichever screen
-  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
+  // `item` and `space` are carried because the delete confirm offers two reaches
+  // and has to know which link, in which circle, it is about (LM-666).
+  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
     || (reverify && <ReverifyDialog provider={user.ssoProvider} onPass={() => { setReverify(false); deleteAccount(); }} onCancel={() => setReverify(false)} />);  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (
     <SwellReactionFlow
@@ -710,14 +762,21 @@ const CircApp = () => {
 
   return (
     <>
-      {forcedMobile ? (
+      {showIndex ? (
+        <StatesIndexView reason={landing} groups={STATE_GROUPS}
+          onGo={(id) => { goState(id); setLanding(null); }}
+          onDismiss={() => setLanding(null)} />
+      ) : forcedMobile ? (
         <div className="circ-stage">
           <div className="circ-phone"><div className="circ-phone-clip"><div className="circ-phone-screen">{appTree}</div></div></div>
         </div>
       ) : appTree}
 
-      {/* Config launcher — prototype aid; deleting app/config.jsx removes it, no edit here */}
-      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher groups={SCENARIO_GROUPS} onReset={reset}
+      {/* Launcher — prototype aid; leaving app/config.jsx out removes it, no edit here */}
+      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher
+        statesGroups={STATE_GROUPS} onGoState={goState}
+        onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
+        onReset={reset}
         gateOn={gateOverride} onGateChange={setGateOverride}
         platform={platform} onPlatformChange={setPlatform}
         mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}

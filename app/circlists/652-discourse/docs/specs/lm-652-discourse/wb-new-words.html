@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../" />
+<title>Whiteboard — new words in a conversation</title>
+<link rel="stylesheet" href="../../../tokens.css">
+<style>
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:62ch;margin:12px 0 0;text-wrap:pretty}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+.opt{margin-top:36px}
+.opthead{display:flex;align-items:baseline;gap:12px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 18px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claims{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:12px 0 0;max-width:82ch}
+.claim{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:860px){.pair,.claims{grid-template-columns:1fr}}
+.frame{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.framecap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--color-border-2);font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.pad{padding:18px 18px 20px}
+.eyebrowline{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.eyebrowline span{font:500 11px/1 var(--font-mono);letter-spacing:.06em;color:var(--color-fg-3)}
+.eyebrowline i{flex:1;height:1px;background:var(--color-border-2)}
+.thread{display:flex;flex-direction:column;gap:14px}
+.turn{display:flex;gap:10px;position:relative}
+.av{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--color-surface-sunken);border:1px solid var(--color-border-2);display:flex;align-items:center;justify-content:center;font:600 9.5px/1 var(--font-sans);color:var(--color-fg-3)}
+.turn.r .av{width:22px;height:22px;font-size:8.5px}
+.body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.by{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.who{font:600 13.5px/1.3 var(--font-sans)}
+.turn.r .who{font-size:12.5px;color:var(--color-fg-2)}
+.when{font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.turn.r .when{font-size:11px}
+.words{font:400 14.5px/1.55 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.rep{font:500 12px/1.3 var(--font-sans);color:var(--color-fg-3);margin-top:2px}
+.group{margin-left:36px;border-left:2px solid var(--color-border-2);padding-left:12px;display:flex;flex-direction:column;gap:10px}
+.dot,.wl,.tab{display:none}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* 00 — what is there now: the whole turn takes a wash. */
+.opt-wash .turn[data-new="1"]{background:rgba(139,191,173,.34);border-radius:var(--radius-md);padding:8px 10px;margin:-8px -10px}
+
+/* 01 — the waterline: one rule where you left off, nothing per turn. */
+.opt-line .wl{display:flex;align-items:center;gap:10px;margin:2px 0}
+.opt-line .wl b{font:500 10.5px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent)}
+.opt-line .wl i{flex:1;height:1px;background:var(--color-accent);opacity:.5}
+
+/* 02 — the margin mark: the return banner's own tab, in the row's flow. Sage,
+   3×22, radius 2, at the row's own gap — the same element, at turn scale. The
+   tab is always in the geometry so seen and unseen turns align; only its colour
+   comes and goes. */
+.opt-mark .tab{display:block;width:3px;height:22px;border-radius:2px;background:transparent;flex-shrink:0;margin-top:2px}
+.opt-mark .turn[data-new="1"] .tab{background:var(--color-sage)}
+.opt-mark .group{margin-left:49px}
+
+/* 03 — the unread byline: the mark rides the name, the paper stays paper. */
+.opt-dot .turn[data-new="1"] .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--color-accent);flex-shrink:0}
+.opt-dot .turn:not([data-new="1"]) .who{color:var(--color-fg-2);font-weight:500}
+.opt-dot .turn.r:not([data-new="1"]) .who{color:var(--color-fg-3)}
+
+.idle .turn[data-new="1"]{background:none;padding:0;margin:0}
+.pad.idle .turn[data-new="1"] .tab{background:transparent}
+.idle .wl{display:none}
+.pad.idle .turn[data-new="1"] .dot,.pad.idle .dot{display:none}
+.pad.idle .turn .who,.pad.idle .turn:not([data-new="1"]) .who{color:var(--color-fg-1);font-weight:600}
+.pad.idle .turn.r .who,.pad.idle .turn.r:not([data-new="1"]) .who{color:var(--color-fg-2);font-weight:600}
+
+.refs{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:860px){.refs{grid-template-columns:1fr}}
+.ref{border:1px dashed var(--color-border-1);border-radius:var(--radius-lg);padding:16px 16px 18px;background:transparent}
+.ref h3{font:600 13.5px/1.3 var(--font-sans);margin:0 0 6px}
+.ref p{font:400 12.5px/1.55 var(--font-sans);color:var(--color-fg-2);margin:0;text-wrap:pretty}
+.refstrip{margin-top:12px;height:58px;border-radius:var(--radius-sm);background:var(--color-surface);border:1px solid var(--color-border-2);position:relative;overflow:hidden}
+.refstrip u{position:absolute;left:10px;right:10px;height:7px;border-radius:2px;background:var(--color-border-1);text-decoration:none}
+.refstrip u:nth-of-type(1){top:11px}
+.refstrip u:nth-of-type(2){top:27px;right:80px}
+.refstrip u:nth-of-type(3){top:43px;right:52px}
+.refstrip.a::before{content:"";position:absolute;left:10px;right:10px;top:22px;height:1px;background:var(--color-accent);opacity:.6}
+.refstrip.b u:nth-of-type(2),.refstrip.b u:nth-of-type(3){left:24px}
+.refstrip.b::before,.refstrip.b::after{content:"";position:absolute;left:10px;width:6px;height:6px;border-radius:50%;background:var(--color-accent)}
+.refstrip.b::before{top:27px}
+.refstrip.b::after{top:43px}
+.refstrip.c u:nth-of-type(2),.refstrip.c u:nth-of-type(3){background:#B9D6C9}
+.refstrip.c::before{content:"";position:absolute;left:4px;right:4px;top:22px;height:30px;border-radius:var(--radius-sm);background:rgba(139,191,173,.34)}
+.refnote{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:26px 0 0}
+</style>
+</head>
+<body>
+<template id="thread">
+  <div class="eyebrowline"><span>the conversation</span><i></i></div>
+  <div class="thread">
+    <div class="turn" data-new="0">
+      <span class="tab"></span>
+      <div class="av">MT</div>
+      <div class="body">
+        <div class="by"><span class="who">Marcus T.</span><span class="dot"></span><span class="when">2d</span></div>
+        <div class="words">We quote &ldquo;errors are values&rdquo; a lot and still write if err != nil three times a function.</div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="turn r" data-new="0">
+        <span class="tab"></span>
+        <div class="av">AL</div>
+        <div class="body">
+          <div class="by"><span class="who">Ada L.</span><span class="dot"></span><span class="when">2d</span></div>
+          <div class="words">The sentinel-error section is the part we actually need.</div>
+        </div>
+      </div>
+      <div class="turn r" data-new="1">
+        <span class="tab"></span>
+        <div class="av">DK</div>
+        <div class="body">
+          <div class="by"><span class="who">Dev K.</span><span class="dot"></span><span class="when">20m</span></div>
+          <div class="words">Came back to this — the wrapping rules answer the question I asked on Thursday.</div>
+        </div>
+      </div>
+      <div class="rep">More replies</div>
+    </div>
+    <div class="turn" data-new="1">
+      <span class="tab"></span>
+      <div class="av">PN</div>
+      <div class="body">
+        <div class="by"><span class="who">Priya N.</span><span class="dot"></span><span class="when">14m</span></div>
+        <div class="words">The appendix checklist is worth the read on its own. I have put it in the migration doc.</div>
+        <div class="rep">Reply</div>
+      </div>
+    </div>
+    <div class="wl"><b>new</b><i></i></div>
+    <div class="turn" data-new="1">
+      <span class="tab"></span>
+      <div class="av">LP</div>
+      <div class="body">
+        <div class="by"><span class="who">Lena P.</span><span class="dot"></span><span class="when">6m</span></div>
+        <div class="words">Two seconds, two attempts, and a search list five entries long — ten lookups for one name.</div>
+        <div class="rep">Reply</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div class="wrap">
+  <div class="eyebrow">LM-652 · whiteboard</div>
+  <h1>New words in a conversation</h1>
+  <p class="lede">The wash currently paints the whole turn. A turn is a flexible block of words, so the shape it fills is a padded rectangle around a paragraph — arbitrary at every length, and a stack of them reads as slabs. The green also carries the accent's action meaning, which nothing here is asking you to do. Three ways out, each moving the mark to a different scale: the conversation, the gutter, the byline. Every frame is seeded the same way — a run of new turns at the foot AND one new reply buried in an older group, which is the case each option has to survive.</p>
+
+  <div class="rule"></div>
+
+  <div class="opt">
+    <div class="opthead"><span class="num">00</span><span class="name">What is there now</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the wash from the feed's arrival glow, held as a resting state under the whole turn.</p>
+      <p class="claim"><b>Cost</b> — the fill has no shape of its own, competes with the accent, and multiplies down a thread.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Nothing new</span></div><div class="pad idle opt-wash" data-thread></div></div>
+      <div class="frame"><div class="framecap"><span>Three new · today's baseline</span></div><div class="pad opt-wash" data-thread></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt">
+    <div class="opthead"><span class="num">01</span><span class="name">The waterline</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — newness is a position in the conversation, not a property of each turn. One rule where you left off, and it tells you where to start reading rather than what to look at.</p>
+      <p class="claim"><b>Cost</b> — it only marks a contiguous run at the foot. The new reply inside the older group sits above the line and gets nothing, so a conversation that grows in its middle is unserved.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Nothing new</span></div><div class="pad idle opt-line" data-thread></div></div>
+      <div class="frame"><div class="framecap"><span>Three new</span></div><div class="pad opt-line" data-thread></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt">
+    <div class="opthead"><span class="num">02</span><span class="name">The margin mark</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the return banner's own tab, at turn scale: sage, 3×22, radius 2, standing in the row's flow at the row's gap. Not a new mark — the one the product already uses to say <i>this is the thing that came back</i>. The tab is always in the geometry, so nothing shifts when it colours.</p>
+      <p class="claim"><b>Cost</b> — it lands in the same gutter the reply rail occupies, so a new reply shows two vertical lines within 13px. It is also markedly quieter than the wash, which is the point and the risk.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Nothing new</span></div><div class="pad idle opt-mark" data-thread></div></div>
+      <div class="frame"><div class="framecap"><span>Three new</span></div><div class="pad opt-mark" data-thread></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt">
+    <div class="opthead"><span class="num">03</span><span class="name">The unread byline</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — no ground and no gutter. A dot after the name, and the bylines of turns you have read recede; the same mark the rail already uses for a circle with something in it, at the scale of one turn.</p>
+      <p class="claim"><b>Cost</b> — the weakest of the three at a glance, and it dims what you have already read to make the new stand out, which is a claim about old words the product has not made anywhere else.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Nothing new</span></div><div class="pad idle opt-dot" data-thread></div></div>
+      <div class="frame"><div class="framecap"><span>Three new</span></div><div class="pad opt-dot" data-thread></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <p class="refnote">For context, not options — how the three patterns behave elsewhere</p>
+  <div class="refs">
+    <div class="ref">
+      <h3>The labelled divider</h3>
+      <p>Group chat draws one line across the transcript at the last-read point, labelled, and pins it until you leave. Position, not emphasis.</p>
+      <div class="refstrip a"><u></u><u></u><u></u></div>
+    </div>
+    <div class="ref">
+      <h3>The margin dot</h3>
+      <p>Mail lists put a filled dot in the left margin of each unread row, and clear it on read. Per item, and countable down the column.</p>
+      <div class="refstrip b"><u></u><u></u><u></u></div>
+    </div>
+    <div class="ref">
+      <h3>The tinted row</h3>
+      <p>Forums and trackers tint the whole unread row. Loud and unmissable at list scale, where every row is the same height.</p>
+      <div class="refstrip c"><u></u><u></u><u></u></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tpl = document.getElementById('thread');
+document.querySelectorAll('[data-thread]').forEach(el => el.appendChild(tpl.content.cloneNode(true)));
+</script>
+</body>
+</html>

@@ -19,8 +19,10 @@
     const set = (url, fields) => { const it = byUrl[url]; if (it) Object.assign(it, fields); };
 
     // ---- Backend Pod: thoughts on Active cards (the tucked-under band) ----
-    // YOUR card, first on Active, with a conversation running on it — so its
-    // surface carries item 7's line (champion here: "another circle").
+    // @fixture item-7-near-miss — YOUR card, first on Active, three replies from
+    // other people and none of your own: the item-7 line is ABSENT here, and
+    // appears the moment you reply. The pair to `@fixture item-7-sales-line`
+    // below (go.dev/blog/pipelines), which meets both counts.
     set('https://newsletter.pragmaticengineer.com/p/scaling-on-call', {
       thought: { by: 'You', text: 'Their on-call comp table matches what we pay. The rotation sizing is where we differ.', at: NOW - 1 * H },
       watching: true, talkSeenAt: NOW - 4 * H,
@@ -52,6 +54,13 @@
     // ---- Backend Pod: conversations on Read cards, watched, some fresh ----
     // YOUR card, first on Read, well talked about — the same item-7 line, met
     // from the tab you actually visit conversations from.
+    // @fixture item-7-sales-line — the card that DEMONSTRATES the item-7 line.
+    // Yours, with three replies from other people AND one of your own, which is
+    // what the line now needs (CAND_OWN_MIN + CAND_OWN_MINE, ratified
+    // 2026-08-18). Open it and the line sits at the foot of the surface.
+    // Near-miss twin, deliberately kept: the Pragmatic Engineer card below —
+    // three replies from others, none of yours, so the line is ABSENT until you
+    // add one. Search this file for `@fixture` to find both.
     set('https://go.dev/blog/pipelines', {
       attribution: 'Added by you',
       watching: true, talkSeenAt: NOW - 20 * H,
@@ -60,12 +69,24 @@
         T('gp1', 'Priya N.', 30, 'The done-channel pattern here is exactly what the ingest service is missing. We cancel by killing the process.'),
         T('gp2', 'Dev K.', 26, 'Same. I started a branch that threads a context through the pipeline stages \u2014 will link it when it holds up.'),
         T('gp3', 'Ada L.', 3, 'Worth reading beside the errgroup docs. Half of this file is errgroup now, done better.'),
+        // Your own reply — the second count the item-7 line needs.
+        T('gp4', 'You', 2, 'Both worth doing. I will take the shutdown path and thread a context through it this week.'),
       ],
     });
     set('https://jvns.ca/blog/2026/02/dns-resolvers/', {
       watching: true, talkSeenAt: NOW - 10 * H,
       thought: { by: 'Priya N.', text: 'Sending this round before the resolver migration \u2014 the diagrams are the clearest I have seen.', at: NOW - 30 * H },
       talk: [
+        // The deep group: six replies under one turn, so the collapse and the
+        // tail control can be judged. Two of them landed after this card's mark,
+        // in the held-back tail — so the group has to open on arrival.
+        T('jv0', 'Marcus T.', 28, 'The stub-resolver section is the part I would have everyone read twice. Half our timeouts are the stub giving up, not the upstream.'),
+        T('jv0a', 'Ada L.', 26, 'We set a two second timeout in the container image and then wonder why the first lookup of the morning fails.', { replyTo: 'jv0' }),
+        T('jv0b', 'Dev K.', 24, 'That is the one. And the retry goes to the same broken resolver, in order, every time.', { replyTo: 'jv0' }),
+        T('jv0c', 'Priya N.', 22, 'Migration plan should name the timeout and the attempts explicitly rather than inheriting whatever the base image ships.', { replyTo: 'jv0' }),
+        T('jv0d', 'Lena P.', 20, 'Agreed. I will put the current values in the doc so we are arguing about real numbers.', { replyTo: 'jv0' }),
+        T('jv0e', 'Sam R.', 6, 'Numbers are in. Two seconds, two attempts, and the search list is five entries long \u2014 that is ten lookups for one name.', { replyTo: 'jv0' }),
+        T('jv0f', 'Ada L.', 4, 'Ten lookups explains the morning failures on its own. The search list is where I would start.', { replyTo: 'jv0' }),
         T('jv1', 'Lena P.', 5, 'The negative-caching part explains the ghost outage from March. TTL zero is not \u201cno caching\u201d everywhere.'),
       ],
     });

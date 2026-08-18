@@ -230,8 +230,16 @@ const SettingUp = ({ spaceName, onDone }) => {
 // passes to whoever funds next.
 //   asleep     → Fund (the standalone re-fund checkout) + the rule in copy,
 //                the ordinary contact door, and Leave
-//   suspended  → Get in touch, and nothing else. Funding is absent because the
-//                subscription still exists, paused; the screen says so.
+//   suspended  → Get in touch, and Leave. Funding is absent because the
+//                subscription still exists, paused; the screen says so. Same
+//                left/right pair as asleep, but NEITHER side is a box: with no
+//                fill to rank against, a boxed exit next to a text link would
+//                outweigh the remedy, and contact must not be a filled primary
+//                — it is a mailto, not a transaction. So both are text controls
+//                the exit stays the SAME boxed destructive-secondary control as
+//                asleep — one treatment of Leave across the family — and the
+//                remedy takes the right-hand slot as the accent contact link it
+//                already was. Leave opens the same shipped confirmation.
 // Layout (LM-626 whiteboard, Di + round three): headline states the fact, one
 // subheading, then the two actions ranked — Leave LEFT of Fund in a row
 // (reading order ends on the affirmative, as the confirm dialogs do), stacked
@@ -262,11 +270,12 @@ const DormantSpace = ({ space, dormancy = 'terminal', onFund, onLeave }) => {
           <h1 className="circ-dormant-title">{title}</h1>
           <p className="circ-dormant-body">{body}</p>
           {suspended ? (
-            <div style={{ marginTop: 'var(--space-8)' }}>
-              <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Suspended circle: ' + (space ? space.name : ''))}`} className="circ-textlink" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
-                fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-accent)',
-              }}><Icon name="mail" size={17} color="var(--color-accent)" /> Get in touch</a>
+            <div className="circ-dormant-actions">
+              {onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
+              <a href={`mailto:${OPERATOR_EMAIL}?subject=${encodeURIComponent('Suspended circle: ' + (space ? space.name : ''))}`}
+                className="circ-dormant-link" style={{ color: 'var(--color-accent)' }}>
+                <Icon name="mail" size={17} color="var(--color-accent)" /> Get in touch
+              </a>
             </div>
           ) : (
             <React.Fragment>

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists — C3 · the return affordance</title>
+<base href="../../../" />
+<title>Circlists — LM-666 candidate</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -170,12 +171,17 @@
   .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 52ch; text-wrap: pretty; }
   /* DOM order is Leave then Fund: the row uses it as-is (Leave left), the stack
      reverses it so Fund sits on top. One markup path, no second component. */
-  .circ-dormant-actions { display: flex; flex-direction: column-reverse; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  .circ-dormant-actions { display: flex; flex-direction: column-reverse; align-items: center; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  /* Suspended: same row, same boxed exit as asleep — one treatment of Leave.
+     The right-hand slot holds the contact link (a mailto is not a primary). */
+  .circ-dormant-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; font-family: var(--font-sans); font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .circ-dormant-link:hover { background: var(--color-surface-sunken); }
   .circ-dormant-foot { display: flex; justify-content: center; padding: 0 20px 24px; }
   .circ-dormant-foot > p { margin: 0 !important; }
   @container (min-width: 520px) {
     .circ-dormant-actions { flex-direction: row; justify-content: center; width: auto; gap: var(--space-3); }
     .circ-dormant-actions > .circ-btn { width: auto; }
+    .circ-dormant-actions > .circ-dormant-link { margin-left: var(--space-2); }
   }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }
 
@@ -251,13 +257,15 @@
 
   /* ---- config launcher (prototype aid) ---- */
   .circ-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
-  .circ-config-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--color-fg-1); color: #fff; border: 0; cursor: pointer;
-    padding: 9px 14px; border-radius: var(--radius-pill);
-    font-family: var(--font-sans); font-weight: 600; font-size: 13px;
-    box-shadow: var(--shadow-overlay);
-  }
+  /* One pill, two halves: settings you HOLD (Config) and states you GO to
+     (States, app/states-ui.jsx). Icon-only keeps it out of the way; each half
+     keeps its own 44px hit target, and the whole pill still drags. */
+  .circ-launcher { display: inline-flex; align-items: stretch; background: var(--color-fg-1); border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); overflow: hidden; }
+  .circ-launcher-half { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 44px; padding: 0; background: transparent; border: 0; color: #fff; cursor: inherit; }
+  .circ-launcher-half + .circ-launcher-half { box-shadow: inset 1px 0 0 rgba(255,255,255,0.2); }
+  .circ-launcher-half:hover { background: rgba(255,255,255,0.1); }
+  .circ-launcher-half[data-open] { color: var(--color-accent); background: rgba(255,255,255,0.08); }
+  .circ-launcher-half:focus-visible { outline-offset: -3px; }
 
   /* ---- config modal (prototype aid) ---- */
   .circ-config-scrim {
@@ -346,6 +354,35 @@
   }
   .circ-config-item:hover { background: var(--color-surface-sunken); }
 
+  /* ---- states palette + index (prototype aid; register in app/states.jsx) ----
+     Both are derived views of the register and share their row: the label, the
+     address under it, and the copy-a-link control. The palette borrows the config
+     modal's shell so the two aids read as siblings. */
+  .circ-states-search { width: 100%; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 10px 12px; min-height: 40px; font: 400 13.5px var(--font-sans); color: var(--color-fg-1); margin-bottom: var(--space-4); }
+  .circ-states-groups { columns: 260px 2; column-gap: 28px; }
+  .circ-states-group { break-inside: avoid; margin-bottom: var(--space-4); }
+  .circ-states-item { break-inside: avoid; }
+  .circ-states-row { display: flex; align-items: center; gap: 4px; }
+  .circ-states-jump { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: transparent; border: 0; cursor: pointer; padding: 7px 10px; border-radius: var(--radius-sm); }
+  .circ-states-jump:hover { background: var(--color-surface-sunken); }
+  .circ-states-label { font: 500 13.5px/1.3 var(--font-sans); color: var(--color-fg-1); }
+  .circ-states-id { font: 400 11px/1.3 var(--font-mono); color: var(--color-fg-3); }
+  .circ-states-copy { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; background: transparent; border: 0; border-radius: var(--radius-sm); color: var(--color-fg-3); cursor: pointer; }
+  .circ-states-copy:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-states-copied { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; }
+  .circ-states-copied > span { font: 500 11px var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  .circ-states-copied > input { flex: 1; min-width: 0; background: var(--color-surface-sunken); border: 1px solid var(--color-border-2); border-radius: var(--radius-sm); padding: 5px 7px; font: 400 11px var(--font-mono); color: var(--color-fg-2); }
+  .circ-states-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--color-border-2); margin-top: var(--space-4); padding-top: var(--space-4); }
+  .circ-index { min-height: 100vh; background: var(--color-canvas); padding: clamp(32px, 7vh, 72px) 20px 96px; }
+  .circ-index-inner { max-width: 860px; margin: 0 auto; }
+  .circ-index-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
+  .circ-index-title { font: 600 clamp(28px, 5vw, 38px)/1.1 var(--font-sans); letter-spacing: -0.02em; color: var(--color-fg-1); margin: 10px 0 0; }
+  .circ-index-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 0; max-width: 62ch; text-wrap: pretty; }
+  .circ-index-note { font: 400 14px/1.6 var(--font-sans); color: var(--color-fg-2); background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 12px 14px; margin: var(--space-4) 0 0; max-width: 62ch; }
+  .circ-index code { font: 400 0.92em var(--font-mono); color: var(--color-fg-1); background: var(--color-surface-sunken); border-radius: 3px; padding: 1px 5px; }
+  .circ-index-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: var(--space-5) 0 var(--space-4); }
+  .circ-index-bar > .circ-states-search { flex: 1; min-width: 200px; margin: 0; }
+
   /* ---- mobile phone frame (forced-mobile posture) ---- */
   .circ-stage {
     min-height: 100vh; width: 100%;
@@ -384,64 +421,55 @@
   .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
   @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
 
-  /* ---- LM-652 candidate (cand-lm652-*.jsx) ---- */
-  .cand-band:hover { border-color: #CFCDC2; background: #EEEDE5; }
-  .cand-band:hover .cand-bandchev { color: var(--color-fg-1); }
-  .cand-altclose { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-altclose:hover, .cand-altclose:focus-visible { color: var(--color-fg-1); }
-  /* The alt face's own actions take the cross's treatment: the house icon-button
-     state layer is mixed for a white surface and reads as a smudge on the warm
-     paper, so ink darkens instead of a fill appearing. */
-  .cand-altaction { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
-  .cand-altaction:hover, .cand-altaction:focus-visible { color: var(--color-fg-1); }
-  .cand-altaction:hover::before { background: transparent !important; }
-  .cand-write:focus-visible { outline: none; }
-  [data-cand-listrow]:first-child { border-top-color: transparent !important; }
-  .cand-watch[aria-pressed="true"]:hover { color: var(--color-accent-strong, var(--color-accent)); }
-  .cand-quiet:hover { color: var(--color-fg-1); text-decoration: underline; text-underline-offset: 2px; }
-
-
-  .pgc3-inline { color: var(--color-fg-1) !important; text-decoration-color: var(--color-border-strong) !important; }
-  .pgc3-inline:hover { text-decoration-color: var(--color-fg-1) !important; }
-  .pgc3-row:hover { background: var(--color-surface-sunken); }
-  .pgc3-bar:hover span:first-child { color: var(--color-fg-1); }
-  .pgc3-lift { transition: box-shadow var(--duration-base) var(--ease-quiet); }
-  .pgc3-lift:hover { box-shadow: var(--shadow-raised); }
-  .pgc2-fold:hover path[stroke] { stroke: var(--color-fg-3); }
-  .pgc2-fold:focus-visible { border-radius: 0 var(--radius-lg) 0 0; }
-  .pgc2-line:hover span { color: var(--color-fg-1) !important; }
-  .pgc2-inv::before { display: none; }
-
-  /* ---- C1 playground shell ----------------------------------------------
-     The page's own header bar is FIXED above a stage that owns the app's scroll.
-     The stage carries transform: translateZ(0), so it is the containing block
-     for the app's position:fixed overlays (the same trick .circ-phone-clip uses)
-     — sheets, scrims and the FAB pin to the app's own bounds rather than riding
-     over the bar. */
-  #pgbar { position: fixed; top: 0; left: 0; right: 0; z-index: 500; background: #1A1917; border-bottom: 1px solid #302F2C; }
-  #pgstage { position: fixed; inset: var(--pgbar-h, 132px) 0 0 0; overflow-y: auto; -webkit-overflow-scrolling: touch; transform: translateZ(0); background: var(--color-canvas); --circ-vh: 100%; }
-  #root { min-height: 100%; }
-  #pgstage .circ-stage { min-height: 100%; }
-  #pgstage .circ-phone { height: min(872px, calc(100% - 48px)); }
-
   /* ---- entrance animations ----
      Overlays rest at their visible end-state with NO entrance keyframe, so they
      render correctly under prefers-reduced-motion AND under capture tools that
      freeze CSS animations at frame 0. Motion lives in transitions (FAB, tabs,
      buttons) which reveal from a real prior value and never hide content. */
 
+
+  /* ---- LM-666 candidate (cand-lm666-*.jsx) — the delete action list ----
+     The house confirm shell (same scrim, panel, radius, padding and title
+     treatment) with the single primary/dismiss pair replaced by full-width
+     stack of the app's own full-width buttons. NO DEFAULT ACT: a destructive act
+     is never the default one, so neither reach is filled — both take the house
+     destructive-secondary, and the plain secondary Cancel beneath them holds the
+     focus. The card's bin is untouched. */
+  .cand666-scrim { position: fixed; inset: 0; z-index: 130; background: var(--color-scrim); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .cand666-panel { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--space-6); max-width: 400px; width: 100%; box-shadow: var(--shadow-overlay); }
+  .cand666-title { font-family: var(--font-sans); font-weight: 600; font-size: var(--text-2xl); line-height: 1.3; letter-spacing: -0.01em; color: var(--color-fg-1); margin: 0; }
+  .cand666-sub { font-family: var(--font-sans); font-weight: 400; font-size: 15px; line-height: 1.55; color: var(--color-fg-2); margin: 8px 0 0; }
+  .cand666-stack { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-5); }
 </style>
 </head>
 <body>
-<div id="pgbar"></div>
-<div id="pgstage"><div id="root"></div></div>
+<!-- ============================================================================
+     ADDRESSABLE STATES. This prototype can be opened AT a named state:
+
+         circlists.html?state=dormant-circle
+
+     The names live in the register, app/states.jsx (one entry per state, its id
+     is its address). They are also published on the page as window.CIRC_STATES
+     — ids, labels and groups, nothing runnable.
+
+         ?state=index   the catalogue: every state, grouped, each one linkable
+         ?state=<name>  that state, overriding whatever local state was restored
+         a name the register does not hold  ->  the index, so a stale link shows
+                                               itself instead of opening the
+                                               wrong screen
+         nothing        the top circle, on Active, exactly as the real app opens
+
+     Details, and why the resolver looks inert in a design tool, are in
+     ARCHITECTURE.md -> Addressable states.
+     ============================================================================ -->
+<div id="root"></div>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<!-- Playground: its own persisted-state key, so it never mixes with the candidate's. -->
-<script>window.CIRC_STATE_KEY = 'circ_pgc3_state_v1';</script>
+<!-- Candidate build: its own persisted-state key, so it never mixes with the main app's. -->
+<script>window.CIRC_STATE_KEY = 'circ_lm666_state_v1';</script>
 
 <script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
@@ -458,26 +486,18 @@
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/tweaks-panel.jsx"></script>
 <script type="text/babel" src="app/circ-tweaks.jsx"></script>
+<script type="text/babel" src="app/states.jsx"></script>
+<script type="text/babel" src="app/states-ui.jsx"></script>
 <script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/gate.jsx"></script>
-
-<!-- The real candidate, mounted whole. Loads AFTER the app files it re-publishes over
-     (seed-data, feed, swell-reactions) and BEFORE main.jsx, so the first render
-     already sees the candidate names. Delete these lines + the cand files to
-     tear the candidate down; app/* stays the app. -->
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-parts.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-data.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-add.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-card.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-reveal.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-surface.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-return.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/cand-lm652-main.jsx"></script>
-<!-- C3 option set: re-publishes CircCandidate.FeedLead only. -->
-<script type="text/babel" src="docs/specs/lm-652-discourse/pg-c3-store.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/pg-c3-return.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/pg-c3-wire.jsx"></script>
-<script type="text/babel" src="docs/specs/lm-652-discourse/pg-cx-bar.jsx"></script>
+<!-- LM-666 candidate overlay set: loads AFTER the app files it re-publishes over
+     (feed, states) and BEFORE main.jsx, so the first render already sees the
+     candidate names. Delete these lines + the cand files to tear the candidate
+     down; app/* stays the app. -->
+<script type="text/babel" src="docs/archive/lm-666-link-deletion/cand-lm666-viewer.jsx"></script>
+<script type="text/babel" src="docs/archive/lm-666-link-deletion/cand-lm666-dialog.jsx"></script>
+<script type="text/babel" src="docs/archive/lm-666-link-deletion/cand-lm666-states.jsx"></script>
+<script type="text/babel" src="docs/archive/lm-666-link-deletion/cand-lm666-main.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

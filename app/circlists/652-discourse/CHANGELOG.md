@@ -3,6 +3,36 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Deleting a link has two reaches — 2026-08-18
+
+- **Delete is no longer one act.** A link can go from your own list or from the whole circle.
+  `hiddenForMe` sits on the circle, so the link stays whole for everyone else and your
+  reaction on it still stands. Nothing records that a member hid something.
+- **One read path, so nothing leaks.** Every rendered surface — both tabs, the New pill, the
+  waterline, the empty state, the rail dot, the home rows — derives from a single scoping of
+  the circles; mutations still run against raw state. A circle's dot only stands while a
+  *visible* unread item is left to see.
+- **The confirm has no default act.** Both reaches take the house destructive-secondary and
+  Cancel holds the focus, so Return dismisses. A member who holds only the narrow act gets the
+  same panel with one button.
+- Landed as a candidate build first (LM-666), merged after ratification; the candidate is
+  archived.
+
+## Every state has an address — 2026-08-18
+
+- **One register, not a section inside a settings panel.** `app/states.jsx` holds every staged
+  state of the app as `{ group, id, label, stage }` — the staging that used to be Config's
+  Scenarios list. Config now holds review settings only. A setting is a mode you hold; a state
+  is an address you open, and mixing the two is what made the old list confusing.
+- **`?state=<id>` opens the app at that state**, overriding the restored local state, so a
+  ticket in the real build can link straight to the screen it is about instead of leaving the
+  reader to guess a click path. Nothing in the address still opens the top circle, as the real
+  app does. A name the register does not hold lands on the states index — that is how a stale
+  ticket link shows itself rather than opening the wrong screen.
+- **Everything else is derived from the register and cannot drift from it:** the palette in the
+  launcher (jump, or copy a link), the index page, and `window.CIRC_STATES` for anything
+  reading the page. The launcher became one pill with two halves — settings, and states.
+
 ## Workspace reorganised onto specs-and-archive — 2026-08-14
 
 - **One place for task-scoped work, one place for finished work.** Everything a piece of

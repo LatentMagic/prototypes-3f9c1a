@@ -7,10 +7,13 @@
 
 // The thought's paper (working decision 2026-08-14; not a token yet).
 const CAND_PAPER = { bg: '#F2F1EB', bd: '#DEDCD3', bdHover: '#CFCDC2' };
-// PLACEHOLDER — the item-7 minimum is unset upstream. Three is the founder's
-// stated lean, said as a question rather than a ruling; it AWAITS RATIFICATION.
-// The counter excludes the contributor, so three means three other people.
+// The item-7 gate, ratified 2026-08-18: TWO counts, both met, neither first.
+// Three replies from people other than you says the card drew attention; one
+// reply of your own is the only evidence we hold that YOU enjoyed the
+// conversation, which is who the line is for. Both count turns, not people, and
+// both exclude deleted turns.
 const CAND_OWN_MIN = 3;
+const CAND_OWN_MINE = 1;
 
 const candWhen = (at) => (window.circWhen ? window.circWhen(at) : null);
 const candTitleOf = (item) => item.title || String(item.url || '').replace(/^https?:\/\//, '');
@@ -62,8 +65,8 @@ const CandFoldToggle = ({ item, api }) => {
   const on = !!item.watching;
   return (
     <button type="button" className="cand-foldtoggle" onClick={() => candToggleWatch(api, item)} aria-pressed={on}
-      aria-label={on ? 'Watching this card' : 'Watch this card'}
-      title={on ? 'Watching \u2014 turn the corner back down' : 'Watch this card'}
+      aria-label={on ? 'Stop watching this conversation' : 'Watch this conversation'}
+      title={on ? 'Stop watching this conversation' : 'Watch this conversation'}
       style={{ position: 'absolute', top: 0, right: 0, width: 32, height: 32, padding: 0, border: 0,
         background: 'transparent', cursor: 'pointer', zIndex: 1 }}>
       <svg viewBox="0 0 24 24" width={24} height={24} aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, display: 'block' }}>
@@ -88,12 +91,15 @@ const CandFoldGlyph = ({ size = 15, filled = false }) => (
 // So it is the shape the record already has — the Swell's disc, which is what
 // the door in this slot drew — with what was said held inside it. The ring is
 // how it landed; the three marks are the turns. Monoline, house set, no tail.
-const CandWayIcon = ({ size = 18 }) => (
+// Inverted (`on`) = a watched card holding words you have not seen. The disc
+// fills and the marks reverse out of it. Filled in INK, never accent: this is
+// status, and the accent is reserved for primary actions and active states.
+const CandWayIcon = ({ size = 18, on = false }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true" style={{ display: 'block' }}>
-    <circle cx="12" cy="12" r="8.6" />
-    <circle cx="8.2" cy="12" r="1.05" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="12" r="1.05" fill="currentColor" stroke="none" />
-    <circle cx="15.8" cy="12" r="1.05" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="8.6" fill={on ? 'var(--color-fg-2)' : 'none'} stroke={on ? 'var(--color-fg-2)' : 'currentColor'} />
+    {[8.2, 12, 15.8].map((cx) => (
+      <circle key={cx} cx={cx} cy="12" r="1.05" fill={on ? 'var(--color-surface)' : 'currentColor'} stroke="none" />
+    ))}
   </svg>
 );
 const CandBubbleIcon = CandWayIcon; // old name, kept so nothing dangles
@@ -112,7 +118,19 @@ const CandSwitch = ({ on, onChange, label }) => (
 // One field for everything written here: the contributor's thought and every
 // turn. Borderless words on the same warm paper they will land on; grows as you
 // write (capped, then scrolls) so 500 characters stay readable and visible.
-const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxPx = 220, autoFocus = false, ariaLabel, size = 15 }) => {
+// The send glyph — an arrow, on the house control shape. Never a circle: the
+// app's only circles are avatars and the Swell's disc.
+const CandSendArrow = ({ size = 17 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: 'block' }}>
+    <line x1="12" y1="19.5" x2="12" y2="5.5" /><polyline points="6 11.5 12 5.5 18 11.5" />
+  </svg>
+);
+
+// Whiteboard 2, option 2 (2026-08-18): committing happens INSIDE the field —
+// one control on the field's own edge, drawn at rest and inked once there are
+// words. There is no Cancel: you take words back by clearing them, which is the
+// one rule for every box in this product.
+const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxPx = 220, autoFocus = false, ariaLabel, size = 15, onSend }) => {
   const ref = React.useRef(null);
   const [focus, setFocus] = React.useState(false);
   React.useLayoutEffect(() => {
@@ -123,14 +141,22 @@ const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxP
   React.useEffect(() => { if (autoFocus && ref.current) ref.current.focus({ preventScroll: true }); }, []);
   const left = max - String(value || '').length;
   return (
-    <div style={{ background: CAND_PAPER.bg, border: '1px solid ' + (focus ? 'var(--color-accent)' : CAND_PAPER.bd), borderRadius: 'var(--radius-md)', padding: '10px 12px 4px', transition: 'border-color var(--duration-base)' }}>
+    <div style={{ position: 'relative', background: CAND_PAPER.bg, border: '1px solid ' + (focus ? 'var(--color-accent)' : CAND_PAPER.bd), borderRadius: 'var(--radius-md)', padding: '10px 12px 4px', transition: 'border-color var(--duration-base)' }}>
       <textarea ref={ref} className="cand-write" value={value} maxLength={max} placeholder={placeholder} aria-label={ariaLabel}
         onChange={(e) => onChange(e.target.value)} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
         style={{ display: 'block', width: '100%', border: 0, outline: 'none', background: 'transparent', resize: 'none', padding: 0,
-          font: '400 ' + size + 'px/1.6 var(--font-sans)', color: 'var(--color-fg-1)', minHeight: Math.round(minLines * size * 1.6), overflowY: 'auto' }} />
-      <div aria-hidden="true" style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 15 }}>
+          font: '400 ' + size + 'px/1.6 var(--font-sans)', color: 'var(--color-fg-1)', minHeight: Math.round(minLines * size * 1.6), overflowY: 'auto',
+          paddingRight: onSend ? 40 : 0 }} />
+      <div aria-hidden="true" style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 15, paddingRight: onSend ? 40 : 0 }}>
         {left <= 60 && <span style={{ font: '400 11.5px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{left} left</span>}
       </div>
+      {onSend && (
+        <button type="button" className="cand-infield" data-live={String(value || '').trim() ? '' : undefined}
+          onClick={() => { if (String(value || '').trim()) onSend(); }} aria-label="Send"
+          style={{ position: 'absolute', right: 7, bottom: 7 }}>
+          <CandSendArrow />
+        </button>
+      )}
     </div>
   );
 };
@@ -147,8 +173,19 @@ const CandEyebrow = ({ children, style }) => (
 const candUpdateItem = (api, itemId, fn) => api.setSpaces(prev => prev.map(s => s.id === api.currentId
   ? { ...s, items: s.items.map(i => i.id === itemId ? fn(i) : i) } : s));
 const candTurns = (item) => ((item && item.talk) || []);
-const candFresh = (item) => candTurns(item).filter(t => !t.deleted && t.by !== 'You' && t.at > (item.talkSeenAt || 0));
+// Nothing is new on a first visit. A card with no mark has never been read
+// against anything, so there is no "since" for the words to be after — the first
+// visit sets the baseline and marks nothing. A mark is always a real timestamp;
+// anything falsy means there is no baseline yet.
+const candFresh = (item) => {
+  const m = item && item.talkSeenAt;
+  if (!m) return [];
+  return candTurns(item).filter(t => !t.deleted && t.by !== 'You' && t.at > m);
+};
 const candResponses = (item) => candTurns(item).filter(t => !t.deleted && t.by !== 'You').length;
+// Your own turns on the card — the thought is not one of them: it is given with
+// the link, outside the conversation, so it is not evidence of taking part in it.
+const candOwnTurns = (item) => candTurns(item).filter(t => !t.deleted && t.by === 'You').length;
 const candNames = (names) => names.length === 1 ? names[0]
   : names.length === 2 ? names[0] + ' and ' + names[1]
   : names[0] + ', ' + names[1] + ' and others';
@@ -160,12 +197,32 @@ const candDeleteTurn = (api, item, turnId) => candUpdateItem(api, item.id, i => 
   talk: (i.talk || []).map(t => t.id === turnId ? { ...t, deleted: true, text: '' } : t) }));
 const candToggleWatch = (api, item) => candUpdateItem(api, item.id, i => ({ ...i,
   watching: !i.watching, ...(i.watching ? {} : { talkSeenAt: Date.now() }) }));
+// The contributor's own thought, edited and removed the way a turn is (item 3).
+// An edit leaves the same marker a turn's edit does; a removal takes the thought
+// off the card entirely, so the band and the stack go with it — there is no
+// tombstone, because nothing is attached beneath a thought the way replies hang
+// beneath a turn.
+const candAddThought = (api, item, text) => candUpdateItem(api, item.id, i => ({ ...i,
+  thought: { by: 'You', text, at: Date.now() } }));
+const candEditThought = (api, item, text) => candUpdateItem(api, item.id, i => ({ ...i,
+  thought: { ...i.thought, text, edited: true } }));
+const candDeleteThought = (api, item) => candUpdateItem(api, item.id, (i) => {
+  const next = { ...i }; delete next.thought; return next;
+});
+// A turn the member has not seen: somebody else's words, landed after the mark
+// this visit is read against. Deleted turns are tombstones and never glow.
+const candTurnUnseen = (t, cut) => !t.deleted && t.by !== 'You' && t.at > (cut || 0);
+// The resting wash — the arrival colour from .circ-glow, held as a state rather
+// than played as an animation. Painted as the row's own ground, behind the
+// words, so the text keeps its contrast for as long as the wash stands.
+const CAND_WASH = 'rgba(139,191,173,0.34)';
 
 // Set on the conversation surface, so the pieces the feed card mounts can tell
 // they are already there — the way-through withdraws rather than pointing at the
 // page it is drawn on.
 const CandSurfaceCtx = React.createContext(false);
 
-Object.assign(window, { CAND_PAPER, CAND_OWN_MIN, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
-  CandBubbleIcon, CandWayIcon, CandSwitch, CandWrite, CandEyebrow, candUpdateItem, candTurns, candFresh, candResponses,
-  candNames, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch });
+Object.assign(window, { CandSendArrow, CAND_PAPER, CAND_OWN_MIN, CAND_OWN_MINE, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
+  CandBubbleIcon, CandWayIcon, CandSwitch, CandWrite, CandEyebrow, candUpdateItem, candTurns, candFresh, candResponses, candOwnTurns,
+  candNames, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch, candAddThought, candEditThought, candDeleteThought,
+  candTurnUnseen, CAND_WASH });

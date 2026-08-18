@@ -9,13 +9,13 @@ ticket yet, use `<kebab-topic>` and rename when one exists.
 
 When the work finishes, move the whole folder to `docs/archive/`.
 
-## Live
+Nothing playable sits at the project root any more. A ticket's candidate build is
+`docs/specs/<ticket>/circlists-<ticket>.html`; its rigs live in the same folder (new ones
+in `<ticket>/playground/`). Both load from there via `<base href>` — see `CLAUDE.md`
+§ Playgrounds.
 
-- `lm-652-discourse/` — discourse. The live rig is `pg-discourse-v10.html` at
-  the project root (a playground entry must sit at root for `app/*`,
-  `tokens.css` and `brand/` to resolve); its modules are here.
+## Finding a rig
 
-## Settled but not yet archived
-
-`lm-570/`, `lm-626-champion-exit/`, `biz-80-metadata/`, `biz-84-app-ia/`,
-`motion/`.
+`playgrounds.html` at the project root is the launcher: pick a ticket, then open its
+candidate build or one of its rigs. It renders `playgrounds.json`, which is derived from
+this tree — regenerate the manifest whenever a folder or entry moves.

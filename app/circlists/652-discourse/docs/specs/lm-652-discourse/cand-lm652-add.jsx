@@ -9,8 +9,13 @@
 //   · the link's slot     — the surface's own white, standard border, link glyph
 //                           at the head of it (pg-wb-linkslot.html, option 3)
 //   · the thought          — a second face that is nothing but room to write
-//   · the way back         — the arrow alone; nothing is committed on that face,
-//                           Add commits the whole surface (pg-wb-return-ctl.html, 1)
+//   · the way back         — a back arrow in the writing face's head row, beside
+//                           the link it belongs to (ratified 2026-08-18). Add
+//                           appears ONCE, on the link face: the writing face is
+//                           room to write, not a place you submit from. Going
+//                           back keeps the words, which is what makes the arrow
+//                           legible. The face is gated behind a valid link, so
+//                           the head row is always drawn.
 //   · the returned state   — two lines on paper, the cut drawn as a fade the moment
 //                           the thought runs to a second line (pg-wb-returned.html, 1)
 //   · saying it is optional — carried by the writing face's placeholder, so the
@@ -156,7 +161,18 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
     return () => ro.disconnect();
   }, [face, render]);
 
-  const toWriting = () => { setFace(1); setTimeout(() => roomRef.current && roomRef.current.focus({ preventScroll: true }), 320); };
+  // The thought is a thought ABOUT a link, so it cannot be written before there
+  // is one. Opening the writing face runs the same validation the commit runs,
+  // and a failure keeps you on the slot carrying the error.
+  const toWriting = () => {
+    if (!CAND_URL_RE.test(url.trim())) {
+      setError(url.trim() ? 'That doesn\u2019t look like a valid URL. Check it and try again.' : 'Add a link first \u2014 the thought goes with it.');
+      if (inputRef.current) inputRef.current.focus({ preventScroll: true });
+      return;
+    }
+    setError(null);
+    setFace(1); setTimeout(() => roomRef.current && roomRef.current.focus({ preventScroll: true }), 320);
+  };
   const toLink = () => { setFace(0); setTimeout(() => inputRef.current && inputRef.current.focus({ preventScroll: true }), 320); };
 
   if (!render) return null;
@@ -172,9 +188,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
   // back off collapses The Swell AND clears any placed glyph.
   const toggleRead = (v) => { setMarkRead(v); if (!v) setSwell({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 }); };
 
-  const submit = (e) => {
-    e.preventDefault();
-    if (face) { toLink(); return; }
+  const commit = () => {
     const v = url.trim();
     if (!CAND_URL_RE.test(v)) { setError('That doesn\u2019t look like a valid URL. Check it and try again.'); return; }
     setError(null);
@@ -193,6 +207,10 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
     onAdd(item);
     onClose();
   };
+  // The link face's own submit. Committing from the writing face goes straight
+  // to commit(); a URL that fails there sends you back to the slot carrying the
+  // error, since the slot is the only place it can be fixed.
+  const submit = (e) => { e.preventDefault(); if (face) { setFace(0); } commit(); };
 
   const still = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const box = 236;
@@ -246,9 +264,9 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
                   <CandSwitch on={markRead} onChange={toggleRead} label="Mark as read" />
                 </div>
                 <div style={{ overflow: 'hidden', height: markRead ? swellH : 0, transition: 'height 300ms var(--ease-quiet)' }} aria-hidden={!markRead}>
-                  <div ref={swellRef} style={{ borderTop: '1px solid var(--color-border-2)', paddingTop: 12 }}>
-                    <div style={{ font: '600 14px/1.3 var(--font-sans)', color: 'var(--color-fg-1)', textAlign: 'center' }}>How did it land?</div>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                  <div ref={swellRef} style={{ paddingTop: 8 }}>
+                    <span className="circ-vh">How did it land? Optional — leave it blank and the card arrives unmarked.</span>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                       <div style={{ position: 'relative', width: box, height: box }}>
                         {markRead && <SwellGlyphRadios live={swell} onPick={(g) => applyGlyphLevel(g, swell.intensity != null ? level : null)} />}
                         <div style={{ position: 'absolute', inset }}>
@@ -259,12 +277,12 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
                         <SwellPalette live={swell} box={box} />
                       </div>
                     </div>
-                    <p style={{ margin: '0 0 4px', font: '400 12px/1.5 var(--font-sans)', color: 'var(--color-fg-3)', textAlign: 'center', textWrap: 'pretty' }}>
+                    <p style={{ margin: 0, font: '400 12px/1.5 var(--font-sans)', color: 'var(--color-fg-3)', textAlign: 'center', textWrap: 'pretty' }}>
                       Optional. Leave it blank and the card arrives unmarked.
                     </p>
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
                   <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
                   <Button type="submit" variant="primary">Add</Button>
                 </div>
@@ -272,15 +290,18 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
             </div>
             <div style={{ width: '50%', flexShrink: 0 }} {...(face ? {} : { inert: '' })}>
               <div ref={writeFaceRef}>
-                {/* Arrow only. Nothing is committed here — Add commits the whole surface. */}
+                {/* The way back, and the only control on this face: Add lives on the
+                    link face alone, so the one commit is always in the same place.
+                    Nothing is discarded going back — the words return with you and
+                    show under the slot. The row is always drawn: the face is
+                    unreachable without a link, so the domain is always there to name. */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-3)', minHeight: 44 }}>
-                  <button type="button" onClick={toLink} aria-label="Back to the link" className="cand-glyphbtn"
-                    style={{ background: 'transparent', border: 0, cursor: 'pointer', color: 'var(--color-fg-2)', display: 'inline-flex',
-                      alignItems: 'center', justifyContent: 'center', width: 44, height: 44, borderRadius: 'var(--radius-md)', marginLeft: -10, flexShrink: 0 }}>
-                    <Icon name="arrow-left" size={18} />
-                  </button>
-                  <span style={{ flex: 1, minWidth: 0, font: '500 12px/1.4 var(--font-mono)', color: 'var(--color-fg-2)',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{url}</span>
+                  <button type="button" onClick={toLink} aria-label="Back to the link" style={{
+                    background: 'transparent', border: 0, padding: 6, margin: '-6px -6px -6px -8px', cursor: 'pointer',
+                    color: 'var(--color-fg-2)', display: 'inline-flex', flexShrink: 0,
+                  }}><Icon name="arrow-left" size={18} /></button>
+                  <span style={{ flex: 1, minWidth: 0, font: '500 14px/1.4 var(--font-mono)', color: 'var(--color-fg-2)',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{url.trim()}</span>
                 </div>
                 <CandRoom ref={roomRef} value={thought} onChange={setThought} max={500}
                   maxPx={isMobile ? 300 : 250} placeholder={'Say why you\u2019re sharing it, or leave it blank.'} />

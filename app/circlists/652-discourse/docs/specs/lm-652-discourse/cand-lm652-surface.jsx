@@ -14,8 +14,8 @@ const CandWatchControl = ({ item, api }) => {
   return (
     <button type="button" className="circ-cardaction circ-cardaction-icon cand-watch"
       onClick={() => candToggleWatch(api, item)} aria-pressed={on}
-      aria-label={on ? 'Watching this card' : 'Watch this card'}
-      title={on ? 'Watching \u2014 turn the corner back down' : 'Watch this card'}
+      aria-label={on ? 'Stop watching this conversation' : 'Watch this conversation'}
+      title={on ? 'Stop watching this conversation' : 'Watch this conversation'}
       style={{ color: on ? 'var(--color-accent)' : undefined }}>
       <CandFoldGlyph size={17} filled={on} />
     </button>
@@ -67,8 +67,8 @@ const CandThreadHead = ({ item, api }) => {
       <CandEyebrow style={{ flexShrink: 0 }}>the conversation</CandEyebrow>
       <span aria-hidden="true" style={{ flex: 1, height: 1, background: 'var(--color-border-2)' }} />
       <button type="button" className="cand-watchglyph" aria-pressed={on}
-        aria-label={on ? 'Watching this conversation' : 'Watch this conversation'}
-        title={on ? 'Watching \u2014 turn the corner back down' : 'Watch this conversation'}
+        aria-label={on ? 'Stop watching this conversation' : 'Watch this conversation'}
+        title={on ? 'Stop watching this conversation' : 'Watch this conversation'}
         onClick={() => candToggleWatch(api, item)}
         style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           background: 'transparent', border: 0, cursor: 'pointer', borderRadius: 'var(--radius-sm)',
@@ -90,8 +90,16 @@ const candQuietBtn = { background: 'transparent', border: 0, cursor: 'pointer', 
 // two words permanently under every own turn. Menu shape follows the app's own
 // (app/spaces.jsx): a small card of .circ-menuitem rows.
 const CAND_MENU_W = 180;
-const CandTurnMenu = ({ item, t, api, onEdit }) => {
-  const [open, setOpen] = React.useState(false);
+const CandTurnMenu = ({ item, t, api, onEdit, onDelete, onOpenChange }) => {
+  const [open, setOpenRaw] = React.useState(false);
+  // The row this menu sits in may have to be raised above its neighbours while
+  // the panel is out (a feed card's tucked band is only as tall as one line, so
+  // the panel opens over the card beneath it). The owner is told.
+  const setOpen = React.useCallback((v) => setOpenRaw(prev => {
+    const next = typeof v === 'function' ? v(prev) : v;
+    if (onOpenChange) onOpenChange(next);
+    return next;
+  }), [onOpenChange]);
   // The trigger floats after the name and the time, so how far in it sits depends
   // on the byline. Left-aligned it can run past the right edge on a narrow
   // screen; the panel flips to right-aligned when it would. Decided from the
@@ -138,14 +146,14 @@ const CandTurnMenu = ({ item, t, api, onEdit }) => {
           <button type="button" role="menuitem" className="circ-menuitem" style={{ ...row, color: 'var(--color-fg-1)' }}
             onClick={() => { setOpen(false); onEdit(); }}>Edit</button>
           <button type="button" role="menuitem" className="circ-menuitem" style={{ ...row, color: 'var(--color-destructive)' }}
-            onClick={() => { setOpen(false); candDeleteTurn(api, item, t.id); }}>Delete</button>
+            onClick={() => { setOpen(false); (onDelete || (() => candDeleteTurn(api, item, t.id)))(); }}>Delete</button>
         </div>
       )}
     </span>
   );
 };
 
-const CandTurn = ({ item, t, api, depth, onReply }) => {
+const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
   const me = t.by === 'You';
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState('');
@@ -153,8 +161,19 @@ const CandTurn = ({ item, t, api, depth, onReply }) => {
   // the turn it answers. Only the furniture recedes: a smaller avatar, a smaller
   // and lighter name and time, with the rail and the indent carrying the rest.
   const av = depth ? 22 : 26;
+  // The mark for words you have not seen: the return banner's own tab (sage,
+  // 3×22, radius 2), standing in the row's flow at the row's own gap. It is
+  // always in the geometry, so a turn does not move when it colours — only the
+  // colour comes and goes. Replaces the full-turn wash, which had no shape of its
+  // own at any length and stacked into slabs down a thread (whiteboard 02,
+  // ratified 2026-08-17).
+  const tab = (bright) => (
+    <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, flexShrink: 0, marginTop: 2,
+      background: bright ? 'var(--color-sage)' : 'transparent' }} />
+  );
   if (t.deleted) return (
     <div style={{ display: 'flex', gap: 10, padding: '1px 0' }}>
+      {tab(false)}
       <span aria-hidden="true" style={{ width: av, flexShrink: 0 }} />
       <span style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--color-fg-3)' }}>
         {me ? 'You removed what you said.' : t.by + ' removed what they said.'}
@@ -163,6 +182,7 @@ const CandTurn = ({ item, t, api, depth, onReply }) => {
   );
   return (
     <div className="cand-turn" style={{ display: 'flex', gap: 10 }}>
+      {tab(!!fresh)}
       <Avatar name={me ? displayName(api.user) : t.by} size={av} accent={me} />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, minWidth: 0, flexWrap: 'wrap' }}>
@@ -181,7 +201,10 @@ const CandTurn = ({ item, t, api, depth, onReply }) => {
         ) : (
           <React.Fragment>
             <CandProse text={t.text} size={14.5} lh={1.55} />
-            {depth === 0 && (
+            {/* Reply lives at the foot of the reply GROUP (CandTalk). A turn with
+                no replies has no group, so the control stays here — which is the
+                foot of an empty group, the same place. */}
+            {depth === 0 && showReply && (
               <div style={{ display: 'flex', gap: 16, marginTop: 1 }}>
                 <button type="button" className="cand-quiet" style={candQuietBtn} onClick={onReply}>Reply</button>
               </div>
@@ -207,13 +230,31 @@ const CandTalk = ({ item, api }) => {
   const [replyTo, setReplyTo] = React.useState(null);
   const [reply, setReply] = React.useState('');
   const [text, setText] = React.useState('');
-  // Which turns have had their tail opened. Once opened it stays open for the
-  // visit; nothing re-collapses under the member.
-  const [shown, setShown] = React.useState({});
+  // The mark this visit is read against, frozen at arrival: turns that landed
+  // after it carry the mark, and they keep it for the whole visit however long
+  // the member reads. The mark is only moved forward when they LEAVE
+  // (CandSurfaceRoute), so coming back shows only what has arrived since.
+  // A card with no mark has never been visited: the first visit sets the baseline
+  // and marks nothing, because there is no "since" yet.
+  const cut = React.useRef(item.talkSeenAt || Date.now()).current;
+  const isNew = (t) => candTurnUnseen(t, cut);
+  // Which turns have their tail open. A group whose held-back tail carries
+  // anything unseen opens on ARRIVAL — the fold never hides words you have not
+  // seen. From there it is the member's: they can hide the rest again whenever
+  // they like (2026-08-18 — the delta's "withheld until seen" rule is overturned;
+  // it took the member's control of their own page away, with no way to settle a
+  // group without leaving the surface). Nothing re-collapses on its own.
+  const [shown, setShown] = React.useState(() => {
+    const o = {};
+    tops.forEach(t => { if (kidsOf(t.id).slice(2).some(isNew)) o[t.id] = true; });
+    return o;
+  });
   // One rail for the whole reply group, not one per reply: two replies under a
   // turn were reading as two separate quoted blocks. The gap between replies
-  // stays; the rail runs through it.
-  const rail = { marginLeft: 36, borderLeft: '2px solid var(--color-border-2)', paddingLeft: 12,
+  // stays; the rail runs through it. Indented past the parent's own tab and gap
+  // (3 + 10) as well as its avatar, so a reply's tab lines up under the avatar
+  // rather than under the tab above it.
+  const rail = { marginLeft: 49, borderLeft: '2px solid var(--color-border-2)', paddingLeft: 12,
     display: 'flex', flexDirection: 'column', gap: 10 };
   return (
     <React.Fragment>
@@ -224,43 +265,57 @@ const CandTalk = ({ item, api }) => {
         const kids = kidsOf(t.id);
         // The first two are always visible — nothing is collapsed by default.
         // Only the long tail is held back, so it cannot bury the next turn.
+        // The fold is a density tool for material already read: a tail holding
+        // anything unseen is open before the member arrives (see `shown`), so
+        // nothing wearing a tab is ever hidden behind an unmarked control.
         const open = !!shown[t.id];
         const head = open ? kids : kids.slice(0, 2);
         const rest = open ? 0 : kids.length - head.length;
         return (
         <div key={t.id} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <CandTurn item={item} t={t} api={api} depth={0}
+          <CandTurn item={item} t={t} api={api} depth={0} fresh={isNew(t)} showReply={kids.length === 0}
             onReply={() => { setReplyTo(replyTo === t.id ? null : t.id); setReply(''); }} />
           {(kids.length > 0 || replyTo === t.id) && (
             <div style={rail}>
-              {head.map(k => <CandTurn key={k.id} item={item} t={k} api={api} depth={1} />)}
-              {/* No count: a number here quantifies a debt nobody asked for.
-                  Not "Read more" — those words belong to the control that brings
-                  a contributor's thought forward. The way back is the same words
-                  in the same place, so the pair reads as one control: the first
-                  two replies never move, and "the rest" is what comes and goes.
-                  A gesture on the rail was tried and dropped — nothing on touch
-                  says a line is pressable. */}
-              {rest > 0 && (
-                <div>
-                  <button type="button" className="cand-quiet" style={candQuietBtn}
-                    onClick={() => setShown(s => ({ ...s, [t.id]: true }))}>More replies</button>
-                </div>
-              )}
-              {open && kids.length > 2 && (
-                <div>
-                  <button type="button" className="cand-quiet" style={candQuietBtn}
-                    onClick={() => setShown(s => ({ ...s, [t.id]: false }))}>Hide the rest</button>
+              {head.map(k => <CandTurn key={k.id} item={item} t={k} api={api} depth={1} fresh={isNew(k)} />)}
+              {/* The foot of the group. Reply sits here, where the member is once
+                  they have read the tail — not under the turn's own words, above
+                  the replies it would be answering.
+                  No count on the tail control: a number here quantifies a debt
+                  nobody asked for. Not "Read more" — those words belong to the
+                  control that brings a contributor's thought forward. The way
+                  back is the same words in the same place, so the pair reads as
+                  one control: the first two replies never move, and "the rest" is
+                  what comes and goes. A gesture on the rail was tried and dropped
+                  — nothing on touch says a line is pressable.
+                  While a tail is held back, Reply is NOT here (ratified
+                  2026-08-17): answering a turn whose replies you have not read is
+                  answering half a conversation, and two controls side by side made
+                  the fold look like a pair of equal choices. Read the rest first;
+                  Reply appears once nothing is hidden. The conversation's own
+                  composer at the foot is always open, so there is never a state
+                  with no way to speak. */}
+              {(rest > 0 || (open && kids.length > 2) || replyTo !== t.id) && kids.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                  {rest > 0 && (
+                    <button type="button" className="cand-quiet" style={candQuietBtn}
+                      onClick={() => setShown(s => ({ ...s, [t.id]: true }))}>More replies</button>
+                  )}
+                  {open && kids.length > 2 && (
+                    <button type="button" className="cand-quiet" style={candQuietBtn}
+                      onClick={() => setShown(s => ({ ...s, [t.id]: false }))}>Hide the rest</button>
+                  )}
+                  {rest === 0 && (
+                    <button type="button" className="cand-quiet" style={candQuietBtn}
+                      onClick={() => { if (replyTo === t.id) { setReplyTo(null); setReply(''); return; } setReplyTo(t.id); setReply(''); }}>Reply</button>
+                  )}
                 </div>
               )}
               {replyTo === t.id && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <CandWrite value={reply} onChange={setReply} max={500} minLines={1} autoFocus size={14.5}
-                    placeholder={'Reply to ' + (t.by === 'You' ? 'yourself' : t.by)} ariaLabel={'Reply to ' + t.by} />
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                    <Button size="sm" variant="secondary" onClick={() => setReplyTo(null)}>Cancel</Button>
-                    <Button size="sm" variant="primary" disabled={!reply.trim()} onClick={() => { candAddTurn(api, item, reply.trim(), t.id); setReplyTo(null); setReply(''); }}>Send</Button>
-                  </div>
+                    placeholder={'Reply to ' + (t.by === 'You' ? 'yourself' : t.by)} ariaLabel={'Reply to ' + t.by}
+                    onSend={() => { candAddTurn(api, item, reply.trim(), t.id); setReplyTo(null); setReply(''); }} />
                 </div>
               )}
             </div>
@@ -269,24 +324,23 @@ const CandTalk = ({ item, api }) => {
         );
       })}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: tops.length ? 6 : 0 }}>
-        <CandWrite value={text} onChange={setText} max={500} minLines={1} placeholder="Add to the conversation" ariaLabel="Add to the conversation" />
-        {!!text.trim() && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="primary" onClick={() => { candAddTurn(api, item, text.trim()); setText(''); }}>Send</Button>
-          </div>
-        )}
+        <CandWrite value={text} onChange={setText} max={500} minLines={1} placeholder="Add to the conversation" ariaLabel="Add to the conversation"
+          onSend={() => { candAddTurn(api, item, text.trim()); setText(''); }} />
       </div>
     </React.Fragment>
   );
 };
 
 // Item 7 — one quiet line at the very foot of YOUR OWN card's conversation,
-// once it has drawn a minimum of responses (CAND_OWN_MIN — placeholder value).
+// once it has drawn CAND_OWN_MIN replies from other people AND carries at least
+// CAND_OWN_MINE reply of your own (ratified 2026-08-18). Attention alone is not
+// the signal; taking part in the conversation is.
 // Founder's lines, verbatim. An ordinary inline link, never a button.
 const CandOwnDoor = ({ item, api }) => {
   if (!/^added by you\b/i.test(item.attribution || '')) return null;
   if (candResponses(item) < CAND_OWN_MIN) return null;
-  const champ = api.isChampion(api.space);
+  if (candOwnTurns(item) < CAND_OWN_MINE) return null;
+  const champ = (api.spaces || []).some(s => api.isChampion(s));
   const link = (label) => (
     <button type="button" onClick={api.startCircle} className="circ-doorlink"
       style={{ backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit', fontWeight: 600 }}>{label}</button>
@@ -366,8 +420,15 @@ const CandSurface = ({ item, api }) => {
 const CandSurfaceRoute = ({ api, itemId }) => {
   const item = api.space && api.space.items.find(i => i.id === itemId);
   React.useEffect(() => { if (!item) api.returnToSpace(); }, [!!item]);
+  // The mark moves forward on the way OUT, not on the way in: entry has to leave
+  // the mark where it was, or there is nothing for the wash to be read against.
+  const apiRef = React.useRef(api);
+  apiRef.current = api;
+  React.useEffect(() => () => {
+    candUpdateItem(apiRef.current, itemId, i => ({ ...i, talkSeenAt: Date.now() }));
+  }, [itemId]);
   if (!item) return null;
   return <CandSurface item={item} api={api} />;
 };
 
-Object.assign(window, { CandSurface, CandSurfaceHead, CandSurfaceRoute, CandThreadHead, CandCornerSignal, CandWatchControl, CandTalk, CandTurn, CandIntro, CandOwnDoor });
+Object.assign(window, { CandSurface, CandSurfaceHead, CandSurfaceRoute, CandThreadHead, CandCornerSignal, CandWatchControl, CandTalk, CandTurn, CandTurnMenu, CandIntro, CandOwnDoor });
