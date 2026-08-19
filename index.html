@@ -966,6 +966,19 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds in Claude Design. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-08-19',
+              title: 'Discourse',
+              items: [
+                'A contributor can attach a thought to the card they contribute. It rides tucked under the card in the feed and swaps to the front when opened.',
+                'Every card has a conversation surface of its own, reached from the reaction door and left like circle settings. Turns, replies, editing and deleting your own words live there.',
+                'The reaction door on a read card now leads to the conversation instead of the reaction breakdown.',
+                'Cards can be watched. A folded corner marks a watched card, and the returns bar at the head of the feed names who has spoken on them and opens straight to the words.',
+                'New words since your last visit are marked, against a mark that only moves when you leave the card.',
+                'Contributing a card marks it read.',
+                'Landed as a candidate build first (LM-652), merged after ratification; the candidate entry stays on the record, switched off.'
+              ]
+            },
+            {
               date: '2026-08-18',
               title: 'Deleting a link has two reaches',
               items: [
@@ -1003,27 +1016,6 @@
                 'Account deletion, and life after it: account settings carries delete, with one confirmation that enumerates no circles. A circle whose champion is gone keeps working to the end of its paid period with no management offered to anybody, and a statement where the crown was.'
               ],
               base: 'Canon\'s first sync — carries forward the agreed line next was holding.'
-            }
-          ]
-        },
-        {
-          slug: '652-discourse',
-          version: 'proposal',
-          ticket: 'LM-652',
-          html: 'docs/specs/lm-652-discourse/circlists-lm652.html',
-          kind: 'candidate',
-          desc: 'Temporary proposal slug for the discourse round — not canon. Disappears once the design is ratified and folded into canon.',
-          changelog: [
-            {
-              date: '2026-08-17',
-              title: 'QA fixes land, the tucked-under card swap becomes real motion',
-              items: [
-                'QA round: the fold now draws on the Read tab only; adding a link enrols the contributor (watching + seen state); the own-thought minimum moved from 1 to 3, marked awaiting ratification; the open control moved into the surface\'s action row; a reaction placed in the Add popover carries at-add and rides no turn; the alt face\'s actions take the cross\'s ink treatment.',
-                'The closed/open card swap was rebuilt as one React tree instead of two, both cards always mounted and animated past each other via the Web Animations API — fixing a pop at the z-index flip and an unanimatable auto height along the way.',
-                'The contributed thought is now set as somebody\'s words: a name-led treatment, ratified for the open card. Shown whole, no cap or Read more.',
-                'Reply density and the watching control were rebuilt; the fold was demoted.'
-              ],
-              base: 'Carries forward the QA-round and candidate-build sync from 2026-08-14.'
             }
           ]
         }

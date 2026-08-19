@@ -139,6 +139,64 @@ function seedSpaces(userEmail) {
     },
   ];
 
+  // ---- Discourse (app/talk-*.jsx) ------------------------------------------
+  // Thoughts and conversations on a handful of cards, so the feature is present
+  // rather than an empty affordance. Same two rules as the rest of this file: no
+  // third-party request, nothing broken. Marks sit at NOW — the demo lands CAUGHT
+  // UP, so no turn wears the unseen tab and the returns bar stays folded until
+  // words arrive while the visitor is here.
+  // martinfowler.com is deliberately left thought-less: it is the visitor's own
+  // card, so its empty band is where they can write one.
+  {
+    const H = 3600e3, NOW = Date.now();
+    const T = (id, by, hoursAgo, text, replyTo) => ({ id, by, text, at: NOW - hoursAgo * H, ...(replyTo ? { replyTo } : {}) });
+    const byUrl = {};
+    spaces.forEach(sp => sp.items.forEach(it => { byUrl[it.url] = it; }));
+    const set = (url, fields) => { const it = byUrl[url]; if (it) Object.assign(it, { talkSeenAt: NOW, ...fields }); };
+
+    set('https://newsletter.pragmaticengineer.com/p/scaling-on-call', {
+      thought: { by: 'Priya N.', text: 'The rotation sizing section is the one to read before we plan next quarter.', at: NOW - 5 * H },
+      talk: [
+        T('pe1', 'Marcus T.', 4, 'Their rotation is six deep and ours is four. That is the whole difference in how tired everyone is.'),
+        T('pe2', 'Ada L.', 3, 'Agreed on the depth. The handover checklist is the cheaper half of it, though.', 'pe1'),
+        T('pe3', 'Dev K.', 2, 'Worth putting the comp table next to ours before Thursday.'),
+      ],
+    });
+    set('https://jvns.ca/blog/2026/02/dns-resolvers/', {
+      thought: { by: 'Marcus T.', text: 'Sending this round before the resolver migration — the diagrams are the clearest I have seen.', at: NOW - 9 * H },
+      talk: [T('dn1', 'Priya N.', 6, 'The stub-resolver drawing is the one that finally made the caching layer make sense to me.')],
+    });
+    set('https://go.dev/blog/pipelines', {
+      watching: true,
+      thought: { by: 'Marcus T.', text: 'The fan-in section is the one to slow down for. It explains our worker-pool shutdown bug.', at: NOW - 40 * H },
+      talk: [
+        T('gp1', 'Priya N.', 30, 'The done-channel pattern here is exactly what the ingest service is missing. We cancel by killing the process.'),
+        T('gp2', 'You', 26, 'Same conclusion. I will write up how we would retrofit it.', 'gp1'),
+        T('gp3', 'Ada L.', 18, 'The stage-per-goroutine shape is worth copying wholesale.'),
+      ],
+    });
+    set('https://www.kernel.org/doc/html/latest/process/submitting-patches.html', {
+      watching: true,
+      talk: [
+        T('kp1', 'Lena P.', 22, 'The changelog section is the part our own reviews keep failing on.'),
+        T('kp2', 'Priya N.', 20, 'Yes — one logical change per patch would fix most of our review churn.', 'kp1'),
+      ],
+    });
+    set('https://www.newyorker.com/books/page-turner/the-quiet-novel-revival', {
+      thought: { by: 'Joe M.', text: 'Short piece, and it names what we kept circling around last Tuesday.', at: NOW - 14 * H },
+      talk: [T('qn1', 'Elif K.', 11, 'The paragraph on quiet endings is the one I would read aloud.')],
+    });
+    set('https://www.gutenberg.org/files/2701/2701-h/2701-h.htm', {
+      watching: true,
+      thought: { by: 'Joe M.', text: 'Chapters 32 to 35 are the ones to come with marked up.', at: NOW - 70 * H },
+      talk: [
+        T('md1', 'Priya N.', 60, 'The cetology chapter is a joke that lasts forty pages and I am here for it.'),
+        T('md2', 'You', 52, 'It reads as a straight face held far too long, which is the point.', 'md1'),
+        T('md3', 'Elif K.', 44, 'Bringing the Ahab-on-deck passage on Tuesday.'),
+      ],
+    });
+  }
+
   // ---- Liveliness fields (app/liveliness.jsx) ------------------------------
   // The demo lands CAUGHT UP: the last-seen mark sits above every seeded item,
   // so nothing pre-existing claims to be new and no circle wears a dot. The

@@ -3,6 +3,22 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Discourse — 2026-08-19
+
+- **A contributor can attach a thought to the card they contribute.** It rides tucked under the
+  card in the feed and swaps to the front when opened.
+- **Every card has a conversation surface of its own**, reached from the reaction door and left
+  like circle settings. Turns, replies, editing and deleting your own words live there.
+- **The reaction door on a read card now leads to the conversation** instead of the reaction
+  breakdown.
+- **Cards can be watched.** A folded corner marks a watched card, and the returns bar at the
+  head of the feed names who has spoken on them and opens straight to the words.
+- **New words since your last visit are marked**, against a mark that only moves when you leave
+  the card.
+- **Contributing a card marks it read.**
+- Landed as a candidate build first (LM-652), merged after ratification; the candidate entry
+  stays on the record, switched off.
+
 ## Deleting a link has two reaches — 2026-08-18
 
 - **Delete is no longer one act.** A link can go from your own list or from the whole circle.

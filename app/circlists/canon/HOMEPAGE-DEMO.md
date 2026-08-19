@@ -92,6 +92,19 @@ add any other external URL to the entry, the overlay, or the seed.
 - Carry behaviour of its own. If the demo would be better with a product change, that is a separate
   conversation.
 
+## A new feature never arrives on its own
+
+The demo shares `app/`, so a fix to a surface both entries already show reaches it for free. A NEW
+feature does not: the entry carries its own module list, its own copy of the page styles, and its
+own seed. So merging a candidate into `circlists.html` leaves the demo without the feature until it
+is carried across deliberately — three moves, and the third is the one that gets forgotten:
+
+1. the feature's modules join the demo entry's list (review-staging aids stay out);
+2. the feature's styles join the demo entry's `<style>` block;
+3. the demo seed gets content for it, or the feature is present and empty.
+
+Then walk the demo: an affordance with nothing behind it is worse than an omission.
+
 ## Keeping it alive
 
 Every export reproduces `circlists-homepage-demo.html`, `demo/demo-overlay.jsx` and `demo/demo-seed.jsx`

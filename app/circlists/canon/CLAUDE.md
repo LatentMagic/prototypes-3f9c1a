@@ -15,7 +15,7 @@
 - `GOTCHA.md` — hard-won, non-obvious traps (overlay/sheet motion, sandbox verification pitfalls). Read before touching animated overlays or "verifying" a mount transition.
   - **Editing rule:** only add an entry when the user approves it — do not append gotchas unprompted. Keep each entry terse: symptom → cause → fix → rule.
 - `skills/build-playground/SKILL.md` (+ `references/`) — how to build a playground: the intent, the non-negotiables, picking the rig shape, then config/driver patterns and wiring in its references. Supersedes the old `PLAYGROUND.md`. Keep it current: when a playground teaches you something durable, add it here.
-- `skills/build-candidate/SKILL.md` — how to build a **candidate build**: a second, unratified state of the app that *is* the app, carried by an overlay set over the one shared `app/` rather than a fork or a playground. The philosophy and the invariants; read before building any delta that has to be played as the product. Supersedes `docs/specs/candidate-builds/README.md` as the standard (that file stays as the reasoning record).
+- `skills/candidate-build/SKILL.md` — how to build a **candidate build**, and how to **merge** one when it ratifies: a second, unratified state of the app that *is* the app, carried by an overlay set over the one shared `app/` rather than a fork or a playground. The philosophy and the invariants; read before building any delta that has to be played as the product. Supersedes the archived `docs/archive/candidate-builds/README.md`, which stays only as the reasoning record.
 - `skills/frontend-ui-engineering/SKILL.md` (+ `references/accessibility-checklist.md`) — code-quality bar for building or reorganising the `app/` UI: composition, focused components (split past ~200 lines), state-management fit, WCAG 2.1 AA, and the anti-AI-aesthetic rules. Read before non-trivial UI work or refactors. It reinforces conventions the app already follows — deletable aids, `window`-based module decoupling, container/presentation split — so keep those intact when editing.
 
 These distil the durable essence. For exact tokens, components, and visual style, this project's own `tokens.css` and the brand pack (`brand/circlists-brand.md` + its SVGs) are the binding source — when in doubt on a specific value, they win. (Voice and the destructive-red `#991b1b` are captured in Key reminders below, not the pack.)
@@ -44,7 +44,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Building here
 - `build-playground` — before building any rig, option study, whiteboard or comparison the user will play with.
-- `build-candidate` — before building a delta that has to *be* the app rather than sit beside it as options; and before touching an existing `circlists-<ticket>.html` entry or its `cand-*` overlays.
+- `candidate-build` — before building a delta that has to *be* the app rather than sit beside it as options; and before touching an existing `circlists-<ticket>.html` entry or its `cand-*` overlays; and before merging a ratified candidate into the main build.
 - `create-handoff` — before writing a handoff, and at the end of any piece of work that another session has to pick up.
 - `frontend-ui-engineering` — before non-trivial `app/` UI work or any refactor.
 

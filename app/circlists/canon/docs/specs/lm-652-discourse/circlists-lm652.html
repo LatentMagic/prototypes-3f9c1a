@@ -474,6 +474,11 @@
   .cand-infield[data-live] { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
   .cand-infield[data-live]:hover { background: var(--color-accent-hover, var(--color-accent)); }
   .cand-infield:not([data-live]) { cursor: default; }
+  /* The edit box's way out (item 4, option 03): it stands in the name row, not on
+     the field's edge \u2014 quiet ink, darkening on hover. On the warm paper a grey
+     state layer reads as a smudge (see cand-altaction), so nothing fills. */
+  .cand-editout { color: var(--color-fg-3); transition: color var(--duration-base) ease; }
+  .cand-editout:hover, .cand-editout:focus-visible { color: var(--color-fg-1); }
   .cand-foldtoggle:hover, .cand-foldtoggle:focus-visible { filter: brightness(0.95); }
   .cand-foldtoggle:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; border-radius: 0 var(--radius-lg) 0 0; }
   [data-cand-listrow]:first-child { border-top-color: transparent !important; }

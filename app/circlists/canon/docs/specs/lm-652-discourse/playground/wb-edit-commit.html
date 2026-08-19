@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Whiteboard — the edit box's way out</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:64ch;margin:12px 0 0;text-wrap:pretty}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+.opt{margin-top:36px}
+.opthead{display:flex;align-items:baseline;gap:12px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 18px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claims{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:12px 0 0;max-width:82ch}
+.claim{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:860px){.pair,.claims,.refs{grid-template-columns:1fr}}
+.frame{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.framecap{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--color-border-2);font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.pad{padding:18px}
+
+/* ---- the turn being edited: the surface's own furniture, at its own sizes ---- */
+.turn{display:flex;gap:10px}
+.tab{width:3px;height:22px;border-radius:2px;background:transparent;flex-shrink:0;margin-top:2px}
+.av{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;font:600 9.5px/1 var(--font-sans);color:#fff}
+.body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.by{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.who{font:600 13.5px/1.3 var(--font-sans)}
+.when{font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.byspace{flex:1}
+
+/* ---- the field: CandWrite's geometry, verbatim ---- */
+.field{position:relative;background:#F2F1EB;border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:10px 12px 4px}
+.words{font:400 14.5px/1.6 var(--font-sans);color:var(--color-fg-1);white-space:pre-wrap;padding-right:40px}
+.count{display:flex;justify-content:flex-end;min-height:15px;padding-right:40px;font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.count u{text-decoration:none;visibility:hidden}
+.near .count u{visibility:visible}
+.set{position:absolute;right:7px;bottom:7px;display:flex;align-items:center;gap:4px}
+.ctl{width:34px;height:34px;border-radius:var(--radius-md);border:1px solid var(--color-border-1);background:var(--color-surface);color:var(--color-fg-3);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctl.live{background:var(--color-accent);border-color:var(--color-accent);color:#fff}
+/* The in-field ✗ belongs to 01 and 02 only. */
+.ctl.ghost{background:transparent;border-color:transparent;display:none}
+.o1 .ctl.ghost,.o2 .ctl.ghost{display:inline-flex}
+.ctl svg{display:block}
+
+/* 01 — the pair side by side, as built. */
+.o1 .words,.o1 .count{padding-right:78px}
+
+/* 02 — stacked on the edge: ✗ above the arrow. */
+.o2 .set{flex-direction:column-reverse;gap:4px}
+.o2 .field{min-height:104px}
+
+/* 03 — the way out leaves the field: it belongs to the box, not to the send. */
+.o3 .byout{display:inline-flex}
+.byout{display:none;width:34px;height:34px;border-radius:var(--radius-md);align-items:center;justify-content:center;color:var(--color-fg-3);flex-shrink:0;margin:-6px -6px -6px 0}
+
+/* 04 — the word instead of the mark. */
+.o4 .discard{display:inline-flex}
+.o4 .words,.o4 .count{padding-right:112px}
+.discard{display:none;align-items:center;height:34px;padding:0 4px;font:500 13px/1 var(--font-sans);color:var(--color-fg-3)}
+
+.refnote{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:26px 0 0}
+.refs{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ref{border:1px dashed var(--color-border-1);border-radius:var(--radius-lg);padding:16px}
+.ref h3{font:600 13.5px/1.3 var(--font-sans);margin:0 0 6px}
+.ref p{font:400 12.5px/1.55 var(--font-sans);color:var(--color-fg-2);margin:0 0 12px;text-wrap:pretty}
+.refbox{position:relative;background:var(--color-surface-sunken);border:1px solid var(--color-border-2);border-radius:var(--radius-sm);height:74px}
+.refbox i{position:absolute;left:10px;top:12px;right:60px;height:7px;border-radius:2px;background:var(--color-border-1)}
+.refbox i+i{top:26px;right:96px}
+.rc{position:absolute;width:24px;height:24px;border-radius:var(--radius-sm);border:1px solid var(--color-border-1);background:var(--color-surface);display:flex;align-items:center;justify-content:center;color:var(--color-fg-3)}
+.rc.fill{background:var(--color-accent);border-color:var(--color-accent);color:#fff}
+.rc svg{width:13px;height:13px;display:block}
+.rb1 .rc:nth-of-type(1){right:10px;top:10px}
+.rb1 .rc:nth-of-type(2){right:10px;top:40px}
+.rb2 .rc:nth-of-type(1){right:40px;bottom:10px}
+.rb2 .rc:nth-of-type(2){right:10px;bottom:10px}
+.rb3 .rc{width:auto;height:26px;padding:0 10px;font:500 11.5px/1 var(--font-sans)}
+.rb3 .rc:nth-of-type(1){right:74px;bottom:10px}
+.rb3 .rc:nth-of-type(2){right:10px;bottom:10px}
+</style>
+</head>
+<body>
+<template id="tpl">
+  <div class="turn">
+    <span class="tab"></span>
+    <div class="av">YO</div>
+    <div class="body">
+      <div class="by"><span class="who">You</span><span class="when">2h · edited</span><span class="byspace"></span>
+        <span class="byout"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="6.5" y1="6.5" x2="17.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="6.5" y2="17.5"/></svg></span>
+      </div>
+      <div class="field">
+        <div class="words" data-words></div>
+        <div class="count"><u data-left></u></div>
+        <div class="set">
+          <span class="discard">Discard</span>
+          <span class="ctl ghost" data-x><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="6.5" y1="6.5" x2="17.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="6.5" y2="17.5"/></svg></span>
+          <span class="ctl live"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19.5" x2="12" y2="5.5"/><polyline points="6 11.5 12 5.5 18 11.5"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div class="wrap">
+  <div class="eyebrow">LM-652 · whiteboard</div>
+  <h1>The edit box's way out</h1>
+  <p class="lede">An edit box is the one box in this product that needs a way out: clearing the field does not give the original words back. The arrow is the only glyph here that means commit, so the way out cannot be a second one — the question is where it stands. Every frame is the same turn of yours mid-edit; the right-hand frame is the same box near the 500 cap, where the remaining-count shares the field's edge with whatever is put there.</p>
+
+  <div class="rule"></div>
+
+  <div class="opt o1">
+    <div class="opthead"><span class="num">01</span><span class="name">Beside the arrow — as built</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — one slot on the field's edge holds both: the way out unfilled and unbordered, the commit the only inked box, the arrow in the exact corner it holds in every other field.</p>
+      <p class="claim"><b>Cost</b> — two controls in a row read as a pair of choices, and the ✗ sits where the eye expects nothing. It eats 78px of the text's right gutter, and pushes the count further in.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Mid-edit</span></div><div class="pad" data-mount></div></div>
+      <div class="frame"><div class="framecap"><span>Near the cap</span></div><div class="pad near" data-mount data-long></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o2">
+    <div class="opthead"><span class="num">02</span><span class="name">Stacked above the arrow</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the placement chat apps use: the two acts share one column at the field's right edge, so the gutter stays one control wide and the commit keeps the bottom corner.</p>
+      <p class="claim"><b>Cost</b> — the field can never be shorter than two controls, so a one-line edit stands ~104px tall. The count now runs under the stack rather than beside it.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Mid-edit</span></div><div class="pad" data-mount></div></div>
+      <div class="frame"><div class="framecap"><span>Near the cap</span></div><div class="pad near" data-mount data-long></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o3">
+    <div class="opthead"><span class="num">03</span><span class="name">Out of the field, onto the box</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — commit and abandon are not siblings. The arrow keeps the field's edge alone, exactly as everywhere else, and the way out sits at the top right of the words being edited — where the ⋯ that opened the edit stood.</p>
+      <p class="claim"><b>Cost</b> — the two acts are far apart, and the ✗ lands in the name row, which so far has only ever carried the menu. On a reply, the row is tighter.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Mid-edit</span></div><div class="pad" data-mount></div></div>
+      <div class="frame"><div class="framecap"><span>Near the cap</span></div><div class="pad near" data-mount data-long></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o4">
+    <div class="opthead"><span class="num">04</span><span class="name">The word, not the mark</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — no new glyph enters the product at all. A quiet word on the field's edge says what pressing it does, which no ✗ can; discarding words is worth one plain reading.</p>
+      <p class="claim"><b>Cost</b> — it is the loudest option and the widest, taking 112px of gutter, and it re-introduces a text control beside the field after the buttons beneath it were taken out.</p>
+    </div>
+    <div class="pair">
+      <div class="frame"><div class="framecap"><span>Mid-edit</span></div><div class="pad" data-mount></div></div>
+      <div class="frame"><div class="framecap"><span>Near the cap</span></div><div class="pad near" data-mount data-long></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <p class="refnote">For context, not options — how other products end an edit</p>
+  <div class="refs">
+    <div class="ref">
+      <h3>Stacked on the edge</h3>
+      <p>Team chat puts the two acts in one column at the field's right edge, the way out above the commit.</p>
+      <div class="refbox rb1"><i></i><i></i><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg></span><span class="rc fill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"/></svg></span></div>
+    </div>
+    <div class="ref">
+      <h3>A pair under the words</h3>
+      <p>Phone messaging draws both marks as small round controls below the field, side by side and equally weighted.</p>
+      <div class="refbox rb2"><i></i><i></i><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg></span><span class="rc fill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 13 10 18 19 7"/></svg></span></div>
+    </div>
+    <div class="ref">
+      <h3>Two words beneath</h3>
+      <p>Code review and issue trackers keep the text pair under the box — the arrangement this build has just taken out.</p>
+      <div class="refbox rb3"><i></i><i></i><span class="rc">Cancel</span><span class="rc fill">Update</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tpl = document.getElementById('tpl');
+const SHORT = 'That is the facilitator\u2019s job and we have never named who does it.';
+const LONG = 'That is the facilitator\u2019s job and we have never named who does it. Rotating it works when the facilitator was not on call that week, and it stops the same two people carrying every review — so I would rather we name the rotation in the doc than keep agreeing about it in the room, and then argue the numbers once they are written down where';
+document.querySelectorAll('[data-mount]').forEach(el => {
+  el.appendChild(tpl.content.cloneNode(true));
+  const long = el.hasAttribute('data-long');
+  const text = long ? LONG : SHORT;
+  el.querySelector('[data-words]').textContent = text;
+  el.querySelector('[data-left]').textContent = (500 - text.length) + ' left';
+});
+</script>
+</body>
+</html>

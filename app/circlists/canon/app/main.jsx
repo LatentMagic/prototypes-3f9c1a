@@ -431,7 +431,12 @@ const CircApp = () => {
   // The read-write happens regardless; the reaction is appended when present.
   const markRead = (item, reaction) => setSpaces(prev => prev.map(s => s.id === currentId
     ? { ...s, items: s.items.map(i => i.id === item.id
-        ? { ...i, read: true, reactions: reaction ? [...(i.reactions || []), reaction] : (i.reactions || []) }
+        // The one candidate hook on this write (read off window per call, like
+        // every other deletable aid): absent, this is byte for byte the shipped
+        // behaviour. LM-652's item 5 uses it to enrol the reader in the card's
+        // pool at the mark.
+        ? { ...i, read: true, reactions: reaction ? [...(i.reactions || []), reaction] : (i.reactions || []),
+            ...(window.CircCandidate && window.CircCandidate.onMarkRead ? window.CircCandidate.onMarkRead(i) : null) }
         : i) }
     : s));
   const deleteItem = (item) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: s.items.filter(i => i.id !== item.id) } : s));
