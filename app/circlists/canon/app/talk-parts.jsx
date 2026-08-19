@@ -212,10 +212,11 @@ const candOwnTurns = (item) => candTurns(item).filter(t => !t.deleted && t.by ==
 const candNames = (names) => names.length === 1 ? names[0]
   : names.length === 2 ? names[0] + ' and ' + names[1]
   : names[0] + ', ' + names[1] + ' and others';
-// Item 5 (ratified 2026-08-19): ANY act of participation enrols you. Leaving a
-// turn or a thought sets `watching`, exactly as adding the link does. The mark is
-// NOT touched: enrolling is not reading, and the surface moves `talkSeenAt`
-// forward when the member leaves.
+// Item 5 (corrected 2026-08-19): TWO triggers enrol you — adding the link, or
+// speaking in the conversation (a turn or a reply). Speaking sets `watching`,
+// exactly as adding the link does. The mark is NOT touched: enrolling is not
+// reading, and the surface moves `talkSeenAt` forward when the member leaves.
+// Marking read and placing a reaction never enrol (see talk-main.jsx).
 const candAddTurn = (api, item, text, replyTo) => candUpdateItem(api, item.id, i => ({ ...i,
   watching: true,
   talk: [...(i.talk || []), { id: 'u' + Date.now() + Math.random().toString(36).slice(2, 5), by: 'You', text, at: Date.now(), ...(replyTo ? { replyTo } : {}) }] }));
@@ -230,6 +231,8 @@ const candToggleWatch = (api, item) => candUpdateItem(api, item.id, i => ({ ...i
 // off the card entirely, so the band and the stack go with it — there is no
 // tombstone, because nothing is attached beneath a thought the way replies hang
 // beneath a turn.
+// A thought attaches only to your OWN card, so the add has already enrolled you.
+// `watching` is kept here as a defensive check; it can never fire on its own.
 const candAddThought = (api, item, text) => candUpdateItem(api, item.id, i => ({ ...i,
   watching: true,
   thought: { by: 'You', text, at: Date.now() } }));
@@ -251,12 +254,7 @@ const CAND_WASH = 'rgba(139,191,173,0.34)';
 // page it is drawn on.
 const CandSurfaceCtx = React.createContext(false);
 
-// The mark-as-read enrolment (item 5). app/main.jsx's markRead reads this off
-// window per call and spreads it into the item — absent, the shipped write is
-// byte for byte what it was.
-const candMarkReadPatch = () => ({ watching: true });
-
-Object.assign(window, { CandSendArrow, CandCrossGlyph, CandEditOut, candMarkReadPatch, CAND_PAPER, CAND_OWN_MIN, CAND_OWN_MINE, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
+Object.assign(window, { CandSendArrow, CandCrossGlyph, CandEditOut, CAND_PAPER, CAND_OWN_MIN, CAND_OWN_MINE, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
   CandBubbleIcon, CandWayIcon, CandSwitch, CandWrite, CandEyebrow, candUpdateItem, candTurns, candFresh, candResponses, candOwnTurns,
   candNames, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch, candAddThought, candEditThought, candDeleteThought,
   candTurnUnseen, CAND_WASH });

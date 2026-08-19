@@ -428,9 +428,13 @@ const CONFIRM = {
     primary: 'Leave', variant: 'destructive', role: 'alertdialog',
   },
   // Stands in front of the provider deep-link: the cost is carried BEFORE the act.
+  // NO way-back line here (LM-638, overruling the delta's item 4 on the user's word
+  // 2026-08-19): cancelling is a cancel, not a pause, and a reassurance in the dialog
+  // made it read as a pause and left the panel doing two jobs. The fact that resuming
+  // is possible lives on the ending CARD, which is where it can be acted on.
   'cancel-funding': {
     title: 'Cancel this circle\u2019s funding?',
-    body: 'Your champion powers end when the paid period does. The circle then goes to sleep for everyone, and whoever funds it next becomes its champion.',
+    body: 'When the paid period ends you stop being champion, the circle goes to sleep for everyone, and whoever funds it next champions it.',
     primary: 'Continue', dismiss: 'Back', variant: 'destructive', role: 'alertdialog',
   },
   // The split, ratified: the CARD carries what is true for every member; the DIALOG

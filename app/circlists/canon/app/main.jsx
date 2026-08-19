@@ -515,6 +515,13 @@ const CircApp = () => {
     setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, funded: false, dormancy: 'terminal' } : s));
     enterSpace(currentId);
   };
+  // Resume (LM-638): available for the whole paid period, gone once the circle is
+  // asleep (then Fund on the dormant screen is the only route, open to everyone).
+  // Clearing `funding` returns the card to its ordinary funded state — no charge,
+  // no confirm, next payment untouched, and nothing celebrates it.
+  const resumeFunding = () => {
+    setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, funded: true, dormancy: null, funding: null } : s));
+  };
 
   // ---- auth flows ----
   const signOut = () => { setUser(DEFAULT_USER); setRoute('signin'); };
@@ -671,6 +678,7 @@ const CircApp = () => {
   } else if (route === 'members') {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
       onInvite={inviteEmail} onManageFunding={openManageFunding} onCancelFunding={() => setConfirm({ kind: 'cancel-funding' })}
+      onResumeFunding={resumeFunding}
       onRename={renameSpace} onRemoveMember={removeMember} onLeave={() => setConfirm({ kind: 'leave', spaceId: currentId })}
       onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });

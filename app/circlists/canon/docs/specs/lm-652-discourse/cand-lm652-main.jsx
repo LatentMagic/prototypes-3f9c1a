@@ -30,10 +30,11 @@ let candMigrated = false;
 
 window.CircCandidate = {
   api: null,
-  // Item 5 — any act of participation enrols you. Adding is done in the popover;
-  // leaving a turn or a thought is done in the cand mutations; the mark goes
-  // through app/main.jsx's markRead, which reads this hook per call.
-  onMarkRead: () => candMarkReadPatch(),
+  // Item 5 (corrected 2026-08-19) — TWO triggers only: adding the link, or
+  // speaking in the conversation (a turn or a reply). Marking read does NOT
+  // enrol, and neither does placing a reaction; both run through app/main.jsx's
+  // markRead, so this hook stays unset.
+  onMarkRead: null,
   bind(api) {
     this.api = api;
     // After the render, never during it.

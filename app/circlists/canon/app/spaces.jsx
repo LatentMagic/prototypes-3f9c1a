@@ -176,9 +176,13 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
 // card. Every state reads as TEXT — colour and symbol never carry it alone.
 //   active    — nothing beneath the marker
 //   ending    — a cancellation is scheduled; the line carries the date and that
-//               the circle sleeps then. NO buttons in this state: there is no way
-//               back in the product, so Update card and Cancel funding would both
-//               be no-ops, and the provider caveat goes with them. The succession
+//               the circle sleeps then. BOTH buttons are live (LM-638): there IS
+//               now a way back — Resume funding stands where Cancel funding stands
+//               on the active card, and Update payment card is identical to its
+//               active-state self (a stale card is the next thing that would end
+//               the funding after a resume, so the two sit together here as they
+//               do there). Resume takes no confirm and charges nothing: there is
+//               nothing to confirm. The succession
 //               clause IS carried here (restored 2026-08-03): the cancel confirm
 //               said it once, at a moment you pass through; this card is the
 //               standing description of the state, and without it Ending reads as
@@ -199,7 +203,7 @@ const FUNDING_MARKERS = { active: 'Active', ending: 'Ending', retrying: 'Payment
 const circFmtDay = (ts) => new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 const fundingStateLine = (f) => {
   if (!f) return null;
-  if (f.state === 'ending') return `Funding ends on ${circFmtDay(f.endsAt)}. The circle then goes to sleep, and whoever funds it next champions it.`;
+  if (f.state === 'ending') return `Funding ends on ${circFmtDay(f.endsAt)}. The circle then goes to sleep, and whoever funds it next champions it. You can resume funding any time before that date.`;
   if (f.state === 'retrying') return `Update the card within ${f.retryWindow || '14 days'} to keep the circle awake.`;
   return null;
 };
@@ -214,7 +218,7 @@ const fundingStateLine = (f) => {
 // people (Remove); your own kebab acts on you (Leave), and is the only one a
 // non-champion sees — which is what marks it as yours without a label. Scope it
 // strictly to YOUR MEMBERSHIP OF THIS CIRCLE; it is not a settings drawer.
-const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onRename, onRemoveMember, onStartCircle, onLeave }) => {
+const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onRename, onRemoveMember, onStartCircle, onLeave }) => {
   const [email, setEmail] = React.useState('');
   const [err, setErr] = React.useState(null);
   const [sentTo, setSentTo] = React.useState(null);
@@ -408,12 +412,12 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           {fundingLine && (
             <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: 0 }}>{fundingLine}</p>
           )}
-          {funding.state !== 'ending' && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
-              <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => onManageFunding && onManageFunding('update')}>Update payment card</Button>
-              <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => onCancelFunding && onCancelFunding()}>Cancel funding</Button>
-            </div>
-          )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
+            <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => onManageFunding && onManageFunding('update')}>Update payment card</Button>
+            {funding.state === 'ending'
+              ? <Button variant="secondary" onClick={() => onResumeFunding && onResumeFunding()}>Resume funding</Button>
+              : <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => onCancelFunding && onCancelFunding()}>Cancel funding</Button>}
+          </div>
           <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0' }}>
             Billed to {space.championEmail || 'your account'} · card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span>.
           </p>

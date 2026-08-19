@@ -3,6 +3,21 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## A champion can resume funding before it ends — 2026-08-19
+
+- **Cancelling is no longer one-way while the paid period runs.** The ending funding card
+  carries **Resume funding** in the slot **Cancel funding** holds when funding is active.
+  It returns the card to its ordinary funded state with no confirmation, no charge and the
+  next payment on its original date, and nothing celebrates it. The control is gone once
+  the circle is asleep — from then the dormant screen's **Fund** is the only route, open
+  to every member.
+- **Update payment card is no longer hidden by a scheduled cancellation.** It stands on the
+  ending card exactly as it does on the active one; only Cancel had a reason to go.
+- **The ending card states the way back**, in its existing marker-plus-one-line shape. The
+  cancel confirmation does not: it names the full cost and stops there — a reassurance
+  inside a destructive confirm read as a pause rather than a cancel (LM-638 item 4,
+  overruled).
+
 ## Discourse — 2026-08-19
 
 - **A contributor can attach a thought to the card they contribute.** It rides tucked under the

@@ -1,0 +1,108 @@
+{
+  "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
+  "generated": "2026-08-19",
+  "tickets": [
+    { "id": "LM-652", "slug": "lm-652-discourse", "name": "Discourse", "state": "active", "touched": "2026-08-19",
+      "entries": [
+        { "kind": "candidate", "name": "Discourse candidate", "path": "docs/specs/lm-652-discourse/circlists-lm652.html", "on": false, "off": "Merged into the main build 2026-08-19.", "note": "The whole feature, playable as the app." },
+        { "kind": "playground", "name": "The edit box's way out", "path": "docs/specs/lm-652-discourse/playground/wb-edit-commit.html", "note": "Whiteboard: four places to put the way out of an edit." },
+        { "kind": "playground", "name": "Attaching a thought", "path": "docs/specs/lm-652-discourse/playground/pg-attach-thought.html", "note": "Five ways to give your own card a thought it never got." },
+        { "kind": "playground", "name": "The empty band", "path": "docs/specs/lm-652-discourse/playground/pg-empty-band.html", "note": "How the band resolves: in place, or by opening the card." },
+        { "kind": "playground", "name": "New words", "path": "docs/specs/lm-652-discourse/wb-new-words.html", "note": "Whiteboard: naming the open questions." },
+        { "kind": "playground", "name": "Talk in another circle", "path": "docs/specs/lm-652-discourse/wb-out-of-circle.html", "note": "Whiteboard: six answers, including leaving the rail alone." },
+        { "kind": "playground", "name": "The bold row", "path": "docs/specs/lm-652-discourse/wb-bold-row.html", "note": "Whiteboard: five readings of bold, plus the red team." }
+      ],
+      "archive": [
+        { "kind": "playground", "name": "Discourse v10", "path": "docs/specs/lm-652-discourse/archive/pg-discourse-v10.html", "note": "Contribute, reflect, return." },
+        { "kind": "playground", "name": "Discourse v9", "path": "docs/specs/lm-652-discourse/archive/pg-discourse-v9.html" },
+        { "kind": "playground", "name": "Discourse v8", "path": "docs/specs/lm-652-discourse/archive/discourse-playground-v8.html" },
+        { "kind": "playground", "name": "Return v12", "path": "docs/specs/lm-652-discourse/archive/pg-return-v12.html", "note": "The return control." },
+        { "kind": "playground", "name": "Thought v11", "path": "docs/specs/lm-652-discourse/archive/pg-thought-v11.html" },
+        { "kind": "playground", "name": "Thought stack", "path": "docs/specs/lm-652-discourse/archive/pg-thought-stack.html" },
+        { "kind": "playground", "name": "Thought on card", "path": "docs/specs/lm-652-discourse/archive/pg-whiteboard-thought-on-card.html" },
+        { "kind": "playground", "name": "Thought voice v2", "path": "docs/specs/lm-652-discourse/archive/pg-wb-thought-voice-v2.html" },
+        { "kind": "playground", "name": "Thought voice", "path": "docs/specs/lm-652-discourse/archive/pg-wb-thought-voice.html" },
+        { "kind": "playground", "name": "Talking button", "path": "docs/specs/lm-652-discourse/archive/pg-wb-talking-button.html" },
+        { "kind": "playground", "name": "Button content", "path": "docs/specs/lm-652-discourse/archive/pg-wb-button-content.html" },
+        { "kind": "playground", "name": "Control forms", "path": "docs/specs/lm-652-discourse/archive/pg-wb-control-forms.html" },
+        { "kind": "playground", "name": "Discourse v4", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-v4.html" },
+        { "kind": "playground", "name": "Discourse v3", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-v3.html" },
+        { "kind": "playground", "name": "Discourse v2", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-v2.html" },
+        { "kind": "playground", "name": "Discourse v1", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground.html" },
+        { "kind": "playground", "name": "Discourse v8 (bundle)", "path": "docs/specs/lm-652-discourse/archive/discourse-playground-v8-standalone.html", "on": false, "off": "Standalone bundle, 1.7 MB — pending deletion under the no-bundles rule." },
+        { "kind": "playground", "name": "Discourse v10 (bundle)", "path": "docs/specs/lm-652-discourse/archive/pg-discourse-v10-standalone.html", "on": false, "off": "Standalone bundle — pending deletion." },
+        { "kind": "playground", "name": "Thought v11 (bundle)", "path": "docs/specs/lm-652-discourse/archive/pg-thought-v11-standalone.html", "on": false, "off": "Standalone bundle — pending deletion." },
+        { "kind": "playground", "name": "Discourse v1 (bundle)", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-standalone.html", "on": false, "off": "Standalone bundle — pending deletion." },
+        { "kind": "playground", "name": "Discourse v2 (bundle)", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-v2-standalone.html", "on": false, "off": "Standalone bundle — pending deletion." },
+        { "kind": "playground", "name": "Discourse v3 (bundle)", "path": "docs/specs/lm-652-discourse/archive/early/discourse-playground-v3-standalone.html", "on": false, "off": "Standalone bundle — pending deletion." }
+      ] },
+    { "id": "LM-666", "slug": "lm-666-link-deletion", "name": "Link deletion", "state": "archive", "touched": "2026-08-18",
+      "entries": [
+        { "kind": "candidate", "name": "Link deletion candidate", "path": "docs/archive/lm-666-link-deletion/circlists-lm666.html", "on": false, "off": "Merged into the main build 2026-08-18.", "note": "Everyone-delete, playable as the app." }
+      ] },
+    { "id": "—", "slug": "playground-lifecycle", "name": "Playground lifecycle", "state": "archive", "touched": "2026-08-18",
+      "entries": [
+        { "kind": "playground", "name": "Base-href probe", "path": "docs/archive/playground-lifecycle/base-href-probe.html", "on": false, "off": "Settled; the rule lives in CLAUDE.md.", "note": "Proof a nested entry loads." }
+      ] },
+    { "id": "—", "slug": "add-surface", "name": "Add surface", "state": "active", "touched": "2026-08-17", "entries": [] },
+    { "id": "LM-626", "slug": "lm-626-champion-exit", "name": "Champion exit", "state": "active", "touched": "2026-08-03",
+      "entries": [
+        { "kind": "playground", "name": "Whiteboard v3", "path": "docs/specs/lm-626-champion-exit/whiteboard-playground-v3.html", "note": "Dormant-circle wording." },
+        { "kind": "playground", "name": "Whiteboard v2", "path": "docs/specs/lm-626-champion-exit/whiteboard-playground-v2.html" },
+        { "kind": "playground", "name": "Whiteboard v1", "path": "docs/specs/lm-626-champion-exit/whiteboard-playground.html" },
+        { "kind": "playground", "name": "Marker word", "path": "docs/specs/lm-626-champion-exit/whiteboard-marker-word.html", "note": "One word for the exit state." }
+      ] },
+    { "id": "LM-593", "slug": "lm-593-liveliness", "name": "Liveliness", "state": "active", "touched": "2026-07-31", "entries": [] },
+    { "id": "BIZ-84", "slug": "biz-84-app-ia", "name": "App IA", "state": "active", "touched": "2026-07-27",
+      "entries": [
+        { "kind": "playground", "name": "App IA options", "path": "docs/specs/biz-84-app-ia/app-ia-playground.html", "note": "Eight IA directions for the app posture." }
+      ] },
+    { "id": "LM-570", "slug": "lm-570", "name": "Create + fund wizard", "state": "active", "touched": "2026-07-27",
+      "entries": [
+        { "kind": "playground", "name": "Desktop container options", "path": "docs/specs/lm-570/create-fund-desktop-container-options.html" }
+      ] },
+    { "id": "BIZ-80", "slug": "biz-80-metadata", "name": "Card metadata", "state": "active", "touched": "2026-07-24", "entries": [] },
+    { "id": "—", "slug": "motion", "name": "Brand + loading motion", "state": "active", "entries": [] },
+
+    { "id": "—", "slug": "option-studies", "base": "docs/archive/", "name": "Option studies", "state": "archive",
+      "entries": [
+        { "kind": "playground", "name": "Button shape studio", "path": "docs/archive/option-studies/button-shape-studio.html" },
+        { "kind": "playground", "name": "Champion role — resolved", "path": "docs/archive/option-studies/champion-role-resolved.html" },
+        { "kind": "playground", "name": "Champion role — bottom line", "path": "docs/archive/option-studies/champion-role-bottom-line-variations.html" },
+        { "kind": "playground", "name": "Champion role — non-champion card", "path": "docs/archive/option-studies/champion-role-card-non-champion-variations.html" },
+        { "kind": "playground", "name": "Champion role — consolidated", "path": "docs/archive/option-studies/champion-role-consolidated-variations.html" },
+        { "kind": "playground", "name": "Create + fund wizard", "path": "docs/archive/option-studies/create-fund-wizard-playground.html" },
+        { "kind": "playground", "name": "Wizard — refined", "path": "docs/archive/option-studies/create-fund-wizard-refined.html" },
+        { "kind": "playground", "name": "Wizard — responsive", "path": "docs/archive/option-studies/create-fund-wizard-responsive.html" },
+        { "kind": "playground", "name": "Wizard — desktop", "path": "docs/archive/option-studies/create-fund-wizard-desktop.html" },
+        { "kind": "playground", "name": "Desktop container options", "path": "docs/archive/option-studies/create-fund-desktop-container-options.html" },
+        { "kind": "playground", "name": "Beneath the button", "path": "docs/archive/option-studies/create-fund-beneath-the-button.html" },
+        { "kind": "playground", "name": "Champion bullet", "path": "docs/archive/option-studies/create-fund-champion-bullet.html" },
+        { "kind": "playground", "name": "Footer email", "path": "docs/archive/option-studies/create-fund-footer-email.html" },
+        { "kind": "playground", "name": "Footer pairing", "path": "docs/archive/option-studies/create-fund-footer-pairing.html" },
+        { "kind": "playground", "name": "Mobile agreed", "path": "docs/archive/option-studies/create-fund-mobile-agreed.html" },
+        { "kind": "playground", "name": "Name home options", "path": "docs/archive/option-studies/create-fund-name-home-options.html" },
+        { "kind": "playground", "name": "Empty-state copy", "path": "docs/archive/option-studies/empty-state-copy-options.html" },
+        { "kind": "playground", "name": "Empty-state door", "path": "docs/archive/option-studies/empty-state-door-options.html" },
+        { "kind": "playground", "name": "Dense foot reference", "path": "docs/archive/option-studies/feed-card-dense-foot-reference.html" },
+        { "kind": "playground", "name": "Fund circle mobile fit", "path": "docs/archive/option-studies/fund-circle-mobile-fit-options.html" },
+        { "kind": "playground", "name": "Fund circle across dimensions", "path": "docs/archive/option-studies/fund-circle-option-1-across-dimensions.html" },
+        { "kind": "playground", "name": "Permanent hairline", "path": "docs/archive/option-studies/permanent-hairline-edge-aligned-actions.html" },
+        { "kind": "playground", "name": "Reaction door — empty skip", "path": "docs/archive/option-studies/reaction-door-empty-skip-options.html" },
+        { "kind": "playground", "name": "Reaction door — mobile", "path": "docs/archive/option-studies/reaction-door-option-12-mobile.html" },
+        { "kind": "playground", "name": "Reaction store card fit", "path": "docs/archive/option-studies/reaction-store-card-fit-options.html" },
+        { "kind": "playground", "name": "Rename form", "path": "docs/archive/option-studies/rename-form-options.html" },
+        { "kind": "playground", "name": "Sidebar empty state", "path": "docs/archive/option-studies/sidebar-empty-state-options.html" }
+      ] },
+    { "id": "LM-593", "slug": "lm-593-liveliness-archive", "base": "docs/archive/", "folder": "lm-593-liveliness", "name": "Liveliness", "state": "archive",
+      "entries": [
+        { "kind": "playground", "name": "Liveliness", "path": "docs/archive/lm-593-liveliness/liveliness-playground.html", "note": "Warmth signals on a quiet feed." }
+      ] },
+    { "id": "—", "slug": "tab-arrival-signal", "base": "docs/archive/", "name": "Tab arrival signal", "state": "archive",
+      "entries": [
+        { "kind": "playground", "name": "Arrival signal", "path": "docs/archive/tab-arrival-signal/tab-arrival-signal-playground.html" },
+        { "kind": "playground", "name": "Arrival signal v2", "path": "docs/archive/tab-arrival-signal/tab-arrival-signal-playground-v2.html" },
+        { "kind": "playground", "name": "Favicon refinement", "path": "docs/archive/tab-arrival-signal/tab-arrival-signal-favicon-refinement.html" }
+      ] }
+  ]
+}
