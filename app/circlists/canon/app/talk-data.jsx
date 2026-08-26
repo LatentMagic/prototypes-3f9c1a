@@ -93,12 +93,16 @@
       ],
     });
     // A third of yours, further down Read.
+    // Three fresh speakers here against jvns.ca's three and go.dev's one: the
+    // rows in the bar carry different numbers of voices, which is how they read
+    // in life.
     set('https://go.dev/blog/errors-are-values', {
       attribution: 'Added by you',
       watching: true, talkSeenAt: NOW - 6 * H,
       talk: [
         T('ev1', 'Marcus T.', 2, 'We quote \u201cerrors are values\u201d a lot and still write if err != nil three times a function. The sentinel-error section is the part we actually need.'),
         T('ev2', 'Lena P.', 1, 'The wrapping section dates it a little, but the argument holds.'),
+        T('ev3', 'Dev K.', 0.5, 'Took the sentinel list to the ingest service this morning. Two of ours are string comparisons.'),
       ],
     });
     // kernel.org stays bare on purpose — the empty conversation, compose only.

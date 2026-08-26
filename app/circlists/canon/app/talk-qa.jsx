@@ -38,7 +38,50 @@ const candQaApply = (fn) => {
     ? { ...s, items: s.items.map(fn) } : s));
 };
 
+// One item in the circle, chosen by a predicate — the returns bar's "one more
+// card" has to move exactly one row, not every row.
+const candQaApplyOne = (pick, fn) => {
+  const api = window.CircCandidate && window.CircCandidate.api;
+  if (!api) return;
+  api.setSpaces(prev => prev.map(s => {
+    if (s.id !== api.currentId) return s;
+    const target = s.items.find(pick);
+    if (!target) return s;
+    return { ...s, items: s.items.map(i => (i === target ? fn(i) : i)) };
+  }));
+};
+const candQaMark = (i) => {
+  const live = (i.talk || []).filter(t => !t.deleted);
+  return i.talkSeenAt || (live.length ? Math.max(...live.map(t => t.at)) : Date.now());
+};
+
 const candQaActions = {
+  // ---- the returns bar -----------------------------------------------------
+  // On: every watched, read card with a conversation carries unseen words, so the
+  // bar arrives at the head of the feed. Off: everything is marked seen, so it
+  // empties and leaves. Both are staged in the circle the member is looking at.
+  //
+  // The mark is wound BACK behind the last few turns rather than a single turn
+  // being appended: a row whose subline reads one name is the uncommon case, and
+  // a lever that stages it everywhere hides the elision the bar exists to do. How
+  // far back varies card to card (one, two, then three turns), so the rows carry
+  // different numbers of voices the way the seed does.
+  barOn: () => { let k = 0; candQaApply(i => {
+    const talk = (i.talk || []).filter(t => !t.deleted);
+    if (!i.read || !talk.length) return i;
+    const theirs = talk.filter(t => t.by !== 'You').sort((a, b) => a.at - b.at);
+    if (!theirs.length) return { ...i, watching: true, talkSeenAt: candQaMark(i), talk: [...i.talk, candQaTurn(i.talk, 0)] };
+    const want = 1 + (k++ % 3);
+    const from = theirs[Math.max(0, theirs.length - want)];
+    return { ...i, watching: true, talkSeenAt: from.at - 1000 };
+  }); },
+  barOff: () => candQaApply(i => ((i.talk || []).length ? { ...i, talkSeenAt: Date.now() } : i)),
+  // One more row: the first read card with a conversation that is NOT already in
+  // the bar gets a fresh turn from a voice not yet on it.
+  barMore: () => candQaApplyOne(
+    i => i.read && (i.talk || []).filter(t => !t.deleted).length > 0 && !(i.watching && candFresh(i).length > 0),
+    i => ({ ...i, watching: true, talkSeenAt: candQaMark(i), talk: [...i.talk, candQaTurn(i.talk, 0)] }),
+  ),
   // Wind the mark back behind the oldest words on the card, so everything already
   // there reads as unseen and any held-back tail opens on arrival. A real
   // timestamp, never 0 — a falsy mark means "never visited", which marks nothing.
@@ -79,6 +122,19 @@ const candQaActions = {
 const ConfigExtra = ({ onClose }) => (
   <React.Fragment>
     <div className="circ-config-eyebrow">Conversation (LM-652)</div>
+    <div className="circ-config-row">
+      <div className="circ-config-row-label">The returns bar</div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barOn(); onClose(); }}>Bring it in</button>
+        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barOff(); onClose(); }}>Take it away</button>
+      </div>
+    </div>
+    <div className="circ-config-hint">Fires the bar at the head of the feed you are in. <b>Bring it in</b> gives every watched, read card unseen words, so the bar arrives. <b>Take it away</b> marks everything seen, so it empties and leaves. Stay on the feed to watch either happen.</div>
+    <div className="circ-config-row">
+      <div className="circ-config-row-label">One more card</div>
+      <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barMore(); onClose(); }}>Add a watched card</button>
+    </div>
+    <div className="circ-config-hint">Drops one more watched card into the bar. Collapsed, the number moves and the head line may gain a name. Expanded, <b>nothing on screen changes</b> until you collapse it — the bar holds its rows while it is open, and the hold is not marked.</div>
     <div className="circ-config-row">
       <div className="circ-config-row-label">The mark</div>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>

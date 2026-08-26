@@ -167,6 +167,9 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
+/* ---- Text selection ---- */
+::selection { background: var(--color-accent); color: var(--color-fg-inverse); }
+
 /* ---- Headings ---- */
 h1, .h1 {
   font: var(--weight-semibold) var(--text-3xl) / var(--leading-tight) var(--font-sans);

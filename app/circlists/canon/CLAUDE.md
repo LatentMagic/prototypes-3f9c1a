@@ -31,7 +31,8 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 - `i-have-adhd` — **persistent once invoked**, for the whole session, until "stop adhd mode". Lead with the action, number multi-step work, restate state each turn, no preamble or closers.
 - `digestible` — on any overload signal ("too much", "too long", "TLDR", "condense"), and proactively when a reply carries more than can be taken in at once. Sequence the signal in beats; never cut substance to look shorter.
 - `bro` — restate the last message plainly, no jargon.
-- `show-me` — when the point is structural or visual and prose is doing it badly.
+- `show-me` — when prose would force the reader to reconstruct something in their head: a structure, a flow, a comparison, a before/after, a set of options. Fires whether or not a visual was asked for. Use it *with* `must-read` when the thing landed is inside the prototype — the route to it is a flow, so draw the flow.
+- `must-read` — at the end of any finished body of work (a change landed, a doc written, a review run): name the one thing the user cannot skip, precisely, with the stake. Complements the last-line rule below. **When the thing landed is in the prototype, always carry the route to it** — the numbered clicks from the app's entry to the exact surface, so it is never gone looking for.
 
 ### Thinking and self-audit — declared only
 - `blind-spot` — post-output audit: what I'm least confident about, and what the user is missing. **Declared only.**

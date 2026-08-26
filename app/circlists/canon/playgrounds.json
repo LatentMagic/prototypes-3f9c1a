@@ -2,6 +2,12 @@
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "generated": "2026-08-19",
   "tickets": [
+    { "id": "H3", "slug": "h3-champion-exit-line", "name": "Champion exit line", "state": "active", "touched": "2026-08-24",
+      "entries": [
+        { "kind": "playground", "name": "The footer's two voices (v3)", "path": "docs/specs/h3-champion-exit-line/playground/wb-footer-voices-v3.html", "note": "Head-to-head: 05 at 12px, 06 with even margins, and the hybrid." },
+        { "kind": "playground", "name": "The footer's two voices (v2)", "path": "docs/specs/h3-champion-exit-line/playground/wb-footer-voices-v2.html", "note": "Whiteboard: six treatments of the seam, on the full page body, with contrast noted." },
+        { "kind": "playground", "name": "The footer's two voices", "path": "docs/specs/h3-champion-exit-line/playground/wb-footer-voices.html", "on": false, "off": "Superseded by v2 — the block was cropped to one check." }
+      ] },
     { "id": "LM-652", "slug": "lm-652-discourse", "name": "Discourse", "state": "active", "touched": "2026-08-19",
       "entries": [
         { "kind": "candidate", "name": "Discourse candidate", "path": "docs/specs/lm-652-discourse/circlists-lm652.html", "on": false, "off": "Merged into the main build 2026-08-19.", "note": "The whole feature, playable as the app." },

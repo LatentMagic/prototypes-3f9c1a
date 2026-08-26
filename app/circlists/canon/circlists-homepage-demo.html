@@ -404,6 +404,24 @@
      buttons) which reveal from a real prior value and never hide content. */
 
   /* ---- conversation on a card (LM-652; app/talk-*.jsx) ---- */
+  /* The returns bar arriving and leaving (app/talk-return.jsx). The bar is the
+     only thing besides an accepted New pill that may move this feed, so it
+     borrows that grammar: the slot opens its own height while the strip travels
+     up into it (circ-rise itself), once. The removal is the same motion reversed
+     and quicker — leaving is not an announcement. --cand-bar-h is measured before
+     paint; the resting margin animates WITH the height, so the feed below makes
+     one move and not two. */
+  .cand-barslot { overflow: hidden; }
+  .cand-barslot-in { animation: cand-barslot-open 560ms var(--ease-quiet) both; }
+  .cand-barslot-out { animation: cand-barslot-shut 400ms var(--ease-quiet) both; }
+  @keyframes cand-barslot-open { from { height: 0; margin-bottom: 0; } to { height: var(--cand-bar-h); margin-bottom: var(--cand-bar-mb); } }
+  @keyframes cand-barslot-shut { from { height: var(--cand-bar-h); margin-bottom: var(--cand-bar-mb); } to { height: 0; margin-bottom: 0; } }
+  .cand-barslot-in > * { animation: circ-rise 560ms var(--ease-quiet) both; }
+  .cand-barslot-out > * { animation: cand-bar-leave 400ms var(--ease-quiet) both; }
+  @keyframes cand-bar-leave { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(6px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .cand-barslot-in, .cand-barslot-out, .cand-barslot-in > *, .cand-barslot-out > * { animation-duration: 1ms !important; }
+  }
   .cand-bandbtn:hover { background: #EEEDE5; }
   .cand-paper:has(.cand-bandbtn:hover) { border-color: #CFCDC2; }
   .cand-bandbtn:hover .cand-bandchev { color: var(--color-fg-1); }

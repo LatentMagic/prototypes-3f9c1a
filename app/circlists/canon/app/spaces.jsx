@@ -204,7 +204,7 @@ const circFmtDay = (ts) => new Date(ts).toLocaleDateString('en-GB', { day: 'nume
 const fundingStateLine = (f) => {
   if (!f) return null;
   if (f.state === 'ending') return `Funding ends on ${circFmtDay(f.endsAt)}. The circle then goes to sleep, and whoever funds it next champions it. You can resume funding any time before that date.`;
-  if (f.state === 'retrying') return `Update the card within ${f.retryWindow || '14 days'} to keep the circle awake.`;
+  if (f.state === 'retrying') return `Update the card within ${f.retryWindow || '30 days'} to keep the circle awake.`;
   return null;
 };
 

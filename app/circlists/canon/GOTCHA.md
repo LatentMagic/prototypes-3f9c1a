@@ -7,8 +7,8 @@ Entries 1–5 are code traps. **Entries 6–11 are judgement traps** — the mis
 that cost the most time on this project were not wrong code, they were wrong
 intent. Read those before starting design work, not while debugging it.
 
-Entry 12 is a code trap; it sits after the judgement traps because it was found
-later, not because it matters less.
+Entries 12–13 are code traps; they sit after the judgement traps because they
+were found later, not because they matter less.
 
 ---
 
@@ -280,3 +280,30 @@ transition, where a miss is invisible.
 use it. And when motion matters, drive it — a silent no-op is the worst failure
 mode there is, because the code reads as correct and only the user can see that
 it is not (see entry 2: you cannot verify this from a screenshot).
+
+---
+
+## 13. The "referenced file not found" warning is only a false positive when `<base>` is *right*
+
+**Symptom.** A whiteboard in
+`docs/specs/<ticket>/playground/` was handed over with no tokens at all — no
+fonts, no accent green, no spacing. The user opened it and saw black-and-white
+unstyled text. It was defended in chat as "the usual base-relative false
+positive" and shipped twice that way.
+
+**Cause.** The entry was copied from a rig that sits at
+`docs/specs/<ticket>/` (three levels deep) and kept its `<base href="../../../" />`.
+The new file is **four** levels deep, so `<base>` resolved to `docs/` and
+`tokens.css` 404'd. The count is levels *of the file's own folder*, not a
+constant: `playground/` adds one.
+
+**Fix.** `<base href="../../../../" />` for anything under
+`docs/specs/<ticket>/playground/`. Root-relative paths everywhere else stay as
+they are.
+
+**Rule.** `CLAUDE.md` says the preview's "referenced file not found" warning is a
+false positive for base-relative paths — that is true *only when the `<base>`
+depth is correct*, and the warning is identical either way, so it can never
+confirm it. Count the `../` against the file's own depth, then load the page and
+confirm one token-driven thing rendered (a colour, the font) before handing it
+over. Never explain the warning away in chat without having looked.

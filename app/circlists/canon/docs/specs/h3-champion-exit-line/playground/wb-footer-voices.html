@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Whiteboard — the footer's two voices</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:62ch;margin:12px 0 0;text-wrap:pretty}
+.lede b{font-weight:600;color:var(--color-fg-1)}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:32px}
+@media (max-width:980px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:660px){.grid{grid-template-columns:1fr}}
+.opt{display:flex;flex-direction:column}
+.opthead{display:flex;align-items:baseline;gap:10px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 17px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claim{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-2);margin:8px 0 0;text-wrap:pretty}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.cost{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);margin:4px 0 0;text-wrap:pretty}
+.frame{margin-top:14px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);padding:26px 20px 30px;display:flex;flex-direction:column;align-items:center}
+.checks{display:flex;flex-direction:column;gap:var(--space-3);width:100%;max-width:290px;margin:0 0 22px}
+.chk{display:flex;align-items:flex-start;gap:var(--space-3)}
+.chk svg{flex:none;margin-top:1px;color:var(--color-accent)}
+.chk span{font:400 var(--text-base)/1.4 var(--font-sans);color:var(--color-fg-1)}
+.btn{width:100%;max-width:290px;min-height:52px;padding:14px 22px;border:0;border-radius:var(--radius-md);background:var(--color-accent);color:#fff;font:600 16px/1 var(--font-sans);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.foot{width:100%;max-width:290px;margin:14px 0 0;display:flex;flex-direction:column;align-items:center;gap:3px;font:500 12.5px/1.5 var(--font-sans);color:var(--color-fg-3)}
+.billed{display:inline-flex;align-items:center;gap:6px}
+.billed svg{flex:none}
+.stop{max-width:34ch;text-align:center;text-wrap:pretty}
+
+/* v1 — weight the fact */
+.v1 .billed{font-weight:600;color:var(--color-fg-1)}
+/* v2 — split the roles: fact darker, reassurance a smaller caption */
+.v2 .billed{font-weight:600;color:var(--color-fg-2)}
+.v2 .stop{font-size:11.5px;font-weight:400;line-height:1.55}
+/* v3 — a seam */
+.v3 .foot{gap:0}
+.v3 .billed{padding-bottom:11px;color:var(--color-fg-2)}
+.v3 .stop{padding-top:11px;border-top:1px solid var(--color-border-2);width:100%}
+/* v4 — reorder: the answer first, the receipt last */
+.v4 .foot{gap:7px}
+.v4 .stop{order:1;color:var(--color-fg-2)}
+.v4 .billed{order:2;font-size:11.5px}
+/* v5 — demote to caption */
+.v5 .stop{font-size:11px;font-weight:400;color:var(--color-fg-3);letter-spacing:.005em}
+.v5 .billed{color:var(--color-fg-2)}
+/* v6 — out of the footer entirely */
+.v6 .above{width:100%;max-width:290px;margin:0 0 14px;font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-align:center;text-wrap:pretty;max-width:34ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">h3 · champion exit line</div>
+<h1>The footer's two voices</h1>
+<p class="lede">One block, two kinds of information in the same clothes. <b>Billed to sam.rivera@gmail.com</b> is a fact about this payment; <b>Stop anytime…</b> is a statement about the future. Same size, same weight, same grey, 3px apart. Six treatments of the seam — the copy and the placement are not the question here.</p>
+<div class="rule"></div>
+<div class="grid">
+
+<div class="opt">
+<div class="opthead"><span class="num">00</span><span class="name">As it is</span></div>
+<p class="claim">Baseline. Two lines, identical treatment.</p>
+<p class="cost">Reads as one grey wash; the eye finds no edge.</p>
+<div class="frame v0">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">01</span><span class="name">Weight the fact</span></div>
+<p class="claim">The billing line goes semibold and dark; the reassurance stays light. <b>Hierarchy by weight, no new parts.</b></p>
+<p class="cost">Puts the loudest emphasis on the least interesting line.</p>
+<div class="frame v1">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">02</span><span class="name">Split the roles</span></div>
+<p class="claim">Fact reads as receipt detail — mid grey, semibold. Reassurance drops a size and becomes the caption under it.</p>
+<p class="cost">Two changes at once; the reassurance gets quiet fast.</p>
+<div class="frame v2">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">03</span><span class="name">A seam</span></div>
+<p class="claim">Type untouched. A hairline and real air between them, so they read as <b>two groups, not four lines</b>.</p>
+<p class="cost">A rule in the calmest part of the page; adds ~20px.</p>
+<div class="frame v3">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">04</span><span class="name">Answer first</span></div>
+<p class="claim">The reassurance sits directly under the button it answers; the billing fact drops to the last, smallest line.</p>
+<p class="cost">Demotes the one line that names the reader's own money.</p>
+<div class="frame v4">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">05</span><span class="name">Demote to caption</span></div>
+<p class="claim">One change only: the reassurance steps down a size and lightens. The footer keeps one voice; this is its footnote.</p>
+<p class="cost">11px in the calmest grey is close to unread.</p>
+<div class="frame v5">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+    <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+  </div>
+</div>
+</div>
+
+<div class="opt">
+<div class="opthead"><span class="num">06</span><span class="name">Above the button</span></div>
+<p class="claim">Red team: the adjacency is the problem, so remove it. The reassurance sits between the checks and the button; the footer goes back to one line.</p>
+<p class="cost">Puts a caveat in the last gap before the button, and re-busies the space a prior round calmed.</p>
+<div class="frame v6">
+  <div class="checks"><div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div></div>
+  <div class="above">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</div>
+  <button class="btn">Fund this circle</button>
+  <div class="foot">
+    <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+  </div>
+</div>
+</div>
+
+</div>
+</div>
+</body>
+</html>

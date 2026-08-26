@@ -13,8 +13,10 @@ const PRICE_PER_SPACE = 3;
 const OPERATOR_EMAIL = 'support@circlists.com';
 
 // ---- Funding page (Circlists-authored, full page) --------------------------
-// One reusable page: fund a NEW space, or re-fund a DORMANT one. The re-fund
-// register acknowledges the returning champion — never new-customer pricing.
+// One reusable page: fund a NEW space, or fund a DORMANT one back awake. Under
+// succession the payer may never have funded before, so the refund mode does NOT
+// address a returning champion — it states the rule instead: whoever funds it
+// becomes its champion. Never new-customer pricing either way.
 // Tightened layout (design audit, Option 1): no card, back + X both in the top
 // bar, and the body is safe-centred with a scroll fallback so it stays centred
 // on tall screens yet never clips on the smallest phones (natural content
@@ -48,7 +50,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
   const refund = mode === 'refund';
   return (
     <WizardShell flow={refund ? null : { step: 1 }} subject={spaceName} onBack={onBack} onExit={onCancel}>
-          <WizardTitle mb={20}>{refund ? 'Bring your circle back' : 'Fund your circle'}</WizardTitle>
+          <WizardTitle mb={20}>Fund your circle</WizardTitle>
           <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8, marginBottom: 22 }}>
             <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
             <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
@@ -59,7 +61,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
               padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
             }}>Founding rate</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 22, width: '100%', maxWidth: 290 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 14, width: '100%', maxWidth: 290 }}>
             {FUND_FEATURES.map((f) => (
               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
                 <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
@@ -67,7 +69,8 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
               </div>
             ))}
           </div>
-          <Button variant="primary" full size="lg" onClick={onFund}>{refund ? 'Re-fund this circle' : 'Fund this circle'}</Button>
+          <p style={{ margin: '0 0 14px', width: '100%', maxWidth: 34 + 'ch', fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>Stop anytime — the circle sleeps, nothing is lost, and whoever funds it next champions it.</p>
+          <Button variant="primary" full size="lg" onClick={onFund}>Fund this circle</Button>
           <div style={{
             margin: '14px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
             fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', lineHeight: 1.5,
@@ -76,7 +79,6 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
               <Icon name="lock" size={13} style={{ flex: 'none' }} />
               <span>Billed to {user ? user.email : 'your account'}</span>
             </span>
-            <span>Cancel anytime</span>
           </div>
     </WizardShell>
   );

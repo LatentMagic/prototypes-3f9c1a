@@ -172,6 +172,19 @@ const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
     return () => { scroller.style.overflow = prevOverflow; };
   }, []);
 
+  // Staging buttons act on the app behind us, and some of those acts are
+  // animated (the returns bar arriving, a card landing). Firing while the modal
+  // is still on screen means the motion plays behind a card. So: intercept the
+  // click, play our exit, then replay the click on a clear screen. One place,
+  // every staging button, nothing to configure.
+  const onBodyClickCapture = (e) => {
+    const btn = e.target.closest && e.target.closest('.circ-config-btn-secondary');
+    if (!btn || btn.dataset.replay === '1') return;
+    e.preventDefault(); e.stopPropagation();
+    setShown(false);
+    setTimeout(() => { btn.dataset.replay = '1'; btn.click(); }, 190);
+  };
+
   return (
     <div className="circ-config-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -185,7 +198,7 @@ const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
           <button onClick={onClose} aria-label="Close" className="circ-config-close"><Icon name="x" size={18} /></button>
         </div>
 
-        <div className="circ-config-body">
+        <div className="circ-config-body" onClickCapture={onBodyClickCapture}>
           <div className="circ-config-eyebrow">Review settings</div>
 
           <div className="circ-config-row">
