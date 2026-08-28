@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists</title>
+<base href="../../../" />
+<title>Circlists — A3 candidate (invite link)</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -515,7 +516,9 @@
      freeze CSS animations at frame 0. Motion lives in transitions (FAB, tabs,
      buttons) which reveal from a real prior value and never hide content. */
 
-  /* ---- the invite card (app/invite-link.jsx) ----
+  /* ---- A3 CANDIDATE ONLY: the champion sends the invitation themselves ----
+     Carries docs/specs/a3-invite-link/cand-a3-invite.jsx. Nothing above this
+     block differs from circlists.html.
      ONE shape for the card's whole life: the field with its act beside it, then
      the link's box beneath, always present. No second face, so no swap.
      The label is rendered by the card, NOT by the house Field, so the row holds
@@ -525,8 +528,8 @@
      reaches into a house primitive.
      The field row STACKS and its button goes full-width while the card is narrow
      — a container query on the card, not a posture flag, so it holds at 320, in
-     the app frame and on any desktop canvas. The button's width rides a custom
-     property because the house Button sets width inline.
+     the 402px app frame and on any desktop canvas. The button's width rides a
+     custom property because the house Button sets width inline.
      THE BOX IS THE COPY CONTROL, so it takes a control's shape: bordered box,
      copy glyph on the right, hover and press states from the house secondary,
      focus ring, the full 44px hit target. There is no Copy button — a second
@@ -537,23 +540,21 @@
      Ready: the box plays .circ-glow, the app's arrival wash — the same signal a
      card that just landed plays. It is the readiness cue, so the radius is
      brought down to the box's own; the wash never rests. */
-  .circ-invite-card { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-5); container-type: inline-size; }
-  .circ-invite-row { display: flex; flex-direction: column; gap: var(--space-2); }
-  .circ-invite-field { flex: 1; min-width: 0; }
-  .circ-invite-field > div { margin-bottom: 0 !important; }
-  .circ-invite-act { display: flex; }
-  .circ-invite-linkhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: var(--space-4) 0 6px; }
-  .circ-invite-life { font: 400 12.5px var(--font-sans); color: var(--color-fg-3); flex-shrink: 0; }
-  .circ-invite-box { width: 100%; display: flex; align-items: center; gap: 9px; padding: 9px 12px; min-height: 44px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); transition: background var(--duration-base) var(--ease-quiet), border-color var(--duration-base) var(--ease-quiet); }
-  .circ-invite-url { flex: 1; min-width: 0; font: 500 13px/1.35 var(--font-mono); color: var(--color-fg-1); word-break: break-all; text-align: left; }
-  .circ-invite-copy { cursor: pointer; text-align: left; font: inherit; }
-  .circ-invite-copy:hover { background: var(--color-surface-sunken); border-color: var(--color-border-strong); }
-  .circ-invite-copy:active { background: #E8E8E5; }
-  .circ-invite-glyph { display: inline-flex; flex-shrink: 0; color: var(--color-fg-3); transition: color var(--duration-base) var(--ease-quiet); }
-  .circ-invite-copy:hover .circ-invite-glyph, .circ-invite-copy:focus-visible .circ-invite-glyph { color: var(--color-fg-1); }
-  .circ-invite-box[data-dim] { background: var(--color-surface-sunken); border-color: var(--color-border-2); }
-  .circ-invite-box.circ-glow, .circ-invite-box.circ-glow::after { border-radius: var(--radius-md); }
-  @container (min-width: 400px) { .circ-invite-row { flex-direction: row; align-items: flex-start; } .circ-invite-act { --circ-invite-btnw: auto; } }
+  .cand-a3-card { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-5); container-type: inline-size; }
+  .cand-a3-out { display: flex; flex-direction: column; gap: var(--space-2); }
+  .cand-a3-field { flex: 1; min-width: 0; }
+  .cand-a3-field > div { margin-bottom: 0 !important; }
+  .cand-a3-act { display: flex; }
+  .cand-a3-linkrow { width: 100%; display: flex; align-items: center; gap: 9px; padding: 9px 12px; min-height: 44px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); transition: background var(--duration-base) var(--ease-quiet), border-color var(--duration-base) var(--ease-quiet); }
+  .cand-a3-linkval { flex: 1; min-width: 0; font: 500 13px/1.35 var(--font-mono); color: var(--color-fg-1); word-break: break-all; text-align: left; }
+  .cand-a3-linkbtn { cursor: pointer; text-align: left; font: inherit; }
+  .cand-a3-linkbtn:hover { background: var(--color-surface-sunken); border-color: var(--color-border-strong); }
+  .cand-a3-linkbtn:active { background: #E8E8E5; }
+  .cand-a3-linkglyph { display: inline-flex; flex-shrink: 0; color: var(--color-fg-3); transition: color var(--duration-base) var(--ease-quiet); }
+  .cand-a3-linkbtn:hover .cand-a3-linkglyph, .cand-a3-linkbtn:focus-visible .cand-a3-linkglyph { color: var(--color-fg-1); }
+  .cand-a3-linkrow[data-dim] { background: var(--color-surface-sunken); border-color: var(--color-border-2); }
+  .cand-a3-linkrow.circ-glow, .cand-a3-linkrow.circ-glow::after { border-radius: var(--radius-md); }
+  @container (min-width: 400px) { .cand-a3-out { flex-direction: row; align-items: flex-start; } .cand-a3-act { --cand-a3-copyw: auto; } }
 
 </style>
 </head>
@@ -578,6 +579,9 @@
      ARCHITECTURE.md -> Addressable states.
      ============================================================================ -->
 <div id="root"></div>
+
+<!-- Candidate build: its own persisted-state key, so it never mixes with the main app's. -->
+<script>window.CIRC_STATE_KEY = 'circ_a3_state_v2';</script><!-- v2: the seed extension below drops Backend Pod under the member cap; a restored v1 state would still be over it and would open on "circle is full". -->
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -613,10 +617,12 @@
 <script type="text/babel" src="app/talk-return.jsx"></script>
 <script type="text/babel" src="app/talk-qa.jsx"></script>
 <script type="text/babel" src="app/talk-main.jsx"></script>
-<!-- The invite card (A3, merged 2026-08-28). Publishes window.InviteForm, which
-     app/spaces.jsx reads per render — so it loads after that file and before
-     main.jsx, which mounts on load. -->
-<script type="text/babel" src="app/invite-link.jsx"></script>
+<!-- A3 candidate overlay. Re-publishes window.InviteForm over app/spaces.jsx, and
+     wraps the shipped seed so the card is reachable at all. Both load after the
+     files they extend and before main.jsx, which mounts on load. -->
+<script type="text/babel" src="docs/specs/a3-invite-link/cand-a3-seed.jsx"></script>
+<script type="text/babel" src="docs/specs/a3-invite-link/cand-a3-invite.jsx"></script>
+
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

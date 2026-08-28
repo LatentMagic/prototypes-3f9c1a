@@ -189,7 +189,11 @@ function seedSpaces(userEmail) {
       id: 'sp-test-backend',
       name: 'TEST - Backend Pod',
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
-      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com'), M('Owen D.', 'owen.d@example.com'), M('Freya S.', 'freya.s@example.com')],
+      // Nine of ten, deliberately: this circle sits UNDER the cap so the champion's
+      // invite card is reachable here (Backend Pod is seeded at eleven and opens on
+      // "This circle is full"). Owen D. and Freya S. still appear in the reaction
+      // fixtures below as former members, which the model already allows.
+      members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com')],
       items: [
         // No reactions yet — react/skip this one to see the "first one here" moment.
         IT('https://firstonehere.com', 'Added by Sam R.', false, []),

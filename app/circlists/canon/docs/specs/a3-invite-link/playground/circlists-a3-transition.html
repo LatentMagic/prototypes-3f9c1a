@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists</title>
+<base href="../../../../" />
+<title>Circlists — A3 playground (the swap)</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -515,45 +516,95 @@
      freeze CSS animations at frame 0. Motion lives in transitions (FAB, tabs,
      buttons) which reveal from a real prior value and never hide content. */
 
-  /* ---- the invite card (app/invite-link.jsx) ----
-     ONE shape for the card's whole life: the field with its act beside it, then
-     the link's box beneath, always present. No second face, so no swap.
-     The label is rendered by the card, NOT by the house Field, so the row holds
-     only input and button and their tops align; an inline error grows downward
-     under the input without dragging the button with it. The Field's own bottom
-     margin is zeroed — inline style, hence !important, the one place this block
-     reaches into a house primitive.
-     The field row STACKS and its button goes full-width while the card is narrow
-     — a container query on the card, not a posture flag, so it holds at 320, in
-     the app frame and on any desktop canvas. The button's width rides a custom
+  /* ---- A3 CANDIDATE ONLY: the champion sends the invitation themselves ----
+     Carries docs/specs/a3-invite-link/cand-a3-invite.jsx. Nothing above this
+     block differs from circlists.html.
+     The two faces share ONE shape: a label, then a ROW of full-width box +
+     primary action beside it. Face 1 stacked (field, button on a line below)
+     while face 2 went inline (box, Copy beside it) — two layouts for the same
+     label/box/action pattern in one card. Now both are inline.
+     The label is rendered by this card, NOT by the house Field, so the row holds
+     only input and button and their tops align (`flex-start`); an inline error
+     then grows downward under the input without dragging the button with it.
+     The Field's own bottom margin is zeroed — inline style, hence !important, the
+     one place this block reaches into a house primitive.
+     The row STACKS and the button goes full-width when the card is narrow — a
+     container query on the card, not a posture flag, so it holds at 320, in the
+     402px app frame and on any desktop canvas. The button's width rides a custom
      property because the house Button sets width inline.
-     THE BOX IS THE COPY CONTROL, so it takes a control's shape: bordered box,
-     copy glyph on the right, hover and press states from the house secondary,
-     focus ring, the full 44px hit target. There is no Copy button — a second
-     filled control competing with Get a link is what made this card busy.
-     Dim: the box before there is a link — present and empty, so the shape is
-     there and nothing of value is shown until the link is real, and NOT a
-     button, because there is nothing to press.
-     Ready: the box plays .circ-glow, the app's arrival wash — the same signal a
-     card that just landed plays. It is the readiness cue, so the radius is
-     brought down to the box's own; the wash never rests. */
-  .circ-invite-card { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-5); container-type: inline-size; }
-  .circ-invite-row { display: flex; flex-direction: column; gap: var(--space-2); }
-  .circ-invite-field { flex: 1; min-width: 0; }
-  .circ-invite-field > div { margin-bottom: 0 !important; }
-  .circ-invite-act { display: flex; }
-  .circ-invite-linkhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: var(--space-4) 0 6px; }
-  .circ-invite-life { font: 400 12.5px var(--font-sans); color: var(--color-fg-3); flex-shrink: 0; }
-  .circ-invite-box { width: 100%; display: flex; align-items: center; gap: 9px; padding: 9px 12px; min-height: 44px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); transition: background var(--duration-base) var(--ease-quiet), border-color var(--duration-base) var(--ease-quiet); }
-  .circ-invite-url { flex: 1; min-width: 0; font: 500 13px/1.35 var(--font-mono); color: var(--color-fg-1); word-break: break-all; text-align: left; }
-  .circ-invite-copy { cursor: pointer; text-align: left; font: inherit; }
-  .circ-invite-copy:hover { background: var(--color-surface-sunken); border-color: var(--color-border-strong); }
-  .circ-invite-copy:active { background: #E8E8E5; }
-  .circ-invite-glyph { display: inline-flex; flex-shrink: 0; color: var(--color-fg-3); transition: color var(--duration-base) var(--ease-quiet); }
-  .circ-invite-copy:hover .circ-invite-glyph, .circ-invite-copy:focus-visible .circ-invite-glyph { color: var(--color-fg-1); }
-  .circ-invite-box[data-dim] { background: var(--color-surface-sunken); border-color: var(--color-border-2); }
-  .circ-invite-box.circ-glow, .circ-invite-box.circ-glow::after { border-radius: var(--radius-md); }
-  @container (min-width: 400px) { .circ-invite-row { flex-direction: row; align-items: flex-start; } .circ-invite-act { --circ-invite-btnw: auto; } }
+     "Invite someone else" is exempt — it is secondary and the way back, not the
+     step forward, so it stays auto-width and left-aligned throughout. */
+  .cand-a3-card { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-5); container-type: inline-size; }
+  .cand-a3-answer { animation: circ-fade 240ms var(--ease-quiet) both; }
+  .cand-a3-out { display: flex; flex-direction: column; gap: var(--space-2); }
+  .cand-a3-field { flex: 1; min-width: 0; }
+  .cand-a3-field > div { margin-bottom: 0 !important; }
+  .cand-a3-act { display: flex; }
+  .cand-a3-linkrow { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; padding: 9px 12px; min-height: 44px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); }
+  .cand-a3-linkval { flex: 1; min-width: 0; font: 500 13px/1.35 var(--font-mono); color: var(--color-fg-1); word-break: break-all; -webkit-user-select: all; user-select: all; }
+  @container (min-width: 400px) { .cand-a3-out { flex-direction: row; align-items: flex-start; } .cand-a3-act { --cand-a3-copyw: auto; } }
+
+  /* ---- PLAYGROUND ONLY: the swap (docs/specs/a3-invite-link/playground) ----
+     Everything above this block is circlists-a3.html. Below: the four
+     treatments' own motion, and the tooling strip.
+     The strip is chrome that stands in for nothing in the app, so it takes
+     height OUT of the app rather than sitting over it — --pg-strip-h is
+     measured live and fed to every full-height rule, including the app's own
+     Config launcher so it rides above the strip. Hidden, the height is 0 and
+     the app has the whole window back. */
+  :root { --pg-strip-h: 0px; --circ-vh: calc(100vh - var(--pg-strip-h)); }
+  body { padding-bottom: var(--pg-strip-h); }
+  #root { min-height: calc(100vh - var(--pg-strip-h)); }
+  .circ-stage { min-height: calc(100vh - var(--pg-strip-h)); }
+  .circ-phone { height: min(872px, calc(100vh - 48px - var(--pg-strip-h))); }
+  .circ-config-wrap { bottom: calc(16px + var(--pg-strip-h)); }
+
+  /* 01 Grows — the answer opens beneath the ask. 0fr→1fr, so no height is
+     measured and the block collapses to nothing when the address changes. */
+  .pg-grow { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 420ms var(--ease-quiet); }
+  .pg-grow[data-open] { grid-template-rows: 1fr; }
+  .pg-grow-in { overflow: hidden; min-height: 0; }
+
+  /* 02 One frame — both faces in one cell, so geometry cannot move. The link
+     face is absolute and therefore takes the input's height exactly; the URL is
+     one line and truncates because nothing is allowed to grow. */
+  .pg-frame { position: relative; flex: 1; min-width: 0; }
+  .pg-face { transition: opacity 200ms var(--ease-quiet); }
+  .pg-face > div { margin-bottom: 0 !important; }
+  .pg-face:not([data-on]) { opacity: 0; pointer-events: none; }
+  .pg-face-b { position: absolute; inset: 0; display: flex; }
+  .pg-face-b > .cand-a3-linkrow { flex: 1; height: 100%; }
+  .pg-one { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; }
+  .pg-swap { display: inline-block; animation: circ-fade 200ms var(--ease-quiet) both; }
+
+  /* 03 Settles — the leaving face fades, the wrapper's height eases (set in JS,
+     since height cannot transition to auto), the arriving face plays the app's
+     own .circ-rise. */
+  .pg-settle { overflow: hidden; }
+  .pg-leaving { opacity: 0; transition: opacity 150ms var(--ease-quiet); }
+
+  /* 04 No moment — the answer box before there is an answer: present, quiet,
+     holding the stem of the link it will complete. */
+  .cand-a3-linkrow[data-dim] { background: var(--color-surface-sunken); border-color: var(--color-border-2); }
+  .cand-a3-linkrow[data-dim] .cand-a3-linkval { color: var(--color-fg-3); }
+
+  /* The strip: dark tooling, unmistakably not product. */
+  .pg-strip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 250; background: var(--color-fg-1); color: #fff; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -8px 24px rgba(0,0,0,0.18); }
+  .pg-strip-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-right: 108px; }
+  .pg-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .pg-opts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .pg-opt { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 13px; background: transparent; border: 1px solid rgba(255,255,255,0.22); border-radius: var(--radius-md); color: rgba(255,255,255,0.74); font: 600 13px var(--font-sans); cursor: pointer; }
+  .pg-opt:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .pg-opt[data-on] { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.55); color: #fff; }
+  .pg-opt-n { font: 500 11px var(--font-mono); color: rgba(255,255,255,0.45); }
+  .pg-opt[data-on] .pg-opt-n { color: var(--color-accent-on-dark, #8BBFAD); }
+  .pg-hide { margin-left: auto; min-height: 40px; padding: 0 10px; background: transparent; border: 0; color: rgba(255,255,255,0.55); font: 500 12.5px var(--font-sans); cursor: pointer; }
+  .pg-hide:hover { color: #fff; }
+  .pg-why { margin: 8px 0 0; max-width: 92ch; font: 400 12.5px/1.5 var(--font-sans); color: rgba(255,255,255,0.62); text-wrap: pretty; }
+  .pg-cost { color: rgba(255,255,255,0.42); }
+  .pg-reopen { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 250; min-height: 40px; padding: 0 14px; background: var(--color-fg-1); color: #fff; border: 0; border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); font: 600 12.5px var(--font-sans); cursor: pointer; }
+  @media (max-width: 560px) { .pg-strip-top { padding-right: 0; } .pg-why { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .pg-grow, .pg-face, .pg-leaving, .pg-swap { transition: none !important; animation: none !important; } }
 
 </style>
 </head>
@@ -578,6 +629,13 @@
      ARCHITECTURE.md -> Addressable states.
      ============================================================================ -->
 <div id="root"></div>
+<!-- The tooling strip's own root: it is not part of the app, so it does not
+     mount inside #root. -->
+<div id="pg-strip"></div>
+
+<!-- Playground: its own persisted-state key AND its own selection key
+     (pg_a3_transition_v1), so it never mixes with the candidate's. -->
+<script>window.CIRC_STATE_KEY = 'pg_a3_transition_state_v1';</script><!-- v2: the seed extension below drops Backend Pod under the member cap; a restored v1 state would still be over it and would open on "circle is full". -->
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -613,10 +671,12 @@
 <script type="text/babel" src="app/talk-return.jsx"></script>
 <script type="text/babel" src="app/talk-qa.jsx"></script>
 <script type="text/babel" src="app/talk-main.jsx"></script>
-<!-- The invite card (A3, merged 2026-08-28). Publishes window.InviteForm, which
-     app/spaces.jsx reads per render — so it loads after that file and before
-     main.jsx, which mounts on load. -->
-<script type="text/babel" src="app/invite-link.jsx"></script>
+<!-- A3 playground overlay. Re-publishes window.InviteForm as a dispatcher over
+     four treatments of the swap, and wraps the shipped seed so the card is
+     reachable at all. Both load after the files they extend and before main.jsx. -->
+<script type="text/babel" src="docs/specs/a3-invite-link/cand-a3-seed.jsx"></script>
+<script type="text/babel" src="docs/specs/a3-invite-link/playground/pg-a3-transition.jsx"></script>
+
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

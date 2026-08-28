@@ -1,7 +1,12 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-08-19",
+  "generated": "2026-08-28",
   "tickets": [
+    { "id": "A3", "slug": "a3-invite-link", "name": "Invite link", "state": "active", "touched": "2026-08-28",
+      "entries": [
+        { "kind": "candidate", "name": "Invite link candidate", "path": "docs/specs/a3-invite-link/circlists-a3.html", "on": false, "off": "Merged into the main build 2026-08-28.", "note": "The champion copies a link and sends it themselves. The app mails nothing." },
+        { "kind": "playground", "name": "The swap", "path": "docs/specs/a3-invite-link/playground/circlists-a3-transition.html", "note": "Four treatments of the moment the ask becomes a link: Grows, One frame, Settles, No moment." }
+      ] },
     { "id": "H3", "slug": "h3-champion-exit-line", "name": "Champion exit line", "state": "active", "touched": "2026-08-24",
       "entries": [
         { "kind": "playground", "name": "The footer's two voices (v3)", "path": "docs/specs/h3-champion-exit-line/playground/wb-footer-voices-v3.html", "note": "Head-to-head: 05 at 12px, 06 with even margins, and the hybrid." },

@@ -3,6 +3,22 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## The champion sends the invitation themselves — 2026-08-28
+
+- **The app no longer mails an invitation.** The champion enters a member's email address,
+  presses **Get a link**, and the card hands back a link bound to that address — to copy and
+  send in their own words. There is no outbound mail and no control that offers any.
+- **The link is the control that copies it.** It sits in its own box beneath the field, empty
+  until there is a link and clickable once there is; pressing it takes the link. The box
+  plays the app's arrival wash the moment the link is ready.
+- **Nothing is remembered.** No invited list, no pending row, no delivery state, no revoke
+  and no resend. A link is valid for 30 days; going again mints a fresh one for the same
+  address, which is the recovery route. A member appears in the roster when they join.
+- **A link only works for the address it was made for**, and it takes that person straight
+  into the circle.
+- Landed as a candidate build first (A3), merged after ratification; the candidate entry
+  stays on the record, switched off.
+
 ## A champion can resume funding before it ends — 2026-08-19
 
 - **Cancelling is no longer one-way while the paid period runs.** The ending funding card

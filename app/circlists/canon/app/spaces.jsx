@@ -208,6 +208,15 @@ const fundingStateLine = (f) => {
   return null;
 };
 
+// ---- Invite card (champion, circle not full) -------------------------------
+// The card itself lives in app/invite-link.jsx and is read per render off
+// window, like every other droppable module: the champion enters an address, the
+// card hands back a link bound to it, and the app mails nothing. Absent that
+// module the members surface simply offers no invite — which is how the homepage
+// demo omits it, the gate covering circle settings so the surface is never
+// reached there.
+// The circle-full panel stays in MembersSurface: it is not part of the card.
+
 // ---- Members surface (in shell) --------------------------------------------
 // Reached via "N members" in the space header. Lists members + "Championed by X".
 // Role-conditioned: champion sees Invite + Manage funding; a non-champion sees
@@ -219,18 +228,19 @@ const fundingStateLine = (f) => {
 // non-champion sees — which is what marks it as yours without a label. Scope it
 // strictly to YOUR MEMBERSHIP OF THIS CIRCLE; it is not a settings drawer.
 const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onRename, onRemoveMember, onStartCircle, onLeave }) => {
-  const [email, setEmail] = React.useState('');
-  const [err, setErr] = React.useState(null);
-  const [sentTo, setSentTo] = React.useState(null);
+  // onInvite is no longer consumed: getting a link does not add a member. A row
+  // appearing the moment you get one is a delivery confirmation, and the app
+  // makes none — someone appears in the roster when they join, outside the app.
+  // main.jsx still passes it; the states register uses the same path.
   const full = space.members.length >= SPACE_CAP;
+  // Read per render, like every other droppable module (app/invite-link.jsx).
+  const Invite = window.InviteForm;
   // No one holds the role: the champion's account was deleted, so their roster row
   // and crown are gone and NO management is offered to anybody until the paid
   // period runs out. Reading, adding and reacting are untouched.
   const unchampioned = !space.champion;
   const funding = space.funding || { state: 'active' };
   const fundingLine = fundingStateLine(funding);
-  const ref = React.useRef(null);
-  React.useEffect(() => { if (isChampion && !full) { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); } }, [isChampion, full]);
 
   // Rename (champion only) — opens a focused dialog
   const [renaming, setRenaming] = React.useState(false);
@@ -247,15 +257,6 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
     window.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('mousedown', onDoc); window.removeEventListener('keydown', onKey); };
   }, [menuFor]);
-
-  const submit = (e) => {
-    e.preventDefault();
-    const v = email.trim().toLowerCase();
-    if (!EMAIL_RE.test(v)) { setErr('Enter a valid email address.'); return; }
-    const already = space.members.some(m => (m.email || '').toLowerCase() === v);
-    if (already) { setErr('That person is already a member of this circle.'); return; }
-    setErr(null); setSentTo(email.trim()); setEmail(''); onInvite && onInvite(v);
-  };
 
   return (
     <ContentPage>
@@ -351,26 +352,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             }}>Start another circle</button> any time.</p>
           </div>
         ) : (
-          <form onSubmit={submit} noValidate style={{
-            background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-            borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', marginBottom: 'var(--space-5)',
-          }}>
-            <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-fg-1)', marginBottom: 4 }}>Invite a member</div>
-            <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)' }}>
-              Everyone you invite joins free — you fund the circle for all of them.
-            </p>
-            <Field ref={ref} label="Email" name="invite-email" type="email" placeholder="name@example.com"
-              value={email} onChange={(e) => { setEmail(e.target.value); if (err) setErr(null); if (sentTo) setSentTo(null); }} error={err} />
-            {sentTo && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, margin: '-8px 0 16px',
-                fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>
-                <Icon name="check" size={16} color="var(--color-accent)" /> Invite sent to {sentTo}.
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button type="submit" variant="primary" icon={<Icon name="share" size={16} color="#fff" />}>Send invite</Button>
-            </div>
-          </form>
+          Invite ? <Invite space={space} /> : null
         )
       ) : unchampioned ? (
         /* Where the crown was: nobody champions this circle, how long it stays
@@ -721,6 +703,8 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
 // Rendered inside the app shell (rail + header present; header carries no space
 // name). A calm empty-state inviting the user to create a space, plus a quiet
 // line acknowledging invitations. No funding language lives here.
+// The line does NOT promise email: the app mails nothing, and an invitation is a
+// link the champion sends by whatever means they choose (app/invite-link.jsx).
 const NoSpaceHome = ({ onCreate }) => (
   <main style={{ flex: 1, width: '100%' }}>
     <div style={{
@@ -737,8 +721,8 @@ const NoSpaceHome = ({ onCreate }) => (
       </div>
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, lineHeight: 1.5,
-        color: 'var(--color-fg-3)', margin: 'var(--space-8) auto 0', maxWidth: 380,
-      }}>Waiting on an invite? It’ll arrive by email and bring you straight in.</p>
+        color: 'var(--color-fg-3)', margin: 'var(--space-8) auto 0', maxWidth: 380, textWrap: 'balance',
+      }}>Waiting on an invite? The champion will send a link.</p>
     </div>
   </main>
 );
