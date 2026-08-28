@@ -17,4 +17,9 @@
 // setting it here would silently override the wrapper.
 // ============================================================================
 window.CIRC_FORCE_GATE = true;
-window.CIRC_STATE_KEY = 'circ_demo_state_v1';
+// v2: bumped when the seed gained the returns bar's marks (talkSeenAt behind the
+// newest turn on the watched read cards). A persisted v1 predates Discourse
+// entirely, so it restored a state with no talk and no watching and the bar could
+// not appear. Bump this key whenever the seed gains state a returning visitor
+// would otherwise never see.
+window.CIRC_STATE_KEY = 'circ_demo_state_v2';

@@ -82,6 +82,27 @@ Nothing registers a skill automatically in this environment; the built-in skill 
   `demo/demo-seed.jsx`. They live in `uploads/` for historical reasons and must
   never be swept.
 
+## Seed data — the standing rule
+- **The homepage demo has its own seed, and it does not inherit.** `demo/demo-seed.jsx`
+  is loaded *instead of* `app/seed-data.jsx` and is a hand-written parallel seed, not an
+  extension of it. Everything else in the demo inherits for free — modules, CSS,
+  components — so it is easy to believe the seed does too. It does not.
+- **So: any change to seed data is two changes.** Whenever a feature needs seed state to
+  be *visible* — a field, a mark, a flag, a relationship — author it in the demo seed in
+  the same turn, with the demo's own content. **Do this without asking**; it is not a new
+  decision, it is finishing the one already ratified. Only the *content* of the demo seed
+  (which cards, whose words) is a content decision, and the existing two circles set the
+  register to follow.
+- **Then bump `window.CIRC_STATE_KEY` in `demo/demo-overlay.jsx`.** The demo persists
+  state under that key, so a returning visitor restores a state authored before the
+  feature existed and sees nothing — the seed edit is real and invisible. A seed change
+  that adds state is not landed until the key is bumped, with a one-line note saying what
+  the bump was for.
+- **The failure mode is silence.** A feature missing from the demo seed does not error;
+  the surface simply never appears, and stays that way until someone happens to look.
+  When a feature's affordance is absent from the demo, suspect the seed and the state key
+  before the feature.
+
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a
   restore, not a "small" wording change, not a choice between two options you have already

@@ -211,7 +211,7 @@ const EmptyState = ({ tab, onStartCircle }) => {
     <div style={{
       textAlign: 'center', minHeight: 320, padding: '72px 24px',
       display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      gap: 'var(--space-3)',
+      gap: 28,
     }}>
       <h2 style={{
         fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-3xl)',
@@ -224,7 +224,7 @@ const EmptyState = ({ tab, onStartCircle }) => {
       {/* Door: quiet line, only the verb phrase is the link. */}
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
-        color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0',
+        color: 'var(--color-fg-3)', margin: 0,
       }}>When you want a circle of your own, <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
         backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
       }}>start one</button>.</p>

@@ -142,9 +142,13 @@ function seedSpaces(userEmail) {
   // ---- Discourse (app/talk-*.jsx) ------------------------------------------
   // Thoughts and conversations on a handful of cards, so the feature is present
   // rather than an empty affordance. Same two rules as the rest of this file: no
-  // third-party request, nothing broken. Marks sit at NOW — the demo lands CAUGHT
-  // UP, so no turn wears the unseen tab and the returns bar stays folded until
-  // words arrive while the visitor is here.
+  // third-party request, nothing broken. Marks sit at NOW except on the three
+  // WATCHED READ cards, whose marks sit behind their newest turn so the returns
+  // bar stands on entry with rows — Backend Pod reads two conversations, Tuesday
+  // Book Club one, so the plural and the singular are both on show. This is the
+  // bar's only route into the demo: a visitor will not watch a card themselves.
+  // The liveliness landing is untouched and still caught up (see below) — that
+  // runs off lastSeenAt, the bar runs off talkSeenAt.
   // martinfowler.com is deliberately left thought-less: it is the visitor's own
   // card, so its empty band is where they can write one.
   {
@@ -167,7 +171,7 @@ function seedSpaces(userEmail) {
       talk: [T('dn1', 'Priya N.', 6, 'The stub-resolver drawing is the one that finally made the caching layer make sense to me.')],
     });
     set('https://go.dev/blog/pipelines', {
-      watching: true,
+      watching: true, talkSeenAt: NOW - 34 * H,
       thought: { by: 'Marcus T.', text: 'The fan-in section is the one to slow down for. It explains our worker-pool shutdown bug.', at: NOW - 40 * H },
       talk: [
         T('gp1', 'Priya N.', 30, 'The done-channel pattern here is exactly what the ingest service is missing. We cancel by killing the process.'),
@@ -176,7 +180,7 @@ function seedSpaces(userEmail) {
       ],
     });
     set('https://www.kernel.org/doc/html/latest/process/submitting-patches.html', {
-      watching: true,
+      watching: true, talkSeenAt: NOW - 24 * H,
       talk: [
         T('kp1', 'Lena P.', 22, 'The changelog section is the part our own reviews keep failing on.'),
         T('kp2', 'Priya N.', 20, 'Yes — one logical change per patch would fix most of our review churn.', 'kp1'),
@@ -187,7 +191,7 @@ function seedSpaces(userEmail) {
       talk: [T('qn1', 'Elif K.', 11, 'The paragraph on quiet endings is the one I would read aloud.')],
     });
     set('https://www.gutenberg.org/files/2701/2701-h/2701-h.htm', {
-      watching: true,
+      watching: true, talkSeenAt: NOW - 64 * H,
       thought: { by: 'Joe M.', text: 'Chapters 32 to 35 are the ones to come with marked up.', at: NOW - 70 * H },
       talk: [
         T('md1', 'Priya N.', 60, 'The cetology chapter is a joke that lasts forty pages and I am here for it.'),

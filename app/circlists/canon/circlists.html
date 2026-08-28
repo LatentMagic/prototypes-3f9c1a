@@ -166,11 +166,11 @@
   .circ-dormant-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px 20px; text-align: center; }
   .circ-dormant-col { width: 100%; max-width: 470px; display: flex; flex-direction: column; align-items: center; }
   .circ-dormant-title { font-family: var(--font-sans); font-weight: 600; font-size: clamp(23px, 7cqi, 32px); line-height: 1.18; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0; text-wrap: balance; }
-  .circ-dormant-body { font-family: var(--font-sans); font-weight: 400; font-size: clamp(14.5px, 4.2cqi, 16px); line-height: 1.6; color: var(--color-fg-2); margin: 12px 0 0; text-wrap: balance; }
-  .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-5) 0 0; max-width: 52ch; text-wrap: pretty; }
+  .circ-dormant-body { font-family: var(--font-sans); font-weight: 400; font-size: clamp(14.5px, 4.2cqi, 16px); line-height: 1.6; color: var(--color-fg-2); margin: var(--space-8) 0 0; text-wrap: balance; }
+  .circ-dormant-cap { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--color-fg-3); margin: var(--space-8) 0 0; max-width: 52ch; text-wrap: pretty; }
   /* DOM order is Leave then Fund: the row uses it as-is (Leave left), the stack
      reverses it so Fund sits on top. One markup path, no second component. */
-  .circ-dormant-actions { display: flex; flex-direction: column-reverse; align-items: center; gap: var(--space-3); width: 100%; margin-top: 28px; }
+  .circ-dormant-actions { display: flex; flex-direction: column-reverse; align-items: center; gap: var(--space-3); width: 100%; margin-top: var(--space-8); }
   /* Suspended: same row, same boxed exit as asleep — one treatment of Leave.
      The right-hand slot holds the contact link (a mailto is not a primary). */
   .circ-dormant-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 12px; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; font-family: var(--font-sans); font-weight: 600; font-size: 15px; white-space: nowrap; }

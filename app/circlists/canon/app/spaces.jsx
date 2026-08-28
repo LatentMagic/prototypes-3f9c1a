@@ -34,7 +34,7 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
       {eyebrow && (
         <div style={{
           fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
-          textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 16,
+          textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 'var(--space-8)',
         }}>{eyebrow}</div>
       )}
       <h1 style={{
@@ -43,7 +43,7 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
       }}>{title}</h1>
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.55,
-        color: 'var(--color-fg-2)', margin: '14px auto 0', maxWidth: 400,
+        color: 'var(--color-fg-2)', margin: 'var(--space-8) auto 0', maxWidth: 400,
       }}>{body}</p>
       <div style={{ marginTop: 'var(--space-8)' }}>
         <Button variant="primary" size="lg" onClick={onAction}>{actionLabel}</Button>
@@ -737,7 +737,7 @@ const NoSpaceHome = ({ onCreate }) => (
       </div>
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, lineHeight: 1.5,
-        color: 'var(--color-fg-3)', margin: '24px auto 0', maxWidth: 380,
+        color: 'var(--color-fg-3)', margin: 'var(--space-8) auto 0', maxWidth: 380,
       }}>Waiting on an invite? It’ll arrive by email and bring you straight in.</p>
     </div>
   </main>
