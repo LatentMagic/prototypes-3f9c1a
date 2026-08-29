@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Circlists — playgrounds</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;text-align:left}
+.wrap{max-width:840px;margin:0 auto;padding:48px 28px 96px}
+header.top{display:flex;align-items:center;gap:12px;padding-bottom:20px;border-bottom:1px solid var(--color-border-1)}
+header.top img{height:18px;display:block}
+header.top em{font-style:normal;font-size:var(--text-lg);font-weight:var(--weight-medium);color:var(--color-fg-3);letter-spacing:var(--tracking-tight)}
+header.top .n{margin-left:auto;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3)}
+.lede{margin:26px 0 30px;max-width:54ch;color:var(--color-fg-2);font-size:var(--text-md);line-height:var(--leading-relaxed);text-wrap:pretty}
+.shelf{display:grid}
+.tk{display:grid;grid-template-columns:62px 1fr auto 62px;align-items:center;gap:18px;width:100%;padding:17px 6px;border-top:1px solid var(--color-border-2);min-height:var(--tap-target-min);cursor:pointer;transition:background var(--duration-fast) var(--ease-quiet)}
+.shelf .tk:last-child{border-bottom:1px solid var(--color-border-2)}
+.tk:hover{background:var(--color-surface-sunken)}
+.tk:hover .tkname{color:var(--color-accent)}
+.tkid{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3);letter-spacing:var(--tracking-wide)}
+.tkname{font-size:var(--text-xl);font-weight:var(--weight-medium);letter-spacing:var(--tracking-tight)}
+.tkmeta{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3);white-space:nowrap}
+.tkdate{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3);text-align:right;white-space:nowrap}
+.fold{margin-top:34px;border-top:1px solid var(--color-border-1);padding-top:12px}
+.fold summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:12px;font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-fg-3);min-height:36px}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary::after{content:'show';color:var(--color-accent);text-transform:none;letter-spacing:0;margin-left:auto}
+.fold[open] summary::after{content:'hide'}
+.fold .shelf{padding-bottom:8px}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-fg-3);margin:0 0 26px;min-height:44px;cursor:pointer}
+.back:hover{color:var(--color-fg-1)}
+.tkhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.tkhead h1{font-size:var(--text-3xl)}
+.tkhead .tkid{font-size:var(--text-sm)}
+.path{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3);margin:6px 0 0}
+.group{margin-top:38px}
+.grouphead{display:flex;align-items:baseline;gap:10px;font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-fg-3);padding-bottom:10px}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:20px;padding:16px 6px;border-top:1px solid var(--color-border-2);min-height:var(--tap-target-min);transition:background var(--duration-fast) var(--ease-quiet)}
+.rows .row:last-child{border-bottom:1px solid var(--color-border-2)}
+.row:hover{background:var(--color-surface-sunken)}
+.row:hover .rname{color:var(--color-accent)}
+.rname{font-size:var(--text-md);font-weight:var(--weight-medium);display:block}
+.rnote{display:block;color:var(--color-fg-2);font-size:var(--text-sm);margin-top:3px;text-wrap:pretty}
+.rpath{display:block;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-fg-3);margin-top:6px;overflow-wrap:anywhere}
+.open{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-accent);white-space:nowrap}
+.cand{background:var(--color-surface);border-left:2px solid var(--color-accent);padding-left:16px}
+.empty{padding:16px 6px;border-top:1px solid var(--color-border-2);border-bottom:1px solid var(--color-border-2);color:var(--color-fg-3);font-size:var(--text-sm);text-wrap:pretty}
+.held{margin:20px 0 0;font-size:var(--text-sm);color:var(--color-fg-3);text-wrap:pretty;max-width:64ch}
+.held code{font-family:var(--font-mono);font-size:var(--text-xs)}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--color-border-1);color:var(--color-fg-3);font-size:var(--text-sm);text-wrap:pretty;max-width:62ch}
+footer code{font-family:var(--font-mono);font-size:var(--text-xs)}
+@media (max-width:620px){.wrap{padding:28px 18px 72px}.tk{grid-template-columns:1fr auto;gap:3px 12px;padding:14px 6px}.tkid{grid-column:1;font-size:10px}.tkdate{grid-row:1;grid-column:2;align-self:center}.tkname{grid-column:1/-1}.tkmeta{grid-column:1/-1}}
+</style>
+</head><body>
+<div class="wrap">
+<header class="top"><img src="brand/assets/circlists-wordmark.svg" alt="Circlists" /><em>playgrounds</em><span class="n" id="n"></span></header>
+<div id="out"></div>
+<footer>Rendered from <code>playgrounds.json</code>. Every entry shows unless it carries <code>"on": false</code> — the row stays in the file for the record and stops appearing here. A rig lives in its ticket folder; ask for a change and it lands in the manifest.</footer>
+</div>
+<script>
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const el=h=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild};
+const out=document.getElementById('out');
+const MONTH=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const shortDate=s=>{if(!s)return '';const[y,m,d]=s.split('-');return (+d)+' '+MONTH[+m-1]};
+const live=a=>(a||[]).filter(e=>e.on!==false);
+let DATA=null;
+
+function counts(t){
+  const l=live(t.entries), a=live(t.archive);
+  const c=l.filter(e=>e.kind==='candidate').length, r=l.length-c+a.length;
+  const bits=[]; if(c)bits.push(c+' candidate'); if(r)bits.push(r+' rig'+(r>1?'s':''));
+  return {c,r,bits};
+}
+function tkRow(t){
+  const {bits}=counts(t);
+  const b=el('<button class="tk"><span class="tkid">'+esc(t.id)+'</span><span class="tkname">'+esc(t.name)+
+    '</span><span class="tkmeta">'+(bits.length?esc(bits.join(' · ')):'documents only')+
+    '</span><span class="tkdate">'+esc(shortDate(t.touched))+'</span></button>');
+  b.addEventListener('click',()=>ticket(t));
+  return b;
+}
+function shelf(list){const s=el('<div class="shelf"></div>');list.forEach(t=>s.appendChild(tkRow(t)));return s}
+function fold(label,n,node){
+  const d=el('<details class="fold"></details>');
+  d.appendChild(el('<summary><span>'+esc(label)+'</span><span>'+n+'</span></summary>'));
+  d.appendChild(node);return d;
+}
+function home(){
+  out.innerHTML='';
+  const active=DATA.tickets.filter(t=>t.state==='active');
+  const byDate=(a,b)=>String(b.touched||'').localeCompare(String(a.touched||''));
+  const playable=active.filter(t=>counts(t).bits.length).sort(byDate);
+  const docsOnly=active.filter(t=>!counts(t).bits.length).sort(byDate);
+  const archived=DATA.tickets.filter(t=>t.state==='archive');
+  out.appendChild(el('<p class="lede">Everything playable in this project, by ticket, most recently touched first.</p>'));
+  out.appendChild(shelf(playable));
+  if(docsOnly.length)out.appendChild(fold('Documents only',docsOnly.length,shelf(docsOnly)));
+  if(archived.length)out.appendChild(fold('Archive',archived.length,shelf(archived)));
+}
+function rowHtml(e){
+  return '<a class="row'+(e.kind==='candidate'?' cand':'')+'" href="'+esc(e.path)+'"><span><span class="rname">'+
+    esc(e.name)+'</span>'+(e.note?'<span class="rnote">'+esc(e.note)+'</span>':'')+
+    '<span class="rpath">'+esc(e.path)+'</span></span><span class="open">Open</span></a>';
+}
+function group(label,entries){
+  const g=el('<section class="group"></section>');
+  g.appendChild(el('<div class="grouphead"><span>'+esc(label)+'</span><span>'+entries.length+'</span></div>'));
+  const rows=el('<div class="rows"></div>');
+  entries.forEach(e=>rows.appendChild(el(rowHtml(e))));
+  g.appendChild(rows);return g;
+}
+function ticket(t){
+  out.innerHTML='';
+  const back=el('<button class="back">&larr; All tickets</button>');
+  back.addEventListener('click',home);
+  out.appendChild(back);
+  out.appendChild(el('<div class="tkhead"><h1>'+esc(t.name)+'</h1><span class="tkid">'+esc(t.id)+'</span></div>'));
+  out.appendChild(el('<p class="path">'+esc((t.base||'docs/specs/')+(t.folder||t.slug)+'/')+
+    (t.touched?' · touched '+esc(shortDate(t.touched)):'')+'</p>'));
+  const l=live(t.entries);
+  const cands=l.filter(e=>e.kind==='candidate'), rigs=l.filter(e=>e.kind!=='candidate');
+  if(cands.length)out.appendChild(group('Candidate build',cands));
+  if(rigs.length)out.appendChild(group('Playgrounds',rigs));
+  if(!l.length)out.appendChild(el('<p class="empty">No playable entry. The record for this ticket is documents — handoffs, prompts and modules in the folder above.</p>'));
+  const arch=live(t.archive);
+  if(arch.length){const g=group('Spent rigs',arch);g.classList.add('fold');
+    const d=el('<details class="fold"></details>');
+    d.appendChild(el('<summary><span>Spent rigs</span><span>'+arch.length+'</span></summary>'));
+    const rows=el('<div class="rows"></div>');arch.forEach(e=>rows.appendChild(el(rowHtml(e))));
+    d.appendChild(rows);out.appendChild(d);}
+  const off=[].concat(t.entries||[],t.archive||[]).filter(e=>e.on===false);
+  if(off.length)out.appendChild(el('<p class="held">'+off.length+' entr'+(off.length>1?'ies':'y')+
+    ' held back in <code>playgrounds.json</code>: '+esc(off.map(e=>e.name).join(', '))+'.</p>'));
+  window.scrollTo(0,0);
+}
+fetch('playgrounds.json').then(r=>r.json()).then(d=>{
+  DATA=d;
+  let c=0,r=0;DATA.tickets.forEach(t=>{const k=counts(t);c+=k.c;r+=k.r});
+  document.getElementById('n').textContent=c+' candidates · '+r+' rigs';
+  home();
+}).catch(()=>{out.appendChild(el('<p class="empty">Could not load playgrounds.json.</p>'))});
+</script>
+</body></html>

@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="../../../" />
+<title>Sidebar empty state — in situ</title>
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#EDEDEA;color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+
+  .pg{max-width:1160px;margin:0 auto;padding:48px 32px 96px}
+  .pg-head{max-width:780px;margin:0 0 8px}
+  .pg-kicker{font-family:var(--font-mono);font-weight:500;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-fg-3);margin:0 0 12px}
+  .pg-title{font-family:var(--font-sans);font-weight:600;font-size:var(--text-3xl);letter-spacing:-0.02em;line-height:1.15;margin:0 0 12px}
+  .pg-lede{font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:1.6;color:var(--color-fg-2);margin:0}
+  .pg-lede strong{color:var(--color-fg-1);font-weight:600}
+
+  .opt{margin-top:48px}
+  .opt-cap{margin:0 0 16px;max-width:820px}
+  .opt-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:var(--radius-pill);background:var(--color-accent);color:#fff;font-family:var(--font-mono);font-weight:600;font-size:12px;margin-right:10px;vertical-align:middle}
+  .opt-num.rec{background:var(--color-fg-1)}
+  .opt.chosen{position:relative}
+  .opt.chosen .app{outline:2px solid var(--color-accent);outline-offset:6px;border-radius:14px}
+  .opt-tag.chosen{color:var(--color-accent)}
+  .opt-name{font-family:var(--font-sans);font-weight:600;font-size:18px;color:var(--color-fg-1)}
+  .opt-tag{font-family:var(--font-mono);font-weight:500;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-accent);margin-left:10px;vertical-align:middle}
+  .opt-why{font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:1.6;color:var(--color-fg-2);margin:8px 0 0}
+  .opt-why strong{color:var(--color-fg-1);font-weight:600}
+
+  /* ---- real app shell ---- */
+  .app{height:520px;background:var(--color-canvas);border:1px solid var(--color-border-1);border-radius:14px;box-shadow:0 14px 34px rgba(10,10,10,0.08);overflow:hidden;display:flex}
+  .rail{width:240px;flex-shrink:0;background:var(--color-surface-sunken);border-right:1px solid var(--color-border-2);padding:20px 12px;display:flex;flex-direction:column}
+  .rail-lock{display:flex;align-items:center;padding:4px 8px 20px}
+  .rail-lock img{height:20px;width:auto;display:block}
+  .rail-label{font-family:var(--font-sans);font-weight:600;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-fg-3);padding:0 14px 8px}
+  .spacer{flex:1}
+  .newcircle{margin-top:8px;text-align:left;cursor:pointer;background:transparent;border:0;padding:11px 12px 11px 14px;border-radius:var(--radius-md);min-height:44px;font-family:var(--font-sans);font-weight:500;font-size:13px;color:var(--color-fg-2);display:flex;align-items:center;gap:8px}
+  .newcircle:hover{background:var(--color-surface);color:var(--color-fg-1)}
+  .newcircle svg{flex-shrink:0}
+
+  .rail-foot{border-top:1px solid var(--color-border-2);margin-top:12px;padding-top:8px}
+  .acct{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;background:transparent;border:0;padding:8px;border-radius:var(--radius-md);min-height:44px}
+  .acct:hover{background:var(--color-surface)}
+  .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-weight:600;font-size:11px;background:var(--color-accent);color:#fff}
+  .acct-text{min-width:0;flex:1}
+  .acct-name{display:block;font-family:var(--font-sans);font-weight:600;font-size:13px;color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acct-email{display:block;font-family:var(--font-sans);font-weight:400;font-size:12px;color:var(--color-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chev{flex-shrink:0;color:var(--color-fg-3)}
+
+  .col{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:56px;flex-shrink:0;background:var(--color-surface);border-bottom:1px solid var(--color-border-2)}
+  .main{flex:1;min-height:0;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+  .main::-webkit-scrollbar{width:0}
+  .empty{max-width:440px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  .empty h1{font-family:var(--font-sans);font-weight:600;font-size:var(--text-3xl);line-height:1.18;letter-spacing:-0.02em;color:var(--color-fg-1);margin:0}
+  .empty .create{margin-top:32px;display:inline-flex;align-items:center;gap:8px;background:var(--color-accent);color:#fff;border:0;cursor:pointer;font-family:var(--font-sans);font-weight:600;font-size:15px;padding:13px 22px;border-radius:var(--radius-md);min-height:48px}
+  .empty .create:hover{background:var(--color-accent-hover)}
+  .empty .invite{font-family:var(--font-sans);font-weight:500;font-size:14px;line-height:1.5;color:var(--color-fg-3);margin:24px 0 0;max-width:380px}
+
+  /* ---- treatment-specific rail bits ---- */
+  /* B: empty row in the list's own language */
+  .empty-row{padding:9px 14px 14px;font-family:var(--font-sans);font-weight:400;font-size:13px;line-height:1.5;color:var(--color-fg-3)}
+  /* C: create promoted into the circles region */
+  .create-slot{text-align:left;cursor:pointer;background:transparent;border:0;padding:11px 12px 11px 14px;border-radius:var(--radius-md);min-height:44px;font-family:var(--font-sans);font-weight:600;font-size:14px;color:var(--color-accent);display:flex;align-items:center;gap:10px}
+  .create-slot:hover{background:var(--color-surface)}
+  .create-slot svg{flex-shrink:0}
+  /* E/F/G: boxed middle ground between A and D */
+  .box-help{margin:2px 0 10px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);padding:10px 12px;font-family:var(--font-sans);font-weight:400;font-size:13px;line-height:1.5;color:var(--color-fg-3)}
+  /* D: integrated helper line, no border/box */
+  .rail-help{font-family:var(--font-sans);font-weight:400;font-size:12.5px;line-height:1.5;color:var(--color-fg-3);padding:10px 14px 0}
+  .rail-help.even{padding-top:16px}
+  .rail-help.close{padding-top:2px}
+  /* L: helper pinned to the foot of the rail */
+  .rail-help-pin{font-family:var(--font-sans);font-weight:400;font-size:12.5px;line-height:1.5;color:var(--color-fg-3);padding:0 14px 12px}
+</style>
+</head>
+<body>
+<div class="pg">
+  <header class="pg-head">
+    <p class="pg-kicker">App shell · no circles · in situ</p>
+    <h1 class="pg-title">The rail when you have no circles</h1>
+    <p class="pg-lede">Shown against the real Chrome, which already carries the whole empty state — the heading, the primary <strong>Create a circle</strong> button, and the invite line. So the rail's only job is to <strong>not read as broken</strong>. That rules out a second mark (the lockup's already up top — a hat on a hat), a second big CTA, and bordered notes that float rather than integrate. What currently breaks it: the <strong>Circles</strong> label sitting over nothing.</p>
+  </header>
+
+  <!-- A -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num rec">A</span><span class="opt-name">Drop the label</span><span class="opt-tag">recommended</span></div>
+      <p class="opt-why">The heading over an empty region is the thing that looks broken — so remove it. With no circles the rail is just the mark, <strong>New circle</strong>, and your account. Nothing labels an empty space, so nothing reads as missing. The label returns the moment you have one circle.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">B</span><span class="opt-name">An empty row, in the list’s own language</span></div>
+      <p class="opt-why">Keep the <strong>Circles</strong> label, and where circles would list, sit one muted row — no border, no box, the exact geometry of a real circle row. It reads as “this list is empty” in the list’s own voice, not a floating note. Fixes the weak “None yet” and the boxed look you didn’t like.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <div class="empty-row">Nothing here yet — your circles will list here once you create or join one.</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">C</span><span class="opt-name">Promote New circle into the list</span></div>
+      <p class="opt-why">No label. The create control moves up into the circles region as its single item, given a little accent presence — where a circle would sit. It never competes with the Chrome’s primary button (that stays the loud one); the rail just quietly points at its one job. Loses the separate bottom New circle to avoid two of the same.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <button class="create-slot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">D</span><span class="opt-name">Label + a tight helper line</span></div>
+      <p class="opt-why">Keep the label and New circle, and set one genuinely integrated line beneath — no border, no background, just muted text at the rail’s own padding. Same intent as the old note (“circles you create or join show up here”) but sitting <em>with</em> the button, not in a card floating apart from it.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <p class="rail-help">Circles you create or join show up here.</p>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- K -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">K</span><span class="opt-name">The note, naming both paths</span></div>
+      <p class="opt-why">D’s quiet line, but the copy carries both ways a circle appears — so the empty rail quietly answers “what do I do” and “what if I’m waiting on an invite” at once, without a separate box or heading.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <p class="rail-help">Circles you create or get invited to show up here.</p>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- L -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">L</span><span class="opt-name">The note, pinned to the foot</span></div>
+      <p class="opt-why">Same line, moved down to sit just above your account rather than under the button — the circles region stays clean and open, and the explanation reads as a quiet footnote to the whole rail.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <div class="spacer"></div>
+        <p class="rail-help-pin">Circles you create or join show up here.</p>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- M1 — even -->
+  <section class="opt">
+    <div class="opt-cap">
+      <div><span class="opt-num">M1</span><span class="opt-name">Note, evenly spaced</span></div>
+      <p class="opt-why">The gap below the button matches the gap above it — the note sits as its own balanced element, equally spaced from New circle as New circle is from the label.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <p class="rail-help even">Your circles show up here.</p>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- M2 — closer -->
+  <section class="opt chosen">
+    <div class="opt-cap">
+      <div><span class="opt-num">M2</span><span class="opt-name">Note, tucked under the button</span><span class="opt-tag chosen">chosen</span></div>
+      <p class="opt-why">The note sits close under New circle — reading as a caption belonging to the button rather than a separate line, so the two feel like one grouped thought.</p>
+    </div>
+    <div class="app">
+      <div class="rail">
+        <div class="rail-lock"><img src="brand/assets/circlists-lockup.svg" alt="Circlists" /></div>
+        <div class="rail-label">Circles</div>
+        <button class="newcircle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>New circle</button>
+        <p class="rail-help close">Your circles show up here.</p>
+        <div class="spacer"></div>
+        <div class="rail-foot"><button class="acct"><span class="avatar">SR</span><span class="acct-text"><span class="acct-name">Sam Rivera</span><span class="acct-email">sam.rivera@gmail.com</span></span><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button></div>
+      </div>
+      <div class="col">
+        <div class="topbar"></div>
+        <div class="main"><div class="empty"><h1>You’re not in a circle yet.</h1><button class="create"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create a circle</button><p class="invite">Waiting on an invite? It’ll arrive by email and bring you straight in.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

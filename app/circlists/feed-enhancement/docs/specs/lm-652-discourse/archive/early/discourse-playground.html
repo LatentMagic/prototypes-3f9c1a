@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="../../../../../" />
+<title>Circlists — Discourse playground</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="swell.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #EFEFEC; }
+  a { color: var(--color-accent); }
+  a:hover { color: var(--color-accent-hover); }
+  #root { min-height: 100vh; }
+
+  /* The app fills the window (no bezel): open this on a phone and it IS the app.
+     The config rail stands in for the circle rail, so it follows the app's rail
+     exactly: permanently docked at ≥ 1024, and below that it lives behind the top
+     bar's circles-menu button in the app's own MobileDrawer (app/shell.jsx). */
+  .pg-page { display: flex; min-height: 100dvh; }
+  .pg-rail { width: 336px; flex-shrink: 0; background: var(--color-page); border-right: 1px solid var(--color-border-1); padding: 20px 14px 40px; position: sticky; top: 0; align-self: flex-start; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; }
+  .pg-railitem { display: block; width: 100%; text-align: left; cursor: pointer; border: 0; background: transparent; border-radius: var(--radius-md); padding: 11px 12px; font-family: var(--font-sans); color: var(--color-fg-1); transition: background var(--duration-base); }
+  .pg-railitem:hover { background: var(--color-surface); }
+  .pg-ghost { background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 7px 11px; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; color: var(--color-fg-1); cursor: pointer; white-space: nowrap; }
+  .pg-ghost:hover { background: var(--color-surface-sunken); }
+
+  /* The surface carries the transform, so the sheets and the Swell pin to the
+     app surface rather than to the page. */
+  .pgd-surface { position: relative; flex: 1; min-width: 0; height: 100dvh; overflow: hidden; background: var(--color-canvas); transform: translateZ(0); }
+  .pgd-screen { width: 100%; height: 100%; overflow-y: auto; --circ-vh: 100%; }
+
+  /* Forced-mobile posture: the app's own phone frame, copied verbatim from
+     circlists.html. Only ever used when Viewport is set to Mobile by hand. */
+  .circ-stage { flex: 1; min-width: 0; min-height: 100dvh; background: #1c1c1a; background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  .circ-phone { width: 402px; max-width: 100%; height: min(872px, calc(100dvh - 48px)); background: #050505; border-radius: 52px; padding: 11px; box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000; overflow: hidden; }
+  .circ-phone-clip { position: relative; width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: var(--color-canvas); transform: translateZ(0); }
+  .circ-phone-screen { width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; --circ-vh: 100%; }
+  .circ-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  /* ---- reused app card + chrome states (copied from circlists.html) ---- */
+  .circ-card { container-type: inline-size; }
+  .circ-cardaction { background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; min-height: 44px; font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2); transition: background var(--duration-base), color var(--duration-base); }
+  .circ-cardaction:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .circ-cardaction-icon { padding: 8px; min-width: 44px; justify-content: center; position: relative; }
+  .circ-cardaction-icon:hover { background: transparent; }
+  .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
+  .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
+  .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  .circ-cardtitle:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-strong); }
+  .circ-cardtitle:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+  .circ-thumblink { transition: filter var(--duration-base); }
+  .circ-thumblink:hover { filter: brightness(1.05); }
+  .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }
+  .circ-appnav-add:active:not(:disabled) .circ-appnav-adddot { background: var(--color-accent-press) !important; }
+  .circ-topaction:hover { background: var(--color-surface-sunken); }
+  .circ-btn-primary:hover:not(:disabled) { background: var(--color-accent-hover) !important; }
+  .circ-btn-primary:active:not(:disabled) { background: var(--color-accent-press) !important; }
+  .circ-btn-secondary:hover { background: var(--color-surface-sunken) !important; }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); }
+  textarea:focus-visible, input:focus-visible { outline-offset: 0; border-color: var(--color-accent) !important; }
+
+  /* ---- playground-only card states ---- */
+  .pgd-quiet:hover { color: var(--color-fg-1) !important; }
+  .pgd-respond:hover { background: var(--color-surface-sunken); }
+  .pgd-chip:hover { background: var(--color-surface-sunken); }
+  .pgd-flipper { display: grid; transform-style: preserve-3d; transition: transform 420ms var(--ease-quiet); }
+  .pgd-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: visibility 0s linear 210ms; }
+  .pgd-back { transform: rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) { .pgd-flipper { transition: none; } }
+
+  /* app posture: full-page push layers (copied verbatim from circlists.html) */
+  @keyframes circ-push-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes circ-push-out { from { transform: translateX(0) } to { transform: translateX(100%) } }
+  .circ-push-in { animation: circ-push-in var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  .circ-push-out { animation: circ-push-out var(--duration-slow) var(--ease-quiet) both; will-change: transform }
+  @media (prefers-reduced-motion: reduce) { .circ-push-in, .circ-push-out { animation-duration: 1ms } }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#047857"/><rect x="24" y="34" width="72" height="26" rx="8" fill="#FAFAF7"/><rect x="36" y="66" width="60" height="22" rx="8" fill="#8BBFAD"/></svg></template>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/swell-reactions.jsx"></script>
+<script type="text/babel" src="app/shell.jsx"></script>
+<script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="app/app-shell.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-disc-data.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-disc-parts.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-disc-card.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-disc-places.jsx"></script>
+<script type="text/babel" src="docs/specs/discourse/pg-disc-app.jsx"></script>
+</body>
+</html>

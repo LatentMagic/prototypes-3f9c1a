@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../" />
+<title>Whiteboard — the bold row</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:62ch;margin:12px 0 0;text-wrap:pretty}
+.lede b{font-weight:600;color:var(--color-fg-1)}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+h2{font:600 15px/1.3 var(--font-sans);letter-spacing:-.01em;margin:36px 0 0}
+.opt{margin-top:36px}
+.opthead{display:flex;align-items:baseline;gap:12px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 18px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 28px;margin:12px 0 0}
+.claim{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty;margin:0}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:20px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:900px){.trio,.pair,.claims{grid-template-columns:1fr}}
+.frame{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.framecap{padding:10px 14px;border-bottom:1px solid var(--color-border-2);font:500 11px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.pad{padding:18px 16px 22px;background:var(--color-page)}
+
+/* the rail as it is — 248 wide, 44px rows, 11px vertical padding, selected on a
+   raised white surface behind a 3px accent bar, one signal slot at the row's end */
+.rail{width:248px;margin:0 auto;display:flex;flex-direction:column}
+.railhead{font:600 11px/1 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);padding:0 14px 8px}
+.rows{display:flex;flex-direction:column;gap:2px}
+.row{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;padding:11px 12px 11px 14px;border-radius:var(--radius-md)}
+.row.sel{background:var(--color-surface);box-shadow:var(--shadow-raised)}
+.bar,.tab{position:absolute;left:0;top:8px;width:3px;height:28px;border-radius:3px;display:none}
+.row.sel .bar{display:block;background:var(--color-accent)}
+.nm{flex:1;min-width:0;font:500 14px/1.2 var(--font-sans);color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.sel .nm{font-weight:600}
+.slot{display:inline-flex;align-items:center;flex-shrink:0;width:10px;height:10px}
+.dot{display:none}
+.row.l .dot{display:block}
+.newc{display:flex;align-items:center;gap:8px;min-height:44px;padding:11px 12px 11px 14px;margin-top:8px;font:500 13px/1 var(--font-sans);color:var(--color-fg-2)}
+.newc i{width:14px;height:14px;position:relative;flex-shrink:0}
+.newc i::before,.newc i::after{content:"";position:absolute;background:var(--color-fg-2)}
+.newc i::before{left:0;right:0;top:6px;height:1.5px}
+.newc i::after{top:0;bottom:0;left:6px;width:1.5px}
+
+/* the five readings of "bold" */
+.b1 .row.t .nm{font-weight:600}
+.b2 .row.t .nm{font-weight:600}
+.b2 .row:not(.t):not(.sel) .nm{color:var(--color-fg-2)}
+.b3 .row.t .nm,.b3 .row.l .nm{font-weight:600}
+.b3 .row .dot{display:none}
+.b4 .row:not(.t):not(.sel) .nm{color:var(--color-fg-3)}
+.b5 .row.t .nm{font-weight:600}
+.b5 .row.t.fresh .tab{display:block;background:var(--color-sage)}
+
+/* the return bar, as the candidate builds it (cand-lm652-return.jsx) */
+.bar2{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.bar2 .top{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 12px 0 14px}
+.bar2 .t{width:3px;height:22px;border-radius:2px;background:var(--color-sage);flex-shrink:0}
+.bar2[data-tab="0"] .t{background:transparent}
+.bar2 .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bar2 .l1{font:600 14px/1.35 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.bar2 .l2{font:400 12px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.bar2 .chev{flex-shrink:0;width:34px;height:34px;border-radius:var(--radius-md);border:1px solid var(--color-border-1);display:flex;align-items:center;justify-content:center;color:var(--color-fg-2);font:400 15px/1 var(--font-sans)}
+.feedpad{padding:18px 16px 22px;background:var(--color-page)}
+.ghost{margin-top:14px;height:78px;border-radius:var(--radius-lg);border:1px solid var(--color-border-2);background:var(--color-surface)}
+.loop{display:flex;gap:16px;align-items:flex-start;padding:18px 16px 22px;background:var(--color-page);flex-wrap:wrap}
+.loop .rail{margin:0}
+.loop .side{flex:1;min-width:240px}
+
+.vol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:900px){.vol{grid-template-columns:1fr}}
+.tally{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);margin:12px 0 0;max-width:66ch;text-wrap:pretty}
+.tally b{font-weight:600;color:var(--color-fg-1)}
+.red{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+@media (max-width:900px){.red{grid-template-columns:1fr}}
+.red p{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);margin:0;text-wrap:pretty}
+.red p b{font-weight:600;color:var(--color-fg-1)}
+.refnote{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:26px 0 0}
+</style>
+</head>
+<body>
+<template id="rail">
+  <div class="rail">
+    <div class="railhead">Circles</div>
+    <div class="rows">
+      <div class="row sel" data-c="bookmarks"><span class="bar"></span><span class="tab"></span><span class="nm">Bookmarks</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="longreads"><span class="bar"></span><span class="tab"></span><span class="nm">Long reads</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="fifth"><span class="bar"></span><span class="tab"></span><span class="nm">The Fifth Floor</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="tuesday"><span class="bar"></span><span class="tab"></span><span class="nm">Tuesday Club</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+    </div>
+    <div class="newc"><i></i>New circle</div>
+  </div>
+</template>
+
+<div class="wrap">
+  <div class="eyebrow">LM-652 · whiteboard · follows wb-out-of-circle 03</div>
+  <h1>The bold row</h1>
+  <p class="lede">One rule holds every frame below, and it is what makes weight worth taking seriously: <b>a circle's name is bold exactly when that circle's return bar is standing.</b> Not a second signal with its own lifecycle — the same state the bar already holds, rendered a second time in the rail. It appears when someone speaks on a card you watch, it survives tapping in and leaving, and it goes when you have opened the last card the bar was holding. Five readings of that rule, then the ten-circle test, then the red team.</p>
+  <p class="lede">Seeding is unchanged from the last board: Long reads has talk on a card you watch, The Fifth Floor has new links, Tuesday Club has both — and in the third frame you have been to all three, opening Long reads' card and one of Tuesday's two.</p>
+
+  <div class="rule"></div>
+
+  <div class="opt b1">
+    <div class="opthead"><span class="num">01</span><span class="name">Bold</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the plainest reading. A circle owed you a reply, so its name is bold. Every other row is untouched, and the dot keeps saying links and only links.</p>
+      <p class="claim"><b>Clears</b> — with the bar. Card by card, so a tap-in-and-leave keeps it, and Tuesday stays bold with one card unopened.</p>
+      <p class="claim"><b>Cost</b> — 500 to 600 at 14px is a small step, and it lands next to a selected row that is already 600. Two bold rows, two different reasons.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Long reads and Tuesday owe you a reply</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — Tuesday still holds one</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt b2">
+    <div class="opthead"><span class="num">02</span><span class="name">Bold, and the quiet recede</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — bold needs something to be bold against, so circles with nothing waiting step back to secondary ink. The gap between the two states roughly doubles, and the rail reads at a glance.</p>
+      <p class="claim"><b>Clears</b> — with the bar, same as 01. The row settles back to secondary ink rather than to black.</p>
+      <p class="claim"><b>Cost</b> — it dims circles that are perfectly fine, so the resting rail looks half asleep, and the name of the place you go every day is no longer full ink.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting — every name has receded</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Two circles stand out of the greys</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — one left standing</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt b3">
+    <div class="opthead"><span class="num">03</span><span class="name">Bold for anything, and the dot retires</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — one state in the rail, not two. Bold means <i>something here is for you</i>, links or talk, and the micro dot withdraws from the rail rather than being redefined. It keeps its meaning everywhere it still appears.</p>
+      <p class="claim"><b>Clears</b> — the two debts still clear differently, so the row stays bold while <i>either</i> is outstanding: arriving clears the links half, opening cards clears the talk half.</p>
+      <p class="claim"><b>Cost</b> — it withdraws a shipped mark, the rail loses its only live element, and you can no longer tell a circle with a fresh link from a circle with a reply waiting.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Three circles bold — links and talk read alike</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — Tuesday alone</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt b4">
+    <div class="opthead"><span class="num">04</span><span class="name">Ink, not weight</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — weight already belongs to selection, so leave it there. A circle owed you a reply reads in full black; the rest sit at tertiary ink. The difference is contrast, not thickness.</p>
+      <p class="claim"><b>Clears</b> — with the bar, as above.</p>
+      <p class="claim"><b>Cost</b> — the quietest of the five and the one most likely to read as a bug, and it makes every resting circle name lighter than the product's own body text.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Two circles at full ink</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — one left</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt b5">
+    <div class="opthead"><span class="num">05</span><span class="name">Bold, with the tab for what is new since you looked</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — two carriers, honestly split. The sage tab in the left edge marks talk that arrived since you last looked at the rail and discharges on sight; bold is the durable state underneath and stays until the cards are opened.</p>
+      <p class="claim"><b>Clears</b> — the tab goes on your next visit to the rail, the bold goes with the bar. Nothing perishable is left carrying the whole signal.</p>
+      <p class="claim"><b>Cost</b> — two things to learn where the others ask for one, and a row can now show three marks at once. It is the most complete answer here and the least quiet.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Tuesday's reply arrived since you last looked</div><div class="pad" data-rail="fresh"></div></div>
+      <div class="frame"><div class="framecap">After — tab discharged, bold still owed</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Ten circles, one ordinary week</h2>
+  <p class="tally">The same week as the last board: four links landed, eleven people spoke on cards you watch, in six of ten circles. <b>This is the comparison that matters</b> — six sage dots is a switchboard; six bold names is a list with six bold names in it. Bold does not move, does not glow, and does not read as an alarm.</p>
+  <div class="vol">
+    <div class="frame"><div class="framecap">Today — dots, links only</div><div class="pad" data-rail="ten-links"></div></div>
+    <div class="frame b1"><div class="framecap">01 — bold</div><div class="pad" data-rail="ten-both"></div></div>
+    <div class="frame b2"><div class="framecap">02 — bold, quiet receded</div><div class="pad" data-rail="ten-both"></div></div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>The synergy question — one state, rendered twice</h2>
+  <p class="tally">The rail says <i>which circle</i>; the bar inside it says <i>which cards</i>; the card's own margin tab says <i>which turns</i>. Bold is attractive precisely because it defines nothing new: it is the bar's existence, projected onto the row. Where it strains is the circle you are already in — the selected row is bold for being selected, so it cannot also be bold for owing you a reply. In that one case the bar is the only carrier, which is acceptable, because you are looking at the bar.</p>
+  <div class="pair">
+    <div class="frame b1"><div class="framecap">The rail says which circle</div><div class="loop"><div data-rail="moved"></div></div></div>
+    <div class="frame"><div class="framecap">Inside Long reads, the bar says which cards</div><div class="feedpad"><div class="bar2" data-bar data-tab="1" data-l1="Marcus T. spoke on cards you are watching" data-l2="See what they said"></div><div class="ghost"></div></div></div>
+  </div>
+  <div class="pair">
+    <div class="frame b1"><div class="framecap">In Bookmarks, which also owes you a reply — the selected row cannot say so</div><div class="loop"><div data-rail="self"></div></div></div>
+    <div class="frame"><div class="framecap">Opened everything — bar stays, tab discharges, row unbolds</div><div class="feedpad"><div class="bar2" data-bar data-tab="0" data-l1="Marcus T. spoke on cards you are watching" data-l2="See what they said"></div><div class="ghost"></div></div></div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Red team — the case against the bold row</h2>
+  <div class="red">
+    <p><b>Weight is spoken for.</b> The rail has exactly one weight change today and it means <i>you are here</i>. Adding a second meaning to the same variable is the kind of overloading that took the micro dot off the table in the first place.</p>
+    <p><b>It borrows a grammar without its system.</b> Bold-for-unread works in team chat because it sits beside mute, mentions, badges and a channel list built to be scanned for unreads. Here it arrives alone, in a rail built to be chosen from.</p>
+    <p><b>Habituation cuts the other way.</b> A dot is an event and reads as one. A bold name is a property, and a circle that is bold for nine days reads as a circle that is simply called that — the signal becomes the name.</p>
+    <p><b>Figure and ground invert with volume.</b> At six of ten bold, the eye starts reading the four <i>quiet</i> rows as the exception. The signal has not got louder, it has changed which set it describes.</p>
+    <p><b>It cannot be seen by everyone.</b> Weight alone is a thin cue at 14px for low vision and invisible to a screen reader without added text — the dot ships with a hidden ", new items" and bold would need its own, which means the rule must be stated in words anyway.</p>
+    <p><b>It answers a question nobody asked from the rail.</b> The rail is where you choose where to go. Bold tells you where <i>work</i> is, and quietly turns a shelf of places into a queue — which is the shape the product has refused everywhere else.</p>
+  </div>
+  <p class="refnote">Nothing here is ratified — five readings, the volume test, and the case against</p>
+</div>
+
+<script>
+const TPL = document.getElementById('rail');
+const TEN = [
+  ['Bookmarks', 'sel', 0, 0], ['Long reads', '', 0, 1], ['The Fifth Floor', '', 1, 0], ['Tuesday Club', '', 1, 1],
+  ['Design weekly', '', 0, 1], ['Kitchen table', '', 0, 0], ['Infra reading', '', 1, 1],
+  ['Type &amp; lettering', '', 0, 1], ['Night shift', '', 0, 0], ['Second floor', '', 1, 1],
+];
+const SETS = {
+  idle: {},
+  moved: { longreads: 't', fifth: 'l', tuesday: 'lt' },
+  fresh: { longreads: 't', fifth: 'l', tuesday: 'ltf' },
+  dealt: { tuesday: 't' },
+  self: { bookmarks: 't', tuesday: 't' },
+};
+document.querySelectorAll('[data-rail]').forEach((el) => {
+  el.appendChild(TPL.content.cloneNode(true));
+  const kind = el.dataset.rail;
+  const rows = el.querySelector('.rows');
+  if (kind.indexOf('ten') === 0) {
+    const talk = kind === 'ten-both';
+    const proto = TPL.content.querySelector('.row');
+    rows.innerHTML = '';
+    TEN.forEach(([name, sel, l, t]) => {
+      const r = proto.cloneNode(true);
+      r.className = 'row' + (sel ? ' sel' : '') + (l ? ' l' : '') + (talk && t ? ' t' : '');
+      r.querySelector('.nm').innerHTML = name;
+      rows.appendChild(r);
+    });
+    el.querySelector('.newc').remove();
+    return;
+  }
+  const set = SETS[kind] || {};
+  rows.querySelectorAll('.row').forEach((r) => {
+    const v = set[r.dataset.c] || '';
+    if (v.indexOf('l') > -1) r.classList.add('l');
+    if (v.indexOf('t') > -1) r.classList.add('t');
+    if (v.indexOf('f') > -1) r.classList.add('fresh');
+  });
+});
+document.querySelectorAll('[data-bar]').forEach((el) => {
+  const d = el.dataset;
+  el.innerHTML = '<div class="top"><span class="t"></span><span class="txt"><span class="l1">' + d.l1 + '</span><span class="l2">' + d.l2 + '</span></span><span class="chev">&or;</span></div>';
+});
+</script>
+</body>
+</html>

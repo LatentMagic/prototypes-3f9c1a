@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tab arrival signal — playground v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--emerald:#047857;--sage:#8bbfad;--ink:#0A0A0A;--cream:#FAFAF7;--fg-2:#525252;--fg-3:#6E6E6B;--border-1:#DCDCD8;--border-2:#E8E8E5;--font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--font-mono:'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;--font-system:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--font-sans)}
+a{color:var(--emerald)}
+a:hover{color:#036549}
+.page{max-width:1320px;margin:0 auto;padding:64px 40px 140px}
+.page-head h1{font-size:28px;font-weight:600;letter-spacing:-0.01em;margin:0 0 10px}
+.page-head p{font-size:15px;color:var(--fg-2);margin:0 0 12px;max-width:760px;line-height:1.55;text-wrap:pretty}
+.page-head .meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);letter-spacing:.04em;text-transform:uppercase;margin-top:22px}
+.act{margin-top:72px;padding-top:36px;border-top:2px solid var(--ink)}
+.act h2{font-size:22px;font-weight:600;margin:0 0 8px;letter-spacing:-0.01em}
+.act .q{font-size:14.5px;color:var(--fg-2);margin:0;max-width:740px;line-height:1.55;text-wrap:pretty}
+.panel{margin-top:48px;padding-top:32px;border-top:1px solid var(--border-1)}
+.panel-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:26px}
+.panel-head .num{font-family:var(--font-mono);font-size:12px;color:var(--fg-3);border:1px solid var(--border-1);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.panel-head h3{font-size:19px;font-weight:600;margin:0 0 6px;letter-spacing:-0.01em}
+.panel-head .direction{font-size:14px;color:var(--fg-2);margin:0 0 6px;max-width:700px;line-height:1.5;text-wrap:pretty}
+.panel-head .verdict{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);letter-spacing:.02em;margin:0;text-transform:uppercase}
+.contexts{display:flex;flex-direction:column;gap:30px}
+.ctx-label{font-size:12px;color:var(--fg-3);font-weight:500;margin-bottom:12px}
+.pair{display:flex;gap:28px;flex-wrap:wrap}
+.cell{display:flex;flex-direction:column;gap:8px}
+.tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3)}
+.tag.alert{color:var(--emerald)}
+.ctx-note{margin-top:10px;font-size:12.5px;color:var(--fg-3);font-style:italic;max-width:640px;line-height:1.5}
+.browser{width:600px;border-radius:9px;overflow:hidden;box-shadow:0 1px 2px rgba(10,10,10,.06),0 8px 20px rgba(10,10,10,.06)}
+.browser.light{background:#dee1e6}
+.browser.dark{background:#202124}
+.browser.safari{background:#e7e7e7}
+.browser.crowded{width:760px}
+.browser.crowded .tab{padding:0 6px;gap:4px}
+.browser.crowded .tabbar{gap:1px}
+.tabbar{display:flex;align-items:flex-end;gap:2px;padding:9px 8px 0;height:40px}
+.tl{display:flex;gap:6px;align-items:center;margin:0 10px 8px 6px;flex:none}
+.tl span{width:8px;height:8px;border-radius:50%;display:block}
+.tl .r{background:#ff5f57}.tl .y{background:#febc2e}.tl .g{background:#28c840}
+.tab{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:8px 8px 0 0;font-family:var(--font-system);font-size:12px;white-space:nowrap;overflow:hidden;color:#5f6368}
+.tab.active{background:#fff;color:#202124}
+.browser.dark .tab{color:#9aa0a6}
+.browser.dark .tab.active{background:#35363a;color:#e8eaed}
+.tab .favicon{width:16px;height:16px;flex:none;display:flex}
+.tab .favicon svg{width:100%;height:100%;display:block}
+.tab .title{overflow:hidden;text-overflow:ellipsis}
+.tab.pinned{flex:none;width:34px;justify-content:center;padding:0}
+.nfav{width:16px;height:16px;border-radius:3px;background:#c8c8c5;color:#5a5a57;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);letter-spacing:0}
+.browser.dark .nfav{background:#4a4b4d;color:#d5d5d3}
+.toolbar{height:26px;background:#f1f3f4;display:flex;align-items:center;gap:8px;padding:0 12px}
+.browser.dark .toolbar{background:#202124}
+.toolbar .navdot{width:6px;height:6px;border-radius:50%;background:#bdc1c6}
+.browser.dark .toolbar .navdot{background:#5f6368}
+.toolbar .addr{flex:1;height:16px;border-radius:8px;background:#fff}
+.browser.dark .toolbar .addr{background:#292a2d}
+.browser.safari .tabbar{padding:8px 8px 0;height:38px}
+.browser.safari .tab{border-radius:8px;margin:0 1px;justify-content:center;background:transparent;color:#3c3c3c}
+.browser.safari .tab.active{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.browser.safari .toolbar{background:#e7e7e7;justify-content:center}
+.browser.safari .toolbar .addr{max-width:260px;background:#fff}
+.zoom{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:24px}
+.zoom-cell{display:flex;flex-direction:column;align-items:center;gap:8px;width:120px}
+.zoom-stack{display:flex;align-items:flex-end;gap:12px}
+.z16{width:16px;height:16px}.z16 svg{width:100%;height:100%;display:block}
+.z64{width:64px;height:64px;border-radius:6px}.z64 svg{width:100%;height:100%;display:block}
+.zoom-cell .zl{font-size:11.5px;color:var(--fg-3);text-align:center;line-height:1.35}
+.on-light{background:#dee1e6;padding:6px;border-radius:5px}
+.on-dark{background:#202124;padding:6px;border-radius:5px}
+.matrix{width:100%;border-collapse:collapse;margin-top:6px}
+.matrix th{text-align:left;font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3);font-weight:400;padding:0 14px 10px 0;vertical-align:bottom}
+.matrix td{padding:10px 14px 10px 0;border-top:1px solid var(--border-2);font-size:13px;color:var(--fg-2);vertical-align:middle;line-height:1.45}
+.matrix td.k{font-weight:500;color:var(--ink);width:190px}
+.chip{font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block;background:#eef2f0;color:var(--fg-2);white-space:nowrap}
+.chip.yes{background:#e6f0ec;color:#046a4e}
+.chip.no{background:#fbeaea;color:#8a2c2c}
+.out{margin-top:96px;padding-top:36px;border-top:1px solid var(--border-1)}
+.out h2{font-size:18px;font-weight:600;margin:0 0 6px}
+.out .sub{font-size:13px;color:var(--fg-3);margin:0 0 24px;max-width:660px;line-height:1.5}
+.out ul{margin:0;padding-left:18px;max-width:720px}
+.out li{font-size:13.5px;color:var(--fg-2);line-height:1.6;margin-bottom:8px}
+.out li b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="page-head">
+<h1>Tab arrival signal — round two</h1>
+<p>Round one settled two things: the full favicon swap is out (you'd lose the logo most of the time), and the title bullet is out (a dot in the title next to a dot on the mark is a dot on a dot). What's left is the corner-dot favicon you liked, an unresolved doubt about whether it says enough on its own, and one thing round one never tried — the title changing to actual <em>words</em>.</p>
+<p>So this round asks three questions in order: what should the title <em>say</em>; can the corner dot be drawn so it reads at 16px on a light strip; and does words-plus-dot land as one signal or two.</p>
+<div class="meta">Circlists · desktop tab strips only · no numbers · no red · no motion</div>
+</div>
+<div id="acts"></div>
+<div id="out"></div>
+</div>
+<script>
+const IDLE = "Circlists — Sunday Papers";
+const N = {inbox:"Inbox — mail", atlantic:"The Atlantic — why we share what we read", github:"GitHub — pull requests", calendar:"Calendar", docs:"Docs", aeon:"Aeon", longreads:"Longreads", nautilus:"Nautilus", news:"News", figma:"Figma"};
+
+const FAV = {
+  rest:'<circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/>',
+  // a — round one's badge, unchanged
+  dotA:'<circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/><circle cx="38" cy="38" r="7.5" fill="#8bbfad" stroke="#fff" stroke-width="1"/><circle cx="38" cy="38" r="4.6" fill="#047857"/>',
+  // b — knockout: a wide cream gap separates badge from mark
+  dotB:'<circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/><circle cx="39" cy="39" r="11" fill="#FAFAF7"/><circle cx="39" cy="39" r="7.5" fill="#047857"/>',
+  // c — breaking the silhouette: badge sits half outside the circle
+  dotC:'<circle cx="22" cy="22" r="20.5" fill="#8bbfad"/><circle cx="22" cy="22" r="13" fill="#047857"/><circle cx="22" cy="22" r="13.65" fill="none" stroke="#fff" stroke-width="1.3"/><circle cx="39.5" cy="39.5" r="10.5" fill="#FAFAF7"/><circle cx="39.5" cy="39.5" r="7.4" fill="#047857"/>',
+  // d — orbit dot: no mark change, one satellite dot outside the halo, top-right
+  dotD:'<circle cx="21" cy="26" r="19.5" fill="#8bbfad"/><circle cx="21" cy="26" r="12.35" fill="#047857"/><circle cx="21" cy="26" r="12.95" fill="none" stroke="#fff" stroke-width="1.25"/><circle cx="40" cy="8" r="8" fill="#047857"/>',
+  // e — bitten core: the emerald core opens and the dot is what came out of it
+  dotE:'<circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><path d="M24 9.75a14.25 14.25 0 1 0 0 28.5 14.25 14.25 0 0 0 13.1-8.6 9.4 9.4 0 0 1-1.5-18.6A14.2 14.2 0 0 0 24 9.75z" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/><circle cx="40" cy="14" r="7.6" fill="#FAFAF7"/><circle cx="40" cy="14" r="5.2" fill="#047857"/>',
+  // f — halo fills: sage halo goes emerald, core inverts to cream. Mark still fully present.
+  dotF:'<circle cx="24" cy="24" r="22.5" fill="#047857"/><circle cx="24" cy="24" r="14.25" fill="#FAFAF7"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#047857" stroke-width="1.35"/>'
+};
+function favSvg(k){return '<svg viewBox="0 0 48 48">'+FAV[k]+'</svg>'}
+
+function renderTab(cfg){
+  const favHtml = cfg.type==='c' ? `<span class="favicon">${favSvg(cfg.fav)}</span>` : `<span class="favicon"><span class="nfav">${cfg.letter}</span></span>`;
+  const titleHtml = cfg.pinned ? '' : `<span class="title">${cfg.title}</span>`;
+  return `<div class="tab${cfg.pinned?' pinned':''}${cfg.active?' active':''}">${favHtml}${titleHtml}</div>`;
+}
+function renderStrip(theme, tabsArr, extraClass){
+  return `<div class="browser ${theme}${extraClass?' '+extraClass:''}"><div class="tabbar"><div class="tl"><span class="r"></span><span class="y"></span><span class="g"></span></div>${tabsArr.map(renderTab).join('')}</div><div class="toolbar"><span class="navdot"></span><span class="navdot"></span><span class="addr"></span></div></div>`;
+}
+function normalTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+  {type:'n',letter:'CAL',title:N.calendar,active:false},
+];}
+function crowdedTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'n',letter:'DC',title:N.docs,active:false},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+  {type:'n',letter:'AE',title:N.aeon,active:false},
+  {type:'n',letter:'CAL',title:N.calendar,active:false},
+  {type:'n',letter:'LR',title:N.longreads,active:false},
+  {type:'n',letter:'NT',title:N.nautilus,active:false},
+  {type:'n',letter:'NW',title:N.news,active:false},
+  {type:'n',letter:'FG',title:N.figma,active:false},
+];}
+function pinnedTabs(fav,title){return [
+  {type:'c',fav,title,active:false,pinned:true},
+  {type:'n',letter:'IN',title:N.inbox,active:false,pinned:true},
+  {type:'n',letter:'CAL',title:N.calendar,active:false,pinned:true},
+  {type:'n',letter:'TA',title:N.atlantic,active:true,pinned:false},
+  {type:'n',letter:'GH',title:N.github,active:false,pinned:false},
+];}
+function safariTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+];}
+const CTX = {
+  light:{label:'Light tab strip, normal width', theme:'light', build:normalTabs},
+  dark:{label:'Dark tab strip, normal width', theme:'dark', build:normalTabs},
+  crowded:{label:'Crowded strip (10+ tabs, truncated)', theme:'light', build:crowdedTabs, extra:'crowded'},
+  pinned:{label:'Pinned tab (favicon only, no title)', theme:'light', build:pinnedTabs},
+  safari:{label:'Safari-style tab (favicon locked to resting mark, title centred)', theme:'safari', build:safariTabs}
+};
+function ctxRow(key, idleCfg, alertCfg, note){
+  const c = CTX[key];
+  const a = renderStrip(c.theme, c.build(idleCfg.fav, idleCfg.title), c.extra);
+  const b = renderStrip(c.theme, c.build(alertCfg.fav, alertCfg.title), c.extra);
+  return `<div><div class="ctx-label">${c.label}</div><div class="pair"><div class="cell"><span class="tag">Idle</span>${a}</div><div class="cell"><span class="tag alert">Arrived</span>${b}</div></div>${note?`<div class="ctx-note">${note}</div>`:''}</div>`;
+}
+function panel(idx, name, direction, verdict, body){
+  return `<section class="panel"><header class="panel-head"><span class="num">${idx}</span><div><h3>${name}</h3><p class="direction">${direction}</p><p class="verdict">${verdict}</p></div></header><div class="contexts">${body}</div></section>`;
+}
+
+/* ── ACT ONE — what the title says ───────────────────────────────── */
+const WORDINGS = [
+  {n:'Front-loaded, plain', t:'New links — Circlists — Sunday Papers',
+   d:'The fact first, the brand second. Reads as a statement, not a decoration.',
+   v:'Survives truncation; survives Safari; survives pinned only via the favicon',
+   note:{crowded:'At this width the tab shows little more than "New link…" — which is exactly the part worth keeping.', safari:'Safari centres the title, so the change is visible but off-anchor. Still legible.', pinned:'No title exists here. The favicon has to carry it alone — see act three.'}},
+  {n:'Front-loaded, terse', t:'New — Circlists — Sunday Papers',
+   d:'One word. Cheapest possible truncation cost, at the price of saying what is new.',
+   v:'Shortest; risks reading as a section name rather than a state',
+   note:{crowded:'"New — Circ…" holds. But out of context "New" could be a page, not an event.'}},
+  {n:'Circle-named', t:'New in Sunday Papers — Circlists',
+   d:'Names the circle the links landed in. The signal carries a where as well as a what.',
+   v:'Most informative; brand drops out of the truncated view entirely',
+   note:{crowded:'The brand name is the first thing cut. Ask whether that matters to you.', light:'Only correct if the arrival is scoped to one circle. Multi-circle arrivals need a generic string anyway — which collapses this back into option 1.'}},
+  {n:'Verb-led', t:'Read what\'s new — Circlists',
+   d:'House voice is verb-led, so this is the most on-voice string available.',
+   v:'On-voice but instructing — it asks, where the others report',
+   note:{light:'Closest to the brand\'s written register, furthest from calm. A tab that tells you to read is a tab applying pressure.'}},
+  {n:'Suffix', t:'Circlists — Sunday Papers — new links',
+   d:'Brand kept in place, the fact appended. Control case for placement.',
+   v:'Dies in truncation — shown to close the question',
+   note:{crowded:'Gone. Everything past the brand name is cut. Placement is not a taste question.'}}
+];
+const actOne = WORDINGS.map((w,i)=>panel(i+1, w.n, w.d, 'Read — '+w.v,
+  ['light','crowded','safari'].map(k=>ctxRow(k, {fav:'rest', title:IDLE}, {fav:'rest', title:w.t}, w.note[k]||null)).join('')
+)).join('');
+
+/* ── ACT TWO — drawing the dot so it reads ───────────────────────── */
+const DOTS = [
+  {k:'dotA', n:'Round one\'s badge', d:'Sage-haloed dot in the corner, as shipped in the last playground.', v:'Sage on sage — the halo the badge sits on is the same value as the badge\'s own ring'},
+  {k:'dotB', n:'Cream knockout', d:'The badge loses its sage ring and gains a wide cream gap, so it separates from the mark by value, not hue.', v:'Reads on both themes; mark intact'},
+  {k:'dotC', n:'Silhouette break', d:'Mark shrinks slightly and the badge sits half outside it, so the tile\'s outline changes shape, not just its fill.', v:'Detectable in peripheral vision; mark reads slightly smaller'},
+  {k:'dotD', n:'Orbit dot', d:'Mark untouched and pushed down-left; a bare emerald dot sits clear of the halo at top-right.', v:'Cleanest at 16px; the dot is a separate object, not a badge on the logo'},
+  {k:'dotE', n:'Bitten core', d:'The core opens and the dot reads as what came out of it — the mark itself acknowledges the arrival.', v:'Most characterful; most fragile at 16px'},
+  {k:'dotF', n:'Inverted mark', d:'No badge at all. Halo goes emerald, core goes cream. Whole-tile change, but the mark stays fully present.', v:'Loudest, and the logo is never absent — the objection that killed the full swap does not apply'}
+];
+const zoomRow = `<div class="zoom">${[{k:'rest',l:'Resting mark'}].concat(DOTS.map(d=>({k:d.k,l:d.n}))).map(o=>
+  `<div class="zoom-cell"><div class="zoom-stack"><span class="z64 on-light">${favSvg(o.k)}</span><span class="z16 on-light">${favSvg(o.k)}</span><span class="z16 on-dark">${favSvg(o.k)}</span></div><span class="zl">${o.l}</span></div>`).join('')}</div>
+<div class="ctx-note" style="margin-top:0">Each cell: 64px study, then true 16px on a light strip and on a dark one. Judge the two small ones — the big one is a lie you will never see.</div>`;
+const actTwo = panel('—','All six at true size','Same title in every strip (unchanged), so the only variable is the tile. Compare the 16px renders, not the studies.','Craft study — pick the drawing before picking the system', zoomRow)
+ + DOTS.map((d,i)=>panel(i+1, d.n, d.d, 'Read — '+d.v,
+   ['light','pinned','dark'].map(k=>ctxRow(k, {fav:'rest', title:IDLE}, {fav:d.k, title:IDLE}, null)).join('')
+ )).join('');
+
+/* ── ACT THREE — words + dot, together ───────────────────────────── */
+const T1 = 'New links — Circlists — Sunday Papers';
+const COMBOS = [
+  {n:'Words only', d:'Title changes, favicon never does. The mark is never touched, and Safari behaves identically to Chrome.',
+   v:'Zero favicon risk; nothing at all on a pinned tab', fav:()=>'rest', title:()=>T1,
+   note:{pinned:'Fully dark. If you pin Circlists, you get no signal — this is the whole cost of the option.'}},
+  {n:'Dot only', d:'Favicon badges, title never changes. Round one\'s corner dot, drawn with the knockout from act two.',
+   v:'Silent in Safari; the doubt you already named — is a 16px dot enough', fav:(k)=>k==='safari'?'rest':'dotB', title:()=>IDLE,
+   note:{safari:'No-op. Nothing changes at all.', pinned:'Strongest here — favicon is the only channel and it is working.'}},
+  {n:'Both, always',d:'Title says it in words, favicon badges it. Two channels, one event, everywhere the browser allows.',
+   v:'Never dark in any context; the question is redundancy, not coverage', fav:(k)=>k==='safari'?'rest':'dotB', title:()=>T1,
+   note:{light:'Words and a dot are different kinds of statement — not a dot on a dot. Judge whether it reads as one signal or two.', safari:'Favicon locked, so this degrades to words-only without any special-casing.', pinned:'Degrades to dot-only, again with no special-casing. Same rule, different survivor.'}},
+  {n:'Both, inverted mark',d:'Same doubling, but the tile uses act two\'s inverted mark instead of a badge.',
+   v:'Loudest available while keeping the logo present in every state', fav:(k)=>k==='safari'?'rest':'dotF', title:()=>T1,
+   note:{light:'If the corner dot feels too quiet to you, this is the same system turned up — without ever hiding the mark.'}}
+];
+const actThree = COMBOS.map((c,i)=>panel(i+1, c.n, c.d, 'Read — '+c.v,
+  ['light','crowded','pinned','safari'].map(k=>ctxRow(k, {fav:'rest', title:IDLE}, {fav:c.fav(k), title:c.title(k)}, c.note[k]||null)).join('')
+)).join('');
+
+const ACTS = [
+  {h:'Act one — what the title says', q:'Round one only ever tried a bullet. If the title is going to change, it can change to words. Five strings, same favicon throughout, so the only variable is language. Placement is the real decision here: the crowded strip shows what survives.', body:actOne},
+  {h:'Act two — drawing the dot so it reads at 16px', q:'You liked the corner dot and named its flaw: on a light strip the sage halo swallows it. Six drawings of the same idea, from the badge as shipped to the mark inverting. Same title everywhere.', body:actTwo},
+  {h:'Act three — words and dot, together', q:'Now combined. Words in the title, dot on the mark — two different kinds of statement rather than a dot on a dot. Note what each option does in Safari and on a pinned tab: the interesting property is that doubling degrades gracefully in both directions with no special-casing.', body:actThree}
+];
+document.getElementById('acts').innerHTML = ACTS.map(a=>`<section class="act"><h2>${a.h}</h2><p class="q">${a.q}</p>${a.body}</section>`).join('');
+
+document.getElementById('out').innerHTML = `<section class="out"><h2>What this round is asking you to settle</h2><p class="sub">Three decisions, in this order. Each one narrows the next.</p><ul>
+<li><b>Does the title change to words?</b> If yes, placement is settled — front-loaded, because the crowded strip cuts everything else. Remaining choice is plain vs. terse vs. circle-named.</li>
+<li><b>Which drawing of the dot?</b> The badge as shipped does lose to its own halo on light. Knockout fixes it cheaply; orbit dot is the most legible at 16px; inverted mark is the loudest option that still keeps the logo on screen at all times.</li>
+<li><b>One channel or two?</b> Doubling is not a dot on a dot — it is a sentence and a mark. Its real argument is that it needs no fallback logic: Safari drops to words, pinned drops to dot, and the rule never changes.</li>
+</ul></section>`;
+</script>
+</body>
+</html>

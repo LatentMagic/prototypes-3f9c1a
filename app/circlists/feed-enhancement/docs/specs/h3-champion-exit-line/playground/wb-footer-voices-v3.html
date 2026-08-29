@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Whiteboard — the footer's two voices (v3)</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-surface-sunken);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:64ch;margin:12px 0 0;text-wrap:pretty}
+.lede b{font-weight:600;color:var(--color-fg-1)}
+.rule{height:1px;background:var(--color-border-1);margin:32px 0 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:30px}
+@media (max-width:1080px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+.opt{display:flex;flex-direction:column}
+.opthead{display:flex;align-items:baseline;gap:10px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 17px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claim{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-2);margin:8px 0 0;text-wrap:pretty}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.cost{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);margin:4px 0 0;text-wrap:pretty}
+.aa{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;font:500 11px/1.4 var(--font-mono);letter-spacing:.05em;color:var(--color-fg-2)}
+.aa i{width:6px;height:6px;border-radius:50%;background:var(--color-accent);flex:none}
+.aa.warn i{background:#B45309}
+
+/* ---- the real page body, verbatim from FundingPage (app/subscriptions.jsx) ---- */
+.frame{margin-top:14px;background:var(--color-page);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 0;color:var(--color-fg-2)}
+.bar svg{opacity:.9}
+.body{padding:14px 20px 34px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.title{font:var(--weight-semibold) 26px/1.2 var(--font-sans);letter-spacing:-.02em;color:var(--color-fg-1);margin:0 0 20px}
+.price{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;column-gap:10px;row-gap:8px;margin-bottom:22px}
+.amount{font:var(--weight-semibold) 44px/1 var(--font-sans);letter-spacing:-.03em;color:var(--color-accent)}
+.per{font:var(--weight-medium) var(--text-sm)/1.35 var(--font-mono);letter-spacing:var(--tracking-wide);color:var(--color-fg-2);text-align:left}
+.pill{font:var(--weight-medium) 11px/1.35 var(--font-mono);letter-spacing:var(--tracking-wide);color:var(--color-accent);background:var(--color-accent-soft);border:1px solid var(--color-accent);margin-left:6px;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
+.checks{display:flex;flex-direction:column;gap:var(--space-3);width:100%;max-width:290px;margin:0 0 22px}
+.chk{display:flex;align-items:flex-start;gap:var(--space-3)}
+.chk svg{flex:none;margin-top:1px;color:var(--color-accent)}
+.chk span{font:400 var(--text-base)/1.4 var(--font-sans);color:var(--color-fg-1);text-align:left}
+.btn{width:100%;max-width:290px;min-height:52px;padding:14px 22px;border:0;border-radius:var(--radius-md);background:var(--color-accent);color:#fff;font:600 16px/1 var(--font-sans);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.foot{width:100%;max-width:290px;margin:14px 0 0;display:flex;flex-direction:column;align-items:center;gap:3px;font:500 12.5px/1.5 var(--font-sans);color:var(--color-fg-3)}
+.billed{display:inline-flex;align-items:center;gap:6px}
+.billed svg{flex:none}
+.stop{max-width:34ch;text-align:center;text-wrap:pretty}
+.above{display:none}
+
+/* ---- the six treatments ---- */
+/* 01 weight the fact */
+.v1 .billed{font-weight:600;color:var(--color-fg-1)}
+/* 02 split the roles — fact carries weight, reassurance stays its size */
+.v2 .billed{font-weight:600;color:var(--color-fg-1)}
+.v2 .stop{font-weight:400;color:var(--color-fg-3)}
+/* 03 air, no rule */
+.v3 .foot{gap:9px}
+.v3 .billed{color:var(--color-fg-2)}
+/* 04 answer first */
+.v4 .foot{gap:7px}
+.v4 .stop{order:1;font-weight:400;color:var(--color-fg-2)}
+.v4 .billed{order:2}
+/* 05 demote to caption — size only, no bold, on the 12px floor */
+.v5 .stop{font-size:12px;font-weight:400}
+/* 06 above the button — even margins, 22px each side */
+.v6 .stop{display:none}
+.v6 .checks{margin-bottom:22px}
+.v6 .above{display:block;width:100%;max-width:34ch;margin:0 0 22px;font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+/* 06t — the same, tightened: 14px each side */
+.v6t .stop{display:none}
+.v6t .checks{margin-bottom:14px}
+.v6t .above{display:block;width:100%;max-width:34ch;margin:0 0 14px;font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">h3 · champion exit line</div>
+<h1>The footer's two voices</h1>
+<p class="lede">Two survivors, plus the hybrid between them. <b>05</b> is now at <b>12px</b> — on our floor, not under it — and <b>06</b> is shown twice — evened up at 22px each side, and tightened to 14px each side, which keeps the page exactly as tall as it is today. All three pass AA: <b>#6E6E6B on #FAFAF7 is 4.96:1</b> at any size. No bold anywhere.</p>
+<div class="rule"></div>
+<div class="grid" id="grid"></div>
+</div>
+
+<template id="tpl">
+<div class="frame">
+  <div class="bar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="#0A0A0A"></circle></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </div>
+  <div class="body">
+    <h3 class="title">Fund your circle</h3>
+    <div class="price"><span class="amount">£3</span><span class="per">per circle<br>/ month</span><span class="pill">Founding rate</span></div>
+    <div class="checks">
+      <div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>You fund the circle as its champion</span></div>
+      <div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Up to 10 members, all invited free</span></div>
+      <div class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Shared list, private read-state</span></div>
+    </div>
+    <div class="above">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</div>
+    <button class="btn">Fund this circle</button>
+    <div class="foot">
+      <span class="billed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Billed to sam.rivera@gmail.com</span></span>
+      <span class="stop">Stop anytime. The circle sleeps, nothing is lost, and any member can fund it.</span>
+    </div>
+  </div>
+</div>
+</template>
+
+<script>
+const OPTS = [
+  { n: '05', v: 'v5', name: 'Caption, in the footer',
+    claim: 'The reassurance steps to <b>12px regular</b> and stays under the billing line. One change, nothing moved.',
+    cost: 'Still adjacent to the receipt line — the seam is size alone, and it is a quiet one.',
+    aa: 'AA pass · 4.96:1 · 12px floor' },
+  { n: '06', v: 'v6', name: 'Above the button',
+    claim: 'The reassurance sits between the checks and the button, at 12.5px in secondary grey. <b>22px above and below</b>, matching the checks\u2019 rhythm.',
+    cost: 'Re-busies the gap a prior round calmed, and reads a step louder than a footnote.',
+    aa: 'AA pass · 7.5:1 · 12.5px' },
+  { n: '06t', v: 'v6t', name: 'Above the button, tightened',
+    claim: 'Your correction: keep the 14px below and bring the top down to match. <b>14px each side</b> — the block stays exactly as tall as it is today.',
+    cost: 'Sits closer to the checks, so it reads a little more like a fourth fact than its own beat.',
+    aa: 'AA pass · 7.5:1 · 12.5px' },
+];
+const grid = document.getElementById('grid'), tpl = document.getElementById('tpl');
+for (const o of OPTS) {
+  const cell = document.createElement('div');
+  cell.className = 'opt';
+  const warn = o.aa.includes('floor') ? ' warn' : '';
+  cell.innerHTML = '<div class="opthead"><span class="num">' + o.n + '</span><span class="name">' + o.name + '</span></div>'
+    + '<p class="claim">' + o.claim + '</p><p class="cost">' + o.cost + '</p>'
+    + '<span class="aa' + warn + '"><i></i>' + o.aa + '</span>';
+  const f = tpl.content.cloneNode(true);
+  f.querySelector('.frame').classList.add(o.v);
+  cell.appendChild(f);
+  grid.appendChild(cell);
+}
+</script>
+</body>
+</html>

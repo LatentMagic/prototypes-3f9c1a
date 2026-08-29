@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tab arrival signal — playground</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--emerald:#047857;--sage:#8bbfad;--ink:#0A0A0A;--cream:#FAFAF7;--fg-2:#525252;--fg-3:#6E6E6B;--border-1:#DCDCD8;--border-2:#E8E8E5;--font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--font-mono:'JetBrains Mono','IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;--font-system:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--font-sans)}
+a{color:var(--emerald)}
+a:hover{color:#036549}
+.page{max-width:1320px;margin:0 auto;padding:64px 40px 140px}
+.page-head h1{font-size:28px;font-weight:600;letter-spacing:-0.01em;margin:0 0 10px}
+.page-head p{font-size:15px;color:var(--fg-2);margin:0;max-width:720px;line-height:1.55;text-wrap:pretty}
+.page-head .meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);letter-spacing:.04em;text-transform:uppercase;margin-top:22px}
+.panel{margin-top:64px;padding-top:40px;border-top:1px solid var(--border-1)}
+.panel-head{display:flex;gap:20px;align-items:flex-start;margin-bottom:32px}
+.panel-head .num{font-family:var(--font-mono);font-size:13px;color:var(--fg-3);border:1px solid var(--border-1);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.panel-head h3{font-size:21px;font-weight:600;margin:0 0 6px;letter-spacing:-0.01em}
+.panel-head .direction{font-size:14px;color:var(--fg-2);margin:0 0 8px;max-width:680px;line-height:1.5;text-wrap:pretty}
+.panel-head .precedent{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);letter-spacing:.02em;margin:0;text-transform:uppercase}
+.contexts{display:flex;flex-direction:column;gap:36px}
+.ctx-label{font-size:12px;color:var(--fg-3);font-weight:500;margin-bottom:12px}
+.pair{display:flex;gap:28px;flex-wrap:wrap}
+.cell{display:flex;flex-direction:column;gap:8px}
+.tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3)}
+.tag.alert{color:var(--emerald)}
+.ctx-note{margin-top:10px;font-size:12.5px;color:var(--fg-3);font-style:italic;max-width:600px}
+.browser{width:600px;border-radius:9px;overflow:hidden;box-shadow:0 1px 2px rgba(10,10,10,.06),0 8px 20px rgba(10,10,10,.06)}
+.browser.light{background:#dee1e6}
+.browser.dark{background:#202124}
+.browser.safari{background:#e7e7e7}
+.browser.crowded{width:760px}
+.browser.crowded .tab{padding:0 6px;gap:4px}
+.browser.crowded .tabbar{gap:1px}
+.tabbar{display:flex;align-items:flex-end;gap:2px;padding:9px 8px 0;height:40px}
+.tl{display:flex;gap:6px;align-items:center;margin:0 10px 8px 6px;flex:none}
+.tl span{width:8px;height:8px;border-radius:50%;display:block}
+.tl .r{background:#ff5f57}.tl .y{background:#febc2e}.tl .g{background:#28c840}
+.tab{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:8px 8px 0 0;font-family:var(--font-system);font-size:12px;white-space:nowrap;overflow:hidden;color:#5f6368}
+.tab.active{background:#fff;color:#202124}
+.browser.dark .tab{color:#9aa0a6}
+.browser.dark .tab.active{background:#35363a;color:#e8eaed}
+.tab .favicon{width:16px;height:16px;flex:none;display:flex}
+.tab .favicon svg{width:100%;height:100%;display:block}
+.tab .title{overflow:hidden;text-overflow:ellipsis}
+.tab.pinned{flex:none;width:34px;justify-content:center;padding:0}
+.nfav{width:16px;height:16px;border-radius:3px;background:#c8c8c5;color:#5a5a57;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);letter-spacing:0}
+.browser.dark .nfav{background:#4a4b4d;color:#d5d5d3}
+.toolbar{height:26px;background:#f1f3f4;display:flex;align-items:center;gap:8px;padding:0 12px}
+.browser.dark .toolbar{background:#202124}
+.toolbar .navdot{width:6px;height:6px;border-radius:50%;background:#bdc1c6}
+.browser.dark .toolbar .navdot{background:#5f6368}
+.toolbar .addr{flex:1;height:16px;border-radius:8px;background:#fff}
+.browser.dark .toolbar .addr{background:#292a2d}
+.browser.safari .tabbar{padding:8px 8px 0;height:38px}
+.browser.safari .tab{border-radius:8px;margin:0 1px;justify-content:center;background:transparent;color:#3c3c3c}
+.browser.safari .tab.active{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.browser.safari .toolbar{background:#e7e7e7;justify-content:center}
+.browser.safari .toolbar .addr{max-width:260px;background:#fff}
+.reference{margin-top:96px;padding-top:40px;border-top:1px solid var(--border-1)}
+.reference h2{font-size:18px;font-weight:600;margin:0 0 6px}
+.reference .sub{font-size:13px;color:var(--fg-3);margin:0 0 28px;max-width:640px;line-height:1.5}
+.ref-grid{display:flex;gap:28px;flex-wrap:wrap}
+.ref-card{width:230px;padding:20px;border:1px solid var(--border-1);border-radius:12px;background:#fff}
+.ref-icon{width:40px;height:40px;margin-bottom:14px}
+.ref-icon svg{width:100%;height:100%;display:block}
+.ref-label{font-size:13px;font-weight:500;margin:0 0 10px;line-height:1.4}
+.ref-flag{font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block}
+.ref-card.banned .ref-flag{background:#fbeaea;color:#8a2c2c}
+.ref-flag.neutral{background:#eef2f0;color:var(--fg-2)}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="page-head">
+<h1>Backgrounded-tab arrival signal — playground</h1>
+<p>When links arrive while the Circlists tab sits backgrounded, how should the tab itself say so? Five committed directions below, each an established industry pattern, rendered across real tab-strip contexts — light, dark, crowded, pinned, and Safari. No numbers, no color but emerald, no motion.</p>
+<div class="meta">Circlists · desktop tab strips only · idle → alerted pairs</div>
+</div>
+<div id="panels"></div>
+<div id="reference"></div>
+</div>
+<script>
+const CIRC_IDLE = "Circlists — Sunday Papers";
+const BULLET = "• " + CIRC_IDLE;
+const N = {inbox:"Inbox — mail", atlantic:"The Atlantic — why we share what we read", github:"GitHub — pull requests", calendar:"Calendar", docs:"Docs", aeon:"Aeon", longreads:"Longreads", nautilus:"Nautilus", news:"News", figma:"Figma"};
+
+function favSvg(type){
+  if(type==='rest') return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/></svg>';
+  if(type==='alertFull') return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="23" fill="#8bbfad"/><circle cx="24" cy="24" r="19" fill="#047857"/></svg>';
+  if(type==='corner') return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22.5" fill="#8bbfad"/><circle cx="24" cy="24" r="14.25" fill="#047857"/><circle cx="24" cy="24" r="14.925" fill="none" stroke="#fff" stroke-width="1.35"/><circle cx="38" cy="38" r="7.5" fill="#8bbfad" stroke="#fff" stroke-width="1"/><circle cx="38" cy="38" r="4.6" fill="#047857"/></svg>';
+}
+function renderTab(cfg){
+  const favHtml = cfg.type==='c' ? `<span class="favicon">${favSvg(cfg.fav)}</span>` : `<span class="favicon"><span class="nfav">${cfg.letter}</span></span>`;
+  const titleHtml = cfg.pinned ? '' : `<span class="title">${cfg.title}</span>`;
+  return `<div class="tab${cfg.pinned?' pinned':''}${cfg.active?' active':''}">${favHtml}${titleHtml}</div>`;
+}
+function renderStrip(theme, tabsArr, extraClass){
+  const tabsHtml = tabsArr.map(renderTab).join('');
+  return `<div class="browser ${theme}${extraClass?' '+extraClass:''}"><div class="tabbar"><div class="tl"><span class="r"></span><span class="y"></span><span class="g"></span></div>${tabsHtml}</div><div class="toolbar"><span class="navdot"></span><span class="navdot"></span><span class="addr"></span></div></div>`;
+}
+function normalTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+  {type:'n',letter:'CAL',title:N.calendar,active:false},
+];}
+function crowdedTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'n',letter:'DC',title:N.docs,active:false},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+  {type:'n',letter:'AE',title:N.aeon,active:false},
+  {type:'n',letter:'CAL',title:N.calendar,active:false},
+  {type:'n',letter:'LR',title:N.longreads,active:false},
+  {type:'n',letter:'NT',title:N.nautilus,active:false},
+  {type:'n',letter:'NW',title:N.news,active:false},
+  {type:'n',letter:'FG',title:N.figma,active:false},
+];}
+function pinnedTabs(fav,title){return [
+  {type:'c',fav,title,active:false,pinned:true},
+  {type:'n',letter:'IN',title:N.inbox,active:false,pinned:true},
+  {type:'n',letter:'CAL',title:N.calendar,active:false,pinned:true},
+  {type:'n',letter:'TA',title:N.atlantic,active:true,pinned:false},
+  {type:'n',letter:'GH',title:N.github,active:false,pinned:false},
+];}
+function safariTabs(fav,title){return [
+  {type:'n',letter:'IN',title:N.inbox,active:true},
+  {type:'c',fav,title,active:false},
+  {type:'n',letter:'TA',title:N.atlantic,active:false},
+  {type:'n',letter:'GH',title:N.github,active:false},
+];}
+
+const CONTEXTS = [
+  {key:'light', label:'Light tab strip, normal width', theme:'light', build:normalTabs},
+  {key:'dark', label:'Dark tab strip, normal width', theme:'dark', build:normalTabs},
+  {key:'crowded', label:'Crowded strip (10+ tabs, truncated)', theme:'light', build:crowdedTabs, extra:'crowded'},
+  {key:'pinned', label:'Pinned tab (favicon only, no title)', theme:'light', build:pinnedTabs},
+  {key:'safari', label:'Safari-style tab (favicon locked to resting mark)', theme:'safari', build:safariTabs},
+];
+
+const OPTIONS = [
+  {name:'Title bullet', direction:'A leading "•" prepended to the tab title, cleared on focus. Title text can\'t be colored, so the mark stays plain and monochrome.',
+   precedent:'The title-mutation family — Gmail, GitHub, Linear all drive tab signals through document.title. This is its count-free form.',
+   logic:(ctx,state)=>({fav:'rest', title: state==='idle'?CIRC_IDLE:BULLET}),
+   note:(ctx)=>{ if(ctx==='pinned') return 'Pinned tabs carry no title at all — the bullet has nothing to render on. Goes fully dark here.'; if(ctx==='safari') return 'Title-based, not favicon-based — survives Safari\'s favicon restriction completely.'; if(ctx==='crowded') return 'Leading placement survives truncation — the bullet is the first character kept.'; return null; }},
+  {name:'Favicon full-swap', direction:'The entire favicon becomes the dot mark at full icon scale — the halo thins to a rim as the green core fills the tile. Title never changes.',
+   precedent:'Gmail\'s favicon indicator, built for pinned tabs where titles vanish. Full-swap, not overlay, per the 16px guidance that a favicon holds one strong shape.',
+   logic:(ctx,state)=>({fav: ctx==='safari' ? 'rest' : (state==='idle'?'rest':'alertFull'), title:CIRC_IDLE}),
+   note:(ctx)=>{ if(ctx==='safari') return 'Safari can\'t swap favicons — the alerted state renders identical to idle. Shown honestly, not hidden.'; if(ctx==='pinned') return 'Favicon-only context — this is where the signal is fully intact.'; return null; }},
+  {name:'Favicon corner dot', direction:'A small green dot badged into the corner of the resting mark, count-free.',
+   precedent:'The Slack/Discord badge slot. Included deliberately — 16px legibility literature predicts this reads as mud against the mark\'s own sage halo. Rendered faithfully, not flatteringly.',
+   logic:(ctx,state)=>({fav: ctx==='safari' ? 'rest' : (state==='idle'?'rest':'corner'), title:CIRC_IDLE}),
+   note:(ctx)=>{ if(ctx==='safari') return 'Same favicon restriction — no-op in Safari.'; if(ctx==='pinned') return 'Even more cramped at pinned scale — the badge nearly merges into the halo it sits on.'; if(ctx==='light') return 'The mark\'s own halo is sage; the badge\'s halo is sage — there is no contrast left to badge with.'; return null; }},
+  {name:'Layered', direction:'Favicon full-swap where the browser allows it; title bullet steps in only as the Safari fallback.',
+   precedent:'Combines options 1 and 2, routed by what each browser actually supports.',
+   logic:(ctx,state)=>{ if(ctx==='safari') return {fav:'rest', title: state==='idle'?CIRC_IDLE:BULLET}; return {fav: state==='idle'?'rest':'alertFull', title:CIRC_IDLE}; },
+   note:(ctx)=>{ if(ctx==='safari') return 'Favicon locked, so the title bullet takes over as fallback — the tab still speaks.'; if(ctx==='pinned') return 'Favicon path only; Safari\'s title fallback would go dark here too, moot since pinned favicons still swap fine.'; return null; },
+   extra:()=>`<div class="ctx-row"><div class="ctx-label">Doubled state — both signals firing on the same tab at once</div><div class="pair"><div class="cell"><span class="tag alert">Both signals</span>${renderStrip('light', normalTabs('alertFull', BULLET))}</div></div><div class="ctx-note">Judge by eye: does the pairing reinforce, or read as redundant?</div></div>`},
+  {name:'Nothing', direction:'The tab never changes, in any state, in any context. The dot stays in-app.',
+   precedent:'The calm end of the market — Fastmail, Feedbin — ships no tab signal at all.',
+   logic:(ctx,state)=>({fav:'rest', title:CIRC_IDLE}),
+   note:(ctx)=>{ if(ctx==='light') return 'Idle and alerted are pixel-identical — intentionally.'; return null; }},
+];
+
+function renderPanel(opt, idx){
+  const contextsHtml = CONTEXTS.map(ctx=>{
+    const idleCfg = opt.logic(ctx.key,'idle');
+    const alertCfg = opt.logic(ctx.key,'alert');
+    const idleStrip = renderStrip(ctx.theme, ctx.build(idleCfg.fav, idleCfg.title), ctx.extra);
+    const alertStrip = renderStrip(ctx.theme, ctx.build(alertCfg.fav, alertCfg.title), ctx.extra);
+    const note = opt.note ? opt.note(ctx.key) : null;
+    return `<div class="ctx-row"><div class="ctx-label">${ctx.label}</div><div class="pair"><div class="cell"><span class="tag">Idle</span>${idleStrip}</div><div class="cell"><span class="tag alert">Alerted</span>${alertStrip}</div></div>${note?`<div class="ctx-note">${note}</div>`:''}</div>`;
+  }).join('');
+  const extra = opt.extra ? opt.extra() : '';
+  return `<section class="panel"><header class="panel-head"><span class="num">${idx}</span><div><h3>${opt.name}</h3><p class="direction">${opt.direction}</p><p class="precedent">Precedent — ${opt.precedent}</p></div></header><div class="contexts">${contextsHtml}${extra}</div></section>`;
+}
+
+document.getElementById('panels').innerHTML = OPTIONS.map((o,i)=>renderPanel(o,i+1)).join('');
+
+const gmailIcon = '<svg viewBox="0 0 48 48"><rect x="3" y="10" width="38" height="27" rx="4" fill="#fff" stroke="#c7c7c5" stroke-width="2"/><path d="M4 12 L22 27 L40 12" fill="none" stroke="#c7c7c5" stroke-width="2"/><circle cx="37" cy="12" r="11" fill="#d93025"/><text x="37" y="16" font-size="13" font-family="Inter,sans-serif" font-weight="700" fill="#fff" text-anchor="middle">3</text></svg>';
+const slackIcon = '<svg viewBox="0 0 48 48"><rect x="4" y="4" width="18" height="18" rx="4" fill="#36c5ab"/><rect x="26" y="4" width="18" height="18" rx="4" fill="#2eb67d"/><rect x="4" y="26" width="18" height="18" rx="4" fill="#ecb22e"/><rect x="26" y="26" width="18" height="18" rx="4" fill="#8f8f8f"/><circle cx="38" cy="10" r="9" fill="#e01e5a" stroke="#fff" stroke-width="2"/></svg>';
+const ffIcon = '<svg viewBox="0 0 48 48"><defs><radialGradient id="g" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#ffb238"/><stop offset="55%" stop-color="#ff6a1f"/><stop offset="100%" stop-color="#8a2be2"/></radialGradient></defs><circle cx="24" cy="24" r="20" fill="url(#g)"/><circle cx="9" cy="38" r="6.5" fill="#0a84ff" stroke="#fff" stroke-width="2"/></svg>';
+
+document.getElementById('reference').innerHTML = `<section class="reference"><h2>Industry reference — for context, not options</h2><p class="sub">Faithful mimics of what the loud end of the industry does with a favicon, set beside the native browser precedent that needs neither number nor color.</p><div class="ref-grid">
+<div class="ref-card banned"><div class="ref-icon">${gmailIcon}</div><p class="ref-label">Gmail — unread-count favicon</p><span class="ref-flag">Banned: numbers</span></div>
+<div class="ref-card banned"><div class="ref-icon">${slackIcon}</div><p class="ref-label">Slack — red badge favicon</p><span class="ref-flag">Banned: red as signal</span></div>
+<div class="ref-card"><div class="ref-icon">${ffIcon}</div><p class="ref-label">Firefox — native pinned-tab attention dot</p><span class="ref-flag neutral">Native precedent, count-free</span></div>
+</div></section>`;
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../" />
+<title>Whiteboard — talk in a circle you are not in</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:62ch;margin:12px 0 0;text-wrap:pretty}
+.lede b{font-weight:600;color:var(--color-fg-1)}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+h2{font:600 15px/1.3 var(--font-sans);letter-spacing:-.01em;margin:36px 0 0}
+.opt{margin-top:36px}
+.opthead{display:flex;align-items:baseline;gap:12px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 18px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claims{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 28px;margin:12px 0 0}
+.claim{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty;margin:0}
+.claim b{font-weight:600;color:var(--color-fg-1)}
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:900px){.trio,.claims{grid-template-columns:1fr}}
+.frame{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.framecap{padding:10px 14px;border-bottom:1px solid var(--color-border-2);font:500 11px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+.pad{padding:18px 16px 22px;background:var(--color-page)}
+
+/* ---- the rail, as it is: 248 wide, 44px rows, 11px vertical padding, the
+   selected circle on a raised white surface behind a 3px accent bar, and one
+   signal slot at the right-hand end of every row. ---- */
+.rail{width:248px;margin:0 auto;display:flex;flex-direction:column}
+.railhead{font:600 11px/1 var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);padding:0 14px 8px}
+.rows{display:flex;flex-direction:column;gap:2px}
+.row{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;padding:11px 12px 11px 14px;border-radius:var(--radius-md);background:transparent}
+.row.sel{background:var(--color-surface);box-shadow:var(--shadow-raised)}
+.bar,.tab{position:absolute;left:0;top:8px;width:3px;height:28px;border-radius:3px;display:none}
+.row.sel .bar{display:block;background:var(--color-accent)}
+.nm{flex:1;min-width:0;font:500 14px/1.2 var(--font-sans);color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.sel .nm{font-weight:600}
+.slot{display:inline-flex;align-items:center;flex-shrink:0;width:10px;height:10px}
+.dot{display:none}
+.row.l .dot{display:block}
+.newc{display:flex;align-items:center;gap:8px;min-height:44px;padding:11px 12px 11px 14px;margin-top:8px;font:500 13px/1 var(--font-sans);color:var(--color-fg-2)}
+.newc i{width:14px;height:14px;border-radius:1px;position:relative;flex-shrink:0}
+.newc i::before,.newc i::after{content:"";position:absolute;background:var(--color-fg-2)}
+.newc i::before{left:0;right:0;top:6px;height:1.5px}
+.newc i::after{top:0;bottom:0;left:6px;width:1.5px}
+
+/* option-specific rail behaviour — everything else on the row is identical */
+.o-dot .row.t .dot{display:block}
+.o-tab .row.t .tab{display:block;background:var(--color-sage)}
+.o-name .row.t .nm{font-weight:600;color:var(--color-fg-1)}
+.o-name .row:not(.t):not(.sel) .nm{font-weight:500;color:var(--color-fg-2)}
+
+/* 04 — the line at the foot of the rail */
+.foot{display:none;align-items:center;gap:10px;margin-top:10px;padding:9px 10px 9px 12px;min-height:44px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);box-shadow:var(--shadow-raised)}
+.o-foot [data-rail="moved"] .foot.m,.o-foot [data-rail="dealt"] .foot.d{display:flex}
+.foot u{width:3px;height:22px;border-radius:2px;background:var(--color-sage);flex-shrink:0;text-decoration:none}
+.foot span{flex:1;min-width:0;font:400 12.5px/1.35 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.foot span b{font-weight:600}
+.foot em{font-style:normal;color:var(--color-fg-3);font-size:13px;flex-shrink:0}
+
+/* the return bar, as the candidate builds it (cand-lm652-return.jsx) */
+.bar2{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden}
+.bar2 .top{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 12px 0 14px}
+.bar2 .t{width:3px;height:22px;border-radius:2px;background:var(--color-sage);flex-shrink:0}
+.bar2[data-tab="0"] .t{background:transparent}
+.bar2 .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bar2 .l1{font:600 14px/1.35 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.bar2 .l2{font:400 12px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.bar2 .chev{flex-shrink:0;width:34px;height:34px;border-radius:var(--radius-md);border:1px solid var(--color-border-1);display:flex;align-items:center;justify-content:center;color:var(--color-fg-2)}
+.bar2 .rows2{border-top:1px solid var(--color-border-2);padding:4px 6px 6px;display:none}
+.bar2[data-open="1"] .rows2{display:block}
+.bar2 .r2{display:flex;align-items:center;gap:10px;min-height:48px;padding:7px 8px;border-radius:var(--radius-md)}
+.bar2 .r2+.r2{border-top:1px solid var(--color-border-2)}
+.bar2 .r2 span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bar2 .r2 b{font:600 13.5px/1.35 var(--font-sans);color:var(--color-fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar2 .r2 i{font:400 12px/1.3 var(--font-sans);font-style:normal;color:var(--color-fg-3)}
+.feedpad{padding:18px 16px 22px;background:var(--color-page)}
+.ghost{margin-top:14px;height:78px;border-radius:var(--radius-lg);border:1px solid var(--color-border-2);background:var(--color-surface)}
+
+/* ---- volume strip ---- */
+.vol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:20px}
+@media (max-width:900px){.vol{grid-template-columns:1fr}}
+.tally{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);margin:12px 0 0;max-width:62ch;text-wrap:pretty}
+
+/* ---- references ---- */
+.refs{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:900px){.refs{grid-template-columns:1fr}}
+.ref{border:1px dashed var(--color-border-1);border-radius:var(--radius-lg);padding:16px 16px 18px}
+.ref h3{font:600 13.5px/1.3 var(--font-sans);margin:0 0 6px}
+.ref p{font:400 12.5px/1.55 var(--font-sans);color:var(--color-fg-2);margin:0;text-wrap:pretty}
+.refnote{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:26px 0 0}
+</style>
+</head>
+<body>
+<template id="rail">
+  <div class="rail">
+    <div class="railhead">Circles</div>
+    <div class="rows">
+      <div class="row sel" data-c="bookmarks"><span class="bar"></span><span class="tab"></span><span class="nm">Bookmarks</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="longreads"><span class="bar"></span><span class="tab"></span><span class="nm">Long reads</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="fifth"><span class="bar"></span><span class="tab"></span><span class="nm">The Fifth Floor</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+      <div class="row" data-c="tuesday"><span class="bar"></span><span class="tab"></span><span class="nm">Tuesday Club</span><span class="slot"><svg class="dot" width="10" height="10" viewBox="-2 -2 52 52" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="var(--color-sage)"></circle><circle cx="24" cy="24" r="14.25" fill="var(--color-accent)"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#ffffff" stroke-width="1.35"></circle></svg></span></div>
+    </div>
+    <div class="foot m"><u></u><span><b>Marcus T.</b> replied in Long reads</span><em>&rsaquo;</em></div>
+    <div class="foot d"><u></u><span><b>Ada L.</b> replied in Tuesday Club</span><em>&rsaquo;</em></div>
+    <div class="newc"><i></i>New circle</div>
+  </div>
+</template>
+
+<div class="wrap">
+  <div class="eyebrow">LM-652 · whiteboard</div>
+  <h1>Talk in a circle you are not in</h1>
+  <p class="lede">You are reading Bookmarks. In Long reads, Marcus has spoken on a card you watch. Nothing was added there — only talk, on something you have a stake in. <b>Six answers, including leaving the rail alone.</b> Every frame shows the same three moments: the rail quiet, the rail after the circles have moved, and the rail after you have dealt with it — because the two debts do not clear on the same act. A circle's link dot goes the moment you arrive at its Active tab, whether you read anything or not. Talk clears card by card, only as you open each one. An answer that puts both on one mark either forgets the reply or points at one you have already read.</p>
+  <p class="lede">Seeded so the third moment is the test: you went into Long reads and opened the card, tapped into The Fifth Floor and left, and in Tuesday Club opened one of two cards. <b>Tuesday Club still owes you one reply</b> at the end of every frame that can say so.</p>
+
+  <div class="rule"></div>
+
+  <div class="opt o-none">
+    <div class="opthead"><span class="num">00</span><span class="name">Leave the rail alone</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the rail keeps its one dot with its one meaning. You learn a circle has talk by going in, where the return bar is standing at the head of the feed with its sage tab lit.</p>
+      <p class="claim"><b>Clears</b> — nothing to clear out here. The bar's tab discharges once you have opened what came back, and the bar itself stays while anything is unopened.</p>
+      <p class="claim"><b>Cost</b> — from Bookmarks you never learn. A reply on a card you watch waits until you next visit that circle, and someone who answered you is answered by silence.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Long reads has talk · Fifth Floor has links · Tuesday has both</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After you have dealt with it</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o-dot">
+    <div class="opthead"><span class="num">01</span><span class="name">The dot means the circle moved</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — one mark, widened. The micro dot fires for a new link <i>or</i> talk on a card you watch, and refuses to say which: it means <i>something here is for you</i>. Nothing is added to the row.</p>
+      <p class="claim"><b>Clears</b> — on arrival at Active, unconditionally, as it does today. The return bar inside the circle is the durable carrier behind it.</p>
+      <p class="claim"><b>Cost</b> — it over-clears: tap in, leave, and the reply is never announced again (third frame). And talk outruns links, so at ten circles it is lit on most rows most weeks.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Three circles moved — you cannot tell how</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — Tuesday's unread reply is gone with it</div><div class="pad" data-rail="gone"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o-tab">
+    <div class="opthead"><span class="num">02</span><span class="name">The talk mark stands in the left edge</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the conversation's own sage tab, 3&times;22 at radius 2, at rail scale: it stands in the row's left edge while the right-hand slot stays links-only. Two debts, two places, one vocabulary the member has already met.</p>
+      <p class="claim"><b>Clears</b> — card by card. The tab stands until every watched card in that circle has been opened, so it survives tapping in and leaving, and Tuesday stays marked.</p>
+      <p class="claim"><b>Cost</b> — two marks on one row, and the left edge now says two things: <i>you are here</i> in accent, <i>talk waits</i> in sage. The selected circle cannot show both, so the circle you are in never carries it.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Tab for talk · dot for links · Tuesday shows both</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — Tuesday still owes you a reply</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o-name">
+    <div class="opthead"><span class="num">03</span><span class="name">The name carries it</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — no second mark anywhere. A circle holding unread talk reads its name in full ink; circles with nothing to say recede. Hierarchy by weight, which is the house rule, and the signal slot is untouched.</p>
+      <p class="claim"><b>Clears</b> — card by card, like 02: the name settles back once every watched card in that circle has been opened.</p>
+      <p class="claim"><b>Cost</b> — it restyles every quiet row to make one row speak, competes with the selected circle's own weight, and reads as a rendering inconsistency before it reads as a signal.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Long reads and Tuesday hold their ink</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — only Tuesday still stands out</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o-foot">
+    <div class="opthead"><span class="num">04</span><span class="name">One line at the foot of the rail</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — nothing on any circle's row. Beneath the circles, one line in words: who spoke and where. It is specific, it is readable without learning a mark, and it takes you straight to the card.</p>
+      <p class="claim"><b>Clears</b> — when you open that card. The line then names the next one waiting, and goes when nothing unopened is left.</p>
+      <p class="claim"><b>Cost</b> — an inbox by another name. One line is calm; five need a policy, and it puts a person's name into permanent chrome that the rail has kept free of people.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">Nothing waiting</div><div class="pad" data-rail="idle"></div></div>
+      <div class="frame"><div class="framecap">Links still on the row · talk in words below</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">After — the line names what is left</div><div class="pad" data-rail="dealt"></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="opt o-bar">
+    <div class="opthead"><span class="num">05</span><span class="name">The bar answers for every circle</span></div>
+    <div class="claims">
+      <p class="claim"><b>Stance</b> — the rail is untouched, and the job is answered where it is already answered. The return bar at the head of the feed you are in names cards from <i>any</i> circle you watch, and its rows say which circle.</p>
+      <p class="claim"><b>Clears</b> — card by card, exactly as the bar does now. The sage tab goes once nothing unopened is left; the bar stands while anything is.</p>
+      <p class="claim"><b>Cost</b> — the head of Bookmarks now carries Tuesday's business, and you only learn while looking at a feed. The rail, which is where you look to choose, says nothing at all.</p>
+    </div>
+    <div class="trio">
+      <div class="frame"><div class="framecap">The rail, unchanged — links only</div><div class="pad" data-rail="moved"></div></div>
+      <div class="frame"><div class="framecap">The bar at the head of Bookmarks</div><div class="feedpad"><div class="bar2" data-bar data-tab="1" data-open="1" data-l1="Marcus T. and Ada L. spoke on cards you are watching" data-l2="Pick one to open its conversation" data-rows="Why buildings fall down|Marcus T. · Long reads;A pattern language|Ada L. · Tuesday Club"></div><div class="ghost"></div></div></div>
+      <div class="frame"><div class="framecap">After — opened, and the tab discharges</div><div class="feedpad"><div class="bar2" data-bar data-tab="0" data-open="0" data-l1="Ada L. spoke on a card you are watching" data-l2="See what they said"></div><div class="ghost"></div></div></div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Ten circles, one ordinary week</h2>
+  <p class="tally">Four links landed across ten circles; eleven people spoke on cards you watch, in six of them. The same week, told three ways. This is the question underneath the six: whether a mark that reports talk can stay rare enough to mean anything.</p>
+  <div class="vol">
+    <div class="frame o-none"><div class="framecap">Today — links only</div><div class="pad" data-rail="ten-links"></div></div>
+    <div class="frame o-dot"><div class="framecap">01 — one dot for both</div><div class="pad" data-rail="ten-both"></div></div>
+    <div class="frame o-tab"><div class="framecap">02 — tab for talk, dot for links</div><div class="pad" data-rail="ten-both"></div></div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Adjacent, and already settled: the bar's own tab</h2>
+  <p class="tally">Inside a circle, this part is answered. The bar stands while any card you watch holds talk you have not opened; the sage tab is the notification, and it is the only part that discharges. Shown for reference — it is what every option above rests on, and it is not one of the six.</p>
+  <div class="trio">
+    <div class="frame"><div class="framecap">Unopened — the tab is lit</div><div class="feedpad"><div class="bar2" data-bar data-tab="1" data-open="0" data-l1="Marcus T. spoke on cards you are watching" data-l2="See what they said"></div><div class="ghost"></div></div></div>
+    <div class="frame"><div class="framecap">Opened, nothing new — the bar stays, the tab goes</div><div class="feedpad"><div class="bar2" data-bar data-tab="0" data-open="0" data-l1="Marcus T. spoke on cards you are watching" data-l2="See what they said"></div><div class="ghost"></div></div></div>
+    <div class="frame"><div class="framecap">Nothing you watch has been spoken on</div><div class="feedpad"><div class="ghost" style="margin-top:0"></div><div class="ghost"></div></div></div>
+  </div>
+
+  <p class="refnote">For context, not options — how others answer the same job</p>
+  <div class="refs">
+    <div class="ref">
+      <h3>The mention dot</h3>
+      <p>Team chat marks a channel only when you are named, and leaves ordinary talk to a quiet bold. A stake test, not an activity test — which is the same instinct as watching a card.</p>
+    </div>
+    <div class="ref">
+      <h3>The per-folder count</h3>
+      <p>Mail puts a number beside every folder and clears it item by item. Precise, never wrong, and the thing this product refuses: a digit that always demands to reach zero.</p>
+    </div>
+    <div class="ref">
+      <h3>New since your last visit</h3>
+      <p>Forums mark a board as having new posts and clear it on the visit, not on the reading. Cheap to keep honest, and it forgets anything you did not get to.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const TPL = document.getElementById('rail');
+const TEN = [
+  ['Bookmarks', 'sel', 0, 0], ['Long reads', '', 0, 1], ['The Fifth Floor', '', 1, 0], ['Tuesday Club', '', 1, 1],
+  ['Design weekly', '', 0, 1], ['Kitchen table', '', 0, 0], ['Infra reading', '', 1, 1],
+  ['Type &amp; lettering', '', 0, 1], ['Night shift', '', 0, 0], ['Second floor', '', 1, 1],
+];
+const SETS = {
+  idle: {}, gone: {},
+  moved: { longreads: 't', fifth: 'l', tuesday: 'lt' },
+  dealt: { tuesday: 't' },
+};
+document.querySelectorAll('[data-rail]').forEach((el) => {
+  el.appendChild(TPL.content.cloneNode(true));
+  const kind = el.dataset.rail;
+  const rows = el.querySelector('.rows');
+  if (kind.startsWith('ten')) {
+    const talk = kind === 'ten-both';
+    rows.innerHTML = '';
+    const proto = TPL.content.querySelector('.row');
+    TEN.forEach(([name, sel, l, t]) => {
+      const r = proto.cloneNode(true);
+      r.className = 'row' + (sel ? ' sel' : '') + (l ? ' l' : '') + (talk && t ? ' t' : '');
+      r.querySelector('.nm').innerHTML = name;
+      rows.appendChild(r);
+    });
+    el.querySelector('.newc').remove();
+    return;
+  }
+  const set = SETS[kind] || {};
+  rows.querySelectorAll('.row').forEach((r) => {
+    const v = set[r.dataset.c] || '';
+    if (v.includes('l')) r.classList.add('l');
+    if (v.includes('t')) r.classList.add('t');
+  });
+});
+document.querySelectorAll('[data-bar]').forEach((el) => {
+  const d = el.dataset;
+  const rows = (d.rows || '').split(';').filter(Boolean).map((r) => {
+    const [title, who] = r.split('|');
+    return '<div class="r2"><span><b>' + title + '</b><i>' + who + '</i></span><em style="color:var(--color-fg-3)">&rsaquo;</em></div>';
+  }).join('');
+  el.innerHTML = '<div class="top"><span class="t"></span><span class="txt"><span class="l1">' + d.l1 + '</span><span class="l2">' + d.l2 + '</span></span><span class="chev">' + (d.open === '1' ? '&and;' : '&or;') + '</span></div><div class="rows2">' + rows + '</div>';
+});
+</script>
+</body>
+</html>
