@@ -200,6 +200,21 @@ const CIRC_STATE_REGISTER = [
 
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
   { group: 'Account', id: 'account-sso', label: 'Email & password via SSO', stage: (c) => { c.setUser({ ...window.CircSeed.DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); c.goSpace('sp-backend', 'account'); } },
+
+  // ==========================================================================
+  // CANDIDATE BUILD — feed enhancement (BIZ-136)
+  //
+  // Everything the while-away runs build lands in this group, and nowhere else.
+  // One run, one set of entries, appended below the last run's. A state that is
+  // not reachable from here did not ship.
+  //
+  // Keep the group title exactly as written — it is how the work is found in
+  // the Scenarios palette without hunting through the app.
+  //
+  // The placeholder below holds the group open while it is otherwise empty.
+  // Delete it the moment the first real state lands.
+  // ==========================================================================
+  { group: 'Candidate build \u2014 feed enhancement', id: 'candidate-placeholder', label: 'Nothing built yet', stage: (c) => c.goSpace('sp-backend') },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
