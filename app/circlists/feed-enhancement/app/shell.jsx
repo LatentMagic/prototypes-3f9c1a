@@ -204,7 +204,11 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
 };
 
 // ---- Tabs (Active / Read) --------------------------------------------------
-const Tabs = ({ active, onChange }) => {
+// `right` is an optional slot at the trailing edge of the bar, for chrome that
+// scopes the tab's own list rather than the circle (the feed sort control is
+// the first). It sits here rather than in the top bar because the top bar
+// belongs to the circle, and sort acts on one tab's list.
+const Tabs = ({ active, onChange, right = null }) => {
   const items = [
     { id: 'active', label: 'Active' },
     { id: 'read', label: 'Read' },
@@ -212,7 +216,7 @@ const Tabs = ({ active, onChange }) => {
   return (
     <div style={{
       background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border-2)',
-      padding: '0 16px', display: 'flex', gap: 4,
+      padding: '0 16px', display: 'flex', gap: 4, alignItems: 'center',
       position: 'sticky', top: 'var(--top-bar-height)', zIndex: 49,
     }}>
       {items.map((t) => {
@@ -230,6 +234,7 @@ const Tabs = ({ active, onChange }) => {
           </button>
         );
       })}
+      {right && <div style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center' }}>{right}</div>}
     </div>
   );
 };

@@ -171,8 +171,19 @@ const CircApp = () => {
   // state, never persisted — a browser reload is a teardown, so it draws no line.
   const [dividerAt, setDividerAt] = useState(null);
   const [announce, setAnnounce] = useState('');
+  // Feed sort (BIZ-136 candidate build). Held per circle AND per tab, keyed
+  // `<circleId>:<tab>` — Active and Read are different jobs, so a catch-up
+  // posture on one does not follow you to the other. VISIT STATE, never
+  // persisted: newest-first is the product's contract and the substrate the
+  // whole arrivals machinery stands on, so a non-default order is a reading
+  // posture for this session rather than a preference that silently outlives it.
+  const [sortOrder, setSortOrder] = useState({});
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
+  // A menu left open while the view changes underneath it would point at a list
+  // that is no longer there, so switching tab or circle closes it.
+  useEffect(() => { setSortMenuOpen(false); }, [tab, currentId]);
   const spacesRef = useRef(spaces); spacesRef.current = spaces;
   const currentRef = useRef(currentId); currentRef.current = currentId;
   const tabRef = useRef(tab); tabRef.current = tab;
@@ -572,6 +583,7 @@ const CircApp = () => {
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
+        setSortOrder, setSortMenuOpen, setDividerAt,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -703,11 +715,48 @@ const CircApp = () => {
         { showMembers: false }
       );
     } else {
-      const visible = tab === 'active' ? activeItems : readItems;
+      const stored = tab === 'active' ? activeItems : readItems;
       const pending = (space && space.pending) || [];
+      // ---- Feed sort (BIZ-136 candidate build) ----------------------------
+      // A deletable aid in the app's own idiom: no feed-sort.jsx ⇒ no control,
+      // no reorder, and the feed behaves exactly as it did. That is what keeps
+      // the homepage demo, which shares this module, untouched by the candidate.
+      const SortCtl = window.SortControl || null;
+      const sortKey = currentId + ':' + tab;
+      const order = sortOrder[sortKey] || (window.CIRC_SORT_DEFAULT || 'newest');
+      const visible = (SortCtl && window.circSortItems) ? window.circSortItems(stored, order) : stored;
+      // The control is absent below two items — a one-item list reads the same
+      // under either order, so the control could do nothing. Same instinct as
+      // the waterline's own "both sides or nothing".
+      //
+      // Absent while the feed is loading, for the same reason: the member is
+      // looking at the spinner, and a control offering to reorder a list that
+      // is not on screen yet is chrome acting on nothing.
+      const showSort = !!SortCtl && !loadingFeed && stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2);
+      const setOrder = (next) => {
+        setSortOrder((prev) => ({ ...prev, [sortKey]: next }));
+        // The gesture is acknowledged, as every gesture in this app is. The
+        // waterline's suppression is NOT announced — a state never is.
+        announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));
+      };
+      const sortControl = showSort
+        ? <SortCtl order={order} onChange={setOrder} open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
+        : null;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
-      const divIdx = tab === 'active' ? window.circDividerIndex(visible, dividerAt) : -1;
+      //
+      // NOT DRAWN under oldest-first. circDividerIndex finds the first item
+      // at-or-below the mark, which only locates the line correctly in a
+      // newest-first list; and "Earlier" names the older pile BENEATH the line,
+      // which under oldest-first sits above it. Recomputing the index would fix
+      // the position and leave the word lying. Suppression is the existing
+      // grammar, not a new one — ui.md Decision-30 already draws nothing for an
+      // empty, single-item, all-new or nothing-new feed and calls the absence
+      // "the calm answer". Newness is not lost with it: the arrival glow below
+      // keys on the item's own timestamp, not its position, so fresh cards
+      // still glow at the foot of an oldest-first feed.
+      const divIdx = (tab === 'active' && order === 'newest')
+        ? window.circDividerIndex(visible, dividerAt) : -1;
       const feed = loadingFeed ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
@@ -743,7 +792,7 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          <Tabs active={tab} onChange={setTab} />
+          <Tabs active={tab} onChange={setTab} right={sortControl} />
           {feed}
           {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
