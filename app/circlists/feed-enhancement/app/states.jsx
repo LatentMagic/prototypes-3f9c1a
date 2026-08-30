@@ -40,6 +40,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
+    setSortOrder, setSortMenuOpen, setDividerAt,
   } = api;
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
@@ -158,10 +159,53 @@ function circStateContext(api) {
     setCurrentId('sp-full'); setTab('active'); setRoute('members');
   };
 
+  // ---- Feed sort (BIZ-136 candidate build) ---------------------------------
+  // Sort is held per circle AND per tab, keyed `<circleId>:<tab>`, so a stager
+  // sets the key it wants and leaves the other tab alone.
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false }) => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    const next = { [space + ':' + tab]: order };
+    if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
+    setSortOrder(next);
+    setSortMenuOpen(!!menu);
+    setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
+    setTab(tab);
+    // The waterline pair. entering a circle draws the mark from the stored
+    // lastSeenAt and stamps it to now in the same breath, so a staged visit
+    // cannot reliably reproduce a mid-pile mark by timing alone. These two
+    // states exist to show one ruling, so the mark is placed explicitly —
+    // after the entry above, which would otherwise overwrite it — at a fixed
+    // point inside the circle's unread pile. Both states place the SAME mark;
+    // only the sort order differs, which is the whole point of the pair.
+    if (waterline) {
+      setTimeout(() => setDividerAt(Date.now() - 8.5 * 3600e3), 0);
+    }
+  };
+
+  // One unread item only, so the sort control is absent (it appears from two up).
+  // Built as its own circle rather than by emptying a seeded one, so nothing
+  // else about the app is disturbed.
+  const stageSingleItem = () => {
+    setUser(DEFAULT_USER);
+    const one = {
+      id: 'sp-one', name: 'Reading Room', funded: true, dormancy: null,
+      champion: 'You', championEmail: DEFAULT_USER.email,
+      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
+      items: [IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Sam R.')],
+    };
+    one.items.forEach((it) => { it.at = Date.now() - 3600e3; });
+    one.lastSeenAt = Date.now(); one.unseen = false; one.pending = []; one.queued = [];
+    setSpaces(prev => [one, ...prev.filter(s => s.id !== 'sp-one')]);
+    setSortOrder({}); setSortMenuOpen(false);
+    setCurrentId('sp-one'); setTab('active'); setRoute('space'); setLoadingFeed(false);
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
+    stageSort, stageSingleItem,
   };
 }
 
@@ -211,10 +255,17 @@ const CIRC_STATE_REGISTER = [
   // Keep the group title exactly as written — it is how the work is found in
   // the Scenarios palette without hunting through the app.
   //
-  // The placeholder below holds the group open while it is otherwise empty.
-  // Delete it the moment the first real state lands.
+  // Run 1 \u2014 Queue item 1 \u00b7 Sort.
   // ==========================================================================
-  { group: 'Candidate build \u2014 feed enhancement', id: 'candidate-placeholder', label: 'Nothing built yet', stage: (c) => c.goSpace('sp-backend') },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-menu-open', label: 'Sort \u2014 the menu open', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
+  // the sort. Open them in order \u2014 the waterline is there under newest-first and
+  // gone under oldest-first, because "Earlier" names the older pile beneath it
+  // and under oldest-first the older pile is above.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 withheld under oldest first', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
