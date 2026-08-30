@@ -25,6 +25,10 @@
 // mark on it" (pg-d10-contribute.jsx) — credited, rethought, not lifted.
 // No reveal fires on add: nobody else has reacted to a card just added.
 // ============================================================================
+// Typed into, so 16px floor (governance ui-design.md). The six-row minimum is
+// derived from it rather than from a baked-in number, so the box still opens at
+// six visible rows.
+const CAND_THOUGHT_PX = 16;
 const CAND_URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
 
 // ---- the link's slot -------------------------------------------------------
@@ -40,7 +44,7 @@ const CandLinkSlot = React.forwardRef(({ value, onChange, error }, ref) => {
         <input ref={ref} name="add-url" value={value} onChange={onChange} type="text" inputMode="url"
           aria-label="The link" aria-invalid={error ? 'true' : undefined} placeholder="paste a link"
           style={{ flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent', padding: 0,
-            font: '500 14px/1.5 var(--font-mono)', color: 'var(--color-fg-1)' }} />
+            font: '500 16px/1.5 var(--font-mono)', color: 'var(--color-fg-1)' }} />
       </div>
       {error && <p role="alert" style={{ margin: '0 0 var(--space-3)', font: '400 12.5px/1.5 var(--font-sans)', color: 'var(--color-destructive)' }}>{error}</p>}
     </div>
@@ -94,8 +98,8 @@ const CandRoom = React.forwardRef(({ value, onChange, max, placeholder, maxPx },
       <textarea ref={el} value={value} onChange={(e) => onChange(e.target.value)} rows={6} maxLength={max}
         placeholder={placeholder} aria-label="A thought to go with it"
         style={{ display: 'block', width: '100%', border: 0, outline: 'none', background: 'transparent', resize: 'none',
-          padding: 0, margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15.5, lineHeight: 1.65,
-          color: 'var(--color-fg-1)', minHeight: Math.round(15.5 * 1.65 * 6) }} />
+          padding: 0, margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: CAND_THOUGHT_PX, lineHeight: 1.65,
+          color: 'var(--color-fg-1)', minHeight: Math.round(CAND_THOUGHT_PX * 1.65 * 6) }} />
       <div aria-hidden="true" style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 15, paddingTop: 4 }}>
         {left <= 60 && <span style={{ font: '400 11.5px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{left} left</span>}
       </div>

@@ -245,7 +245,7 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark }) => {
           {isYou && editing && <CandEditOut onClick={() => setEditing(false)} />}
         </div>
         {editing ? (
-          <CandWrite value={draft} onChange={setDraft} max={500} minLines={2} autoFocus size={12.5} ariaLabel="Edit what you wrote"
+          <CandWrite value={draft} onChange={setDraft} max={500} minLines={2} autoFocus size={16} ariaLabel="Edit what you wrote"
             onSend={() => { candEditThought(api, item, draft.trim()); setEditing(false); }} />
         ) : <CandProse text={t.text} size={12.5} lh={1.85} color="var(--color-fg-2)" />}
       </div>
@@ -306,7 +306,7 @@ const CandWriteFace = ({ item, api, innerRef, onClose, onDone }) => {
           <span style={{ font: '600 14px/1.25 var(--font-sans)', letterSpacing: '-0.006em', color: 'var(--color-fg-1)' }}>You</span>
         </div>
         <CandWrite value={draft} onChange={setDraft} placeholder="What made you share it?" ariaLabel="Add a thought"
-          max={500} minLines={2} autoFocus size={12.5} />
+          max={500} minLines={2} autoFocus size={16} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: onSurface ? 0 : -2 }}>
         <div style={{ flex: 1, minWidth: 0 }}><CandSourceLine item={item} foot /></div>

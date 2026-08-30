@@ -152,7 +152,7 @@ const CandEditOut = ({ onClick }) => (
 // words, and it is the ONLY control there. There is no Cancel here: a new box is
 // taken back by clearing it, and an edit box's way out lives in the name row
 // (CandEditOut).
-const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxPx = 220, autoFocus = false, ariaLabel, size = 15, onSend }) => {
+const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxPx = 220, autoFocus = false, ariaLabel, size = 16, onSend }) => {
   const ref = React.useRef(null);
   const [focus, setFocus] = React.useState(false);
   React.useLayoutEffect(() => {

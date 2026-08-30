@@ -192,7 +192,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
           {me && editing && <CandEditOut onClick={() => setEditing(false)} />}
         </div>
         {editing ? (
-          <CandWrite value={draft} onChange={setDraft} max={500} minLines={1} autoFocus ariaLabel="Edit what you said" size={14.5}
+          <CandWrite value={draft} onChange={setDraft} max={500} minLines={1} autoFocus ariaLabel="Edit what you said" size={16}
             onSend={() => { candEditTurn(api, item, t.id, draft.trim()); setEditing(false); }} />
         ) : (
           <React.Fragment>
@@ -311,7 +311,7 @@ const CandTalk = ({ item, api }) => {
               )}
               {replyTo === t.id && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <CandWrite value={reply} onChange={setReply} max={500} minLines={1} autoFocus size={14.5}
+                  <CandWrite value={reply} onChange={setReply} max={500} minLines={1} autoFocus size={16}
                     placeholder={'Reply to ' + (t.by === 'You' ? 'yourself' : t.by)} ariaLabel={'Reply to ' + t.by}
                     onSend={() => { candAddTurn(api, item, reply.trim(), t.id); setReplyTo(null); setReply(''); }} />
                 </div>
