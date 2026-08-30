@@ -108,7 +108,7 @@ const CandBubbleIcon = CandWayIcon; // old name, kept so nothing dangles
 const CandSwitch = ({ on, onChange, label }) => (
   <button type="button" role="switch" aria-checked={on} aria-label={label} onClick={() => onChange(!on)}
     style={{ background: 'transparent', border: 0, padding: 8, margin: -8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', minHeight: 44 }}>
-    <span aria-hidden="true" style={{ width: 40, height: 23, borderRadius: 12, background: on ? 'var(--color-accent)' : 'var(--color-border-1)', position: 'relative', transition: 'background var(--duration-base) var(--ease-quiet)', flexShrink: 0 }}>
+    <span aria-hidden="true" style={{ width: 40, height: 23, borderRadius: 12, background: on ? 'var(--color-accent)' : 'var(--color-border-3)', position: 'relative', transition: 'background var(--duration-base) var(--ease-quiet)', flexShrink: 0 }}>
       <span style={{ position: 'absolute', top: 2.5, left: on ? 19.5 : 2.5, width: 18, height: 18, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 2px rgba(10,10,10,0.18)', transition: 'left var(--duration-base) var(--ease-quiet)' }} />
     </span>
   </button>
