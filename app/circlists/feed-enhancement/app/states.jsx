@@ -40,7 +40,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
-    setSortOrder, setSortMenuOpen, setDividerAt,
+    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho,
   } = api;
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
@@ -162,13 +162,23 @@ function circStateContext(api) {
   // ---- Feed sort (BIZ-136 candidate build) ---------------------------------
   // Sort is held per circle AND per tab, keyed `<circleId>:<tab>`, so a stager
   // sets the key it wants and leaves the other tab alone.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false }) => {
+  // Stages the lens: the order (per circle and tab), the contributor (per
+  // circle), and whether the panel is open. `who` is an attribution name as the
+  // cards render it — 'Sam R.', 'you', 'former member' — since that string is
+  // the only contributor identity this product has.
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     const next = { [space + ':' + tab]: order };
     if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
     setSortOrder(next);
-    setSortMenuOpen(!!menu);
+    setLensWho(who ? { [space]: who } : {});
+    // Opened AFTER the route settles, not before. main.jsx closes the panel on
+    // any tab/circle change, and the entry below changes both — so setting it
+    // here directly meant `lens-panel-open` reliably arrived with the panel
+    // shut for anyone walking the register rather than loading the URL cold.
+    if (menu) setTimeout(() => setSortMenuOpen(true), 0);
+    else setSortMenuOpen(false);
     setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
     setTab(tab);
     // The waterline pair. entering a circle draws the mark from the stored
@@ -257,7 +267,10 @@ const CIRC_STATE_REGISTER = [
   //
   // Run 1 \u2014 Queue item 1 \u00b7 Sort.
   // ==========================================================================
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-menu-open', label: 'Sort \u2014 the menu open', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  // Run 1's id, kept so the URL it published still resolves. The standalone sort
+  // menu it named no longer exists — run 2 folded it into the lens — so it now
+  // lands on the lens, same as `lens-panel-open`.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
   // the sort. Open them in order \u2014 the waterline is there under newest-first and
   // gone under oldest-first, because "Earlier" names the older pile beneath it
@@ -266,6 +279,22 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 withheld under oldest first', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
+  // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-panel-open', label: 'The lens \u2014 one control, order and who', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-contributor', label: 'Filtered to one contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Sam R.' }) },
+  // Priya's two Active links sit either side of the last-visit mark, so the
+  // waterline still draws inside the filtered list \u2014 the ruling this state exists
+  // to show. Sorting oldest-first still withholds it, as run 1 ruled.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-waterline', label: 'Waterline \u2014 drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-former-member', label: 'Former member \u2014 the one shared bucket', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'former member' }) },
+  // The lens is held per circle, so it survives the hop to Read. Dev K. has one
+  // link in this circle and it is unread, so Read under their lens is genuinely
+  // empty \u2014 the zero-match register, which is a different thing from an empty
+  // Read pile and says so.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-no-match', label: 'Nothing matches the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
+  // Both halves of the lens non-default at once — the case the chip row exists
+  // to serve, and the one that decides whether it wraps gracefully at 390.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-both-applied', label: 'Both applied \u2014 order and contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'former member' }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

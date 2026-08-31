@@ -178,6 +178,9 @@ const CircApp = () => {
   // whole arrivals machinery stands on, so a non-default order is a reading
   // posture for this session rather than a preference that silently outlives it.
   const [sortOrder, setSortOrder] = useState({});
+  // Keyed by circle alone — see the note at the render site for why the
+  // contributor lens is not held per tab as the order is.
+  const [lensWho, setLensWho] = useState({});
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
@@ -583,7 +586,7 @@ const CircApp = () => {
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
-        setSortOrder, setSortMenuOpen, setDividerAt,
+        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -718,13 +721,23 @@ const CircApp = () => {
       const stored = tab === 'active' ? activeItems : readItems;
       const pending = (space && space.pending) || [];
       // ---- Feed sort (BIZ-136 candidate build) ----------------------------
-      // A deletable aid in the app's own idiom: no feed-sort.jsx ⇒ no control,
+      // A deletable aid in the app's own idiom: no feed-lens.jsx ⇒ no control,
       // no reorder, and the feed behaves exactly as it did. That is what keeps
       // the homepage demo, which shares this module, untouched by the candidate.
-      const SortCtl = window.SortControl || null;
+      const Lens = window.FeedLens || null;
       const sortKey = currentId + ':' + tab;
       const order = sortOrder[sortKey] || (window.CIRC_SORT_DEFAULT || 'newest');
-      const visible = (SortCtl && window.circSortItems) ? window.circSortItems(stored, order) : stored;
+      // The contributor lens is held per CIRCLE, not per circle-and-tab as the
+      // order is. "What did Sam add" is a question about a person, not about a
+      // tab, so hopping to Read to see whether you already read Sam's link
+      // keeps the lens. The asymmetry is deliberate; the chip stays on screen
+      // across the switch, so the state is never hidden.
+      const who = (Lens ? lensWho[currentId] : null) || null;
+      const sorted = (Lens && window.circSortItems) ? window.circSortItems(stored, order) : stored;
+      const visible = Lens ? window.circFilterItems(sorted, who) : sorted;
+      // Offered from the whole circle, so the set does not reshuffle by tab.
+      const contributors = Lens ? window.circContributors(space) : [];
+      const pendingVisible = Lens ? window.circFilterItems(pending, who) : pending;
       // The control is absent below two items — a one-item list reads the same
       // under either order, so the control could do nothing. Same instinct as
       // the waterline's own "both sides or nothing".
@@ -732,15 +745,26 @@ const CircApp = () => {
       // Absent while the feed is loading, for the same reason: the member is
       // looking at the spinner, and a control offering to reorder a list that
       // is not on screen yet is chrome acting on nothing.
-      const showSort = !!SortCtl && !loadingFeed && stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2);
+      // The control is present from two items up, OR whenever a lens is already
+      // applied — otherwise narrowing to one link removes the only way back.
+      const showLens = !!Lens && !loadingFeed
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || window.circLensActive(order, who));
       const setOrder = (next) => {
         setSortOrder((prev) => ({ ...prev, [sortKey]: next }));
         // The gesture is acknowledged, as every gesture in this app is. The
         // waterline's suppression is NOT announced — a state never is.
         announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));
       };
-      const sortControl = showSort
-        ? <SortCtl order={order} onChange={setOrder} open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
+      const setWho = (next) => {
+        setLensWho((prev) => ({ ...prev, [currentId]: next }));
+        announceOnce(next
+          ? 'Showing links added by ' + window.circContributorLabel(next)
+          : 'Showing links from everyone');
+      };
+      const lensControl = showLens
+        ? <Lens order={order} who={who} contributors={contributors}
+            onOrder={setOrder} onWho={setWho} isMobile={isMobile}
+            open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
@@ -766,9 +790,26 @@ const CircApp = () => {
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
           <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {Cand && Cand.FeedLead && <Cand.FeedLead api={candApi} tab={tab} />}
-            {tab === 'active' && pending.length > 0 && <NewPill onClick={revealPending} />}
-            {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
+            {/* The discourse overlay's watching-digest summarises the whole
+                circle. Under a lens it contradicts the screen it sits on — "4
+                conversations you are watching" directly above "Nothing here
+                from Dev K." reads as the filter being broken. Hidden while a
+                lens is applied. This touches that overlay's surface only by
+                withholding it here, at the point the two features meet; nothing
+                about the digest itself is changed. */}
+            {Cand && Cand.FeedLead && !(Lens && window.circLensActive(order, who))
+              && <Cand.FeedLead api={candApi} tab={tab} />}
+            {/* The pill announces arrivals for the list you are LOOKING at. Under
+                a contributor lens, an arrival from somebody else is not one:
+                tapping the pill would land it straight into the hidden pile and
+                the feed would not move, which is the one thing the pill exists
+                to promise it will do. So it counts only arrivals the lens keeps.
+                Unmatched arrivals are not lost — they land whole the moment the
+                lens clears. */}
+            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
+            {visible.length === 0 && who
+              ? <window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} />
+              : visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : visible.map((item, i) => {
                 const card = <FeedCard item={item} tab={tab} user={user} showTime
                   onOpen={openLink}
@@ -792,7 +833,11 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          <Tabs active={tab} onChange={setTab} right={sortControl} />
+          <Tabs active={tab} onChange={setTab} right={lensControl} />
+          {/* What is applied, and the way out of it. Nothing at all in the
+              default state — the folded control means the chips are now the
+              only place the applied lens is legible without opening it. */}
+          {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho} isMobile={isMobile} />}
           {feed}
           {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
