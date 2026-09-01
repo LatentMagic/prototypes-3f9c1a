@@ -214,6 +214,10 @@
   .circ-cardaction-icon::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-base); pointer-events: none; }
   .circ-cardaction-icon:hover::before { background: var(--color-surface-sunken); }
   .circ-cardaction-icon > svg { position: relative; z-index: 1; }
+  /* Compact density (BIZ-136 run 3): the 44px hit area is untouched (padding /
+     min-width above stay put) — only the visible hover-fill box shrinks, to
+     match the smaller icon size feed.jsx passes in compact. */
+  .circ-cardaction-icon-compact::before { inset: 9px; }
   /* enriched card is a container so the footer can adapt to its own width */
   .circ-card { container-type: inline-size; }
   /* ---- Pending card (extraction still resolving) — quiet skeleton, no spinner ---- */
@@ -236,6 +240,13 @@
   .circ-menuitem:hover { background: var(--color-surface-sunken) !important; }
   .circ-topaction:hover { background: var(--color-surface-sunken); }
   .circ-topaction:hover { color: var(--color-fg-1); }
+
+  /* ---- the lens panel (BIZ-136 run 3) ----
+     Trigger's hover-only tint (the resting state carries no background — see
+     feed-lens.jsx). Segment/row focus uses --ring-color, not the page-wide
+     --color-accent outline, per the redesign's own spec. */
+  .circ-lens-trigger:hover { background: var(--color-surface-sunken); }
+  .circ-lens-seg:focus-visible { outline: var(--ring-width) solid var(--ring-color); outline-offset: 2px; }
 
   /* ---- app posture (native mobile) chrome ---- */
   .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }

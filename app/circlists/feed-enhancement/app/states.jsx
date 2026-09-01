@@ -40,7 +40,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
-    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho,
+    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity,
   } = api;
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
@@ -166,13 +166,16 @@ function circStateContext(api) {
   // circle), and whether the panel is open. `who` is an attribution name as the
   // cards render it — 'Sam R.', 'you', 'former member' — since that string is
   // the only contributor identity this product has.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable' }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     const next = { [space + ':' + tab]: order };
     if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
     setSortOrder(next);
     setLensWho(who ? { [space]: who } : {});
+    // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
+    // sets it directly rather than keying it per circle/tab as sortOrder is.
+    setDensity(density);
     // Opened AFTER the route settles, not before. main.jsx closes the panel on
     // any tab/circle change, and the entry below changes both — so setting it
     // here directly meant `lens-panel-open` reliably arrived with the panel
@@ -295,6 +298,14 @@ const CIRC_STATE_REGISTER = [
   // Both halves of the lens non-default at once — the case the chip row exists
   // to serve, and the one that decides whether it wraps gracefully at 390.
   { group: 'Candidate build \u2014 feed enhancement', id: 'lens-both-applied', label: 'Both applied \u2014 order and contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'former member' }) },
+  // Run 3 \u2014 density (Comfortable/Compact) + the lens panel's visual rework.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact', label: 'Compact \u2014 more of the circle in view', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'compact' }) },
+  // Same circle and tab as density-compact, comfortable instead \u2014 open the two
+  // back to back to see the metric change alone, nothing else moving.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'density-comfortable', label: 'Comfortable \u2014 the default rhythm', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'comfortable' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'view-panel-open', label: 'The lens \u2014 order, view and who', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-read', label: 'Compact \u2014 the Read pile', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', density: 'compact' }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

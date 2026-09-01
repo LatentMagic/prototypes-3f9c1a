@@ -181,6 +181,11 @@ const CircApp = () => {
   // Keyed by circle alone — see the note at the render site for why the
   // contributor lens is not held per tab as the order is.
   const [lensWho, setLensWho] = useState({});
+  // Density (BIZ-136 run 3): ONE value for the whole feed surface — comfortable
+  // or compact — never per tab or per circle. Unlike sortOrder/lensWho this IS
+  // persisted (per device, in the app-state blob below): it is a reading
+  // preference the member sets once, not a lens applied to one moment's view.
+  const [density, setDensity] = useState(SAVED?.density === 'compact' ? 'compact' : 'comfortable');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
@@ -229,8 +234,8 @@ const CircApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
-  }, [route, user, spaces, currentId, tab]);
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab, density })); } catch (e) {}
+  }, [route, user, spaces, currentId, tab, density]);
 
   const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
   // ---- The viewer's own view of the circles --------------------------------
@@ -586,7 +591,7 @@ const CircApp = () => {
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
-        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho,
+        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -761,9 +766,18 @@ const CircApp = () => {
           ? 'Showing links added by ' + window.circContributorLabel(next)
           : 'Showing links from everyone');
       };
+      // Density (BIZ-136 run 3): the gesture is acknowledged like every other
+      // lens pick, but it never touches sortOrder/lensWho — no chip, no active
+      // trigger. It hides no content, so it has nothing to disclose.
+      const setDensityView = (next) => {
+        setDensity(next);
+        announceOnce(next === 'compact' ? 'Compact view' : 'Comfortable view');
+      };
       const lensControl = showLens
         ? <Lens order={order} who={who} contributors={contributors}
-            onOrder={setOrder} onWho={setWho} isMobile={isMobile}
+            onOrder={setOrder} onWho={setWho}
+            density={density} onDensity={setDensityView}
+            isMobile={isMobile}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
@@ -789,7 +803,7 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 10 : 16 }}>
             {/* The discourse overlay's watching-digest summarises the whole
                 circle. Under a lens it contradicts the screen it sits on — "4
                 conversations you are watching" directly above "Nothing here
@@ -811,7 +825,7 @@ const CircApp = () => {
               ? <window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} />
               : visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : visible.map((item, i) => {
-                const card = <FeedCard item={item} tab={tab} user={user} showTime
+                const card = <FeedCard item={item} tab={tab} user={user} showTime density={density}
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;

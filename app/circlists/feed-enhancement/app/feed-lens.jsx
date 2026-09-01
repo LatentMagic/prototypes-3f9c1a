@@ -11,13 +11,14 @@
 // The obvious next move is a second button beside it, which is what industry
 // precedent does — sort and filter stay distinct, adjacent controls. That
 // precedent is real, and it is drawn from large catalogues where the strip has
-// room. It has no answer for the four controls still queued behind this one
-// (density, columns, saved, search): two buttons today is six in a 48px strip
-// that already carries two tabs, and that strip dies.
+// room. It has no answer for the controls still queued behind this one
+// (columns, saved, search): two buttons today is six in a 48px strip that
+// already carries two tabs, and that strip dies.
 //
-// So order and who fold into one entry point opening one panel with two
-// labelled groups. Density and columns join the same panel later; search and
-// saved are a different kind of thing and get their own affordance.
+// So order and who fold into one entry point opening one panel with labelled
+// groups. Density (BIZ-136 run 3) has now joined them; columns is still to
+// come. Search and saved are a different kind of thing and get their own
+// affordance.
 //
 // WHAT IT COSTS. The current sort order stops being legible at a glance, which
 // run 1 deliberately valued. Paid for by LensChips: any non-default lens — an
@@ -131,15 +132,13 @@ const CircLensIcon = ({ active }) => {
   );
 };
 
-// One radio group inside the panel. APG radio-group semantics: arrows move AND
-// select, the checked option is the only tab stop, Escape is handled by the
-// panel. Used rather than a menu because the panel is a set of settings that
-// stays open while you read it, not a list of commands that closes on pick.
-const LensGroup = ({ label, options, value, onPick }) => {
-  const refs = React.useRef([]);
+// Shared APG radio-group keyboard behaviour for both group shapes below:
+// arrows move AND select, the checked option is the only tab stop, Escape is
+// handled by the panel. A hook rather than two copies of the same twelve
+// lines, since a segmented control and a vertical list differ only in layout.
+const useLensRadioKeys = (options, value, onPick, refs) => {
   const idx = Math.max(0, options.findIndex((o) => o.id === value));
-
-  const onKey = (e) => {
+  return (e) => {
     const last = options.length - 1;
     let next = null;
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next = idx === last ? 0 : idx + 1;
@@ -152,42 +151,102 @@ const LensGroup = ({ label, options, value, onPick }) => {
     const el = refs.current[next];
     if (el) el.focus({ preventScroll: true });
   };
+};
 
+// A plain sentence-case label above a group — no uppercase, no letterspacing,
+// no small-caps eyebrow. The thing being fixed here was four encodings of
+// "selected" stacked on one row; the label's own job is just to name the
+// group once.
+const LensLabel = ({ children }) => (
+  <div style={{
+    fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
+    color: 'var(--color-fg-2)', padding: '0 2px 6px',
+  }}>{children}</div>
+);
+
+// Order / View — both two-option choices, so both are this one horizontal
+// segmented control. Selected reads through ONE composite signal — the app's
+// own selected-row language: white lifting off the sunken tray, weight,
+// accent — never a tick or a ring. Tray padding is fixed at the app's own 3px;
+// the explicit minHeight is what gives the ROW a 44px hit area on top of that,
+// since 3px padding either side of a 34px segment falls short on its own.
+const LensSegmented = ({ label, options, value, onPick }) => {
+  const refs = React.useRef([]);
+  const onKey = useLensRadioKeys(options, value, onPick, refs);
   return (
-    <div style={{ padding: '4px 0' }}>
-      <div style={{
-        padding: '6px 12px 4px', fontFamily: 'var(--font-sans)', fontSize: 11,
-        fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-        color: 'var(--color-fg-3, var(--color-fg-2))',
-      }}>{label}</div>
-      <div role="radiogroup" aria-label={label} onKeyDown={onKey}>
+    <div style={{ padding: '6px 10px' }}>
+      <LensLabel>{label}</LensLabel>
+      <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
+        background: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-md)',
+        // 3px tray padding either side of a 44px segment. Putting the floor on
+        // the TRAY instead left each segment at 38px — the rows this replaced
+        // were 44px, so the redesign would have quietly shrunk the target.
+        padding: 3, display: 'flex', gap: 2, width: '100%',
+      }}>
         {options.map((o, i) => {
           const on = o.id === value;
           return (
             <button
               key={String(o.id)}
               ref={(el) => { refs.current[i] = el; }}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              tabIndex={on ? 0 : -1}
+              type="button" role="radio" aria-checked={on} tabIndex={on ? 0 : -1}
               onClick={() => onPick(o.id)}
+              className="circ-lens-seg"
               style={{
-                width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                background: 'transparent', border: 0, cursor: 'pointer', textAlign: 'left',
-                // The app declares its own touch-target floor and a menu row is one.
-                padding: '0 12px', minHeight: 'var(--tap-target-min)',
-                borderRadius: 'var(--radius-sm)',
+                flex: 1, border: 0, cursor: 'pointer', textAlign: 'center',
+                background: on ? 'var(--color-surface)' : 'transparent',
+                borderRadius: 'var(--radius-sm)', minHeight: 'var(--tap-target-min)', padding: '0 8px',
+                fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
+                fontWeight: on ? 600 : 500,
+                color: on ? 'var(--color-accent)' : 'var(--color-fg-2)',
+                boxShadow: on ? 'var(--shadow-raised)' : 'none',
+              }}
+            >{o.label}</button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Added by — stays a vertical list (N contributors, not two options to put
+// side by side), bounded so a large circle scrolls the list rather than
+// growing the panel. Selected mark is the app's own selected-list-row
+// language from shell.jsx (RailBody's active-circle bar): a 2px accent left
+// bar plus weight + colour. Unselected rows carry a transparent 2px bar of
+// the same width, so nothing shifts horizontally when the selection moves.
+const LensList = ({ label, options, value, onPick }) => {
+  const refs = React.useRef([]);
+  const onKey = useLensRadioKeys(options, value, onPick, refs);
+  return (
+    <div style={{ padding: '6px 10px' }}>
+      <LensLabel>{label}</LensLabel>
+      <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
+        display: 'flex', flexDirection: 'column', gap: 1,
+        // 4 full 44px rows + a deliberately half-cut fifth, so a circle with more
+        // contributors than fit SHOWS that it has more. A round multiple of the
+        // row height ends flush and reads as a complete list.
+        maxHeight: 202, overflowY: 'auto',
+      }}>
+        {options.map((o, i) => {
+          const on = o.id === value;
+          return (
+            <button
+              key={String(o.id)}
+              ref={(el) => { refs.current[i] = el; }}
+              type="button" role="radio" aria-checked={on} tabIndex={on ? 0 : -1}
+              onClick={() => onPick(o.id)}
+              className="circ-lens-seg"
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', textAlign: 'left',
+                background: 'transparent', border: 0, cursor: 'pointer',
+                borderLeft: '2px solid ' + (on ? 'var(--color-accent)' : 'transparent'),
+                padding: '0 10px 0 8px', minHeight: 'var(--tap-target-min)',
                 fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
                 fontWeight: on ? 600 : 500,
                 color: on ? 'var(--color-accent)' : 'var(--color-fg-1)',
               }}
             >
-              {/* The tick is the checked mark, and the slot is held either way so
-                  every label sits on one left edge. Never colour alone. */}
-              <span style={{ width: 16, flexShrink: 0, display: 'inline-flex' }} aria-hidden="true">
-                {on && <Icon name="check" size={16} />}
-              </span>
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
             </button>
           );
@@ -197,16 +256,29 @@ const LensGroup = ({ label, options, value, onPick }) => {
   );
 };
 
-const FeedLens = ({ order, who, contributors, onOrder, onWho, open, onOpenChange, isMobile }) => {
+// The two options density picks between — Comfortable is the product's
+// default rhythm, Compact tightens the metrics only (see feed.jsx).
+const CIRC_DENSITY_OPTIONS = [
+  { id: 'comfortable', label: 'Comfortable' },
+  { id: 'compact', label: 'Compact' },
+];
+
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   const active = circLensActive(order, who);
 
+  // Focus the PANEL on open, not the checked option. Focusing the option was
+  // correct for the keyboard and wrong on screen: Chromium treats a
+  // programmatic .focus() after a pointer click as focus-visible, so opening
+  // the panel with a tap drew an accent ring around the already-selected
+  // segment — putting back the exact fourth "selected" encoding this rework
+  // exists to remove. The panel takes focus as its own dialog does, and the
+  // radiogroups keep their arrow-key handling once tabbed into.
   React.useEffect(() => {
     if (!open) return;
     const t = setTimeout(() => {
-      const first = panelRef.current && panelRef.current.querySelector('[role="radio"][aria-checked="true"]');
-      if (first) first.focus({ preventScroll: true });
+      if (panelRef.current) panelRef.current.focus({ preventScroll: true });
     }, 20);
     return () => clearTimeout(t);
   }, [open]);
@@ -244,9 +316,14 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, open, onOpenChange
     + ', ' + (who ? 'added by ' + circContributorLabel(who) : 'everyone');
 
   return (
-    // Stretches to the bar's full height so the panel hangs from the bar's own
-    // edge, while the button inside it stays at the 44px floor.
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', alignSelf: 'stretch' }}>
+    // Stretches to the bar's full height so the border-bottom lands flush with
+    // the tab bar's own hairline — exactly how Tabs marks Active/Read, and the
+    // panel hangs from this same edge. The 44px button floats centred inside.
+    <div style={{
+      position: 'relative', display: 'inline-flex', alignItems: 'center', alignSelf: 'stretch',
+      borderBottom: '2px solid ' + (active ? 'var(--color-accent)' : 'transparent'),
+      marginBottom: -1,
+    }}>
       <button
         ref={btnRef}
         type="button"
@@ -259,14 +336,18 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, open, onOpenChange
         aria-controls="circ-lens-panel"
         aria-expanded={open}
         aria-label={spoken}
+        className="circ-lens-trigger"
         style={{
-          // NOT --color-accent-soft: tokens.css reserves that for focus-ring
-          // backgrounds. The sunken surface is the app's own resting tint.
-          background: active ? 'var(--color-surface-sunken)' : 'transparent',
+          // Transparent at rest AND active — a resting fill on ANY control is
+          // this app's hover-only affordance (see --color-surface-sunken's own
+          // comment in tokens.css), so a persistent one here read as nothing
+          // else in the app does. Active is carried by the wrapper's
+          // border-bottom + the icon colour below; hover tint lives in the
+          // circ-lens-trigger CSS class.
+          background: 'transparent',
           border: 0, cursor: 'pointer', padding: 0,
           // One geometry at both widths — the app's declared 44px touch floor,
-          // centred in the bar's 48px, so the tint never reads as a third
-          // pressed tab at mobile the way a full-height one did.
+          // centred in the bar's 48px.
           height: 'var(--tap-target-min)', width: 'var(--tap-target-min)', flexShrink: 0,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           color: active ? 'var(--color-accent)' : 'var(--color-fg-2)',
@@ -292,6 +373,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, open, onOpenChange
           ref={panelRef}
           id="circ-lens-panel"
           role="group"
+          tabIndex={-1}
           aria-label="View options"
           onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); close(true); } }}
           // Tab out of the last option and the panel would otherwise stay open
@@ -303,27 +385,29 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, open, onOpenChange
             if (e.relatedTarget) onOpenChange(false);
           }}
           style={{
-            position: 'absolute', top: '100%', right: 0, zIndex: 60,
-            minWidth: 196, maxWidth: 260,
+            position: 'absolute', top: '100%', right: 0, zIndex: 60, outline: 'none',
+            // Wide enough that "Comfortable | Compact" reads in the segmented
+            // control without truncating.
+            minWidth: 260, maxWidth: 300,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
-            // Horizontal padding so a focus ring on a row lands inside the
-            // panel rather than flush against its border.
-            padding: '4px 6px', outline: 'none',
-            // Reaches down to the fold rather than stopping at 60vh, which cut
-            // the last option in half at 390 with 240px of viewport to spare.
-            maxHeight: 'calc(100vh - 132px)', overflowY: 'auto',
+            padding: '4px 0', outline: 'none',
+            // 60vh normally, but never floor-to-ceiling at 390 — the same
+            // 132px fold margin the trigger's own comment used to reach for.
+            maxHeight: 'min(60vh, calc(100vh - 132px))', overflowY: 'auto',
           }}
         >
-          {/* Each group is conditional on its own data, so removing either
-              engine module leaves a panel that offers only what still works. */}
+          {/* Each group is conditional on its own data, so removing an engine
+              module leaves a panel that offers only what still works. Density
+              (feed.jsx) has no such module to drop, so View is unconditional. */}
           {window.CIRC_SORT_OPTIONS && (
-            <LensGroup label="Sort" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
+            <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
           )}
+          <LensSegmented label="View" value={density} onPick={onDensity} options={CIRC_DENSITY_OPTIONS} />
           {whoOptions.length > 1 && (
             <React.Fragment>
-              <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 8px' }} aria-hidden="true" />
-              <LensGroup label="Added by" value={who} onPick={onWho} options={whoOptions} />
+              <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 10px' }} aria-hidden="true" />
+              <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} />
             </React.Fragment>
           )}
         </div>

@@ -44,9 +44,26 @@ const FEED_TINTS = [
 const feedHash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
 const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.length]; return 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'; };
 
-const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDelete }) => {
+// ---- Density (BIZ-136 run 3) ------------------------------------------------
+// Metrics only, never anatomy: every element present in comfortable stays
+// present in compact, in the same order. Comfortable's numbers are the card's
+// existing values, kept here as the single source so neither branch drifts.
+// actionPull is the one that earns compact its height. The footer row's height
+// is set by the action buttons' 44px touch floor, not by the avatar or the
+// text — so trimming padding and shrinking the thumbnail barely moved the card
+// (measured: 146 -> 124 at 1280, and only 153 -> 145 at 390). The floor is not
+// negotiable, so instead the button cluster is pulled vertically INTO the
+// card's own padding: the buttons still render and still hit at 44px, they
+// simply overlap the padding box, and the row measures ~32px. Costs nothing
+// and takes ~12px off every card at both widths.
+const circCardMetrics = (density) => (density === 'compact'
+  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6 }
+  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0 });
+
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
+  const m = circCardMetrics(density);
 
   const former = /former member/i.test(item.attribution);
   // The current user always reads lower-case "you" in the shared view; normalise
@@ -89,22 +106,22 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
     return (
       <article className="circ-card" style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-        borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+        borderRadius: 'var(--radius-lg)', padding: m.pad,
         display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: m.colGap }}>
             <span className="circ-skel" aria-hidden="true" style={{ width: 120, height: 13, borderRadius: 3 }} />
             <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-3)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>
           </div>
-          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: 60, height: 60, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
+          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-          <Avatar name={avatarName} size={28} accent={isYou} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: m.footerTop }}>
+          <Avatar name={avatarName} size={m.avatar} accent={isYou} />
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{attribution}</span>
-          <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, opacity: 0.4, pointerEvents: 'none' }}>
-            <span className="circ-cardaction circ-cardaction-icon"><Icon name="check" size={18} /></span>
-            <span className="circ-cardaction circ-cardaction-icon"><Icon name="trash" size={17} /></span>
+          <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull, opacity: 0.4, pointerEvents: 'none' }}>
+            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}><Icon name="check" size={m.actionIcon.check} /></span>
+            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}><Icon name="trash" size={m.actionIcon.trash} /></span>
           </div>
         </div>
       </article>
@@ -114,13 +131,13 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
   return (
     <article className="circ-card" style={{
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-      borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+      borderRadius: 'var(--radius-lg)', padding: m.pad,
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
           the only open targets; nothing else in the card opens. */}
       <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: m.colGap }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             {faviconOk && (
               <span style={{ width: 15, height: 15, borderRadius: 3, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--color-border-2)', display: 'inline-flex' }}>
@@ -134,7 +151,7 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
             : <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-1)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>}
         </div>
         {showImage && (
-          <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: 60, height: 60, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
+          <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
             {item.image && !imgBroken
               ? <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               : <span style={{ display: 'block', width: '100%', height: '100%', background: feedTint(source) }} />}
@@ -145,8 +162,8 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
       {/* Footer — attribution (left) + recessive actions (right). The action
           cluster's optical edge is pulled onto the card's content edge (= the
           image's right edge). On Read, the Swell door takes the tick's place. */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-        <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: m.footerTop }}>
+        <Avatar name={former ? null : avatarName} size={m.avatar} accent={isYou} />
         <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 9 }}>
           <span style={{ minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {attribPre
@@ -163,16 +180,16 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
             optical edge is pulled onto the image's right edge via the -13 nudge;
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
           {tab === 'read'
             ? <SwellDoor item={item} />
             : (
-              <button className="circ-cardaction circ-cardaction-icon" onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
-                <Icon name="check" size={18} />
+              <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+                <Icon name="check" size={m.actionIcon.check} />
               </button>
             )}
-          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
-            <Icon name="trash" size={17} />
+          <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
+            <Icon name="trash" size={m.actionIcon.trash} />
           </button>
         </div>
       </div>
