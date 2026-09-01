@@ -219,7 +219,10 @@ const LensList = ({ label, options, value, onPick }) => {
   const refs = React.useRef([]);
   const onKey = useLensRadioKeys(options, value, onPick, refs);
   return (
-    <div style={{ padding: '6px 10px' }}>
+    // No bottom padding: a half-cut row has to be cut BY the container edge to
+    // read as "more below". Ten pixels of white under the slice read as a
+    // rendering fault instead.
+    <div style={{ padding: '6px 10px 0' }}>
       <LensLabel>{label}</LensLabel>
       <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
         display: 'flex', flexDirection: 'column', gap: 1,
@@ -244,7 +247,13 @@ const LensList = ({ label, options, value, onPick }) => {
                 padding: '0 10px 0 8px', minHeight: 'var(--tap-target-min)',
                 fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
                 fontWeight: on ? 600 : 500,
-                color: on ? 'var(--color-accent)' : 'var(--color-fg-1)',
+                // NOT accent text. The rail's selected circle row — this app's
+                // own list-selection language — marks itself with an accent bar
+                // and weight, and leaves the label in fg-1. Colouring the label
+                // too stacked a third signal on the one group that could not
+                // become a segmented control, which is the defect the whole
+                // rework exists to remove.
+                color: 'var(--color-fg-1)',
               }}
             >
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
@@ -391,7 +400,10 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             minWidth: 260, maxWidth: 300,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
-            padding: '4px 0', outline: 'none',
+            // No bottom padding either — the contributor list's half-cut row
+            // must meet the panel's own edge, or the "there is more" cut reads
+            // as clipping. Groups carry their own top spacing.
+            padding: '4px 0 0', outline: 'none',
             // 60vh normally, but never floor-to-ceiling at 390 — the same
             // 132px fold margin the trigger's own comment used to reach for.
             maxHeight: 'min(60vh, calc(100vh - 132px))', overflowY: 'auto',
