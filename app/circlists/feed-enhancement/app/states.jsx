@@ -40,7 +40,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
-    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity,
+    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
   } = api;
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
@@ -166,7 +166,21 @@ function circStateContext(api) {
   // circle), and whether the panel is open. `who` is an attribution name as the
   // cards render it — 'Sam R.', 'you', 'former member' — since that string is
   // the only contributor identity this product has.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable' }) => {
+  // `saved`/`savedOn` (Run 4, feed-enhancement): `saved` is an array of item
+  // indexes WITHIN THE STAGED TAB's own list, in the SAME ORDER main.jsx
+  // actually renders it — sorted by `order` (circSortItems), not raw storage
+  // order. Storage order and display order coincide for the plain seed, but
+  // NOT once the discourse candidate build's own seed extension (talk-data.jsx)
+  // inserts its two extra read fixtures at fixed array positions with their
+  // own timestamps — display order is the only one a person staging this ever
+  // sees, so it is the only one worth indexing against. Passing `saved`
+  // re-marks the WHOLE circle's saved flags (everything not named is
+  // explicitly un-saved), so a stager is idempotent regardless of what an
+  // earlier state in the palette left marked — the same reason `who` below is
+  // always fully replaced rather than merged. Omitted (the default) leaves
+  // saved flags untouched, for every run-1-3 entry that has nothing to say
+  // about them.
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     const next = { [space + ':' + tab]: order };
@@ -176,6 +190,19 @@ function circStateContext(api) {
     // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
     // sets it directly rather than keying it per circle/tab as sortOrder is.
     setDensity(density);
+    if (saved !== null) {
+      setSpaces(prev => withSpace(prev, space).map(s => {
+        if (s.id !== space) return s;
+        const scoped = s.items.filter(i => (tab === 'read' ? i.read : !i.read));
+        const sortedScope = window.circSortItems ? window.circSortItems(scoped, order) : scoped;
+        const scopeIds = sortedScope.map(i => i.id);
+        const keep = new Set(saved.map(i => scopeIds[i]).filter(Boolean));
+        return { ...s, items: s.items.map(i => ({ ...i, saved: keep.has(i.id) })) };
+      }));
+    }
+    // Held per circle, same as `who` — always fully replaced, so switching
+    // between staged entries never inherits a filter the last one turned on.
+    setSavedOn(savedOn ? { [space]: true } : {});
     // Opened AFTER the route settles, not before. main.jsx closes the panel on
     // any tab/circle change, and the entry below changes both — so setting it
     // here directly meant `lens-panel-open` reliably arrived with the panel
@@ -306,6 +333,21 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'view-panel-open', label: 'The lens \u2014 order, view and who', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-read', label: 'Compact \u2014 the Read pile', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', density: 'compact' }) },
+  // Run 4 \u2014 the saved state and its surface.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-marks', label: 'Saved \u2014 the mark on a read card', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2] }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-filtered', label: 'Saved \u2014 the archive narrowed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-none-yet', label: 'Saved \u2014 nothing kept yet (the calm floor)', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [] }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-empty', label: 'Saved \u2014 the lens on, nothing in it', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
+  // Priya N. holds two read links in this circle \u2014 jvns.ca and the
+  // internal-infra postmortem \u2014 indexes 1 and 6 of the Read tab's own
+  // OLDEST-sorted runtime order; confirmed by rendering the staged state and
+  // reading the DOM, not by counting the seed (the discourse candidate
+  // build's own seed extension, talk-data.jsx, inserts two further read
+  // fixtures at fixed positions with their own timestamps, so a seed-only
+  // count is both short by two and in the wrong order once sorted). Marking
+  // both saved and filtering to her gives a genuinely non-empty, three-chip
+  // composition: Order (oldest), Added by (Priya N.), Saved.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-with-lens', label: 'Saved \u2014 composed with the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', who: 'Priya N.', saved: [1, 6], savedOn: true }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

@@ -256,6 +256,27 @@ const LensList = ({ label, options, value, onPick }) => {
                 color: 'var(--color-fg-1)',
               }}
             >
+              {/* The face sits in the row's leading edge at 24px — the card's
+                  avatar, one step down for a dense secondary row. `Everyone` is
+                  the ABSENCE of a filter, so it takes the app's own `users`
+                  glyph rather than a face: a blank gap there reads as an avatar
+                  that failed to load, and a face would imply a person. Same
+                  circle chrome either way, so the label column stays aligned. */}
+              {o.everyone
+                ? <span aria-hidden="true" style={{
+                    width: 24, height: 24, borderRadius: '50%', flexShrink: 0, marginRight: 8,
+                    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+                    color: 'var(--color-fg-3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  }}><Icon name="users" size={13} /></span>
+                : <span aria-hidden="true" style={{ marginRight: 8, display: 'inline-flex' }}>
+                    {/* NEVER accent, even for your own row. On the card the
+                        accent fill means "this is you"; in this list the label
+                        already says You, and the fill made the one UNSELECTED
+                        row the loudest object in the group — louder than the
+                        accent bar marking the row that IS selected. Identity
+                        must not out-rank state. */}
+                    <Avatar name={o.face} size={24} />
+                  </span>}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
             </button>
           );
@@ -272,7 +293,7 @@ const CIRC_DENSITY_OPTIONS = [
   { id: 'compact', label: 'Compact' },
 ];
 
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile }) => {
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   const active = circLensActive(order, who);
@@ -308,8 +329,23 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
     if (refocus && btnRef.current) btnRef.current.focus({ preventScroll: true });
   };
 
-  const whoOptions = [{ id: CIRC_LENS_ALL, label: 'Everyone' }].concat(
-    (contributors || []).map((w) => ({ id: w, label: circContributorLabel(w) }))
+  // `face` is what the row's avatar draws (run 4, on Joe's note of 2026-09-01
+  // 07:39 and the run-3 design review's independent finding that the list was
+  // bare names in ~60% dead width). It is the CARD's own avatar, not a second
+  // vocabulary: a former member resolves to null, which is what FeedCard passes
+  // for the same person and what renders the two-dot mark. `isYou` picks up the
+  // accent fill exactly as the card's does.
+  const whoOptions = [{ id: CIRC_LENS_ALL, label: 'Everyone', face: null, everyone: true }].concat(
+    (contributors || []).map((w) => ({
+      id: w,
+      label: circContributorLabel(w),
+      // The member's OWN initials, not the word's. Deriving the face from the
+      // label rendered 'YO' for a person every card in the same view calls
+      // 'SR' — one person, two avatars, one screen apart. displayName(user) is
+      // exactly what FeedCard resolves for the same row.
+      face: /^former member$/i.test(w) ? null
+        : (/^you$/i.test(w) && user ? displayName(user) : circContributorLabel(w)),
+    }))
   );
   // A filtered contributor whose last link is read away or deleted drops out of
   // `contributors` while the filter is still on. Without this the group has no
@@ -470,8 +506,15 @@ const circAttributionName = (who) => (circIsYou(who) ? 'you'
   : circIsFormer(who) ? 'former member' : who);
 const circAttributionPhrase = (who, bare) => (bare ? '' : 'Added by ') + circAttributionName(who);
 
-const LensChips = ({ order, who, onOrder, onWho, isMobile }) => {
-  if (!circLensActive(order, who)) return null;
+// `saved`/`onSaved` (feed-enhancement candidate build): a third, independent
+// chip. It is not folded into circLensActive — saved is not part of the lens
+// panel and must not light the lens trigger (see feed-saved.jsx's own header
+// and the render-site note in main.jsx) — so this component's OWN render
+// condition below is widened to `active || saved` rather than touching that
+// shared predicate.
+const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile }) => {
+  const active = circLensActive(order, who);
+  if (!active && !saved) return null;
   return (
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab
@@ -504,6 +547,12 @@ const LensChips = ({ order, who, onOrder, onWho, isMobile }) => {
           label={window.circSortLabel ? window.circSortLabel(order) : order}
           clearLabel="Sorted oldest first. Sort newest first"
           onClear={() => onOrder('newest')} />
+      )}
+      {saved && (
+        <LensChip
+          label="Saved"
+          clearLabel="Showing saved links. Show all read links"
+          onClear={() => onSaved(false)} />
       )}
     </div>
     </div>

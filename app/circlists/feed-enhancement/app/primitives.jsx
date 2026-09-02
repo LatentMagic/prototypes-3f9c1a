@@ -34,6 +34,14 @@ const LP_ICONS = {
   circles: '<circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.5"></circle>',
   home: '<path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9.2V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.2"></path>',
   sparkle: '<path d="M12 3v6"></path><path d="M12 15v6"></path><path d="M3 12h6"></path><path d="M15 12h6"></path>',
+  // Saved (feed-enhancement candidate build). Two entries, not a `filled` prop
+  // on Icon: every other glyph here is stroke-only, and the outline->filled
+  // swap is the state's own form change (see feed.jsx's save toggle), so it
+  // rides in the markup the same way `check`/`trash` already do — the plain
+  // entry inherits the svg's fill="none" stroke=currentColor as every other
+  // icon does; the filled one overrides fill/stroke on its own path only.
+  bookmark: '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>',
+  'bookmark-filled': '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" fill="currentColor" stroke="none"></path>',
 };
 
 const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth = 1.5 }) => {

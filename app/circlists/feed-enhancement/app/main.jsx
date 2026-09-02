@@ -181,6 +181,14 @@ const CircApp = () => {
   // Keyed by circle alone — see the note at the render site for why the
   // contributor lens is not held per tab as the order is.
   const [lensWho, setLensWho] = useState({});
+  // Saved filter (feed-enhancement candidate build). Keyed by circle alone,
+  // same as lensWho and for the same reason: "show me what I've kept" is a
+  // question about the circle, not about which tab you happen to be on.
+  // VISIT STATE, never persisted — like sortOrder/lensWho, a narrowed view is
+  // a reading posture for this session, not a preference that silently
+  // outlives it. The saved FLAG on an item is the opposite: it lives on
+  // `spaces` below, because it is a fact about the link, not a lens on it.
+  const [savedOn, setSavedOn] = useState({});
   // Density (BIZ-136 run 3): ONE value for the whole feed surface — comfortable
   // or compact — never per tab or per circle. Unlike sortOrder/lensWho this IS
   // persisted (per device, in the app-state blob below): it is a reading
@@ -458,6 +466,17 @@ const CircApp = () => {
             ...(window.CircCandidate && window.CircCandidate.onMarkRead ? window.CircCandidate.onMarkRead(i) : null) }
         : i) }
     : s));
+  // Save toggle (feed-enhancement candidate build). Read-only chrome, so a
+  // flip never touches `read` — it walks spaces/items the same way markRead
+  // does, above, flipping just the one flag. The announcement fires here,
+  // against the item's PRE-flip state (the closure still holds it), since the
+  // updater above only runs later inside React's own batch.
+  const toggleSaved = (item) => {
+    setSpaces(prev => prev.map(s => s.id === currentId
+      ? { ...s, items: s.items.map(i => i.id === item.id ? { ...i, saved: !i.saved } : i) }
+      : s));
+    announceOnce(item.saved ? 'Removed from saved' : 'Saved');
+  };
   const deleteItem = (item) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: s.items.filter(i => i.id !== item.id) } : s));
   const inviteEmail = (email) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, members: [...s.members, M(email.split('@')[0].replace(/\b\w/g, c => c.toUpperCase()) + ' ', email)] } : s));
   const renameSpace = (name) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, name } : s));
@@ -591,7 +610,7 @@ const CircApp = () => {
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
-        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity,
+        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -738,11 +757,39 @@ const CircApp = () => {
       // keeps the lens. The asymmetry is deliberate; the chip stays on screen
       // across the switch, so the state is never hidden.
       const who = (Lens ? lensWho[currentId] : null) || null;
+      const lensActive = Lens ? window.circLensActive(order, who) : false;
       const sorted = (Lens && window.circSortItems) ? window.circSortItems(stored, order) : stored;
-      const visible = Lens ? window.circFilterItems(sorted, who) : sorted;
+      const lensed = Lens ? window.circFilterItems(sorted, who) : sorted;
       // Offered from the whole circle, so the set does not reshuffle by tab.
       const contributors = Lens ? window.circContributors(space) : [];
       const pendingVisible = Lens ? window.circFilterItems(pending, who) : pending;
+      // ---- Saved (feed-enhancement candidate build) ------------------------
+      // A deletable aid, same idiom as Lens above: no feed-saved.jsx ⇒ no
+      // toggle, no chip, no filter. Held per CIRCLE (see savedOn's own
+      // declaration) — same reasoning as `who`, not repeated here.
+      // Composed AFTER the lens, per the ruling: both can be on at once, and
+      // narrowing to one contributor's saved links is exactly what "compose"
+      // has to mean, not "replace".
+      const Saved = window.circFilterSaved || null;
+      const savedOnFlag = !!savedOn[currentId];
+      const visible = Saved ? Saved(lensed, savedOnFlag) : lensed;
+      // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
+      // is a fact about the circle, not about the current narrowing, and the
+      // toggle's presence rule (render site, below) reads it that way.
+      const hasSaved = !!(window.circHasSaved && window.circHasSaved(readItems));
+      // Read only — a ruled product decision (see feed-saved.jsx's header) —
+      // not loading, and present either because there is something to find or
+      // because the filter is already on: turning it off must stay reachable
+      // even after unsaving the last link it was showing.
+      const showSaved = !!window.SavedToggle && tab === 'read' && !loadingFeed
+        && (hasSaved || savedOnFlag);
+      const setSavedFilter = (next) => {
+        setSavedOn((prev) => ({ ...prev, [currentId]: next }));
+        announceOnce(next ? 'Showing saved links' : 'Showing all read links');
+      };
+      const savedToggle = showSaved
+        ? <window.SavedToggle on={savedOnFlag} onToggle={setSavedFilter} />
+        : null;
       // The control is absent below two items — a one-item list reads the same
       // under either order, so the control could do nothing. Same instinct as
       // the waterline's own "both sides or nothing".
@@ -753,7 +800,7 @@ const CircApp = () => {
       // The control is present from two items up, OR whenever a lens is already
       // applied — otherwise narrowing to one link removes the only way back.
       const showLens = !!Lens && !loadingFeed
-        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || window.circLensActive(order, who));
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensActive);
       const setOrder = (next) => {
         setSortOrder((prev) => ({ ...prev, [sortKey]: next }));
         // The gesture is acknowledged, as every gesture in this app is. The
@@ -774,7 +821,7 @@ const CircApp = () => {
         announceOnce(next === 'compact' ? 'Compact view' : 'Comfortable view');
       };
       const lensControl = showLens
-        ? <Lens order={order} who={who} contributors={contributors}
+        ? <Lens order={order} who={who} contributors={contributors} user={user}
             onOrder={setOrder} onWho={setWho}
             density={density} onDensity={setDensityView}
             isMobile={isMobile}
@@ -810,8 +857,11 @@ const CircApp = () => {
                 from Dev K." reads as the filter being broken. Hidden while a
                 lens is applied. This touches that overlay's surface only by
                 withholding it here, at the point the two features meet; nothing
-                about the digest itself is changed. */}
-            {Cand && Cand.FeedLead && !(Lens && window.circLensActive(order, who))
+                about the digest itself is changed. Saved (feed-enhancement
+                candidate build) is folded into the same condition for the
+                same reason: "3 conversations you are watching" above a feed
+                narrowed to what was saved reads exactly as broken. */}
+            {Cand && Cand.FeedLead && !(lensActive || savedOnFlag)
               && <Cand.FeedLead api={candApi} tab={tab} />}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
                 a contributor lens, an arrival from somebody else is not one:
@@ -821,14 +871,22 @@ const CircApp = () => {
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
             {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
+            {/* LensNoMatch takes precedence over SavedNoMatch when both could
+                fire (a contributor lens AND the saved filter, narrowed to
+                nothing) — the lens is the wider-scoped question ("what did
+                this person add"), saved the narrower one layered on top, so
+                the wider miss is the one reported. */}
             {visible.length === 0 && who
               ? <window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} />
+              : visible.length === 0 && savedOnFlag
+              ? <window.SavedNoMatch onClear={() => setSavedFilter(false)} />
               : visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
               : visible.map((item, i) => {
                 const card = <FeedCard item={item} tab={tab} user={user} showTime density={density}
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
-                  onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;
+                  onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
+                  onToggleSaved={toggleSaved} />;
                 const row = (Cand && Cand.CardRow)
                   ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
                   : card;
@@ -847,11 +905,20 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          <Tabs active={tab} onChange={setTab} right={lensControl} />
+          {/* Saved sits left of the lens trigger; the lens stays outermost
+              (rightmost) so it never shifts position between tabs — Active
+              never carries the saved toggle, so the lens trigger moving with
+              it would be the one thing in this bar that isn't stable. */}
+          <Tabs active={tab} onChange={setTab} right={<>{savedToggle}{lensControl}</>} />
           {/* What is applied, and the way out of it. Nothing at all in the
               default state — the folded control means the chips are now the
-              only place the applied lens is legible without opening it. */}
-          {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho} isMobile={isMobile} />}
+              only place the applied lens (or the saved filter) is legible
+              without opening it. */}
+          {/* LensChips (the chip ROW) is feed-lens.jsx's own component, so its
+              presence still gates on Lens, not Saved — the saved chip rides
+              inside that same row and has nowhere to render without it. */}
+          {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho}
+            saved={savedOnFlag} onSaved={setSavedFilter} isMobile={isMobile} />}
           {feed}
           {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />

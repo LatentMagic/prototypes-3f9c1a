@@ -56,11 +56,14 @@ const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.leng
 // card's own padding: the buttons still render and still hit at 44px, they
 // simply overlap the padding box, and the row measures ~32px. Costs nothing
 // and takes ~12px off every card at both widths.
+// bookmark (feed-enhancement candidate build) joins check/trash at the same
+// two sizes — it only ever sits beside them, on Read, so it has to read at
+// the same scale or it would be the one action that didn't shrink with density.
 const circCardMetrics = (density) => (density === 'compact'
-  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6 }
-  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0 });
+  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6 }
+  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0 });
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete }) => {
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
@@ -182,7 +185,32 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             that inset gap carries the separation — no drawn hairline. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
           {tab === 'read'
-            ? <SwellDoor item={item} />
+            ? (
+              <React.Fragment>
+                {/* Save (feed-enhancement candidate build) — READ ONLY, a ruled
+                    product decision, so it never appears on the Active branch
+                    below. Leftmost of the cluster: [save] [SwellDoor] [delete].
+                    ONE stable accessible name across both states (the correct
+                    ARIA-toggle pattern) — the FORM changes (outline -> filled),
+                    the name does not. onToggleSaved is optional so a caller that
+                    hasn't wired it (e.g. the discourse surface's own FeedCard
+                    mount) simply doesn't get the button, same guard idiom as
+                    every other deletable-aid hook in this app. */}
+                {onToggleSaved && (
+                  <button
+                    className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+                    onClick={() => onToggleSaved(item)}
+                    aria-pressed={!!item.saved}
+                    aria-label="Save this link"
+                    title="Save this link"
+                    style={{ color: item.saved ? 'var(--color-accent)' : 'var(--color-fg-3)' }}
+                  >
+                    <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={m.actionIcon.bookmark} />
+                  </button>
+                )}
+                <SwellDoor item={item} />
+              </React.Fragment>
+            )
             : (
               <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
                 <Icon name="check" size={m.actionIcon.check} />
