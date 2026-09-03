@@ -113,7 +113,18 @@ const CircApp = () => {
   const onGate = () => setGateOpen(true);
 
   // core state
-  const [route, setRoute] = useState(SAVED?.route || 'space');
+  // Routes that are DEAD ENDS: full-page notices a member is sent to, never a
+  // place they chose to be. `route` is persisted (see the effect below), so
+  // without this a member who lands on one — or a reviewer who opens its staged
+  // state — has it written to localStorage, and their NEXT plain visit boots
+  // straight back onto "Page not found." with nothing saying why. The state is
+  // still perfectly reachable: a stager sets the route after boot, so only the
+  // RESTORE path is filtered. Pre-existing for the two invite notices; the
+  // not-found page would have been the third.
+  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full'];
+  const [route, setRoute] = useState(
+    CIRC_UNRESUMABLE.includes(SAVED?.route) ? 'space' : (SAVED?.route || 'space')
+  );
   const [user, setUser] = useState(SAVED?.user || DEFAULT_USER);
   const [spaces, setSpaces] = useState(SAVED?.spaces || seedSpaces(DEFAULT_USER.email));
   const [currentId, setCurrentId] = useState(SAVED?.currentId || 'sp-backend');
@@ -133,6 +144,13 @@ const CircApp = () => {
 
   // ephemeral
   const [loadingFeed, setLoadingFeed] = useState(false);
+  // The feed region's own load-failure (feed-enhancement candidate build).
+  // Separate from loadingFeed rather than a third value on it: a failed fetch
+  // is a state the region can SIT in (the member reads it, decides to retry),
+  // where loading is a state it only ever passes through, and collapsing the
+  // two would make "no longer loading" ambiguous between "succeeded" and
+  // "gave up" everywhere loadingFeed is already read as a boolean.
+  const [feedError, setFeedError] = useState(false);
   // Review-only: freeze a loading interstitial so it can be vetted at rest.
   // Auto-clears the moment the route leaves an interstitial (effect below), so
   // it never leaks into a real auth / billing flow.
@@ -607,7 +625,7 @@ const CircApp = () => {
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
     ? window.buildStates({
         spaces, STATE_KEY,
-        setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
+        setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setFeedError, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
@@ -709,6 +727,10 @@ const CircApp = () => {
     screen = <InvalidInvite onHome={() => goSpace('sp-backend')} />;
   } else if (route === 'space-full') {
     screen = <SpaceFull onHome={() => goSpace('sp-backend')} />;
+  } else if (route === 'not-found') {
+    screen = window.CircNotFound
+      ? <window.CircNotFound onHome={() => goSpace('sp-backend')} />
+      : null;
   } else if (Cand && Cand.matchRoute && Cand.matchRoute(route)) {
     // Candidate-build route (e.g. a card's own surface). The overlay hands back
     // the body and the shell opts; the chrome is still inShell's.
@@ -818,12 +840,29 @@ const CircApp = () => {
       // trigger. It hides no content, so it has nothing to disclose.
       const setDensityView = (next) => {
         setDensity(next);
-        announceOnce(next === 'compact' ? 'Compact view' : 'Comfortable view');
+        announceOnce(next === 'compact' ? 'Compact view' : next === 'grid' ? 'Grid view' : 'Comfortable view');
       };
+      // Grid (feed-enhancement candidate build) is offered only >=1024px
+      // (FeedLens filters the option away below that; see its own comment).
+      // `density` is the STORED preference and stays 'grid' even when the
+      // window is narrow, so widening it restores the grid without a second
+      // gesture. `effectiveDensity` is what THIS render treats it as — the
+      // fallback lives here, once, so every reader downstream (the card, the
+      // container, the trigger's own highlighted option) agrees, instead of
+      // each repeating `density === 'grid' && isMobile` and one of them
+      // eventually drifting.
+      const effectiveDensity = (density === 'grid' && isMobile) ? 'comfortable' : density;
+      const isGrid = effectiveDensity === 'grid';
+      // Full-width rows — the waterline, the New pill, FeedLead, every zero
+      // state — sit in a grid cell like any other row unless told otherwise,
+      // which puts them in ONE column and leaves them half as wide as what
+      // they're describing. `null` outside grid, so spreading it changes
+      // nothing there.
+      const gridSpan = isGrid ? { gridColumn: '1 / -1' } : null;
       const lensControl = showLens
         ? <Lens order={order} who={who} contributors={contributors} user={user}
             onOrder={setOrder} onWho={setWho}
-            density={density} onDensity={setDensityView}
+            density={effectiveDensity} onDensity={setDensityView}
             isMobile={isMobile}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
@@ -842,7 +881,31 @@ const CircApp = () => {
       // still glow at the foot of an oldest-first feed.
       const divIdx = (tab === 'active' && order === 'newest')
         ? window.circDividerIndex(visible, dividerAt) : -1;
-      const feed = loadingFeed ? (
+      const feed = (feedError && window.FeedError) ? (
+        // Load-error takes precedence over every other body state, loading
+        // included: a feed that failed to fetch has no waterline to draw (it
+        // does not know what landed since the mark), no lens or saved miss to
+        // report (it has no items to have missed among), and nothing to show
+        // loading over. Same container shape as the populated feed below, so
+        // only the body swaps and the page does not jump.
+        <main style={{ flex: 1, width: '100%' }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
+            {/* This container never becomes the two-column grid (a load error
+                has no cards to arrange), so `gridSpan` is inert here — kept
+                only so FeedError reads the same as every other full-width row
+                if this branch is ever folded into the shared container. */}
+            <div style={gridSpan}><window.FeedError onRetry={() => {
+              // Prototype affordance only: a real retry re-fires the fetch and
+              // lands on whatever it returns. There is nothing here to re-fetch,
+              // so the loading beat is staged by hand, just long enough to read
+              // as the gesture having done something.
+              setFeedError(false);
+              setLoadingFeed(true);
+              setTimeout(() => setLoadingFeed(false), 900);
+            }} /></div>
+          </div>
+        </main>
+      ) : loadingFeed ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
         <main style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -850,7 +913,23 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: density === 'compact' ? 10 : 16 }}>
+          {/* Grid trades the single-column cap (720, sized for ONE column's
+              line length) for 1100: two columns inside 720 give ~340px
+              columns that wrap every title to three lines regardless of the
+              clamp, since the cap was never meant to bound a row of two. At
+              1100 each column is ~520px, which is what the clamp above was
+              measured against. `display: grid` replaces the flex column
+              wholesale — the two layouts don't share a gap number by
+              coincidence, so this isn't spreading one style object into the
+              other, it's picking one of two whole shapes. */}
+          <div style={{
+            maxWidth: isGrid ? 1100 : 'var(--max-feed-width)', margin: '0 auto',
+            padding: isMobile ? '16px 16px 112px' : '28px 24px 120px',
+            '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%',
+            ...(isGrid
+              ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, alignItems: 'stretch' }
+              : { display: 'flex', flexDirection: 'column', gap: effectiveDensity === 'compact' ? 10 : 16 }),
+          }}>
             {/* The discourse overlay's watching-digest summarises the whole
                 circle. Under a lens it contradicts the screen it sits on — "4
                 conversations you are watching" directly above "Nothing here
@@ -862,7 +941,7 @@ const CircApp = () => {
                 same reason: "3 conversations you are watching" above a feed
                 narrowed to what was saved reads exactly as broken. */}
             {Cand && Cand.FeedLead && !(lensActive || savedOnFlag)
-              && <Cand.FeedLead api={candApi} tab={tab} />}
+              && <div style={gridSpan}><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
                 a contributor lens, an arrival from somebody else is not one:
                 tapping the pill would land it straight into the hidden pile and
@@ -870,19 +949,29 @@ const CircApp = () => {
                 to promise it will do. So it counts only arrivals the lens keeps.
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
-            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
+            {tab === 'active' && pendingVisible.length > 0 && <div style={gridSpan}><NewPill onClick={revealPending} /></div>}
             {/* LensNoMatch takes precedence over SavedNoMatch when both could
                 fire (a contributor lens AND the saved filter, narrowed to
                 nothing) — the lens is the wider-scoped question ("what did
                 this person add"), saved the narrower one layered on top, so
-                the wider miss is the one reported. */}
-            {visible.length === 0 && who
-              ? <window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} />
+                the wider miss is the one reported.
+
+                Corrected in run 5: leading with the lens was right, borrowing
+                its COPY was not. LensNoMatch's supporting line reads "You have
+                not read anything they added", which under the saved filter is
+                false — the member may have read plenty of theirs and saved
+                none of it. The pair now has its own state (feed-saved.jsx's
+                SavedLensNoMatch) naming both narrowings, guarded so dropping
+                that module returns this chain to exactly what it was. */}
+            {visible.length === 0 && who && savedOnFlag && window.SavedLensNoMatch
+              ? <div style={gridSpan}><window.SavedLensNoMatch who={who} onClearWho={() => setWho(null)} /></div>
+              : visible.length === 0 && who
+              ? <div style={gridSpan}><window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} /></div>
               : visible.length === 0 && savedOnFlag
-              ? <window.SavedNoMatch onClear={() => setSavedFilter(false)} />
-              : visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
+              ? <div style={gridSpan}><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
+              : visible.length === 0 ? <div style={gridSpan}><EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
-                const card = <FeedCard item={item} tab={tab} user={user} showTime density={density}
+                const card = <FeedCard item={item} tab={tab} user={user} showTime density={effectiveDensity}
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
@@ -895,7 +984,51 @@ const CircApp = () => {
                 const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
                 return (
                   <React.Fragment key={item.id}>
-                    {i === divIdx && <FeedDivider />}
+                    {i === divIdx && <div style={gridSpan}><FeedDivider /></div>}
+                    {/* CircGlow's own div is this row's direct grid-cell
+                        child (the Fragment wrapping it renders no DOM node),
+                        so it needs BOTH halves of the fix:
+                        `height: '100%'` resolves it to the OUTER grid's row
+                        height explicitly (equivalent to what that row's own
+                        default stretch would give it, since a percentage
+                        height on an auto-sized track is treated as auto for
+                        the row's own sizing pass — verified: matches the
+                        stretched value exactly, never smaller).
+                        `display: 'grid'` then re-stretches ITS OWN child on
+                        both axes, which matters because the discourse
+                        candidate build (Cand.CardRow, always present in this
+                        build — see main.jsx's own Cand binding) inserts an
+                        unstyled `height: auto` wrapper div between this node
+                        and the card. Without this second half, that wrapper
+                        (and the card's own `height: 100%` in feed.jsx inside
+                        it) has nothing definite to resolve against, which
+                        collapsed one seed item's long, unclamped-by-nothing
+                        -webkit-line-clamp title to a blank 34px card
+                        (reproducible, not a timing race — see the run's own
+                        measured numbers). Flex was tried first for this half
+                        and rejected: it only stretches the cross axis, so it
+                        fixed the height and silently narrowed every card to
+                        its content's width instead. */}
+                    {/* NO height on the grid cell, and this was settled by
+                        measuring both ways rather than by argument — a stretch
+                        was tried here first and reverted.
+
+                        A grid item stretches to its row by default, but only
+                        while its height is auto. Pinning it to 100% resolves
+                        against a row the item is itself still sizing, and the
+                        card then grows to swallow the height of its row-mate's
+                        DISCOURSE strip — an appendage that belongs to the other
+                        card, not to the row. Measured at 1280 on this fixture:
+                        with the pin, three of ten cards carried 20-34px of
+                        empty white inside their own border; without it, zero
+                        did, and no card collapsed. A bordered card with a void
+                        in its lower third reads as content that failed to
+                        arrive, which is the exact impression the imageless
+                        grid card exists to avoid.
+
+                        So a shorter row-mate ends at its own content and leaves
+                        ground beneath it. The uneven bottoms that remain are
+                        the honest cost of a per-card appendage in a grid. */}
                     <CircGlow glow={fresh} rise={arrived.includes(item.id)}>{row}</CircGlow>
                   </React.Fragment>
                 );

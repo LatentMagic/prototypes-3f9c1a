@@ -193,7 +193,16 @@ const LensSegmented = ({ label, options, value, onPick }) => {
               onClick={() => onPick(o.id)}
               className="circ-lens-seg"
               style={{
-                flex: 1, border: 0, cursor: 'pointer', textAlign: 'center',
+                // `flex: 1` alone distributes the SPARE space equally and still
+                // sizes each segment from its own content first, which two
+                // options hid (Newest/Oldest are near enough the same width)
+                // and a third exposed: Comfortable | Compact | Grid measured
+                // 93 / 72 / 62px in a track the Order group above divides into
+                // two exact halves. Two same-width segmented controls stacked,
+                // one even and one jittering, is the kind of break the eye
+                // catches without being able to name. `flexBasis: 0` makes the
+                // division exact at any count.
+                flex: 1, flexBasis: 0, minWidth: 0, border: 0, cursor: 'pointer', textAlign: 'center',
                 background: on ? 'var(--color-surface)' : 'transparent',
                 borderRadius: 'var(--radius-sm)', minHeight: 'var(--tap-target-min)', padding: '0 8px',
                 fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
@@ -286,17 +295,26 @@ const LensList = ({ label, options, value, onPick }) => {
   );
 };
 
-// The two options density picks between — Comfortable is the product's
-// default rhythm, Compact tightens the metrics only (see feed.jsx).
+// The three options density picks between — Comfortable is the product's
+// default rhythm, Compact tightens the metrics only, Grid reflows the feed
+// into two columns (see feed.jsx). Grid stays in this master list even
+// though FeedLens below drops it under 1024px — the stored preference and
+// main.jsx's fallback both need the id to exist, only the OFFER narrows.
 const CIRC_DENSITY_OPTIONS = [
   { id: 'comfortable', label: 'Comfortable' },
   { id: 'compact', label: 'Compact' },
+  { id: 'grid', label: 'Grid' },
 ];
 
 const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   const active = circLensActive(order, who);
+  // Grid is a desktop-only offer (main.jsx's own comment has the why: a
+  // two-column grid of these cards is worse at 390). Filtered out of the
+  // OPTIONS rather than rendered disabled — an option nobody at this width
+  // can ever pick is not a choice, it's clutter with a tooltip.
+  const densityOptions = isMobile ? CIRC_DENSITY_OPTIONS.filter((o) => o.id !== 'grid') : CIRC_DENSITY_OPTIONS;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was
   // correct for the keyboard and wrong on screen: Chromium treats a
@@ -431,8 +449,8 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           }}
           style={{
             position: 'absolute', top: '100%', right: 0, zIndex: 60, outline: 'none',
-            // Wide enough that "Comfortable | Compact" reads in the segmented
-            // control without truncating.
+            // Wide enough that "Comfortable | Compact | Grid" reads in the
+            // segmented control without truncating.
             minWidth: 260, maxWidth: 300,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
@@ -451,7 +469,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           {window.CIRC_SORT_OPTIONS && (
             <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
           )}
-          <LensSegmented label="View" value={density} onPick={onDensity} options={CIRC_DENSITY_OPTIONS} />
+          <LensSegmented label="View" value={density} onPick={onDensity} options={densityOptions} />
           {whoOptions.length > 1 && (
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 10px' }} aria-hidden="true" />

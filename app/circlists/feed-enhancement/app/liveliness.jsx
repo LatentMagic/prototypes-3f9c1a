@@ -138,7 +138,7 @@ const FeedDivider = () => (
 //        card inserts into a feed the member is already watching.
 // Under prefers-reduced-motion the card does not travel and the glow still plays
 // (the CSS keeps circ-glow alive and drops circ-rise).
-const CircGlow = ({ glow, rise, children }) => {
+const CircGlow = ({ glow, rise, style, children }) => {
   const ref = React.useRef(null);
   const [inView, setInView] = React.useState(false);
   React.useEffect(() => {
@@ -160,7 +160,11 @@ const CircGlow = ({ glow, rise, children }) => {
     return () => { cancelAnimationFrame(raf); io.disconnect(); };
   }, [glow, inView]);
   const cls = ((glow && inView) ? 'circ-glow ' : '') + (rise ? 'circ-rise' : '');
-  return <div ref={ref} className={cls || undefined}>{children}</div>;
+  // `style` is grid's own doing (main.jsx passes height:'100%' there so this
+  // div — the row's direct grid-cell child, once the surrounding <Fragment>
+  // is skipped — stretches the card to match its neighbour). Undefined
+  // everywhere else, same as before this prop existed.
+  return <div ref={ref} className={cls || undefined} style={style}>{children}</div>;
 };
 
 // ---- Simulated arrivals (the timed check / Config staging) ------------------

@@ -113,4 +113,53 @@ const SavedNoMatch = ({ onClear }) => (
   </div>
 );
 
-Object.assign(window, { circHasSaved, circFilterSaved, SavedToggle, SavedNoMatch });
+// ---- Both narrowings on, nothing left ------------------------------------
+// Run 4 gave LensNoMatch precedence when a contributor lens and the saved
+// filter are both applied, reasoning that the lens is the wider question and
+// so the one to report. The reasoning holds for WHICH to lead with and fails
+// on what the other one then says: LensNoMatch's supporting line is "You have
+// not read anything they added", and under the saved filter that sentence is
+// simply FALSE — the member may have read plenty of theirs and saved none of
+// it. The state was telling members something untrue about their own reading.
+//
+// So the pair gets its own state rather than borrowing either one's copy. It
+// keeps LensNoMatch's escape — clearing the CONTRIBUTOR, not the saved filter
+// — because saved is a place the member deliberately went and the contributor
+// is what they just changed; dropping them out of their saved list to fix a
+// lens they set one tap ago would be the wrong way round. The Saved chip above
+// stays one tap from clearing, so the other way out is never more than that.
+//
+// ACCENT, not SavedNoMatch's neutral, though the two sit a few lines apart —
+// so the difference is deliberate and the rule that decides it is the LABEL,
+// not the file. This button reads "Show everyone", the same words in the same
+// slot of the same block as LensNoMatch's accent button. Two buttons with an
+// identical string and identical geometry rendering different ink is a defect
+// whatever the reasoning behind either of them; a member cannot be expected to
+// know they are looking at a different component. SavedNoMatch says something
+// else — "Show all read links" — and keeps its own neutral treatment and its
+// own reasoning above. Whether the app-wide rule should be accent or neutral is
+// a separate question, and one for the elegance pass rather than for the state
+// that happens to notice it.
+const SavedLensNoMatch = ({ who, onClearWho }) => (
+  <div style={{
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    textAlign: 'center', padding: '56px 24px', gap: 6,
+  }}>
+    <p style={{
+      margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)',
+      fontWeight: 600, color: 'var(--color-fg-1)',
+    }}>{'Nothing saved from ' + window.circContributorLabel(who)}</p>
+    <p style={{
+      margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
+      color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
+    }}>Your saved links don’t include anything they added.</p>
+    <button type="button" onClick={onClearWho} style={{
+      marginTop: 10, background: 'transparent', cursor: 'pointer',
+      border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
+      fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
+      color: 'var(--color-accent)', minHeight: 'var(--tap-target-min)', padding: '0 16px',
+    }}>Show everyone</button>
+  </div>
+);
+
+Object.assign(window, { circHasSaved, circFilterSaved, SavedToggle, SavedNoMatch, SavedLensNoMatch });

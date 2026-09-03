@@ -41,18 +41,28 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+    setFeedError,
   } = api;
+  // The feed's load-failure is the first staged flag that can OUTLIVE the state
+  // that set it: every other flag here is overwritten by the next stager, and a
+  // walker clicking from a load-error state to any other would otherwise carry
+  // the failure into it. So it is cleared defensively wherever a stager settles
+  // a route, and set only where a state asks for it. Guarded because main.jsx
+  // only passes it when app/not-found.jsx is present.
+  const clearFeedError = () => { if (setFeedError) setFeedError(false); };
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
   const reset = () => {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
+    clearFeedError();
   };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setCurrentId(id); setTab('active');
+    clearFeedError();
     if (toRoute) setRoute(toRoute); else enterSpace(id);
   };
 
@@ -67,6 +77,18 @@ function circStateContext(api) {
     setSpaces(prev => withSpace(prev, 'sp-test-weekend').map(s => s.id === 'sp-test-weekend'
       ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
     setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // The app-level not-found page (feed-enhancement candidate build). A bare
+  // route with no circle context, because that is the honest staging: the page
+  // answers an address that resolved to nothing, so there is nothing for it to
+  // be "inside". Signed in, so the way home has somewhere to go.
+  const stageNotFound = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setLoadingFeed(false);
+    clearFeedError();
+    setRoute('not-found');
   };
 
   // Funding state on the champion's card: active / a scheduled ending / a renewal
@@ -180,7 +202,7 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     const next = { [space + ':' + tab]: order };
@@ -211,6 +233,9 @@ function circStateContext(api) {
     else setSortMenuOpen(false);
     setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
     setTab(tab);
+    // Set AFTER enterSpace, which clears it on the way in — the failure is the
+    // state being staged, not something the entry should wash away.
+    if (setFeedError) setTimeout(() => setFeedError(!!feedError), 0);
     // The waterline pair. entering a circle draws the mark from the stored
     // lastSeenAt and stamps it to now in the same breath, so a staged visit
     // cannot reliably reproduce a mid-pile mark by timing alone. These two
@@ -245,7 +270,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem,
+    stageSort, stageSingleItem, stageNotFound,
   };
 }
 
@@ -348,6 +373,32 @@ const CIRC_STATE_REGISTER = [
   // both saved and filtering to her gives a genuinely non-empty, three-chip
   // composition: Order (oldest), Added by (Priya N.), Saved.
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-with-lens', label: 'Saved \u2014 composed with the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', who: 'Priya N.', saved: [1, 6], savedOn: true }) },
+  // ---- Run 5 · item 5, and the arrangement half reopened ------------------
+  // The not-found page is staged as a bare route because that is what it
+  // answers: an address that resolved to nothing, with no circle to be inside.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'not-found-page', label: 'Not found \u2014 one answer for a bad address', stage: (c) => c.stageNotFound() },
+  // The failure with NOTHING applied, so the plain shape reads first: shell and
+  // tabs live above, the region alone replaced.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error', label: 'Feed \u2014 the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
+  // The same failure under a lens. The chips STAY: the fetch failed, and the
+  // member's narrowing is still what they set — hiding it would make a failed
+  // load look like a cleared filter.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error-lens', label: 'Feed \u2014 the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
+  // Grid. Desktop only by design, so this one reads as the arrangement change
+  // at 1280 and falls back to a single column at 390 \u2014 both are correct.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid', label: 'Grid \u2014 two columns, and no card carries an image', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', density: 'grid' }) },
+  // The panel open on three options, which is the control change itself.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid-panel', label: 'Grid \u2014 the View group\u2019s third option', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', density: 'grid', menu: true }) },
+  // The waterline in a grid. It marks where the last visit reached, so it spans
+  // BOTH columns \u2014 a divider sitting in one cell would claim something false
+  // about the card beside it.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid-waterline', label: 'Grid \u2014 the waterline spans both columns', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'grid', waterline: true }) },
+  // Run 4 gave the contributor miss precedence over the saved miss, and its copy
+  // then told members "You have not read anything they added" while the saved
+  // filter was the thing hiding them. Dev K. has read links in this circle and
+  // none of them saved, which is exactly the case that was being described
+  // falsely.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-none', label: 'Saved \u2014 both narrowings empty, and both now named', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.', saved: [0, 2, 4], savedOn: true }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
