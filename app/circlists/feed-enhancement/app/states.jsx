@@ -31,6 +31,16 @@
 
 const DAY = 864e5;
 
+// Search (feed-enhancement candidate build). The one Read-tab card whose title
+// never resolved — seeded unread with no SEED_META entry (seed-data.jsx), so
+// it renders its bare URL as its own headline. `stageSort`'s `bareRead` flag
+// marks this exact URL read so search-bare-url can show the field matching a
+// headline that IS a URL, which is the one case circFilterSearch's index rule
+// most needs proving against. Not edited into the seed itself — a seed change
+// would oblige a parallel demo-seed edit and a state-key bump this slice does
+// not need (see this project's CLAUDE.md, "Seed data — the standing rule").
+const CIRC_BARE_URL = 'https://analytics-internal-example.com/?trace=8823ff1c9e0a4b12-2026-03-retro-followups-database-migration-incident-action-items-and-owners-final-draft-v3';
+
 // ---- staging context -------------------------------------------------------
 // Built per render from main.jsx's setters; every stage() closes over nothing
 // but this. Same staging behaviour as the old Config scenarios, verbatim.
@@ -41,6 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+    setSearchQuery, setSearchOpen,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -202,9 +213,19 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
+    // the `saved` block below, so a stager that ever combines the two indexes
+    // `saved` against the pile this card has already joined, not the one
+    // before it. No entry in this run combines them, but the ordering is the
+    // honest one regardless.
+    if (bareRead) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => i.url === CIRC_BARE_URL ? { ...i, read: true } : i),
+      }));
+    }
     const next = { [space + ':' + tab]: order };
     if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
     setSortOrder(next);
@@ -225,6 +246,18 @@ function circStateContext(api) {
     // Held per circle, same as `who` — always fully replaced, so switching
     // between staged entries never inherits a filter the last one turned on.
     setSavedOn(savedOn ? { [space]: true } : {});
+    // Search (feed-enhancement candidate build). Keyed same as sortOrder,
+    // always fully replaced — same reasoning as `who`/`savedOn` above, so an
+    // entry that says nothing about search always lands with the field shut
+    // and empty, never inheriting whatever the last-opened entry left typed.
+    setSearchQuery(query ? { [space + ':' + tab]: query } : {});
+    // A staged QUERY implies a staged OPEN. Without this, an entry that sets
+    // only `query` leaves `searchOpen` false and the field is open purely
+    // because a query exists — so backspacing to empty closes it mid-keystroke
+    // and drops focus. In real use that never happens, because the only route
+    // to a query is the trigger, which sets the flag; it happened only on the
+    // ?state= URLs, which are exactly the links Joe follows.
+    setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
     // Opened AFTER the route settles, not before. main.jsx closes the panel on
     // any tab/circle change, and the entry below changes both — so setting it
     // here directly meant `lens-panel-open` reliably arrived with the panel
@@ -399,6 +432,38 @@ const CIRC_STATE_REGISTER = [
   // none of them saved, which is exactly the case that was being described
   // falsely.
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-none', label: 'Saved \u2014 both narrowings empty, and both now named', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.', saved: [0, 2, 4], savedOn: true }) },
+  // ---- Search — the fourth narrowing, composed after who/saved --------
+  // The field open with nothing typed yet — the plain disclosure, before it
+  // has anything to say.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-open', label: 'Search \u2014 the field, before a word is typed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', searchOpen: true }) },
+  // 'go' matches TWO Read cards by their URL/title: go.dev/blog/pipelines and
+  // go.dev/blog/errors-are-values ('Go' in both titles, 'go.dev' in both
+  // domains) — confirmed against seed-data.jsx's sp-backend Read pile, not by
+  // guessing at the word.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-results', label: 'Search \u2014 the pile narrows as you type', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'go' }) },
+  // The card seeded with NO SEED_META entry (seed-data.jsx), so its headline
+  // IS its URL — exactly the case the index rule's "or the bare URL" clause
+  // exists for. Unread in the plain seed; `bareRead` promotes it into the Read
+  // pile before the query runs. 'migration' sits inside that URL's own slug
+  // ("...database-migration-incident...") and matches nothing else in this
+  // circle's Read pile.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-bare-url', label: 'Search \u2014 the card whose title never resolved', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', bareRead: true, query: 'migration' }) },
+  // Priya N.'s Read pile in this circle is two links — jvns.ca's DNS piece and
+  // the internal-infra postmortem. 'dns' matches only the first, by its title
+  // ("How DNS Resolvers Actually Work") — confirmed against the same pile
+  // 'filter-contributor' above already narrows to, so the compose is provably
+  // narrower than either filter alone, not just differently-worded.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-composed', label: 'Search \u2014 narrowing an already-narrowed list', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.', query: 'dns' }) },
+  // 'xylophone' appears nowhere in this product's seed data — titles, sources,
+  // domains or attributions — by inspection of seed-data.jsx, so it is a clean
+  // zero-match word rather than one that happens to miss today's fixtures.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-no-match', label: 'Search \u2014 nothing matches, and it says what it looked at', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'xylophone' }) },
+  // All three narrowings named in one headline. 'xylophone' guarantees the
+  // miss regardless of which single saved index landed inside Priya N.'s own
+  // pile — the point of this state is the compound sentence FeedNoMatch
+  // renders when who/saved/query are ALL active, not which particular link
+  // the saved mark happened to land on.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'search-all-three', label: 'Search \u2014 all three narrowings named at once', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.', saved: [0], savedOn: true, query: 'xylophone' }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

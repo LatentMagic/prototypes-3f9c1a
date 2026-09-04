@@ -207,6 +207,18 @@ const CircApp = () => {
   // outlives it. The saved FLAG on an item is the opposite: it lives on
   // `spaces` below, because it is a fact about the link, not a lens on it.
   const [savedOn, setSavedOn] = useState({});
+  // Search (feed-enhancement candidate build). Keyed `<circleId>:<tab>`, same
+  // as sortOrder — Read only, so the key's tab half is always 'read' in
+  // practice, but sharing the key shape rather than inventing a circle-only
+  // one keeps this state and sortOrder reading as the same kind of thing at a
+  // glance. VISIT STATE, never persisted — same reasoning as sortOrder's own
+  // comment above: a typed query is a reading posture for this session, not a
+  // preference that silently outlives it. `searchOpen` is the field's own
+  // disclosure — a query can be non-empty with the field "closed" (nothing
+  // moves it shut once typed; see feed-search.jsx's SearchField comment), so
+  // the two are tracked separately rather than one implying the other.
+  const [searchQuery, setSearchQuery] = useState({});
+  const [searchOpen, setSearchOpen] = useState({});
   // Density (BIZ-136 run 3): ONE value for the whole feed surface — comfortable
   // or compact — never per tab or per circle. Unlike sortOrder/lensWho this IS
   // persisted (per device, in the app-state blob below): it is a reading
@@ -629,6 +641,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+        setSearchQuery, setSearchOpen,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -794,7 +807,7 @@ const CircApp = () => {
       // has to mean, not "replace".
       const Saved = window.circFilterSaved || null;
       const savedOnFlag = !!savedOn[currentId];
-      const visible = Saved ? Saved(lensed, savedOnFlag) : lensed;
+      const savedFiltered = Saved ? Saved(lensed, savedOnFlag) : lensed;
       // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
       // is a fact about the circle, not about the current narrowing, and the
       // toggle's presence rule (render site, below) reads it that way.
@@ -811,6 +824,73 @@ const CircApp = () => {
       };
       const savedToggle = showSaved
         ? <window.SavedToggle on={savedOnFlag} onToggle={setSavedFilter} />
+        : null;
+      // ---- Search (feed-enhancement candidate build) -----------------------
+      // A deletable aid, same idiom as Lens/Saved above: no feed-search.jsx ⇒
+      // no trigger, no field, no filter, and searchQueryVal below is always ''
+      // (Search stays null, so circFilterSearch's guard never runs).
+      // Composed LAST, after saved — the ruling is the same one that put saved
+      // after the lens: each step narrows further, never replaces, so
+      // searching a saved, contributor-filtered list is exactly what
+      // "compose" has to mean here too.
+      const Search = window.circFilterSearch || null;
+      // Read only, by ruled decision (see feed-search.jsx's own header) — on
+      // Active the query is always treated as empty, which composes to a
+      // no-op regardless of what a stale key might hold from a prior Read
+      // visit to this same circle.
+      const searchQueryVal = (Search && tab === 'read') ? (searchQuery[sortKey] || '') : '';
+      const visible = Search ? Search(savedFiltered, searchQueryVal) : savedFiltered;
+      // The field's own visible-ness: open because the trigger was tapped, OR
+      // because a query is already typed — clearing the query is the field's
+      // one way to close once that has happened (see SearchField's own
+      // comment), so a stager or a returning render never has to reconcile
+      // the two flags by hand anywhere else.
+      // A query of pure whitespace narrows NOTHING — circFilterSearch trims
+      // before it filters — so every question of the form "is a search
+      // applied?" has to trim too, or one press of the space bar lights the
+      // trigger, suppresses FeedLead and locks the field open while the pile
+      // is untouched. `searchQueryVal` stays raw: it is what the input shows.
+      const searchActive = !!searchQueryVal.trim();
+      const searchFieldOpen = tab === 'read' && (!!searchOpen[sortKey] || searchActive);
+      // Present from two Read items up, OR whenever a query is already active
+      // — same "never strand the member with no way back" rule as showLens/
+      // showSaved above, not repeated here.
+      //
+      // `window.LensChips` is in the guard because the FIELD renders inside the
+      // chip row, which lives in feed-lens.jsx. Without this term, deleting
+      // that file leaves a search icon in the bar that opens nothing: the
+      // trigger flips aria-expanded, no field ever appears, and a screen
+      // reader announces an expanded control with no contents.
+      const showSearch = !!window.SearchTrigger && !!window.LensChips
+        && tab === 'read' && !loadingFeed
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || searchActive);
+      const setSearchFieldOpen = (next) => {
+        // Closing WITH a query typed clears it. It used to return early and do
+        // nothing at all, which left a visible, focusable, accent-lit control
+        // that silently no-ops on tap — and no visible way to put the field
+        // away, since the member has to empty it by hand first. Closing the
+        // search is the obvious reading of tapping the search icon, so that is
+        // what it now does.
+        if (!next && searchActive) { clearSearch(); return; }
+        setSearchOpen((prev) => ({ ...prev, [sortKey]: next }));
+      };
+      const clearSearch = () => {
+        setSearchQuery((prev) => ({ ...prev, [sortKey]: '' }));
+        setSearchOpen((prev) => ({ ...prev, [sortKey]: false }));
+      };
+      const setSearchQueryVal = (next) => {
+        setSearchQuery((prev) => ({ ...prev, [sortKey]: next }));
+        // Announce the ZERO STATE ONLY — never a count, anywhere, including
+        // here (this app's feed marks are "boolean, wordless, never a
+        // count" — see feed-lens.jsx's own header). Computed against the
+        // pile this keystroke would actually produce, not the one already on
+        // screen, so a screen-reader user hears the miss on the same
+        // keystroke a sighted member sees it on.
+        const wouldMatch = Search ? Search(savedFiltered, next) : savedFiltered;
+        if (wouldMatch.length === 0 && next.trim()) announceOnce('Nothing matches');
+      };
+      const searchToggle = showSearch
+        ? <window.SearchTrigger open={searchFieldOpen} active={searchFieldOpen} onToggle={setSearchFieldOpen} />
         : null;
       // The control is absent below two items — a one-item list reads the same
       // under either order, so the control could do nothing. Same instinct as
@@ -939,8 +1019,13 @@ const CircApp = () => {
                 about the digest itself is changed. Saved (feed-enhancement
                 candidate build) is folded into the same condition for the
                 same reason: "3 conversations you are watching" above a feed
-                narrowed to what was saved reads exactly as broken. */}
-            {Cand && Cand.FeedLead && !(lensActive || savedOnFlag)
+                narrowed to what was saved reads exactly as broken. Search
+                (feed-enhancement candidate build) joins the same condition
+                for the same reason: "4 conversations you are watching" above
+                a feed a query has narrowed to nothing-like-that reads exactly
+                as broken too — a typed-but-empty field does NOT count, since
+                nothing is narrowed yet. */}
+            {Cand && Cand.FeedLead && !(lensActive || savedOnFlag || searchActive)
               && <div style={gridSpan}><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
                 a contributor lens, an arrival from somebody else is not one:
@@ -950,24 +1035,33 @@ const CircApp = () => {
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
             {tab === 'active' && pendingVisible.length > 0 && <div style={gridSpan}><NewPill onClick={revealPending} /></div>}
-            {/* LensNoMatch takes precedence over SavedNoMatch when both could
-                fire (a contributor lens AND the saved filter, narrowed to
-                nothing) — the lens is the wider-scoped question ("what did
-                this person add"), saved the narrower one layered on top, so
-                the wider miss is the one reported.
-
-                Corrected in run 5: leading with the lens was right, borrowing
-                its COPY was not. LensNoMatch's supporting line reads "You have
-                not read anything they added", which under the saved filter is
-                false — the member may have read plenty of theirs and saved
-                none of it. The pair now has its own state (feed-saved.jsx's
-                SavedLensNoMatch) naming both narrowings, guarded so dropping
-                that module returns this chain to exactly what it was. */}
-            {visible.length === 0 && who && savedOnFlag && window.SavedLensNoMatch
-              ? <div style={gridSpan}><window.SavedLensNoMatch who={who} onClearWho={() => setWho(null)} /></div>
-              : visible.length === 0 && who
-              ? <div style={gridSpan}><window.LensNoMatch who={who} tab={tab} onClear={() => setWho(null)} /></div>
-              : visible.length === 0 && savedOnFlag
+            {/* ONE zero-match register for all four narrowings (who / saved /
+                query), any combination — feed-lens.jsx's FeedNoMatch, which
+                replaces the three components this render site used to
+                choose between (LensNoMatch / SavedNoMatch / SavedLensNoMatch,
+                still defined and exported, deletable-aid idiom, just no
+                longer called from here). See that component's own header for
+                the regression contract and the escape-precedence reasoning —
+                not repeated here.
+                Falls through to EmptyState when NOTHING is narrowed — that is
+                a genuinely empty tab, the spec's own register, and stays
+                exactly as it was. window.FeedNoMatch guards the first branch
+                so dropping feed-lens.jsx whole degrades to EmptyState rather
+                than throwing on a missing component. */}
+            {visible.length === 0 && (who || savedOnFlag || searchActive) && window.FeedNoMatch
+              ? <div style={gridSpan}><window.FeedNoMatch who={who} tab={tab} saved={savedOnFlag} query={searchQueryVal}
+                  onClearWho={() => setWho(null)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
+              /* Saved survives feed-lens.jsx on its own: its toggle and its
+                 filter both live in feed-saved.jsx and neither is gated on the
+                 lens. Before the fold, SavedNoMatch rendered for this case
+                 whether or not feed-lens.jsx existed; folding it into
+                 FeedNoMatch quietly took that away, so a member filtering an
+                 unsaved pile would have met EmptyState's "there is nothing
+                 here / Start a circle" instead of "No saved links here". That
+                 is not degrading to the previous behaviour, which is what the
+                 deletable-aid contract actually promises — so the old
+                 component stays reachable for exactly the case it used to own. */
+              : visible.length === 0 && savedOnFlag && !who && window.SavedNoMatch
               ? <div style={gridSpan}><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
               : visible.length === 0 ? <div style={gridSpan}><EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
@@ -1038,20 +1132,25 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          {/* Saved sits left of the lens trigger; the lens stays outermost
-              (rightmost) so it never shifts position between tabs — Active
-              never carries the saved toggle, so the lens trigger moving with
-              it would be the one thing in this bar that isn't stable. */}
-          <Tabs active={tab} onChange={setTab} right={<>{savedToggle}{lensControl}</>} />
+          {/* Saved sits outboard, search inboard of it, the lens stays
+              outermost (rightmost) so it never shifts position between tabs —
+              Active never carries the saved toggle or search, so the lens
+              trigger moving with either would be the one thing in this bar
+              that isn't stable. Search is the last control to join this
+              ceiling — the region's own declared order, not a preference. */}
+          <Tabs active={tab} onChange={setTab} right={<>{savedToggle}{searchToggle}{lensControl}</>} />
           {/* What is applied, and the way out of it. Nothing at all in the
               default state — the folded control means the chips are now the
-              only place the applied lens (or the saved filter) is legible
-              without opening it. */}
+              only place the applied lens (or the saved filter, or a typed
+              query) is legible without opening it. */}
           {/* LensChips (the chip ROW) is feed-lens.jsx's own component, so its
-              presence still gates on Lens, not Saved — the saved chip rides
-              inside that same row and has nowhere to render without it. */}
+              presence still gates on Lens, not Saved or Search — both the
+              saved chip and the search field ride inside that same row and
+              have nowhere to render without it. */}
           {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho}
-            saved={savedOnFlag} onSaved={setSavedFilter} isMobile={isMobile} />}
+            saved={savedOnFlag} onSaved={setSavedFilter} isMobile={isMobile}
+            searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
+            onSearchChange={setSearchQueryVal} onSearchClear={clearSearch} />}
           {feed}
           {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />

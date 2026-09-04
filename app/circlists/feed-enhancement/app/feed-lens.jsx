@@ -522,7 +522,20 @@ const LensChip = ({ label, onClear, clearLabel }) => (
 // control's accessible name either way.
 const circAttributionName = (who) => (circIsYou(who) ? 'you'
   : circIsFormer(who) ? 'former member' : who);
-const circAttributionPhrase = (who, bare) => (bare ? '' : 'Added by ') + circAttributionName(who);
+// Joe's fix, 2026-09 (feed-enhancement candidate build): bare is now sentence
+// case at its OWN first letter — 'You', 'Former member' — where the non-bare
+// form stays exactly as the paragraph above ruled. The two are not the same
+// kind of string any more: "Added by you" is a clause inside a sentence and
+// stays lower-case; standing alone as the WHOLE label (the 390px chip), bare
+// is a fragment on its own line, and a fragment opens capitalised the way any
+// other label in this panel does (LensList's own row labels: 'You', 'Former
+// member'). Only the first character changes — a contributor's own name
+// ('Sam R.') already opens capitalised and is untouched either way.
+const circAttributionPhrase = (who, bare) => {
+  const name = circAttributionName(who);
+  if (!bare) return 'Added by ' + name;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
 
 // `saved`/`onSaved` (feed-enhancement candidate build): a third, independent
 // chip. It is not folded into circLensActive — saved is not part of the lens
@@ -530,9 +543,17 @@ const circAttributionPhrase = (who, bare) => (bare ? '' : 'Added by ') + circAtt
 // and the render-site note in main.jsx) — so this component's OWN render
 // condition below is widened to `active || saved` rather than touching that
 // shared predicate.
-const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile }) => {
+const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
+  // Search (feed-enhancement candidate build): `searchOpen` is already the
+  // COMPOSITE flag main.jsx computes ("field open OR a query is already
+  // typed") — this component does not re-derive it, it only asks whether
+  // `window.SearchField` exists to draw it with.
+  searchOpen, searchQuery, onSearchChange, onSearchClear }) => {
   const active = circLensActive(order, who);
-  if (!active && !saved) return null;
+  const Field = window.SearchField || null;
+  const showField = !!Field && !!searchOpen;
+  const anyChips = !!(who || (order && order !== 'newest') || saved);
+  if (!active && !saved && !showField) return null;
   return (
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab
@@ -550,27 +571,42 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile }) => 
       borderBottom: '1px solid var(--color-border-2)', width: '100%',
     }}>
     <div style={{
-      display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap',
+      // Column now, not row: the field (when present) is its OWN full-width
+      // row at the top, and the chips wrap on a row beneath it — same at both
+      // widths, per the field's own no-adaptive-exception rule. When the field
+      // is absent this collapses to exactly the single wrapping row it always
+      // was; `gap: 8` reads the same either way.
+      display: 'flex', flexDirection: 'column', gap: 8,
       padding: isMobile ? '8px 16px' : '8px 24px',
       maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%',
     }}>
-      {who && (
-        <LensChip
-          label={circAttributionPhrase(who, isMobile)}
-          clearLabel={'Showing links added by ' + circContributorLabel(who) + '. Show links from everyone'}
-          onClear={() => onWho(CIRC_LENS_ALL)} />
-      )}
-      {order && order !== 'newest' && (
-        <LensChip
-          label={window.circSortLabel ? window.circSortLabel(order) : order}
-          clearLabel="Sorted oldest first. Sort newest first"
-          onClear={() => onOrder('newest')} />
-      )}
-      {saved && (
-        <LensChip
-          label="Saved"
-          clearLabel="Showing saved links. Show all read links"
-          onClear={() => onSaved(false)} />
+      {/* THE DISCLOSURE, not a chip. A search chip would have to be both a
+          label (what's typed) and an edit affordance (tap to change it),
+          which LensChip's one-button-one-action design deliberately cannot
+          be — see feed-search.jsx's own header for why the field lives here
+          instead. */}
+      {showField && <Field value={searchQuery} onChange={onSearchChange} onClear={onSearchClear} />}
+      {anyChips && (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          {who && (
+            <LensChip
+              label={circAttributionPhrase(who, isMobile)}
+              clearLabel={'Showing links added by ' + circContributorLabel(who) + '. Show links from everyone'}
+              onClear={() => onWho(CIRC_LENS_ALL)} />
+          )}
+          {order && order !== 'newest' && (
+            <LensChip
+              label={window.circSortLabel ? window.circSortLabel(order) : order}
+              clearLabel="Sorted oldest first. Sort newest first"
+              onClear={() => onOrder('newest')} />
+          )}
+          {saved && (
+            <LensChip
+              label="Saved"
+              clearLabel="Showing saved links. Show all read links"
+              onClear={() => onSaved(false)} />
+          )}
+        </div>
       )}
     </div>
     </div>
@@ -578,11 +614,135 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile }) => 
 };
 
 // ---- Nothing matched -------------------------------------------------------
-// A third empty register the spec does not contemplate: not "you have no
-// links", but "none of yours match this lens". It follows the two registers
-// that do exist — one calm centred typographic block, no illustration — and
-// names what was filtered, then offers the way out, which is what an empty
-// state is required to do.
+// ONE component for every zero-match combination of who / saved / query
+// (feed-enhancement candidate build, search half). Replaces THREE call sites
+// in main.jsx — LensNoMatch below, plus feed-saved.jsx's SavedNoMatch and
+// SavedLensNoMatch — with a single one that knows about all four narrowings
+// at once, because search composes with the other two and the old
+// one-component-per-combination approach does not scale past three. It lives
+// HERE, in feed-lens.jsx (not feed-search.jsx), so that dropping
+// feed-search.jsx alone leaves this component intact and degrading correctly:
+// `query` is simply never set by anything, so its four search branches below
+// never fire and the three original cases render exactly as they always did.
+//
+// REGRESSION CONTRACT: the three inputs that shipped before search — who
+// alone, saved alone, who+saved — must emit what LensNoMatch / SavedNoMatch /
+// SavedLensNoMatch emit today, character for character. Those three branches
+// below are copied verbatim from those components; do not "tidy" the strings.
+//
+// SUPPORTING LINE RULE: write a line only where it is TRUE for the exact
+// combination on screen; a missing line beats a false one. This is the whole
+// reason the who+saved pair (run 4's SavedLensNoMatch) exists rather than
+// reusing LensNoMatch's copy under the saved filter — "You have not read
+// anything they added" is simply false there, since the member may have read
+// plenty of the contributor's links and saved none of them.
+//
+// ESCAPE PRECEDENCE: search > contributor > saved. The button drops whichever
+// narrowing was applied most recently and most transiently, and keeps the one
+// the member deliberately walked into. A typed query is seconds old and the
+// first thing a member forgets is on screen; the contributor lens is a
+// standing view they return to; Saved is a shelf they went to on purpose, and
+// least deserves being undone by a button that was really about something
+// else.
+const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClearSearch }) => {
+  const label = who ? circContributorLabel(who) : '';
+  const q = String(query || '').trim();
+  let headline, support;
+  if (q) {
+    // The four search combinations. The headline names EVERY active
+    // narrowing, so nothing sitting in the chip row is missing from the
+    // sentence — a member reading it should never have to check the chips to
+    // know what "nothing" means here.
+    headline = who && saved ? 'Nothing saved from ' + label + ' matches “' + q + '”'
+      : who ? 'Nothing from ' + label + ' matches “' + q + '”'
+      : saved ? 'Nothing saved matches “' + q + '”'
+      : 'Nothing matches “' + q + '”';
+    // True in every one of the four cases — it says where the search ceiling
+    // is, which is this file's own index rule restated for the member reading
+    // it, not the engineer reading feed-search.jsx's header.
+    //
+    // It must name ALL of the index and not most of it. It first read "title,
+    // source and address", which omitted the contributor label — so a member
+    // who had just found cards by typing a name was told search does not look
+    // there. That is the same defect class this whole component exists to end
+    // (a zero state asserting something untrue about the search), arriving as
+    // an understatement instead of an overstatement. "Title or address"
+    // because those are one field: a card headed by its URL has no title.
+    support = 'Search looks at what a card shows — its title or address, its source, and who added it.';
+  } else if (who && saved) {
+    // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim.
+    headline = 'Nothing saved from ' + label;
+    support = 'Your saved links don’t include anything they added.';
+  } else if (saved) {
+    // REGRESSION: feed-saved.jsx's SavedNoMatch, verbatim.
+    headline = 'No saved links here';
+    support = 'Nothing in this circle is saved.';
+  } else {
+    // REGRESSION: this file's own LensNoMatch, verbatim.
+    headline = 'Nothing here from ' + label;
+    support = tab === 'read'
+      ? 'You have not read anything they added.'
+      : 'They have not added anything you have left to read.';
+  }
+  // Button label/colour/action all key off the SAME branch as the escape
+  // precedence above — search wins, then contributor, then saved. The colour
+  // split (accent vs fg-1) is run 4's own ruling, preserved exactly: a
+  // recovery action is neutral UNLESS it also clears a lens or a search, both
+  // of which stay accent (see feed-saved.jsx's SavedNoMatch/SavedLensNoMatch
+  // comments for the reasoning, not repeated here).
+  //
+  // ONE EXCEPTION, and it is the design review's finding rather than a
+  // preference: where a query sits ON TOP of another narrowing, clearing only
+  // the query lands the member in a second filtered view that may also be
+  // empty. They pressed the one calm action the screen offered and are still
+  // looking at nothing. So when a query is combined with a contributor or with
+  // saved, the escape clears ALL of them and says so.
+  //
+  // It applies only where a query is involved. The contributor+saved pair
+  // WITHOUT a query is shipped behaviour under this component's regression
+  // contract — it must keep emitting "Show everyone" and clearing only the
+  // contributor — so that case is deliberately left alone, dead end and all,
+  // and stays recorded as run 5's own ruling rather than quietly reversed here.
+  let onClear, buttonLabel, buttonColor;
+  if (q && (who || saved)) {
+    onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
+    buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
+  } else if (q) {
+    onClear = onClearSearch; buttonLabel = 'Clear search'; buttonColor = 'var(--color-accent)';
+  } else if (who) {
+    onClear = onClearWho; buttonLabel = 'Show everyone'; buttonColor = 'var(--color-accent)';
+  } else {
+    onClear = onClearSaved; buttonLabel = 'Show all read links'; buttonColor = 'var(--color-fg-1)';
+  }
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      textAlign: 'center', padding: '56px 24px', gap: 6,
+    }}>
+      <p style={{
+        margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)',
+        fontWeight: 600, color: 'var(--color-fg-1)',
+      }}>{headline}</p>
+      <p style={{
+        margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
+        color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
+      }}>{support}</p>
+      <button type="button" onClick={onClear} style={{
+        marginTop: 10, background: 'transparent', cursor: 'pointer',
+        border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
+        fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
+        color: buttonColor, minHeight: 'var(--tap-target-min)', padding: '0 16px',
+      }}>{buttonLabel}</button>
+    </div>
+  );
+};
+
+// The three components below are SUPERSEDED by FeedNoMatch above and no
+// longer called from main.jsx. Left defined and exported — deletable-aid
+// idiom, same as every other module in this app: harmless to keep, and it
+// means dropping just feed-lens.jsx (an edge case FeedNoMatch's own header
+// does not promise to cover) does not also delete code some other caller
+// might still reach for.
 const LensNoMatch = ({ who, tab, onClear }) => (
   <div style={{
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -615,7 +775,7 @@ const LensNoMatch = ({ who, tab, onClear }) => (
 );
 
 Object.assign(window, {
-  FeedLens, LensChips, LensNoMatch,
+  FeedLens, LensChips, LensNoMatch, FeedNoMatch,
   circContributors, circContributorOf, circContributorLabel, circAttributionPhrase,
   circFilterItems, circLensActive, CIRC_LENS_ALL,
 });

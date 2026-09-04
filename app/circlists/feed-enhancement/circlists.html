@@ -143,6 +143,18 @@
   input:focus-visible {
     outline-offset: 0; border-color: var(--color-accent) !important;
   }
+  /* Search field (feed-enhancement candidate build). The rule above is written
+     for a field that IS the input; this one is a bordered row that CONTAINS an
+     input alongside a leading glyph and a trailing clear button. Left to the
+     global rule the input drew its own accent ring inside that border, so the
+     control rendered as a box inside a box. Focus therefore moves to the row —
+     which is what a member perceives as the control — and the inner input's
+     own ring is suppressed. Same ink, same width, one box. */
+  .cand-searchinput:focus-visible { outline: none; }
+  .cand-searchfield:focus-within {
+    outline: var(--ring-width) solid var(--color-accent);
+    outline-offset: 0; border-color: var(--color-accent);
+  }
 
   /* ---- button hover/press (4% / 8% darken on accent) ---- */
   .circ-btn-primary:hover:not(:disabled) { background: var(--color-accent-hover) !important; }
@@ -603,6 +615,7 @@
 <script type="text/babel" src="app/feed-sort.jsx"></script>
 <script type="text/babel" src="app/feed-lens.jsx"></script>
 <script type="text/babel" src="app/feed-saved.jsx"></script>
+<script type="text/babel" src="app/feed-search.jsx"></script>
 <script type="text/babel" src="app/shell.jsx"></script>
 <script type="text/babel" src="app/home.jsx"></script>
 <script type="text/babel" src="app/app-shell.jsx"></script>

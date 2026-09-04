@@ -42,6 +42,9 @@ const LP_ICONS = {
   // icon does; the filled one overrides fill/stroke on its own path only.
   bookmark: '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>',
   'bookmark-filled': '<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" fill="currentColor" stroke="none"></path>',
+  // Search (feed-enhancement candidate build). No prior magnifier in this set —
+  // `circles` is two concentric rings, a different shape entirely.
+  search: '<circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.65" y2="16.65"></line>',
 };
 
 const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth = 1.5 }) => {
