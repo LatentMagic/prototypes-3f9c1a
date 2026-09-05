@@ -170,13 +170,30 @@ const LensLabel = ({ children }) => (
 // accent — never a tick or a ring. Tray padding is fixed at the app's own 3px;
 // the explicit minHeight is what gives the ROW a 44px hit area on top of that,
 // since 3px padding either side of a 34px segment falls short on its own.
-const LensSegmented = ({ label, options, value, onPick }) => {
+// `caption` (feed-enhancement candidate build, Reading A): an optional quiet
+// line under the group's OWN label, not a new signal bolted onto the control.
+// Order/View never pass it. Saved does — see feed-saved-readings.jsx — because
+// it alone narrows by a fact only this member holds, not one the whole circle
+// shares, and that is worth one line of type, not a badge or an accent.
+const LensSegmented = ({ label, caption, options, value, onPick }) => {
   const refs = React.useRef([]);
   const onKey = useLensRadioKeys(options, value, onPick, refs);
+  // The caption sits OUTSIDE the radiogroup, so without this it is reachable by
+  // swipe and never announced with the group it belongs to (BIZ-136 run 7, from
+  // the review). For Reading A's Saved group the caption IS the claim — that
+  // this narrowing is the member's alone — so a screen-reader user hearing the
+  // group without it hears a different group from the one on screen.
+  const captionId = caption ? 'circ-lens-cap-' + String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-') : null;
   return (
     <div style={{ padding: '6px 10px' }}>
       <LensLabel>{label}</LensLabel>
-      <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
+      {caption && (
+        <p id={captionId} style={{
+          margin: '-4px 2px 8px', fontFamily: 'var(--font-sans)',
+          fontSize: 'var(--text-sm)', color: 'var(--color-fg-2)', lineHeight: 1.4,
+        }}>{caption}</p>
+      )}
+      <div role="radiogroup" aria-label={label} aria-describedby={captionId || undefined} onKeyDown={onKey} style={{
         background: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-md)',
         // 3px tray padding either side of a 44px segment. Putting the floor on
         // the TRAY instead left each segment at 38px — the rows this replaced
@@ -204,13 +221,26 @@ const LensSegmented = ({ label, options, value, onPick }) => {
                 // division exact at any count.
                 flex: 1, flexBasis: 0, minWidth: 0, border: 0, cursor: 'pointer', textAlign: 'center',
                 background: on ? 'var(--color-surface)' : 'transparent',
-                borderRadius: 'var(--radius-sm)', minHeight: 'var(--tap-target-min)', padding: '0 8px',
+                // 4px, not 8. `flexBasis: 0` divides the track exactly, which is
+                // right — but at three options each segment is ~90px and
+                // "Comfortable" needs ~82 for its text, so 8px either side
+                // overflowed it. With no `overflow` set the text did not
+                // truncate, it SPILLED: at 1280 the View group rendered
+                // "ComfortableCompact" as one run with "Grid" floating loose
+                // outside the control. Pre-existing since run 5 added Grid, and
+                // reproduced on untouched `canon` — fixed here, out of slice,
+                // because it renders inside the one state Joe opens to judge
+                // Reading A and made that reading look broken rather than the
+                // panel. The ellipsis span below is the backstop, so a longer
+                // label in future truncates instead of spilling again.
+                borderRadius: 'var(--radius-sm)', minHeight: 'var(--tap-target-min)', padding: '0 4px',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
                 fontWeight: on ? 600 : 500,
                 color: on ? 'var(--color-accent)' : 'var(--color-fg-2)',
                 boxShadow: on ? 'var(--shadow-raised)' : 'none',
               }}
-            >{o.label}</button>
+            ><span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{o.label}</span></button>
           );
         })}
       </div>
@@ -306,15 +336,29 @@ const CIRC_DENSITY_OPTIONS = [
   { id: 'grid', label: 'Grid' },
 ];
 
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null }) => {
+// `saved`/`onSaved`/`savedMode` (feed-enhancement candidate build, Reading A):
+// a deletable aid inside a deletable aid. Absent feed-saved-readings.jsx ⇒ no
+// window.CIRC_SAVED_LENS_OPTIONS ⇒ `showSavedGroup` below is false regardless
+// of what `savedMode` says, so a stale 'lens' mode degrades to exactly the
+// panel that shipped before this reading existed — no throw, no dead group.
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, savedMode = 'bar' }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
-  const active = circLensActive(order, who);
+  // Under Reading A (BIZ-136 run 7) saved IS one of this door's narrowings, so
+  // the door has to say so. The design review caught the contradiction by
+  // looking: with only Saved applied the trigger sat grey and unmarked while a
+  // Saved chip showed directly beneath it — the lens declining to count a
+  // narrowing it now owns, which is precisely the claim Reading A is making.
+  // `circLensActive` itself is untouched: under 'bar' and 'surface' saved is
+  // genuinely not part of this door, and folding it in there would light the
+  // trigger for a control that lives somewhere else entirely.
+  const active = circLensActive(order, who) || (savedMode === 'lens' && !!saved);
   // Grid is a desktop-only offer (main.jsx's own comment has the why: a
   // two-column grid of these cards is worse at 390). Filtered out of the
   // OPTIONS rather than rendered disabled — an option nobody at this width
   // can ever pick is not a choice, it's clutter with a tooltip.
   const densityOptions = isMobile ? CIRC_DENSITY_OPTIONS.filter((o) => o.id !== 'grid') : CIRC_DENSITY_OPTIONS;
+  const showSavedGroup = savedMode === 'lens' && !!onSaved && !!window.CIRC_SAVED_LENS_OPTIONS;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was
   // correct for the keyboard and wrong on screen: Chromium treats a
@@ -375,8 +419,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
 
   // The name carries the whole applied state, so a screen reader hears the lens
   // without opening it.
+  // Under Reading A the saved narrowing is set behind this door, so it belongs
+  // in the door's own spoken state — otherwise a screen-reader user hears
+  // "newest first, everyone" over a list narrowed to saved links, which is the
+  // audible version of the grey trigger the design review caught.
   const spoken = 'View options: ' + (window.circSortLabel ? window.circSortLabel(order).toLowerCase() : order)
-    + ', ' + (who ? 'added by ' + circContributorLabel(who) : 'everyone');
+    + ', ' + (who ? 'added by ' + circContributorLabel(who) : 'everyone')
+    + (savedMode === 'lens' && saved ? ', saved only' : '');
 
   return (
     // Stretches to the bar's full height so the border-bottom lands flush with
@@ -451,7 +500,23 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             position: 'absolute', top: '100%', right: 0, zIndex: 60, outline: 'none',
             // Wide enough that "Comfortable | Compact | Grid" reads in the
             // segmented control without truncating.
-            minWidth: 260, maxWidth: 300,
+            //
+            // 340 on desktop, and that number is a correction rather than a
+            // preference. At 300 the three-option View group gave each segment
+            // ~90px against "Comfortable"'s ~82px of text plus its padding, so
+            // the label spilled out of its own segment and the group rendered
+            // as "ComfortableCompact" with "Grid" adrift. Tightening the
+            // segment padding stopped the spill and truncated the SELECTED
+            // label to "Comfort…" instead, which is not better. The honest fix
+            // is the width: the comment above has always claimed this panel is
+            // wide enough for three, and since run 5 added Grid it has not been.
+            // Desktop only, because `isMobile` filters Grid out entirely, so at
+            // 390 the group is still two options in the panel run 3 shipped —
+            // untouched, which also keeps this run's own comparison honest.
+            // It is the minWidth that has to move, not the max: the panel sizes
+            // to its content, and its content never asks for more than 260, so
+            // raising the ceiling alone changed nothing on screen.
+            minWidth: isMobile ? 260 : 340, maxWidth: isMobile ? 300 : 340,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
             // No bottom padding either — the contributor list's half-cut row
@@ -470,6 +535,27 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
           )}
           <LensSegmented label="View" value={density} onPick={onDensity} options={densityOptions} />
+          {/* Reading A (BIZ-136 run 7): the fourth group, ABOVE "Added by" and
+              not below it.
+              It was built last, after Added by, and the design review caught
+              what that cost by looking: this panel scrolls
+              (maxHeight 60vh, overflowY auto) and "Added by" carries its own
+              202px inner scroller, so a group placed after it lands BELOW the
+              panel's clipped edge and is never seen. Worse, it was invisible to
+              every check we had — the element is laid out, so
+              getBoundingClientRect reports it on screen, and its text is in
+              innerText, so a content assertion passes. Only a screenshot showed
+              a heading and a caption with no control under them.
+              So it sits with the other two short groups, and the one divider
+              still separates the fixed controls from the contributor list.
+              The "only you" distinction rides on the caption, as ruled — the
+              position is about being seen at all, not about emphasis. */}
+          {showSavedGroup && (
+            <LensSegmented label="Saved" caption={window.CIRC_SAVED_LENS_CAPTION}
+              value={saved ? 'only' : 'all'}
+              onPick={(id) => onSaved(id === 'only')}
+              options={window.CIRC_SAVED_LENS_OPTIONS} />
+          )}
           {whoOptions.length > 1 && (
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 10px' }} aria-hidden="true" />
@@ -493,25 +579,86 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
 //
 // Not --radius-pill: tokens.css reserves that for content-type badges and says
 // explicitly NOT buttons, which this is.
-const LensChip = ({ label, onClear, clearLabel }) => (
-  <button type="button" onClick={onClear} aria-label={clearLabel} style={{
-    display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-    // --radius-md and --color-border-1, matching the trigger 8px away: the two
-    // express the same engaged-lens state, so they cannot disagree on shape.
-    // --color-border-2 is the hairline/separator token, and on a control it is
-    // what made this read as a generic tag rather than one of this app's.
-    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
-    borderRadius: 'var(--radius-md)', padding: '0 10px',
-    minHeight: 'var(--tap-target-min)',
-    fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
-    color: 'var(--color-fg-1)', maxWidth: '100%',
-  }}>
-    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-    <span aria-hidden="true" style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--color-fg-2)' }}>
-      <Icon name="x" size={13} />
-    </span>
-  </button>
-);
+// `onReopen`/`reopenLabel` (feed-enhancement candidate build, Reading A):
+// under savedMode 'lens' ONLY, every narrowing this app can name now opens
+// from the one door, so the chip that names it reopens that door too. TWO
+// real `<button>`s, not one button doing two jobs — the label reopens, the ✕
+// still clears, exactly as it always has (`clearLabel` untouched). The outer
+// box carries the chip's own look (fill, border, radius); the buttons inside
+// it are transparent, so the chip reads as one object with two live regions,
+// not two chips glued together. Height stays the chip's own 44px throughout —
+// the split adds width, never height, so the row's rhythm is untouched.
+// Absent `onReopen` (every other mode), this renders the original one-button
+// chip byte for byte — see the branch below.
+const LensChip = ({ label, onClear, clearLabel, onReopen, reopenLabel }) => {
+  if (onReopen) {
+    return (
+      <div style={{
+        display: 'inline-flex', alignItems: 'stretch', cursor: 'default',
+        background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+        borderRadius: 'var(--radius-md)', minHeight: 'var(--tap-target-min)', maxWidth: '100%',
+      }}>
+        <button type="button" onClick={onReopen}
+          aria-label={typeof reopenLabel === 'function' ? reopenLabel(label) : reopenLabel}
+          // The lens trigger this reopens carries both of these; the chip that
+          // reopens the same panel was announced as a plain button.
+          aria-haspopup="dialog" aria-expanded={false}
+          style={{
+          display: 'inline-flex', alignItems: 'center', cursor: 'pointer', overflow: 'hidden',
+          background: 'transparent', border: 0, borderRadius: 'var(--radius-md) 0 0 var(--radius-md)',
+          padding: '0 4px 0 10px', minHeight: 'var(--tap-target-min)',
+          fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
+          color: 'var(--color-fg-1)', maxWidth: '100%',
+        }}>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+        </button>
+        {/* The split, drawn. Without it this chip is one plain rounded box with
+            slightly loose padding, and the design review said so plainly: the
+            label's tap target had NO visual encoding at all, so Reading A's
+            second-best idea — the row leading back to the door that set it —
+            was invisible in the very state built to show it. An affordance
+            nobody can see is not an affordance.
+            --color-border-2 is this file's own hairline/separator token, and
+            its comment below records that using it as a control BORDER made a
+            chip read as a generic tag. As a separator between two halves of one
+            control it is exactly what it is for, and it is the conventional
+            encoding of a split button rather than a device invented here.
+            Inset 9px top and bottom so it never meets the rounded corners. */}
+        <span aria-hidden="true" style={{
+          width: 1, alignSelf: 'stretch', flexShrink: 0,
+          background: 'var(--color-border-2)', margin: '9px 0',
+        }} />
+        <button type="button" onClick={onClear} aria-label={clearLabel} style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+          background: 'transparent', border: 0, borderRadius: '0 var(--radius-md) var(--radius-md) 0',
+          minWidth: 'var(--tap-target-min)', minHeight: 'var(--tap-target-min)', padding: '0 10px 0 2px',
+          color: 'var(--color-fg-2)', flexShrink: 0,
+        }}>
+          <Icon name="x" size={13} />
+        </button>
+      </div>
+    );
+  }
+  return (
+    <button type="button" onClick={onClear} aria-label={clearLabel} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+      // --radius-md and --color-border-1, matching the trigger 8px away: the two
+      // express the same engaged-lens state, so they cannot disagree on shape.
+      // --color-border-2 is the hairline/separator token, and on a control it is
+      // what made this read as a generic tag rather than one of this app's.
+      background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+      borderRadius: 'var(--radius-md)', padding: '0 10px',
+      minHeight: 'var(--tap-target-min)',
+      fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
+      color: 'var(--color-fg-1)', maxWidth: '100%',
+    }}>
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      <span aria-hidden="true" style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--color-fg-2)' }}>
+        <Icon name="x" size={13} />
+      </span>
+    </button>
+  );
+};
 
 // The chip says what the cards say. "Added by you", not "Added by You" — the
 // panel's row is a standalone label and is capitalised; the chip is a sentence
@@ -548,12 +695,33 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
   // COMPOSITE flag main.jsx computes ("field open OR a query is already
   // typed") — this component does not re-derive it, it only asks whether
   // `window.SearchField` exists to draw it with.
-  searchOpen, searchQuery, onSearchChange, onSearchClear }) => {
+  searchOpen, searchQuery, onSearchChange, onSearchClear,
+  // Reading A / Reading B (feed-enhancement candidate build, run 7):
+  // `savedMode` decides two independent things here. Under 'surface' the
+  // Saved chip never renders at all — saved is a tab now, not a narrowing,
+  // so it has nothing to disclose (main.jsx still narrows the list itself;
+  // this component just stops naming it). Under 'lens' every chip gains a
+  // second target that reopens the one door all of them now share.
+  // `onReopenLens` is main.jsx's own `setSortMenuOpen(true)` — opened at
+  // rest, never scrolled to a group.
+  savedMode = 'bar', onReopenLens }) => {
   const active = circLensActive(order, who);
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
-  const anyChips = !!(who || (order && order !== 'newest') || saved);
-  if (!active && !saved && !showField) return null;
+  const savedChipOn = savedMode === 'surface' ? false : !!saved;
+  const anyChips = !!(who || (order && order !== 'newest') || savedChipOn);
+  if (!active && !savedChipOn && !showField) return null;
+  // `reopenLabel` is a FUNCTION of the chip's own label, not one fixed string
+  // (BIZ-136 run 7, from the review). It was 'Change filters' on every chip, and
+  // aria-label overrides a button's own text — so with two chips applied a
+  // screen-reader user met two controls with identical names and neither said
+  // which filter it would change. The visible words "Priya N." and "Saved"
+  // appeared in neither name, which is WCAG 2.5.3 Label in Name failing on the
+  // one word that carries the meaning. The visible label now leads, so the
+  // accessible name starts with what is on screen.
+  const reopen = savedMode === 'lens'
+    ? { onReopen: onReopenLens, reopenLabel: (l) => l + '. Change filters' }
+    : {};
   return (
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab
@@ -592,19 +760,19 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
             <LensChip
               label={circAttributionPhrase(who, isMobile)}
               clearLabel={'Showing links added by ' + circContributorLabel(who) + '. Show links from everyone'}
-              onClear={() => onWho(CIRC_LENS_ALL)} />
+              onClear={() => onWho(CIRC_LENS_ALL)} {...reopen} />
           )}
           {order && order !== 'newest' && (
             <LensChip
               label={window.circSortLabel ? window.circSortLabel(order) : order}
               clearLabel="Sorted oldest first. Sort newest first"
-              onClear={() => onOrder('newest')} />
+              onClear={() => onOrder('newest')} {...reopen} />
           )}
-          {saved && (
+          {savedChipOn && (
             <LensChip
               label="Saved"
               clearLabel="Showing saved links. Show all read links"
-              onClear={() => onSaved(false)} />
+              onClear={() => onSaved(false)} {...reopen} />
           )}
         </div>
       )}

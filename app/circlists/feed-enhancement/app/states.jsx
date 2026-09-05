@@ -51,7 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-    setSearchQuery, setSearchOpen,
+    setSearchQuery, setSearchOpen, setSavedMode,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -213,7 +213,18 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false }) => {
+  // `savedMode` (BIZ-136 run 7): the shape saved is offered in — 'bar'
+  // (shipped, default), 'lens' (Reading A, a fourth lens group) or 'surface'
+  // (Reading B, a third tab). ALWAYS fully replaced, same reasoning as
+  // `who`/`savedOn` above: an entry that says nothing about it must land in
+  // 'bar', never inherit whatever the last-staged entry left it on.
+  // `finalTab` (run 7): the DISPLAYED tab, when it differs from the `tab`
+  // param above. `tab` still decides which item pool `saved` indexes into
+  // (read vs active) — a Reading-B state stages saved marks against the READ
+  // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
+  // different thing from what pool was scoped. Omitted, the displayed tab is
+  // `tab` itself, exactly as before this param existed.
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'bar', finalTab = null }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -226,7 +237,18 @@ function circStateContext(api) {
         ...s, items: s.items.map(i => i.url === CIRC_BARE_URL ? { ...i, read: true } : i),
       }));
     }
-    const next = { [space + ':' + tab]: order };
+    // Keyed by the DISPLAYED tab, not the scope tab (BIZ-136 run 7, from the
+    // review). `tab` scopes which pool the `saved` indices below count against;
+    // `finalTab` is where the member actually lands. main.jsx computes its
+    // sortKey from the displayed tab, so a Reading-B entry staging
+    // `tab: 'read', finalTab: 'saved'` wrote `<circle>:read` while main.jsx
+    // read `<circle>:saved` — and the order, the query and the field's open
+    // flag were all silently dropped. No entry today stages an order or a query
+    // on the Saved tab, so nothing looked wrong; the next one that wants
+    // "Saved, oldest first" would have staged it and seen nothing, with no
+    // error anywhere.
+    const keyTab = finalTab || tab;
+    const next = { [space + ':' + keyTab]: order };
     if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
     setSortOrder(next);
     setLensWho(who ? { [space]: who } : {});
@@ -250,22 +272,43 @@ function circStateContext(api) {
     // always fully replaced — same reasoning as `who`/`savedOn` above, so an
     // entry that says nothing about search always lands with the field shut
     // and empty, never inheriting whatever the last-opened entry left typed.
-    setSearchQuery(query ? { [space + ':' + tab]: query } : {});
+    setSearchQuery(query ? { [space + ':' + keyTab]: query } : {});
     // A staged QUERY implies a staged OPEN. Without this, an entry that sets
     // only `query` leaves `searchOpen` false and the field is open purely
     // because a query exists — so backspacing to empty closes it mid-keystroke
     // and drops focus. In real use that never happens, because the only route
     // to a query is the trigger, which sets the flag; it happened only on the
     // ?state= URLs, which are exactly the links Joe follows.
-    setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
-    // Opened AFTER the route settles, not before. main.jsx closes the panel on
-    // any tab/circle change, and the entry below changes both — so setting it
-    // here directly meant `lens-panel-open` reliably arrived with the panel
-    // shut for anyone walking the register rather than loading the URL cold.
-    if (menu) setTimeout(() => setSortMenuOpen(true), 0);
+    setSearchOpen((searchOpen || query) ? { [space + ':' + keyTab]: true } : {});
+    if (setSavedMode) setSavedMode(savedMode);
+    const shownTab = finalTab || tab;
+    setCurrentId(space); setTab(shownTab); setLoadingFeed(false); enterSpace(space);
+    setTab(shownTab);
+    // Opened AFTER the route settles, not before, and AFTER the tab/circle
+    // writes just above (moved here in run 7 — read on). main.jsx closes the
+    // panel on any tab/circle change (the `[tab, currentId]` effect in
+    // main.jsx), and an entry can change both, so opening the panel before
+    // that settles meant the close would win.
+    //
+    // THE DELAY IS THE ACTUAL FIX, not the statement order (run 7). Every
+    // menu:true entry before this run staged `tab: 'active'` — this app's own
+    // boot default — so the cleanup effect's deps never actually changed and
+    // its `setSortMenuOpen(false)` never re-ran; a bare setTimeout(…, 0)
+    // "worked" by there being no closing write left to race, regardless of
+    // where in this function it was called. `saved-lens-door` (run 7) is the
+    // first entry to open the menu on a tab that is NOT the boot default, so
+    // it is the first to actually change `tab` — and 0ms lost that race
+    // outright: every setState call in this function lands in ONE batched
+    // React commit no matter what order they're written in here, so moving
+    // this block earlier or later in the function changes nothing about when
+    // the resulting effect flush runs against a plain setTimeout(0) macrotask
+    // — and that flush settled the close FIRST. 60ms clears it with room to
+    // spare and is imperceptible against the 2600ms this app's own stagers
+    // are already read against. Kept after the tab/circle writes anyway,
+    // because reading top-to-bottom as "settle the route, THEN open the
+    // panel" is the honest shape even though the timer is what does the work.
+    if (menu) setTimeout(() => setSortMenuOpen(true), 60);
     else setSortMenuOpen(false);
-    setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
-    setTab(tab);
     // Set AFTER enterSpace, which clears it on the way in — the failure is the
     // state being staged, not something the entry should wash away.
     if (setFeedError) setTimeout(() => setFeedError(!!feedError), 0);
@@ -464,6 +507,20 @@ const CIRC_STATE_REGISTER = [
   // renders when who/saved/query are ALL active, not which particular link
   // the saved mark happened to land on.
   { group: 'Candidate build \u2014 feed enhancement', id: 'search-all-three', label: 'Search \u2014 all three narrowings named at once', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.', saved: [0], savedOn: true, query: 'xylophone' }) },
+
+  // ---- Run 7 \u2014 two readings of "saved", side by side with the shipped bar --
+  // Fixture parity, deliberate: every entry below stages sp-backend, scopes
+  // `saved` against the READ pool, and marks the same three links (indexes
+  // 0/1/2 of that pool's own newest-first order) \u2014 except saved-tab-empty,
+  // which marks none. Comparing two shapes of the same control against two
+  // different piles of links is not a comparison, so nothing here varies that.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-door', label: 'Reading A \u2014 saved joins the lens, the door open', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'lens', menu: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-applied', label: 'Reading A \u2014 saved on, no bookmark left on the bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'lens' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-composed', label: 'Reading A \u2014 saved and a contributor, both from the one door', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, who: 'Priya N.', savedMode: 'lens' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab', label: 'Reading B \u2014 saved as its own tab, populated', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface', finalTab: 'saved' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-composed', label: 'Reading B \u2014 the Saved tab under a contributor lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], who: 'Priya N.', savedMode: 'surface', finalTab: 'saved' }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
