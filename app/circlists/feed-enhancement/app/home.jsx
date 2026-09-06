@@ -1,21 +1,38 @@
 // ============================================================================
-// Circlists — Home body: the circles list at account level.
+// Circlists — Home body: the circles list at account level, plus (feed-
+// enhancement candidate build) the cross-circle returns strip above it.
 // ----------------------------------------------------------------------------
-// Home is CHROME today, not a shared surface: it holds exactly one thing, the
-// circles list, which already exists in the web posture as the rail. Same
-// content, different chrome. It lives in its own file so that the day it gains
-// content existing nowhere else (a cross-circle view, activity, anything past
-// "pick a circle") it becomes a shared surface and its promotion into all three
-// postures is a MOVE, not a rewrite. See MOBILE.md.
+// MOBILE.md named the test for when home stops being chrome: the day it gains
+// content that exists nowhere else — a cross-circle view, anything past "pick
+// a circle" — it becomes a SHARED SURFACE. The returns strip (app/home-
+// returns.jsx) is exactly that content, so this file crossed that line the
+// moment the strip was added. Nothing about that promotion required a
+// per-posture fork: this body already renders identically under all three
+// postures' chrome (main.jsx's inShell), which is the whole reason MOBILE.md
+// had this file hold its own body from the start — promotion is a move, not a
+// rewrite, and here it needed no move at all.
 // ============================================================================
+
+// Two named registers on this screen, in the same quiet treatment, so they
+// read as a pair: the strip is what answered you, the rows are where you go.
+// Aligned to the CARD edge, not 4.5px inside it. The design review measured the
+// first attempt at x20.5 against a card edge of 16 and a card content edge of
+// 32 — aligned to neither, which reads as a slip rather than as an indent.
+const HOME_EYEBROW = {
+  fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11, letterSpacing: '0.06em',
+  textTransform: 'uppercase', color: 'var(--color-fg-3)', padding: '0 0 10px', margin: 0,
+};
 
 // Each row carries a reason to be looked at, so home is a place rather than a
 // picker you pass through. Sleeping circles say so instead of counting links.
+// No counts anywhere on this screen (feed-enhancement candidate build):
+// "New links" replaces a number the member would otherwise have to read twice
+// — once here, once for real inside the circle.
 const circleSummary = (s) => {
   const members = (s.members ? s.members.length : 0) + ' member' + ((s.members || []).length === 1 ? '' : 's');
   if (!s.funded) return 'Asleep · ' + members;
   const unread = (s.items || []).filter(i => !i.read).length;
-  return (unread ? unread + ' unread' : 'All read') + ' · ' + members;
+  return (unread ? 'New links' : 'All read') + ' · ' + members;
 };
 
 const homeTile = (name) => (
@@ -27,12 +44,35 @@ const homeTile = (name) => (
   }}>{(name || '?').trim().charAt(0).toUpperCase()}</span>
 );
 
-const CirclesHome = ({ spaces = [], onSelect, onCreate }) => (
-  <main style={{ flex: 1, width: '100%', padding: '18px 16px 28px' }}>
-    <div style={{
-      fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11, letterSpacing: '0.06em',
-      textTransform: 'uppercase', color: 'var(--color-fg-3)', padding: '0 4px 10px',
-    }}>Your circles</div>
+const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip }) => {
+  // The strip and its heading are a DELETABLE AID (app/home-returns.jsx),
+  // guarded here at the one render site — dropping that file takes the whole
+  // "Conversations" register with it, since neither the heading nor the
+  // caught-up line beneath it means anything without the surface they answer
+  // for. `circleSummary`'s wording above is a direct edit to this file and
+  // stays regardless.
+  const HomeReturns = window.CircHomeReturns;
+  const funded = spaces.filter((s) => s.funded);
+  return (
+  // Centred on the app's own shared content width. The first build stretched
+  // the mobile layout to the full 1008px the rail leaves behind, while every
+  // other desktop surface in this app is 672px and centred — so the home read
+  // as a different application beside its own feed, and a circle's status dot
+  // rendered a thousand pixels from the circle's name, beside the chevron,
+  // where nothing connects the two. `--max-feed-width` is the value the feed
+  // already uses; this is a reflow to it, not a second layout.
+  <main style={{ flex: 1, width: '100%', maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: '18px 16px 28px' }}>
+    {HomeReturns && (
+      <React.Fragment>
+        <h2 style={HOME_EYEBROW}>Conversations</h2>
+        {/* Always rendered, in every state. The component owns its own empty
+            case (a card saying you are caught up) rather than being swapped out
+            for a caption, so this section never becomes a heading with nothing
+            under it and never changes height between states. */}
+        <HomeReturns spaces={funded} open={stripOpen} onToggle={onToggleStrip} onEnterSpace={onSelect} />
+      </React.Fragment>
+    )}
+    <h2 style={HOME_EYEBROW}>Your circles</h2>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {spaces.map((s) => (
         <button key={s.id} onClick={() => onSelect && onSelect(s.id)} className="circ-appsheet-row" style={{
@@ -61,6 +101,7 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate }) => (
       <span style={{ width: 38, display: 'inline-flex', justifyContent: 'center' }}><Icon name="plus" size={19} color="var(--color-accent)" strokeWidth={2} /></span> New circle
     </button>
   </main>
-);
+  );
+};
 
 Object.assign(window, { CirclesHome });

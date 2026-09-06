@@ -51,7 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-    setSearchQuery, setSearchOpen, setSavedMode,
+    setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -100,6 +100,74 @@ function circStateContext(api) {
     setLoadingFeed(false);
     clearFeedError();
     setRoute('not-found');
+  };
+
+  // The home screen (feed-enhancement candidate build) — one stager,
+  // `stageSort`'s own style: an options object whose every flag is fully
+  // replaced on each call, so an entry is idempotent regardless of what the
+  // previous one in the palette left set.
+  //   only  — keep exactly this one circle (a single-circle or a single-
+  //           dormant-circle home), default: the whole seed.
+  //   quiet — the caught-up state. Three things have to be true at once or the
+  //           screen contradicts itself: no dot on any circle, no fresh turn on
+  //           any watched card (marks pulled up to now), AND no unread links —
+  //           because `circleSummary` reads unread links, so leaving them unread
+  //           renders "New links" on every row beneath a strip saying "You're
+  //           caught up." Clearing only the first two is the obvious fix and the
+  //           wrong one; this state's whole job is that the quiet reads as
+  //           arrival, so all three go.
+  //   empty — no circles at all, landing on NoSpaceHome.
+  //   open  — whether the returns strip is expanded. Defaults to TRUE, matching
+  //           the app's own landing default (main.jsx's homeStripOpen): on the
+  //           home the strip IS the content, so a stager that quietly collapsed
+  //           it would stage a screen the product never shows.
+  //   sleep — put ONE named circle to sleep, leaving the others funded. A
+  //           dormant circle shown on its own proves nothing: the claim being
+  //           demonstrated is that it sits AMONG the others saying "Asleep",
+  //           carries no dot, and is absent from the strip even when it holds
+  //           watched cards — and only a mixed list can show that.
+  //
+  // TEST circles are dropped from every home state. `listSpaces` hides them only
+  // while the review toggle is off, and the home's whole subject IS the circle
+  // list — five rows where a member has three makes the screen read as a debug
+  // view. Staging is where that belongs, not in the product code.
+  //   crowd — a member in FIVE talking circles, so the strip's ceiling is
+  //           actually on screen. Without this the bound ruled in 87 is
+  //           unfalsifiable: the seed yields five rows over two circles, every
+  //           other state sits under the cap, and the leftover line has never
+  //           rendered. The two extra circles are clones of the two that already
+  //           carry watched, read, freshly-answered cards, renamed — cloning is
+  //           what keeps this a fixture rather than a second seed to maintain.
+  const stageHome = ({ only = null, quiet = false, empty = false, open = true, sleep = null, crowd = false } = {}) => {
+    setUser(DEFAULT_USER);
+    let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    if (crowd) {
+      const clone = (src, id, name, shift) => ({
+        ...src, id, name, unseen: false,
+        items: src.items.map((i, n) => ({
+          ...i, id: id + '-' + n,
+          ...(i.talkSeenAt ? { talkSeenAt: i.talkSeenAt - shift } : {}),
+          talk: (i.talk || []).map((t) => ({ ...t, id: id + '-' + t.id, at: t.at - shift })),
+        })),
+      });
+      const pod = s.find((sp) => sp.id === 'sp-backend');
+      const club = s.find((sp) => sp.id === 'sp-book');
+      if (pod && club) s = s.concat([
+        clone(club, 'sp-crowd-a', 'Thursday Cinema', 36e5),
+        clone(pod, 'sp-crowd-b', 'Platform Guild', 72e5),
+      ]);
+    }
+    if (only) s = s.filter((sp) => sp.id === only);
+    if (sleep) s = s.map((sp) => (sp.id === sleep
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      : sp));
+    if (quiet) s = s.map((sp) => ({
+      ...sp, unseen: false,
+      items: sp.items.map((i) => ({ ...i, read: true, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : {}) })),
+    }));
+    setSpaces(s);
+    setCurrentId(null); setRoute('home'); setLoadingFeed(false);
+    if (setHomeStripOpen) setHomeStripOpen(open);
   };
 
   // Funding state on the champion's card: active / a scheduled ending / a renewal
@@ -346,7 +414,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageNotFound,
+    stageSort, stageSingleItem, stageNotFound, stageHome,
   };
 }
 
@@ -521,6 +589,19 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-composed', label: 'Reading B \u2014 the Saved tab under a contributor lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], who: 'Priya N.', savedMode: 'surface', finalTab: 'saved' }) },
+
+  // ---- Run 8 \u2014 Home as a shared surface, and the cross-circle returns strip --
+  // The home screen (app/home.jsx + app/home-returns.jsx) and the "Go home"
+  // fix on every dead-end route. All seven land here, per this group's own
+  // rule: not reachable from this list, not shipped.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-landing', label: 'Home \u2014 landing, two circles talking', stage: (c) => c.stageHome({}) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-quiet', label: 'Home \u2014 quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-crowded', label: 'Home \u2014 five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-strip-shut', label: 'Home \u2014 the returns strip collapsed (the alternative)', stage: (c) => c.stageHome({ open: false }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-one-circle', label: 'Home \u2014 a single circle', stage: (c) => c.stageHome({ only: 'sp-backend' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-no-circles', label: 'Home \u2014 no circles yet (NoSpaceHome)', stage: (c) => c.stageHome({ empty: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

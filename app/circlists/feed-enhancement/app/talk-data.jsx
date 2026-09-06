@@ -176,6 +176,22 @@
     const club = spaces.find(s => s.id === 'sp-book');
     if (club) club.items.push(mid);
 
+    // ---- Tuesday Book Club: a watched, READ card outside Backend Pod --------
+    // @fixture cross-circle-second-source — the feed-enhancement candidate build
+    // (BIZ-136) adds a returns strip that unions candBarRows() over every funded
+    // circle. Computed against the seed above this comment, that union was
+    // ENTIRELY sp-backend: no other circle held a card that was watched, read,
+    // AND carried a fresh turn, so a cross-circle screen had nothing cross-
+    // circle to show. This turns the already-read Moby-Dick card into that
+    // second source — mark set well before both turns, so both land fresh.
+    set('https://www.gutenberg.org/files/2701/2701-h/2701-h.htm', {
+      watching: true, talkSeenAt: NOW - 30 * H,
+      talk: [
+        T('mb1', 'Joe M.', 5, 'The whiteness-of-the-whale chapter is the one I want us to slow down on Thursday — Melville spends forty pages refusing to answer his own question.'),
+        T('mb2', 'Sam R.', 2, 'Finished it last night. The coffin foreshadowing lands so much harder once you already know it is coming back.'),
+      ],
+    });
+
     return spaces;
   };
 })();

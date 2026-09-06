@@ -640,6 +640,11 @@
 <script type="text/babel" src="app/talk-reveal.jsx"></script>
 <script type="text/babel" src="app/talk-surface.jsx"></script>
 <script type="text/babel" src="app/talk-return.jsx"></script>
+<!-- The home screen's cross-circle returns strip (feed-enhancement candidate
+     build). Reads candFresh/candNames (talk-parts.jsx) and candBarRows/
+     candBarWho/candBarSnap (talk-return.jsx), so it loads after both and
+     before main.jsx, which mounts the app that renders it. -->
+<script type="text/babel" src="app/home-returns.jsx"></script>
 <script type="text/babel" src="app/talk-qa.jsx"></script>
 <script type="text/babel" src="app/talk-main.jsx"></script>
 <!-- The invite card (A3, merged 2026-08-28). Publishes window.InviteForm, which

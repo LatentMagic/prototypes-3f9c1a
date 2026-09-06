@@ -26,7 +26,7 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // deletions a rail refresh reconciles away.)
 // A candidate-build entry sets window.CIRC_STATE_KEY before app scripts load so
 // its persisted state never mixes with the main app's. Absent -> unchanged.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v11';
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v12';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -122,12 +122,32 @@ const CircApp = () => {
   // RESTORE path is filtered. Pre-existing for the two invite notices; the
   // not-found page would have been the third.
   const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full'];
-  const [route, setRoute] = useState(
-    CIRC_UNRESUMABLE.includes(SAVED?.route) ? 'space' : (SAVED?.route || 'space')
-  );
+  // A fresh session (nothing stored) lands on home — home is a shared surface
+  // now, not an app-only chrome state (feed-enhancement candidate build, per
+  // MOBILE.md's promotion test). A RESTORED session goes back exactly where it
+  // was, circle included: only the no-stored-route case falls to 'home'.
+  const INITIAL_ROUTE = CIRC_UNRESUMABLE.includes(SAVED?.route) ? 'space' : (SAVED?.route || 'home');
+  const [route, setRoute] = useState(INITIAL_ROUTE);
   const [user, setUser] = useState(SAVED?.user || DEFAULT_USER);
   const [spaces, setSpaces] = useState(SAVED?.spaces || seedSpaces(DEFAULT_USER.email));
-  const [currentId, setCurrentId] = useState(SAVED?.currentId || 'sp-backend');
+  // A fresh 'home' landing has to pair with NO current circle — goHome() itself
+  // never sets one either. Without this, a first-ever visit opened on home
+  // while currentId still defaulted to 'sp-backend', so the rail read Backend
+  // Pod as the ALREADY-ACTIVE circle and a click on it ran the refresh gesture
+  // instead of entering it — a real dead click, caught only by driving it.
+  // Home NEVER pairs with a current circle — which is what goHome() already
+  // guarantees, so the rule belongs here too rather than only on a cold boot.
+  // The first version of this guard read `!SAVED && INITIAL_ROUTE === 'home'`
+  // and closed only the first-ever visit: goHome() persists currentId as null,
+  // so on the NEXT load SAVED exists, the guard falls through, and `||` coerces
+  // that persisted null straight back to 'sp-backend'. The rail then marks a
+  // circle active while the member is standing on home, and RailBody routes a
+  // click on an active circle to the refresh gesture instead of entering it —
+  // a dead click on the landing screen, for every returning member. No staged
+  // state could show it, because every stager sets currentId explicitly.
+  const [currentId, setCurrentId] = useState(
+    INITIAL_ROUTE === 'home' ? null : (SAVED?.currentId || 'sp-backend')
+  );
   // 'saved' is NOT resumable, for exactly the reason `CIRC_UNRESUMABLE` above
   // exists (BIZ-136 run 7). `tab` is persisted; `savedMode` is visit state and
   // is not — so after looking at Reading B once, the next bare load restores
@@ -272,6 +292,21 @@ const CircApp = () => {
   // preference the member sets once, not a lens applied to one moment's view.
   const [density, setDensity] = useState(SAVED?.density === 'compact' ? 'compact' : 'comfortable');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  // Whether the home screen's cross-circle returns strip (feed-enhancement
+  // candidate build, app/home-returns.jsx) is expanded. Controlled here, same
+  // idiom as sortMenuOpen above, so a staged state can open it directly — the
+  // strip has no circle context of its own to reset it against, so unlike the
+  // per-circle bar it simply holds until the member (or a stager) changes it.
+  // Open by default, which is the one place this screen departs from the bar it
+  // reuses. On the feed the bar is a lead-in above a screen already full of
+  // content, so collapsed is right. On the home it IS the content: collapsed,
+  // the screen shows three circle names and hides every real thing behind a
+  // 34px chevron. The design review put that against Things' Today, Linear's
+  // Inbox and Basecamp's Home — all three put the items themselves on the
+  // surface — and its verdict was that the collapsed screen would not hold its
+  // own beside them while the expanded one would. The collapsed shape stays
+  // reachable as its own state so the swap can be overruled by looking.
+  const [homeStripOpen, setHomeStripOpen] = useState(true);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
   // A menu left open while the view changes underneath it would point at a list
@@ -495,13 +530,6 @@ const CircApp = () => {
     pendPrev.current = pendCount;
   }, [pendCount, tab, announceOnce]);
 
-  // Home is app-posture chrome. The web postures reach their circles through the
-  // rail, so a web session must never sit on it while the user holds circles —
-  // switching Platform back to Web lands you in a circle instead.
-  useEffect(() => {
-    if (!isApp && route === 'home' && spaces.length > 0) enterSpace(currentId || spaces[0].id);
-  }, [isApp, route, spaces.length, currentId, enterSpace]);
-
   // Review-only: hiding the TEST circles while inside one steps out to the first
   // remaining circle so the screenshot never shows a hidden circle's feed.
   useEffect(() => {
@@ -652,7 +680,12 @@ const CircApp = () => {
       // Land with NO spaces → the no-space home (create launches from there).
       setSpaces([]); setCurrentId(null); goHome();
     } else {
-      if (spaces.length === 0) goHome(); else enterSpace(currentId || spaces[0]?.id);
+      // Signing in lands on the home, whatever circles you hold. Ruling 89 is
+      // unconditional, and until this line it was true only of a cold boot with
+      // nothing stored — every actual auth path still entered a circle, so the
+      // slice claimed a landing it did not make. goHome() clears currentId too,
+      // so the rail does not mark a circle active behind the home.
+      goHome();
     }
   };
 
@@ -688,7 +721,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-        setSearchQuery, setSearchOpen, setSavedMode,
+        setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -763,9 +796,9 @@ const CircApp = () => {
     screen = <OtcEntry email={pendingEmail} context={otc.context} initialError={otc.error}
       onVerify={finishOtc} onBack={() => setRoute(otc.context === 'signup' ? 'signup' : 'signin')} />;
   } else if (route === 'google-return') {
-    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); goHome(); } else if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} />;
+    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); } goHome(); }} />;
   } else if (route === 'recovery') {
-    screen = <Recovery onDone={() => { if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} onBackToSignin={() => setRoute('signin')} />;
+    screen = <Recovery onDone={goHome} onBackToSignin={() => setRoute('signin')} />;
   } else if (route === 'funding') {
     screen = <FundingPage user={user} spaceName={fundFlow.name} mode={fundFlow.mode}
       onFund={() => setRoute('checkout')}
@@ -784,12 +817,19 @@ const CircApp = () => {
   } else if (route === 'create-space') {
     screen = <CreateSpace onCreate={beginCreateFund} initialName={fundFlow.name} canCancel={spaces.length > 0} onCancel={exitToApp} />;
   } else if (route === 'invalid-invite') {
-    screen = <InvalidInvite onHome={() => goSpace('sp-backend')} />;
+    screen = <InvalidInvite onHome={goHome} />;
   } else if (route === 'space-full') {
-    screen = <SpaceFull onHome={() => goSpace('sp-backend')} />;
+    screen = <SpaceFull onHome={goHome} />;
   } else if (route === 'not-found') {
+    // The 404's "Go home" button had no home to reach (`goSpace` is not
+    // defined anywhere in this file — a plain ReferenceError on click, not
+    // merely a wrong target). `goHome` is the real, defined action, and now
+    // that home is a shared surface it is also the RIGHT one to reach for
+    // every dead-end route on this page, not only this one. Closes the
+    // founder-reported defect: "the 404 includes a go-home button that does
+    // nothing currently. There is no home."
     screen = window.CircNotFound
-      ? <window.CircNotFound onHome={() => goSpace('sp-backend')} />
+      ? <window.CircNotFound onHome={goHome} />
       : null;
   } else if (Cand && Cand.matchRoute && Cand.matchRoute(route)) {
     // Candidate-build route (e.g. a card's own surface). The overlay hands back
@@ -812,7 +852,8 @@ const CircApp = () => {
     const CirclesHomeBody = window.CirclesHome;
     screen = inShell(
       (listSpaces.length > 0 && CirclesHomeBody)
-        ? <CirclesHomeBody spaces={listSpaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace} />
+        ? <CirclesHomeBody spaces={listSpaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace}
+            stripOpen={homeStripOpen} onToggleStrip={setHomeStripOpen} />
         : <NoSpaceHome onCreate={gateActive ? onGate : openCreateSpace} />,
       { showMembers: false, home: true });
   } else {

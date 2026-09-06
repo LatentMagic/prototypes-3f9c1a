@@ -7,14 +7,33 @@
 // ---- Rail contents (shared by desktop rail + mobile drawer) ----------------
 // The account control lives at the FOOT of the rail; its menu opens upward.
 const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onManageAccount, onSignOut, onAccountGate,
-                   refreshingId, settledId, onRefreshSpace }) => {
+                   refreshingId, settledId, onRefreshSpace, onHome }) => {
   const [acctOpen, setAcctOpen] = React.useState(false);
   const acctBtnRef = React.useRef(null);
   return (
   <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    <div style={{ display: 'flex', alignItems: 'center', padding: '4px 8px 20px' }}>
+    {/* The logo goes home — the standard affordance (feed-enhancement candidate
+        build), now that home is a real web destination and not only the app
+        posture's account level. A real button, not a decorated link: same mark,
+        same padding as before, just pressable.
+
+        The name is "Circlists home", not "Home": the mark renders an <img> whose
+        alt is "Circlists", so an aria-label of "Home" REPLACES the visible words
+        with a string containing none of them — WCAG 2.5.3 Label in Name, Level
+        A, and a speech-input user saying "click Circlists" gets no match. The
+        same failure shape shipped once already in this build on a different
+        control.
+
+        And it closes the drawer, as every other control in this rail does: on
+        mobile web the rail IS the drawer, so navigating without closing leaves
+        the member looking at the menu they just used, with the screen they asked
+        for hidden behind it. */}
+    <button onClick={() => { onHome && onHome(); onClose && onClose(); }} aria-label="Circlists home" style={{
+      display: 'flex', alignItems: 'center', alignSelf: 'flex-start', minHeight: 44,
+      padding: '4px 8px 20px', margin: 0, background: 'transparent', border: 0, cursor: 'pointer',
+    }}>
       <PulseLockup size={20} />
-    </div>
+    </button>
     <div style={{
       fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11,
       letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)',
@@ -148,7 +167,7 @@ const UserMenu = ({ user, subscribed, onManageAccount, onManageSubscription, onS
 // The space's own header: space name, with a ⚙ Space settings affordance below
 // that opens the members/settings surface. No account identity lives here — that
 // moved to the foot of the rail. With no space, the name slot is absent entirely.
-const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false }) => {
+const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subView = null, menuOpen = false, isHome = false }) => {
   // A sub-view (settings/account) replaces the leading slot with a back arrow +
   // section title, and hides the gear (it brought you here — showing it again is
   // redundant). The space feed shows the hamburger/space name + gear.
@@ -179,6 +198,14 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{subView.title}</span>
         </div>
+      ) : isHome ? (
+        // The wordmark carries the title slot on home — but only where the rail
+        // is not already carrying the brand. On desktop the rail is open beside
+        // this bar, and the first build rendered the lockup TWICE, 135px apart,
+        // with the rest of the bar empty. Mobile web has no visible rail, so
+        // there the wordmark is the only mark on screen and belongs here; this
+        // is the same branch TopBarNative takes for the app posture.
+        <div style={{ flex: 1, minWidth: 0, display: 'flex' }}>{isMobile ? <Wordmark size={19} /> : null}</div>
       ) : space ? (
         <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 10 }}>
           <span style={{
@@ -288,14 +315,14 @@ const MobileDrawer = ({ open, width = 272, children, ...rail }) => {
 };
 
 // ---- AppShell --------------------------------------------------------------
-const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true,
+const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true, isHome = false,
                     onSelectSpace, onCreateSpace, onMembers,
-                    onManageAccount, onSignOut, onAccountGate, subView = null,
+                    onManageAccount, onSignOut, onAccountGate, onHome, subView = null,
                     refreshingId, settledId, onRefreshSpace, children }) => {
   const [drawer, setDrawer] = React.useState(false);
   const rail = {
     spaces, currentId, onSelect: onSelectSpace, onCreate: onCreateSpace, user,
-    onManageAccount, onSignOut, onAccountGate,
+    onManageAccount, onSignOut, onAccountGate, onHome,
     refreshingId, settledId, onRefreshSpace,
   };
   return (
@@ -311,7 +338,7 @@ const AppShell = ({ isMobile, user, spaces, currentId, space, showMembers = true
       )}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <TopBar
-          isMobile={isMobile} space={space} showMembers={showMembers}
+          isMobile={isMobile} space={space} showMembers={showMembers} isHome={isHome}
           onMenu={() => setDrawer(v => !v)} onMembers={onMembers}
           subView={subView} menuOpen={drawer}
         />
