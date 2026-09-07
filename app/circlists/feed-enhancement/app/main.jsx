@@ -900,7 +900,16 @@ const CircApp = () => {
       // keeps the lens. The asymmetry is deliberate; the chip stays on screen
       // across the switch, so the state is never hidden.
       const who = (Lens ? lensWho[currentId] : null) || null;
+      // TWO PREDICATES, deliberately (BIZ-136, ruling of 2026-09-07).
+      // `lensActive` is CONCEALMENT — cards are being hidden — and it is what
+      // suppresses the feed lead, because a lead counting things above a
+      // narrowed feed reads as broken. Sorting oldest-first hides nothing, so
+      // the lead correctly survives it now; it did not before.
+      // `lensOffDefault` is "anything in the door is off its default", and it
+      // exists for exactly one job below: keeping the door reachable.
       const lensActive = Lens ? window.circLensActive(order, who) : false;
+      const lensOffDefault = Lens && window.circLensNonDefault
+        ? window.circLensNonDefault(order, who) : lensActive;
       const sorted = (Lens && window.circSortItems) ? window.circSortItems(stored, order) : stored;
       const lensed = Lens ? window.circFilterItems(sorted, who) : sorted;
       // Offered from the whole circle, so the set does not reshuffle by tab.
@@ -1050,8 +1059,11 @@ const CircApp = () => {
       // is not on screen yet is chrome acting on nothing.
       // The control is present from two items up, OR whenever a lens is already
       // applied — otherwise narrowing to one link removes the only way back.
+      // `lensOffDefault`, not `lensActive`: a member who sorted oldest-first and
+      // then read the pile down to one link must still be able to open the door
+      // and put it back. Concealment is not the test here — reachability is.
       const showLens = !!Lens && !loadingFeed
-        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensActive);
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
       const setOrder = (next) => {
         setSortOrder((prev) => ({ ...prev, [sortKey]: next }));
         // The gesture is acknowledged, as every gesture in this app is. The
@@ -1346,7 +1358,10 @@ const CircApp = () => {
               would be the row reporting a concealment that is not happening —
               the exact dishonesty this row exists to prevent. Same fix as the
               lens group's own gate above, on the other half of the pair. */}
-          {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho}
+          {/* No `order`/`onOrder` (ruling of 2026-09-07): the chip row is for
+              concealment, and an order conceals nothing. The component stopped
+              taking them rather than taking and ignoring them. */}
+          {Lens && !loadingFeed && <window.LensChips who={who} onWho={setWho}
             saved={effectiveSavedOn} onSaved={setSavedFilter} isMobile={isMobile}
             searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
             onSearchChange={setSearchQueryVal} onSearchClear={clearSearch}

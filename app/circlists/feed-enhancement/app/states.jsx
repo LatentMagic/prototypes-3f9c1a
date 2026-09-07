@@ -500,15 +500,19 @@ const CIRC_STATE_REGISTER = [
   // empty \u2014 the zero-match register, which is a different thing from an empty
   // Read pile and says so.
   { group: 'Candidate build \u2014 feed enhancement', id: 'filter-no-match', label: 'Nothing matches the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
-  // Both halves of the lens non-default at once — the case the chip row exists
-  // to serve, and the one that decides whether it wraps gracefully at 390.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-both-applied', label: 'Both applied \u2014 order and contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'former member' }) },
+  // Order AND contributor both off their defaults — and, since the ruling of
+  // 2026-09-07, the state that shows the chip row saying ONE thing rather than
+  // two. The order redraws and so discloses nothing; only the contributor
+  // conceals, so only the contributor gets a chip. The label names what is
+  // APPLIED, which is still both; what it demonstrates is what the row does
+  // with that. Id untouched — an id is an address.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-both-applied', label: 'Order and contributor \u2014 one chip, not two', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'former member' }) },
   // Run 3 \u2014 density (Comfortable/Compact) + the lens panel's visual rework.
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact', label: 'Compact \u2014 more of the circle in view', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'compact' }) },
   // Same circle and tab as density-compact, comfortable instead \u2014 open the two
   // back to back to see the metric change alone, nothing else moving.
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-comfortable', label: 'Comfortable \u2014 the default rhythm', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'comfortable' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'view-panel-open', label: 'The lens \u2014 order, view and who', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'view-panel-open', label: 'The lens \u2014 display above, filter below', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-read', label: 'Compact \u2014 the Read pile', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', density: 'compact' }) },
   // Run 4 \u2014 the saved state and its surface.
@@ -523,8 +527,10 @@ const CIRC_STATE_REGISTER = [
   // build's own seed extension, talk-data.jsx, inserts two further read
   // fixtures at fixed positions with their own timestamps, so a seed-only
   // count is both short by two and in the wrong order once sorted). Marking
-  // both saved and filtering to her gives a genuinely non-empty, three-chip
-  // composition: Order (oldest), Added by (Priya N.), Saved.
+  // both saved and filtering to her gives a genuinely non-empty composition of
+  // all three narrowings — Order (oldest), Added by (Priya N.), Saved — of
+  // which TWO now carry chips: the order conceals nothing and lost its chip in
+  // the ruling of 2026-09-07.
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-with-lens', label: 'Saved \u2014 composed with the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', who: 'Priya N.', saved: [1, 6], savedOn: true }) },
   // ---- Run 5 · item 5, and the arrangement half reopened ------------------
   // The not-found page is staged as a bare route because that is what it

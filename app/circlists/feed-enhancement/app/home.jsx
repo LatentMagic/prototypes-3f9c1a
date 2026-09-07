@@ -116,24 +116,21 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
             <span style={{ display: 'block', fontWeight: 600, fontSize: 'var(--text-md)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
             <span style={{ display: 'block', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{circleSummary(s)}</span>
           </span>
-          {/* The micro dot the web rail carries. Opening the circle is the
-              accept, so home needs no refresh gesture of its own.
-              RUN 9, and this is a correction to the same run's own change.
-              Taking `New links` off the meta line was justified on the grounds
-              that the dot already said it. **It did not.** The two are
-              different predicates: the words counted UNREAD items, the dot
-              reads `unseen` — arrivals since the member last looked, set once
-              at seed and cleared permanently on the first visit to Active. On
-              the seeded data exactly one circle of five carries `unseen`, so
-              dropping the words left rows with plenty to read carrying no
-              signal at all, in the visual channel and the assistive one alike.
-              That is stripping, and this pass was told to tune.
-              So the dot now covers both. Joe's own sentence was "the micro
-              carries the news"; this is that sentence made true rather than
-              assumed. Its hidden text (", new items") is already right for
-              both cases, and nothing outside this row changes — the rail's own
-              dot still means strictly `unseen`. */}
-          <CircleSignal state={(s.unseen || (s.funded && (s.items || []).some((i) => !i.read))) ? 'unseen' : null} />
+          {/* The micro dot the web rail carries, meaning exactly what it means
+              there: `unseen` — arrivals since the member last looked. Opening
+              the circle is the accept, so home needs no refresh gesture.
+              REVERTED 2026-09-07, on Joe's ruling. Run 9 widened this to fire
+              on unread items too, reasoning that dropping `New links` from the
+              meta line otherwise lost a signal. That was the wrong move twice
+              over. **The home screen does not indicate unread at all** — it is
+              implicit in there being a Read pile, and he had already said so —
+              and the fix for "the words and the dot say different things" is
+              never to redefine the dot. One mark, one meaning, in both places
+              it appears; the rail and the home row can now be read as the same
+              signal because they are.
+              Consequence, accepted: a circle with plenty unread and nothing new
+              carries no mark. That is the definition working. */}
+          <CircleSignal state={s.unseen ? 'unseen' : null} />
           <Icon name="chevron-right" size={18} color="var(--color-fg-3)" />
         </button>
       ))}

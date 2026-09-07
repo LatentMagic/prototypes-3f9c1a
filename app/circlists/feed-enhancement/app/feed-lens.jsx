@@ -20,11 +20,27 @@
 // come. Search and saved are a different kind of thing and get their own
 // affordance.
 //
+// TWO KINDS OF THING BEHIND ONE DOOR (Joe's ruling, 2026-09-07). The four
+// groups are labelled as two sections — DISPLAY (Order, View), which redraws
+// what is already there, and FILTER (Show, Added by), which conceals cards.
+// The rule that follows from it governs the whole region:
+//
+//   The door shows you everything. The lit trigger and the chip row exist only
+//   to say SOMETHING IS BEING HIDDEN FROM YOU, and only those can be cleared.
+//
+// One door rather than two buttons because the split in Linear and Jira tracks
+// filter WEIGHT — a query builder, compound conditions, saved views — and this
+// is one filter over eight names plus one binary. A second trigger would spend
+// chrome on a problem the product does not have, in a bar that has just come
+// down to two icons. If filters ever grow, the labelled Filter section lifts
+// out into its own button and the rule above does not change. That is the
+// trigger to revisit; nothing else is.
+//
 // WHAT IT COSTS. The current sort order stops being legible at a glance, which
-// run 1 deliberately valued. Paid for by LensChips: any non-default lens — an
-// order, a contributor, or both — puts a named chip under the tab bar with its
-// own clear. Default state shows nothing at all, which is this app's own
-// grammar for calm rather than a new one.
+// run 1 deliberately valued — and it is no longer paid for by a chip, because
+// an order hides nothing. It reads on its own row inside the door, and in the
+// feed, which is in that order. At rest the display preferences are invisible.
+// LensChips pays only for the narrowings: a contributor, saved, or both.
 //
 // NO COUNTS. The conventional signal for an active filter is a count badge on
 // the trigger. This product's register forbids it — its feed marks are
@@ -101,9 +117,59 @@ const circFilterItems = (items, who) => {
   return (items || []).filter((it) => circContributorOf(it).toLowerCase() === key);
 };
 
-// The lens is non-default when either half is. That single predicate drives the
-// trigger's active state and whether any chip shows at all.
-const circLensActive = (order, who) => (order && order !== 'newest') || !!who;
+// THE REGION'S ONE RULE (BIZ-136, Joe's ruling of 2026-09-07). The door shows
+// you everything; the lit trigger and the chip row exist ONLY to say something
+// is being HIDDEN from you, and only those things can be cleared.
+//
+// So `circLensActive` is concealment, and concealment alone. `order` no longer
+// counts and is kept in the signature only because it is a published symbol
+// with call sites; the argument is deliberately unread.
+//
+// What this corrects: the predicate was `(order !== 'newest') || !!who`, so
+// sorting oldest-first lit the trigger AND rendered a chip in a row that reads
+// "your view is narrowed" — over a feed where every card was still present.
+// Density never did either, and run 3 had already written the correct rule in
+// main.jsx's own words: "It hides no content, so it has nothing to disclose."
+// Order was the one control disobeying a rule the region already had.
+const circLensActive = (order, who) => !!who;
+
+// Whether ANYTHING in the door is off its default — a different question from
+// the one above, and the only place `order` still counts. Used for "keep the
+// door reachable", never for the lit state and never for a chip.
+const circLensNonDefault = (order, who) =>
+  !!who || !!(order && order !== (window.CIRC_SORT_DEFAULT || 'newest'));
+
+// THE VISIBLE HEIGHT, and it is not `100vh`.
+//
+// This exists because of a shipped defect (BIZ-136 run 9, found by Joe on his
+// phone): the sheet capped itself at `min(60vh, 100vh - 96px)` while its
+// content measured 721px, so on an 844px screen the cap was 748 and NEVER BIT.
+// The sheet therefore never scrolled — `scrollHeight === clientHeight` — and,
+// anchored to the bottom, its top edge sat at `visible-bottom − 721`. On a real
+// phone the visible area is smaller than `100vh`, because `vh` is the LARGE
+// viewport and excludes the browser's own toolbars. So the top of the panel —
+// the Order group, and every route out of it — was off the screen, with no
+// scroll available to bring it back. Unreachable.
+//
+// Two things made it invisible to the checks: a headless viewport has no
+// browser chrome, so `vh` and the visible height agree there and the screenshot
+// looks right; and a cap that never bites reports no overflow.
+//
+// `visualViewport.height` is the visible area, chrome excluded, and it is the
+// primitive this actually needed. `innerHeight` is the fallback, which is right
+// where there is no browser chrome at all.
+const circVisibleHeight = () => {
+  const vv = window.visualViewport;
+  return Math.round((vv && vv.height) || window.innerHeight || 800);
+};
+
+// What the sheet is allowed to be. 72% of the visible height, and never closer
+// than 88px to the top of it — so a strip of the scrimmed feed is ALWAYS
+// visible above the sheet. That strip is what makes it read as a sheet over the
+// app rather than as a screen that replaced it, and it is the thing 85% of the
+// viewport had taken away.
+const circSheetMaxHeight = (visible) =>
+  Math.max(240, Math.min(Math.round(visible * 0.72), visible - 88));
 
 // ---- The control -----------------------------------------------------------
 
@@ -161,6 +227,28 @@ const LensLabel = ({ children }) => (
   <div style={{
     fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
     color: 'var(--color-fg-2)', padding: '0 2px 6px',
+  }}>{children}</div>
+);
+
+// The section eyebrow — DISPLAY and FILTER (Joe's ruling, 2026-09-07). It names
+// the two kinds of thing this door holds: controls that redraw what is already
+// there, and controls that conceal cards. The distinction is the reason the
+// chip row and the lit trigger mean one thing rather than "some of these".
+//
+// It has to sit ABOVE the group labels without competing with them, and one
+// step of size is not enough on its own at 13→12px. So it borrows the app's
+// existing eyebrow language wholesale (home.jsx's HOME_EYEBROW): uppercase,
+// tracked, semibold, and the QUIETEST foreground — superordinate by shape,
+// subordinate by weight of colour. A larger or darker section header would have
+// turned a calm four-group panel into a document with headings.
+//
+// 11px there is off the type scale; --text-xs is the nearest rung and is what
+// this uses. Same idea, one token honoured.
+const LensSection = ({ children }) => (
+  <div style={{
+    fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', fontWeight: 600,
+    letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)',
+    padding: '10px 12px 0',
   }}>{children}</div>
 );
 
@@ -363,9 +451,12 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // looking: with only Saved applied the trigger sat grey and unmarked while a
   // Saved chip showed directly beneath it — the lens declining to count a
   // narrowing it now owns, which is precisely the claim Reading A is making.
-  // `circLensActive` itself is untouched: under 'bar' and 'surface' saved is
-  // genuinely not part of this door, and folding it in there would light the
-  // trigger for a control that lives somewhere else entirely.
+  // Saved is folded in HERE rather than into `circLensActive`, because under
+  // 'bar' and 'surface' saved is genuinely not part of this door, and folding
+  // it in there would light the trigger for a control that lives elsewhere.
+  //
+  // Every term below conceals cards. That is the whole test now (see
+  // `circLensActive`): `order` is absent from this line on purpose.
   const active = circLensActive(order, who) || (savedMode === 'lens' && !!saved);
   // Grid is a desktop-only offer (main.jsx's own comment has the why: a
   // two-column grid of these cards is worse at 390). Filtered out of the
@@ -426,6 +517,24 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // there is, and this app already had the answer in its own codebase.
   const [render, setRender] = React.useState(open);
   const [shown, setShown] = React.useState(false);
+
+  // Re-measured while the sheet is up, because the visible height CHANGES under
+  // it: iOS shrinks and grows its toolbars as the page moves, and rotating the
+  // handset changes it outright. A height measured once at open is the same
+  // stale-number defect one axis over.
+  const [visibleH, setVisibleH] = React.useState(circVisibleHeight);
+  React.useEffect(() => {
+    if (!render || !isMobile) return;
+    const vv = window.visualViewport;
+    const measure = () => setVisibleH(circVisibleHeight());
+    measure();
+    window.addEventListener('resize', measure);
+    if (vv) { vv.addEventListener('resize', measure); vv.addEventListener('scroll', measure); }
+    return () => {
+      window.removeEventListener('resize', measure);
+      if (vv) { vv.removeEventListener('resize', measure); vv.removeEventListener('scroll', measure); }
+    };
+  }, [render, isMobile]);
   React.useEffect(() => {
     if (open) {
       setRender(true);
@@ -463,6 +572,15 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   if (who && !whoOptions.some((o) => o.id === who)) {
     whoOptions.push({ id: who, label: circContributorLabel(who) });
   }
+  // Both section eyebrows ride on this. A door holding only display controls
+  // has one kind of thing in it, and a lone "DISPLAY" header over the whole
+  // panel would be a heading naming the only thing there is — so with no
+  // filters the panel renders exactly as it did before the sections existed.
+  // Same deletable-aid contract as every other guard in this file: remove
+  // feed-saved-readings.jsx and drop to a one-contributor circle and the panel
+  // degrades to two bare groups rather than to a labelled section with a gap
+  // where its sibling was.
+  const hasFilterGroups = showSavedGroup || whoOptions.length > 1;
 
   // The name carries the whole applied state, so a screen reader hears the lens
   // without opening it.
@@ -623,7 +741,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // contributor list is uncapped (see LensList's `bounded`), so a
             // thumb dragging anywhere moves one list, not whichever of two it
             // happened to land on.
-            maxHeight: 'calc(100vh - 96px)', overflowY: 'auto',
+            //
+            // Capped against the MEASURED visible height, not `100vh` — see
+            // `circVisibleHeight`, and the defect that comment records. The
+            // sheet now always scrolls when its content is taller than the cap,
+            // and its top edge is always at least 88px inside the visible area.
+            maxHeight: circSheetMaxHeight(visibleH), overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
             transform: shown ? 'translateY(0)' : 'translateY(100%)',
             transition: 'transform var(--duration-slow) var(--ease-quiet)',
           } : {
@@ -663,7 +787,16 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // once again the only thing on this surface that scrolls.
             // The `100vh - 132px` term is untouched and still governs a short
             // window, where both scrolling is the honest fallback.
-            maxHeight: 'min(72vh, calc(100vh - 132px))', overflowY: 'auto',
+            // 78vh, raised from run 9's 72 by the two section eyebrows, and
+            // measured rather than chosen: they take the popover's content to
+            // 588px against a 72vh cap of 576 at 1280x800, so the panel scrolled
+            // by 12px WHILE `Added by` scrolled inside it — the nested-scroller
+            // defect run 9 removed, back for the sake of a dozen pixels. At 78vh
+            // the cap is 624, the box fits its content, and the contributor list
+            // is again the only thing on this surface that scrolls.
+            // The `100vh - 132px` term is untouched and still governs a short
+            // window, where both scrolling is the honest fallback.
+            maxHeight: 'min(78vh, calc(100vh - 132px))', overflowY: 'auto',
           }}
         >
           {/* The sheet's grab handle (run 9, from the design review). It took
@@ -677,14 +810,30 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               four group labels already say what it is. Decorative and inert —
               the scrim, Escape and outside-tap are the real exits, and this is
               the mark that says so. */}
+          {/* Sticky, because the sheet now scrolls (it did not before, which was
+              the defect). A handle that scrolls away takes the sheet's one mark
+              of container identity off the screen the moment the member reaches
+              for the group at the bottom — exactly when they most need to see
+              what they are inside of. It carries the surface colour so the rows
+              pass under it rather than through it. */}
           {isMobile && (
-            <div aria-hidden="true" style={{ padding: '8px 0 2px', display: 'flex', justifyContent: 'center' }}>
+            <div aria-hidden="true" style={{
+              position: 'sticky', top: 0, zIndex: 1, background: 'var(--color-surface)',
+              padding: '8px 0 6px', display: 'flex', justifyContent: 'center',
+              borderTopLeftRadius: 20, borderTopRightRadius: 20,
+            }}>
               <span style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--color-border-1)' }} />
             </div>
           )}
           {/* Each group is conditional on its own data, so removing an engine
               module leaves a panel that offers only what still works. Density
               (feed.jsx) has no such module to drop, so View is unconditional. */}
+          {/* DISPLAY — the two controls that redraw what is already on screen.
+              Neither conceals a card, so neither lights the trigger and neither
+              makes a chip. Their current value reads here, on their own row.
+              Density was already silent (run 3, "it hides no content, so it has
+              nothing to disclose"); Order joins it. */}
+          {hasFilterGroups && <LensSection>Display</LensSection>}
           {window.CIRC_SORT_OPTIONS && (
             <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
           )}
@@ -710,6 +859,21 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               "Saved: Saved". `Show` is the question the two options answer, and
               it keeps the caption anchored to the word `saved` where it
               belongs — in the sentence that says only you can see it. */}
+          {/* FILTER — the controls that conceal cards. These are the ones that
+              light the trigger, put a chip in the row, and can be cleared.
+              The rule between the two sections is the whole point of labelling
+              them: a member should never have to learn WHICH of these four
+              things the lit icon was talking about.
+              The divider moved here from just above `Added by`, where it used
+              to separate "the fixed controls" from "the contributor list" — a
+              split by control SHAPE. It now falls on the split that carries
+              meaning, and there is still exactly one rule in the panel. */}
+          {hasFilterGroups && (
+            <React.Fragment>
+              <div style={{ height: 1, background: 'var(--color-border-2)', margin: '10px 10px 0' }} aria-hidden="true" />
+              <LensSection>Filter</LensSection>
+            </React.Fragment>
+          )}
           {showSavedGroup && (
             <LensSegmented label="Show" caption={window.CIRC_SAVED_LENS_CAPTION}
               value={saved ? 'only' : 'all'}
@@ -717,10 +881,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               options={window.CIRC_SAVED_LENS_OPTIONS} />
           )}
           {whoOptions.length > 1 && (
-            <React.Fragment>
-              <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 10px' }} aria-hidden="true" />
-              <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
-            </React.Fragment>
+            <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
           )}
         </div>
       )}
@@ -858,7 +1019,7 @@ const circAttributionPhrase = (who, bare) => {
 // and the render-site note in main.jsx) — so this component's OWN render
 // condition below is widened to `active || saved` rather than touching that
 // shared predicate.
-const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
+const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // Search (feed-enhancement candidate build): `searchOpen` is already the
   // COMPOSITE flag main.jsx computes ("field open OR a query is already
   // typed") — this component does not re-derive it, it only asks whether
@@ -873,11 +1034,21 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
   // `onReopenLens` is main.jsx's own `setSortMenuOpen(true)` — opened at
   // rest, never scrolled to a group.
   savedMode = 'lens', onReopenLens }) => {
-  const active = circLensActive(order, who);
+  // `order`/`onOrder` were props here until 2026-09-07 and are gone with the
+  // Order chip — a component that takes a value it can no longer render is a
+  // dead condition reading as a live one.
+  const active = circLensActive(null, who);
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
   const savedChipOn = savedMode === 'surface' ? false : !!saved;
-  const anyChips = !!(who || (order && order !== 'newest') || savedChipOn);
+  // ORDER HAS NO CHIP (BIZ-136, ruling of 2026-09-07). This row means exactly
+  // one thing — cards are being hidden from you — and every chip in it is a
+  // thing you can drop to get them back. Sorting oldest-first hides nothing, so
+  // a chip for it was the row saying "narrowed" over a complete feed, and its
+  // clear button undid a preference rather than restoring anything.
+  // Where the order now reads instead: on its own row inside the door, and in
+  // the feed itself, which is in that order. See `circLensActive`.
+  const anyChips = !!(who || savedChipOn);
   if (!active && !savedChipOn && !showField) return null;
   // `reopenLabel` is a FUNCTION of the chip's own label, not one fixed string
   // (BIZ-136 run 7, from the review). It was 'Change filters' on every chip, and
@@ -929,12 +1100,6 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
               label={circAttributionPhrase(who, isMobile)}
               clearLabel={'Showing links added by ' + circContributorLabel(who) + '. Show links from everyone'}
               onClear={() => onWho(CIRC_LENS_ALL)} {...reopen} />
-          )}
-          {order && order !== 'newest' && (
-            <LensChip
-              label={window.circSortLabel ? window.circSortLabel(order) : order}
-              clearLabel="Sorted oldest first. Sort newest first"
-              onClear={() => onOrder('newest')} {...reopen} />
           )}
           {savedChipOn && (
             <LensChip
@@ -1113,5 +1278,5 @@ const LensNoMatch = ({ who, tab, onClear }) => (
 Object.assign(window, {
   FeedLens, LensChips, LensNoMatch, FeedNoMatch,
   circContributors, circContributorOf, circContributorLabel, circAttributionPhrase,
-  circFilterItems, circLensActive, CIRC_LENS_ALL,
+  circFilterItems, circLensActive, circLensNonDefault, CIRC_LENS_ALL,
 });
