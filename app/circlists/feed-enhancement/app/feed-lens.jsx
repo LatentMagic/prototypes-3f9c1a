@@ -168,6 +168,12 @@ const circVisibleHeight = () => {
 // visible above the sheet. That strip is what makes it read as a sheet over the
 // app rather than as a screen that replaced it, and it is the thing 85% of the
 // viewport had taken away.
+//
+// One qualification, so the sentence above is not read as an invariant it is
+// not: the 240px floor wins below 328px of visible height, and the 88px gap
+// goes with it. No handset reaches that — 320x568 and a landscape 844x390 were
+// both measured and both keep the gap — but the floor is there so a freak
+// measurement cannot collapse the sheet to nothing, and it would win first.
 const circSheetMaxHeight = (visible) =>
   Math.max(240, Math.min(Math.round(visible * 0.72), visible - 88));
 
@@ -244,12 +250,24 @@ const LensLabel = ({ children }) => (
 //
 // 11px there is off the type scale; --text-xs is the nearest rung and is what
 // this uses. Same idea, one token honoured.
-const LensSection = ({ children }) => (
-  <div style={{
+//
+// It carries an `id` because the section is not decoration — it is the whole
+// mechanism for "which of these four light the trigger" — and a heading that
+// exists only in the visual channel leaves that mechanism unavailable to anyone
+// not looking at it. `LensSectionBody` below ties the groups to it.
+const LensSection = ({ id, children }) => (
+  <div id={id} style={{
     fontFamily: 'var(--font-sans)', fontSize: 'var(--text-xs)', fontWeight: 600,
     letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)',
     padding: '10px 12px 0',
   }}>{children}</div>
+);
+
+// The groups under one eyebrow, named by it. A bare wrapper with no styles —
+// the panel's spacing is carried by the groups themselves, so this adds a node
+// to the accessibility tree and nothing to the layout.
+const LensSectionBody = ({ labelledBy, children }) => (
+  <div role="group" aria-labelledby={labelledBy}>{children}</div>
 );
 
 // Order / View — both two-option choices, so both are this one horizontal
@@ -792,8 +810,19 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // 588px against a 72vh cap of 576 at 1280x800, so the panel scrolled
             // by 12px WHILE `Added by` scrolled inside it — the nested-scroller
             // defect run 9 removed, back for the sake of a dozen pixels. At 78vh
-            // the cap is 624, the box fits its content, and the contributor list
-            // is again the only thing on this surface that scrolls.
+            // and 1280x800 the cap is 624, the box fits its content, and the
+            // contributor list is the only thing on this surface that scrolls.
+            //
+            // THAT IS TRUE DOWN TO ~760px OF VIEWPORT HEIGHT AND NOT BELOW IT,
+            // and the qualification is the honest part. Measured: the panel
+            // fits at 800 and 760, and scrolls at 740 and under — where
+            // `Added by` scrolls inside it too, which is the nested pair again.
+            // The eyebrows added ~58px of content while the cap rose 6vh, so
+            // the threshold moved from ~736px to ~754px: a fault that already
+            // existed on a short window, ~18px worse. A 1366x768 laptop nests
+            // either way. Raising the cap further only trades it for a panel
+            // that reaches the fold, so it is recorded rather than chased —
+            // the real answer is fewer pixels of content, not a bigger box.
             // The `100vh - 132px` term is untouched and still governs a short
             // window, where both scrolling is the honest fallback.
             maxHeight: 'min(78vh, calc(100vh - 132px))', overflowY: 'auto',
@@ -833,11 +862,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               makes a chip. Their current value reads here, on their own row.
               Density was already silent (run 3, "it hides no content, so it has
               nothing to disclose"); Order joins it. */}
-          {hasFilterGroups && <LensSection>Display</LensSection>}
-          {window.CIRC_SORT_OPTIONS && (
-            <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
-          )}
-          <LensSegmented label="View" value={density} onPick={onDensity} options={densityOptions} />
+          {hasFilterGroups && <LensSection id="circ-lens-display">Display</LensSection>}
+          <LensSectionBody labelledBy={hasFilterGroups ? 'circ-lens-display' : undefined}>
+            {window.CIRC_SORT_OPTIONS && (
+              <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
+            )}
+            <LensSegmented label="View" value={density} onPick={onDensity} options={densityOptions} />
+          </LensSectionBody>
           {/* Reading A (BIZ-136 run 7): the fourth group, ABOVE "Added by" and
               not below it.
               It was built last, after Added by, and the design review caught
@@ -871,17 +902,19 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           {hasFilterGroups && (
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '10px 10px 0' }} aria-hidden="true" />
-              <LensSection>Filter</LensSection>
+              <LensSection id="circ-lens-filter">Filter</LensSection>
+              <LensSectionBody labelledBy="circ-lens-filter">
+                {showSavedGroup && (
+                  <LensSegmented label="Show" caption={window.CIRC_SAVED_LENS_CAPTION}
+                    value={saved ? 'only' : 'all'}
+                    onPick={(id) => onSaved(id === 'only')}
+                    options={window.CIRC_SAVED_LENS_OPTIONS} />
+                )}
+                {whoOptions.length > 1 && (
+                  <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
+                )}
+              </LensSectionBody>
             </React.Fragment>
-          )}
-          {showSavedGroup && (
-            <LensSegmented label="Show" caption={window.CIRC_SAVED_LENS_CAPTION}
-              value={saved ? 'only' : 'all'}
-              onPick={(id) => onSaved(id === 'only')}
-              options={window.CIRC_SAVED_LENS_OPTIONS} />
-          )}
-          {whoOptions.length > 1 && (
-            <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
           )}
         </div>
       )}
