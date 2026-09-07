@@ -281,18 +281,27 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  // `savedMode` (BIZ-136 run 7): the shape saved is offered in — 'bar'
-  // (shipped, default), 'lens' (Reading A, a fourth lens group) or 'surface'
-  // (Reading B, a third tab). ALWAYS fully replaced, same reasoning as
-  // `who`/`savedOn` above: an entry that says nothing about it must land in
-  // 'bar', never inherit whatever the last-staged entry left it on.
+  // `savedMode` (BIZ-136 run 7): the shape saved is offered in — 'lens'
+  // (shipped since run 9: saved is a lens group), 'bar' (the superseded
+  // bookmark on the tab bar) or 'surface' (Reading B, a third tab). ALWAYS
+  // fully replaced, same reasoning as `who`/`savedOn` above: an entry that says
+  // nothing about it must land in the default, never inherit whatever the
+  // last-staged entry left it on.
+  //
+  // THE DEFAULT MOVED TO 'lens' IN RUN 9, and this line is the reason every
+  // older saved state moved with it. The owner ratified Reading A by looking at
+  // it; had this default stayed 'bar', the app would have opened in one shape
+  // while `saved-marks`, `saved-filtered` and the rest of the run-4 states went
+  // on demonstrating the shape it replaced. The register would then have been
+  // showing him a version of the app that no longer exists — which is the
+  // failure a states register is for preventing, not for causing.
   // `finalTab` (run 7): the DISPLAYED tab, when it differs from the `tab`
   // param above. `tab` still decides which item pool `saved` indexes into
   // (read vs active) — a Reading-B state stages saved marks against the READ
   // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
   // different thing from what pool was scoped. Omitted, the displayed tab is
   // `tab` itself, exactly as before this param existed.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'bar', finalTab = null }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -582,9 +591,19 @@ const CIRC_STATE_REGISTER = [
   // 0/1/2 of that pool's own newest-first order) \u2014 except saved-tab-empty,
   // which marks none. Comparing two shapes of the same control against two
   // different piles of links is not a comparison, so nothing here varies that.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-door', label: 'Reading A \u2014 saved joins the lens, the door open', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'lens', menu: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-applied', label: 'Reading A \u2014 saved on, no bookmark left on the bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'lens' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-composed', label: 'Reading A \u2014 saved and a contributor, both from the one door', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, who: 'Priya N.', savedMode: 'lens' }) },
+  // Run 9: these three stopped being a PROPOSAL and became the app. Their ids
+  // are unchanged \u2014 an id is an address and renaming one breaks every link
+  // already written to it \u2014 but "Reading A" is gone from the labels, because
+  // there is no longer a Reading B beside it on the shipped path to be read
+  // against. They now say what they show.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-door', label: 'Saved is a lens \u2014 the door open, all four groups', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'lens', menu: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-applied', label: 'Saved on \u2014 the bar carries no bookmark', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'lens' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-composed', label: 'Saved and a contributor, both set from the one door', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, who: 'Priya N.', savedMode: 'lens' }) },
+  // The shape run 9 replaced, kept openable on purpose. The pick was made from
+  // a side-by-side, so the way back has to stay a side-by-side: this is the
+  // bookmark on the tab bar, three icons and all, to be overruled by looking
+  // rather than by reading an argument about it.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-bar-superseded', label: 'Superseded \u2014 saved as a bookmark on the tab bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'bar' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab', label: 'Reading B \u2014 saved as its own tab, populated', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface', finalTab: 'saved' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },

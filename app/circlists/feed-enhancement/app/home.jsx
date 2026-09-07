@@ -23,16 +23,41 @@ const HOME_EYEBROW = {
   textTransform: 'uppercase', color: 'var(--color-fg-3)', padding: '0 0 10px', margin: 0,
 };
 
-// Each row carries a reason to be looked at, so home is a place rather than a
-// picker you pass through. Sleeping circles say so instead of counting links.
-// No counts anywhere on this screen (feed-enhancement candidate build):
-// "New links" replaces a number the member would otherwise have to read twice
-// — once here, once for real inside the circle.
+// THE META LINE — rewritten in run 9's elegance pass. It used to read
+// `New links · 4 members` or `All read · 3 members`, and both halves were
+// wrong.
+//
+// `New links` was redundant with the dot two elements to its right — and
+// redundant in the accessibility channel too, not only the visual one: the dot
+// is not a bare colour, it already carries `", new items"` as visually-hidden
+// text (app/liveliness.jsx). So the words were a second voice saying what the
+// mark already said, which is exactly why the line read as noise. `All read`
+// was worse than redundant: it asserted a completed state the product does not
+// promise, on a tab nobody is expected to empty.
+//
+// What replaced them is the one thing that differs between two circles of the
+// same size: WHO IS IN THEM. A circle is its members — that is the product's
+// second axis stated literally — so the row now says what the circle IS rather
+// than filing a status report on it. Three rows never read alike again, which
+// was the defect run 8 recorded and could not fix from inside its own slice:
+// "three consecutive rows read `New links · N members` and the meta column
+// distinguishes nothing."
+//
+// Rejected on the way here: recency (`Last link 3 weeks ago`), which is a guilt
+// column — performance pressure on whoever last contributed, reached by a
+// different road than a leaderboard but arriving at the same place.
+//
+// `Asleep` survives, and it is the one status word that should. A dormant
+// circle's cards are unreachable, and no dot can carry that: the dot marks
+// arrivals, and a sleeping circle has none to mark.
 const circleSummary = (s) => {
-  const members = (s.members ? s.members.length : 0) + ' member' + ((s.members || []).length === 1 ? '' : 's');
-  if (!s.funded) return 'Asleep · ' + members;
-  const unread = (s.items || []).filter(i => !i.read).length;
-  return (unread ? 'New links' : 'All read') + ' · ' + members;
+  const roster = window.candRoster;
+  const others = (s.members || []).map((m) => m && m.name).filter((n) => n && n !== 'You');
+  // The helper lives in a droppable module, so the count is the fallback rather
+  // than a crash — same deletable-aid contract every other guard here honours.
+  const people = roster ? roster(others)
+    : others.length + ' member' + (others.length === 1 ? '' : 's');
+  return s.funded ? people : 'Asleep · ' + people;
 };
 
 const homeTile = (name) => (
@@ -83,12 +108,32 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
         }}>
           {homeTile(s.name)}
           <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: 'block', fontWeight: 600, fontSize: 15.5, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
-            <span style={{ display: 'block', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', marginTop: 3 }}>{circleSummary(s)}</span>
+            {/* Run 9: `15.5` and `12.5` were sizes the scale does not contain.
+                tokens.css runs 12/13/15/16/18/20/24/32/40 and every older module
+                honours it; this file and home-returns.jsx were a day old and
+                already off it, which is the literal form of "has it been done
+                beautifully". Snapped to `--text-md` and `--text-sm`. */}
+            <span style={{ display: 'block', fontWeight: 600, fontSize: 'var(--text-md)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
+            <span style={{ display: 'block', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{circleSummary(s)}</span>
           </span>
-          {/* Unseen items — the same micro dot the web rail carries. Opening the
-              circle is the accept, so home needs no refresh gesture of its own. */}
-          <CircleSignal state={s.unseen ? 'unseen' : null} />
+          {/* The micro dot the web rail carries. Opening the circle is the
+              accept, so home needs no refresh gesture of its own.
+              RUN 9, and this is a correction to the same run's own change.
+              Taking `New links` off the meta line was justified on the grounds
+              that the dot already said it. **It did not.** The two are
+              different predicates: the words counted UNREAD items, the dot
+              reads `unseen` — arrivals since the member last looked, set once
+              at seed and cleared permanently on the first visit to Active. On
+              the seeded data exactly one circle of five carries `unseen`, so
+              dropping the words left rows with plenty to read carrying no
+              signal at all, in the visual channel and the assistive one alike.
+              That is stripping, and this pass was told to tune.
+              So the dot now covers both. Joe's own sentence was "the micro
+              carries the news"; this is that sentence made true rather than
+              assumed. Its hidden text (", new items") is already right for
+              both cases, and nothing outside this row changes — the rail's own
+              dot still means strictly `unseen`. */}
+          <CircleSignal state={(s.unseen || (s.funded && (s.items || []).some((i) => !i.read))) ? 'unseen' : null} />
           <Icon name="chevron-right" size={18} color="var(--color-fg-3)" />
         </button>
       ))}

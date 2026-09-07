@@ -49,9 +49,24 @@
 // saving only ever happens on a card in Read, never here.
 // ============================================================================
 
+// COPY, settled in run 9's elegance pass — the owner named the copy twice as
+// the thing wrong with this panel. Two changes, both about the panel reading as
+// one object rather than four separately-worded ones.
+//
+// `All read` → `Everything`. The panel has two groups that CONCEAL, and they
+// were wording the same idea — "nothing is narrowed" — two different ways:
+// `Everyone` in Added by, `All read` here. Kindle's library filter is the
+// referent: its groups are plain nouns and their un-narrowed states are worded
+// alike, which is what lets several groups read as one control. `Everything`
+// also drops a phrase the owner had already rejected in another surface, where
+// it asserted a completion state ("all read") he does not believe in.
+//
+// `Saved only` → `Saved`. The adverb was doing the segmented control's own job:
+// picking one segment already means "only this one", so the word said in copy
+// what the selection says in form. Its sibling `Everyone` never needed one.
 const CIRC_SAVED_LENS_OPTIONS = [
-  { id: 'all', label: 'All read' },
-  { id: 'only', label: 'Saved only' },
+  { id: 'all', label: 'Everything' },
+  { id: 'only', label: 'Saved' },
 ];
 
 const CIRC_SAVED_LENS_CAPTION = 'Only you can see what you have saved.';

@@ -243,12 +243,23 @@ const CircApp = () => {
   const [savedOn, setSavedOn] = useState({});
   // Saved mode (BIZ-136 run 7, two readings of "saved"): 'bar' (shipped,
   // default) · 'lens' (Reading A — saved joins the lens popover) · 'surface'
-  // (Reading B — saved is its own tab). STAGED ONLY — nothing in the shipped
-  // UI can change this, only `?state=` via app/states.jsx's `stageSort`, so a
-  // plain visit is always 'bar' and every one of the 59 states that predate
-  // this run renders exactly as it did. VISIT STATE, never persisted, same
+  // (Reading B — saved is its own tab). VISIT STATE, never persisted, same
   // reasoning as sortOrder/lensWho/savedOn above.
-  const [savedMode, setSavedMode] = useState('bar');
+  //
+  // 'lens' IS THE DEFAULT AS OF BIZ-136 run 9, and that is a ratification, not
+  // a preference. Run 7 built both readings live and deep-linked so the owner
+  // could pick by looking rather than by reading an argument; he did, in one
+  // line — "It should be a filter. A." So saved is no longer a bookmark sitting
+  // on the tab bar beside two unrelated icons; it is a narrowing reached from
+  // the one door the other narrowings already share, and the chip it leaves
+  // leads back to that door instead of dead-ending.
+  //
+  // 'bar' AND 'surface' BOTH REMAIN REACHABLE, deliberately. He chose A from a
+  // side-by-side comparison, not from living with a four-group panel on a
+  // phone — so if he reverses on return, that is a one-word change here rather
+  // than a rebuild. `saved-bar-superseded` (app/states.jsx) is the shape this
+  // replaced, kept openable for exactly that reason.
+  const [savedMode, setSavedMode] = useState('lens');
   // The deletable-aid contract, honoured ONCE here rather than at each of the
   // half-dozen places that read the mode (BIZ-136 run 7, from the review).
   // Gating each consumer on `savedMode` alone was a real breach, not a
@@ -259,8 +270,17 @@ const CircApp = () => {
   // toggle that 'surface' does not read. The contract promises the PREVIOUS
   // behaviour, not merely "does not throw".
   // Both readings need the module, so one term covers both: without it the
-  // mode collapses to 'bar' and every consumer below is the shipped shape
-  // again, with no further guard of its own.
+  // mode collapses to 'bar'.
+  // RUN 9 CHANGED WHAT THAT COLLAPSE MEANS, and the honest note is that it is
+  // now weaker than it reads. While 'bar' was the shipped shape, dropping
+  // feed-saved-readings.jsx degraded to the PREVIOUS behaviour, which is what
+  // the deletable-aid contract promises. 'lens' is the shipped shape now, so
+  // the same collapse resurrects a SUPERSEDED bookmark-on-the-bar instead.
+  // Still coherent and still not a throw — every consumer below is internally
+  // consistent under 'bar' — but it is a fallback to an older app rather than
+  // to this one, and the contract's own words no longer describe it exactly.
+  // Left as 'bar' deliberately: the alternative is no saved control at all
+  // when the module goes, which is a worse answer than an older one.
   const savedModeReady = !!window.SavedTabEmptyState && !!window.CIRC_SAVED_LENS_OPTIONS
     && !!window.circFilterSaved;
   const effectiveSavedMode = savedModeReady ? savedMode : 'bar';
@@ -902,7 +922,18 @@ const CircApp = () => {
       // zero-match copy, the discourse lead's suppression) reads this instead,
       // so Reading B's tab narrows the list without a toggle ever existing to
       // flip. Under 'bar'/'lens' this is exactly `savedOnFlag`, unchanged.
-      const effectiveSavedOn = effectiveSavedMode === 'surface' ? tab === 'saved' : savedOnFlag;
+      // Run 9: `&& tab === 'read'`. Saving is read-only by ruling — a card can
+      // only be saved from Read — so "saved" is a lens over the Read pile and
+      // over nothing else. Applied tab-blind, the stored per-circle flag also
+      // narrowed ACTIVE by a mark no Active card can carry, emptying the tab
+      // with nothing on screen explaining it. Under 'bar' that was hard to
+      // reach, because the only toggle lived on Read; making saved a lens put
+      // it one tap from Active and turned a latent fault into a reachable one.
+      // Fixed here rather than deferred: it renders inside the surface this
+      // run is asking to be judged.
+      const effectiveSavedOn = effectiveSavedMode === 'surface'
+        ? tab === 'saved'
+        : (savedOnFlag && tab === 'read');
       const savedFiltered = Saved ? Saved(lensed, effectiveSavedOn) : lensed;
       // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
       // is a fact about the circle, not about the current narrowing, and the
@@ -916,6 +947,21 @@ const CircApp = () => {
       // leaves the tab bar outright — saved is reached from the lens door or
       // from its own tab instead, never both places at once.
       const showSaved = effectiveSavedMode === 'bar' && !!window.SavedToggle && tab === 'read' && !loadingFeed
+        && (hasSaved || savedOnFlag);
+      // Run 9: the SAME presence rule, for the lens group that replaced the
+      // toggle. Reading A moved saved behind the door and silently dropped
+      // every gate the bar toggle carried — so the Saved group appeared on
+      // ACTIVE, where nothing can be saved; while the feed was still loading;
+      // and in a circle where the member has never saved anything, offering a
+      // narrowing guaranteed to match nothing.
+      //
+      // The third clause is the one worth keeping deliberately. Run 4 called it
+      // the region's third state, after "present" and "present and applied":
+      // NOT YET EARNED — the control does not exist until the member has made
+      // its reason to exist. That principle was recorded as a region rule and
+      // would have been lost by moving the control, which is exactly the kind
+      // of thing an audit of the whole picture is for catching.
+      const showSavedLens = effectiveSavedMode === 'lens' && tab === 'read' && !loadingFeed
         && (hasSaved || savedOnFlag);
       const setSavedFilter = (next) => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
@@ -1059,12 +1105,18 @@ const CircApp = () => {
       // the tab bar's active id) — only the read-vs-active COSMETIC choice
       // inside the card and the empty-tab copy read this normalised value.
       const cardTab = tab === 'saved' ? 'read' : tab;
+      // `saved={effectiveSavedOn}`, not the raw flag — the third place the same
+      // fix was needed, and the one missed on the first pass. The trigger's lit
+      // state and its accessible name both read this prop: with the raw flag,
+      // standing on Active with saved stored ON lit the lens and announced
+      // "…, saved only" over a feed that was not narrowed, offering no way to
+      // clear it. A claim that is neither applied, shown, nor clearable.
       const lensControl = showLens
         ? <Lens order={order} who={who} contributors={contributors} user={user}
             onOrder={setOrder} onWho={setWho}
             density={effectiveDensity} onDensity={setDensityView}
             isMobile={isMobile}
-            saved={savedOnFlag} onSaved={setSavedFilter} savedMode={effectiveSavedMode}
+            saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null} savedMode={effectiveSavedMode}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
       // The third tab (run 7, Reading B). Gated on the module, not on
@@ -1288,13 +1340,29 @@ const CircApp = () => {
               presence still gates on Lens, not Saved or Search — both the
               saved chip and the search field ride inside that same row and
               have nowhere to render without it. */}
+          {/* Run 9: the chip reads `effectiveSavedOn`, not the raw stored flag.
+              The chip row's one job is to disclose what is being CONCEALED, so
+              a Saved chip on a tab where the saved narrowing does not apply
+              would be the row reporting a concealment that is not happening —
+              the exact dishonesty this row exists to prevent. Same fix as the
+              lens group's own gate above, on the other half of the pair. */}
           {Lens && !loadingFeed && <window.LensChips order={order} who={who} onOrder={setOrder} onWho={setWho}
-            saved={savedOnFlag} onSaved={setSavedFilter} isMobile={isMobile}
+            saved={effectiveSavedOn} onSaved={setSavedFilter} isMobile={isMobile}
             searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
             onSearchChange={setSearchQueryVal} onSearchClear={clearSearch}
             savedMode={effectiveSavedMode} onReopenLens={() => setSortMenuOpen(true)} />}
           {feed}
-          {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
+          {/* The FAB stands down while the lens sheet is up (run 9, from the
+              design review, which caught it painting green over a scrimmed
+              modal). It cannot be solved with z-index: the panel renders inside
+              the tab bar, which is `position: sticky` with its own stacking
+              context at 49, so nothing written inside it can out-paint a FAB at
+              80. Suppressing is also simply correct — a primary compose action
+              should not be tappable under a scrim, whichever way they paint.
+              Mobile only, because at desktop the panel is an anchored popover
+              with no scrim and nothing is being covered. */}
+          {!loadingFeed && !isApp && !(isMobile && sortMenuOpen)
+            && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
         </>,
         { canAdd: true }

@@ -188,9 +188,16 @@ const LensSegmented = ({ label, caption, options, value, onPick }) => {
     <div style={{ padding: '6px 10px' }}>
       <LensLabel>{label}</LensLabel>
       {caption && (
+        // Run 9, from the design review: this was `--text-sm`/`fg-2`, the SAME
+        // size and colour as the group label above it, so it measured larger
+        // and darker on screen than the thing it explains and the pair read as
+        // a two-line heading rather than as label + caption. One step down in
+        // both channels. It keeps its place — in a communal library "if I save
+        // this, can the others see?" is a real anxiety and this is the only
+        // line in the product that answers it.
         <p id={captionId} style={{
           margin: '-4px 2px 8px', fontFamily: 'var(--font-sans)',
-          fontSize: 'var(--text-sm)', color: 'var(--color-fg-2)', lineHeight: 1.4,
+          fontSize: 'var(--text-xs)', color: 'var(--color-fg-3)', lineHeight: 1.4,
         }}>{caption}</p>
       )}
       <div role="radiogroup" aria-label={label} aria-describedby={captionId || undefined} onKeyDown={onKey} style={{
@@ -254,21 +261,28 @@ const LensSegmented = ({ label, caption, options, value, onPick }) => {
 // language from shell.jsx (RailBody's active-circle bar): a 2px accent left
 // bar plus weight + colour. Unselected rows carry a transparent 2px bar of
 // the same width, so nothing shifts horizontally when the selection moves.
-const LensList = ({ label, options, value, onPick }) => {
+// `bounded` (BIZ-136 run 9): whether this list caps its own height and scrolls.
+// True in the desktop popover, which is anchored and must not grow down the
+// page. FALSE in the mobile sheet, where the sheet itself is the scroll region
+// — a capped list inside a scrolling sheet is two scrollers stacked, and a
+// thumb landing on the list scrolls the list while a thumb two pixels outside
+// it scrolls the sheet, which is the same gesture doing different things.
+const LensList = ({ label, options, value, onPick, bounded = true }) => {
   const refs = React.useRef([]);
   const onKey = useLensRadioKeys(options, value, onPick, refs);
   return (
     // No bottom padding: a half-cut row has to be cut BY the container edge to
     // read as "more below". Ten pixels of white under the slice read as a
-    // rendering fault instead.
-    <div style={{ padding: '6px 10px 0' }}>
+    // rendering fault instead. In the sheet the list runs to its natural end,
+    // so it takes the normal bottom pad back.
+    <div style={{ padding: bounded ? '6px 10px 0' : '6px 10px 4px' }}>
       <LensLabel>{label}</LensLabel>
       <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
         display: 'flex', flexDirection: 'column', gap: 1,
         // 4 full 44px rows + a deliberately half-cut fifth, so a circle with more
         // contributors than fit SHOWS that it has more. A round multiple of the
         // row height ends flush and reads as a complete list.
-        maxHeight: 202, overflowY: 'auto',
+        ...(bounded ? { maxHeight: 202, overflowY: 'auto' } : null),
       }}>
         {options.map((o, i) => {
           const on = o.id === value;
@@ -341,7 +355,7 @@ const CIRC_DENSITY_OPTIONS = [
 // window.CIRC_SAVED_LENS_OPTIONS ⇒ `showSavedGroup` below is false regardless
 // of what `savedMode` says, so a stale 'lens' mode degrades to exactly the
 // panel that shipped before this reading existed — no throw, no dead group.
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, savedMode = 'bar' }) => {
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, savedMode = 'lens' }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   // Under Reading A (BIZ-136 run 7) saved IS one of this door's narrowings, so
@@ -386,10 +400,43 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
     return () => document.removeEventListener('mousedown', onDoc);
   }, [open, onOpenChange]);
 
+  // Escape on the WINDOW, not only on the panel (run 9, from the review).
+  // AddReveal binds it this way and the sheet should match: the panel's own
+  // `onKeyDown` only fires while focus is inside it, and a member who has
+  // tapped the scrim's edge or whose focus has drifted has no key out of a
+  // modal sheet. Harmless for the popover, which is why it is not branched.
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') close(true); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   const close = (refocus) => {
     onOpenChange(false);
     if (refocus && btnRef.current) btnRef.current.focus({ preventScroll: true });
   };
+
+  // ---- Mount transition, mobile only (BIZ-136 run 9) -----------------------
+  // Copied from AddReveal (feed.jsx) rather than written fresh: the same
+  // two-frame rAF to let the browser paint the off-screen position before the
+  // transform runs, and the same 240ms hold so the sheet SLIDES OUT instead of
+  // vanishing. An entry animation with no exit is one of the cheapest tells
+  // there is, and this app already had the answer in its own codebase.
+  const [render, setRender] = React.useState(open);
+  const [shown, setShown] = React.useState(false);
+  React.useEffect(() => {
+    if (open) {
+      setRender(true);
+      let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
+      return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+    }
+    setShown(false);
+    if (!isMobile) { setRender(false); return; }
+    const t = setTimeout(() => setRender(false), 240);
+    return () => clearTimeout(t);
+  }, [open, isMobile]);
 
   // `face` is what the row's avatar draws (run 4, on Joe's note of 2026-09-01
   // 07:39 and the run-3 design review's independent finding that the list was
@@ -469,22 +516,43 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
         <CircLensIcon active={active} />
       </button>
 
-      {open && isMobile && (
-        // The panel stays a popover at this size rather than becoming a sheet,
-        // but it must not float over live cards with nothing behind it: the
-        // scrim says the feed is not the thing being touched. A full bottom
-        // sheet is the convention here and is the better answer — recorded for
-        // the elegance pass rather than built late in this slice.
+      {render && isMobile && (
+        // The scrim now fades WITH the sheet rather than appearing instantly
+        // over it — same `--duration-slow` opacity as AddReveal's.
         <div onClick={() => close(false)} aria-hidden="true" style={{
-          position: 'fixed', inset: 0, background: 'var(--color-scrim)', zIndex: 59,
+          // 118/119, raised from 59/60 in run 9 (design review found the green
+          // FAB painting on top of the scrimmed sheet).
+          // THE RAISE ALONE DOES NOT FIX IT, and the reason is worth keeping:
+          // this panel lives inside the tab bar, which is `position: sticky`
+          // with `zIndex: 49` (shell.jsx) — a stacking context. Every z-index
+          // in here is therefore resolved INSIDE that context, so 119 competes
+          // with its siblings and the whole context still sits at 49, below
+          // the FAB's 80. No number written here can win. The FAB is suppressed
+          // at its own render site instead (main.jsx), which is the right
+          // behaviour rather than a workaround: a compose button should not be
+          // tappable under a modal scrim whichever order they paint in.
+          // Kept at 118/119 because the ordering against its own siblings is
+          // still correct, and below AddReveal's 120/121 by intent.
+          position: 'fixed', inset: 0, background: 'var(--color-scrim)', zIndex: 118,
+          opacity: shown ? 1 : 0,
+          transition: 'opacity var(--duration-slow) ease-in-out',
         }} />
       )}
 
-      {open && (
+      {render && (
         <div
           ref={panelRef}
           id="circ-lens-panel"
-          role="group"
+          // Run 9, from the review. The sheet took AddReveal's visual grammar
+          // and not its SEMANTICS: a scrimmed modal sheet that called itself a
+          // `group` while its own trigger declared `aria-haspopup="dialog"`.
+          // To a screen reader the feed behind the scrim stayed reachable by
+          // swipe — and swipe navigation fires no blur, so the one thing that
+          // closed the panel on leaving it never fired either. As a popover
+          // `group` was defensible; behind a scrim it is not, so the role
+          // follows the container rather than being one answer for both.
+          role={isMobile ? 'dialog' : 'group'}
+          aria-modal={isMobile ? true : undefined}
           tabIndex={-1}
           aria-label="View options"
           onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); close(true); } }}
@@ -496,8 +564,70 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               || (btnRef.current && btnRef.current.contains(e.relatedTarget)))) return;
             if (e.relatedTarget) onOpenChange(false);
           }}
-          style={{
-            position: 'absolute', top: '100%', right: 0, zIndex: 60, outline: 'none',
+          // ---- THE CONTAINER, settled in run 9's Form step ------------------
+          // A BOTTOM SHEET wherever this app counts itself mobile; the popover
+          // run 3 shipped, untouched, everywhere else.
+          //
+          // THE BOUNDARY IS `isMobile`, WHICH IS NOT 640px. An earlier draft of
+          // this comment said 640, borrowing the number from the Add reveal's
+          // row in `ui.md`'s adaptive-exceptions table. It is wrong and was
+          // caught in review. `isMobile` (main.jsx) is `winW < 1024`, or forced
+          // true by the app posture and by the launcher's layout override — so
+          // this swaps at 1024, and can be true at any width at all. Two
+          // consequences worth stating rather than discovering: an 800px window
+          // gets the sheet, and a forced-mobile 1440px one gets it too. The
+          // first is deliberate — 1024 is the same boundary `View`'s Grid
+          // option already keys off, so the panel now changes shape on the line
+          // the panel's own contents already changed on. The second is the app
+          // posture behaving as it does for every other sheet it has.
+          //
+          // Why it changed at all: Reading A makes this four groups, and four
+          // groups do not fit. MEASURED at 390x844 rather than estimated — the
+          // popover's cap is min(60vh, 100vh-132px) = 506px and the four
+          // groups render 706px, so 200px would never have been seen. (An
+          // earlier comment here put the content at ~490 from an arithmetic
+          // estimate made before it was built; that number was too small and
+          // did not even support its own conclusion. The measurement stands,
+          // the estimate is gone.) A group has already fallen below this
+          // panel's clipped edge once this fortnight, invisibly, because a
+          // laid-out element reports itself on screen and its text reports
+          // itself in innerText. Only a screenshot caught it.
+          //
+          // Why a sheet is not a new pattern: `ui.md`'s adaptive-exceptions
+          // table already swaps the Add reveal from popover to bottom sheet,
+          // and this file's own scrim was already half of that pattern. The
+          // grammar below is COPIED from AddReveal — 20px top corners,
+          // safe-area bottom padding, the same transform and easing — with the
+          // Swell sheet's `maxWidth` so a 1000px-wide sheet does not stretch
+          // four short controls across a tablet. Run 3 deferred this on the
+          // reading that adding a row to that table is a spec change; the table
+          // lists instances, not a closed set, and the owner has ruled twice
+          // that a spec describing the current state is not an invariant.
+          style={isMobile ? {
+            position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 119, outline: 'none',
+            // Capped and centred, per the Swell sheet (swell-reactions.jsx),
+            // which is this app's other full-width sheet and already does this.
+            maxWidth: 520, margin: '0 auto',
+            background: 'var(--color-surface)',
+            borderTopLeftRadius: 20, borderTopRightRadius: 20,
+            boxShadow: 'var(--shadow-overlay)',
+            // Bottom pad raised from `--space-3` in run 9 (design review): the
+            // last row sat about 20px off the screen edge, which puts "Former
+            // member" under a handset's home indicator. `--space-5` plus the
+            // safe-area inset, which is what AddReveal's own sheet uses.
+            padding: '0 0 calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
+            // ONE scroll region, which is the second thing four groups broke.
+            // The popover scrolled AND `Added by` scrolled inside it — a
+            // scroller nested in a scroller, which Linear's own display popover
+            // never does. Here the sheet is the only thing that scrolls and the
+            // contributor list is uncapped (see LensList's `bounded`), so a
+            // thumb dragging anywhere moves one list, not whichever of two it
+            // happened to land on.
+            maxHeight: 'calc(100vh - 96px)', overflowY: 'auto',
+            transform: shown ? 'translateY(0)' : 'translateY(100%)',
+            transition: 'transform var(--duration-slow) var(--ease-quiet)',
+          } : {
+            position: 'absolute', top: '100%', right: 0, zIndex: 119, outline: 'none',
             // Wide enough that "Comfortable | Compact | Grid" reads in the
             // segmented control without truncating.
             //
@@ -510,24 +640,48 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // label to "Comfort…" instead, which is not better. The honest fix
             // is the width: the comment above has always claimed this panel is
             // wide enough for three, and since run 5 added Grid it has not been.
-            // Desktop only, because `isMobile` filters Grid out entirely, so at
-            // 390 the group is still two options in the panel run 3 shipped —
-            // untouched, which also keeps this run's own comparison honest.
             // It is the minWidth that has to move, not the max: the panel sizes
             // to its content, and its content never asks for more than 260, so
             // raising the ceiling alone changed nothing on screen.
-            minWidth: isMobile ? 260 : 340, maxWidth: isMobile ? 300 : 340,
+            // Both were `isMobile ? … : …` ternaries until run 9; this branch
+            // is unreachable while `isMobile`, so the mobile halves were dead
+            // conditions reading as live ones.
+            minWidth: 340, maxWidth: 340,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
             // No bottom padding either — the contributor list's half-cut row
             // must meet the panel's own edge, or the "there is more" cut reads
             // as clipping. Groups carry their own top spacing.
             padding: '4px 0 0', outline: 'none',
-            // 60vh normally, but never floor-to-ceiling at 390 — the same
-            // 132px fold margin the trigger's own comment used to reach for.
-            maxHeight: 'min(60vh, calc(100vh - 132px))', overflowY: 'auto',
+            // 72vh, raised from 60vh in run 9, and measured rather than
+            // chosen. The fourth group took the panel's content to 531px
+            // against a 60vh cap of 480 at 1280x800 — so the panel scrolled
+            // AND `Added by` scrolled inside it, which is the same
+            // nested-scroller defect the sheet was built to remove on mobile,
+            // reappearing on desktop three groups later. At 72vh the cap is
+            // 576, the outer box fits its content, and the contributor list is
+            // once again the only thing on this surface that scrolls.
+            // The `100vh - 132px` term is untouched and still governs a short
+            // window, where both scrolling is the honest fallback.
+            maxHeight: 'min(72vh, calc(100vh - 132px))', overflowY: 'auto',
           }}
         >
+          {/* The sheet's grab handle (run 9, from the design review). It took
+              AddReveal's geometry and none of its container identity — no
+              handle, no title, no close — while occupying 706 of 844px, so it
+              read as content that had slid up rather than as one of this app's
+              sheets, with a 137px strip of scrim as the only visible way out.
+              A handle answers that in four pixels of height and NO COPY, which
+              is the right trade for a panel whose whole history is refusing
+              chrome: a title bar would have added a heading to a surface whose
+              four group labels already say what it is. Decorative and inert —
+              the scrim, Escape and outside-tap are the real exits, and this is
+              the mark that says so. */}
+          {isMobile && (
+            <div aria-hidden="true" style={{ padding: '8px 0 2px', display: 'flex', justifyContent: 'center' }}>
+              <span style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--color-border-1)' }} />
+            </div>
+          )}
           {/* Each group is conditional on its own data, so removing an engine
               module leaves a panel that offers only what still works. Density
               (feed.jsx) has no such module to drop, so View is unconditional. */}
@@ -550,8 +704,14 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               still separates the fixed controls from the contributor list.
               The "only you" distinction rides on the caption, as ruled — the
               position is about being seen at all, not about emphasis. */}
+          {/* Labelled `Show`, not `Saved` (run 9, from the design review). With
+              options `Everything / Saved` a group called `Saved` had its own
+              option for a name, so the applied state read back as
+              "Saved: Saved". `Show` is the question the two options answer, and
+              it keeps the caption anchored to the word `saved` where it
+              belongs — in the sentence that says only you can see it. */}
           {showSavedGroup && (
-            <LensSegmented label="Saved" caption={window.CIRC_SAVED_LENS_CAPTION}
+            <LensSegmented label="Show" caption={window.CIRC_SAVED_LENS_CAPTION}
               value={saved ? 'only' : 'all'}
               onPick={(id) => onSaved(id === 'only')}
               options={window.CIRC_SAVED_LENS_OPTIONS} />
@@ -559,7 +719,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           {whoOptions.length > 1 && (
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 10px' }} aria-hidden="true" />
-              <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} />
+              <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
             </React.Fragment>
           )}
         </div>
@@ -624,9 +784,17 @@ const LensChip = ({ label, onClear, clearLabel, onReopen, reopenLabel }) => {
             control it is exactly what it is for, and it is the conventional
             encoding of a split button rather than a device invented here.
             Inset 9px top and bottom so it never meets the rounded corners. */}
+        {/* Run 9, from the design review, which sampled it: at
+            --color-border-2 this line was FAINTER than the chip's own border,
+            on a fill sitting 2% off the page ground — so the one element
+            telling a member their view is narrowed was the lowest-contrast
+            object on the screen. Fine on a monitor, gone on a phone in
+            daylight, and the phone is where this gets read. Promoted to
+            --color-border-1, the chip's own border token, so the split is at
+            least as legible as the thing it divides. */}
         <span aria-hidden="true" style={{
           width: 1, alignSelf: 'stretch', flexShrink: 0,
-          background: 'var(--color-border-2)', margin: '9px 0',
+          background: 'var(--color-border-1)', margin: '9px 0',
         }} />
         <button type="button" onClick={onClear} aria-label={clearLabel} style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -704,7 +872,7 @@ const LensChips = ({ order, who, onOrder, onWho, saved, onSaved, isMobile,
   // second target that reopens the one door all of them now share.
   // `onReopenLens` is main.jsx's own `setSortMenuOpen(true)` — opened at
   // rest, never scrolled to a group.
-  savedMode = 'bar', onReopenLens }) => {
+  savedMode = 'lens', onReopenLens }) => {
   const active = circLensActive(order, who);
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
