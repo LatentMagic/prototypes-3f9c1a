@@ -51,7 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-    setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen,
+    setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -301,7 +301,7 @@ function circStateContext(api) {
   // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
   // different thing from what pool was scoped. Omitted, the displayed tab is
   // `tab` itself, exactly as before this param existed.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -358,6 +358,23 @@ function circStateContext(api) {
     // ?state= URLs, which are exactly the links Joe follows.
     setSearchOpen((searchOpen || query) ? { [space + ':' + keyTab]: true } : {});
     if (setSavedMode) setSavedMode(savedMode);
+    // The pointed card (BIZ-136 wild feature — sharing). `pointed` is an INDEX
+    // into the staged tab's own sorted order, not an item id, for the same
+    // reason `saved` is: an id is a seed detail that moves the day the seed
+    // does, and every other index in this stager is positional.
+    // Always fully replaced, so an entry that says nothing about sharing lands
+    // with nothing pointed at rather than inheriting the last entry's card.
+    if (setPointedId) setPointedId(null);
+    if (setPointedId && pointed !== null) {
+      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
+      const scoped = ((sp && sp.items) || []).filter(i => (keyTab === 'read' ? i.read : !i.read));
+      const sortedScope = window.circSortItems ? window.circSortItems(scoped, order) : scoped;
+      const target = sortedScope[pointed];
+      // After the tab and circle writes settle, for the same reason the lens
+      // panel's own open is deferred: main.jsx clears transient view state on a
+      // tab or circle change, and an entry sets both.
+      if (target) setTimeout(() => setPointedId(target.id), 80);
+    }
     const shownTab = finalTab || tab;
     setCurrentId(space); setTab(shownTab); setLoadingFeed(false); enterSpace(space);
     setTab(shownTab);
@@ -419,11 +436,33 @@ function circStateContext(api) {
     setCurrentId('sp-one'); setTab('active'); setRoute('space'); setLoadingFeed(false);
   };
 
+  // Arriving on a shared card address (BIZ-136 wild feature). ONE stager for
+  // both ends, because in the product they are one route: the address means
+  // "this card", and the follower's own read-state decides what they meet.
+  // Staging them from two different helpers would have made them look like two
+  // features, which is the thing the design is arguing against.
+  const stageSharedCard = ({ space = 'sp-backend', read = false, index = 1 } = {}) => {
+    stageSort({ space, tab: read ? 'read' : 'active', order: 'newest', pointed: read ? null : index });
+    if (!read) return;
+    // The read branch lands on Overview, which is the candidate module's own
+    // route. Deferred past the tab and circle writes for the same reason every
+    // other post-stage act here is: main.jsx clears transient view state when
+    // either changes.
+    setTimeout(() => {
+      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
+      const scoped = ((sp && sp.items) || []).filter(i => i.read);
+      const sorted = window.circSortItems ? window.circSortItems(scoped, 'newest') : scoped;
+      const target = sorted[index];
+      const C = window.CircCandidate;
+      if (target && C && C.goToCard) C.goToCard({ id: target.id });
+    }, 160);
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageNotFound, stageHome,
+    stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
   };
 }
 
@@ -481,10 +520,13 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
   // the sort. Open them in order \u2014 the waterline is there under newest-first and
-  // gone under oldest-first, because "Earlier" names the older pile beneath it
-  // and under oldest-first the older pile is above.
+  // the SAME line in both, since 2026-09-07. It used to be gone under
+  // oldest-first — `Earlier` named the older pile beneath it, and the position
+  // helper matched on row 0 in a reversed list and returned -1. The label now
+  // names the boundary rather than a side, so the line survives the flip and
+  // says where the backlog ends and what landed while you were away begins.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 withheld under oldest first', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 the same line, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
@@ -627,6 +669,19 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-no-circles', label: 'Home \u2014 no circles yet (NoSpaceHome)', stage: (c) => c.stageHome({ empty: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
+  // ---- Sharing a card (wild feature, 2026-09-07) --------------------------
+  // The two ends of one address. A shared card link means "this card", and what
+  // the follower meets depends on THEIR OWN read-state — not on anything the
+  // sharer chose. Open them as a pair; the difference between them is the whole
+  // design.
+  //
+  // The third end has no entry of its own on purpose: a follower who is not in
+  // the circle, or whose card has been deleted for everyone, meets
+  // `not-found-home` directly above. That page already refuses to say which of
+  // those it was, which is the privacy answer, and a second copy of it staged
+  // under a sharing label would imply it is a different screen.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-unread', label: 'Shared card \u2014 they have not read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-read', label: 'Shared card \u2014 they have read it (Overview)', stage: (c) => c.stageSharedCard({ read: true }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

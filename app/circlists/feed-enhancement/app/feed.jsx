@@ -69,12 +69,12 @@ const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.leng
 // the image column. `thumb: 0` is unused once `grid` is true (showImage is
 // forced off below) but kept honest rather than left undefined.
 const circCardMetrics = (density) => (density === 'grid'
-  ? { pad: 'var(--space-4) var(--space-5)', thumb: 0, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 3, grid: true }
+  ? { pad: 'var(--space-4) var(--space-5)', thumb: 0, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 3, grid: true }
   : density === 'compact'
-  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
-  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
+  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
+  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved }) => {
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
@@ -150,10 +150,15 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
   }
 
   return (
-    <article className="circ-card" style={{
+    // `pointed` — this is the card a shared address sent the member to. Drawn
+    // with the app's own "this one" language (a 2px accent left bar, as the
+    // rail and the lens list both use), inset so the card does not grow and
+    // nothing beside it moves. Nothing else about the card changes.
+    <article className="circ-card" data-card-id={item.id} style={{
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)', padding: m.pad,
       display: 'flex', flexDirection: 'column', height: m.grid ? '100%' : undefined,
+      ...(pointed && window.circPointedStyle ? window.circPointedStyle() : null),
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
           the only open targets; nothing else in the card opens. */}
@@ -202,6 +207,18 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
+          {/* [share] [state] [way] [delete] — one grammar across both tabs,
+              reading left to right from least to most consequential. Share
+              leads because it is the only action here that changes nothing:
+              it neither marks, nor keeps, nor removes. Active has no way
+              through, which is the read-gate showing in the row rather than an
+              omission. (BIZ-136 wild feature; deletable — no card-share.jsx,
+              no button, and the row is exactly what it was.) */}
+          {window.CardShareButton && (
+            <window.CardShareButton item={item} space={space} announce={onAnnounce}
+              className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+              size={m.actionIcon.share} />
+          )}
           {tab === 'read'
             ? (
               <React.Fragment>

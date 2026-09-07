@@ -440,6 +440,69 @@ const CircApp = () => {
   // visit stamped the mark, it draws no line.
   useEffect(() => { if (route === 'space' && currentId) openVisit(currentId); }, []);
 
+  // ---- Arriving on a shared card (BIZ-136 wild feature) --------------------
+  // `?card=<id>` is the address a share hands over. Resolved ONCE at mount,
+  // against the member's own state — which is the whole design: the address
+  // means "this card", and what this card looks like depends on whether the
+  // person following it has read it.
+  //
+  //   not a member / deleted / no such card ──▶ not-found, which never says
+  //       which of those it was (hld.md Decision-44). The privacy answer needed
+  //       no new screen.
+  //   they have read it                     ──▶ Overview, the card's own page.
+  //   they have not                         ──▶ its circle, Active, pointed at.
+  //
+  // A staged `?state=` wins outright: that is the register's harness driving the
+  // app, and two boot resolutions racing would make every staged state a
+  // coin toss. Deletable — no card-share.jsx, no `circReadCardParam`, and an
+  // incoming address falls through to the ordinary boot.
+  const [pointedId, setPointedId] = useState(null);
+  useEffect(() => {
+    if (!window.circReadCardParam) return;
+    try { if (new URL(window.location.href).searchParams.get('state')) return; } catch (e) { return; }
+    const id = window.circReadCardParam();
+    if (!id) return;
+    const sp = spacesRef.current.find(s => (s.items || []).some(i => i.id === id));
+    const item = sp && (sp.items || []).find(i => i.id === id);
+    if (!sp || !item) { setRoute('not-found'); return; }
+    setCurrentId(sp.id);
+    if (item.read) {
+      // Overview is reachable from a read card, so a follower who has read it
+      // lands on the conversation. Guarded on the candidate module being
+      // present, exactly as every other consumer of it is.
+      const C = window.CircCandidate;
+      setTab('read');
+      if (C && C.goToCard) { C.goToCard({ id }); return; }
+    }
+    setTab('active');
+    setRoute('space');
+    setPointedId(id);
+  }, []);
+
+  // The point clears the moment the member acts anywhere — it says "this is the
+  // one you were sent", which stops being news as soon as they have engaged
+  // with the screen. It is never persisted: a reload does not re-point, because
+  // the address it came from was cleaned out of the bar when it was read.
+  const clearPointed = useCallback(() => setPointedId(null), []);
+
+  // Bring it into view. A member sent to a card 30 rows down should not have to
+  // find it — that is the one thing an address has to do that scrolling to the
+  // top does not. Deferred to the frame after the feed has settled, because the
+  // card does not exist in the document until then, and `block: 'center'` so it
+  // lands mid-screen with the feed visible around it rather than jammed under
+  // the tab bar. Runs once per point; smooth unless the member asked for less
+  // motion, in which case it jumps, like every other movement in this app.
+  useEffect(() => {
+    if (!pointedId || loadingFeed) return;
+    const t = setTimeout(() => {
+      const el = document.querySelector('[data-card-id="' + (window.CSS && CSS.escape ? CSS.escape(pointedId) : pointedId) + '"]');
+      if (!el) return;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }, 120);
+    return () => clearTimeout(t);
+  }, [pointedId, loadingFeed]);
+
   // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
   // while the member sits on Read is pointing them AT Active, so it has to survive
   // until they arrive. An effect, not a branch inside enterSpace, so every way in
@@ -741,7 +804,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-        setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen,
+        setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1143,18 +1206,30 @@ const CircApp = () => {
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
       //
-      // NOT DRAWN under oldest-first. circDividerIndex finds the first item
-      // at-or-below the mark, which only locates the line correctly in a
-      // newest-first list; and "Earlier" names the older pile BENEATH the line,
-      // which under oldest-first sits above it. Recomputing the index would fix
-      // the position and leave the word lying. Suppression is the existing
-      // grammar, not a new one — ui.md Decision-30 already draws nothing for an
-      // empty, single-item, all-new or nothing-new feed and calls the absence
-      // "the calm answer". Newness is not lost with it: the arrival glow below
-      // keys on the item's own timestamp, not its position, so fresh cards
-      // still glow at the foot of an oldest-first feed.
-      const divIdx = (tab === 'active' && order === 'newest')
-        ? window.circDividerIndex(visible, dividerAt) : -1;
+      // DRAWN IN BOTH ORDERS since 2026-09-07, and this is the reversal of a
+      // ruling that stood the whole fortnight. It used to be suppressed under
+      // oldest-first on the reading that `Earlier` named the older pile beneath
+      // the line and would point the wrong way once the list flipped.
+      //
+      // Two things were wrong with that. The label was a SIDE label, and the
+      // answer to a side label that cannot survive a reversal is to name the
+      // boundary instead — `Last visit`, true from either end. And the position
+      // was broken underneath the wording: `circDividerIndex` matched on row 0
+      // in a reversed list and returned -1, so even a correctly-worded line
+      // would not have drawn. Both are fixed; the helper now takes the order.
+      //
+      // What this buys, in the member's terms: tapping Oldest first gives a
+      // feed that starts at the backlog and ends at what landed while they were
+      // away, with the line saying where one becomes the other. Before, it gave
+      // the same list with nothing marking that at all.
+      //
+      // Bounded by the fact that the order does not persist (sort resets to
+      // newest-first on reload, ruled in the sort spec): new links sitting at
+      // the foot of the feed is a within-sitting posture, never a state a member
+      // returns to weeks later. **If sort ever becomes persistent, this
+      // reopens** — that is the condition the ruling was ratified on.
+      const divIdx = (tab === 'active')
+        ? window.circDividerIndex(visible, dividerAt, order === 'newest') : -1;
       const feed = (feedError && window.FeedError) ? (
         // Load-error takes precedence over every other body state, loading
         // included: a feed that failed to fetch has no waterline to draw (it
@@ -1270,17 +1345,27 @@ const CircApp = () => {
               ? <div style={gridSpan}><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
               : visible.length === 0 ? <div style={gridSpan}><EmptyState tab={cardTab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
+                const pointed = pointedId === item.id;
                 const card = <FeedCard item={item} tab={cardTab} user={user} showTime density={effectiveDensity}
-                  onOpen={openLink}
-                  onMarkRead={(it) => setReacting(it)}
+                  onOpen={(it) => { clearPointed(); openLink(it); }}
+                  onMarkRead={(it) => { clearPointed(); setReacting(it); }}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
-                  onToggleSaved={toggleSaved} />;
+                  onToggleSaved={toggleSaved}
+                  space={space} onAnnounce={announceOnce} pointed={pointed} />;
                 const row = (Cand && Cand.CardRow)
                   ? <Cand.CardRow item={item} tab={cardTab} api={candApi}>{card}</Cand.CardRow>
                   : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
-                const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
+                //
+                // A card a shared address pointed at glows too, and deliberately
+                // reuses this one rather than minting a second treatment: both
+                // mean LOOK HERE, the glow is already one-shot and already
+                // reduced-motion aware, and a card that is both new and shared
+                // glows once rather than twice. The accent bar is what makes the
+                // two distinguishable at rest — the glow resolves to nothing.
+                const fresh = pointed
+                  || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
                 return (
                   <React.Fragment key={item.id}>
                     {i === divIdx && <div style={gridSpan}><FeedDivider /></div>}
