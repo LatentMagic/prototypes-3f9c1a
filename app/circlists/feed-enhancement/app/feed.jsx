@@ -69,15 +69,111 @@ const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.leng
 // the image column. `thumb: 0` is unused once `grid` is true (showImage is
 // forced off below) but kept honest rather than left undefined.
 const circCardMetrics = (density) => (density === 'grid'
-  ? { pad: 'var(--space-4) var(--space-5)', thumb: 0, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 3, grid: true }
+  ? { pad: 'var(--space-4) var(--space-5)', thumb: 0, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 3, grid: true }
   : density === 'compact'
-  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
-  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
+  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
+  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
 const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
+
+  // ---- Trailing kebab menu (run 10, BIZ-136: "[posture] [⋮]") --------------
+  // Copies spaces.jsx's per-row kebab (same glyph, same open/close, same aria)
+  // rather than inventing a menu. `window.circCardRowLegacy` is the escape
+  // hatch (requirement 11): true renders exactly the old crowded row and this
+  // whole apparatus sits unused.
+  const legacyRow = !!window.circCardRowLegacy;
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuStyle, setMenuStyle] = React.useState(null);
+  const triggerRef = React.useRef(null);
+  const menuRef = React.useRef(null);
+  const closeMenu = () => setMenuOpen(false);
+  const menuLabel = item.title || item.source || 'this link';
+
+  // Position against the visible viewport, not `vh` (requirement 4) — measured
+  // AFTER the menu mounts (off-screen, invisible) so its real height is known,
+  // in a useLayoutEffect so the correction lands before paint and nothing
+  // flickers. Flips above the trigger when it would run past the visible
+  // bottom; clamps horizontally so it never sits off screen.
+  React.useLayoutEffect(() => {
+    if (!menuOpen) { setMenuStyle(null); return; }
+    const trigger = triggerRef.current;
+    const menu = menuRef.current;
+    if (!trigger || !menu) return;
+    const tRect = trigger.getBoundingClientRect();
+    const mRect = menu.getBoundingClientRect();
+    const visibleH = window.visualViewport?.height ?? window.innerHeight;
+    const visibleW = window.visualViewport?.width ?? window.innerWidth;
+    const margin = 12;
+    let top = tRect.bottom + 4;
+    if (top + mRect.height > visibleH - margin) top = tRect.top - 4 - mRect.height;
+    if (top < margin) top = margin;
+    let left = tRect.right - mRect.width;
+    if (left < margin) left = margin;
+    if (left + mRect.width > visibleW - margin) left = visibleW - margin - mRect.width;
+    setMenuStyle({ top, left });
+  }, [menuOpen]);
+
+  // Focus the first item once positioned; return focus to the trigger on close
+  // (Escape, outside click, or after any item runs).
+  const wasMenuOpen = React.useRef(false);
+  React.useEffect(() => {
+    if (menuOpen && menuStyle && menuRef.current) {
+      const first = menuRef.current.querySelector('[role^="menuitem"]');
+      if (first) first.focus();
+    }
+    if (!menuOpen && wasMenuOpen.current && triggerRef.current) {
+      triggerRef.current.focus({ preventScroll: true });
+    }
+    wasMenuOpen.current = menuOpen;
+  }, [menuOpen, menuStyle]);
+
+  // Outside click, Escape, and arrow-key movement between items.
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const onDocDown = (e) => {
+      if (triggerRef.current && triggerRef.current.contains(e.target)) return;
+      if (menuRef.current && menuRef.current.contains(e.target)) return;
+      closeMenu();
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { closeMenu(); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = menuRef.current ? Array.from(menuRef.current.querySelectorAll('[role^="menuitem"]')) : [];
+      if (!items.length) return;
+      e.preventDefault();
+      const idx = items.indexOf(document.activeElement);
+      const next = e.key === 'ArrowDown'
+        ? (idx < 0 ? 0 : (idx + 1) % items.length)
+        : (idx < 0 ? items.length - 1 : (idx - 1 + items.length) % items.length);
+      items[next].focus();
+    };
+    document.addEventListener('mousedown', onDocDown);
+    window.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDocDown); window.removeEventListener('keydown', onKey); };
+  }, [menuOpen]);
+
+  // Same portal target as SwellDoor (swell-reactions.jsx): the forced-mobile
+  // frame's own screen element when present, else <body>. A card lives deep
+  // inside a scrolled, `container-type: inline-size` list — portalling is what
+  // takes the menu out of that ancestor's box for position:fixed math, the
+  // same reasoning that moved the reaction door out of the card.
+  const menuPortalTarget = () => (typeof document !== 'undefined'
+    && (document.querySelector('.circ-phone-screen') || document.body)) || null;
+
+  // minHeight 44, not spaces.jsx's 40 (ui.md's 44px floor for a primary
+  // control, restated ui.md:113 — a menu item you tap to delete a link is
+  // one, not a dense secondary display). spaces.jsx's own member-row items
+  // are 40 and pre-date this app going through this floor at every
+  // breakpoint; this build stays out of that gap rather than copying it in.
+  const menuItemBase = {
+    display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+    background: 'transparent', border: 0, cursor: 'pointer', padding: '11px 10px', minHeight: 44,
+    borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
+    color: 'var(--color-fg-1)', whiteSpace: 'nowrap',
+  };
 
   const former = /former member/i.test(item.attribution);
   // The current user always reads lower-case "you" in the shared view; normalise
@@ -142,7 +238,12 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{attribution}</span>
           <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull, opacity: 0.4, pointerEvents: 'none' }}>
             <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}><Icon name="check" size={m.actionIcon.check} /></span>
-            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}><Icon name="trash" size={m.actionIcon.trash} /></span>
+            {/* Ghost row wears whichever shape the real row wears (requirement:
+                "bring it to [tick] [⋮] ... so it does not become the one row
+                still showing the old shape"). */}
+            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}>
+              <Icon name={legacyRow ? 'trash' : 'more-vertical'} size={legacyRow ? m.actionIcon.trash : m.actionIcon.more} />
+            </span>
           </div>
         </div>
       </article>
@@ -201,59 +302,168 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
           {when && (
             <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{when}</span>
           )}
+          {/* Saved mark (run 10, requirement 9) — the one thing that must not
+              be lost with the Save button moving into the menu. Not
+              interactive: nothing in this line is tappable, which is what
+              reads it as a mark rather than a broken button. Zero cost for
+              any member who has saved nothing. */}
+          {/* Drawn in the SAME ink as the age it follows, never the accent.
+              The accent was legal while this was a button — a control's active
+              state — and stopped being legal the moment it became a mark:
+              ui.md:40 reserves it for actions, active states and focus, "never
+              status or decoration", and ui.md:132 forbids colour as the sole
+              channel. Shape carries the state; the hidden text carries it in
+              the other channel. It also keeps Decision-32's attribution line
+              falling away rather than ending on its brightest pixel. */}
+          {item.saved && (
+            <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', color: 'var(--color-fg-3)' }}>
+              <Icon name="bookmark-filled" size={12} />
+              <span className="circ-vh">, saved</span>
+            </span>
+          )}
         </div>
-        {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
+        {/* Edge-locked actions (BIZ-80 alignment study). The trailing action's
             optical edge is pulled onto the image's right edge via the -13 nudge;
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
-          {/* [share] [state] [way] [delete] — one grammar across both tabs,
-              reading left to right from least to most consequential. Share
-              leads because it is the only action here that changes nothing:
-              it neither marks, nor keeps, nor removes. Active has no way
-              through, which is the read-gate showing in the row rather than an
-              omission. (BIZ-136 wild feature; deletable — no card-share.jsx,
-              no button, and the row is exactly what it was.) */}
-          {window.CardShareButton && (
-            <window.CardShareButton item={item} space={space} announce={onAnnounce}
-              className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-              size={m.actionIcon.share} />
-          )}
-          {tab === 'read'
-            ? (
-              <React.Fragment>
-                {/* Save (feed-enhancement candidate build) — READ ONLY, a ruled
-                    product decision, so it never appears on the Active branch
-                    below. Leftmost of the cluster: [save] [SwellDoor] [delete].
-                    ONE stable accessible name across both states (the correct
-                    ARIA-toggle pattern) — the FORM changes (outline -> filled),
-                    the name does not. onToggleSaved is optional so a caller that
-                    hasn't wired it (e.g. the discourse surface's own FeedCard
-                    mount) simply doesn't get the button, same guard idiom as
-                    every other deletable-aid hook in this app. */}
-                {onToggleSaved && (
-                  <button
-                    className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-                    onClick={() => onToggleSaved(item)}
-                    aria-pressed={!!item.saved}
-                    aria-label="Save this link"
-                    title="Save this link"
-                    style={{ color: item.saved ? 'var(--color-accent)' : 'var(--color-fg-3)' }}
-                  >
-                    <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={m.actionIcon.bookmark} />
+          {legacyRow ? (
+            /* window.circCardRowLegacy escape hatch (requirement 11) — exactly
+               today's crowded row, untouched, so the ruled row below can be
+               overruled by looking rather than by argument.
+               [share] [state] [way] [delete] — one grammar across both tabs,
+               reading left to right from least to most consequential. Share
+               leads because it is the only action here that changes nothing:
+               it neither marks, nor keeps, nor removes. Active has no way
+               through, which is the read-gate showing in the row rather than an
+               omission. (BIZ-136 wild feature; deletable — no card-share.jsx,
+               no button, and the row is exactly what it was.) */
+            <React.Fragment>
+              {window.CardShareButton && (
+                <window.CardShareButton item={item} space={space} announce={onAnnounce}
+                  className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+                  size={m.actionIcon.share} />
+              )}
+              {tab === 'read'
+                ? (
+                  <React.Fragment>
+                    {onToggleSaved && (
+                      <button
+                        className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+                        onClick={() => onToggleSaved(item)}
+                        aria-pressed={!!item.saved}
+                        aria-label="Save this link"
+                        title="Save this link"
+                        style={{ color: item.saved ? 'var(--color-accent)' : 'var(--color-fg-3)' }}
+                      >
+                        <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={m.actionIcon.bookmark} />
+                      </button>
+                    )}
+                    <SwellDoor item={item} />
+                  </React.Fragment>
+                )
+                : (
+                  <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+                    <Icon name="check" size={m.actionIcon.check} />
                   </button>
                 )}
-                <SwellDoor item={item} />
-              </React.Fragment>
-            )
-            : (
-              <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
-                <Icon name="check" size={m.actionIcon.check} />
+              <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
+                <Icon name="trash" size={m.actionIcon.trash} />
               </button>
-            )}
-          <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
-            <Icon name="trash" size={m.actionIcon.trash} />
-          </button>
+            </React.Fragment>
+          ) : (
+            /* [posture] [⋮] — one grammar, two visible targets, every surface
+               (run 10, BIZ-136 build brief A). The posture action is the
+               card's one high-frequency act and stays visible; everything
+               occasional (Share, Save, Delete) goes behind the kebab, ruled
+               32's Read-only Save included, destructive last. */
+            <React.Fragment>
+              {tab === 'read'
+                ? <SwellDoor item={item} />
+                : (
+                  <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+                    <Icon name="check" size={m.actionIcon.check} />
+                  </button>
+                )}
+              {/* Set apart from the posture slot, in weight and in distance.
+                  The design review measured the Read row as two dot-triads of
+                  the same ink 44px apart — the way-through disc and this — and
+                  was right that more gap alone leaves two marooned marks
+                  rather than one action plus card chrome. So the separation is
+                  the app's own mechanism instead: hierarchy by weight, never
+                  colour. This drops a step to fg-3 while the posture action
+                  keeps fg-2, and takes a real gap so the pair reads as two
+                  zones. NOT a drawn hairline — this row's own rule is that the
+                  hover inset carries separation.
+                  The stronger answer is the review's first: lift the menu off
+                  the attribution line to the card's trailing corner, where
+                  Readwise puts it and where card-scoped actions belong. That
+                  is a structural move made late in a run, which is exactly how
+                  the last one shipped a broken container, so it is written up
+                  rather than taken. */}
+              <button ref={triggerRef} type="button"
+                className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-haspopup="menu" aria-expanded={menuOpen}
+                aria-label={'More actions for ' + menuLabel}
+                style={{ color: 'var(--color-fg-3)', marginLeft: m.actionPull ? 4 : 8 }}>
+                <Icon name="more-vertical" size={m.actionIcon.more} />
+              </button>
+              {menuOpen && menuPortalTarget() && ReactDOM.createPortal(
+                <React.Fragment>
+                  {/* Transparent full-screen click-catcher UNDER the menu
+                      (requirement 5) — closes the menu and stops a tap
+                      falling through to the FAB beneath it. position: fixed
+                      on both is what takes them out of the card's own
+                      stacking context (this card sits inside a
+                      `container-type: inline-size` list); a z-index written
+                      inside the card cannot win against the FAB's 80, same
+                      trap run 9's vent recorded for a `position: sticky`
+                      ancestor. */}
+                  <div onClick={closeMenu} aria-hidden="true"
+                    style={{ position: 'fixed', inset: 0, zIndex: 89, background: 'transparent' }} />
+                  <div ref={menuRef} role="menu" aria-label={'Actions for ' + menuLabel}
+                    style={{
+                      position: 'fixed', zIndex: 90, minWidth: 168,
+                      background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+                      borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
+                      visibility: menuStyle ? 'visible' : 'hidden',
+                      top: menuStyle ? menuStyle.top : -9999, left: menuStyle ? menuStyle.left : -9999,
+                    }}>
+                    {window.CardShareMenuItem && (
+                      <window.CardShareMenuItem item={item} space={space} announce={onAnnounce} onDone={closeMenu} />
+                    )}
+                    {tab === 'read' && onToggleSaved && (
+                      /* Save, as a checkable item — ONE stable label across
+                         both states (requirement 8): the state rides in
+                         aria-checked, not the words, same ARIA-toggle
+                         correctness the old button already used. Read-only
+                         (ruling 32), so this never renders on Active. */
+                      <button role="menuitemcheckbox" aria-checked={!!item.saved}
+                        className="circ-menuitem"
+                        onClick={() => { onToggleSaved(item); closeMenu(); }}
+                        style={menuItemBase}>
+                        <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={16}
+                          style={{ color: 'var(--color-fg-2)' }} />
+                        <span style={{ flex: 1 }}>Save</span>
+                        {item.saved && <Icon name="check" size={15} />}
+                      </button>
+                    )}
+                    {/* Ruled off from what precedes it. All three exemplars
+                        separate the destructive item; this app has the token
+                        for it and the row above is otherwise pure white. */}
+                    <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
+                    <button role="menuitem" className="circ-menuitem"
+                      onClick={() => { onDelete(item); closeMenu(); }}
+                      style={{ ...menuItemBase, color: 'var(--color-destructive)' }}>
+                      <Icon name="trash" size={16} /> Delete
+                    </button>
+                  </div>
+                </React.Fragment>,
+                menuPortalTarget()
+              )}
+            </React.Fragment>
+          )}
         </div>
       </div>
     </article>

@@ -22,4 +22,8 @@ window.CIRC_FORCE_GATE = true;
 // entirely, so it restored a state with no talk and no watching and the bar could
 // not appear. Bump this key whenever the seed gains state a returning visitor
 // would otherwise never see.
-window.CIRC_STATE_KEY = 'circ_demo_state_v2';
+// v3: bumped when the seed gained Backend Pod's description (BIZ-136 run 10).
+// A persisted v2 restores a circle with no description, so the home row keeps
+// falling back to the circle's people and the feature is invisible — the exact
+// silent failure this key exists to prevent.
+window.CIRC_STATE_KEY = 'circ_demo_state_v3';

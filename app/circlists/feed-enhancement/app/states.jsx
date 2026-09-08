@@ -61,19 +61,26 @@ function circStateContext(api) {
   // a route, and set only where a state asks for it. Guarded because main.jsx
   // only passes it when app/not-found.jsx is present.
   const clearFeedError = () => { if (setFeedError) setFeedError(false); };
+  // The superseded card row (BIZ-136 run 10) is the second flag that can outlive
+  // the state that set it, for the same reason the load-error can: it is a bare
+  // window global read at render time rather than app state a stager overwrites.
+  // So it is cleared wherever a stager settles a route, exactly as above, and
+  // set only by `stageLegacyRow`. Without this, opening the superseded row and
+  // then any other state leaves every card in the app wearing the old shape.
+  const clearLegacyRow = () => { window.circCardRowLegacy = false; };
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
   const reset = () => {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
-    clearFeedError();
+    clearFeedError(); clearLegacyRow();
   };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setCurrentId(id); setTab('active');
-    clearFeedError();
+    clearFeedError(); clearLegacyRow();
     if (toRoute) setRoute(toRoute); else enterSpace(id);
   };
 
@@ -98,7 +105,7 @@ function circStateContext(api) {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setLoadingFeed(false);
-    clearFeedError();
+    clearFeedError(); clearLegacyRow();
     setRoute('not-found');
   };
 
@@ -458,11 +465,43 @@ function circStateContext(api) {
     }, 160);
   };
 
+  // The card row before run 10 folded it into a menu (BIZ-136 run 10). Kept
+  // reachable rather than argued about: the row went from three actions on
+  // Active and four on Read to two on both, and a swap of a shipped pattern is
+  // overruled by looking at it rather than by reading a ruling. Sets the flag
+  // FeedCard reads; every other stager clears it (see clearLegacyRow above).
+  const stageLegacyRow = ({ tab = 'read' } = {}) => {
+    stageSort({ space: 'sp-backend', tab, order: 'newest', saved: tab === 'read' ? [0, 2] : [] });
+    // After stageSort, which clears it along with every other route settle.
+    setTimeout(() => { window.circCardRowLegacy = true; setDensity(d => d); }, 60);
+  };
+
+  // A circle's description (BIZ-136 run 10). The seed gives two circles one and
+  // leaves the rest without, so the home's fallback is visible with no staging
+  // at all — these two stage the cases the seed cannot: a description at the
+  // full 250-character cap, and the members surface reading one whole.
+  const CIRC_LONG_DESC = 'A place for the long reads none of us get through in a week — systems writing, post-mortems, the occasional essay that has nothing to do with work but everything to do with how we think about it. Drop it here and come back when you have an hour.';
+  const stageCircleDescription = ({ long = false, members = false } = {}) => {
+    setUser(DEFAULT_USER);
+    const base = spaces.length ? spaces : seedSpaces(DEFAULT_USER.email);
+    const s = base.filter((sp) => !/^TEST\b/i.test(sp.name || '')).map((sp) => (sp.id === 'sp-backend'
+      ? { ...sp, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email,
+          ...(long ? { description: CIRC_LONG_DESC } : null) }
+      : sp));
+    setSpaces(s);
+    clearFeedError(); clearLegacyRow();
+    setLoadingFeed(false);
+    if (members) { setCurrentId('sp-backend'); setTab('active'); setRoute('members'); return; }
+    setCurrentId(null); setRoute('home');
+    if (setHomeStripOpen) setHomeStripOpen(true);
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
+    stageLegacyRow, stageCircleDescription,
   };
 }
 
@@ -682,6 +721,23 @@ const CIRC_STATE_REGISTER = [
   // under a sharing label would imply it is a different screen.
   { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-unread', label: 'Shared card \u2014 they have not read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-read', label: 'Shared card \u2014 they have read it (Overview)', stage: (c) => c.stageSharedCard({ read: true }) },
+
+  // The card's action row, folded into one door (BIZ-136 run 10). The row went
+  // from three actions on Active and four on Read to two on both: the posture
+  // action stays out, everything occasional goes behind the kebab. There is no
+  // state that stages the MENU open \u2014 it is opened by a tap, and a fixture that
+  // forced it would be staging an interaction rather than a screen. Tap the
+  // trailing dots on any card in the first two entries to see it.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-active', label: 'The card row \u2014 two actions on Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-read', label: 'The card row \u2014 Read, and the saved mark that stayed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', saved: [0, 2] }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-superseded', label: 'Superseded \u2014 the row before it was folded', stage: (c) => c.stageLegacyRow({ tab: 'read' }) },
+
+  // A circle can say what it is for (BIZ-136 run 10). The seed carries a
+  // description on two circles and none on the rest, so `home-landing` already
+  // shows both halves of the rule; these stage what the seed cannot.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-home', label: 'Circle description \u2014 its own words, or its people', stage: (c) => c.stageCircleDescription({}) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long', label: 'Circle description \u2014 at the cap, on one line', stage: (c) => c.stageCircleDescription({ long: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-members', label: 'Circle description \u2014 read whole, where it is edited', stage: (c) => c.stageCircleDescription({ members: true }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

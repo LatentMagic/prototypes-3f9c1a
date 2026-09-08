@@ -2,6 +2,7 @@
 // Circlists — sharing a card (BIZ-136 wild feature. NOT ratified.)
 //
 //   CardShareButton      — the act, in the card's action row.
+//   CardShareMenuItem    — the act, as an item in the card's kebab menu (run 10).
 //   circCardLocalUrl     — the address it hands over.
 //   circReadCardParam    — reading one back on boot.
 //   circPointedStyle     — how a card that was pointed at is drawn.
@@ -143,6 +144,69 @@ const CardShareButton = ({ item, space, className, size = 15, announce }) => {
   );
 };
 
+// ---- The act, as a menu item (run 10) ---------------------------------------
+// Same gesture as CardShareButton above, wearing the card's own kebab-menu
+// grammar (spaces.jsx's per-row menu) instead of a standing icon. Kept
+// alongside CardShareButton, not in its place — a superseded state (run 9's
+// row) still renders the old button, and the deletable-aid contract in this
+// file's header covers both: drop the file and the menu simply has no Share
+// item, everything else unchanged.
+//
+// The acknowledgement stays inside the control pressed, same as the button's
+// own form-change grammar, just spoken as this item's own label rather than
+// its glyph: native path, the platform sheet is the acknowledgement, so
+// `onDone` fires at once and nothing flashes; clipboard path, the label reads
+// "Link copied" for the same 1600ms beat the button used, then `onDone` fires
+// and the menu closes.
+const CardShareMenuItem = ({ item, space, announce, onDone }) => {
+  const [done, setDone] = React.useState(false);
+  const timer = React.useRef(null);
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+
+  const share = async () => {
+    const url = circCardLocalUrl(item);
+    const title = item.title || item.source || 'A link';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        onDone && onDone();
+        return;
+      }
+    } catch (e) {
+      // A cancelled share is not a failure and says nothing.
+      if (e && e.name === 'AbortError') { onDone && onDone(); return; }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setDone(true);
+      if (announce) announce('Link copied');
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => { setDone(false); onDone && onDone(); }, 1600);
+    } catch (e) {
+      // Clipboard refused (an insecure origin, or permission). Same fallback
+      // as the button: the address goes on screen for the member to take.
+      if (announce) announce('Copy the link from the address shown');
+      window.prompt('Copy this link', url);
+      onDone && onDone();
+    }
+  };
+
+  return (
+    <button type="button" role="menuitem" className="circ-menuitem" onClick={share}
+      style={{
+        // 44px floor (ui.md:53/113), not spaces.jsx's 40 — see feed.jsx's
+        // menuItemBase for the same note.
+        display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+        background: 'transparent', border: 0, cursor: 'pointer', padding: '11px 10px', minHeight: 44,
+        borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
+        color: 'var(--color-fg-1)', whiteSpace: 'nowrap',
+      }}>
+      <Icon name={done ? 'check' : 'share'} size={16} />
+      {done ? 'Link copied' : 'Share'}
+    </button>
+  );
+};
+
 // ---- Arriving from one ------------------------------------------------------
 // Read once at boot and then held in app state; the address is cleaned out of
 // the bar afterwards so a refresh does not re-point at a card the member has
@@ -171,5 +235,5 @@ const circPointedStyle = () => ({
 });
 
 Object.assign(window, {
-  circCardLocalUrl, circReadCardParam, circPointedStyle, CardShareButton,
+  circCardLocalUrl, circReadCardParam, circPointedStyle, CardShareButton, CardShareMenuItem,
 });

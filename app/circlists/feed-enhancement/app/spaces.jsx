@@ -66,16 +66,60 @@ const SpaceFull = ({ onHome }) => (
     actionLabel="Go home" onAction={onHome} />
 );
 
+// ---- Circle description — capped writing field ------------------------------
+// Reuses the mechanic behind the discourse candidate's thought composer
+// (talk-parts.jsx CandWrite, talk-add.jsx CandRoom): native `maxLength` stops
+// the field at the cap without an error, and a remaining count is drawn only
+// once it's close (<=60 left) — not written new. 250, not 500 (the thought /
+// comment cap): Slack's own cap for the same job, answering "why does this
+// exist" in a list of many, never room for an essay.
+// The cap is announced to assistive tech up front via a fixed hint, not only
+// the late-appearing visual count, which is aria-hidden exactly as the
+// mechanic it's drawn from leaves it.
+const CIRCLE_DESC_CAP = 250;
+const CircleDescriptionField = ({ id, value, onChange, placeholder }) => {
+  const [focus, setFocus] = React.useState(false);
+  const left = CIRCLE_DESC_CAP - String(value || '').length;
+  const hintId = id + '-hint';
+  return (
+    <div style={{ marginBottom: 'var(--space-4)' }}>
+      <label htmlFor={id} style={{
+        display: 'block', marginBottom: 6,
+        fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)',
+      }}>Description <span style={{ fontWeight: 400, color: 'var(--color-fg-3)' }}>(optional)</span></label>
+      <span id={hintId} className="circ-vh">Up to {CIRCLE_DESC_CAP} characters.</span>
+      <textarea id={id} value={value} maxLength={CIRCLE_DESC_CAP} placeholder={placeholder}
+        aria-describedby={hintId} rows={3}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+        style={{
+          display: 'block', width: '100%', boxSizing: 'border-box',
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
+          color: 'var(--color-fg-1)', resize: 'vertical',
+          border: '1px solid ' + (focus ? 'var(--color-accent)' : 'var(--color-border-1)'),
+          borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44,
+          background: 'var(--color-surface)', transition: 'border-color var(--duration-base)',
+        }} />
+      <div aria-hidden="true" style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 15, paddingTop: 4 }}>
+        {left <= 60 && <span style={{ font: '400 11.5px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{left} left</span>}
+      </div>
+    </div>
+  );
+};
+
 // ---- Create space (dedicated full page) ------------------------------------
-const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
+const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '' }) => {
   const [name, setName] = React.useState(initialName);
+  const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
   const ref = React.useRef(null);
   React.useEffect(() => { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); }, []);
   const submit = (e) => {
     e.preventDefault();
     if (!name.trim()) { setErr('Give your circle a name.'); return; }
-    onCreate(name.trim());
+    // A blank description never blocks Continue — trimmed here so
+    // whitespace-only behaves exactly as never-set from this point on.
+    onCreate(name.trim(), description.trim());
   };
   // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
   return (
@@ -88,6 +132,8 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
       <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
         <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
+        <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
+          placeholder="What’s this circle for?" />
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
         </Button>
@@ -129,13 +175,19 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   );
 };
 
-// ---- Rename-circle dialog — champion only ----------------------------------
+// ---- Edit-circle dialog — champion only -------------------------------------
 // Focused dialog (matches the Remove-member treatment). Auto-growing textarea so
 // a long name wraps and stays fully visible instead of scrolling out of a single
 // line; 60-char cap enforced silently; Save trims. Enter saves, Esc/scrim/Cancel
-// dismiss. No X, no explanatory subline — the title and one field carry it.
-const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
+// dismiss. No X, no explanatory subline — the title and its fields carry it.
+// Was RenameCircleDialog (name only); now carries the circle's optional
+// description too — one door, not two: the champion still reaches it from the
+// same edit affordance that used to open rename alone. Enter still saves from
+// the single-line name input; inside the description textarea it inserts a
+// newline instead, same as any multi-line field in this app.
+const EditCircleDialog = ({ currentName, currentDescription, onSave, onCancel }) => {
   const [draft, setDraft] = React.useState(currentName);
+  const [descDraft, setDescDraft] = React.useState(currentDescription || '');
   const [err, setErr] = React.useState(null);
   const areaRef = React.useRef(null);
   const invokerRef = React.useRef(null);
@@ -146,13 +198,15 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
     window.addEventListener('keydown', onKey);
     return () => { clearTimeout(id); window.removeEventListener('keydown', onKey); if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus(); };
   }, []);
-  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v); };
+  // Whitespace-only description is no description: trimmed here so it stores
+  // nothing and behaves exactly as never-set.
+  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v, descDraft.trim()); };
   return (
-    <div role="dialog" aria-modal="true" aria-label="Rename circle"
+    <div role="dialog" aria-modal="true" aria-label="Edit circle"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
-        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-5)' }}>Rename circle</h2>
+        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-5)' }}>Edit circle</h2>
         <input id="rename-circle-input" ref={areaRef} value={draft} maxLength={30} aria-label="Circle name" aria-invalid={!!err}
           onChange={(e) => { setDraft(e.target.value); if (err) setErr(null); }}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); } }}
@@ -162,7 +216,11 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
             <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{err}</span>
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-5)' }}>
+        <div style={{ marginTop: 'var(--space-5)' }}>
+          <CircleDescriptionField id="edit-circle-description" value={descDraft} onChange={setDescDraft}
+            placeholder="What’s this circle for?" />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button variant="primary" onClick={save} disabled={!draft.trim()}>Save</Button>
         </div>
@@ -227,7 +285,7 @@ const fundingStateLine = (f) => {
 // people (Remove); your own kebab acts on you (Leave), and is the only one a
 // non-champion sees — which is what marks it as yours without a label. Scope it
 // strictly to YOUR MEMBERSHIP OF THIS CIRCLE; it is not a settings drawer.
-const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onRename, onRemoveMember, onStartCircle, onLeave }) => {
+const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onEdit, onRemoveMember, onStartCircle, onLeave }) => {
   // onInvite is no longer consumed: getting a link does not add a member. A row
   // appearing the moment you get one is a delivery confirmation, and the app
   // makes none — someone appears in the roster when they join, outside the app.
@@ -241,10 +299,15 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   const unchampioned = !space.champion;
   const funding = space.funding || { state: 'active' };
   const fundingLine = fundingStateLine(funding);
+  // The optional description, read in full here — the one place it's shown
+  // whole rather than ellipsised. Nothing rendered when there is none, for
+  // anyone, champion included: an empty state is not a prompt to add one.
+  const description = ((space.description || '') + '').trim();
 
-  // Rename (champion only) — opens a focused dialog
-  const [renaming, setRenaming] = React.useState(false);
-  const beginRename = () => setRenaming(true);
+  // Edit (champion only) — opens a focused dialog carrying name + description.
+  // Was rename-only; onRename -> onEdit follows main.jsx's editSpace.
+  const [editingCircle, setEditingCircle] = React.useState(false);
+  const beginEdit = () => setEditingCircle(true);
 
   // Per-member kebab + removal (champion only)
   const [menuFor, setMenuFor] = React.useState(null);
@@ -267,14 +330,25 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: 0,
           }}>{space.name}</h1>
           {isChampion && (
-            <button onClick={beginRename} aria-label="Rename circle" className="circ-cardaction circ-cardaction-icon"
+            <button onClick={beginEdit} aria-label="Edit circle" className="circ-cardaction circ-cardaction-icon"
               style={{ minWidth: 40, minHeight: 40, color: 'var(--color-fg-3)' }}>
               <Icon name="edit" size={18} />
             </button>
           )}
         </div>
       )}
-      {renaming && <RenameCircleDialog currentName={space.name} onSave={(v) => { onRename && onRename(v); setRenaming(false); }} onCancel={() => setRenaming(false)} />}
+      {editingCircle && <EditCircleDialog currentName={space.name} currentDescription={space.description}
+        onSave={(name, desc) => { onEdit && onEdit(name, desc); setEditingCircle(false); }}
+        onCancel={() => setEditingCircle(false)} />}
+      {/* The description — read in full here, wrapping rather than truncated.
+          Nothing rendered at all when there is none. */}
+      {description && (
+        <p style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
+          color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)',
+          whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+        }}>{description}</p>
+      )}
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>
         {space.members.length} of {SPACE_CAP} members
       </p>

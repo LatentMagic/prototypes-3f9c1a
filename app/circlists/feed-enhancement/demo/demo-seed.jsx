@@ -50,6 +50,13 @@ function seedSpaces(userEmail) {
       // The visitor champions this one: the roster shows "Championed by You".
       id: 'sp-backend',
       name: 'Backend Pod',
+      // A circle can say what it is for (BIZ-136 run 10). Carried here as well
+      // as in app/seed-data.jsx because this seed does not inherit from that
+      // one — see CLAUDE.md, "Seed data — the standing rule". Only this circle
+      // gets one: Tuesday Book Club is left without, so the home row's fallback
+      // to the circle's people is visible in the demo too rather than only in
+      // the states register.
+      description: 'Where the backend team keeps what’s worth reading before it gets lost in chat — scaling, reliability, the occasional queue rant.',
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
       members: [M('You', userEmail), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'),
         M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'),

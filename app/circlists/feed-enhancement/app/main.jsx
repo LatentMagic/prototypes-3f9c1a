@@ -203,8 +203,8 @@ const CircApp = () => {
   const [pendingEmail, setPendingEmail] = useState('sam.rivera@gmail.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
   // (Config launcher state + drag now live in app/config.jsx — a deletable aid.)
-  // funding flow: { mode: 'new' | 'refund', name, spaceId }
-  const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', spaceId: null });
+  // funding flow: { mode: 'new' | 'refund', name, description, spaceId }
+  const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', description: '', spaceId: null });
   const [manageIntent, setManageIntent] = useState('manage');
 
   // ---- Liveliness (BIZ-96) ------------------------------------------------
@@ -354,8 +354,8 @@ const CircApp = () => {
     else window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // open Create-a-space fresh (clears any carried name)
-  const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', spaceId: null }); setRoute('create-space'); };
+  // open Create-a-space fresh (clears any carried name + description)
+  const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', description: '', spaceId: null }); setRoute('create-space'); };
 
   // Home — the account level. Historically this was only the landing place for a
   // user who holds no membership; in the app posture it is a real destination
@@ -667,7 +667,11 @@ const CircApp = () => {
   };
   const deleteItem = (item) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: s.items.filter(i => i.id !== item.id) } : s));
   const inviteEmail = (email) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, members: [...s.members, M(email.split('@')[0].replace(/\b\w/g, c => c.toUpperCase()) + ' ', email)] } : s));
-  const renameSpace = (name) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, name } : s));
+  // Edit — name (unchanged) plus the optional description (CIRC-020's champion
+  // gate now covers both). Whitespace-only description trims to nothing and
+  // stores as never-set, exactly like an empty one.
+  const editSpace = (name, description) => setSpaces(prev => prev.map(s => s.id === currentId
+    ? { ...s, name, description: (description && description.trim()) ? description.trim() : undefined } : s));
   const removeMember = (memberName) => setSpaces(prev => prev.map(s => {
     if (s.id !== currentId) return s;
     // Removed member KEEPS their name on links they added; "former member" is
@@ -711,7 +715,9 @@ const CircApp = () => {
   };
 
   // ---- create = fund (name-first) ----
-  const beginCreateFund = (name) => { setFundFlow({ mode: 'new', name, spaceId: null }); setRoute('funding'); };
+  // Carries description alongside name so CIRC-007 AF-02's return-to-revise
+  // trip (create -> funding -> back) brings it back too.
+  const beginCreateFund = (name, description) => { setFundFlow({ mode: 'new', name, description, spaceId: null }); setRoute('funding'); };
   const onCheckoutSuccess = () => {
     if (fundFlow.mode === 'refund') {
       setSpaces(prev => prev.map(s => s.id === fundFlow.spaceId
@@ -724,6 +730,7 @@ const CircApp = () => {
   const finishProvisioning = () => {
     const sp = {
       id: 'sp-' + Date.now(), name: fundFlow.name || 'New circle',
+      description: fundFlow.description ? fundFlow.description : undefined,
       funded: true, dormancy: null, champion: 'You', championEmail: user.email,
       members: [M('You', user.email)], items: [],
     };
@@ -898,7 +905,7 @@ const CircApp = () => {
     screen = <ManageFunding user={user} spaceName={space ? space.name : ''} intent={manageIntent}
       onReturn={() => setRoute('members')} onCancelSub={cancelFunding} />;
   } else if (route === 'create-space') {
-    screen = <CreateSpace onCreate={beginCreateFund} initialName={fundFlow.name} canCancel={spaces.length > 0} onCancel={exitToApp} />;
+    screen = <CreateSpace onCreate={beginCreateFund} initialName={fundFlow.name} initialDescription={fundFlow.description} canCancel={spaces.length > 0} onCancel={exitToApp} />;
   } else if (route === 'invalid-invite') {
     screen = <InvalidInvite onHome={goHome} />;
   } else if (route === 'space-full') {
@@ -923,7 +930,7 @@ const CircApp = () => {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
       onInvite={inviteEmail} onManageFunding={openManageFunding} onCancelFunding={() => setConfirm({ kind: 'cancel-funding' })}
       onResumeFunding={resumeFunding}
-      onRename={renameSpace} onRemoveMember={removeMember} onLeave={() => setConfirm({ kind: 'leave', spaceId: currentId })}
+      onEdit={editSpace} onRemoveMember={removeMember} onLeave={() => setConfirm({ kind: 'leave', spaceId: currentId })}
       onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {

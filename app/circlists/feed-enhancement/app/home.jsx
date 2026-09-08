@@ -50,14 +50,22 @@ const HOME_EYEBROW = {
 // `Asleep` survives, and it is the one status word that should. A dormant
 // circle's cards are unreachable, and no dot can carry that: the dot marks
 // arrivals, and a sleeping circle has none to mark.
+// BIZ-run-10 addendum: the champion's own words about what a circle is FOR now
+// outrank the roster line above when there are any — a more specific answer to
+// the exact question this line has always asked ("what IS this circle", never
+// a status report), so this is not a reversal of the reasoning above, only a
+// better answer standing in front of it. The roster line stays as the fallback
+// for a circle that hasn't set one — never both, never a second line.
 const circleSummary = (s) => {
+  const description = ((s.description || '') + '').trim();
   const roster = window.candRoster;
   const others = (s.members || []).map((m) => m && m.name).filter((n) => n && n !== 'You');
   // The helper lives in a droppable module, so the count is the fallback rather
   // than a crash — same deletable-aid contract every other guard here honours.
   const people = roster ? roster(others)
     : others.length + ' member' + (others.length === 1 ? '' : 's');
-  return s.funded ? people : 'Asleep · ' + people;
+  const line = description || people;
+  return s.funded ? line : 'Asleep · ' + line;
 };
 
 const homeTile = (name) => (

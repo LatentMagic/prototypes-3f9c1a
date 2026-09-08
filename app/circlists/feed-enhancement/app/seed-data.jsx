@@ -51,6 +51,7 @@ function seedSpaces(userEmail) {
       // You champion it → Invite + Manage funding + "Championed by You".
       id: 'sp-backend',
       name: 'Backend Pod',
+      description: 'Where the backend team keeps what’s worth reading before it gets lost in chat — scaling, reliability, the occasional queue rant.',
       funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
       members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Ada L.', 'ada.l@example.com'), M('Dev K.', 'dev.k@example.com'), M('Lena P.', 'lena.p@example.com'), M('Nadia F.', 'nadia.f@example.com'), M('Theo B.', 'theo.b@example.com'), M('Owen D.', 'owen.d@example.com'), M('Freya S.', 'freya.s@example.com')],
       items: [
@@ -174,6 +175,7 @@ function seedSpaces(userEmail) {
       // Small two-person space — championed by Sam R. (non-champion view).
       id: 'sp-sam',
       name: 'Me & Sam',
+      description: 'Whatever either of us is reading this week. No theme, no schedule.',
       funded: true, dormancy: null, champion: 'Sam R.', championEmail: 'sam.r@example.com',
       members: [M('You', userEmail), M('Sam R.', 'sam.r@example.com')],
       items: [
