@@ -653,16 +653,8 @@ const CIRC_STATE_REGISTER = [
   // member's narrowing is still what they set — hiding it would make a failed
   // load look like a cleared filter.
   { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error-lens', label: 'Feed \u2014 the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
-  // Grid. Desktop only by design, so this one reads as the arrangement change
   // at 1280 and falls back to a single column at 390 \u2014 both are correct.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid', label: 'Grid \u2014 two columns, and no card carries an image', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', density: 'grid' }) },
   // The panel open on three options, which is the control change itself.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid-panel', label: 'Grid \u2014 the View group\u2019s third option', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', density: 'grid', menu: true }) },
-  // The waterline in a grid. It marks where the last visit reached, so it spans
-  // BOTH columns \u2014 a divider sitting in one cell would claim something false
-  // about the card beside it.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'view-grid-waterline', label: 'Grid \u2014 the waterline spans both columns', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'grid', waterline: true }) },
-  // Run 4 gave the contributor miss precedence over the saved miss, and its copy
   // then told members "You have not read anything they added" while the saved
   // filter was the thing hiding them. Dev K. has read links in this circle and
   // none of them saved, which is exactly the case that was being described

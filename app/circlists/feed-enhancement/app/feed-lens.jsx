@@ -445,15 +445,21 @@ const LensList = ({ label, options, value, onPick, bounded = true }) => {
   );
 };
 
-// The three options density picks between — Comfortable is the product's
-// default rhythm, Compact tightens the metrics only, Grid reflows the feed
-// into two columns (see feed.jsx). Grid stays in this master list even
-// though FeedLens below drops it under 1024px — the stored preference and
-// main.jsx's fallback both need the id to exist, only the OFFER narrows.
+// The two options density picks between — Comfortable is the product's default
+// rhythm and Compact tightens the metrics only. Both keep the feed a single
+// column, which is what `ui.md` describes.
+//
+// GRID WAS HERE AND IS VETOED (2026-09-09, Joe). Run 5 built it as a third
+// option after he overturned the cut, but he had already framed the real
+// question better than grid answered it: *"how do you solve the white space
+// problem on a desktop?"*, asked from first principles, with grid as one guess
+// made before the question was put that way. Seeing it built, he vetoed it —
+// *"I'm happy with compact view display"*. The desktop white-space question
+// stays open and is not this control's to answer; do not re-add a third option
+// here as a way of reopening it.
 const CIRC_DENSITY_OPTIONS = [
   { id: 'comfortable', label: 'Comfortable' },
   { id: 'compact', label: 'Compact' },
-  { id: 'grid', label: 'Grid' },
 ];
 
 // `saved`/`onSaved`/`savedMode` (feed-enhancement candidate build, Reading A):
@@ -476,11 +482,10 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // Every term below conceals cards. That is the whole test now (see
   // `circLensActive`): `order` is absent from this line on purpose.
   const active = circLensActive(order, who) || (savedMode === 'lens' && !!saved);
-  // Grid is a desktop-only offer (main.jsx's own comment has the why: a
-  // two-column grid of these cards is worse at 390). Filtered out of the
-  // OPTIONS rather than rendered disabled — an option nobody at this width
-  // can ever pick is not a choice, it's clutter with a tooltip.
-  const densityOptions = isMobile ? CIRC_DENSITY_OPTIONS.filter((o) => o.id !== 'grid') : CIRC_DENSITY_OPTIONS;
+  // Both options are offered at every width. The width filter that used to sit
+  // here existed only for Grid, which was desktop-only; with Grid vetoed there
+  // is nothing left that varies by viewport.
+  const densityOptions = CIRC_DENSITY_OPTIONS;
   const showSavedGroup = savedMode === 'lens' && !!onSaved && !!window.CIRC_SAVED_LENS_OPTIONS;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was

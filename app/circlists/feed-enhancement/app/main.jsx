@@ -1157,25 +1157,16 @@ const CircApp = () => {
       // trigger. It hides no content, so it has nothing to disclose.
       const setDensityView = (next) => {
         setDensity(next);
-        announceOnce(next === 'compact' ? 'Compact view' : next === 'grid' ? 'Grid view' : 'Comfortable view');
+        announceOnce(next === 'compact' ? 'Compact view' : 'Comfortable view');
       };
-      // Grid (feed-enhancement candidate build) is offered only >=1024px
-      // (FeedLens filters the option away below that; see its own comment).
-      // `density` is the STORED preference and stays 'grid' even when the
-      // window is narrow, so widening it restores the grid without a second
-      // gesture. `effectiveDensity` is what THIS render treats it as — the
-      // fallback lives here, once, so every reader downstream (the card, the
-      // container, the trigger's own highlighted option) agrees, instead of
-      // each repeating `density === 'grid' && isMobile` and one of them
-      // eventually drifting.
-      const effectiveDensity = (density === 'grid' && isMobile) ? 'comfortable' : density;
-      const isGrid = effectiveDensity === 'grid';
-      // Full-width rows — the waterline, the New pill, FeedLead, every zero
-      // state — sit in a grid cell like any other row unless told otherwise,
-      // which puts them in ONE column and leaves them half as wide as what
-      // they're describing. `null` outside grid, so spreading it changes
-      // nothing there.
-      const gridSpan = isGrid ? { gridColumn: '1 / -1' } : null;
+      // Grid was vetoed on 2026-09-09 (see CIRC_DENSITY_OPTIONS in
+      // feed-lens.jsx for the why). The option is gone, but `density` is a
+      // PERSISTED preference, so a member who picked Grid before the veto still
+      // has 'grid' in storage — normalised here, once, rather than left to
+      // render a mode that no longer exists. This line is the only reason the
+      // string 'grid' still appears in the build; it can go once no stored
+      // preference can plausibly still hold it.
+      const effectiveDensity = density === 'grid' ? 'comfortable' : density;
       // Reading B's own empty state (run 7): true only when the Saved TAB
       // itself is genuinely empty — nothing saved in the whole circle, and no
       // contributor or query narrowing it further. Either of those still
@@ -1252,11 +1243,9 @@ const CircApp = () => {
         // only the body swaps and the page does not jump.
         <main style={{ flex: 1, width: '100%' }}>
           <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
-            {/* This container never becomes the two-column grid (a load error
-                has no cards to arrange), so `gridSpan` is inert here — kept
-                only so FeedError reads the same as every other full-width row
-                if this branch is ever folded into the shared container. */}
-            <div style={gridSpan}><window.FeedError onRetry={() => {
+            {/* The load-error branch keeps its own container so the shell,
+                tabs and chips stay live while the feed region is replaced. */}
+            <div><window.FeedError onRetry={() => {
               // Prototype affordance only: a real retry re-fires the fetch and
               // lands on whatever it returns. There is nothing here to re-fetch,
               // so the loading beat is staged by hand, just long enough to read
@@ -1275,22 +1264,15 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          {/* Grid trades the single-column cap (720, sized for ONE column's
-              line length) for 1100: two columns inside 720 give ~340px
-              columns that wrap every title to three lines regardless of the
-              clamp, since the cap was never meant to bound a row of two. At
-              1100 each column is ~520px, which is what the clamp above was
-              measured against. `display: grid` replaces the flex column
-              wholesale — the two layouts don't share a gap number by
-              coincidence, so this isn't spreading one style object into the
-              other, it's picking one of two whole shapes. */}
+          {/* One column at every width, capped at `--max-feed-width` for line
+              length. The two-column grid alternative that used to branch here
+              was vetoed on 2026-09-09; the desktop white-space question it was
+              guessing at is still open, and is not answered by this element. */}
           <div style={{
-            maxWidth: isGrid ? 1100 : 'var(--max-feed-width)', margin: '0 auto',
+            maxWidth: 'var(--max-feed-width)', margin: '0 auto',
             padding: isMobile ? '16px 16px 112px' : '28px 24px 120px',
             '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%',
-            ...(isGrid
-              ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, alignItems: 'stretch' }
-              : { display: 'flex', flexDirection: 'column', gap: effectiveDensity === 'compact' ? 10 : 16 }),
+            display: 'flex', flexDirection: 'column', gap: effectiveDensity === 'compact' ? 10 : 16,
           }}>
             {/* The discourse overlay's watching-digest summarises the whole
                 circle. Under a lens it contradicts the screen it sits on — "4
@@ -1308,7 +1290,7 @@ const CircApp = () => {
                 as broken too — a typed-but-empty field does NOT count, since
                 nothing is narrowed yet. */}
             {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || searchActive)
-              && <div style={gridSpan}><Cand.FeedLead api={candApi} tab={tab} /></div>}
+              && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
                 a contributor lens, an arrival from somebody else is not one:
                 tapping the pill would land it straight into the hidden pile and
@@ -1316,7 +1298,7 @@ const CircApp = () => {
                 to promise it will do. So it counts only arrivals the lens keeps.
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
-            {tab === 'active' && pendingVisible.length > 0 && <div style={gridSpan}><NewPill onClick={revealPending} /></div>}
+            {tab === 'active' && pendingVisible.length > 0 && <div><NewPill onClick={revealPending} /></div>}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to
@@ -1340,9 +1322,9 @@ const CircApp = () => {
                 narrowing on top of the tab falls through to FeedNoMatch below
                 exactly as the lens/bar readings already do. */}
             {savedTabEmpty && window.SavedTabEmptyState
-              ? <div style={gridSpan}><window.SavedTabEmptyState /></div>
+              ? <div><window.SavedTabEmptyState /></div>
               : visible.length === 0 && (who || effectiveSavedOn || searchActive) && window.FeedNoMatch
-              ? <div style={gridSpan}><window.FeedNoMatch who={who} tab={cardTab} saved={effectiveSavedOn} query={searchQueryVal}
+              ? <div><window.FeedNoMatch who={who} tab={cardTab} saved={effectiveSavedOn} query={searchQueryVal}
                   onClearWho={() => setWho(null)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
               /* Saved survives feed-lens.jsx on its own: its toggle and its
                  filter both live in feed-saved.jsx and neither is gated on the
@@ -1355,8 +1337,8 @@ const CircApp = () => {
                  deletable-aid contract actually promises — so the old
                  component stays reachable for exactly the case it used to own. */
               : visible.length === 0 && effectiveSavedOn && !who && window.SavedNoMatch
-              ? <div style={gridSpan}><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
-              : visible.length === 0 ? <div style={gridSpan}><EmptyState tab={cardTab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
+              ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
+              : visible.length === 0 ? <div><EmptyState tab={cardTab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
                 const pointed = pointedId === item.id;
                 const card = <FeedCard item={item} tab={cardTab} user={user} showTime density={effectiveDensity}
@@ -1381,7 +1363,7 @@ const CircApp = () => {
                   || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
                 return (
                   <React.Fragment key={item.id}>
-                    {i === divIdx && <div style={gridSpan}><FeedDivider /></div>}
+                    {i === divIdx && <div><FeedDivider /></div>}
                     {/* CircGlow's own div is this row's direct grid-cell
                         child (the Fragment wrapping it renders no DOM node),
                         so it needs BOTH halves of the fix:

@@ -60,17 +60,12 @@ const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.leng
 // two sizes — it only ever sits beside them, on Read, so it has to read at
 // the same scale or it would be the one action that didn't shrink with density.
 // `titleClamp` is read from here by every branch (not hardcoded at the JSX
-// call site) so grid's 3-line title is one number in one place, not a
-// duplicate of the 2 the other two branches already had.
-// Grid (feed-enhancement candidate build) reuses comfortable's own metrics —
-// same padding, avatar, action sizes — and adds `grid: true`, the one marker
-// FeedCard reads to drop the thumbnail and widen the clamp. It is NOT a
-// fourth set of numbers: the card's anatomy in grid is comfortable's, minus
-// the image column. `thumb: 0` is unused once `grid` is true (showImage is
-// forced off below) but kept honest rather than left undefined.
-const circCardMetrics = (density) => (density === 'grid'
-  ? { pad: 'var(--space-4) var(--space-5)', thumb: 0, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 3, grid: true }
-  : density === 'compact'
+// call site) so the number lives in one place.
+// A third `grid` branch sat here until 2026-09-09, when grid was vetoed. It
+// reused comfortable's metrics and set a `grid: true` marker that dropped the
+// thumbnail and widened the clamp; both it and every reader of that marker are
+// gone. See CIRC_DENSITY_OPTIONS in feed-lens.jsx for why.
+const circCardMetrics = (density) => (density === 'compact'
   ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
   : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
@@ -193,12 +188,9 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
   const source = item.source || host;               // source is always present
   const title = item.title || feedDeriveTitle(item.url);
   const prettyUrl = item.url.replace(/^https?:\/\//, '');
-  // Grid has no image column at all — not "no image for THIS item", every
-  // card's. 7 of the 22 seed items already carry hasImage: false, so a grid
-  // built around a hero image would leave roughly a third of cards with an
-  // empty top; forcing showImage off is what makes imaged and imageless
-  // cards structurally identical, which is the whole point of the layout.
-  const showImage = m.grid ? false : item.hasImage !== false;
+  // Per-item: 7 of the 22 seed links carry hasImage: false, and those get the
+  // source-keyed tint block rather than a fabricated photo.
+  const showImage = item.hasImage !== false;
   const faviconOk = item.faviconExists !== false && !favBroken;
   // Favicons: baked-in local files win over Google's live service, so the demo
   // renders the real mark offline (see uploads/card-favicons/). Host is matched
@@ -222,16 +214,14 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
       <article className="circ-card" style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
         borderRadius: 'var(--radius-lg)', padding: m.pad,
-        display: 'flex', flexDirection: 'column', height: m.grid ? '100%' : undefined,
+        display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: m.colGap }}>
             <span className="circ-skel" aria-hidden="true" style={{ width: 120, height: 13, borderRadius: 3 }} />
             <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-3)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>
           </div>
-          {/* Same showImage rule as the resolved card below — grid has no
-              image column, pending or not. */}
-          {!m.grid && <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />}
+          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: m.footerTop }}>
           <Avatar name={avatarName} size={m.avatar} accent={isYou} />
@@ -258,7 +248,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
     <article className="circ-card" data-card-id={item.id} style={{
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)', padding: m.pad,
-      display: 'flex', flexDirection: 'column', height: m.grid ? '100%' : undefined,
+      display: 'flex', flexDirection: 'column',
       ...(pointed && window.circPointedStyle ? window.circPointedStyle() : null),
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
