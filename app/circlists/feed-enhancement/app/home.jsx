@@ -161,10 +161,16 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
     </div>
     <button onClick={onCreate} className="circ-appsheet-row" style={{
       display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer',
-      background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', padding: '13px 12px', minHeight: 52,
+      background: 'transparent', border: 0, borderRadius: 'var(--radius-md)', padding: '13px 14px', minHeight: 52,
       marginTop: 10, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-accent)',
     }}>
-      <span style={{ width: 38, display: 'inline-flex', justifyContent: 'center' }}><Icon name="plus" size={19} color="var(--color-accent)" strokeWidth={2} /></span> New circle
+      {/* The plus used to sit inside a 38px spacer standing in for the rows'
+          monogram tile, which put `New circle` on the same left edge as the
+          circle names above. The tile went on 2026-09-09 and the spacer had to
+          go with it, or the label indented against a column that no longer
+          exists. The row padding now matches the cards' 14px, so the plus takes
+          the leading position the circle name takes in every row above it. */}
+      <Icon name="plus" size={19} color="var(--color-accent)" strokeWidth={2} /> New circle
     </button>
   </main>
   );

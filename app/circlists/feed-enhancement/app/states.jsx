@@ -626,7 +626,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-read', label: 'Compact \u2014 the Read pile', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', density: 'compact' }) },
   // Run 4 \u2014 the saved state and its surface.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-marks', label: 'Saved \u2014 the mark on a read card', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2] }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-marks', label: 'Saved \u2014 read cards kept, the state held in the card menu', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2] }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-filtered', label: 'Saved \u2014 the archive narrowed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-none-yet', label: 'Saved \u2014 nothing kept yet (the calm floor)', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [] }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'saved-empty', label: 'Saved \u2014 the lens on, nothing in it', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
