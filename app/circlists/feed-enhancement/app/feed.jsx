@@ -315,8 +315,13 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
               channel. Shape carries the state; the hidden text carries it in
               the other channel. It also keeps Decision-32's attribution line
               falling away rather than ending on its brightest pixel. */}
+          {/* alignSelf:center overrides the row's shared text baseline for
+              this one item — an icon has no descender, so baseline-aligning
+              it against the attribution/timestamp text pulls it ~2px above
+              their optical centre (measured). Centring it in the row's cross
+              axis instead reads flush against both neighbours. */}
           {item.saved && (
-            <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', color: 'var(--color-fg-3)' }}>
+            <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', alignSelf: 'center', color: 'var(--color-fg-3)' }}>
               <Icon name="bookmark-filled" size={12} />
               <span className="circ-vh">, saved</span>
             </span>

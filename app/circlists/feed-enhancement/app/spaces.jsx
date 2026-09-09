@@ -323,8 +323,13 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 
   return (
     <ContentPage>
+      {/* The title block's bottom margin does NOT collapse when there is no
+          description. The pixel review measured the empty case closing to
+          ~0-4px, which re-formed the name and the Members row as a title-and-
+          subtitle pair — the exact reading demoting the count exists to break.
+          The gap the description would have provided is held open instead. */}
       {(
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', margin: '0 0 6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', margin: description ? '0 0 6px' : '0 0 var(--space-6)' }}>
           <h1 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.25,
             letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: 0,
@@ -341,20 +346,31 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         onSave={(name, desc) => { onEdit && onEdit(name, desc); setEditingCircle(false); }}
         onCancel={() => setEditingCircle(false)} />}
       {/* The description — read in full here, wrapping rather than truncated.
-          Nothing rendered at all when there is none. */}
+          Nothing rendered at all when there is none. Body prose (Decision-32 /
+          ui.md:9): authored words, not a computed datum, so full size/weight/
+          colour rather than the recessive metadata treatment.
+          Capped at 62ch: at 1280 an uncapped line measured 632px / ~88 characters,
+          well past the readable band, and prose at that measure stops reading as a
+          paragraph and starts reading as a stretched caption. Both exemplars this
+          was held against protect measure — GitHub's About panel is a ~300px
+          column, Linear's description is a document at a constrained width. */}
       {description && (
         <p style={{
-          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
-          color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)',
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'var(--text-base)', lineHeight: 1.55,
+          color: 'var(--color-fg-1)', margin: '0 0 var(--space-6)', maxWidth: '62ch',
           whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
         }}>{description}</p>
       )}
-      <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>
-        {space.members.length} of {SPACE_CAP} members
-      </p>
 
-      {/* Member list */}
-      <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)', marginBottom: 'var(--space-3)' }}>Members</div>
+      {/* Member list. The count (ui.md Decision-22 wording, unchanged) now
+          rides the Members label row instead of its own line — recessive
+          metadata beside the section it counts, per Decision-32. */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)' }}>Members</div>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)' }}>
+          {space.members.length} of {SPACE_CAP} members
+        </div>
+      </div>
       <div style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
         borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-6)',

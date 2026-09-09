@@ -481,7 +481,7 @@ function circStateContext(api) {
   // at all — these two stage the cases the seed cannot: a description at the
   // full 250-character cap, and the members surface reading one whole.
   const CIRC_LONG_DESC = 'A place for the long reads none of us get through in a week — systems writing, post-mortems, the occasional essay that has nothing to do with work but everything to do with how we think about it. Drop it here and come back when you have an hour.';
-  const stageCircleDescription = ({ long = false, members = false } = {}) => {
+  const stageCircleDescription = ({ long = false, members = false, bare = false } = {}) => {
     setUser(DEFAULT_USER);
     const base = spaces.length ? spaces : seedSpaces(DEFAULT_USER.email);
     const s = base.filter((sp) => !/^TEST\b/i.test(sp.name || '')).map((sp) => (sp.id === 'sp-backend'
@@ -492,6 +492,35 @@ function circStateContext(api) {
     clearFeedError(); clearLegacyRow();
     setLoadingFeed(false);
     if (members) { setCurrentId('sp-backend'); setTab('active'); setRoute('members'); return; }
+    if (bare) { setCurrentId('sp-book'); setTab('active'); setRoute('members'); return; }
+    setCurrentId(null); setRoute('home');
+    if (setHomeStripOpen) setHomeStripOpen(true);
+  };
+
+  // The home's micro dot, staged by name. The dot means `unseen` — a card
+  // landed in the circle since the member last met its Active feed (ui.md
+  // Decision-29), which is exactly "this circle has a new card". The behaviour
+  // already shipped; nothing was addressable for it, so it could not be checked
+  // by looking.
+  // Staged as a CONTRAST rather than a single lit row: one circle with a card
+  // that arrived and has not been met, two without, so the dot's absence reads
+  // as deliberate rather than as a rendering failure. The underlying items are
+  // made consistent with the flag — a lit dot over an all-read circle would be
+  // a fixture asserting something the product never does.
+  const stageCircleMicro = () => {
+    setUser(DEFAULT_USER);
+    const base = seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    const s = base.map((sp) => {
+      if (sp.id === 'sp-backend') {
+        return { ...sp, funded: true, dormancy: null, unseen: true,
+          items: sp.items.map((i, n) => (n === 0 ? { ...i, read: false } : i)) };
+      }
+      return { ...sp, unseen: false,
+        items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
+    });
+    setSpaces(s);
+    clearFeedError(); clearLegacyRow();
+    setLoadingFeed(false);
     setCurrentId(null); setRoute('home');
     if (setHomeStripOpen) setHomeStripOpen(true);
   };
@@ -501,7 +530,7 @@ function circStateContext(api) {
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
-    stageLegacyRow, stageCircleDescription,
+    stageLegacyRow, stageCircleDescription, stageCircleMicro,
   };
 }
 
@@ -556,7 +585,7 @@ const CIRC_STATE_REGISTER = [
   // Run 1's id, kept so the URL it published still resolves. The standalone sort
   // menu it named no longer exists — run 2 folded it into the lens — so it now
   // lands on the lens, same as `lens-panel-open`.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
   // the sort. Open them in order \u2014 the waterline is there under newest-first and
   // the SAME line in both, since 2026-09-07. It used to be gone under
@@ -690,11 +719,11 @@ const CIRC_STATE_REGISTER = [
   // a side-by-side, so the way back has to stay a side-by-side: this is the
   // bookmark on the tab bar, three icons and all, to be overruled by looking
   // rather than by reading an argument about it.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-bar-superseded', label: 'Superseded \u2014 saved as a bookmark on the tab bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'bar' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab', label: 'Reading B \u2014 saved as its own tab, populated', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface', finalTab: 'saved' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-tab-composed', label: 'Reading B \u2014 the Saved tab under a contributor lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], who: 'Priya N.', savedMode: 'surface', finalTab: 'saved' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-bar-superseded', label: 'Superseded \u2014 saved as a bookmark on the tab bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'bar' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab', label: 'Reading B \u2014 saved as its own tab, populated', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface', finalTab: 'saved' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-composed', label: 'Reading B \u2014 the Saved tab under a contributor lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], who: 'Priya N.', savedMode: 'surface', finalTab: 'saved' }) },
 
   // ---- Run 8 \u2014 Home as a shared surface, and the cross-circle returns strip --
   // The home screen (app/home.jsx + app/home-returns.jsx) and the "Go home"
@@ -707,7 +736,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-one-circle', label: 'Home \u2014 a single circle', stage: (c) => c.stageHome({ only: 'sp-backend' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-no-circles', label: 'Home \u2014 no circles yet (NoSpaceHome)', stage: (c) => c.stageHome({ empty: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
   // ---- Sharing a card (wild feature, 2026-09-07) --------------------------
   // The two ends of one address. A shared card link means "this card", and what
   // the follower meets depends on THEIR OWN read-state — not on anything the
@@ -730,7 +759,7 @@ const CIRC_STATE_REGISTER = [
   // trailing dots on any card in the first two entries to see it.
   { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-active', label: 'The card row \u2014 two actions on Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-read', label: 'The card row \u2014 Read, and the saved mark that stayed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', saved: [0, 2] }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-superseded', label: 'Superseded \u2014 the row before it was folded', stage: (c) => c.stageLegacyRow({ tab: 'read' }) },
+  { group: 'Candidate build \u2014 superseded shapes', id: 'card-row-superseded', label: 'Superseded \u2014 the row before it was folded', stage: (c) => c.stageLegacyRow({ tab: 'read' }) },
 
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
   // description on two circles and none on the rest, so `home-landing` already
@@ -738,6 +767,9 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-home', label: 'Circle description \u2014 its own words, or its people', stage: (c) => c.stageCircleDescription({}) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long', label: 'Circle description \u2014 at the cap, on one line', stage: (c) => c.stageCircleDescription({ long: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-members', label: 'Circle description \u2014 read whole, where it is edited', stage: (c) => c.stageCircleDescription({ members: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-absent', label: 'Circle description \u2014 the header of a circle that wrote none', stage: (c) => c.stageCircleDescription({ bare: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long-members', label: 'Circle description \u2014 at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-micro-new-card', label: 'Home \u2014 the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.

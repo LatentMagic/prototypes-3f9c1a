@@ -56,6 +56,17 @@ const HOME_EYEBROW = {
 // a status report), so this is not a reversal of the reasoning above, only a
 // better answer standing in front of it. The roster line stays as the fallback
 // for a circle that hasn't set one — never both, never a second line.
+// Run 11 briefly rendered an authored description a step darker than the derived
+// people line, to separate the two kinds the way the members header now does.
+// The pixel review killed it and was right: at 13px, #525252 against #6E6E6B is
+// ΔL* 9.2, and a member never sees the two sublines in one row — they read ONE
+// and must classify it from memory. So the distinction was technically present
+// and not legible. Worse, it made colour the SOLE channel, which this app's own
+// rule forbids in as many words: hierarchy via size and weight, never colour.
+// The sanctioned levers do not fit here — 15px would collide with the 16px row
+// title, and a leading glyph would put a fourth element in a row that already
+// carries a tile, a dot and a chevron. Reverted rather than half-fixed. What the
+// home row actually owes is ruling 15's truncation question, and that is Joe's.
 const circleSummary = (s) => {
   const description = ((s.description || '') + '').trim();
   const roster = window.candRoster;

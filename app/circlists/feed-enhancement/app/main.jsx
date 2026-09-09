@@ -26,7 +26,13 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // deletions a rail refresh reconciles away.)
 // A candidate-build entry sets window.CIRC_STATE_KEY before app scripts load so
 // its persisted state never mixes with the main app's. Absent -> unchanged.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v12';
+// v13: the seed drops Backend Pod from eleven members to ten (the cap is hard —
+// hld.md Decision-15 — so eleven was staging a state the product forbids, and it
+// rendered "11 of 10 members" on the members header). `spaces` is persisted, so
+// without this bump a returning visitor restores the eleven-member circle and the
+// fix is invisible to the one person it was made for. Same reasoning as
+// circlists-a3.html's own v1 -> v2 bump, for the same circle.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v13';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
