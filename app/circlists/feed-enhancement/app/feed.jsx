@@ -16,8 +16,11 @@
 //     smaller): an honest raw address, never a naked/broken card. Source still
 //     falls back to the bare domain.
 //   - Favicon is an optional garnish beside the source; genuine absence shows
-//     nothing (never a fabricated globe). No preview -> a calm source-keyed
-//     tint block (never a fabricated photo).
+//     nothing (never a fabricated globe). A missing preview is the SAME rule:
+//     no image means no image column, and the text takes the full width. The
+//     source-keyed tint block that used to stand in was removed 2026-09-09 —
+//     a coloured square in a picture's place is the fabrication the favicon
+//     rule already forbade, and it read as a broken image.
 //   - Mark-as-read (Active tab) opens the Swell flow; the Read tab shows the
 //     Swell door in its place. Delete opens the confirm dialog. Both unchanged.
 const feedHostOf = (url) => {
@@ -34,15 +37,10 @@ const feedDeriveTitle = (url) => {
     return seg.charAt(0).toUpperCase() + seg.slice(1);
   } catch (e) { return null; }
 };
-// Source-keyed tint blocks — the "bits of colour" fallback preview: never a
-// fabricated photo, just a calm two-tone block so a card is never naked. Muted,
-// paper-adjacent hues that sit inside the theme.
-const FEED_TINTS = [
-  ['#3a3a38', '#5a5a56'], ['#33413f', '#54655f'], ['#403830', '#645749'],
-  ['#343a4a', '#565f77'], ['#42323c', '#66505d'],
-];
-const feedHash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
-const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.length]; return 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'; };
+// The source-keyed tint palette lived here — a two-tone block rendered in the
+// image's place so "a card is never naked". Removed 2026-09-09 on Joe's ruling:
+// no image means no image column. Nothing replaces it, deliberately; a card with
+// no picture is a card whose text takes the full width.
 
 // ---- Density (BIZ-136 run 3) ------------------------------------------------
 // Metrics only, never anatomy: every element present in comfortable stays
@@ -188,9 +186,18 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
   const source = item.source || host;               // source is always present
   const title = item.title || feedDeriveTitle(item.url);
   const prettyUrl = item.url.replace(/^https?:\/\//, '');
-  // Per-item: 7 of the 22 seed links carry hasImage: false, and those get the
-  // source-keyed tint block rather than a fabricated photo.
-  const showImage = item.hasImage !== false;
+  // Per-item, and the rule is now literal: NO IMAGE MEANS NO IMAGE COLUMN.
+  // 2026-09-09, Joe's ruling. Until today a link with no preview rendered a
+  // source-keyed gradient block in the image's place — documented in this
+  // project's CLAUDE.md as deliberate, so it was not a slip, but it contradicted
+  // the rule sitting two lines above it in the same doc: a missing FAVICON
+  // "shows nothing (never a fabricated globe)". Same situation, opposite answer.
+  // A coloured block standing in for a picture is the same fabrication as a
+  // fabricated globe, and it reads as a broken image rather than as a choice.
+  // So: the card either has a picture or it has no image column, and the text
+  // takes the full width. 7 of the 22 seed links have none, so this is the
+  // common case, not the edge.
+  const showImage = item.hasImage !== false && !!item.image;
   const faviconOk = item.faviconExists !== false && !favBroken;
   // Favicons: baked-in local files win over Google's live service, so the demo
   // renders the real mark offline (see uploads/card-favicons/). Host is matched
@@ -267,11 +274,11 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             ? <a {...openLinkProps} className="circ-cardtitle" style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: m.titleClamp, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</a>
             : <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-1)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>}
         </div>
-        {showImage && (
+        {/* An image that fails to load is the same case as no image at all:
+            the column goes, rather than degrading to a block of colour. */}
+        {showImage && !imgBroken && (
           <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
-            {item.image && !imgBroken
-              ? <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-              : <span style={{ display: 'block', width: '100%', height: '100%', background: feedTint(source) }} />}
+            <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
           </a>
         )}
       </div>

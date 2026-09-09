@@ -16,10 +16,12 @@ const HEART = '\u2764\uFE0F', FIRE = '\uD83D\uDD25', THUMB = '\uD83D\uDC4D', BUL
 
 // ---- Extracted metadata (BIZ-80), keyed by URL. Merged onto the seed items in
 // seedSpaces() so the item fixtures stay readable. Fields: title (headline),
-// source (publication; omit -> bare domain), image (preview path; omit -> a
-// source-keyed tint block), hasImage:false (genuinely no preview -> text-only),
+// source (publication; omit -> bare domain), image (preview path; omit -> NO
+// image column at all, since 2026-09-09 — the source-keyed tint block that used
+// to stand in was removed), hasImage:false (genuinely no preview -> text-only,
+// which is now the same rendering as omitting `image`),
 // faviconExists:false (host ships no favicon -> no garnish). The throwaway TEST
-// spaces are intentionally left unlisted: they derive a title + tint block.
+// spaces are intentionally left unlisted: they derive a title and no image.
 const SEED_META = {
   'https://newsletter.pragmaticengineer.com/p/scaling-on-call': { title: 'Scaling On-Call Without Burning Out the Team', source: 'The Pragmatic Engineer', image: 'uploads/card-previews/pragmatic-engineer.jpg' },
   'https://blog.rust-lang.org/2026/01/async-internals': { title: 'Inside Async: How Rust Schedules Your Futures', source: 'Rust Blog', image: 'uploads/card-previews/blog-overreacted.png' },
