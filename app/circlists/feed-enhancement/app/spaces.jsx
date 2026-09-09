@@ -362,13 +362,17 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         }}>{description}</p>
       )}
 
-      {/* Member list. The count (ui.md Decision-22 wording, unchanged) now
-          rides the Members label row instead of its own line — recessive
-          metadata beside the section it counts, per Decision-32. */}
+      {/* Member list. The count rides the Members label row rather than its own
+          line — recessive metadata beside the section it counts, per
+          Decision-32. The trailing noun is dropped: the label two inches to the
+          left already says `Members`, so `3 of 10 members` said it twice on one
+          row. ui.md Decision-22's wording was written for a standalone line,
+          where the noun was the only thing naming what was counted; beside a
+          label it carries nothing. */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
         <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)' }}>Members</div>
         <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)' }}>
-          {space.members.length} of {SPACE_CAP} members
+          {space.members.length} of {SPACE_CAP}
         </div>
       </div>
       <div style={{

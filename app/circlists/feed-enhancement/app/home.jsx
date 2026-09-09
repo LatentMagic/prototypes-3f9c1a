@@ -50,43 +50,33 @@ const HOME_EYEBROW = {
 // `Asleep` survives, and it is the one status word that should. A dormant
 // circle's cards are unreachable, and no dot can carry that: the dot marks
 // arrivals, and a sleeping circle has none to mark.
-// BIZ-run-10 addendum: the champion's own words about what a circle is FOR now
-// outrank the roster line above when there are any — a more specific answer to
-// the exact question this line has always asked ("what IS this circle", never
-// a status report), so this is not a reversal of the reasoning above, only a
-// better answer standing in front of it. The roster line stays as the fallback
-// for a circle that hasn't set one — never both, never a second line.
-// Run 11 briefly rendered an authored description a step darker than the derived
-// people line, to separate the two kinds the way the members header now does.
-// The pixel review killed it and was right: at 13px, #525252 against #6E6E6B is
-// ΔL* 9.2, and a member never sees the two sublines in one row — they read ONE
-// and must classify it from memory. So the distinction was technically present
-// and not legible. Worse, it made colour the SOLE channel, which this app's own
-// rule forbids in as many words: hierarchy via size and weight, never colour.
-// The sanctioned levers do not fit here — 15px would collide with the 16px row
-// title, and a leading glyph would put a fourth element in a row that already
-// carries a tile, a dot and a chevron. Reverted rather than half-fixed. What the
-// home row actually owes is ruling 15's truncation question, and that is Joe's.
+// 2026-09-09, on Joe's ruling: THE DESCRIPTION IS NOT READ HERE, and is not to
+// be put back. Run 10 put it on this row and filed that as ruling 13, but his
+// note of 2026-09-08 07:57 shows he had only ASKED whether it belonged here
+// ("I am not saying it should have") — so the row was carrying an answer to a
+// question nobody had settled. The answer is no.
+//
+// This row is a CHOOSER: it helps a member pick which circle to enter. The
+// description is a champion's standing statement of what belongs inside,
+// written for people already in — nobody outside a circle ever sees it. It
+// cannot help you choose between circles you are already a member of.
+//
+// Everything the runs fought over here was downstream of that one misplacement:
+// a 250-character field in a one-line slot (40 characters at 390px), the colour
+// split run 11 tried and reverted, the two-line clamp and the ragged rows it
+// brought. None of it is a problem once the description reads where it is
+// actually read — the circle's own surface (spaces.jsx), where all 250
+// characters already render whole on a phone. The roster line goes back to
+// being this row's only subline, which is what the reasoning above describes.
 const circleSummary = (s) => {
-  const description = ((s.description || '') + '').trim();
   const roster = window.candRoster;
   const others = (s.members || []).map((m) => m && m.name).filter((n) => n && n !== 'You');
   // The helper lives in a droppable module, so the count is the fallback rather
   // than a crash — same deletable-aid contract every other guard here honours.
   const people = roster ? roster(others)
     : others.length + ' member' + (others.length === 1 ? '' : 's');
-  const line = description || people;
-  return s.funded ? line : 'Asleep · ' + line;
+  return s.funded ? people : 'Asleep · ' + people;
 };
-
-const homeTile = (name) => (
-  <span aria-hidden="true" style={{
-    width: 38, height: 38, borderRadius: 12, flexShrink: 0,
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    background: 'var(--color-surface-sunken)', color: 'var(--color-fg-2)',
-    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16,
-  }}>{(name || '?').trim().charAt(0).toUpperCase()}</span>
-);
 
 const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip }) => {
   // The strip and its heading are a DELETABLE AID (app/home-returns.jsx),
@@ -125,7 +115,14 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
           borderRadius: 'var(--radius-lg)', padding: '13px 14px', minHeight: 64,
           boxShadow: 'var(--shadow-raised)', fontFamily: 'var(--font-sans)',
         }}>
-          {homeTile(s.name)}
+          {/* No monogram tile. Removed 2026-09-09: `homeTile` was local to this
+              file and used nowhere else, while the app's avatar grammar
+              (primitives.jsx `Avatar`, round initials) marks PEOPLE at every one
+              of its call sites. A rounded-square monogram on a circle copied
+              that grammar onto a non-person, so a circle read as a user account
+              — and the letter carried nothing: every circle sharing an initial
+              drew the same tile, and it was `aria-hidden`, which is the markup
+              conceding it was decoration. */}
           <span style={{ flex: 1, minWidth: 0 }}>
             {/* Run 9: `15.5` and `12.5` were sizes the scale does not contain.
                 tokens.css runs 12/13/15/16/18/20/24/32/40 and every older module
@@ -150,7 +147,15 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
               Consequence, accepted: a circle with plenty unread and nothing new
               carries no mark. That is the definition working. */}
           <CircleSignal state={s.unseen ? 'unseen' : null} />
-          <Icon name="chevron-right" size={18} color="var(--color-fg-3)" />
+          {/* No trailing chevron. Removed 2026-09-09: every row in this list
+              navigates, so a mark that never varies carries no information — it
+              is furniture at the end of each row. It also collided with the
+              `chevron-down` the Conversations strip above uses to collapse
+              (home-returns.jsx), leaving one glyph family carrying two meanings
+              on one screen, separated only by 90° of rotation at 16px in fg-3.
+              The strip's chevron DOES vary with state, so it earns its place and
+              is now the only chevron on the screen. The whole card is the
+              target; its border, raised shadow and hover carry that. */}
         </button>
       ))}
     </div>

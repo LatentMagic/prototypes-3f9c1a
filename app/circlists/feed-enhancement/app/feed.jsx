@@ -302,30 +302,16 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
           {when && (
             <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{when}</span>
           )}
-          {/* Saved mark (run 10, requirement 9) — the one thing that must not
-              be lost with the Save button moving into the menu. Not
-              interactive: nothing in this line is tappable, which is what
-              reads it as a mark rather than a broken button. Zero cost for
-              any member who has saved nothing. */}
-          {/* Drawn in the SAME ink as the age it follows, never the accent.
-              The accent was legal while this was a button — a control's active
-              state — and stopped being legal the moment it became a mark:
-              ui.md:40 reserves it for actions, active states and focus, "never
-              status or decoration", and ui.md:132 forbids colour as the sole
-              channel. Shape carries the state; the hidden text carries it in
-              the other channel. It also keeps Decision-32's attribution line
-              falling away rather than ending on its brightest pixel. */}
-          {/* alignSelf:center overrides the row's shared text baseline for
-              this one item — an icon has no descender, so baseline-aligning
-              it against the attribution/timestamp text pulls it ~2px above
-              their optical centre (measured). Centring it in the row's cross
-              axis instead reads flush against both neighbours. */}
-          {item.saved && (
-            <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', alignSelf: 'center', color: 'var(--color-fg-3)' }}>
-              <Icon name="bookmark-filled" size={12} />
-              <span className="circ-vh">, saved</span>
-            </span>
-          )}
+          {/* NO SAVED MARK HERE, deliberately — removed 2026-09-09, and do not
+              re-add it. Run 10 added it as compensation for the Save button
+              moving into the kebab, not because anything asked for it. It
+              duplicated state the menu already carries: the Save item is a
+              `menuitemcheckbox` (see the menu below), so reopening the kebab
+              shows a filled bookmark with a tick beside it. The control that
+              performed the action reflects its own state, which is where a
+              member looks. A permanent badge on every card, to confirm one tap,
+              taxed every card forever — and on the Saved lens, where every card
+              is saved, it carried nothing at all. */}
         </div>
         {/* Edge-locked actions (BIZ-80 alignment study). The trailing action's
             optical edge is pulled onto the image's right edge via the -13 nudge;

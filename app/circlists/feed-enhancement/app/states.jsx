@@ -764,8 +764,6 @@ const CIRC_STATE_REGISTER = [
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
   // description on two circles and none on the rest, so `home-landing` already
   // shows both halves of the rule; these stage what the seed cannot.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-home', label: 'Circle description \u2014 its own words, or its people', stage: (c) => c.stageCircleDescription({}) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long', label: 'Circle description \u2014 at the cap, on one line', stage: (c) => c.stageCircleDescription({ long: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-members', label: 'Circle description \u2014 read whole, where it is edited', stage: (c) => c.stageCircleDescription({ members: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-absent', label: 'Circle description \u2014 the header of a circle that wrote none', stage: (c) => c.stageCircleDescription({ bare: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long-members', label: 'Circle description \u2014 at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
