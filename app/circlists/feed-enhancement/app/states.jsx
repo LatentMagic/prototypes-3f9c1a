@@ -52,14 +52,8 @@ function circStateContext(api) {
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
     setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
-    setFeedError, setAddOpen, setAddDraftUrl, setAddDraftThought,
+    setFeedError,
   } = api;
-  // The add surface is the third flag that can outlive the state that set it —
-  // the same hazard the feed error and the legacy card row carry, for the same
-  // reason. A walker clicking from a staged add surface to any other state would
-  // otherwise carry an open sheet and a typed URL into it. Cleared wherever a
-  // stager settles a route, set only by `stageAddSame`.
-  const clearAdd = () => { if (setAddOpen) setAddOpen(false); if (setAddDraftUrl) setAddDraftUrl(''); if (setAddDraftThought) setAddDraftThought(''); };
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
   // that set it: every other flag here is overwritten by the next stager, and a
   // walker clicking from a load-error state to any other would otherwise carry
@@ -80,13 +74,13 @@ function circStateContext(api) {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
-    clearFeedError(); clearLegacyRow(); clearAdd();
+    clearFeedError(); clearLegacyRow();
   };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setCurrentId(id); setTab('active');
-    clearFeedError(); clearLegacyRow(); clearAdd();
+    clearFeedError(); clearLegacyRow();
     if (toRoute) setRoute(toRoute); else enterSpace(id);
   };
 
@@ -111,7 +105,7 @@ function circStateContext(api) {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setLoadingFeed(false);
-    clearFeedError(); clearLegacyRow(); clearAdd();
+    clearFeedError(); clearLegacyRow();
     setRoute('not-found');
   };
 
@@ -495,7 +489,7 @@ function circStateContext(api) {
           ...(long ? { description: CIRC_LONG_DESC } : null) }
       : sp));
     setSpaces(s);
-    clearFeedError(); clearLegacyRow(); clearAdd();
+    clearFeedError(); clearLegacyRow();
     setLoadingFeed(false);
     if (members) { setCurrentId('sp-backend'); setTab('active'); setRoute('members'); return; }
     if (bare) { setCurrentId('sp-book'); setTab('active'); setRoute('members'); return; }
@@ -513,28 +507,6 @@ function circStateContext(api) {
   // as deliberate rather than as a rendering failure. The underlying items are
   // made consistent with the flag — a lit dot over an all-read circle would be
   // a fixture asserting something the product never does.
-  // BIZ-136 run 12 — the add surface's same-link tell. Staged by opening the add
-  // surface over a real circle with a URL already in the slot, so the states
-  // exercise the shipped lookup against the shipped seed rather than a fixture:
-  // every URL below is one a seeded card already carries, or a variant of one.
-  // No seed edit, so no parallel demo-seed edit and no state-key bump (this
-  // project's CLAUDE.md, "Seed data — the standing rule").
-  const stageAddSame = ({ space = 'sp-backend', url = '', thought = '' } = {}) => {
-    setUser(DEFAULT_USER);
-    setSpaces(prev => withSpace(prev, space));
-    setCurrentId(space); setTab('active'); setRoute('space'); setLoadingFeed(false);
-    clearFeedError(); clearLegacyRow();
-    if (setAddDraftUrl) setAddDraftUrl(url);
-    if (setAddDraftThought) setAddDraftThought(thought);
-    // Set in the same batch as the route, with no timeout. An earlier draft
-    // deferred this and justified it by saying main.jsx clears transient view
-    // state on a circle or tab change — the code review checked, and nothing
-    // does. React batches these setters, so the surface opens already carrying
-    // the draft, and the unearned delay is gone rather than left in place with
-    // a comment nobody had verified.
-    if (setAddOpen) setAddOpen(true);
-  };
-
   const stageCircleMicro = () => {
     setUser(DEFAULT_USER);
     const base = seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
@@ -547,7 +519,7 @@ function circStateContext(api) {
         items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
     });
     setSpaces(s);
-    clearFeedError(); clearLegacyRow(); clearAdd();
+    clearFeedError(); clearLegacyRow();
     setLoadingFeed(false);
     setCurrentId(null); setRoute('home');
     if (setHomeStripOpen) setHomeStripOpen(true);
@@ -558,7 +530,7 @@ function circStateContext(api) {
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
-    stageLegacyRow, stageCircleDescription, stageCircleMicro, stageAddSame,
+    stageLegacyRow, stageCircleDescription, stageCircleMicro,
   };
 }
 
@@ -788,11 +760,6 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-absent', label: 'Circle description \u2014 the header of a circle that wrote none', stage: (c) => c.stageCircleDescription({ bare: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long-members', label: 'Circle description \u2014 at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-micro-new-card', label: 'Home \u2014 the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'add-already-here', label: 'Adding a link the circle already holds', stage: (c) => c.stageAddSame({ url: 'https://danluu.com/percentile-latency/' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'add-already-here-canonical', label: 'The same video, written the short way (youtu.be)', stage: (c) => c.stageAddSame({ url: 'https://youtu.be/Kx7Bvksk_qg?si=8fQ2xR' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'add-already-here-tracked', label: 'The same link, carrying a campaign tag', stage: (c) => c.stageAddSame({ url: 'https://www.danluu.com/percentile-latency?utm_source=newsletter&utm_medium=email' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'add-already-here-with-thought', label: 'Already here \u2014 with a thought already written', stage: (c) => c.stageAddSame({ url: 'https://danluu.com/percentile-latency/', thought: 'The tail-latency section is the bit worth arguing about on Thursday.' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'add-new-link', label: 'Adding a link that is new \u2014 the surface says nothing', stage: (c) => c.stageAddSame({ url: 'https://example.com/something-nobody-has-added' }) },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
