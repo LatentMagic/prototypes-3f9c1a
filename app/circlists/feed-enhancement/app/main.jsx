@@ -485,11 +485,51 @@ const CircApp = () => {
     setPointedId(id);
   }, []);
 
-  // The point clears the moment the member acts anywhere — it says "this is the
-  // one you were sent", which stops being news as soon as they have engaged
-  // with the screen. It is never persisted: a reload does not re-point, because
-  // the address it came from was cleaned out of the bar when it was read.
+  // ---- HOW LONG THE MARK LIVES (ruled by Joe, 2026-09-10) -------------------
+  //
+  // **One visit to the surface it pointed at.** It says "this is the one you
+  // were sent", and that stops being news when the member has either engaged
+  // with the card or left the surface — not before.
+  //
+  //   survives   scrolling, and a glance away. Scrolling is LOOKING for it, not
+  //              being done with it, and the mark's whole job is to hold your
+  //              place in a feed you did not choose to be in.
+  //   clears     acting on the card — opening the link, marking it read,
+  //              opening the card's own menu (feed.jsx's `onAct`).
+  //   clears     changing surface — another tab, the Read tab included, or
+  //              another route: settings, members, home, a card's Overview.
+  //   never      survives a reload. Already true, and kept true: the address it
+  //              came from was cleaned out of the bar when it was read.
+  //
+  // It biases LATE deliberately. Clearing late costs a stale bar for a minute;
+  // clearing early costs the member their place, which is the very thing the
+  // mark exists to hold. That rules out both ends: a click anywhere is too
+  // jumpy, and clearing only on reload lets the mark outlive the visit and start
+  // lying about why you are there.
+  //
+  // A consequence worth knowing, because it is what earns the fade in
+  // card-share.jsx: since leaving the surface clears it, the only clear a member
+  // ever SEES happen is the one where they acted on the card.
   const clearPointed = useCallback(() => setPointedId(null), []);
+
+  // The surface a point belongs to, captured when the point is set rather than
+  // read from a route the member may already have left. Declared before the
+  // clear-on-leave effect below so it is captured first on the render that sets
+  // the point — otherwise the point would clear itself on arrival.
+  const pointedOnRef = useRef(null);
+  useEffect(() => {
+    pointedOnRef.current = pointedId ? { route, tab, currentId } : null;
+  }, [pointedId]);
+
+  // Leaving the surface clears the point. Circle counts as surface alongside
+  // route and tab: a member who switches circles is no longer anywhere near the
+  // card, and returning later to a bar still lit would be the mark lying about
+  // why they are there.
+  useEffect(() => {
+    const on = pointedOnRef.current;
+    if (!pointedId || !on) return;
+    if (on.route !== route || on.tab !== tab || on.currentId !== currentId) clearPointed();
+  }, [route, tab, currentId, pointedId, clearPointed]);
 
   // Bring it into view. A member sent to a card 30 rows down should not have to
   // find it — that is the one thing an address has to do that scrolling to the
@@ -1344,6 +1384,7 @@ const CircApp = () => {
                 const card = <FeedCard item={item} tab={cardTab} user={user} showTime density={effectiveDensity}
                   onOpen={(it) => { clearPointed(); openLink(it); }}
                   onMarkRead={(it) => { clearPointed(); setReacting(it); }}
+                  onAct={clearPointed}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
                   onToggleSaved={toggleSaved}
                   space={space} onAnnounce={announceOnce} pointed={pointed} />;

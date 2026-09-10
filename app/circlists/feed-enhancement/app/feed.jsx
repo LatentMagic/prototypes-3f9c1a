@@ -67,7 +67,7 @@ const circCardMetrics = (density) => (density === 'compact'
   ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
   : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false }) => {
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false, onAct = () => {} }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
@@ -256,7 +256,11 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)', padding: m.pad,
       display: 'flex', flexDirection: 'column',
-      ...(pointed && window.circPointedStyle ? window.circPointedStyle() : null),
+      // Applied whether or not this card is pointed at: the fragment carries the
+      // transition that lets the mark fade OUT, and a fragment that disappears
+      // with the mark takes the transition with it. card-share.jsx explains why
+      // the alternative — a wrapper element — is forbidden on this card.
+      ...(window.circPointedStyle ? window.circPointedStyle(pointed) : null),
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
           the only open targets; nothing else in the card opens. */}
@@ -391,7 +395,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
                   rather than taken. */}
               <button ref={triggerRef} type="button"
                 className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-                onClick={() => setMenuOpen((o) => !o)}
+                onClick={() => { if (!menuOpen) onAct(); setMenuOpen((o) => !o); }}
                 aria-haspopup="menu" aria-expanded={menuOpen}
                 aria-label={'More actions for ' + menuLabel}
                 style={{ color: 'var(--color-fg-3)', marginLeft: m.actionPull ? 4 : 8 }}>

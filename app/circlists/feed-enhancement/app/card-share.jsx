@@ -5,7 +5,8 @@
 //   CardShareMenuItem    — the act, as an item in the card's kebab menu (run 10).
 //   circCardLocalUrl     — the address it hands over.
 //   circReadCardParam    — reading one back on boot.
-//   circPointedStyle     — how a card that was pointed at is drawn.
+//   circPointedStyle     — how a card that was pointed at is drawn, and how
+//                          that mark fades when it clears.
 //
 // A DELETABLE AID. Drop this file and every share affordance disappears, the
 // action rows return to what they were, and an incoming card address falls
@@ -230,8 +231,32 @@ const circReadCardParam = () => {
 // The bar is drawn INSIDE the card's border box, so the card does not grow and
 // nothing beside it shifts — a pointed card must not move the cards around it,
 // or arriving at one rearranges the feed you were sent to.
-const circPointedStyle = () => ({
-  boxShadow: 'inset 2px 0 0 0 var(--color-accent)',
+//
+// ---- WHY THE FRAGMENT IS RETURNED FOR UNPOINTED CARDS TOO ------------------
+//
+// The clear FADES; the arrival does not. In at zero — the mark is the answer to
+// "where is it?", and an answer that eases in is an answer arriving late — and
+// out over `--duration-slow`, because a bar that snaps off reads as a glitch
+// rather than as a state ending.
+//
+// A transition cannot run on a property that is being removed along with the
+// element's whole declaration, and the wrapper that would normally carry it is
+// forbidden here for the reason above. So **the fragment is applied to every
+// card, pointed or not**, and it is `boxShadow` that changes: the accent bar
+// when pointed, a zero-width transparent shadow when not. Transitioning to
+// `none` would snap; transitioning to a matching zero shadow interpolates, and
+// that interpolation is the fade. The unpointed value paints nothing, and
+// `.circ-card` sets no shadow of its own for it to overwrite.
+//
+// Reduced motion is not handled here. `tokens.css` already zeroes every
+// `transition-duration` under `prefers-reduced-motion: reduce` with
+// `!important`, which beats this inline declaration — the same one mechanism the
+// arrival glow rides. Inventing a second one here would be a second vocabulary.
+const circPointedStyle = (pointed = true) => ({
+  boxShadow: pointed
+    ? 'inset 2px 0 0 0 var(--color-accent)'
+    : 'inset 0 0 0 0 transparent',
+  transition: 'box-shadow var(--duration-slow) var(--ease-quiet)',
 });
 
 Object.assign(window, {
