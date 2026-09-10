@@ -491,6 +491,25 @@ const CircApp = () => {
   // the address it came from was cleaned out of the bar when it was read.
   const clearPointed = useCallback(() => setPointedId(null), []);
 
+  // BIZ-136 run 12 — the add surface's same-link tell offers a route to the card
+  // the circle already holds, and it resolves EXACTLY as an address does above:
+  // read lands on Overview, unread lands on the feed with the card pointed at.
+  // One resolution rule, two entrances — a second rule here would be a second
+  // answer to "where does this card live", which is the thing wild-01 settled.
+  const [addDraftUrl, setAddDraftUrl] = useState('');
+  const [addDraftThought, setAddDraftThought] = useState('');
+  const seeExistingCard = useCallback((it) => {
+    if (!it) return;
+    if (it.read) {
+      const C = window.CircCandidate;
+      setTab('read');
+      if (C && C.goToCard) { C.goToCard({ id: it.id }); return; }
+    }
+    setTab('active');
+    setRoute('space');
+    setPointedId(it.id);
+  }, []);
+
   // Bring it into view. A member sent to a card 30 rows down should not have to
   // find it — that is the one thing an address has to do that scrolling to the
   // top does not. Deferred to the frame after the feed has settled, because the
@@ -818,6 +837,7 @@ const CircApp = () => {
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
         setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
+        setAddOpen, setAddDraftUrl, setAddDraftThought,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1458,7 +1478,18 @@ const CircApp = () => {
               with no scrim and nothing is being covered. */}
           {!loadingFeed && !isApp && !(isMobile && sortMenuOpen)
             && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
-          <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
+          {/* `space` is the VIEWER's circle — derived through circViewerSpaces,
+              LM-666's single read side — so the add surface's same-link tell
+              cannot see a link this member deleted for themselves, and cannot
+              become the one surface a hidden link leaks through. Seeing it goes
+              through the same pointed-card arrival wild-01 built, rather than a
+              second route to the same place. */}
+          {/* Closing drops the staged draft. Without this the sheet reopens
+              pre-filled with a URL a STAGER typed, and shows a tell about it —
+              a surface appearing to remember a draft the product never keeps. */}
+          <AddReveal open={addOpen} isMobile={isMobile} onClose={() => { setAddOpen(false); setAddDraftUrl(''); setAddDraftThought(''); }} onAdd={addItem}
+            items={space ? space.items : []} initialUrl={addDraftUrl} initialThought={addDraftThought}
+            onSeeCard={seeExistingCard} />
         </>,
         { canAdd: true }
       );

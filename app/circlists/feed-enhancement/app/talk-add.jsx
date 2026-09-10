@@ -27,6 +27,121 @@
 // ============================================================================
 const CAND_URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
 
+// ---- the same-link test (BIZ-136 run 12) -----------------------------------
+// What makes two links "the same" is the URL, and never the title. A card's URL
+// is guaranteed by construction; its extracted metadata is not, so matching on
+// anything extracted would fail the moment a title never resolved — which is the
+// exact worry the backlog's own duplicate concept raises ("a bare URL and a
+// titled, metadata-enriched card may not compare cleanly"). Matching URLs
+// answers it by never comparing titles.
+//
+// Errors here are ASYMMETRIC, and every rule below is written from that: a
+// missed match costs a member nothing, while a FALSE match tells them their
+// circle holds something it does not. So the parameter list is deliberately
+// short and the host table is explicit rather than clever — both are additive,
+// and neither guesses.
+// Stripped everywhere: these five are namespaced campaign tags that never
+// identify a resource. `si` is NOT among them — it is a bare two-letter name a
+// real site can use for a real parameter (`?si=large` and `?si=small` are two
+// products), so it is stripped only on the hosts that mint it as a share tag.
+const CAND_TRACKING = /^(utm_[a-z_]*|fbclid|gclid|igshid|mc_[a-z]+)$/i;
+const CAND_SI_HOSTS = ['youtube.com', 'youtu.be', 'open.spotify.com', 'spotify.com'];
+const candCanonicalUrl = (raw) => {
+  if (!raw) return null;
+  let s = String(raw).trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
+  let u;
+  try { u = new URL(s); } catch (e) { return null; }
+  // `host`, not `hostname`: hostname drops the PORT, and a service on :8080 is
+  // not the same resource as one on the default port. `URL` already normalises
+  // a default port away, so this costs nothing in the ordinary case.
+  let host = u.host.toLowerCase().replace(/^www\./, '');
+  let path = u.pathname || '/';
+  const params = new URLSearchParams(u.search);
+  const siOk = CAND_SI_HOSTS.indexOf(host) !== -1;
+  // The one host equivalence the PRD names by example: `youtu.be/x` and
+  // `youtube.com/watch?v=x` are the same video. Guarded to a SINGLE path
+  // segment — `youtu.be/a/b` is not a video id and rewriting it would silently
+  // discard `/b` and collapse every such address onto `a`.
+  if (host === 'youtu.be') {
+    const seg = path.replace(/^\//, '').split('/').filter(Boolean);
+    if (seg.length === 1) { host = 'youtube.com'; path = '/watch'; params.set('v', seg[0]); }
+  } else if (host === 'm.youtube.com' || host === 'music.youtube.com') {
+    host = 'youtube.com';
+  }
+  Array.from(params.keys()).forEach((k) => {
+    if (CAND_TRACKING.test(k) || (siOk && /^si$/i.test(k))) params.delete(k);
+  });
+  if (typeof params.sort === 'function') params.sort();
+  const q = params.toString();
+  if (path.length > 1) path = path.replace(/\/+$/, '');
+  // The FRAGMENT is kept, and that is deliberate against the usual advice. A
+  // dropped hash collapses every hash-ROUTED address onto its bare host —
+  // `app/#/board/1` and `app/#/board/2` become one key, and so do this team's
+  // own console links (`…/#canon`, `…/#brand`). Keeping it costs only a missed
+  // match between `page` and `page#section`, and the asymmetry rule above says
+  // a missed match is cheap while a false one is not.
+  const hash = u.hash && u.hash !== '#' ? u.hash : '';
+  return host + path + (q ? '?' + q : '') + hash;
+};
+// The list handed in is the VIEWER's own items — main.jsx derives it through
+// `circViewerSpaces`, LM-666's single read side — so a link the member deleted
+// for themselves cannot produce a tell. That is the privacy rule, and it holds
+// by construction rather than by a second check that could drift from the first.
+const candFindSame = (items, raw) => {
+  const key = candCanonicalUrl(raw);
+  if (!key) return null;
+  let best = null;
+  (items || []).forEach((it) => {
+    if (!it || !it.url || candCanonicalUrl(it.url) !== key) return;
+    // Where a circle already holds it more than once, the EARLIEST is offered:
+    // it is the one carrying the conversation.
+    if (!best || (it.at || 0) < (best.at || 0)) best = it;
+  });
+  return best;
+};
+
+// ---- already here ----------------------------------------------------------
+// Deliberately NOT the error register: this is information, not a fault, and
+// nothing here is destructive-coloured or alarm-glyphed. It mirrors
+// CandThoughtRow's grammar exactly — full-width button, 48px floor, chevron at
+// the trailing edge — so it reads as part of this surface rather than as a
+// warning bolted onto it.
+//
+// It names a PERSON and never a quantity: no numeral, no "and N others". It
+// shows the card's own attribution string verbatim and the same coarse age the
+// feed card shows, so the tell speaks the card's language rather than a second
+// one. The title is deliberately absent — it is not guaranteed to have resolved,
+// and the attribution is.
+const CandAlreadyHere = ({ item, onSee }) => {
+  const when = window.circWhen ? window.circWhen(item.at) : null;
+  const paper = (window.CAND_PAPER || { bg: '#F2F1EB', bd: '#DEDCD3' });
+  // 24px beneath, 16px above (the slot's own margin). Deliberately unequal, from
+  // the design review: the exemplars hold the found thing OUTSIDE the form's
+  // control stack, and equal gaps here made the tell read as one more row to
+  // fill in. The wider gap below binds it to the field it describes.
+  return (
+    <div role="status" aria-live="polite" style={{ marginBottom: 'var(--space-5)' }}>
+      <button type="button" onClick={() => onSee(item)}
+        style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, minHeight: 48,
+          background: paper.bg, border: '1px solid ' + paper.bd, borderRadius: 'var(--radius-md)',
+          padding: '9px 12px', cursor: 'pointer', overflow: 'hidden' }}>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: 'block', font: '500 13.5px/1.5 var(--font-sans)', color: 'var(--color-fg-1)' }}>Already in this circle</span>
+          {/* The card's own grammar, not a second one: name then age, no
+              separator, the age recessive — which is what the feed card renders
+              and what Decision-32 ratifies for a computed datum. */}
+          <span style={{ display: 'block', font: '400 12.5px/1.5 var(--font-sans)', color: 'var(--color-fg-2)',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.attribution}
+            {when ? <span style={{ color: 'var(--color-fg-3)' }}>{' ' + when}</span> : null}</span>
+        </span>
+        <span style={{ color: 'var(--color-fg-3)', display: 'inline-flex', flexShrink: 0 }}><Icon name="chevron-right" size={16} /></span>
+      </button>
+    </div>
+  );
+};
+
 // ---- the link's slot -------------------------------------------------------
 const CandLinkSlot = React.forwardRef(({ value, onChange, error }, ref) => {
   const [focus, setFocus] = React.useState(false);
@@ -103,7 +218,7 @@ const CandRoom = React.forwardRef(({ value, onChange, max, placeholder, maxPx },
   );
 });
 
-const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
+const CandAddReveal = ({ open, isMobile, onClose, onAdd, items, initialUrl, initialThought, onSeeCard }) => {
   const [url, setUrl] = React.useState('');
   const [error, setError] = React.useState(null);
   const [thought, setThought] = React.useState('');
@@ -118,6 +233,19 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
   const linkFaceRef = React.useRef(null);
   const writeFaceRef = React.useRef(null);
   const [faceH, setFaceH] = React.useState('auto');
+  // Read through a ref rather than added to the open-effect's deps. The effect
+  // genuinely depends on `open` alone — it is the OPENING that seeds the slot —
+  // and listing `initialUrl` there would make a later change to it wipe a
+  // half-written thought mid-session. The ref keeps the dep array honest instead
+  // of keeping it short.
+  const initialUrlRef = React.useRef(initialUrl);
+  initialUrlRef.current = initialUrl;
+  // Same treatment, and it exists for one reason: the thought row wears PAPER
+  // once words are in it, which is the tell's own ground. That adjacency is the
+  // case the design decision actually has to survive, and with no way to stage a
+  // written thought there was no frame of it.
+  const initialThoughtRef = React.useRef(initialThought);
+  initialThoughtRef.current = initialThought;
 
   // Mount choreography — the shipped AddReveal pattern, verbatim.
   const [render, setRender] = React.useState(open);
@@ -137,7 +265,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
   React.useEffect(() => {
     if (open) {
       invokerRef.current = document.activeElement;
-      setUrl(''); setError(null); setThought(''); setMarkRead(false); setFace(0);
+      setUrl(initialUrlRef.current || ''); setError(null); setThought(initialThoughtRef.current || ''); setMarkRead(false); setFace(0);
       setSwell({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
       const id = setTimeout(() => inputRef.current && inputRef.current.focus({ preventScroll: true }), 60);
       return () => clearTimeout(id);
@@ -145,6 +273,21 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
       invokerRef.current.focus();
     }
   }, [open]);
+
+  // The tell. GitHub's duplicate detection waits for enough signal before it
+  // looks, rather than searching on every keystroke — the move taken here, with
+  // this product's own threshold: a URL that actually parses. So nothing appears
+  // while a member is halfway through typing a host, and the surface does not
+  // flicker a match on and off as the path is completed. The settle is short
+  // because the lookup is local and exact, not a semantic search.
+  const [same, setSame] = React.useState(null);
+  React.useEffect(() => {
+    if (!open) { setSame(null); return; }
+    const v = url.trim();
+    if (!CAND_URL_RE.test(v)) { setSame(null); return; }
+    const t = setTimeout(() => setSame(candFindSame(items, v)), 260);
+    return () => clearTimeout(t);
+  }, [url, items, open]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -268,6 +411,14 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
                 </div>
                 <CandLinkSlot ref={inputRef} value={url} error={error}
                   onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }} />
+                {/* Directly beneath the slot it is about, and never where the
+                    error sits — the error belongs to the slot and is drawn
+                    inside it. No match renders nothing at all: no reserved
+                    height, and no line congratulating a member for not
+                    duplicating. The surface is bottom-anchored in both
+                    postures, so this grows the sheet UPWARD and the commit row
+                    does not move under the thumb. */}
+                {same && !error && <CandAlreadyHere item={same} onSee={(it) => { onClose(); if (onSeeCard) onSeeCard(it); }} />}
                 <CandThoughtRow words={words} onOpen={toWriting} />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 44, marginTop: 4 }}>
                   <span style={{ font: '500 14px/1.3 var(--font-sans)', color: 'var(--color-fg-1)' }}>Mark as read</span>
