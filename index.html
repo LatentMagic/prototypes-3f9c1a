@@ -1471,7 +1471,11 @@
     changesBtnM.hidden = log.length === 0;
     if (log.length === 0) { closeChangelog(); return; }
     clSub.textContent = spec.slug;
-    clBody.innerHTML = log.map(function (e) {
+    clBody.innerHTML = log.map(function (entry) {
+      // Two entry shapes are in use: canon's objects, and the candidate line's
+      // flat strings. A string is the title and nothing else — read as an object
+      // it yields `undefined` for every field, which drew fifteen empty headings.
+      var e = typeof entry === 'string' ? { title: entry } : entry;
       var items = (e.items || []).map(function (it) {
         return '<li class="cl-item">' + esc(it) + '</li>';
       }).join('');
