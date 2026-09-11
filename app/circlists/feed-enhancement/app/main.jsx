@@ -1255,12 +1255,14 @@ const CircApp = () => {
       // oldest-first on the reading that `Earlier` named the older pile beneath
       // the line and would point the wrong way once the list flipped.
       //
-      // Two things were wrong with that. The label was a SIDE label, and the
-      // answer to a side label that cannot survive a reversal is to name the
-      // boundary instead — `Last visit`, true from either end. And the position
-      // was broken underneath the wording: `circDividerIndex` matched on row 0
-      // in a reversed list and returned -1, so even a correctly-worded line
-      // would not have drawn. Both are fixed; the helper now takes the order.
+      // Two things were wrong with that. The label was fixed text, and the
+      // position was broken underneath the wording: `circDividerIndex` matched
+      // on row 0 in a reversed list and returned -1, so even a correctly-worded
+      // line would not have drawn. Position is fixed here — the helper takes
+      // the order below. Wording is fixed in FeedDivider itself: it took a
+      // `Last visit` boundary label next (rejected as internal-sounding,
+      // BIZ-136) and now takes `newestFirst` so the label names whichever pile
+      // sits below the line — see FeedDivider's own header in liveliness.jsx.
       //
       // What this buys, in the member's terms: tapping Oldest first gives a
       // feed that starts at the backlog and ends at what landed while they were
@@ -1404,7 +1406,7 @@ const CircApp = () => {
                   || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
                 return (
                   <React.Fragment key={item.id}>
-                    {i === divIdx && <div><FeedDivider /></div>}
+                    {i === divIdx && <div><FeedDivider newestFirst={order === 'newest'} /></div>}
                     {/* CircGlow's own div is this row's direct grid-cell
                         child (the Fragment wrapping it renders no DOM node),
                         so it needs BOTH halves of the fix:

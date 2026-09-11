@@ -129,27 +129,34 @@ const NewPill = ({ onClick }) => {
 };
 
 // ---- Feed divider ----------------------------------------------------------
-// The waterline: it sits where the last visit ended, BELOW the arrivals. A word
-// on that boundary is read as a header for what follows it, so the label names
-// the past — "Earlier" — and never claims the new cards above. No count, no
-// arrow, no affordance, and nothing closing off the items beneath it.
+// The waterline: it always sits BETWEEN two piles, and which pile falls below
+// it flips with the sort order — newest-first leaves the older pile below;
+// oldest-first leaves the newer pile below. A word on a horizontal rule reads
+// DOWNWARD, as a heading for what follows, so the label names whichever pile
+// sits below the line, not the line itself. No count, no arrow, no affordance,
+// and nothing closing off the items beneath it.
+//
+// `Last visit` (BIZ-136, ruled 2026-09-07) tried naming the boundary instead of
+// a side, to dodge the flip. Rejected: it reads as the glossary's internal
+// field name and says nothing about old vs new. A side label is right after
+// all — it just has to be the RIGHT side, chosen per render rather than fixed:
+//   newestFirst true  → below the line is the older pile → "Earlier"
+//   newestFirst false → below the line is the newer pile → "New"
+// Positioning (`circDividerIndex`) already took `newestFirst` before this
+// change and is untouched here — only the label follows the prop now.
 //
 // Expressed as a labelled member of the feed's own sequence, not a separator
 // laid across it — role="separator" is invalid inside a list (a list may only
 // contain list items), so it can't survive the feed carrying list semantics.
 // role="listitem" holds the same label and stays valid either way: inert, not
 // focusable, closes off nothing.
-// The label names the LINE, not a side of it (BIZ-136, ruled 2026-09-07).
-// `Earlier` pointed downward at the older pile, which is true in a newest-first
-// list and false the moment the list is reversed — so the label was the reason
-// the line could not survive a sort, and rewording it is what lets it. A
-// boundary label is the standard device for a divider that has to hold in any
-// ordering; a side label is not.
 // Deliberately undated. `Since Tuesday` was tried and rejected: a date here is
 // a second timestamp on a screen whose cards already carry their own age.
-const FeedDivider = () => (
-  <div className="circ-fdiv" role="listitem" aria-label="Last visit — everything on the other side of this you had already seen">
-    <span className="circ-fdiv-label">Last visit</span>
+const FeedDivider = ({ newestFirst = true }) => (
+  <div className="circ-fdiv" role="listitem" aria-label={newestFirst
+    ? 'Earlier — everything below this was already here before your last visit'
+    : 'New — everything below this arrived since your last visit'}>
+    <span className="circ-fdiv-label">{newestFirst ? 'Earlier' : 'New'}</span>
   </div>
 );
 

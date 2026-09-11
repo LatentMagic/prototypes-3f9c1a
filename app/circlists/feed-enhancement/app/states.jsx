@@ -587,14 +587,16 @@ const CIRC_STATE_REGISTER = [
   // lands on the lens, same as `lens-panel-open`.
   { group: 'Candidate build \u2014 superseded shapes', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
   // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
-  // the sort. Open them in order \u2014 the waterline is there under newest-first and
-  // the SAME line in both, since 2026-09-07. It used to be gone under
-  // oldest-first — `Earlier` named the older pile beneath it, and the position
-  // helper matched on row 0 in a reversed list and returned -1. The label now
-  // names the boundary rather than a side, so the line survives the flip and
-  // says where the backlog ends and what landed while you were away begins.
+  // the sort. Open them in order — the waterline draws at the same mark
+  // under both, but the word on it flips with which pile falls below it:
+  // "Earlier" under newest-first, "New" under oldest-first. It used to be
+  // gone under oldest-first entirely — the position helper matched on row 0
+  // in a reversed list and returned -1; fixed since 2026-09-07 by an
+  // order-aware helper. A boundary label naming neither side was tried next
+  // and rejected (BIZ-136) as reading like an internal field name — the
+  // label now names whichever pile the order actually puts below the line.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 the same line, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 same mark, read from the other end, labelled "New"', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
