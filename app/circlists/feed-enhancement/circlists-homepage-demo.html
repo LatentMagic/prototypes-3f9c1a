@@ -124,10 +124,8 @@
   .circ-newpill { position: sticky; top: calc(var(--top-bar-height) + 49px + 16px); margin-top: calc(16px - var(--circ-feed-pad-top, 16px)); z-index: 40; align-self: center; display: inline-flex; align-items: center; gap: 7px; background: var(--color-surface); border: 1px solid var(--color-border-1); box-shadow: var(--shadow-raised); border-radius: var(--radius-pill); padding: 0 18px; min-height: 44px; cursor: pointer; font: 600 13px/1 var(--font-sans); color: var(--color-accent); animation: circ-newpill-in 240ms var(--ease-quiet) both; }
   .circ-newpill:hover { background: var(--color-surface-sunken); }
   @keyframes circ-newpill-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-  /* The waterline. It always sits between two piles; the label names
-     whichever one falls below it — "Earlier" under newest-first, "New"
-     under oldest-first (FeedDivider, liveliness.jsx). No count, no arrow,
-     no affordance, and no rule or seam closing off the items below it. */
+  /* The waterline. "Earlier" names the older side beneath the line — no count, no
+     arrow, no affordance, and no rule or seam closing off the items below it. */
   .circ-fdiv { display: flex; align-items: center; gap: var(--space-3); padding: 0 0 4px; }
   .circ-fdiv::after { content: ''; flex: 1; height: 1px; background: var(--color-border-2); }
   .circ-fdiv-label { font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
