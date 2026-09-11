@@ -367,25 +367,28 @@ const CircApp = () => {
   // instinct that it should be newest-first only: the same control doing
   // two different things depending on the sort is exactly the order-
   // dependent inconsistency objected to all session, and it outweighs the
-  // no-anchor-at-the-foot cost). That cost is real and known, not dismissed:
-  // under oldest-first this is a sustained, unanchored glide past everything
-  // the member had not reached yet — measured at 1413px past a backlog they
-  // were mid-way through. What makes it acceptable is that the member
-  // caused it by tapping the pill, rather than the feed moving under them
-  // unasked. `toFoot` reads the LIVE order at the moment of the carry (see
-  // `sortOrderRef` above): under newest-first the arrivals are at the head,
-  // under oldest-first — since accepting no longer reverts the sort — they
-  // are at the foot. Not something Joe's ruling itself asked for to begin
-  // with: it is Decision-29's own promise ("carrying the member to them"),
-  // which the build had never kept in either order until this pass; building
-  // it is my own read of that decision, flagged in the report, his call to
-  // make throughout. The window scrolls on web; the phone screen is the
-  // scroller in the app posture.
+  // no-anchor-at-the-foot cost). `toFoot` reads the LIVE order at the moment
+  // of the carry (see `sortOrderRef` above): under newest-first the arrivals
+  // are at the head, under oldest-first — since accepting no longer reverts
+  // the sort — they are at the foot. Not something Joe's ruling itself asked
+  // for to begin with: it is Decision-29's own promise ("carrying the member
+  // to them"), which the build had never kept in either order until this
+  // pass; building it is my own read of that decision, flagged in the
+  // report, his call to make throughout.
+  //
+  // INSTANT, not smooth (adversarial spec pass, 2026-09-11): the monorepo's
+  // own `feed-view.component.ts` answers this same carry with a bare
+  // `scrollTop = 0` and states why in its own comment — "smooth would be
+  // motion the app invented." `behavior: 'smooth'` here was a prototype
+  // defect against that decision, not a considered choice, and it is what
+  // made the foot-carry measure as a long, sustained glide in an earlier
+  // pass's report; instant, the distance costs nothing. The window scrolls
+  // on web; the phone screen is the scroller in the app posture.
   const scrollToArrivals = (toFoot) => {
     const el = document.querySelector('.circ-phone-screen');
     const top = toFoot ? (el ? el.scrollHeight : document.documentElement.scrollHeight) : 0;
-    if (el) el.scrollTo({ top, behavior: 'smooth' });
-    else window.scrollTo({ top, behavior: 'smooth' });
+    if (el) el.scrollTo({ top });
+    else window.scrollTo({ top });
   };
 
   // open Create-a-space fresh (clears any carried name + description)
