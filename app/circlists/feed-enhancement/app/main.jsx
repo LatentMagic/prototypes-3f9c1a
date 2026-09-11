@@ -341,6 +341,12 @@ const CircApp = () => {
   const spacesRef = useRef(spaces); spacesRef.current = spaces;
   const currentRef = useRef(currentId); currentRef.current = currentId;
   const tabRef = useRef(tab); tabRef.current = tab;
+  // Same reason as the three above: `refreshSpace` lands 900ms after the click
+  // that queued it, and reading `sortOrder` from that click-time closure races
+  // a member who flips the order WHILE the reload is running (design audit
+  // finding 5, 2026-09-11 — requirement 13 failed under this race). The ref is
+  // read at the moment of landing instead.
+  const sortOrderRef = useRef(sortOrder); sortOrderRef.current = sortOrder;
   // One polite announcement, re-fired cleanly for a repeated gesture: a live
   // region only speaks when its text CHANGES, so it is cleared first.
   const announceTimer = useRef(null);
@@ -641,7 +647,7 @@ const CircApp = () => {
       // Active reading posture.
       const sortKey = id + ':active';
       const landingHere = found.length && here && onActive;
-      const wasOldest = landingHere && (sortOrder[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') !== 'newest';
+      const wasOldest = landingHere && (sortOrderRef.current[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') !== 'newest';
       if (wasOldest) setSortOrder(prev => ({ ...prev, [sortKey]: 'newest' }));
       if (found.length || gone.length) setSpaces(prev => prev.map(s => {
         if (s.id !== id) return s;
@@ -1360,7 +1366,12 @@ const CircApp = () => {
                 to promise it will do. So it counts only arrivals the lens keeps.
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
-            {tab === 'active' && pendingVisible.length > 0 && <div><NewPill onClick={revealPending} /></div>}
+            {/* A bare wrapper div here (as every other conditional row in this
+                list still uses) gives the pill a 44px stick range and kills
+                its `align-self: center` — canon renders it as a direct flex
+                child of this column and both work (finding 1, design audit,
+                2026-09-11). No wrapper. */}
+            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to

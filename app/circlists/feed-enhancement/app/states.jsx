@@ -427,9 +427,25 @@ function circStateContext(api) {
     // same simulated-drop generator the live check uses, staged directly
     // rather than waited for. After the entry above, same reason `waterline`
     // is: entering a circle clears transient arrival state on the way in.
+    //
+    // Skips any drop whose URL the circle already holds (design audit finding
+    // 3, 2026-09-11): `circNextDrop`'s pool opens with a New Yorker piece
+    // `sp-book` already seeds, so an unguarded draw landed the same source and
+    // headline three rows apart — the state built to show the ruling opened on
+    // what read as a duplicate-card bug. A small bounded retry, not a fixed
+    // skip-count, so this holds if the pool or the target circle's seed ever
+    // changes again.
     if (pendingCount) {
-      setTimeout(() => setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s
-        : { ...s, pending: Array.from({ length: pendingCount }, () => window.circNextDrop()) })), 0);
+      setTimeout(() => setSpaces(prev => withSpace(prev, space).map(s => {
+        if (s.id !== space) return s;
+        const seeded = new Set((s.items || []).map((i) => i.url));
+        const picked = [];
+        for (let tries = 0; picked.length < pendingCount && tries < 20; tries += 1) {
+          const drop = window.circNextDrop();
+          if (!seeded.has(drop.url)) picked.push(drop);
+        }
+        return { ...s, pending: picked };
+      })), 0);
     }
   };
 
