@@ -610,26 +610,25 @@ const CIRC_STATE_REGISTER = [
   // menu it named no longer exists — run 2 folded it into the lens — so it now
   // lands on the lens, same as `lens-panel-open`.
   { group: 'Candidate build \u2014 superseded shapes', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
-  // THE RULING, made visible as a PAIR (reversed 2026-09-11, after standing
-  // since 2026-09-07 — Sally's ruling, BIZ-136). Same circle, same mark, one
-  // difference: the sort. Open them in order — the waterline is there under
-  // newest-first and gone under oldest-first, because "Earlier" names the
-  // older pile beneath it and under oldest-first the older pile is above.
-  // A run tried keeping the line in both orders (a boundary label, then a
-  // label that followed the order) and reversed both: no fixed word survives
-  // a reversal, and the case barely arises anyway — asking for arrivals
-  // restores newest-first before they land (see revealPending/refreshSpace,
-  // main.jsx), so nothing ever arrives into an oldest-first feed to mark.
+  // THE RULING, made visible as a PAIR — drawn in both orders again as of
+  // 2026-09-11 (Joe's own reversal of Sally's same-day call that it should
+  // draw newest-first only). Same circle, same mark, one difference: the
+  // sort. Open them in order — the waterline is there in both, at the SAME
+  // mark, because the mark is visit state and a sort change never touches
+  // it; only which end of the list you meet it from changes. The label stays
+  // fixed `Earlier` in both, which Joe knows may not read true of the pile
+  // beneath it under oldest-first — parked deliberately, his own candidate
+  // words to follow.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 withheld under oldest first', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
-  // Arrivals staged UNDER oldest-first, then accepted (Sally's ruling,
-  // BIZ-136, 2026-09-11, requirements 6–8): the pill shows exactly as it
-  // does under newest-first (requirement 4), and tapping it restores
-  // newest-first, lands the two arrivals at the head, and carries the
-  // circle there — the same landing state as `sort-waterline-newest`,
-  // `Earlier` now sitting beneath the arrivals instead of the pre-existing
-  // pile alone.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill restores newest', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11 —
+  // Joe reversed the requirement this state was built to show. The pill no
+  // longer touches the sort: tapping it leaves the order exactly as it was
+  // and the two arrivals land in sorted position, which under oldest-first
+  // is the FOOT, below the waterline that is still drawn at its own
+  // unmoved mark. Contrast with `sort-waterline-newest`, where an accept
+  // would land the same two arrivals at the head instead.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill leaves the sort alone', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
@@ -637,7 +636,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'filter-contributor', label: 'Filtered to one contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Sam R.' }) },
   // Priya's two Active links sit either side of the last-visit mark, so the
   // waterline still draws inside the filtered list \u2014 the ruling this state exists
-  // to show. Sorting oldest-first still withholds it, as run 1 ruled.
+  // to show, in either sort order (both-orders-again, 2026-09-11).
   { group: 'Candidate build \u2014 feed enhancement', id: 'filter-waterline', label: 'Waterline \u2014 drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'filter-former-member', label: 'Former member \u2014 the one shared bucket', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'former member' }) },
   // The lens is held per circle, so it survives the hop to Read. Dev K. has one
