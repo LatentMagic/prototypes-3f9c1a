@@ -4,7 +4,7 @@
 // the MEMBER asked (the rail refresh), what it finds simply lands.
 //
 //   circWhen(at)                  — the card's AGE: how long ago it was contributed
-//   circDividerIndex(items, mark, newestFirst) — where the waterline sits, or -1
+//   circDividerIndex(items, mark) — where the waterline sits, or -1
 //   CircleSignal                  — the per-circle slot in the rail / home list:
 //                                   the micro dot (unseen), the spinner (the refresh
 //                                   receipt running), or the mark it resolves into.
@@ -58,27 +58,19 @@ const circWhen = (at) => {
 };
 
 // ---- Waterline position ----------------------------------------------------
-// Where the line goes, in whichever order the list is drawn. It is the SAME
-// boundary either way — everything on one side arrived since the member last
-// looked, everything on the other was already there — read from whichever end
-// the list starts at.
+// Index of the first item at-or-before the DRAWN mark — i.e. how many items
+// arrived since the last visit. The line is drawn above them, and only when items
+// sit on BOTH sides: a line with nothing below it names nothing.
 //
-// `newestFirst` (BIZ-136, ruled 2026-09-07) is why this takes an order at all.
-// The list runs new→old by default, so the first item at-or-below the mark IS
-// the boundary. Reverse it and that test matches on row 0 immediately — every
-// list starts with its oldest item — so the old code returned -1 and the line
-// simply vanished under oldest-first. That was read as a wording problem for a
-// fortnight; the position was broken underneath it.
-//
-// The mirror is the same question asked from the other end: the first item
-// NEWER than the mark. Both branches keep the both-sides-or-nothing rule — a
-// line with nothing on one side of it names nothing — so a feed that is all
-// new, or all old, still draws none.
-const circDividerIndex = (items, mark, newestFirst = true) => {
+// Newest-first only. BIZ-136 briefly took an order-aware mirror of this (ruled
+// 2026-09-07, so oldest-first could draw the same boundary reworded) and then
+// reversed it (Sally's ruling, 2026-09-11): asking for arrivals restores
+// newest-first before they land, so the only order this ever has to place the
+// line in is newest-first, and the mirror branch is dead weight. The caller
+// (main.jsx) now only invokes this when `order === 'newest'`.
+const circDividerIndex = (items, mark) => {
   if (!mark || !items || items.length < 2) return -1;
-  const i = newestFirst
-    ? items.findIndex((it) => !it.at || it.at <= mark)
-    : items.findIndex((it) => it.at && it.at > mark);
+  const i = items.findIndex((it) => !it.at || it.at <= mark);
   return i > 0 && i < items.length ? i : -1;
 };
 
@@ -134,22 +126,26 @@ const NewPill = ({ onClick }) => {
 // the past — "Earlier" — and never claims the new cards above. No count, no
 // arrow, no affordance, and nothing closing off the items beneath it.
 //
+// FIXED, one label, drawn newest-first only (Sally's ruling, BIZ-136,
+// 2026-09-11 — supersedes both the `Last visit` boundary label tried on
+// 2026-09-07 and the order-following `Earlier`/`New` pair tried on 2026-09-11
+// itself). A word on a horizontal rule is read DOWNWARD, as a heading for what
+// follows — so a fixed word is true in exactly one order, and the other three
+// options this ruling weighed (a bare hairline, an order-following pair, an
+// icon) all cost more than drawing nothing under oldest-first: asking for
+// arrivals restores newest-first before they land (main.jsx), so oldest-first
+// never has an arrival to mark in the first place.
+//
 // Expressed as a labelled member of the feed's own sequence, not a separator
 // laid across it — role="separator" is invalid inside a list (a list may only
 // contain list items), so it can't survive the feed carrying list semantics.
 // role="listitem" holds the same label and stays valid either way: inert, not
 // focusable, closes off nothing.
-// The label names the LINE, not a side of it (BIZ-136, ruled 2026-09-07).
-// `Earlier` pointed downward at the older pile, which is true in a newest-first
-// list and false the moment the list is reversed — so the label was the reason
-// the line could not survive a sort, and rewording it is what lets it. A
-// boundary label is the standard device for a divider that has to hold in any
-// ordering; a side label is not.
 // Deliberately undated. `Since Tuesday` was tried and rejected: a date here is
 // a second timestamp on a screen whose cards already carry their own age.
 const FeedDivider = () => (
-  <div className="circ-fdiv" role="listitem" aria-label="Last visit — everything on the other side of this you had already seen">
-    <span className="circ-fdiv-label">Last visit</span>
+  <div className="circ-fdiv" role="listitem" aria-label="Earlier — before your last visit">
+    <span className="circ-fdiv-label">Earlier</span>
   </div>
 );
 

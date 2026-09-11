@@ -341,6 +341,12 @@ const CircApp = () => {
   const spacesRef = useRef(spaces); spacesRef.current = spaces;
   const currentRef = useRef(currentId); currentRef.current = currentId;
   const tabRef = useRef(tab); tabRef.current = tab;
+  // Same reason as the three above: `refreshSpace` lands 900ms after the click
+  // that queued it, and reading `sortOrder` from that click-time closure races
+  // a member who flips the order WHILE the reload is running (design audit
+  // finding 5, 2026-09-11 — requirement 13 failed under this race). The ref is
+  // read at the moment of landing instead.
+  const sortOrderRef = useRef(sortOrder); sortOrderRef.current = sortOrder;
   // One polite announcement, re-fired cleanly for a repeated gesture: a live
   // region only speaks when its text CHANGES, so it is cleared first.
   const announceTimer = useRef(null);
@@ -586,15 +592,31 @@ const CircApp = () => {
   };
   // Accept: the click is what moves the feed, and it is the one moment a card
   // travels. It stamps the mark; the drawn line stays exactly where it is.
+  //
+  // ASKING FOR ARRIVALS IS ASKING FOR THE NEWEST (Sally's ruling, BIZ-136,
+  // 2026-09-11): the pill's accept restores this circle's Active order to
+  // newest-first BEFORE the arrivals land, so they land at the head, above
+  // the waterline, in EITHER starting order — same as `refreshSpace` below.
+  // Only written (and only announced) when the order actually changes; an
+  // accept from newest-first touches neither.
   const revealPending = () => {
     const id = currentRef.current;
     const sp = spacesRef.current.find(s => s.id === id);
     if (!sp || !(sp.pending || []).length) return;
     const ids = sp.pending.map(i => i.id);
+    const sortKey = id + ':active';
+    const wasOldest = (sortOrder[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') !== 'newest';
+    if (wasOldest) setSortOrder(prev => ({ ...prev, [sortKey]: 'newest' }));
     setSpaces(prev => prev.map(s => s.id === id
       ? { ...s, items: [...s.pending, ...s.items], pending: [], lastSeenAt: Date.now() } : s));
     setArrived(a => [...a, ...ids]);
     setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
+    // Carries the member to the head, in both orders (Decision-29; the build
+    // was short of this in either order until now).
+    requestAnimationFrame(scrollToArrivals);
+    // Announced once, only when the order changed (sort ruling 10's own
+    // pattern) — an accept from newest-first stays silent-on-success.
+    if (wasOldest) announceOnce('Newest first');
   };
   // The refresh gesture — selecting the circle already on screen. There is no
   // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
@@ -617,6 +639,16 @@ const CircApp = () => {
       const gone = (sp && sp.remoteDeleted) || [];
       const here = id === currentRef.current;
       const onActive = tabRef.current === 'active';
+      // Landing on the circle's own Active tab is the same gesture the pill's
+      // accept is (Sally's ruling, BIZ-136, 2026-09-11): asking for arrivals
+      // restores newest-first before they land. A refresh made from Read, or
+      // on a circle the member is not standing in, leaves the order untouched
+      // — the dot carries them, and the order is only ever this circle's own
+      // Active reading posture.
+      const sortKey = id + ':active';
+      const landingHere = found.length && here && onActive;
+      const wasOldest = landingHere && (sortOrderRef.current[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') !== 'newest';
+      if (wasOldest) setSortOrder(prev => ({ ...prev, [sortKey]: 'newest' }));
       if (found.length || gone.length) setSpaces(prev => prev.map(s => {
         if (s.id !== id) return s;
         return { ...s, items: [...found, ...s.items.filter(i => !gone.includes(i.id))],
@@ -628,8 +660,11 @@ const CircApp = () => {
       }));
       // Carried to the arrivals only when there are any — scrolling on an empty
       // refresh would move the member for nothing.
-      if (found.length && here && onActive) requestAnimationFrame(scrollToArrivals);
+      if (landingHere) requestAnimationFrame(scrollToArrivals);
       announceOnce('Refreshed');
+      // Second, separate announcement — after "Refreshed" has had its own
+      // beat, never overlapping it — only when the order actually flipped.
+      if (wasOldest) setTimeout(() => announceOnce('Newest first'), 1700);
     }, 900);
   };
 
@@ -1250,30 +1285,23 @@ const CircApp = () => {
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
       //
-      // DRAWN IN BOTH ORDERS since 2026-09-07, and this is the reversal of a
-      // ruling that stood the whole fortnight. It used to be suppressed under
-      // oldest-first on the reading that `Earlier` named the older pile beneath
-      // the line and would point the wrong way once the list flipped.
-      //
-      // Two things were wrong with that. The label was a SIDE label, and the
-      // answer to a side label that cannot survive a reversal is to name the
-      // boundary instead — `Last visit`, true from either end. And the position
-      // was broken underneath the wording: `circDividerIndex` matched on row 0
-      // in a reversed list and returned -1, so even a correctly-worded line
-      // would not have drawn. Both are fixed; the helper now takes the order.
-      //
-      // What this buys, in the member's terms: tapping Oldest first gives a
-      // feed that starts at the backlog and ends at what landed while they were
-      // away, with the line saying where one becomes the other. Before, it gave
-      // the same list with nothing marking that at all.
-      //
-      // Bounded by the fact that the order does not persist (sort resets to
-      // newest-first on reload, ruled in the sort spec): new links sitting at
-      // the foot of the feed is a within-sitting posture, never a state a member
-      // returns to weeks later. **If sort ever becomes persistent, this
-      // reopens** — that is the condition the ruling was ratified on.
-      const divIdx = (tab === 'active')
-        ? window.circDividerIndex(visible, dividerAt, order === 'newest') : -1;
+      // NOT DRAWN under oldest-first, in any state (Sally's ruling, BIZ-136,
+      // 2026-09-11 — reverses the "drawn in both orders" call of 2026-09-07,
+      // which stood a few weeks). `Earlier` names the older pile BENEATH the
+      // line, true in exactly one order — no fixed word survives a reversal,
+      // and the alternatives (a boundary label, an order-following pair, an
+      // icon) were all tried and cost more than the absence. Suppression is
+      // the existing grammar, not a new one — ui.md Decision-30 already draws
+      // nothing for an empty, single-item, all-new or nothing-new feed and
+      // calls the absence "the calm answer". Newness is not lost with it: the
+      // arrival glow below keys on the item's own timestamp, not its
+      // position, so fresh cards still glow at the foot of an oldest-first
+      // feed. And the case the line would have served barely arises: asking
+      // for arrivals (the pill, a landing refresh) restores newest-first
+      // before they land, so nothing ever arrives into an oldest-first feed —
+      // see revealPending/refreshSpace above.
+      const divIdx = (tab === 'active' && order === 'newest')
+        ? window.circDividerIndex(visible, dividerAt) : -1;
       const feed = (feedError && window.FeedError) ? (
         // Load-error takes precedence over every other body state, loading
         // included: a feed that failed to fetch has no waterline to draw (it
@@ -1338,7 +1366,12 @@ const CircApp = () => {
                 to promise it will do. So it counts only arrivals the lens keeps.
                 Unmatched arrivals are not lost — they land whole the moment the
                 lens clears. */}
-            {tab === 'active' && pendingVisible.length > 0 && <div><NewPill onClick={revealPending} /></div>}
+            {/* A bare wrapper div here (as every other conditional row in this
+                list still uses) gives the pill a 44px stick range and kills
+                its `align-self: center` — canon renders it as a direct flex
+                child of this column and both work (finding 1, design audit,
+                2026-09-11). No wrapper. */}
+            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to

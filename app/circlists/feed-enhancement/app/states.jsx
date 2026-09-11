@@ -308,7 +308,7 @@ function circStateContext(api) {
   // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
   // different thing from what pool was scoped. Omitted, the displayed tab is
   // `tab` itself, exactly as before this param existed.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null, pendingCount = 0 }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -422,6 +422,30 @@ function circStateContext(api) {
     // only the sort order differs, which is the whole point of the pair.
     if (waterline) {
       setTimeout(() => setDividerAt(Date.now() - 8.5 * 3600e3), 0);
+    }
+    // Arrivals behind the pill (`sort-oldest-accept`, requirements 6–8): the
+    // same simulated-drop generator the live check uses, staged directly
+    // rather than waited for. After the entry above, same reason `waterline`
+    // is: entering a circle clears transient arrival state on the way in.
+    //
+    // Skips any drop whose URL the circle already holds (design audit finding
+    // 3, 2026-09-11): `circNextDrop`'s pool opens with a New Yorker piece
+    // `sp-book` already seeds, so an unguarded draw landed the same source and
+    // headline three rows apart — the state built to show the ruling opened on
+    // what read as a duplicate-card bug. A small bounded retry, not a fixed
+    // skip-count, so this holds if the pool or the target circle's seed ever
+    // changes again.
+    if (pendingCount) {
+      setTimeout(() => setSpaces(prev => withSpace(prev, space).map(s => {
+        if (s.id !== space) return s;
+        const seeded = new Set((s.items || []).map((i) => i.url));
+        const picked = [];
+        for (let tries = 0; picked.length < pendingCount && tries < 20; tries += 1) {
+          const drop = window.circNextDrop();
+          if (!seeded.has(drop.url)) picked.push(drop);
+        }
+        return { ...s, pending: picked };
+      })), 0);
     }
   };
 
@@ -586,15 +610,26 @@ const CIRC_STATE_REGISTER = [
   // menu it named no longer exists — run 2 folded it into the lens — so it now
   // lands on the lens, same as `lens-panel-open`.
   { group: 'Candidate build \u2014 superseded shapes', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
-  // THE RULING, made visible as a PAIR. Same circle, same mark, one difference:
-  // the sort. Open them in order \u2014 the waterline is there under newest-first and
-  // the SAME line in both, since 2026-09-07. It used to be gone under
-  // oldest-first — `Earlier` named the older pile beneath it, and the position
-  // helper matched on row 0 in a reversed list and returned -1. The label now
-  // names the boundary rather than a side, so the line survives the flip and
-  // says where the backlog ends and what landed while you were away begins.
+  // THE RULING, made visible as a PAIR (reversed 2026-09-11, after standing
+  // since 2026-09-07 — Sally's ruling, BIZ-136). Same circle, same mark, one
+  // difference: the sort. Open them in order — the waterline is there under
+  // newest-first and gone under oldest-first, because "Earlier" names the
+  // older pile beneath it and under oldest-first the older pile is above.
+  // A run tried keeping the line in both orders (a boundary label, then a
+  // label that followed the order) and reversed both: no fixed word survives
+  // a reversal, and the case barely arises anyway — asking for arrivals
+  // restores newest-first before they land (see revealPending/refreshSpace,
+  // main.jsx), so nothing ever arrives into an oldest-first feed to mark.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 the same line, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 withheld under oldest first', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  // Arrivals staged UNDER oldest-first, then accepted (Sally's ruling,
+  // BIZ-136, 2026-09-11, requirements 6–8): the pill shows exactly as it
+  // does under newest-first (requirement 4), and tapping it restores
+  // newest-first, lands the two arrivals at the head, and carries the
+  // circle there — the same landing state as `sort-waterline-newest`,
+  // `Earlier` now sitting beneath the arrivals instead of the pre-existing
+  // pile alone.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill restores newest', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
