@@ -621,14 +621,21 @@ const CIRC_STATE_REGISTER = [
   // words to follow.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
-  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11 —
-  // Joe reversed the requirement this state was built to show. The pill no
-  // longer touches the sort: tapping it leaves the order exactly as it was
-  // and the two arrivals land in sorted position, which under oldest-first
-  // is the FOOT, below the waterline that is still drawn at its own
-  // unmoved mark. Contrast with `sort-waterline-newest`, where an accept
-  // would land the same two arrivals at the head instead.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill leaves the sort alone', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
+  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11,
+  // three times the same day — the requirement this state first showed was
+  // reversed, then the carry it grew in that reversal was reversed too, then
+  // Joe overruled his own reversal of the carry: the same pill carrying the
+  // member under one order and not the other was the order-dependent
+  // inconsistency he had been objecting to all along). The pill still does
+  // not touch the sort: tapping it leaves the order exactly as it was, and
+  // the two arrivals land in sorted position — the FOOT, under oldest-first
+  // — below the waterline still drawn at its own unmoved mark. What's back
+  // is the carry: the member IS taken to the arrivals, same as
+  // `sort-waterline-newest` — the difference between the two states is
+  // which end of the list that carry lands on, not whether it happens.
+  // Known, accepted cost of the foot case: a long, unanchored glide past
+  // whatever backlog sat between the member and the foot.
+  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill carries you to the foot', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.

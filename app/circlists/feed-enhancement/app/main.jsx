@@ -362,15 +362,25 @@ const CircApp = () => {
       announceTimer.current = setTimeout(() => setAnnounce(''), 1600);
     }, 60);
   }, []);
-  // Carry the member to the arrivals — wherever they actually landed. Not
-  // something Joe's ruling asked for: it is Decision-29's own promise
-  // ("carrying the member to them"), which the build has never kept in
-  // either order, and building it here is my own read of that decision, not
-  // his — flagged in the report, his call to make. `toFoot` reads the LIVE
-  // order at the moment of the carry (see `sortOrderRef` above): under
-  // newest-first the arrivals are at the head, under oldest-first — since
-  // accepting no longer reverts the sort — they are at the foot. The window
-  // scrolls on web; the phone screen is the scroller in the app posture.
+  // Carry the member to the arrivals — wherever they actually landed, in
+  // BOTH orders (Joe's call, 2026-09-11, overruling his own same-day
+  // instinct that it should be newest-first only: the same control doing
+  // two different things depending on the sort is exactly the order-
+  // dependent inconsistency objected to all session, and it outweighs the
+  // no-anchor-at-the-foot cost). That cost is real and known, not dismissed:
+  // under oldest-first this is a sustained, unanchored glide past everything
+  // the member had not reached yet — measured at 1413px past a backlog they
+  // were mid-way through. What makes it acceptable is that the member
+  // caused it by tapping the pill, rather than the feed moving under them
+  // unasked. `toFoot` reads the LIVE order at the moment of the carry (see
+  // `sortOrderRef` above): under newest-first the arrivals are at the head,
+  // under oldest-first — since accepting no longer reverts the sort — they
+  // are at the foot. Not something Joe's ruling itself asked for to begin
+  // with: it is Decision-29's own promise ("carrying the member to them"),
+  // which the build had never kept in either order until this pass; building
+  // it is my own read of that decision, flagged in the report, his call to
+  // make throughout. The window scrolls on web; the phone screen is the
+  // scroller in the app posture.
   const scrollToArrivals = (toFoot) => {
     const el = document.querySelector('.circ-phone-screen');
     const top = toFoot ? (el ? el.scrollHeight : document.documentElement.scrollHeight) : 0;
