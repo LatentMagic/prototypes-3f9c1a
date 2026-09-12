@@ -629,11 +629,14 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
 //   tick  — a brief post-add confirmation, then self-clears back to plus
 // Cancel goes cross→plus (no tick); submit goes cross→tick→plus. The tick grows
 // in as it resolves — a small, quiet moment, never a colour shift or halo.
-const FAB = ({ onClick, expanded, isMobile, confirm }) => {
+// `bottom` is the one piece of geometry a caller may set: the app posture floats
+// this same FAB above a permanent bottom bar, and the bar's clearance is the
+// chrome's number to know (APP_FAB_BOTTOM, app/app-shell.jsx), not the feed's.
+const FAB = ({ onClick, expanded, isMobile, confirm, bottom = null }) => {
   const glyph = confirm ? 'tick' : (expanded ? 'cross' : 'plus');
   return (
   <button onClick={onClick} aria-label="Add a link" style={{
-    position: 'fixed', right: isMobile ? 24 : 32, bottom: isMobile ? 24 : 32, zIndex: 80,
+    position: 'fixed', right: isMobile ? 24 : 32, bottom: bottom != null ? bottom : (isMobile ? 24 : 32), zIndex: 80,
     width: 56, height: 56, borderRadius: '50%',
     background: 'var(--color-accent)', color: '#fff', border: 0, cursor: 'pointer',
     boxShadow: '0 4px 14px rgba(4,120,87,0.28), 0 1px 3px rgba(10,10,10,0.12)',

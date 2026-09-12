@@ -3,6 +3,16 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## The app carries one bar at every level — 2026-09-12
+
+- **The phone's bottom bar is permanent and account-scoped.** Home · Account, the same two slots
+  on home and inside a circle, so the bar never changes shape as a member moves. Account is
+  reached from the bar; the home top bar carries the wordmark alone.
+- **A circle's own scope sits above the bar.** The circle's gear stands in the circle top bar,
+  beside the circle's name.
+- **Add floats.** A round button at the bottom-right corner, inside a circle and nowhere else. It
+  means *add a link* and never changes its noun by context.
+
 ## The champion sends the invitation themselves — 2026-08-28
 
 - **The app no longer mails an invitation.** The champion enters a member's email address,

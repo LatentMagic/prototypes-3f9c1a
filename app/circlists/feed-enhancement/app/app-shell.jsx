@@ -9,20 +9,21 @@
 // SAME shared component the web posture renders. Only the persistent chrome
 // diverges.
 //
-// TWO CHROME STATES, ONE SHELL (IA direction 08):
-//   • Home (account level) — "Circlists" + avatar in the top bar, the circles
-//     list as the body, and NO bottom bar. Account hangs off the avatar, not off
-//     a bar slot: you are already at account level.
-//   • Inside a circle (circle level) — the circle name alone in the top bar, and
-//     a three-slot bottom bar: Home · Add · Settings.
-// The bar is never rendered outside a circle, so the bar IS the circle scope —
-// a plain "Settings" cannot be misread as the app's settings. That is the whole
-// point of 08; do not reintroduce a bar on home, and do not add global slots.
-//   • Home is the way BACK, not an action: it moves you, so it does not
-//     reintroduce the scope mix it was introduced to remove.
-//   • Add is the centre-docked accent circle (54px, marginTop -30, surface
-//     ring). It is not a floating FAB — that was ruled out and stays ruled out.
-//   • Settings is the plain gear opening the circle's settings as a full page.
+// ONE BAR, TWO LEVELS (IA direction 2):
+//   • Home (account level) — the wordmark in the top bar, the circles list as
+//     the body.
+//   • Inside a circle (circle level) — the circle's name and its gear in the
+//     top bar, and the feed as the body.
+// The bottom bar is the SAME at both, and holds account-scoped destinations
+// only: Home · Account. It never changes shape as the member moves, and nothing
+// in it ever speaks for a circle, so no slot has to prove whose it is. Home is
+// the way back; Account is the account, reached from the bar rather than from an
+// avatar, so the level a member is standing at is always named in one place.
+//   • Circle scope lives entirely ABOVE the bar. The circle's gear sits in the
+//     top bar beside the circle's name.
+//   • Add is a floating FAB (app/feed.jsx's own, raised clear of the bar by
+//     APP_FAB_BOTTOM). It is circle-scoped and means "add a link", so it is
+//     absent on home and never changes its noun by context.
 // Containers: a bottom sheet is for Add ONLY (short, transient, you return to
 // what is behind it). Circle entry, circle settings and Account are full pages
 // that slide in from the right — destinations with their own content.
@@ -33,6 +34,13 @@
 // ============================================================================
 
 const { useState: usAppState, useEffect: usAppEffect, useRef: usAppRef } = React;
+
+// ---- Chrome geometry --------------------------------------------------------
+// The bar's own height, and the clearance a floating action needs to sit above
+// it. Published because the FAB is rendered by main.jsx from the shared
+// app/feed.jsx component: the chrome owns the number, the caller passes it on.
+const APP_NAV_HEIGHT = 54;
+const APP_FAB_BOTTOM = 'calc(' + (APP_NAV_HEIGHT + 20) + 'px + env(safe-area-inset-bottom, 0px))';
 
 // ---- Push presentation ------------------------------------------------------
 // The app has ONE mount choreography (also used by AddReveal in feed.jsx):
@@ -75,16 +83,18 @@ const useNativePush = (view, depth) => {
   return anim;
 };
 
-// ---- Top bar — status only ---------------------------------------------------
-// Home: the wordmark + the account avatar. Root (in a circle): the circle name,
-// nothing else — circle settings lives in the bottom bar. Sub-view: back + title.
-const TopBarNative = ({ space, isHome = false, user, onAccount, subView = null }) => {
+// ---- Top bar — status, and the circle's own scope ---------------------------
+// Home: the wordmark alone. Root (in a circle): the circle name and its gear —
+// the one control that acts on the circle sits beside the thing it acts on.
+// Sub-view: back + title.
+const TopBarNative = ({ space, isHome = false, onSettings, canSettings = false, subView = null }) => {
   const isSub = !!subView;
+  const gear = !isSub && !isHome && canSettings;
   return (
     <header style={{
       height: 'var(--top-bar-height)', background: 'var(--color-surface)',
       borderBottom: '1px solid var(--color-border-2)', display: 'flex', alignItems: 'center',
-      padding: isSub ? '0 8px' : isHome ? '0 10px 0 16px' : '0 16px', gap: 8,
+      padding: isSub ? '0 8px' : gear ? '0 10px 0 16px' : '0 16px', gap: 8,
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       {isSub ? (
@@ -96,15 +106,18 @@ const TopBarNative = ({ space, isHome = false, user, onAccount, subView = null }
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{subView.title}</span>
         </React.Fragment>
       ) : isHome ? (
-        <React.Fragment>
-          <span style={{ flex: 1, minWidth: 0, display: 'flex' }}><Wordmark size={19} /></span>
-          <button onClick={onAccount} aria-label="Account" className="circ-topaction" style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'transparent',
-            border: 0, cursor: 'pointer', width: 40, height: 40, borderRadius: 'var(--radius-md)', flexShrink: 0,
-          }}><Avatar name={displayName(user)} size={29} /></button>
-        </React.Fragment>
+        <span style={{ flex: 1, minWidth: 0, display: 'flex' }}><Wordmark size={19} /></span>
       ) : space ? (
-        <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{space.name}</span>
+        <React.Fragment>
+          <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 17, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{space.name}</span>
+          {gear && (
+            <button onClick={onSettings} aria-label="Circle settings" className="circ-topaction" style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'transparent',
+              border: 0, cursor: 'pointer', width: 40, height: 40, borderRadius: 'var(--radius-md)', flexShrink: 0,
+              color: 'var(--color-fg-2)',
+            }}><Icon name="settings" size={21} strokeWidth={1.6} /></button>
+          )}
+        </React.Fragment>
       ) : (
         <span style={{ flex: 1, display: 'flex', justifyContent: 'center' }}><Wordmark size={19} /></span>
       )}
@@ -112,57 +125,40 @@ const TopBarNative = ({ space, isHome = false, user, onAccount, subView = null }
   );
 };
 
-// ---- Bottom navigation — the circle's chrome, in the thumb zone -------------
-const NavItem = ({ icon, label, disabled, onClick }) => (
-  <button onClick={disabled ? undefined : onClick} disabled={disabled} aria-label={label}
+// ---- Bottom navigation — the account's destinations, in the thumb zone -------
+// A slot takes either an icon or a `glyph` (Account carries the member's own
+// avatar, which no icon in the set can stand for).
+const NavItem = ({ icon, label, glyph, active = false, onClick }) => (
+  <button onClick={onClick} aria-label={label} aria-current={active || undefined}
     className="circ-appnav-item" style={{
       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
-      background: 'transparent', border: 0, cursor: disabled ? 'default' : 'pointer', minHeight: 54, padding: '7px 4px',
-      opacity: disabled ? 0.4 : 1,
+      background: 'transparent', border: 0, cursor: 'pointer', minHeight: APP_NAV_HEIGHT, padding: '7px 4px',
     }}>
-    <Icon name={icon} size={22} color="var(--color-fg-2)" strokeWidth={1.5} />
-    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 10.5, letterSpacing: '0.01em', color: 'var(--color-fg-3)' }}>{label}</span>
+    {glyph || <Icon name={icon} size={22} color={active ? 'var(--color-accent)' : 'var(--color-fg-2)'} strokeWidth={1.5} />}
+    <span style={{
+      fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 10.5, letterSpacing: '0.01em',
+      color: active ? 'var(--color-accent)' : 'var(--color-fg-3)',
+      maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    }}>{label}</span>
   </button>
 );
 
-// Center-docked Add — a large raised circle that overlaps the bar's top edge
-// (surface-colour ring separates it from whatever scrolls beneath).
-const AddNavItem = ({ disabled, onClick }) => (
-  <button onClick={disabled ? undefined : onClick} disabled={disabled} aria-label="Add a link"
-    className="circ-appnav-add" style={{
-      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
-      background: 'transparent', border: 0, cursor: disabled ? 'default' : 'pointer', minHeight: 54, padding: '7px 4px',
-      opacity: disabled ? 0.4 : 1,
-    }}>
-    <span className="circ-appnav-adddot" aria-hidden="true" style={{
-      width: 54, height: 54, borderRadius: '50%', marginTop: -30, flexShrink: 0,
-      background: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      boxShadow: '0 0 0 4px var(--color-surface), 0 4px 12px rgba(4,120,87,0.30)',
-      transition: 'background var(--duration-base)',
-    }}>
-      <Icon name="plus" size={26} strokeWidth={2} color="#fff" />
-    </span>
-    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 10.5, letterSpacing: '0.01em', color: 'var(--color-fg-3)' }}>Add</span>
-  </button>
-);
-
-// Three slots, and only ever inside a circle.
-const BottomNav = ({ canAdd, canSettings, onHome, onAdd, onSettings }) => (
-  <nav aria-label="Circle" style={{
+// Two slots, the same two everywhere the bar is rendered.
+const BottomNav = ({ user, isHome, onHome, onAccount }) => (
+  <nav aria-label="Circlists" style={{
     position: 'sticky', bottom: 0, zIndex: 40, display: 'flex', alignItems: 'stretch',
     background: 'var(--color-surface)', borderTop: '1px solid var(--color-border-2)',
     paddingBottom: 'env(safe-area-inset-bottom, 0px)', boxShadow: '0 -1px 0 rgba(10,10,10,0.02)',
   }}>
-    <NavItem icon="home" label="Home" onClick={onHome} />
-    <AddNavItem disabled={!canAdd} onClick={onAdd} />
-    <NavItem icon="settings" label="Settings" disabled={!canSettings} onClick={onSettings} />
+    <NavItem icon="home" label="Home" active={isHome} onClick={onHome} />
+    <NavItem label="Account" glyph={<Avatar name={displayName(user)} size={22} />} onClick={onAccount} />
   </nav>
 );
 
 // ---- AppShellNative — same prop surface as AppShell, plus app-only extras ----
 const AppShellNative = ({ isMobile, user, spaces, currentId, space, showMembers = true, isHome = false,
                           onSelectSpace, onCreateSpace, onMembers, onManageAccount, onSignOut,
-                          onAccountGate, onHome, onAdd, canAdd = false, subView = null, children }) => {
+                          onAccountGate, onHome, subView = null, children }) => {
   const isSub = !!subView;
 
   // Account access mirrors the rail: when the preview gate is armed, the control
@@ -171,12 +167,10 @@ const AppShellNative = ({ isMobile, user, spaces, currentId, space, showMembers 
 
   const view = (
     <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)' }}>
-      <TopBarNative space={space} isHome={isHome && !isSub} user={user} onAccount={openAccount} subView={subView} />
+      <TopBarNative space={space} isHome={isHome && !isSub} subView={subView}
+        onSettings={onMembers} canSettings={showMembers && !!space} />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{children}</div>
-      {!isSub && !isHome && (
-        <BottomNav canAdd={canAdd} canSettings={showMembers && !!space}
-          onHome={onHome} onAdd={onAdd} onSettings={onMembers} />
-      )}
+      {!isSub && <BottomNav user={user} isHome={isHome} onHome={onHome} onAccount={openAccount} />}
     </div>
   );
 
@@ -195,4 +189,4 @@ const AppShellNative = ({ isMobile, user, spaces, currentId, space, showMembers 
   );
 };
 
-Object.assign(window, { AppShellNative });
+Object.assign(window, { AppShellNative, TopBarNative, useNativePush, APP_NAV_HEIGHT, APP_FAB_BOTTOM });

@@ -2,7 +2,7 @@
 
 ## Reference docs — read when relevant
 - `ARCHITECTURE.md` — app-wide structure: one app / three postures, how `inShell()` swaps only the chrome, deletable aids and droppable modules, the web-only-payments guard, code conventions. Read before touching routing, shells, or module load order.
-- `MOBILE.md` — the app posture (native mobile): its two chrome states, containers, push motion, the chrome-vs-surface test for home, and the checklist for maintaining app and web together. Read before any app-posture work.
+- `MOBILE.md` — the app posture (native mobile): its one bar across two levels, containers, push motion, why home is a shared surface, and the checklist for maintaining app and web together. Read before any app-posture work.
 - `CHANGELOG.md` — major milestones over time (not granular). Read to catch up on where the product has been.
   - **Editing rule (strict):** one entry per *significant landed step* — a feature introduced, a rebrand, a model change, or a **fundamental change to how the app works or is structured** (an information-architecture rework, consolidating an overloaded concept, a flow being reshaped) even when it originates as a bug fix. What matters is whether the *shape* of the product changed, not the label on the task. NOT for iterative work: refinements, cosmetic bug fixes, size/spacing/timing tweaks, seed-data changes, enabling an option, renaming a key, motion detail, etc. never get their own entry or bullet.
   - Do NOT keep amending an entry as you iterate within a feature — the entry captures the *shape* of the step, written once, and then left alone. When in doubt, add nothing and ask. A single terse title + 2–4 shape-level bullets is the ceiling.

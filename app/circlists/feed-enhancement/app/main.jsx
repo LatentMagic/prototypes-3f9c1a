@@ -949,7 +949,6 @@ const CircApp = () => {
       refreshingId={refreshing} settledId={settledId} onRefreshSpace={refreshSpace}
       onAccountGate={gateActive ? onGate : null}
       onSignOut={signOut}
-      onAdd={() => setAddOpen(true)} canAdd={!!opts.canAdd}
       subView={opts.subView || null}
     >{content}</Shell>
   );
@@ -1546,11 +1545,16 @@ const CircApp = () => {
               should not be tappable under a scrim, whichever way they paint.
               Mobile only, because at desktop the panel is an anchored popover
               with no scrim and nothing is being covered. */}
-          {!loadingFeed && !isApp && !(isMobile && sortMenuOpen)
-            && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
+          {/* The app posture floats this same FAB clear of its permanent
+              bottom bar — Add is circle-scoped, so it stands inside a circle
+              and nowhere else. The clearance is the chrome's number
+              (APP_FAB_BOTTOM); with app/app-shell.jsx dropped there is no bar
+              to clear and the FAB sits where the web posture puts it. */}
+          {!loadingFeed && !(isMobile && sortMenuOpen)
+            && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
+                 bottom={isApp ? (window.APP_FAB_BOTTOM || null) : null} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
-        </>,
-        { canAdd: true }
+        </>
       );
     }
   }
