@@ -304,9 +304,19 @@ const DormantSpace = ({ space, dormancy = 'terminal', onFund, onLeave }) => {
 //
 // CREATING a circle lands here FIRST, before the name and description are asked
 // for: a circle exists only once it is funded, so on the phone with payments off
-// there is nothing a name could be attached to. Asking for one and then blocking
-// throws the member's work away, which is why the `new` copy claims no circle,
-// no name and no saved state — it says plainly that nothing was kept.
+// there is nothing a name could be attached to. The block lands on the tap, so
+// no work exists to lose — which is why the `new` copy says nothing about saved
+// state. Reassurance about work the member never did invents a worry.
+//
+// The `new` copy is ONE statement of the constraint and ONE way out, and no more:
+// the constraint, the payment model behind it and the instruction to open a
+// browser were three sentences saying the same thing, and it read as a wall. The
+// model is Netflix's own in-app sign-up block — terse, plain, unembarrassed, no
+// justification and no apology. It also drops the eyebrow: `Invitation` earns its
+// label because InvalidInvite and SpaceFull belong to one flow, but a synthetic
+// `New circle` label above a title that already says it is pure repetition. The
+// not-found page leaves the slot empty for the same reason. `refund` and `manage`
+// keep theirs — they name a circle and need the flow said.
 //
 // The page is a CalmPage (app/spaces.jsx), the same frame as InvalidInvite,
 // SpaceFull and the not-found page: small wordmark, one title, one body, one
@@ -316,9 +326,8 @@ const DormantSpace = ({ space, dormancy = 'terminal', onFund, onLeave }) => {
 // place while off; when payments are on, the real wizard runs untouched.
 const HANDOFF_COPY = {
   new: {
-    eyebrow: 'New circle',
     title: () => 'Circles are created on the web.',
-    body: () => 'Circlists takes payment on the web, and a circle goes live once it\u2019s funded. Open Circlists in a browser to create one. Nothing has been saved here.',
+    body: () => 'Open Circlists in a browser to create one.',
   },
   refund: {
     eyebrow: 'Finish on the web',
