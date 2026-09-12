@@ -1,3 +1,6 @@
 node_modules/
 .playwright-mcp/
 .DS_Store
+.playwright-cli/
+**/.build-cache/
+app/circlists/feed-enhancement/*-standalone.html

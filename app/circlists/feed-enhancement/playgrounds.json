@@ -1,7 +1,12 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-08-28",
+  "generated": "2026-09-12",
   "tickets": [
+    { "id": "BIZ-136", "slug": "biz-136-mobile-chrome", "name": "The phone\u2019s chrome", "state": "active", "touched": "2026-09-12",
+      "entries": [
+        { "kind": "playground", "name": "Leaving a circle", "path": "leaving-a-circle-playground.html", "note": "Three ways out of a circle on a phone with no bottom bar, playable in place: A the back arrow at the top (carried over from the whiteboard), B the circle as a sheet you close from the thumb, C the circle as a layer you pull aside from the edge. The floating pill switches between them without leaving where you were standing." },
+        { "kind": "playground", "name": "Where the member reaches", "path": "mobile-chrome-whiteboard.html", "note": "Four directions for the phone\u2019s chrome now that home is a real surface \u2014 each drawn home beside inside-a-circle, at 320, 402 and the desktop canvas. TickTick sits at the foot for context, not as an option." }
+      ] },
     { "id": "A3", "slug": "a3-invite-link", "name": "Invite link", "state": "active", "touched": "2026-08-28",
       "entries": [
         { "kind": "candidate", "name": "Invite link candidate", "path": "docs/specs/a3-invite-link/circlists-a3.html", "on": false, "off": "Merged into the main build 2026-08-28.", "note": "The champion copies a link and sends it themselves. The app mails nothing." },

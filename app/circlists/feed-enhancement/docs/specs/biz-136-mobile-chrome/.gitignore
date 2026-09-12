@@ -1,0 +1,2 @@
+# Vendor files build.mjs fetches once (Babel, React UMD). Re-fetched on demand.
+.build-cache/

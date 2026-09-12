@@ -1,0 +1,81 @@
+/* ============================================================================
+   BIZ-136 whiteboard — board chrome. NOT product: this is the page the
+   directions are pinned to, and nothing in here may leak into a screen.
+   ========================================================================= */
+.mc-page { max-width: 1240px; margin: 0 auto; padding: 40px 20px 96px; }
+.mc-head { margin: 0 0 48px; }
+.mc-eyebrow { font-family: var(--font-mono); font-weight: 500; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); margin-bottom: 12px; }
+.mc-title { font-family: var(--font-sans); font-weight: 600; font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; color: var(--color-fg-1); margin: 0 0 12px; }
+.mc-lede { font-family: var(--font-sans); font-weight: 400; font-size: 15.5px; line-height: 1.62; color: var(--color-fg-2); margin: 0; max-width: 74ch; text-wrap: pretty; }
+
+.mc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+.mc-inv { padding: 16px 18px; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); }
+.mc-inv-t { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-1); margin-bottom: 9px; }
+.mc-inv-l { display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.mc-inv-l li { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.55; color: var(--color-fg-2); text-wrap: pretty; }
+.mc-inv-l code { font-family: var(--font-mono); font-size: 12px; color: var(--color-fg-1); }
+
+.mc-sec { margin: 0 0 64px; padding-top: 30px; border-top: 1px solid var(--color-border-1); }
+.mc-sec-h { display: flex; align-items: center; gap: 10px; font-family: var(--font-sans); font-weight: 600; font-size: 19px; letter-spacing: -0.015em; color: var(--color-fg-1); margin: 0 0 16px; }
+.mc-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--color-fg-1); color: var(--color-canvas); font-family: var(--font-mono); font-weight: 600; font-size: 12.5px; flex: none; }
+
+.mc-caps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; margin: 0 0 12px; }
+.mc-stance, .mc-cost, .mc-swapped { font-family: var(--font-sans); font-weight: 400; font-size: 14px; line-height: 1.6; margin: 0; text-wrap: pretty; }
+.mc-stance { color: var(--color-fg-2); }
+.mc-cost { color: var(--color-fg-3); }
+.mc-swapped { color: var(--color-fg-3); font-size: 13px; margin-bottom: 24px; max-width: 90ch; }
+.mc-stance > span, .mc-cost > span, .mc-swapped > span { display: block; font-family: var(--font-sans); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.mc-stance > span { color: var(--color-fg-3); }
+.mc-cost > span { color: var(--color-destructive); }
+.mc-swapped > span { color: var(--color-fg-3); }
+
+.mc-widthband { margin: 0 0 26px; }
+.mc-widthlabel { font-family: var(--font-sans); font-weight: 600; font-size: 13px; color: var(--color-fg-2); margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--color-border-2); }
+.mc-row { display: flex; gap: 20px; align-items: flex-start; overflow-x: auto; padding-bottom: 6px; }
+.mc-frame { display: flex; flex-direction: column; gap: 8px; flex: none; }
+.mc-frame-wide { width: 100%; }
+.mc-framelabel { font-family: var(--font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); }
+/* Exactly the screen's bounds, does not scroll, carries the transform — so a
+   position:fixed FAB inside resolves against this box and not the page.
+   GOTCHA.md #5. The scroller is the layer inside it. */
+.mc-screen { position: relative; overflow: hidden; transform: translateZ(0); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); background: var(--color-canvas); }
+.mc-screen-desk { width: 100%; min-width: 1024px; }
+.mc-scroll { height: 100%; overflow-y: auto; overflow-x: hidden; }
+.mc-deskstack { display: flex; flex-direction: column; gap: 22px; overflow-x: auto; }
+
+.mc-note { font-family: var(--font-sans); font-weight: 400; font-size: 13px; line-height: 1.6; color: var(--color-fg-3); margin: 0 0 12px; max-width: 84ch; text-wrap: pretty; }
+.mc-note-top { margin-top: 18px; }
+
+/* The reference row — fenced so it cannot read as a fifth direction. */
+.mc-ref { margin: 20px 0 0; padding: 26px 24px 30px; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-surface-sunken); }
+.mc-refmark { display: inline-block; font-family: var(--font-mono); font-weight: 600; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); padding: 4px 8px; margin-bottom: 14px; }
+.mc-sec-h-ref { font-size: 17px; }
+.mc-refwrap { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+.mc-note-ref { flex: 1; min-width: 280px; margin: 0; }
+.mc-refphone { position: relative; width: 300px; height: 520px; flex: none; background: #FFFFFF; border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); overflow: hidden; }
+.mc-refbody { padding: 18px 16px; }
+.mc-reftitle { font: 600 20px/1.2 var(--font-sans); color: var(--color-fg-1); margin-bottom: 16px; }
+.mc-refrow { display: flex; align-items: center; gap: 12px; font: 400 14px/1.4 var(--font-sans); color: var(--color-fg-2); padding: 11px 0; border-bottom: 1px solid var(--color-border-2); }
+.mc-refbox { width: 17px; height: 17px; border: 1.5px solid var(--color-border-strong); border-radius: 4px; flex: none; }
+.mc-reffab { position: absolute; right: 18px; bottom: 76px; width: 52px; height: 52px; border-radius: 50%; background: #6E6E6B; color: #fff; display: flex; align-items: center; justify-content: center; font: 300 30px/1 var(--font-sans); box-shadow: 0 4px 14px rgba(10,10,10,0.22); }
+.mc-refbar { position: absolute; left: 0; right: 0; bottom: 0; height: 58px; display: flex; background: #FAFAF8; border-top: 1px solid var(--color-border-2); }
+.mc-refslot { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font: 500 9.5px/1 var(--font-sans); color: var(--color-fg-3); }
+.mc-refslot.is-on { color: var(--color-fg-1); }
+.mc-refglyph { width: 18px; height: 18px; border: 1.5px solid currentColor; border-radius: 4px; opacity: 0.75; }
+
+@media (max-width: 900px) {
+  .mc-cols, .mc-caps { grid-template-columns: minmax(0, 1fr); }
+  .mc-title { font-size: 25px; }
+}
+
+/* On a phone the board is read on a phone. A 402px screen cannot fit inside a
+   page with 20px gutters at 390px, so at narrow widths the rows bleed to the
+   page edges and scroll sideways within themselves — the page itself never
+   scrolls horizontally. */
+@media (max-width: 520px) {
+  .mc-page { padding-left: 16px; padding-right: 16px; }
+  .mc-row, .mc-deskstack { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+  .mc-ref { padding-left: 16px; padding-right: 16px; }
+  .mc-title { font-size: 22px; }
+  .mc-sec-h { font-size: 17px; }
+}

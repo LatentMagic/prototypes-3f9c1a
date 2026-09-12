@@ -1,0 +1,204 @@
+/* ============================================================================
+   BIZ-136 — leaving a circle. Rig chrome + the two variations that needed a
+   frame of their own (B's sheet, C's pull layer). Everything here is either the
+   rig's own furniture or a variation's design; nothing in the app is restyled.
+   ========================================================================= */
+
+/* ---- The screen -----------------------------------------------------------
+   One box at the screen's height that does not scroll, holding layers that do.
+   No transform at rest: a transform is a containing block, and the FAB, the Add
+   sheet and the reaction sheet are all position: fixed (GOTCHA #5). Inside the
+   forced-mobile phone, .circ-phone-clip already provides that box, so this one
+   simply fills it. */
+.lc-clip {
+  position: relative; height: 100dvh; overflow: hidden;
+  background: var(--color-canvas);
+  --circ-vh: 100%;
+}
+.lc-phone-screen { overflow: hidden; }
+.lc-phone-screen > .lc-clip { height: 100%; }
+
+.lc-layer {
+  position: absolute; inset: 0; overflow: hidden;
+  background: var(--color-canvas);
+}
+/* A link's NATIVE drag takes the pointer before either gesture arms, so a drag
+   begun on a card's title — the biggest target in the feed — did nothing in B
+   and nothing in C. The app's anchors are not ours to add `draggable` to, and
+   they do not need dragging anywhere in this product. */
+.lc-sheet a, .lc-poplayer a, .lc-layer a { -webkit-user-drag: none; user-drag: none; }
+.lc-scroll {
+  height: 100%; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+}
+
+/* ---- C: the title as the way up ------------------------------------------ */
+.lc-titlebtn { border-radius: var(--radius-sm); }
+.lc-titlebtn:hover { color: var(--color-accent); }
+.lc-titlebtn:active { opacity: 0.6; }
+.lc-titlebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* ---- B: the circle as a sheet over home ---------------------------------- */
+/* Home, dimmed while the sheet is over it. Without this the strip showing above
+   the sheet is home's own top bar cut in half, which reads as a render fault
+   rather than as the page behind. Every sheet on a phone does this. */
+.lc-behind-scrim {
+  position: absolute; inset: 0; z-index: 55; pointer-events: none;
+  background: rgba(10, 10, 10, 0.42);
+  border-top-left-radius: 14px; border-top-right-radius: 14px;
+  transition: opacity var(--duration-slow) var(--ease-quiet),
+              transform var(--duration-slow) var(--ease-quiet);
+}
+/* The strip showing above the sheet is home's own top bar, cut off — which
+   reads as a render fault however much it is dimmed. Rounding the layer's head
+   while it is covered makes the cut an EDGE: a page behind a page, which is the
+   stack every phone draws. It does not put the sliced wordmark back; it stops
+   the slice being the thing you notice. */
+.lc-layer.is-behind { border-top-left-radius: 14px; border-top-right-radius: 14px; }
+/* The shoulder — the strip of home left showing above the sheet. A real target
+   (tapping the page behind a sheet is how a sheet closes) but the third route,
+   not the first: on a handset this strip lies under the status bar. */
+.lc-shoulder {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 60;
+  background: transparent; border: 0; padding: 0; cursor: pointer;
+  transition: opacity var(--duration-slow) var(--ease-quiet);
+}
+.lc-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 70;
+  overflow: hidden; background: var(--color-canvas);
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  box-shadow: 0 -12px 32px rgba(10, 10, 10, 0.22), 0 -1px 0 var(--color-border-2);
+  will-change: transform;
+}
+/* No grab handle and no grab band: the whole sheet answers the drag, guarded on
+   the feed already being at its top, which is the native rule. An overlay strip
+   across the head sat on top of the gear and made circle settings unclickable. */
+.lc-sheet.is-dragging { user-select: none; -webkit-user-select: none; }
+/* The way out, in the thumb, mirroring the accent FAB in the opposite corner:
+   quiet where the FAB is loud, because leaving is not the action the screen is
+   for — but with an edge strong enough to read against a white card. */
+.lc-closedisc {
+  position: fixed; left: 24px; bottom: 24px; z-index: 80;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-surface); color: var(--color-fg-1);
+  border: 1px solid var(--color-border-strong); cursor: pointer;
+  box-shadow: 0 4px 14px rgba(10, 10, 10, 0.16), 0 1px 3px rgba(10, 10, 10, 0.12);
+  transition: color var(--duration-base) var(--ease-quiet),
+              background var(--duration-base) var(--ease-quiet),
+              transform var(--duration-base) var(--ease-quiet);
+}
+.lc-closedisc:hover { background: var(--color-surface-sunken); }
+.lc-closedisc:active { transform: translateY(1px); }
+.lc-closedisc:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+/* ---- C: the pull layer, its handle and its one-time coach ---------------- */
+.lc-poplayer {
+  position: absolute; inset: 0; overflow: hidden; z-index: 70;
+  background: var(--color-canvas);
+  box-shadow: -8px 0 24px rgba(10, 10, 10, 0.14);
+  will-change: transform;
+}
+.lc-poplayer.is-dragging { user-select: none; -webkit-user-select: none; cursor: grabbing; }
+/* The handle: what you pull, and a tap target in its own right. Raised proud of
+   the edge with a surface fill and a border — a hairline on this edge is a
+   scrollbar, which is what the first build drew. Low on the edge, where a thumb
+   of either hand already rests. Inside the pull layer, so it travels with it. */
+.lc-handle {
+  position: absolute; left: 0; bottom: 26%; z-index: 95;
+  width: 15px; height: 68px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-surface); border: 1px solid var(--color-border-strong);
+  border-left: 0; border-radius: 0 9px 9px 0; cursor: grab;
+  box-shadow: 2px 0 10px rgba(10, 10, 10, 0.10);
+  touch-action: pan-y;
+  transition: background var(--duration-base) var(--ease-quiet),
+              width var(--duration-base) var(--ease-quiet);
+}
+/* The painted lozenge is 15px wide; the TARGET is 44. The invisible extension
+   reaches right, over the handle's own band only — not a strip down the whole
+   edge, which is what had to be taken out. */
+.lc-handle::after {
+  content: ''; position: absolute; left: 0; top: -8px; bottom: -8px; width: 44px;
+}
+.lc-handle-bar {
+  width: 3px; height: 26px; border-radius: 2px;
+  background: var(--color-fg-3);
+  transition: background var(--duration-base) var(--ease-quiet);
+}
+.lc-handle:hover, .lc-handle[data-drag] { width: 18px; background: var(--color-surface-sunken); }
+.lc-handle:hover .lc-handle-bar, .lc-handle[data-drag] .lc-handle-bar { background: var(--color-accent); }
+.lc-handle:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+/* The coach sits ABOVE the handle and points down at it, so it teaches the
+   handle rather than merely appearing beside it — and it clears the card the
+   handle is over at 320px. */
+.lc-coach {
+  position: absolute; left: 12px; bottom: calc(26% + 76px); z-index: 96;
+  font: 500 12.5px/1.35 var(--font-sans); color: var(--color-fg-1);
+  background: var(--color-surface); border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay);
+  padding: 8px 14px; max-width: calc(100% - 24px);
+  animation: lc-coach-in var(--duration-slow) var(--ease-quiet) both;
+  pointer-events: none;
+}
+.lc-coach::after {
+  content: ''; position: absolute; left: 18px; bottom: -5px;
+  width: 8px; height: 8px; transform: rotate(45deg);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+@keyframes lc-coach-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---- The switcher's letter halves --------------------------------------- */
+/* The app's own .circ-launcher-half, carrying a letter instead of a glyph. */
+.lc-half { font: 600 13px/1 var(--font-mono); letter-spacing: 0.04em; }
+
+/* ---- The card behind the list half -------------------------------------- */
+.lc-info { padding: 12px 0 14px; border-top: 1px solid var(--color-border-2); }
+.lc-info:first-of-type { border-top: 0; }
+.lc-info-head {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+  background: transparent; border: 0; padding: 0 0 8px; margin: 0; cursor: pointer;
+}
+.lc-info-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; flex: none;
+  background: var(--color-surface-sunken); color: var(--color-fg-2);
+  font: 600 11.5px/1 var(--font-mono);
+}
+.lc-info[data-on] .lc-info-badge { background: var(--color-accent); color: #fff; }
+.lc-info-name { font: 600 14px/1.3 var(--font-sans); color: var(--color-fg-1); }
+.lc-info-head:hover .lc-info-name { color: var(--color-accent); }
+.lc-info-tag {
+  font: 500 10.5px/1 var(--font-sans); letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--color-fg-3); border: 1px solid var(--color-border-1);
+  border-radius: var(--radius-sm); padding: 4px 6px; margin-left: auto; flex: none;
+}
+.lc-info-line {
+  font: 400 13px/1.58 var(--font-sans); color: var(--color-fg-2);
+  margin: 0 0 8px; text-wrap: pretty;
+}
+.lc-info-line > span {
+  display: block; font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--color-fg-3); margin-bottom: 4px;
+}
+.lc-info-cost { color: var(--color-fg-3); margin-bottom: 0; }
+.lc-info-cost > span { color: var(--color-destructive); }
+
+/* The pill's resting place. NOT bottom-right: that is where the FAB lives, and
+   the default position covered the one control every variation shares. Centred
+   and lifted clear of the whole floating band — the FAB on the right, B's close
+   disc on the left — which at 320px a centred pill still collided with at each
+   end. The rig's own furniture gets out of the product's way; a reviewer who
+   wants it elsewhere drags it, and a dragged position then replaces this
+   wholesale, transform included. */
+.circ-config-wrap.lc-wrap {
+  left: 50%; right: auto; bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-sheet, .lc-poplayer, .lc-layer, .lc-shoulder, .lc-behind-scrim { transition-duration: 1ms !important; }
+  .lc-coach { animation-duration: 1ms; }
+}
