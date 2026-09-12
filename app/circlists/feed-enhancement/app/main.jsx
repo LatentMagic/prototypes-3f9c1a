@@ -969,13 +969,21 @@ const CircApp = () => {
   // so no checkout, price-entry, or provider surface is reachable in-app while
   // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
-  const PAYMENT_ROUTES = ['funding', 'checkout', 'manage-interstitial', 'manage-funding'];
+  // `create-space` is in this list because creating a circle IS a funding act:
+  // the circle does not exist until it is funded, so with payments off there is
+  // nothing on the phone for a name and description to attach to. The block
+  // therefore lands on the tap, BEFORE the member writes anything — walking them
+  // through the wizard first and blocking after throws that writing away.
+  const PAYMENT_ROUTES = ['create-space', 'funding', 'checkout', 'manage-interstitial', 'manage-funding'];
   if (isApp && !mobilePayments && PAYMENT_ROUTES.includes(route)) {
     const ctx = (route === 'manage-interstitial' || route === 'manage-funding')
       ? 'manage' : (fundFlow.mode === 'refund' ? 'refund' : 'new');
     const nm = ctx === 'new' ? fundFlow.name : (space ? space.name : fundFlow.name);
+    // New circles are launched from home, so "Back to your circles" returns to
+    // home. Re-funding and managing are reached from inside a circle, and go
+    // back to it.
     screen = window.WebHandoff
-      ? <WebHandoff context={ctx} spaceName={nm} onExit={exitToApp} />
+      ? <WebHandoff context={ctx} spaceName={nm} onExit={ctx === 'new' ? goHome : exitToApp} />
       : null;
   } else if (route === 'signin') {
     screen = <SignIn onSubmit={({ email }) => startSignin(email)} onGoogle={() => { setPostAuthTo('space'); setRoute('google-return'); }} onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;

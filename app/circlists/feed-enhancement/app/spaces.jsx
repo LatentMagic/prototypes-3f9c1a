@@ -22,12 +22,26 @@ const ContentPage = ({ onBack, backLabel = 'Back', children, max = 'var(--max-fe
   </main>
 );
 
-// ---- Standalone calm full page (invalid invite / space full) ---------------
-const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
+// ---- Standalone calm full page (invalid invite / space full / web handoff) --
+// `children` is an optional slot between the body and the action, for a page
+// that has one more thing to show before the button (the web handoff's
+// circlists.com line). Everything else is fixed: one small wordmark, one title,
+// one body, one primary action — that fixity is what makes these pages read as
+// one family, so a page joins it rather than restating it.
+//
+// The wordmark is positioned against THIS page, not the phone frame, and the
+// column reserves the band it sits in (76px, symmetric so the centred block does
+// not move): a tall title on a short screen otherwise prints the eyebrow through
+// the wordmark, and a page that overflows otherwise scrolls its first line up
+// under a wordmark that never moves. `safe center` is the other half — it stops
+// centring the moment the content is taller than the screen, so the top of the
+// block stays reachable instead of overflowing off the top edge.
+const CalmPage = ({ eyebrow, title, body, actionLabel, onAction, children }) => (
   <div style={{
+    position: 'relative',
     minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    padding: '40px 24px', textAlign: 'center',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center',
+    padding: '76px 24px', textAlign: 'center',
   }}>
     <div style={{ position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)' }}><Wordmark size={21} /></div>
     <div style={{ maxWidth: 460 }}>
@@ -45,6 +59,7 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.55,
         color: 'var(--color-fg-2)', margin: 'var(--space-8) auto 0', maxWidth: 400,
       }}>{body}</p>
+      {children && <div style={{ marginTop: 'var(--space-8)' }}>{children}</div>}
       <div style={{ marginTop: 'var(--space-8)' }}>
         <Button variant="primary" size="lg" onClick={onAction}>{actionLabel}</Button>
       </div>

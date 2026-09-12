@@ -89,8 +89,11 @@ The no-membership case is the **empty state of the same screen**, not a separate
 
 ## Payments
 
-App + **Mobile payments: Off** (the default) sends every funding / checkout / manage path to the
-finish-on-web handoff. Guarded once in `main.jsx`, not in the shell. See `ARCHITECTURE.md`.
+App + **Mobile payments: Off** (the default) sends every path that would reach a price — creating a
+circle, funding, checkout, managing funding — to the finish-on-web handoff. Creating lands there on
+the tap, before a name is asked for: a circle exists only once it is funded, so nothing typed on the
+phone would have anything to attach to. Guarded once in `main.jsx`, not in the shell. See
+`ARCHITECTURE.md`.
 
 ## Maintaining both at once — the checklist
 

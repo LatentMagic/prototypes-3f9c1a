@@ -299,22 +299,31 @@ const DormantSpace = ({ space, dormancy = 'terminal', onFund, onLeave }) => {
 // Real app stores make in-app payment fraught, so Circlists takes payment on the
 // web only. In app mode with payments off, every path that would reach the
 // funding / checkout wizard (create a circle, re-fund a dormant one, manage
-// funding) lands here instead: the circle is named / set up as far as possible
-// in-app, and the user is told to finish on the web. No checkout, no price, no
-// provider surface is reachable. Voice: direct, present-tense, non-blaming, no
-// urgency — the same calm floor as every other surface. main.jsx guards the
-// payment routes and renders this in their place while off; when payments are
-// on, the real wizard runs in the app posture untouched.
+// funding) lands here instead, and the member is told to finish on the web. No
+// checkout, no price, no provider surface is reachable.
+//
+// CREATING a circle lands here FIRST, before the name and description are asked
+// for: a circle exists only once it is funded, so on the phone with payments off
+// there is nothing a name could be attached to. Asking for one and then blocking
+// throws the member's work away, which is why the `new` copy claims no circle,
+// no name and no saved state — it says plainly that nothing was kept.
+//
+// The page is a CalmPage (app/spaces.jsx), the same frame as InvalidInvite,
+// SpaceFull and the not-found page: small wordmark, one title, one body, one
+// primary action. It is a fourth calm full page, not a treatment of its own.
+// Voice: direct, present-tense, non-blaming, no urgency — the same calm floor as
+// every other surface. main.jsx guards the routes and renders this in their
+// place while off; when payments are on, the real wizard runs untouched.
 const HANDOFF_COPY = {
   new: {
-    eyebrow: 'Finish on the web',
-    title: (n) => `${n || 'Your circle'} is ready`,
-    body: (n) => `${n || 'Your circle'} is named and set up. Circlists takes payment on the web, so open it in a browser to fund it and bring it live. Everyone you invite joins free.`,
+    eyebrow: 'New circle',
+    title: () => 'Circles are created on the web.',
+    body: () => 'Circlists takes payment on the web, and a circle goes live once it\u2019s funded. Open Circlists in a browser to create one. Nothing has been saved here.',
   },
   refund: {
     eyebrow: 'Finish on the web',
     title: (n) => `Bring ${n || 'this circle'} back`,
-    body: (n) => `Circlists takes payment on the web. Open it in a browser to re-fund ${n || 'this circle'} and bring it back for everyone — your members and history are still here.`,
+    body: (n) => `Circlists takes payment on the web. Open it in a browser to re-fund ${n || 'this circle'} and bring it back for everyone \u2014 your members and history are still here.`,
   },
   manage: {
     eyebrow: 'Manage on the web',
@@ -325,24 +334,17 @@ const HANDOFF_COPY = {
 const WebHandoff = ({ context = 'new', spaceName, onExit }) => {
   const c = HANDOFF_COPY[context] || HANDOFF_COPY.new;
   return (
-    <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '10px 12px', flex: 'none' }}>
-        <IconBtn name="x" label="Close" onClick={onExit} />
-      </header>
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center', padding: '8px 24px 40px', textAlign: 'center' }}>
-        <div style={{ maxWidth: 400, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ marginBottom: 22 }}><PulseMark size={46} /></div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 12 }}>{c.eyebrow}</div>
-          <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: '0 0 12px' }}>{c.title(spaceName)}</h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 24px', maxWidth: 360 }}>{c.body(spaceName)}</p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', marginBottom: 28 }}>
-            <Icon name="external-link" size={16} color="var(--color-fg-3)" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-1)' }}>circlists.com</span>
-          </div>
-          <Button variant="primary" full size="lg" onClick={onExit} style={{ maxWidth: 320 }}>Back to your circles</Button>
-        </div>
+    <CalmPage eyebrow={c.eyebrow} title={c.title(spaceName)} body={c.body(spaceName)}
+      actionLabel="Back to your circles" onAction={onExit}>
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px',
+        border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
+        background: 'var(--color-surface)',
+      }}>
+        <Icon name="external-link" size={16} color="var(--color-fg-3)" />
+        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-1)' }}>circlists.com</span>
       </div>
-    </div>
+    </CalmPage>
   );
 };
 

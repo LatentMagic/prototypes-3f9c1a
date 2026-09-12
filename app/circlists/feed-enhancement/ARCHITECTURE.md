@@ -99,10 +99,13 @@ index is the only thing that catches it.
 
 ## Web-only payments
 
-App posture + **Config → Mobile payments: Off** routes every funding / checkout / provider path to
-the finish-on-web handoff (`WebHandoff`, `app/subscriptions.jsx`). It is a single render-level
-guard in `main.jsx` covering `PAYMENT_ROUTES`, so *all* entry points — real flows and Config
-scenarios alike — are covered and no checkout, price, or provider surface is reachable in-app.
+App posture + **Config → Mobile payments: Off** routes every create / funding / checkout / provider
+path to the finish-on-web handoff (`WebHandoff`, `app/subscriptions.jsx`). It is a single
+render-level guard in `main.jsx` covering `PAYMENT_ROUTES`, so *all* entry points — real flows and
+Config scenarios alike — are covered and no checkout, price, or provider surface is reachable
+in-app. Creating a circle is in that list because it is a funding act: the circle exists only once
+it is funded, so the block lands on the tap rather than after the member has named and described
+something the phone cannot keep.
 `On` runs the real wizard in the app posture. Web ignores the setting entirely.
 (Every state in the register goes through the same guard, so a deep link cannot reach a checkout
 surface in-app either.)
