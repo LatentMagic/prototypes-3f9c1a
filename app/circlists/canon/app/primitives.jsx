@@ -107,7 +107,10 @@ const Button = React.forwardRef((props, ref) => {
     minHeight: minH, width: full ? '100%' : 'auto',
     cursor: loading || disabled ? 'default' : 'pointer',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-    transition: 'background var(--duration-base) var(--ease-quiet), opacity var(--duration-base)',
+    // Background only. Transitioning opacity too made the button fade to 45%
+    // going disabled or loading, which drew it twice mid-transition on iOS —
+    // the opacity change lands instantly.
+    transition: 'background var(--duration-base) var(--ease-quiet)',
     opacity: disabled && !loading ? 0.45 : 1,
     whiteSpace: 'nowrap',
   };

@@ -35,7 +35,7 @@
 // is the act; after it, the act is copying, and the box carries it. So the card
 // holds exactly one filled control at any time, and never two.
 //
-// The box has three states, so readiness is defined and signalled:
+// The box has four states, so readiness is defined and signalled:
 //   empty    no link for the address in the field. The slot at its resting
 //            height holding nothing of value — not even the domain, which would
 //            imply part of the link already exists.
@@ -43,6 +43,18 @@
 //   ready    the link is there, and the box plays .circ-glow — the app's arrival
 //            wash, the same signal a card that just landed plays. The live
 //            region says so.
+//   refused  the request came back with no usable link. The box says so plainly
+//            and Get a link returns to primary, because the act is pressing
+//            again — the refusal is about the request, not the address, so it
+//            lands IN the box and never on the field's hint line (the hint slot
+//            is the field's error slot, and holds the funding fact otherwise).
+//            Same box, same height: the footer does not move.
+//
+// **Get a link is disabled while its link is on screen.** Not merely demoted:
+// each press mints a fresh, non-withdrawable 30-day invitation, so a second
+// press for the same address strands a live invitation nobody can revoke
+// (CIRC-031, UI Decision-53). Editing the address frees it again — the same
+// signal that empties the box. A refusal minted nothing, so it frees it too.
 //
 // The signing beat is not decoration: the token is signed server-side (a pure
 // function of address + circle + a secret), so the real card makes one
@@ -86,6 +98,7 @@ const inviteCardStyles = {
   helper: { fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13.5, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)' },
   label: { display: 'block', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)', marginBottom: 6 },
   linkLabelText: { fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' },
+  refusal: { flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.35, color: 'var(--color-fg-1)', textAlign: 'left' },
   bind: { fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: 'var(--space-4) 0 0' },
 };
 
@@ -94,6 +107,7 @@ const InviteCard = ({ space }) => {
   const [err, setErr] = React.useState(null);
   const [link, setLink] = React.useState(null);
   const [working, setWorking] = React.useState(false);
+  const [failed, setFailed] = React.useState(null);
   const [copied, setCopied] = React.useState(null);
   const fieldRef = React.useRef(null);
   const linkRef = React.useRef(null);
@@ -114,6 +128,7 @@ const InviteCard = ({ space }) => {
   // Derived, not stored: a link belongs to the address it was made for, so
   // editing the field empties the box without anything having to clear it.
   const ready = !!link && link.email === v;
+  const refused = !ready && !working && !!failed && failed === v;
 
   // Focus follows the link when it lands, so the keyboard is already on the
   // thing to press next and the arrival is not only a visual event.
@@ -125,9 +140,15 @@ const InviteCard = ({ space }) => {
     if (space.members.some(m => (m.email || '').toLowerCase() === v)) {
       setErr('That person is already a member of this circle.'); return;
     }
-    setErr(null); setCopied(null); setWorking(true);
+    setErr(null); setCopied(null); setFailed(null); setWorking(true);
     clearTimeout(signRef.current);
     signRef.current = setTimeout(() => {
+      // The real card's one request per press can come back with no usable
+      // acceptance link. Armed by the states register (a transient window flag,
+      // never app state — a persisted flag would leave a normal circle
+      // silently refusing the first press forever) and consumed here: press →
+      // refusal, press again → link, so the retry route is walkable.
+      if (window.CIRC_INVITE_MINT_FAIL) { window.CIRC_INVITE_MINT_FAIL = false; setFailed(v); setWorking(false); return; }
       setLink({ email: v, url: INVITE_BASE + inviteToken(v, space.id) });
       setWorking(false);
     }, INVITE_SIGN_MS);
@@ -170,7 +191,7 @@ const InviteCard = ({ space }) => {
               value={email} onChange={change} error={err} />
           </div>
           <div className="circ-invite-act">
-            <Button type="submit" variant={ready ? 'secondary' : 'primary'} loading={working}
+            <Button type="submit" variant={ready ? 'secondary' : 'primary'} loading={working} disabled={ready}
               style={{ width: 'var(--circ-invite-btnw, 100%)' }}
               icon={<Icon name="link" size={16} color={ready ? 'var(--color-fg-2)' : '#fff'} />}>Get a link</Button>
           </div>
@@ -203,14 +224,16 @@ const InviteCard = ({ space }) => {
           <span style={{ display: 'inline-flex', flexShrink: 0 }}>
             {working ? <Spinner size={14} light={false} /> : <Icon name="link" size={15} color="var(--color-fg-3)" />}
           </span>
-          <span className="circ-invite-url" />
+          {refused
+            ? <span style={inviteCardStyles.refusal}>Couldn’t make a link. Try again.</span>
+            : <span className="circ-invite-url" />}
         </div>
       )}
       {copied === 'manual' && (
         <p style={inviteCardStyles.bind}>Copy it by hand — the link is selected.</p>
       )}
       <p style={inviteCardStyles.bind}>It only works for that address, and it takes them straight into {space.name}.</p>
-      <span className="circ-vh" role="status" aria-live="polite">{copied === 'ok' ? 'Link copied.' : (ready ? 'Link ready.' : '')}</span>
+      <span className="circ-vh" role="status" aria-live="polite">{copied === 'ok' ? 'Link copied.' : (ready ? 'Link ready.' : (refused ? 'Couldn’t make a link. Try again.' : ''))}</span>
     </div>
   );
 };

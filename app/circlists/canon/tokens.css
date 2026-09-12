@@ -46,6 +46,7 @@
   --color-border-1:         #DCDCD8;  /* card borders, default      */
   --color-border-2:         #E8E8E5;  /* separators, hairlines      */
   --color-border-strong:    #0A0A0A;  /* deliberate emphasis only   */
+  --color-border-3:         #949490;  /* mid neutral, ≥3:1 on white — WCAG 1.4.11 floor for resting UI-component states (e.g. switch OFF track) */
 
   /* Destructive — used in v1 ONLY on the last-member Leave primary action.   */
   --color-destructive:      #991B1B;
