@@ -212,9 +212,9 @@ const fundingStateLine = (f) => {
 // The card itself lives in app/invite-link.jsx and is read per render off
 // window, like every other droppable module: the champion enters an address, the
 // card hands back a link bound to it, and the app mails nothing. Absent that
-// module the members surface simply offers no invite — which is how the homepage
-// demo omits it, the gate covering circle settings so the surface is never
-// reached there.
+// module the members surface simply offers no invite — which is how a build can
+// omit it, the gate covering circle settings so the surface is never reached
+// there.
 // The circle-full panel stays in MembersSurface: it is not part of the card.
 
 // ---- Members surface (in shell) --------------------------------------------

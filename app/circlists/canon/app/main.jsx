@@ -31,8 +31,8 @@ const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) |
 
 // ---- Tweak defaults, baked in ----------------------------------------------
 // So the app renders at its intended look even when the Tweaks files
-// (circ-tweaks.jsx / tweaks-panel.jsx) are absent — the delete-only homepage-demo
-// derivation drops them. When those files are present they take over.
+// (circ-tweaks.jsx / tweaks-panel.jsx) are absent — a build that omits the aids
+// drops them. When those files are present they take over.
 const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto', pulseDepth: 7.5, spinSpeed: 1.4 };
 
 // ---- The timed check's cadence ---------------------------------------------
@@ -86,7 +86,7 @@ const CircApp = () => {
 
   // ---- Deletable-aid / droppable-module handles ----
   // Read once per render from window so the app tolerates any of these files
-  // being absent (delete-only homepage-demo derivation): config + tweaks are
+  // being absent (a build can omit any of them): config + tweaks are
   // aids that can be deleted; gate is a module that can be dropped in.
   const ConfigLauncher = window.ConfigLauncher;
   const CircTweaks = window.CircTweaks;
@@ -104,8 +104,8 @@ const CircApp = () => {
   // OFF by default so the working prototype behaves normally (New circle + account
   // run their real flows, every reload). Two ways to switch it on:
   //   • locally: Config → Preview gate → On  (session-only, not persisted)
-  //   • in the exported homepage demo: set  window.CIRC_FORCE_GATE = true  in the
-  //     embed. No file in this project is hand-edited to activate it.
+  //   • from an embedding page: set  window.CIRC_FORCE_GATE = true  before the app
+  //     mounts. No file in this project is hand-edited to activate it.
   const gateModulePresent = !!GateOverlay;
   const [gateOverride, setGateOverride] = useState(false);
   const gateActive = gateModulePresent && (window.CIRC_FORCE_GATE === true || gateOverride);

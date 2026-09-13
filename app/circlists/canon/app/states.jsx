@@ -20,8 +20,8 @@
 //
 // A deletable aid, in two files (this + app/states-ui.jsx). main.jsx guards on
 // window.buildStates / window.StatesIndex, so absent ⇒ no register, no palette,
-// no address reading, and the app behaves exactly as it ships. The homepage-demo
-// entry simply does not list them.
+// no address reading, and the app behaves exactly as it ships. A build that
+// omits the aids simply does not list them.
 //
 // NOTE ON PREVIEW: the resolver reads location.search, and nothing in the design
 // tool can hand this page a URL — so `?state=` looks INERT here, in every

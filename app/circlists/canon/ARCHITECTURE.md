@@ -47,8 +47,6 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/circ-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
 
-This is how the homepage demo is derived: by **omitting** files, never by editing the core.
-
 ## Addressable states
 
 A ticket in the real build links to this prototype, so a reviewer has to be able to arrive at the

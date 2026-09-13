@@ -10,4 +10,4 @@
 - `newyorker.com.ico` — newyorker.com
 
 For the Design prototype to bake in as static assets (same treatment as the card-preview
-og images), so the homepage-demo build can stop calling Google's live favicon service.
+og images), so no build has to call Google's live favicon service.
