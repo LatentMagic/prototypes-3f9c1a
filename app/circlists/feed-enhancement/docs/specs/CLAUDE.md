@@ -14,8 +14,7 @@ On merge:
 
 1. **Merge the delta into `app/`**, renaming any `cand-*` CSS classes to house
    names and adding the styles to every live entry that loads the changed module
-   (`circlists.html`, `circlists-homepage-demo.html`, and any live playground
-   entry). The bridge file (`cand-*-main.jsx`) is scaffolding — delete it rather
+   (`circlists.html` and any live playground entry). The bridge file (`cand-*-main.jsx`) is scaffolding — delete it rather
    than merging it.
 2. **Move the whole ticket folder to `docs/archive/<ticket>/`.** A move, never a
    rewrite. Repoint the entry's own `<script src="docs/specs/…">` lines at the

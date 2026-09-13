@@ -20,8 +20,8 @@
 //
 // A deletable aid, in two files (this + app/states-ui.jsx). main.jsx guards on
 // window.buildStates / window.StatesIndex, so absent ⇒ no register, no palette,
-// no address reading, and the app behaves exactly as it ships. The homepage-demo
-// entry simply does not list them.
+// no address reading, and the app behaves exactly as it ships. A build that
+// omits the aids simply does not list them.
 //
 // NOTE ON PREVIEW: the resolver reads location.search, and nothing in the design
 // tool can hand this page a URL — so `?state=` looks INERT here, in every
@@ -550,12 +550,28 @@ function circStateContext(api) {
     if (setHomeStripOpen) setHomeStripOpen(true);
   };
 
+  // Minting refused: the invite card's request comes back with no usable link.
+  // On sp-test-backend, not sp-backend — sp-backend seeds at 11 members, over
+  // the cap, so the invite card is suppressed there.
+  // The arming flag is a transient window flag, NOT app state: app state is
+  // persisted, so a flag on the circle would leave a normal circle refusing the
+  // first press forever. Re-staging re-arms it; the card clears it on the press.
+  const stageInviteRefusal = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    window.CIRC_INVITE_MINT_FAIL = true;
+    setSpaces(prev => withSpace(prev, 'sp-test-backend').map(s => s.id === 'sp-test-backend'
+      ? { ...s, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email } : s));
+    setCurrentId('sp-test-backend'); setTab('active'); setRoute('members');
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
     stageLegacyRow, stageCircleDescription, stageCircleMicro,
+    stageInviteRefusal,
   };
 }
 
@@ -563,23 +579,23 @@ function circStateContext(api) {
 // Order here is the order the palette and the index read in. Group titles are
 // plain strings; a new group is simply a new title.
 const CIRC_STATE_REGISTER = [
-  { group: 'Onboarding', id: 'signup-first-circle', label: 'Sign up \u2192 first circle', stage: (c) => { c.setSpaces([]); c.setRoute('signup'); } },
+  { group: 'Onboarding', id: 'signup-first-circle', label: 'Sign up → first circle', stage: (c) => { c.setSpaces([]); c.setRoute('signup'); } },
   { group: 'Onboarding', id: 'signin-new-device', label: 'Sign in (new device)', stage: (c) => c.setRoute('signin') },
   { group: 'Onboarding', id: 'forgot-password', label: 'Forgot password', stage: (c) => c.setRoute('recovery') },
-  { group: 'Onboarding', id: 'otc-error', label: 'One-time code \u2014 errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
+  { group: 'Onboarding', id: 'otc-error', label: 'One-time code — errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
 
   { group: 'The feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
   { group: 'The feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
   { group: 'The feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
 
-  { group: 'Loading states', id: 'feed-loading', label: 'Feed \u2014 in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
-  { group: 'Loading states', id: 'app-loading', label: 'App \u2014 full screen', stage: (c) => c.holdInterstitial('google-return') },
+  { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
+  { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
 
-  { group: 'Members & funding', id: 'members-champion', label: 'Members \u2014 champion (you)', stage: (c) => c.stageFunding(null) },
-  { group: 'Members & funding', id: 'members-non-champion', label: 'Members \u2014 non-champion', stage: (c) => c.stageNonChampion() },
-  { group: 'Members & funding', id: 'members-circle-full', label: 'Members \u2014 circle full', stage: (c) => c.goFullSpaceManage() },
-  { group: 'Members & funding', id: 'funding-ending', label: 'Funding \u2014 ending on a date', stage: (c) => c.stageFunding({ state: 'ending', endsAt: Date.now() + 18 * DAY }) },
-  { group: 'Members & funding', id: 'funding-retrying', label: 'Funding \u2014 payment retrying', stage: (c) => c.stageFunding({ state: 'retrying', retryWindow: '30 days' }) },
+  { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
+  { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
+  { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
+  { group: 'Members & funding', id: 'funding-ending', label: 'Funding — ending on a date', stage: (c) => c.stageFunding({ state: 'ending', endsAt: Date.now() + 18 * DAY }) },
+  { group: 'Members & funding', id: 'funding-retrying', label: 'Funding — payment retrying', stage: (c) => c.stageFunding({ state: 'retrying', retryWindow: '30 days' }) },
   { group: 'Members & funding', id: 'circle-no-champion', label: 'Circle with no champion', stage: (c) => c.stageNoChampion() },
   { group: 'Members & funding', id: 'manage-funding', label: 'Manage funding (champion)', stage: (c) => { c.goSpace('sp-backend'); c.setManageIntent('manage'); c.setRoute('manage-interstitial'); } },
   { group: 'Members & funding', id: 'create-and-fund', label: 'Create + fund a circle', stage: (c) => c.openCreateSpace() },
@@ -587,10 +603,11 @@ const CIRC_STATE_REGISTER = [
   { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
   { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'suspended' }) },
 
-  { group: 'Invitations', id: 'invite-funded', label: 'Accept invite \u2014 funded', stage: (c) => c.goSpace('sp-book') },
-  { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite \u2014 dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite \u2014 invalid', stage: (c) => c.setRoute('invalid-invite') },
-  { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite \u2014 circle full', stage: (c) => c.setRoute('space-full') },
+  { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },
+  { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — invalid', stage: (c) => c.setRoute('invalid-invite') },
+  { group: 'Invitations', id: 'invite-link-refused', label: 'Get a link — creation refused', stage: (c) => c.stageInviteRefusal() },
+  { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite — circle full', stage: (c) => c.setRoute('space-full') },
 
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
   { group: 'Account', id: 'account-sso', label: 'Email & password via SSO', stage: (c) => { c.setUser({ ...window.CircSeed.DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); c.goSpace('sp-backend', 'account'); } },

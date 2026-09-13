@@ -13,8 +13,8 @@
 // confusing, and an address needs a register of its own (app/states.jsx) before
 // `?state=` can mean anything.
 //
-// Extracted to its own file so the omission-based homepage-demo derivation can
-// drop the whole aid by leaving THIS one file out — main.jsx guards on
+// Extracted to its own file so a build can drop the whole aid by leaving THIS
+// one file out — main.jsx guards on
 // window.ConfigLauncher and renders nothing when it's absent. The States half
 // only appears when window.StatesPalette is loaded too.
 //

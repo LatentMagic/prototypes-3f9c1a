@@ -8,10 +8,11 @@
   - Do NOT keep amending an entry as you iterate within a feature — the entry captures the *shape* of the step, written once, and then left alone. When in doubt, add nothing and ask. A single terse title + 2–4 shape-level bullets is the ceiling.
 - `docs/ABOUT.md` — what the product is, who it's for, how it's sold, emotional intent, and the deliberate NOTs. Durable product essence.
 - `brand/circlists-brand.md` — the Circlists brand pack: palette, mark, wordmark, lockup, type. Source of truth for all brand assets; the SVGs and raster set (favicons, PWA icons) live in `brand/assets/`, generators in `brand/scripts/`. The pack mirrors the company wiki (linked in `brand/README.md`) and may be overwritten by future syncs.
+- **CRITICAL — `specs/governance/standards/ui-design.md` (monorepo, read live).** Binding cross-app UI design law: domain-aligned placement, responsive-by-default, consistent affordances, prefer-a-statement-to-a-disabled-control, non-flicker loading, rationed confirmation, deferred validation, focus restoration, touch floor, and the **text-input font floor (any control the user types into renders at 16px or larger — under that iOS Safari zooms the viewport in on focus and never back out; the viewport meta tag is not the remedy)**. Read it before any design decision that sets a convention, and check every new or edited text input against the floor.
+- **CRITICAL — the Circlists stable specs (monorepo `specs/projects/circlists/`, read live).** `prd.md`, `hld.md`, `ui.md`, `glossary.md`, plus `requirements/CIRC-###-*.md` and `changes/LM-###-*/`. Canonical for product behaviour. Cite by path and id; never copy in.
 - `github.md` — the four-repo working context this project sits in: business-ops (where intent is refined into the prompts that arrive here), the monorepo (the stable project specs *and* the governance standards, including the binding `specs/governance/standards/ui-design.md`), the wiki (voice, positioning, brand), and prototypes-3f9c1a (where this project is published as `app/circlists/canon/`). Read it before looking for a spec, the PRD, copy voice, positioning, or the reasoning behind a prompt: those are read **live** from GitHub, not held here.
 - `docs/BRANDING.md` — thin pointer to `brand/`, noting it's a manual copy of the wiki's brand directory.
 - `brand/motion/circlists-motion.md` — spec for the mark's motion (pulse/spinner/micro keyframes, timings, curves). The `<style>`/`@keyframes` block gets stripped from the SVGs on upload, so the shipped `brand/motion/*.svg` files are static — do not treat that as a defect and do not edit them. When you need the motion, refer to this markdown spec as the source of truth for the curves, timings, and keyframes.
-- `HOMEPAGE-DEMO.md` — the **homepage demo**: the app state a stranger plays with on `circlists.com`. It is part of the working line's output and **ships with every export** (`circlists-homepage-demo.html` + `demo/`). Read it before touching the demo entry, its overlay, its seed, or the module list either entry carries — and whenever a module is added to or removed from `circlists.html`.
 - `GOTCHA.md` — hard-won, non-obvious traps (overlay/sheet motion, sandbox verification pitfalls). Read before touching animated overlays or "verifying" a mount transition.
   - **Editing rule:** only add an entry when the user approves it — do not append gotchas unprompted. Keep each entry terse: symptom → cause → fix → rule.
 - `skills/build-playground/SKILL.md` (+ `references/`) — how to build a playground: the intent, the non-negotiables, picking the rig shape, then config/driver patterns and wiring in its references. Supersedes the old `PLAYGROUND.md`. Keep it current: when a playground teaches you something durable, add it here.
@@ -47,17 +48,24 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 - `build-playground` — before building any rig, option study, whiteboard or comparison the user will play with.
 - `candidate-build` — before building a delta that has to *be* the app rather than sit beside it as options; and before touching an existing `circlists-<ticket>.html` entry or its `cand-*` overlays; and before merging a ratified candidate into the main build.
 - `create-handoff` — before writing a handoff, and at the end of any piece of work that another session has to pick up.
-- `frontend-ui-engineering` — before non-trivial `app/` UI work or any refactor.
+- `frontend-ui-engineering` — before non-trivial `app/` UI work or any refactor. Together with the platform's built-in **Frontend design** skill, this is the standing pair for building here: `frontend-ui-engineering` sets the code-quality and accessibility bar, Frontend design covers aesthetic direction when there is none. Circlists always has one, so the two below are for range, not for direction.
+
+### Design range — opt-in toolkit, imported from open source
+Two external skills, vendored into `skills/` and adapted. Neither fires as part of routine build work: reach for them on `$impeccable` / `$design-taste-frontend`, or when a piece of work genuinely needs critique depth or ideation range beyond the standing pair. Each carries a `<!-- circlists-local -->` block at the top of its `SKILL.md` — read that before the upstream body; it says what applies here and what was left out.
+- `impeccable` — a critique-and-refine vocabulary (`critique`, `audit`, `polish`, `clarify`, `layout`, `typeset`, plus the app-posture platform references) with one playbook per move in `references/`. Best used on surfaces that already exist. `shape` / `new-work` only inside a playground or candidate build, never straight into `app/`. Upstream `pbakaus/impeccable`.
+- `design-taste-frontend` — anti-slop ideation: the Design Read, the anti-default list, the pre-flight check. Upstream scopes it to landing pages, portfolios and redesigns and *excludes* product UI, so it belongs on marketing surfaces and option studies — not on the app's own screens. Upstream `Leonxlnx/taste-skill`. Its three style packs (`soft`, `minimalist`, `brutalist`) were left unvendored so they cannot read as competing themes, but they exist and can be read live from that repo for ideation support when an option study needs range our own system cannot supply — see the skill's own Circlists block.
+
+**Precedence over both: the theme is not theirs to set.** `tokens.css`, `brand/circlists-brand.md` and the monorepo's `specs/governance/standards/ui-design.md` are binding. Take their process, never their default aesthetics: no new palette, typeface, aesthetic "world", `DESIGN.md`, `PRODUCT.md`, `.impeccable/` or blocks library. Both assume a CLI, hooks, a browser overlay and sub-agents that do not exist here — the copied files are read-and-follow playbooks, and any instruction to run a script is skipped, never faked.
 
 **Where they disagree with this file, this file wins** — most of all the ratification rule and the last-line-carries-the-ask rule for chat replies.
 
 ## Where files live
 - **Upstream first.** Product behaviour lives in the monorepo spec, cross-app design law in `specs/governance/standards/ui-design.md`, brand and voice in the wiki, and the reasoning behind any prompt that arrives here in business-ops `work/apps/circlists/<ticket>/` — read that ticket's `CONTEXT.md` before building against its prompt, since the prompt is the tip of a much larger record. The ticket convention there is the same as ours, so the folder names line up. Read all of it live; the only thing mirrored into this project is `brand/`, because the app loads `brand/assets/*` at runtime. Details and paths in `github.md`. Never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
-- **Root** holds only what must be there: `circlists.html`, `circlists-homepage-demo.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `demo/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `HOMEPAGE-DEMO.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
+- **Root** holds only what must be there: `circlists.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs (`CLAUDE.md`, `ARCHITECTURE.md`, `MOBILE.md`, `GOTCHA.md`, `CHANGELOG.md`, `github.md`).
 - **`docs/`** holds durable docs only (`ABOUT.md`, `BRANDING.md`).
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the monorepo — `lm-###` for changes, `circ-###` for requirements, `biz-##` for business-ops work. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
-- **A candidate build lives in its ticket folder**, next to its `cand-*` modules: `docs/specs/<ticket>/circlists-<ticket>.html`. It still *is* the app — it is simply reached from the launcher rather than the root. (The homepage demo is not task-scoped: its entry and its `demo/` modules are permanent root fixtures — see `HOMEPAGE-DEMO.md`.)
+- **A candidate build lives in its ticket folder**, next to its `cand-*` modules: `docs/specs/<ticket>/circlists-<ticket>.html`. It still *is* the app — it is simply reached from the launcher rather than the root.
 
 ## Playgrounds — placement and the launcher
 - **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product, or a candidate of it".
@@ -78,30 +86,8 @@ Nothing registers a skill automatically in this environment; the built-in skill 
   fonts, so each one costs 1.7–6 MB and dominates the download. Generate it, hand
   it over, delete it in the same session.
 - **Load-bearing exception:** `uploads/card-previews/` and `uploads/card-favicons/`
-  are referenced by `app/seed-data.jsx`, `app/liveliness.jsx` and
-  `demo/demo-seed.jsx`. They live in `uploads/` for historical reasons and must
+  are referenced by `app/seed-data.jsx` and `app/liveliness.jsx`. They live in `uploads/` for historical reasons and must
   never be swept.
-
-## Seed data — the standing rule
-- **The homepage demo has its own seed, and it does not inherit.** `demo/demo-seed.jsx`
-  is loaded *instead of* `app/seed-data.jsx` and is a hand-written parallel seed, not an
-  extension of it. Everything else in the demo inherits for free — modules, CSS,
-  components — so it is easy to believe the seed does too. It does not.
-- **So: any change to seed data is two changes.** Whenever a feature needs seed state to
-  be *visible* — a field, a mark, a flag, a relationship — author it in the demo seed in
-  the same turn, with the demo's own content. **Do this without asking**; it is not a new
-  decision, it is finishing the one already ratified. Only the *content* of the demo seed
-  (which cards, whose words) is a content decision, and the existing two circles set the
-  register to follow.
-- **Then bump `window.CIRC_STATE_KEY` in `demo/demo-overlay.jsx`.** The demo persists
-  state under that key, so a returning visitor restores a state authored before the
-  feature existed and sees nothing — the seed edit is real and invisible. A seed change
-  that adds state is not landed until the key is bumped, with a one-line note saying what
-  the bump was for.
-- **The failure mode is silence.** A feature missing from the demo seed does not error;
-  the surface simply never appears, and stays that way until someone happens to look.
-  When a feature's affordance is absent from the demo, suspect the seed and the state key
-  before the feature.
 
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a
