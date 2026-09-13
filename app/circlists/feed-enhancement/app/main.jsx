@@ -323,16 +323,13 @@ const CircApp = () => {
   // idiom as sortMenuOpen above, so a staged state can open it directly — the
   // strip has no circle context of its own to reset it against, so unlike the
   // per-circle bar it simply holds until the member (or a stager) changes it.
-  // Open by default, which is the one place this screen departs from the bar it
-  // reuses. On the feed the bar is a lead-in above a screen already full of
-  // content, so collapsed is right. On the home it IS the content: collapsed,
-  // the screen shows three circle names and hides every real thing behind a
-  // 34px chevron. The design review put that against Things' Today, Linear's
-  // Inbox and Basecamp's Home — all three put the items themselves on the
-  // surface — and its verdict was that the collapsed screen would not hold its
-  // own beside them while the expanded one would. The collapsed shape stays
-  // reachable as its own state so the swap can be overruled by looking.
-  const [homeStripOpen, setHomeStripOpen] = useState(true);
+  // Collapsed by default. Ruling 97 landed it open, arguing collapsed shows
+  // three circle names and hides every real thing behind a chevron — Joe
+  // overturned that on 2026-09-13: open-by-default reads as content bloat on
+  // a screen the member has not asked anything of yet. The open shape stays
+  // reachable as its own state (`home-strip-open`) so either can be looked at
+  // without reading this.
+  const [homeStripOpen, setHomeStripOpen] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
   // A menu left open while the view changes underneath it would point at a list

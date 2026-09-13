@@ -108,11 +108,12 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
     return { flat, ...candCrossBounded(spaces, flat) };
   }, [spaces]);
 
-  // Frozen when the member OPENS the panel — never on the initial mount, even
-  // though the panel now lands open (ruling 97). Freezing on mount was wrong and
-  // only driving it showed why: the app stages `?state=` in an effect AFTER
-  // mount, so a snapshot taken at mount captures the pre-staged circles and then
-  // never refreshes, because `open` never flips again. The crowded state rendered
+  // Frozen when the member OPENS the panel — never on the initial mount. That
+  // guard matters even though the panel lands collapsed by default, because a
+  // staged demo state can still land it open: the app stages `?state=` in an
+  // effect after mount, so a snapshot taken at mount captures the pre-staged
+  // circles and then never refreshes, because `open` never flips again. The
+  // crowded state rendered
   // five rows over two circles instead of six over three, and nothing errored —
   // the panel was faithfully showing a world that had already been replaced.
   // The hold is meant to stop a turn landing MID-VIEW from moving rows; it was

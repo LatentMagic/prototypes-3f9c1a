@@ -124,10 +124,11 @@ function circStateContext(api) {
   //           wrong one; this state's whole job is that the quiet reads as
   //           arrival, so all three go.
   //   empty — no circles at all, landing on NoSpaceHome.
-  //   open  — whether the returns strip is expanded. Defaults to TRUE, matching
-  //           the app's own landing default (main.jsx's homeStripOpen): on the
-  //           home the strip IS the content, so a stager that quietly collapsed
-  //           it would stage a screen the product never shows.
+  //   open  — whether the returns strip is expanded. Defaults to FALSE, matching
+  //           the app's own landing default (main.jsx's homeStripOpen): open by
+  //           default reads as content bloat on a screen the member has not
+  //           asked anything of yet, so a stager that quietly opened it would
+  //           stage a screen the product never shows.
   //   sleep — put ONE named circle to sleep, leaving the others funded. A
   //           dormant circle shown on its own proves nothing: the claim being
   //           demonstrated is that it sits AMONG the others saying "Asleep",
@@ -145,7 +146,7 @@ function circStateContext(api) {
   //           rendered. The two extra circles are clones of the two that already
   //           carry watched, read, freshly-answered cards, renamed — cloning is
   //           what keeps this a fixture rather than a second seed to maintain.
-  const stageHome = ({ only = null, quiet = false, empty = false, open = true, sleep = null, crowd = false } = {}) => {
+  const stageHome = ({ only = null, quiet = false, empty = false, open = false, sleep = null, crowd = false } = {}) => {
     setUser(DEFAULT_USER);
     let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
     if (crowd) {
@@ -765,7 +766,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-landing', label: 'Home \u2014 landing, two circles talking', stage: (c) => c.stageHome({}) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-quiet', label: 'Home \u2014 quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-crowded', label: 'Home \u2014 five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-strip-shut', label: 'Home \u2014 the returns strip collapsed (the alternative)', stage: (c) => c.stageHome({ open: false }) },
+  { group: 'Candidate build \u2014 feed enhancement', id: 'home-strip-open', label: 'Home \u2014 the returns strip opened (the alternative)', stage: (c) => c.stageHome({ open: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-one-circle', label: 'Home \u2014 a single circle', stage: (c) => c.stageHome({ only: 'sp-backend' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-no-circles', label: 'Home \u2014 no circles yet (NoSpaceHome)', stage: (c) => c.stageHome({ empty: true }) },
