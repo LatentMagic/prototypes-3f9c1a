@@ -428,13 +428,11 @@ const LensList = ({ label, options, value, onPick, bounded = true }) => {
                     color: 'var(--color-fg-3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   }}><Icon name="users" size={13} /></span>
                 : <span aria-hidden="true" style={{ marginRight: 8, display: 'inline-flex' }}>
-                    {/* NEVER accent, even for your own row. On the card the
-                        accent fill means "this is you"; in this list the label
-                        already says You, and the fill made the one UNSELECTED
-                        row the loudest object in the group — louder than the
-                        accent bar marking the row that IS selected. Identity
-                        must not out-rank state. */}
-                    <Avatar name={o.face} size={24} />
+                    {/* Same accent fill the card gives your own avatar
+                        everywhere else it appears — Joe's ruling overrides
+                        the earlier neutral-by-design call this comment used
+                        to record. */}
+                    <Avatar name={o.face} size={24} accent={o.accent} />
                   </span>}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
             </button>
@@ -586,6 +584,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
       // exactly what FeedCard resolves for the same row.
       face: /^former member$/i.test(w) ? null
         : (/^you$/i.test(w) && user ? displayName(user) : circContributorLabel(w)),
+      accent: circIsYou(w),
     }))
   );
   // A filtered contributor whose last link is read away or deleted drops out of
@@ -1209,19 +1208,31 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     // because those are one field: a card headed by its URL has no title.
     support = 'Search looks at what a card shows — its title or address, its source, and who added it.';
   } else if (who && saved) {
-    // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim.
+    // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim — except the
+    // self case, which speaks in the first person rather than "they" (see
+    // the Active/Read branch below for the same fix and its reasoning).
     headline = 'Nothing saved from ' + label;
-    support = 'Your saved links don’t include anything they added.';
+    support = circIsYou(who)
+      ? 'Your saved links don’t include anything you’ve added.'
+      : 'Your saved links don’t include anything they added.';
   } else if (saved) {
     // REGRESSION: feed-saved.jsx's SavedNoMatch, verbatim.
     headline = 'No saved links here';
     support = 'Nothing in this circle is saved.';
   } else {
-    // REGRESSION: this file's own LensNoMatch, verbatim.
+    // REGRESSION: this file's own LensNoMatch, verbatim — except the self
+    // case, which the template was never substituted through: "they" read
+    // naturally for another member's row but described the member themself
+    // in the third person when they filtered to their own. First person for
+    // You, unchanged for everyone else.
     headline = 'Nothing here from ' + label;
-    support = tab === 'read'
-      ? 'You have not read anything they added.'
-      : 'They have not added anything you have left to read.';
+    support = circIsYou(who)
+      ? (tab === 'read'
+        ? 'You haven’t read any of your own links yet.'
+        : 'You haven’t added anything that’s still to read.')
+      : (tab === 'read'
+        ? 'You have not read anything they added.'
+        : 'They have not added anything you have left to read.');
   }
   // Button label/colour/action all key off the SAME branch as the escape
   // precedence above — search wins, then contributor, then saved. The colour
@@ -1297,9 +1308,13 @@ const LensNoMatch = ({ who, tab, onClear }) => (
       margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
       color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
     }}>
-      {tab === 'read'
-        ? 'You have not read anything they added.'
-        : 'They have not added anything you have left to read.'}
+      {circIsYou(who)
+        ? (tab === 'read'
+          ? 'You haven’t read any of your own links yet.'
+          : 'You haven’t added anything that’s still to read.')
+        : (tab === 'read'
+          ? 'You have not read anything they added.'
+          : 'They have not added anything you have left to read.')}
     </p>
     <button type="button" onClick={onClear} style={{
       marginTop: 10, background: 'transparent', cursor: 'pointer',
