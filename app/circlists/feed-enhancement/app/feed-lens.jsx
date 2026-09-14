@@ -985,27 +985,51 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
 // the split adds width, never height, so the row's rhythm is untouched.
 // Absent `onReopen` (every other mode), this renders the original one-button
 // chip byte for byte — see the branch below.
-const LensChip = ({ label, onClear, clearLabel, onReopen, reopenLabel }) => {
+// Chip cleanliness pass (BIZ-136, Joe 2026-09-14: "not enough space left of
+// the divider; the × takes too much room"). The DRAWN chip is now 36px tall
+// and the 44px floor is carried by the hit areas rather than the paint: the
+// box is an absolutely-placed layer 4px inside the 44px row, and the ×'s
+// 44px target runs 8px past the drawn edge into the gap to the next chip, so
+// neighbouring targets tile edge to edge without overlapping. One rhythm on
+// all three sides of the label (12px), a 16px split, an 12px ×.
+const CHIP_TRAIL = 8; // the × target's overhang past the drawn box = the visual gap between chips
+const ChipBox = () => (
+  <span aria-hidden="true" style={{
+    position: 'absolute', top: 4, bottom: 4, left: 0, right: CHIP_TRAIL, pointerEvents: 'none',
+    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+    borderRadius: 'var(--radius-md)',
+  }} />
+);
+const ChipLabel = ({ label, icon }) => (
+  <React.Fragment>
+    {icon && <Icon name={icon} size={13} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />}
+    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+  </React.Fragment>
+);
+const chipText = {
+  fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
+  lineHeight: 1, color: 'var(--color-fg-1)',
+};
+const LensChip = ({ label, icon, onClear, clearLabel, onReopen, reopenLabel }) => {
   if (onReopen) {
     return (
       <div style={{
-        display: 'inline-flex', alignItems: 'stretch', cursor: 'default',
-        background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
-        borderRadius: 'var(--radius-md)', minHeight: 'var(--tap-target-min)', maxWidth: '100%',
+        position: 'relative', display: 'inline-flex', alignItems: 'stretch', cursor: 'default',
+        minHeight: 'var(--tap-target-min)', maxWidth: '100%', minWidth: 0,
       }}>
+        <ChipBox />
         <button type="button" onClick={onReopen}
           aria-label={typeof reopenLabel === 'function' ? reopenLabel(label) : reopenLabel}
           // The lens trigger this reopens carries both of these; the chip that
           // reopens the same panel was announced as a plain button.
           aria-haspopup="dialog" aria-expanded={false}
           style={{
-          display: 'inline-flex', alignItems: 'center', cursor: 'pointer', overflow: 'hidden',
+          position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6,
+          cursor: 'pointer', overflow: 'hidden', minWidth: 0,
           background: 'transparent', border: 0, borderRadius: 'var(--radius-md) 0 0 var(--radius-md)',
-          padding: '0 4px 0 10px', minHeight: 'var(--tap-target-min)',
-          fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
-          color: 'var(--color-fg-1)', maxWidth: '100%',
+          padding: '0 12px', minHeight: 'var(--tap-target-min)', ...chipText,
         }}>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+          <ChipLabel label={label} icon={icon} />
         </button>
         {/* The split, drawn. Without it this chip is one plain rounded box with
             slightly loose padding, and the design review said so plainly: the
@@ -1028,41 +1052,47 @@ const LensChip = ({ label, onClear, clearLabel, onReopen, reopenLabel }) => {
             --color-border-1, the chip's own border token, so the split is at
             least as legible as the thing it divides. */}
         <span aria-hidden="true" style={{
-          width: 1, alignSelf: 'stretch', flexShrink: 0,
-          background: 'var(--color-border-1)', margin: '9px 0',
+          position: 'relative', width: 1, alignSelf: 'stretch', flexShrink: 0,
+          background: 'var(--color-border-1)', margin: '14px 0',
         }} />
+        {/* 44 × 44 target: 36px of it sits inside the drawn box (the 12px glyph
+            centred there), the last CHIP_TRAIL px overhang into the gap. */}
         <button type="button" onClick={onClear} aria-label={clearLabel} style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-          background: 'transparent', border: 0, borderRadius: '0 var(--radius-md) var(--radius-md) 0',
-          minWidth: 'var(--tap-target-min)', minHeight: 'var(--tap-target-min)', padding: '0 10px 0 2px',
-          color: 'var(--color-fg-2)', flexShrink: 0,
+          position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', background: 'transparent', border: 0,
+          borderRadius: '0 var(--radius-md) var(--radius-md) 0',
+          width: 'var(--tap-target-min)', minHeight: 'var(--tap-target-min)',
+          padding: `0 ${CHIP_TRAIL}px 0 0`, color: 'var(--color-fg-2)', flexShrink: 0,
         }}>
-          <Icon name="x" size={13} />
+          <Icon name="x" size={12} strokeWidth={1.75} />
         </button>
       </div>
     );
   }
+  // --radius-md and --color-border-1 (drawn by ChipBox), matching the trigger
+  // beside it: the two express the same engaged-lens state, so they cannot
+  // disagree on shape.
   return (
     <button type="button" onClick={onClear} aria-label={clearLabel} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-      // --radius-md and --color-border-1, matching the trigger 8px away: the two
-      // express the same engaged-lens state, so they cannot disagree on shape.
-      // --color-border-2 is the hairline/separator token, and on a control it is
-      // what made this read as a generic tag rather than one of this app's.
-      background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
-      borderRadius: 'var(--radius-md)', padding: '0 10px',
-      minHeight: 'var(--tap-target-min)',
-      fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 500,
-      color: 'var(--color-fg-1)', maxWidth: '100%',
+      position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+      background: 'transparent', border: 0, padding: `0 ${12 + CHIP_TRAIL}px 0 12px`,
+      minHeight: 'var(--tap-target-min)', maxWidth: '100%', ...chipText,
     }}>
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-      <span aria-hidden="true" style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--color-fg-2)' }}>
-        <Icon name="x" size={13} />
+      <ChipBox />
+      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+        <ChipLabel label={label} icon={icon} />
+      </span>
+      <span aria-hidden="true" style={{ position: 'relative', display: 'inline-flex', flexShrink: 0, color: 'var(--color-fg-2)' }}>
+        <Icon name="x" size={12} strokeWidth={1.75} />
       </span>
     </button>
   );
 };
 
+// SUPERSEDED for the chip row (Joe, 2026-09-14): chips now always pass
+// `bare`, at every width — the name alone, "You" capitalised — so several
+// chips never read "Added by, added by, added by". The history below is kept
+// for the non-bare form, which still has callers.
 // The chip says what the cards say. "Added by you", not "Added by You" — the
 // panel's row is a standalone label and is capitalised; the chip is a sentence
 // about the feed, and it sits directly above cards reading the lower-case form.
@@ -1174,17 +1204,24 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
         // removes only that one name — `onWho(w)` toggles it back off, the
         // same call the panel's own row makes; "Everyone" is a separate
         // click, not this row's clear.
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        // No row or column gap: each chip carries its own 4px top/bottom and
+        // CHIP_TRAIL px trailing air inside its 44px target (see LensChip), so
+        // the drawn boxes sit 8px apart both ways while the targets tile.
+        // The trailing -CHIP_TRAIL margin gives the last chip's overhang back,
+        // so the row's right edge is the drawn edge. Saved carries the card's
+        // own filled bookmark (Joe, 2026-09-14); contributors are named alone,
+        // never "Added by" (Joe, 2026-09-14: "Added by, added by, added by").
+        <div style={{ display: 'flex', gap: 0, alignItems: 'center', flexWrap: 'wrap', marginRight: -CHIP_TRAIL, marginBlock: -4 }}>
           {savedChipOn && (
             <LensChip
-              label="Saved"
+              label="Saved" icon="bookmark-filled"
               clearLabel="Showing saved links. Show all read links"
               onClear={() => onSaved(false)} {...reopen} />
           )}
           {whoList.map((w) => (
             <LensChip
               key={w}
-              label={circAttributionPhrase(w, isMobile)}
+              label={circAttributionPhrase(w, true)}
               clearLabel={'Showing links added by ' + circContributorLabel(w) + '. Remove this filter'}
               onClear={() => onWho(w)} {...reopen} />
           ))}
