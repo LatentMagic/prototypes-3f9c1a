@@ -1355,28 +1355,30 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
   // of which stay accent (see feed-saved.jsx's SavedNoMatch/SavedLensNoMatch
   // comments for the reasoning, not repeated here).
   //
-  // ONE EXCEPTION, and it is the design review's finding rather than a
-  // preference: where a query sits ON TOP of another narrowing, clearing only
-  // the query lands the member in a second filtered view that may also be
-  // empty. They pressed the one calm action the screen offered and are still
-  // looking at nothing. So when a query is combined with a contributor or with
-  // saved, the escape clears ALL of them and says so.
+  // Where a narrowing sits ON TOP of another narrowing, clearing only one of
+  // them lands the member in a second filtered view that may also be empty.
+  // They pressed the one calm action the screen offered and are still
+  // looking at nothing. So wherever more than one of query, contributor and
+  // saved are active together, the escape clears ALL of them and says so.
   //
-  // It applies only where a query is involved. The contributor+saved pair
-  // WITHOUT a query is shipped behaviour under this component's regression
-  // contract — it must keep emitting "Show everyone" and clearing only the
-  // contributor(s) — so that case is deliberately left alone, dead end and
-  // all, and stays recorded as run 5's own ruling rather than quietly
-  // reversed here. `onClearWho` clears every selected contributor at once —
-  // the same "Show everyone" a member reaches from the panel's own row — not
-  // just one of them, since the recovery action offered here has always been
-  // the full escape, never a per-person undo (that lives in the chip row).
+  // Saved+contributor without a query used to be the one dead end left
+  // standing — "Show everyone" cleared the contributor only, and a member who
+  // had also ticked Saved stayed stuck looking at an empty saved view. Ruled
+  // 2026-09-14 (run 8, ruling 7): a saved narrowing is a filter same as any
+  // other, so leaving it uncleared there was a bug, not a shipped exception.
+  // `onClearWho` clears every selected contributor at once — the same "Show
+  // everyone" a member reaches from the panel's own row — not just one of
+  // them, since the recovery action offered here has always been the full
+  // escape, never a per-person undo (that lives in the chip row).
   let onClear, buttonLabel, buttonColor;
   if (q && (whoList.length || saved)) {
     onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
     buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
   } else if (q) {
     onClear = onClearSearch; buttonLabel = 'Clear search'; buttonColor = 'var(--color-accent)';
+  } else if (whoList.length && saved) {
+    onClear = () => { onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
+    buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
   } else if (whoList.length) {
     onClear = onClearWho; buttonLabel = 'Show everyone'; buttonColor = 'var(--color-accent)';
   } else {
