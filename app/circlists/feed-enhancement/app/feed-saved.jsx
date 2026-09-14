@@ -5,13 +5,17 @@
 //   circFilterSaved(items, on) — the view-only narrowing to saved links. Never
 //                                 mutates, same contract as feed-sort.jsx and
 //                                 feed-lens.jsx's own view functions.
-//   SavedToggle                — the bar control, Read tab only.
+//   SavedToggle                — the bar control, Read tab only. Superseded by
+//                                 the lens group (feed-saved-readings.jsx,
+//                                 ratified run 9) — still defined and exported,
+//                                 deletable-aid idiom, just no longer wired
+//                                 into main.jsx's render.
 //   SavedNoMatch                — the empty case: filter on, nothing matches.
 //
 // A DELETABLE AID, in this app's own idiom (see feed-sort.jsx / feed-lens.jsx's
-// own headers): absent, main.jsx's `window.circFilterSaved` / `window.SavedToggle`
-// guards all fall through and the Read tab behaves exactly as it did before
-// this file existed — no toggle, no chip, no filter.
+// own headers): absent, main.jsx's `window.circFilterSaved` guard falls
+// through and the Read tab behaves exactly as it did before this file
+// existed — no lens group, no chip, no filter.
 //
 // THE MARK LIVES ON THE CARD (feed.jsx's bookmark toggle in FeedCard's action
 // cluster) and is READ-ONLY chrome. This file is the RETRIEVAL half: the
@@ -20,11 +24,12 @@
 // product decision, not an oversight, so nothing here offers a way to reach
 // the filter from Active.
 //
-// THE PRESENCE RULE is main.jsx's, not this file's: the toggle is handed to
-// `Tabs`' `right` slot only when the circle actually holds a saved link, or
-// the filter is already on (so unsaving your last link while filtered can't
-// strand the member with no way back). That rule needs `tab` and `loadingFeed`,
-// which this file doesn't carry, so it lives at the render site.
+// THE PRESENCE RULE is main.jsx's, not this file's: the lens group that now
+// carries this narrowing (feed-saved-readings.jsx) is offered only when the
+// circle actually holds a saved link, or the filter is already on (so
+// unsaving your last link while filtered can't strand the member with no way
+// back). That rule needs `tab` and `loadingFeed`, which this file doesn't
+// carry, so it lives at the render site.
 // ============================================================================
 
 // Whole-circle, not view-scoped — the presence rule above reads this against

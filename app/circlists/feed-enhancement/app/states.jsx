@@ -51,7 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-    setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
+    setSearchQuery, setSearchOpen, setHomeStripOpen, setPointedId,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -61,20 +61,13 @@ function circStateContext(api) {
   // a route, and set only where a state asks for it. Guarded because main.jsx
   // only passes it when app/not-found.jsx is present.
   const clearFeedError = () => { if (setFeedError) setFeedError(false); };
-  // The superseded card row (BIZ-136 run 10) is the second flag that can outlive
-  // the state that set it, for the same reason the load-error can: it is a bare
-  // window global read at render time rather than app state a stager overwrites.
-  // So it is cleared wherever a stager settles a route, exactly as above, and
-  // set only by `stageLegacyRow`. Without this, opening the superseded row and
-  // then any other state leaves every card in the app wearing the old shape.
-  const clearLegacyRow = () => { window.circCardRowLegacy = false; };
   const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
   const reset = () => {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
   };
 
   // Every Scenario reseeds before it stages (fuzz walk, 2026-09-14): Scenarios
@@ -90,10 +83,9 @@ function circStateContext(api) {
     setSpaces(fresh); setUser(DEFAULT_USER);
     setLoadingFeed(false); setHoldLoading(false);
     window.CIRC_INVITE_MINT_FAIL = false;
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
     setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
     setSavedOn({}); setSearchQuery({}); setSearchOpen({});
-    if (setSavedMode) setSavedMode('lens');
     if (setPointedId) setPointedId(null);
     if (setHomeStripOpen) setHomeStripOpen(false);
   };
@@ -101,7 +93,7 @@ function circStateContext(api) {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setCurrentId(id); setTab('active');
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
     if (toRoute) setRoute(toRoute); else enterSpace(id);
   };
 
@@ -126,7 +118,7 @@ function circStateContext(api) {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setLoadingFeed(false);
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
     setRoute('not-found');
   };
 
@@ -310,27 +302,7 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  // `savedMode` (BIZ-136 run 7): the shape saved is offered in — 'lens'
-  // (shipped since run 9: saved is a lens group), 'bar' (the superseded
-  // bookmark on the tab bar) or 'surface' (Reading B, a third tab). ALWAYS
-  // fully replaced, same reasoning as `who`/`savedOn` above: an entry that says
-  // nothing about it must land in the default, never inherit whatever the
-  // last-staged entry left it on.
-  //
-  // THE DEFAULT MOVED TO 'lens' IN RUN 9, and this line is the reason every
-  // older saved state moved with it. The owner ratified Reading A by looking at
-  // it; had this default stayed 'bar', the app would have opened in one shape
-  // while `saved-marks`, `saved-filtered` and the rest of the run-4 states went
-  // on demonstrating the shape it replaced. The register would then have been
-  // showing him a version of the app that no longer exists — which is the
-  // failure a states register is for preventing, not for causing.
-  // `finalTab` (run 7): the DISPLAYED tab, when it differs from the `tab`
-  // param above. `tab` still decides which item pool `saved` indexes into
-  // (read vs active) — a Reading-B state stages saved marks against the READ
-  // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
-  // different thing from what pool was scoped. Omitted, the displayed tab is
-  // `tab` itself, exactly as before this param existed.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null, pendingCount = 0 }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pointed = null, pendingCount = 0 }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -346,11 +318,6 @@ function circStateContext(api) {
     // Order is keyed by circle alone (fuzz finding 3, ruled 2026-09-14) — it
     // applies to both tabs, the same way density and the contributor filter
     // already do, so there is no tab to get right or wrong here any more.
-    // `keyTab` below still scopes the query/search-open keys, which stay
-    // tab-scoped, and the `saved`/`pointed` indices, which still count
-    // against the DISPLAYED tab's own pool for the reason recorded at their
-    // own use below.
-    const keyTab = finalTab || tab;
     setSortOrder({ [space]: order });
     // Multi-select (BIZ-136, ruling 2026-09-14): `who` accepts a single name
     // (a Scenario written before the ruling) or an array (several people at
@@ -379,15 +346,14 @@ function circStateContext(api) {
     // `who`/`savedOn` above, so an entry that says nothing about search
     // always lands with the field shut and empty, never inheriting whatever
     // the last-opened entry left typed.
-    setSearchQuery(query ? { [space + ':' + keyTab]: query } : {});
+    setSearchQuery(query ? { [space + ':' + tab]: query } : {});
     // A staged QUERY implies a staged OPEN. Without this, an entry that sets
     // only `query` leaves `searchOpen` false and the field is open purely
     // because a query exists — so backspacing to empty closes it mid-keystroke
     // and drops focus. In real use that never happens, because the only route
     // to a query is the trigger, which sets the flag; it happened only on the
     // ?state= URLs, which are exactly the links Joe follows.
-    setSearchOpen((searchOpen || query) ? { [space + ':' + keyTab]: true } : {});
-    if (setSavedMode) setSavedMode(savedMode);
+    setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
     // The pointed card (BIZ-136 wild feature — sharing). `pointed` is an INDEX
     // into the staged tab's own sorted order, not an item id, for the same
     // reason `saved` is: an id is a seed detail that moves the day the seed
@@ -397,7 +363,7 @@ function circStateContext(api) {
     if (setPointedId) setPointedId(null);
     if (setPointedId && pointed !== null) {
       const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
-      const scoped = ((sp && sp.items) || []).filter(i => (keyTab === 'read' ? i.read : !i.read));
+      const scoped = ((sp && sp.items) || []).filter(i => (tab === 'read' ? i.read : !i.read));
       const sortedScope = window.circSortItems ? window.circSortItems(scoped, order) : scoped;
       const target = sortedScope[pointed];
       // After the tab and circle writes settle, for the same reason the lens
@@ -405,9 +371,8 @@ function circStateContext(api) {
       // tab or circle change, and an entry sets both.
       if (target) setTimeout(() => setPointedId(target.id), 80);
     }
-    const shownTab = finalTab || tab;
-    setCurrentId(space); setTab(shownTab); setLoadingFeed(false); enterSpace(space);
-    setTab(shownTab);
+    setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
+    setTab(tab);
     // Opened AFTER the route settles, not before, and AFTER the tab/circle
     // writes just above (moved here in run 7 — read on). main.jsx closes the
     // panel on any tab/circle change (the `[tab, currentId]` effect in
@@ -512,17 +477,6 @@ function circStateContext(api) {
     }, 160);
   };
 
-  // The card row before run 10 folded it into a menu (BIZ-136 run 10). Kept
-  // reachable rather than argued about: the row went from three actions on
-  // Active and four on Read to two on both, and a swap of a shipped pattern is
-  // overruled by looking at it rather than by reading a ruling. Sets the flag
-  // FeedCard reads; every other stager clears it (see clearLegacyRow above).
-  const stageLegacyRow = ({ tab = 'read' } = {}) => {
-    stageSort({ space: 'sp-backend', tab, order: 'newest', saved: tab === 'read' ? [0, 2] : [] });
-    // After stageSort, which clears it along with every other route settle.
-    setTimeout(() => { window.circCardRowLegacy = true; setDensity(d => d); }, 60);
-  };
-
   // A circle's description (BIZ-136 run 10). The seed gives two circles one and
   // leaves the rest without, so the home's fallback is visible with no staging
   // at all — these two stage the cases the seed cannot: a description at the
@@ -536,7 +490,7 @@ function circStateContext(api) {
           ...(long ? { description: CIRC_LONG_DESC } : null) }
       : sp));
     setSpaces(s);
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
     setLoadingFeed(false);
     if (members) { setCurrentId('sp-backend'); setTab('active'); setRoute('members'); return; }
     if (bare) { setCurrentId('sp-book'); setTab('active'); setRoute('members'); return; }
@@ -566,7 +520,7 @@ function circStateContext(api) {
         items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
     });
     setSpaces(s);
-    clearFeedError(); clearLegacyRow();
+    clearFeedError();
     setLoadingFeed(false);
     setCurrentId(null); setRoute('home');
     if (setHomeStripOpen) setHomeStripOpen(true);
@@ -592,7 +546,7 @@ function circStateContext(api) {
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
-    stageLegacyRow, stageCircleDescription, stageCircleMicro,
+    stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
   };
 }

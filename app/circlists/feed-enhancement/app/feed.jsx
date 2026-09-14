@@ -74,10 +74,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
 
   // ---- Trailing kebab menu (run 10, BIZ-136: "[posture] [⋮]") --------------
   // Copies spaces.jsx's per-row kebab (same glyph, same open/close, same aria)
-  // rather than inventing a menu. `window.circCardRowLegacy` is the escape
-  // hatch (requirement 11): true renders exactly the old crowded row and this
-  // whole apparatus sits unused.
-  const legacyRow = !!window.circCardRowLegacy;
+  // rather than inventing a menu.
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [menuStyle, setMenuStyle] = React.useState(null);
   const triggerRef = React.useRef(null);
@@ -239,7 +236,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
                 "bring it to [tick] [⋮] ... so it does not become the one row
                 still showing the old shape"). */}
             <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}>
-              <Icon name={legacyRow ? 'trash' : 'more-vertical'} size={legacyRow ? m.actionIcon.trash : m.actionIcon.more} />
+              <Icon name="more-vertical" size={m.actionIcon.more} />
             </span>
           </div>
         </div>
@@ -319,56 +316,12 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
-          {legacyRow ? (
-            /* window.circCardRowLegacy escape hatch (requirement 11) — exactly
-               today's crowded row, untouched, so the ruled row below can be
-               overruled by looking rather than by argument.
-               [share] [state] [way] [delete] — one grammar across both tabs,
-               reading left to right from least to most consequential. Share
-               leads because it is the only action here that changes nothing:
-               it neither marks, nor keeps, nor removes. Active has no way
-               through, which is the read-gate showing in the row rather than an
-               omission. (BIZ-136 wild feature; deletable — no card-share.jsx,
-               no button, and the row is exactly what it was.) */
-            <React.Fragment>
-              {window.CardShareButton && (
-                <window.CardShareButton item={item} space={space} announce={onAnnounce}
-                  className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-                  size={m.actionIcon.share} />
-              )}
-              {tab === 'read'
-                ? (
-                  <React.Fragment>
-                    {onToggleSaved && (
-                      <button
-                        className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-                        onClick={() => onToggleSaved(item)}
-                        aria-pressed={!!item.saved}
-                        aria-label="Save this link"
-                        title="Save this link"
-                        style={{ color: item.saved ? 'var(--color-accent)' : 'var(--color-fg-3)' }}
-                      >
-                        <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={m.actionIcon.bookmark} />
-                      </button>
-                    )}
-                    <SwellDoor item={item} />
-                  </React.Fragment>
-                )
-                : (
-                  <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
-                    <Icon name="check" size={m.actionIcon.check} />
-                  </button>
-                )}
-              <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
-                <Icon name="trash" size={m.actionIcon.trash} />
-              </button>
-            </React.Fragment>
-          ) : (
-            /* [posture] [⋮] — one grammar, two visible targets, every surface
-               (run 10, BIZ-136 build brief A). The posture action is the
-               card's one high-frequency act and stays visible; everything
-               occasional (Share, Save, Delete) goes behind the kebab, ruled
-               32's Read-only Save included, destructive last. */
+          {/* [posture] [⋮] — one grammar, two visible targets, every surface
+              (run 10, BIZ-136 build brief A). The posture action is the
+              card's one high-frequency act and stays visible; everything
+              occasional (Share, Save, Delete) goes behind the kebab, ruled
+              32's Read-only Save included, destructive last. */}
+          {
             <React.Fragment>
               {tab === 'read'
                 ? <SwellDoor item={item} />
@@ -458,7 +411,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
                 menuPortalTarget()
               )}
             </React.Fragment>
-          )}
+          }
         </div>
       </div>
     </article>

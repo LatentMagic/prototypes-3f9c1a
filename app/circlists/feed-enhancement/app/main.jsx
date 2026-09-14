@@ -163,20 +163,12 @@ const CircApp = () => {
   const [currentId, setCurrentId] = useState(
     INITIAL_ROUTE === 'home' ? null : (SAVED?.currentId || 'sp-backend')
   );
-  // 'saved' is NOT resumable, for exactly the reason `CIRC_UNRESUMABLE` above
-  // exists (BIZ-136 run 7). `tab` is persisted; `savedMode` is visit state and
-  // is not — so after looking at Reading B once, the next bare load restores
-  // `tab: 'saved'` into a `savedMode: 'bar'` render, where the Saved tab does
-  // not exist. The bar then shows Active and Read with NEITHER selected, and
-  // the bookmark toggle vanishes too, because its own gate wants `tab ===
-  // 'read'`. That is the SHIPPED shape of the app rendering broken, on the
-  // second visit rather than the first, purely because a candidate reading was
-  // looked at once — and it is the control arm of the comparison this whole
-  // build exists to make fair.
-  //
-  // Restored as 'read', not 'active': the Saved tab shows read links, so Read
-  // is where the member actually was. Only the RESTORE path is filtered — a
-  // stager sets the tab after boot, so every `?state=` entry still works.
+  // 'saved' is NOT a tab this app has any more (the third-tab reading was
+  // superseded and its stager removed, 2026-09-14) — but `tab` is persisted,
+  // so a browser still carrying an old 'saved' value in storage is a real
+  // case, not a hypothetical one. Restored as 'read', not 'active': the
+  // superseded Saved tab showed read links, so Read is where the member
+  // actually was.
   const [tab, setTab] = useState(SAVED?.tab === 'saved' ? 'read' : (SAVED?.tab || 'active'));
 
   // ---- The address --------------------------------------------------------
@@ -257,59 +249,6 @@ const CircApp = () => {
   // outlives it. The saved FLAG on an item is the opposite: it lives on
   // `spaces` below, because it is a fact about the link, not a lens on it.
   const [savedOn, setSavedOn] = useState({});
-  // Saved mode (BIZ-136 run 7, two readings of "saved"): 'bar' (shipped,
-  // default) · 'lens' (Reading A — saved joins the lens popover) · 'surface'
-  // (Reading B — saved is its own tab). VISIT STATE, never persisted, same
-  // reasoning as sortOrder/lensWho/savedOn above.
-  //
-  // 'lens' IS THE DEFAULT AS OF BIZ-136 run 9, and that is a ratification, not
-  // a preference. Run 7 built both readings live and deep-linked so the owner
-  // could pick by looking rather than by reading an argument; he did, in one
-  // line — "It should be a filter. A." So saved is no longer a bookmark sitting
-  // on the tab bar beside two unrelated icons; it is a narrowing reached from
-  // the one door the other narrowings already share, and the chip it leaves
-  // leads back to that door instead of dead-ending.
-  //
-  // 'bar' AND 'surface' BOTH REMAIN REACHABLE, deliberately. He chose A from a
-  // side-by-side comparison, not from living with a four-group panel on a
-  // phone — so if he reverses on return, that is a one-word change here rather
-  // than a rebuild. `saved-bar-superseded` (app/states.jsx) is the shape this
-  // replaced, kept openable for exactly that reason.
-  const [savedMode, setSavedMode] = useState('lens');
-  // The deletable-aid contract, honoured ONCE here rather than at each of the
-  // half-dozen places that read the mode (BIZ-136 run 7, from the review).
-  // Gating each consumer on `savedMode` alone was a real breach, not a
-  // theoretical one: drop feed-saved-readings.jsx with a stale 'surface' left
-  // in a `?state=` link and there was no third tab, no tab selected, the feed
-  // silently narrowed to the saved links with nothing naming it — and the one
-  // escape button on the empty state was DEAD, because it wrote the stored
-  // toggle that 'surface' does not read. The contract promises the PREVIOUS
-  // behaviour, not merely "does not throw".
-  // Both readings need the module, so one term covers both: without it the
-  // mode collapses to 'bar'.
-  // RUN 9 CHANGED WHAT THAT COLLAPSE MEANS, and the honest note is that it is
-  // now weaker than it reads. While 'bar' was the shipped shape, dropping
-  // feed-saved-readings.jsx degraded to the PREVIOUS behaviour, which is what
-  // the deletable-aid contract promises. 'lens' is the shipped shape now, so
-  // the same collapse resurrects a SUPERSEDED bookmark-on-the-bar instead.
-  // Still coherent and still not a throw — every consumer below is internally
-  // consistent under 'bar' — but it is a fallback to an older app rather than
-  // to this one, and the contract's own words no longer describe it exactly.
-  // Left as 'bar' deliberately: the alternative is no saved control at all
-  // when the module goes, which is a worse answer than an older one.
-  const savedModeReady = !!window.SavedTabEmptyState && !!window.CIRC_SAVED_LENS_OPTIONS
-    && !!window.circFilterSaved;
-  const effectiveSavedMode = savedModeReady ? savedMode : 'bar';
-  // The MODE collapsing is not enough on its own: a stale `?state=saved-tab`
-  // link stages `tab: 'saved'` directly, and with the module gone there is no
-  // Saved tab for it to select — so the bar rendered Active and Read with
-  // NEITHER lit. Same defect as the persisted-tab one above, reached by a
-  // different route, and the same answer: 'saved' is not a tab this app has
-  // unless the module says so. Corrected in state rather than papered over per
-  // consumer, so everything keyed on `tab` downstream is simply right.
-  React.useEffect(() => {
-    if (!savedModeReady && tab === 'saved') setTab('read');
-  }, [savedModeReady, tab]);
   // Search (feed-enhancement candidate build). Keyed `<circleId>:<tab>` —
   // unlike sortOrder, this stays tab-scoped (fuzz finding 3's ruling covers
   // order only): Read only, so the key's tab half is always 'read' in
@@ -917,7 +856,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-        setSearchQuery, setSearchOpen, setSavedMode, setHomeStripOpen, setPointedId,
+        setSearchQuery, setSearchOpen, setHomeStripOpen, setPointedId,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1113,25 +1052,13 @@ const CircApp = () => {
       // has to mean, not "replace".
       const Saved = window.circFilterSaved || null;
       const savedOnFlag = !!savedOn[currentId];
-      // `effectiveSavedOn` (run 7): the narrowing this render actually applies,
-      // which under 'surface' is NOT the stored toggle at all — it is simply
-      // whether the member is standing on the Saved tab. Every consumer below
-      // that used to read `savedOnFlag` directly (the filter itself, the
-      // zero-match copy, the discourse lead's suppression) reads this instead,
-      // so Reading B's tab narrows the list without a toggle ever existing to
-      // flip. Under 'bar'/'lens' this is exactly `savedOnFlag`, unchanged.
       // Run 9: `&& tab === 'read'`. Saving is read-only by ruling — a card can
       // only be saved from Read — so "saved" is a lens over the Read pile and
       // over nothing else. Applied tab-blind, the stored per-circle flag also
       // narrowed ACTIVE by a mark no Active card can carry, emptying the tab
-      // with nothing on screen explaining it. Under 'bar' that was hard to
-      // reach, because the only toggle lived on Read; making saved a lens put
-      // it one tap from Active and turned a latent fault into a reachable one.
-      // Fixed here rather than deferred: it renders inside the surface this
-      // run is asking to be judged.
-      const effectiveSavedOn = effectiveSavedMode === 'surface'
-        ? tab === 'saved'
-        : (savedOnFlag && tab === 'read');
+      // with nothing on screen explaining it. Fixed here rather than deferred:
+      // it renders inside the surface this run is asking to be judged.
+      const effectiveSavedOn = savedOnFlag && tab === 'read';
       const savedFiltered = Saved ? Saved(lensed, effectiveSavedOn) : lensed;
       // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
       // is a fact about the circle, not about the current narrowing, and the
@@ -1141,17 +1068,6 @@ const CircApp = () => {
       // not loading, and present either because there is something to find or
       // because the filter is already on: turning it off must stay reachable
       // even after unsaving the last link it was showing.
-      // `savedMode === 'bar'` (run 7): under Reading A/B the bookmark toggle
-      // leaves the tab bar outright — saved is reached from the lens door or
-      // from its own tab instead, never both places at once.
-      const showSaved = effectiveSavedMode === 'bar' && !!window.SavedToggle && tab === 'read' && !loadingFeed
-        && (hasSaved || savedOnFlag);
-      // Run 9: the SAME presence rule, for the lens group that replaced the
-      // toggle. Reading A moved saved behind the door and silently dropped
-      // every gate the bar toggle carried — so the Saved group appeared on
-      // ACTIVE, where nothing can be saved; while the feed was still loading;
-      // and in a circle where the member has never saved anything, offering a
-      // narrowing guaranteed to match nothing.
       //
       // The third clause is the one worth keeping deliberately. Run 4 called it
       // the region's third state, after "present" and "present and applied":
@@ -1159,15 +1075,11 @@ const CircApp = () => {
       // its reason to exist. That principle was recorded as a region rule and
       // would have been lost by moving the control, which is exactly the kind
       // of thing an audit of the whole picture is for catching.
-      const showSavedLens = effectiveSavedMode === 'lens' && tab === 'read' && !loadingFeed
-        && (hasSaved || savedOnFlag);
+      const showSavedLens = tab === 'read' && !loadingFeed && (hasSaved || savedOnFlag);
       const setSavedFilter = (next) => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
         announceOnce(next ? 'Showing saved links' : 'Showing all read links');
       };
-      const savedToggle = showSaved
-        ? <window.SavedToggle on={savedOnFlag} onToggle={setSavedFilter} />
-        : null;
       // ---- Search (feed-enhancement candidate build) -----------------------
       // A deletable aid, same idiom as Lens/Saved above: no feed-search.jsx ⇒
       // no trigger, no field, no filter, and searchQueryVal below is always ''
@@ -1181,10 +1093,7 @@ const CircApp = () => {
       // Active the query is always treated as empty, which composes to a
       // no-op regardless of what a stale key might hold from a prior Read
       // visit to this same circle.
-      // 'saved' (run 7, Reading B) is a list like any other, per the brief: it
-      // gets search on the same terms Read does. `sortKey` already carries the
-      // tab, so 'saved' keys its own query bucket rather than sharing Read's.
-      const isReadLikeTab = tab === 'read' || tab === 'saved';
+      const isReadLikeTab = tab === 'read';
       const searchQueryVal = (Search && isReadLikeTab) ? (searchQuery[sortKey] || '') : '';
       const visible = Search ? Search(savedFiltered, searchQueryVal) : savedFiltered;
       // The field's own visible-ness: open because the trigger was tapped, OR
@@ -1201,7 +1110,7 @@ const CircApp = () => {
       const searchFieldOpen = isReadLikeTab && (!!searchOpen[sortKey] || searchActive);
       // Present from two Read items up, OR whenever a query is already active
       // — same "never strand the member with no way back" rule as showLens/
-      // showSaved above, not repeated here.
+      // showSavedLens above, not repeated here.
       //
       // `window.LensChips` is in the guard because the FIELD renders inside the
       // chip row, which lives in feed-lens.jsx. Without this term, deleting
@@ -1290,23 +1199,6 @@ const CircApp = () => {
       // string 'grid' still appears in the build; it can go once no stored
       // preference can plausibly still hold it.
       const effectiveDensity = density === 'grid' ? 'comfortable' : density;
-      // Reading B's own empty state (run 7): true only when the Saved TAB
-      // itself is genuinely empty — nothing saved in the whole circle, and no
-      // contributor or query narrowing it further. Either of those still
-      // narrowing an otherwise-populated saved list is a MISS, not an empty
-      // surface, and falls through to FeedNoMatch below like every other miss.
-      const savedTabEmpty = effectiveSavedMode === 'surface' && tab === 'saved'
-        && !who.length && !searchActive && visible.length === 0;
-      // `cardTab` (run 7): the Saved tab shows READ items — a card there has
-      // to render exactly as it does on Read (the save/un-save mark, the
-      // Swell door), never as it does on Active (a "mark as read" button on
-      // an item that is already read, which is what feed.jsx's own
-      // `tab === 'read'` branch would fall through to otherwise, since
-      // 'saved' fails that check). The app's OWN `tab` stays 'saved' for
-      // everything that keys state by tab (sortKey, search's own bucket,
-      // the tab bar's active id) — only the read-vs-active COSMETIC choice
-      // inside the card and the empty-tab copy read this normalised value.
-      const cardTab = tab === 'saved' ? 'read' : tab;
       // `saved={effectiveSavedOn}`, not the raw flag — the third place the same
       // fix was needed, and the one missed on the first pass. The trigger's lit
       // state and its accessible name both read this prop: with the raw flag,
@@ -1318,18 +1210,9 @@ const CircApp = () => {
             onOrder={setOrder} onWho={setWho}
             density={effectiveDensity} onDensity={setDensityView}
             isMobile={isSheetPosture}
-            saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null} savedMode={effectiveSavedMode}
+            saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
-      // The third tab (run 7, Reading B). Gated on the module, not on
-      // `savedMode` alone — deletable-aid idiom, same as every guard reading
-      // window.* in this render: drop feed-saved-readings.jsx and a stale
-      // 'surface' mode left over from a `?state=` link falls back to the
-      // shipped two-tab bar rather than showing a tab whose own screen (the
-      // teaching empty state) no longer exists to back it.
-      const tabItems = (effectiveSavedMode === 'surface')
-        ? [{ id: 'active', label: 'Active' }, { id: 'read', label: 'Read' }, { id: 'saved', label: 'Saved' }]
-        : undefined;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
       //
@@ -1429,20 +1312,9 @@ const CircApp = () => {
                 a genuinely empty tab, the spec's own register, and stays
                 exactly as it was. window.FeedNoMatch guards the first branch
                 so dropping feed-lens.jsx whole degrades to EmptyState rather
-                than throwing on a missing component.
-                Reading B's Saved tab (run 7) gets ONE more branch ahead of all
-                of these: a genuinely empty saved list, with no other narrowing
-                on top, is not a MISS to escape from — there is nowhere else on
-                this tab to go — so it takes its own teaching empty state
-                rather than FeedNoMatch's "no saved links / show all read
-                links" framing, which is written for a filter with an escape,
-                not a destination with none. `who`/`searchActive` still
-                narrowing on top of the tab falls through to FeedNoMatch below
-                exactly as the lens/bar readings already do. */}
-            {savedTabEmpty && window.SavedTabEmptyState
-              ? <div><window.SavedTabEmptyState /></div>
-              : visible.length === 0 && (who.length || effectiveSavedOn || searchActive) && window.FeedNoMatch
-              ? <div><window.FeedNoMatch who={who} tab={cardTab} saved={effectiveSavedOn} query={searchQueryVal}
+                than throwing on a missing component. */}
+            {visible.length === 0 && (who.length || effectiveSavedOn || searchActive) && window.FeedNoMatch
+              ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} query={searchQueryVal}
                   onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
               /* Saved survives feed-lens.jsx on its own: its toggle and its
                  filter both live in feed-saved.jsx and neither is gated on the
@@ -1456,10 +1328,10 @@ const CircApp = () => {
                  component stays reachable for exactly the case it used to own. */
               : visible.length === 0 && effectiveSavedOn && !who.length && window.SavedNoMatch
               ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
-              : visible.length === 0 ? <div><EmptyState tab={cardTab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
+              : visible.length === 0 ? <div><EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
                 const pointed = pointedId === item.id;
-                const card = <FeedCard item={item} tab={cardTab} user={user} showTime density={effectiveDensity}
+                const card = <FeedCard item={item} tab={tab} user={user} showTime density={effectiveDensity}
                   onOpen={(it) => { clearPointed(); openLink(it); }}
                   onMarkRead={(it) => { clearPointed(); setReacting(it); }}
                   onAct={clearPointed}
@@ -1467,7 +1339,7 @@ const CircApp = () => {
                   onToggleSaved={toggleSaved}
                   space={space} onAnnounce={announceOnce} pointed={pointed} />;
                 const row = (Cand && Cand.CardRow)
-                  ? <Cand.CardRow item={item} tab={cardTab} api={candApi}>{card}</Cand.CardRow>
+                  ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
                   : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
@@ -1536,13 +1408,12 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          {/* Saved sits outboard, search inboard of it, the lens stays
-              outermost (rightmost) so it never shifts position between tabs —
-              Active never carries the saved toggle or search, so the lens
-              trigger moving with either would be the one thing in this bar
-              that isn't stable. Search is the last control to join this
-              ceiling — the region's own declared order, not a preference. */}
-          <Tabs active={tab} onChange={setTab} items={tabItems} right={<>{savedToggle}{searchToggle}{lensControl}</>} />
+          {/* The lens stays outermost (rightmost) so it never shifts position
+              between tabs — Active never carries search, so the lens trigger
+              moving with it would be the one thing in this bar that isn't
+              stable. Search is the last control to join this ceiling — the
+              region's own declared order, not a preference. */}
+          <Tabs active={tab} onChange={setTab} right={<>{searchToggle}{lensControl}</>} />
           {/* What is applied, and the way out of it. Nothing at all in the
               default state — the folded control means the chips are now the
               only place the applied lens (or the saved filter, or a typed
@@ -1564,7 +1435,7 @@ const CircApp = () => {
             saved={effectiveSavedOn} onSaved={setSavedFilter} isMobile={isMobile}
             searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
             onSearchChange={setSearchQueryVal} onSearchClear={clearSearch}
-            savedMode={effectiveSavedMode} onReopenLens={() => setSortMenuOpen(true)} />}
+            onReopenLens={() => setSortMenuOpen(true)} />}
           {feed}
           {/* The FAB stands down while the lens sheet is up (run 9, from the
               design review, which caught it painting green over a scrimmed

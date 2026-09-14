@@ -514,31 +514,26 @@ const CIRC_DENSITY_OPTIONS = [
   { id: 'compact', label: 'Compact' },
 ];
 
-// `saved`/`onSaved`/`savedMode` (feed-enhancement candidate build, Reading A):
-// a deletable aid inside a deletable aid. Absent feed-saved-readings.jsx ⇒ no
-// window.CIRC_SAVED_LENS_OPTIONS ⇒ `showSavedGroup` below is false regardless
-// of what `savedMode` says, so a stale 'lens' mode degrades to exactly the
-// panel that shipped before this reading existed — no throw, no dead group.
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, savedMode = 'lens' }) => {
+// `saved`/`onSaved` (feed-enhancement candidate build, ratified run 9): a
+// deletable aid inside a deletable aid. Absent feed-saved-readings.jsx ⇒ no
+// window.CIRC_SAVED_LENS_OPTIONS ⇒ `showSavedGroup` below is false, so the
+// panel degrades to two bare groups — no throw, no dead group.
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
-  // Under Reading A (BIZ-136 run 7) saved IS one of this door's narrowings, so
-  // the door has to say so. The design review caught the contradiction by
-  // looking: with only Saved applied the trigger sat grey and unmarked while a
-  // Saved chip showed directly beneath it — the lens declining to count a
-  // narrowing it now owns, which is precisely the claim Reading A is making.
-  // Saved is folded in HERE rather than into `circLensActive`, because under
-  // 'bar' and 'surface' saved is genuinely not part of this door, and folding
-  // it in there would light the trigger for a control that lives elsewhere.
+  // Saved IS one of this door's narrowings, so the door has to say so. The
+  // design review caught the contradiction by looking: with only Saved
+  // applied the trigger sat grey and unmarked while a Saved chip showed
+  // directly beneath it — the lens declining to count a narrowing it now owns.
   //
   // Every term below conceals cards. That is the whole test now (see
   // `circLensActive`): `order` is absent from this line on purpose.
-  const active = circLensActive(order, who) || (savedMode === 'lens' && !!saved);
+  const active = circLensActive(order, who) || !!saved;
   // Both options are offered at every width. The width filter that used to sit
   // here existed only for Grid, which was desktop-only; with Grid vetoed there
   // is nothing left that varies by viewport.
   const densityOptions = CIRC_DENSITY_OPTIONS;
-  const showSavedGroup = savedMode === 'lens' && !!onSaved && !!window.CIRC_SAVED_LENS_OPTIONS;
+  const showSavedGroup = !!onSaved && !!window.CIRC_SAVED_LENS_OPTIONS;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was
   // correct for the keyboard and wrong on screen: Chromium treats a
@@ -662,14 +657,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   const hasFilterGroups = showSavedGroup || whoOptions.length > 0;
 
   // The name carries the whole applied state, so a screen reader hears the lens
-  // without opening it.
-  // Under Reading A the saved narrowing is set behind this door, so it belongs
-  // in the door's own spoken state — otherwise a screen-reader user hears
-  // "newest first, everyone" over a list narrowed to saved links, which is the
-  // audible version of the grey trigger the design review caught.
+  // without opening it. The saved narrowing is set behind this door, so it
+  // belongs in the door's own spoken state — otherwise a screen-reader user
+  // hears "newest first, everyone" over a list narrowed to saved links, which
+  // is the audible version of the grey trigger the design review caught.
   const spoken = 'View options: ' + (window.circSortLabel ? window.circSortLabel(order).toLowerCase() : order)
     + ', ' + ((who && who.length) ? 'added by ' + who.map(circContributorLabel).join(', ') : 'everyone')
-    + (savedMode === 'lens' && saved ? ', saved only' : '');
+    + (saved ? ', saved only' : '');
 
   return (
     // Stretches to the bar's full height so the border-bottom lands flush with
@@ -976,9 +970,9 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
 //
 // Not --radius-pill: tokens.css reserves that for content-type badges and says
 // explicitly NOT buttons, which this is.
-// `onReopen`/`reopenLabel` (feed-enhancement candidate build, Reading A):
-// under savedMode 'lens' ONLY, every narrowing this app can name now opens
-// from the one door, so the chip that names it reopens that door too. TWO
+// `onReopen`/`reopenLabel` (feed-enhancement candidate build, ratified run 9):
+// every narrowing this app can name now opens from the one door, so the chip
+// that names it reopens that door too. TWO
 // real `<button>`s, not one button doing two jobs — the label reopens, the ✕
 // still clears, exactly as it always has (`clearLabel` untouched). The outer
 // box carries the chip's own look (fill, border, radius); the buttons inside
@@ -1131,15 +1125,11 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // typed") — this component does not re-derive it, it only asks whether
   // `window.SearchField` exists to draw it with.
   searchOpen, searchQuery, onSearchChange, onSearchClear,
-  // Reading A / Reading B (feed-enhancement candidate build, run 7):
-  // `savedMode` decides two independent things here. Under 'surface' the
-  // Saved chip never renders at all — saved is a tab now, not a narrowing,
-  // so it has nothing to disclose (main.jsx still narrows the list itself;
-  // this component just stops naming it). Under 'lens' every chip gains a
-  // second target that reopens the one door all of them now share.
+  // Saved (feed-enhancement candidate build, ratified run 9): every chip
+  // gains a second target that reopens the one door all of them now share.
   // `onReopenLens` is main.jsx's own `setSortMenuOpen(true)` — opened at
   // rest, never scrolled to a group.
-  savedMode = 'lens', onReopenLens }) => {
+  onReopenLens }) => {
   // `order`/`onOrder` were props here until 2026-09-07 and are gone with the
   // Order chip — a component that takes a value it can no longer render is a
   // dead condition reading as a live one.
@@ -1147,7 +1137,7 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   const active = circLensActive(null, whoList);
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
-  const savedChipOn = savedMode === 'surface' ? false : !!saved;
+  const savedChipOn = !!saved;
   // ORDER HAS NO CHIP (BIZ-136, ruling of 2026-09-07). This row means exactly
   // one thing — cards are being hidden from you — and every chip in it is a
   // thing you can drop to get them back. Sorting oldest-first hides nothing, so
@@ -1165,9 +1155,7 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // appeared in neither name, which is WCAG 2.5.3 Label in Name failing on the
   // one word that carries the meaning. The visible label now leads, so the
   // accessible name starts with what is on screen.
-  const reopen = savedMode === 'lens'
-    ? { onReopen: onReopenLens, reopenLabel: (l) => l + '. Change filters' }
-    : {};
+  const reopen = { onReopen: onReopenLens, reopenLabel: (l) => l + '. Change filters' };
   return (
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab

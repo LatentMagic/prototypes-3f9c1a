@@ -235,14 +235,8 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
 // scopes the tab's own list rather than the circle (the feed sort control is
 // the first). It sits here rather than in the top bar because the top bar
 // belongs to the circle, and sort acts on one tab's list.
-// `items` (feed-enhancement candidate build, Reading B): optional override for
-// the tab set, defaulting to today's exact Active/Read pair — omitted, this is
-// byte-for-byte the shipped bar. main.jsx hands in a third `{ id: 'saved', ...
-// }` entry only under savedMode 'surface', and it renders through this SAME
-// map() as the other two — no forked markup, no second component, so a third
-// tab cannot read as anything but the real thing.
-const Tabs = ({ active, onChange, right = null, items }) => {
-  const tabItems = items || [
+const Tabs = ({ active, onChange, right = null }) => {
+  const tabItems = [
     { id: 'active', label: 'Active' },
     { id: 'read', label: 'Read' },
   ];
