@@ -229,12 +229,13 @@ const CircApp = () => {
   // state, never persisted — a browser reload is a teardown, so it draws no line.
   const [dividerAt, setDividerAt] = useState(null);
   const [announce, setAnnounce] = useState('');
-  // Feed sort (BIZ-136 candidate build). Held per circle AND per tab, keyed
-  // `<circleId>:<tab>` — Active and Read are different jobs, so a catch-up
-  // posture on one does not follow you to the other. VISIT STATE, never
-  // persisted: newest-first is the product's contract and the substrate the
-  // whole arrivals machinery stands on, so a non-default order is a reading
-  // posture for this session rather than a preference that silently outlives it.
+  // Feed sort (BIZ-136 candidate build). Held per circle alone, keyed by
+  // circle id — same reasoning as lensWho/savedOn below: switching tab is
+  // never a reset of a view option (fuzz finding 3, ruled 2026-09-14). VISIT
+  // STATE, never persisted: newest-first is the product's contract and the
+  // substrate the whole arrivals machinery stands on, so a non-default order
+  // is a reading posture for this session rather than a preference that
+  // silently outlives it.
   const [sortOrder, setSortOrder] = useState({});
   // Keyed by circle alone — see the note at the render site for why the
   // contributor lens is not held per tab as the order is.
@@ -300,13 +301,14 @@ const CircApp = () => {
   React.useEffect(() => {
     if (!savedModeReady && tab === 'saved') setTab('read');
   }, [savedModeReady, tab]);
-  // Search (feed-enhancement candidate build). Keyed `<circleId>:<tab>`, same
-  // as sortOrder — Read only, so the key's tab half is always 'read' in
+  // Search (feed-enhancement candidate build). Keyed `<circleId>:<tab>` —
+  // unlike sortOrder, this stays tab-scoped (fuzz finding 3's ruling covers
+  // order only): Read only, so the key's tab half is always 'read' in
   // practice, but sharing the key shape rather than inventing a circle-only
-  // one keeps this state and sortOrder reading as the same kind of thing at a
-  // glance. VISIT STATE, never persisted — same reasoning as sortOrder's own
-  // comment above: a typed query is a reading posture for this session, not a
-  // preference that silently outlives it. `searchOpen` is the field's own
+  // one keeps this state reading as the same kind of thing as sortOrder was
+  // at a glance. VISIT STATE, never persisted — same reasoning as sortOrder's
+  // own comment above: a typed query is a reading posture for this session,
+  // not a preference that silently outlives it. `searchOpen` is the field's own
   // disclosure — a query can be non-empty with the field "closed" (nothing
   // moves it shut once typed; see feed-search.jsx's SearchField comment), so
   // the two are tracked separately rather than one implying the other.
@@ -632,8 +634,7 @@ const CircApp = () => {
     setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
     // Carries the member to wherever the arrivals actually landed — see
     // `scrollToArrivals`'s own header for why this exists and whose call it is.
-    const sortKey = id + ':active';
-    const toFoot = (sortOrderRef.current[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
+    const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
     requestAnimationFrame(() => scrollToArrivals(toFoot));
   };
   // The refresh gesture — selecting the circle already on screen. There is no
@@ -676,8 +677,7 @@ const CircApp = () => {
       // who flips the sort while the reload is running still gets carried to
       // the end that is actually true when it lands.
       if (landingHere) {
-        const sortKey = id + ':active';
-        const toFoot = (sortOrderRef.current[sortKey] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
+        const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
         requestAnimationFrame(() => scrollToArrivals(toFoot));
       }
       announceOnce('Refreshed');
@@ -1066,8 +1066,11 @@ const CircApp = () => {
       // no reorder, and the feed behaves exactly as it did. That is what keeps
       // the homepage demo, which shares this module, untouched by the candidate.
       const Lens = window.FeedLens || null;
+      // Order is keyed by circle alone (fuzz finding 3, ruled 2026-09-14) —
+      // `sortKey` below stays tab-scoped for search, which the ruling left
+      // untouched.
+      const order = sortOrder[currentId] || (window.CIRC_SORT_DEFAULT || 'newest');
       const sortKey = currentId + ':' + tab;
-      const order = sortOrder[sortKey] || (window.CIRC_SORT_DEFAULT || 'newest');
       // The contributor lens is held per CIRCLE, not per circle-and-tab as the
       // order is. "What did Sam add" is a question about a person, not about a
       // tab, so hopping to Read to see whether you already read Sam's link
@@ -1239,7 +1242,7 @@ const CircApp = () => {
       const showLens = !!Lens && !loadingFeed
         && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
       const setOrder = (next) => {
-        setSortOrder((prev) => ({ ...prev, [sortKey]: next }));
+        setSortOrder((prev) => ({ ...prev, [currentId]: next }));
         // The gesture is acknowledged, as every gesture in this app is. The
         // waterline's suppression is NOT announced — a state never is.
         announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));

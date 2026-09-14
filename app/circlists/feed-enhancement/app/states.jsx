@@ -330,7 +330,7 @@ function circStateContext(api) {
   // pool (`tab: 'read'`) but then wants the SAVED tab on screen, which is a
   // different thing from what pool was scoped. Omitted, the displayed tab is
   // `tab` itself, exactly as before this param existed.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, otherTab = null, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null, pendingCount = 0 }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, savedMode = 'lens', finalTab = null, pointed = null, pendingCount = 0 }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead` (feed-enhancement candidate build). Applied BEFORE
@@ -343,23 +343,18 @@ function circStateContext(api) {
         ...s, items: s.items.map(i => i.url === CIRC_BARE_URL ? { ...i, read: true } : i),
       }));
     }
-    // Keyed by the DISPLAYED tab, not the scope tab (BIZ-136 run 7, from the
-    // review). `tab` scopes which pool the `saved` indices below count against;
-    // `finalTab` is where the member actually lands. main.jsx computes its
-    // sortKey from the displayed tab, so a Reading-B entry staging
-    // `tab: 'read', finalTab: 'saved'` wrote `<circle>:read` while main.jsx
-    // read `<circle>:saved` — and the order, the query and the field's open
-    // flag were all silently dropped. No entry today stages an order or a query
-    // on the Saved tab, so nothing looked wrong; the next one that wants
-    // "Saved, oldest first" would have staged it and seen nothing, with no
-    // error anywhere.
+    // Order is keyed by circle alone (fuzz finding 3, ruled 2026-09-14) — it
+    // applies to both tabs, the same way density and the contributor filter
+    // already do, so there is no tab to get right or wrong here any more.
+    // `keyTab` below still scopes the query/search-open keys, which stay
+    // tab-scoped, and the `saved`/`pointed` indices, which still count
+    // against the DISPLAYED tab's own pool for the reason recorded at their
+    // own use below.
     const keyTab = finalTab || tab;
-    const next = { [space + ':' + keyTab]: order };
-    if (otherTab) next[space + ':' + otherTab.tab] = otherTab.order;
-    setSortOrder(next);
+    setSortOrder({ [space]: order });
     setLensWho(who ? { [space]: who } : {});
     // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
-    // sets it directly rather than keying it per circle/tab as sortOrder is.
+    // sets it directly rather than keying it per circle.
     setDensity(density);
     if (saved !== null) {
       setSpaces(prev => withSpace(prev, space).map(s => {
@@ -374,10 +369,12 @@ function circStateContext(api) {
     // Held per circle, same as `who` — always fully replaced, so switching
     // between staged entries never inherits a filter the last one turned on.
     setSavedOn(savedOn ? { [space]: true } : {});
-    // Search (feed-enhancement candidate build). Keyed same as sortOrder,
-    // always fully replaced — same reasoning as `who`/`savedOn` above, so an
-    // entry that says nothing about search always lands with the field shut
-    // and empty, never inheriting whatever the last-opened entry left typed.
+    // Search (feed-enhancement candidate build). Keyed `<circle>:<tab>` —
+    // unlike sortOrder, search stays tab-scoped (fuzz finding 3's ruling
+    // covers order only) — always fully replaced, same reasoning as
+    // `who`/`savedOn` above, so an entry that says nothing about search
+    // always lands with the field shut and empty, never inheriting whatever
+    // the last-opened entry left typed.
     setSearchQuery(query ? { [space + ':' + keyTab]: query } : {});
     // A staged QUERY implies a staged OPEN. Without this, an entry that sets
     // only `query` leaves `searchOpen` false and the field is open purely
