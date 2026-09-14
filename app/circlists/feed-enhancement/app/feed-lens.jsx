@@ -474,7 +474,8 @@ const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, bou
             <React.Fragment>
               <LensFilterRow ref={(el) => { refs.current[savedIdx] = el; }}
                 on={!!saved} onClick={() => onSaved(!saved)}
-                lead={<LensFilterFace on={!!saved} />} label="Saved" />            </React.Fragment>
+                lead={<LensFilterFace on={!!saved} />} label="Saved" />
+            </React.Fragment>
           );
         })()}
         {options.map((o) => {
