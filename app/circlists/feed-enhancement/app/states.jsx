@@ -675,53 +675,14 @@ const CIRC_STATE_REGISTER = [
   // Known, accepted cost of the foot case: a long, unanchored glide past
   // whatever backlog sat between the member and the foot.
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill carries you to the foot', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-read-oldest', label: 'Read pile from the beginning', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', otherTab: { tab: 'active', order: 'newest' } }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
   // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-panel-open', label: 'The lens \u2014 one control, order and who', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-contributor', label: 'Filtered to one contributor', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Sam R.' }) },
   // Priya's two Active links sit either side of the last-visit mark, so the
   // waterline still draws inside the filtered list \u2014 the ruling this state exists
   // to show, in either sort order (both-orders-again, 2026-09-11).
   { group: 'Candidate build \u2014 feed enhancement', id: 'filter-waterline', label: 'Waterline \u2014 drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-former-member', label: 'Former member \u2014 the one shared bucket', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'former member' }) },
-  // The lens is held per circle, so it survives the hop to Read. Dev K. has one
-  // link in this circle and it is unread, so Read under their lens is genuinely
-  // empty \u2014 the zero-match register, which is a different thing from an empty
-  // Read pile and says so.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-no-match', label: 'Nothing matches the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
-  // Order AND contributor both off their defaults — and, since the ruling of
-  // 2026-09-07, the state that shows the chip row saying ONE thing rather than
-  // two. The order redraws and so discloses nothing; only the contributor
-  // conceals, so only the contributor gets a chip. The label names what is
-  // APPLIED, which is still both; what it demonstrates is what the row does
-  // with that. Id untouched — an id is an address.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'lens-both-applied', label: 'Order and contributor \u2014 one chip, not two', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'former member' }) },
-  // Run 3 \u2014 density (Comfortable/Compact) + the lens panel's visual rework.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact', label: 'Compact \u2014 more of the circle in view', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'compact' }) },
-  // Same circle and tab as density-compact, comfortable instead \u2014 open the two
-  // back to back to see the metric change alone, nothing else moving.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'density-comfortable', label: 'Comfortable \u2014 the default rhythm', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', density: 'comfortable' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'view-panel-open', label: 'The lens \u2014 display above, filter below', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
+  // Run 3 \u2014 density (Comfortable/Compact).
   { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-read', label: 'Compact \u2014 the Read pile', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', density: 'compact' }) },
-  // Run 4 \u2014 the saved state and its surface.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-marks', label: 'Saved \u2014 read cards kept, the state held in the card menu', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2] }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-filtered', label: 'Saved \u2014 the archive narrowed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-none-yet', label: 'Saved \u2014 nothing kept yet (the calm floor)', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [] }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-empty', label: 'Saved \u2014 the lens on, nothing in it', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
-  // Priya N. holds two read links in this circle \u2014 jvns.ca and the
-  // internal-infra postmortem \u2014 indexes 1 and 6 of the Read tab's own
-  // OLDEST-sorted runtime order; confirmed by rendering the staged state and
-  // reading the DOM, not by counting the seed (the discourse candidate
-  // build's own seed extension, talk-data.jsx, inserts two further read
-  // fixtures at fixed positions with their own timestamps, so a seed-only
-  // count is both short by two and in the wrong order once sorted). Marking
-  // both saved and filtering to her gives a genuinely non-empty composition of
-  // all three narrowings — Order (oldest), Added by (Priya N.), Saved — of
-  // which TWO now carry chips: the order conceals nothing and lost its chip in
-  // the ruling of 2026-09-07.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-with-lens', label: 'Saved \u2014 composed with the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'oldest', who: 'Priya N.', saved: [1, 6], savedOn: true }) },
   // ---- Run 5 · item 5, and the arrangement half reopened ------------------
   // The not-found page is staged as a bare route because that is what it
   // answers: an address that resolved to nothing, with no circle to be inside.
@@ -733,45 +694,6 @@ const CIRC_STATE_REGISTER = [
   // member's narrowing is still what they set — hiding it would make a failed
   // load look like a cleared filter.
   { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error-lens', label: 'Feed \u2014 the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
-  // at 1280 and falls back to a single column at 390 \u2014 both are correct.
-  // The panel open on three options, which is the control change itself.
-  // then told members "You have not read anything they added" while the saved
-  // filter was the thing hiding them. Dev K. has read links in this circle and
-  // none of them saved, which is exactly the case that was being described
-  // falsely.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-none', label: 'Saved \u2014 both narrowings empty, and both now named', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.', saved: [0, 2, 4], savedOn: true }) },
-  // ---- Search — the fourth narrowing, composed after who/saved --------
-  // The field open with nothing typed yet — the plain disclosure, before it
-  // has anything to say.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-open', label: 'Search \u2014 the field, before a word is typed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', searchOpen: true }) },
-  // 'go' matches TWO Read cards by their URL/title: go.dev/blog/pipelines and
-  // go.dev/blog/errors-are-values ('Go' in both titles, 'go.dev' in both
-  // domains) — confirmed against seed-data.jsx's sp-backend Read pile, not by
-  // guessing at the word.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-results', label: 'Search \u2014 the pile narrows as you type', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'go' }) },
-  // The card seeded with NO SEED_META entry (seed-data.jsx), so its headline
-  // IS its URL — exactly the case the index rule's "or the bare URL" clause
-  // exists for. Unread in the plain seed; `bareRead` promotes it into the Read
-  // pile before the query runs. 'migration' sits inside that URL's own slug
-  // ("...database-migration-incident...") and matches nothing else in this
-  // circle's Read pile.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-bare-url', label: 'Search \u2014 the card whose title never resolved', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', bareRead: true, query: 'migration' }) },
-  // Priya N.'s Read pile in this circle is two links — jvns.ca's DNS piece and
-  // the internal-infra postmortem. 'dns' matches only the first, by its title
-  // ("How DNS Resolvers Actually Work") — confirmed against the same pile
-  // 'filter-contributor' above already narrows to, so the compose is provably
-  // narrower than either filter alone, not just differently-worded.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-composed', label: 'Search \u2014 narrowing an already-narrowed list', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.', query: 'dns' }) },
-  // 'xylophone' appears nowhere in this product's seed data — titles, sources,
-  // domains or attributions — by inspection of seed-data.jsx, so it is a clean
-  // zero-match word rather than one that happens to miss today's fixtures.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-no-match', label: 'Search \u2014 nothing matches, and it says what it looked at', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'xylophone' }) },
-  // All three narrowings named in one headline. 'xylophone' guarantees the
-  // miss regardless of which single saved index landed inside Priya N.'s own
-  // pile — the point of this state is the compound sentence FeedNoMatch
-  // renders when who/saved/query are ALL active, not which particular link
-  // the saved mark happened to land on.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'search-all-three', label: 'Search \u2014 all three narrowings named at once', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.', saved: [0], savedOn: true, query: 'xylophone' }) },
 
   // ---- Run 7 \u2014 two readings of "saved", side by side with the shipped bar --
   // Fixture parity, deliberate: every entry below stages sp-backend, scopes
@@ -784,9 +706,6 @@ const CIRC_STATE_REGISTER = [
   // already written to it \u2014 but "Reading A" is gone from the labels, because
   // there is no longer a Reading B beside it on the shipped path to be read
   // against. They now say what they show.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-door', label: 'Saved is a lens \u2014 the door open, all four groups', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'lens', menu: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-applied', label: 'Saved on \u2014 the bar carries no bookmark', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'lens' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'saved-lens-composed', label: 'Saved and a contributor, both set from the one door', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, who: 'Priya N.', savedMode: 'lens' }) },
   // The shape run 9 replaced, kept openable on purpose. The pick was made from
   // a side-by-side, so the way back has to stay a side-by-side: this is the
   // bookmark on the tab bar, three icons and all, to be overruled by looking
@@ -801,13 +720,9 @@ const CIRC_STATE_REGISTER = [
   // The home screen (app/home.jsx + app/home-returns.jsx) and the "Go home"
   // fix on every dead-end route. All seven land here, per this group's own
   // rule: not reachable from this list, not shipped.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-landing', label: 'Home \u2014 landing, two circles talking', stage: (c) => c.stageHome({}) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-quiet', label: 'Home \u2014 quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-crowded', label: 'Home \u2014 five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-strip-open', label: 'Home \u2014 the returns strip opened (the alternative)', stage: (c) => c.stageHome({ open: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-one-circle', label: 'Home \u2014 a single circle', stage: (c) => c.stageHome({ only: 'sp-backend' }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-no-circles', label: 'Home \u2014 no circles yet (NoSpaceHome)', stage: (c) => c.stageHome({ empty: true }) },
   { group: 'Candidate build \u2014 superseded shapes', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
   // ---- Sharing a card (wild feature, 2026-09-07) --------------------------
   // The two ends of one address. A shared card link means "this card", and what
@@ -828,16 +743,12 @@ const CIRC_STATE_REGISTER = [
   // action stays out, everything occasional goes behind the kebab. There is no
   // state that stages the MENU open \u2014 it is opened by a tap, and a fixture that
   // forced it would be staging an interaction rather than a screen. Tap the
-  // trailing dots on any card in the first two entries to see it.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-active', label: 'The card row \u2014 two actions on Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'card-row-read', label: 'The card row \u2014 Read, and the saved mark that stayed', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', saved: [0, 2] }) },
+  // trailing dots on any card in the feed to see it.
   { group: 'Candidate build \u2014 superseded shapes', id: 'card-row-superseded', label: 'Superseded \u2014 the row before it was folded', stage: (c) => c.stageLegacyRow({ tab: 'read' }) },
 
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
-  // description on two circles and none on the rest, so `home-landing` already
+  // description on two circles and none on the rest, so the home already
   // shows both halves of the rule; these stage what the seed cannot.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-members', label: 'Circle description \u2014 read whole, where it is edited', stage: (c) => c.stageCircleDescription({ members: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-absent', label: 'Circle description \u2014 the header of a circle that wrote none', stage: (c) => c.stageCircleDescription({ bare: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long-members', label: 'Circle description \u2014 at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
   { group: 'Candidate build \u2014 feed enhancement', id: 'circle-micro-new-card', label: 'Home \u2014 the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
 ];
