@@ -3,4 +3,3 @@ node_modules/
 .DS_Store
 .playwright-cli/
 **/.build-cache/
-app/circlists/feed-enhancement/*-standalone.html
