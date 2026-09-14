@@ -151,7 +151,7 @@ const BottomNav = ({ user, isHome, onHome, onAccount }) => (
     paddingBottom: 'env(safe-area-inset-bottom, 0px)', boxShadow: '0 -1px 0 rgba(10,10,10,0.02)',
   }}>
     <NavItem icon="home" label="Home" active={isHome} onClick={onHome} />
-    <NavItem label="Account" glyph={<Avatar name={displayName(user)} size={22} />} onClick={onAccount} />
+    <NavItem label="Account" glyph={<Avatar name={displayName(user)} size={22} accent />} onClick={onAccount} />
   </nav>
 );
 
