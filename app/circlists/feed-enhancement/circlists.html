@@ -259,6 +259,25 @@
      --color-accent outline, per the redesign's own spec. */
   .circ-lens-trigger:hover { background: var(--color-surface-sunken); }
   .circ-lens-seg:focus-visible { outline: var(--ring-width) solid var(--ring-color); outline-offset: 2px; }
+  /* Unselected panel options only (BIZ-136, ruling 2026-09-14) — Order, View,
+     Show segments and Added by rows share this class; the selected option's
+     own look (accent/weight/shadow) is untouched. !important: feed-lens.jsx
+     sets `background: transparent` inline on the unselected state, which
+     outranks an external rule on specificity alone — same reason the app's
+     other hover rules over inline backgrounds carry it (circ-btn-primary
+     etc., above). Pointer-only: a touch tap leaves no lingering "hover"
+     state to get stuck showing this tint.
+     Two tokens, not one. Order/View/Show (role=radio) sit on a tray whose
+     OWN background is already --color-surface-sunken (feed-lens.jsx's
+     LensSegmented tray) — that token on hover would be invisible against
+     itself. The config panel hits the same shape and already resolves it:
+     `.circ-config-seg-btn:not([data-active]):hover` (above) steps one
+     shade darker to --color-border-2. Added by rows (role=checkbox) sit on
+     transparent, so the plain sunken tint the ruling names reads there. */
+  @media (hover: hover) and (pointer: fine) {
+    .circ-lens-seg[role="radio"]:not([aria-checked="true"]):hover { background: var(--color-border-2) !important; }
+    .circ-lens-seg[role="checkbox"]:not([aria-checked="true"]):hover { background: var(--color-surface-sunken) !important; }
+  }
 
   /* ---- app posture (native mobile) chrome ---- */
   .circ-appnav-item:active:not(:disabled) { background: var(--color-surface-sunken); }
