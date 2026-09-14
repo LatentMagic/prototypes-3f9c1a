@@ -196,7 +196,7 @@ const CandSourceLine = ({ item, foot }) => {
 // is the one voice on the card, and grey is this product's word for secondary.
 // The link's identity moves to the FOOT, which fills the bottom-left and keeps
 // the site's colour at both ends; the preview image does not come over.
-const CandAltFace = ({ item, api, onClose, innerRef, mark }) => {
+const CandAltFace = ({ item, api, onClose, innerRef, mark, tab }) => {
   const t = item.thought;
   const by = /^you$/i.test(t.by) ? 'You' : t.by;
   const isYou = by === 'You';
@@ -258,10 +258,20 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark }) => {
             tertiary ink, darkening to primary, and no grey state layer — the
             house icon-button fill is mixed for white surface and read as a
             smudge here. */}
-        {/* On the conversation surface the head card already carries Delete (and
-            Mark as read), so the alt face carries neither — the same controls
-            twice on one screen. */}
-        {!onSurface && (
+        {/* Shown on the surface too (corrected): once the thought is open the
+            sliver beneath it hides the head card's own footer, so suppressing
+            the alt face's actions there left no way to act on the card at all
+            while reading it. Same actions, same tab-keyed choice, everywhere. */}
+        {/* Read parity: a Read card's thought carries READ's own actions — the
+            conversation door + the Share/Save/Delete kebab, exactly what the
+            same card shows closed — not Active's mark-as-read tick. "Mark as
+            read" on a card already in Read said nothing true. */}
+        {tab === 'read' && (
+          <window.FeedCardActions item={item} tab="read" edgeNudge={false}
+            onDelete={() => { onClose(); api.requestDelete(item); }}
+            onToggleSaved={api.toggleSaved} space={api.space} onAnnounce={api.announceOnce} />
+        )}
+        {tab !== 'read' && (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <button className="circ-cardaction circ-cardaction-icon cand-altaction" aria-label="Mark as read" title="Mark as read"
             onClick={() => { onClose(); api.requestMarkRead(item); }}>
@@ -334,7 +344,12 @@ const CandCardRow = ({ item, tab, api, children, Face, mark = 'lines', openPaper
   // A card that HAS a thought, and a card of yours that could have one, both
   // carry a band — the second one empty (LM-652). The row is the same either way.
   const writable = candCanWrite(item);
-  const showBand = tab === 'active' && !item.pending && (!!item.thought || writable);
+  // Read parity (align with the app's current direction): the band is no
+  // longer Active-only. A thought is the same information on either tab, and
+  // a card of yours carrying none gets the same empty "Add a thought" slot on
+  // Read that it gets on Active — the shelf a thought lives on does not change
+  // what tab you are looking at it from.
+  const showBand = !item.pending && (!!item.thought || writable);
   const [linkRef, linkH] = useCandHeight();
   const [bandRef, bandH] = useCandHeight();
   const [altRef, altH] = useCandHeight();
@@ -462,7 +477,7 @@ const CandCardRow = ({ item, tab, api, children, Face, mark = 'lines', openPaper
             over the stack. Pinned to the wrapper it stayed at the top-right
             while the link card slipped behind and was clipped to its sliver,
             leaving the corner floating above the opened thought. */}
-        {corner && item.watching && !open && <CandFold />}
+        {(corner || tab === 'read') && item.watching && !open && <CandFold />}
       </div>
       {/* The thought card. One element, two faces: the band while it is behind,
           the face while it is in front. They cross-fade over each other inside a
@@ -493,7 +508,7 @@ const CandCardRow = ({ item, tab, api, children, Face, mark = 'lines', openPaper
             ? <CandWriteFace item={item} api={api} innerRef={altRef} onClose={() => swap(false)} onDone={wrote} />
             : React.createElement(Face || CandAltFace, {
                 item: heldFace === 'alt' ? { ...item, thought: lastThought.current } : item,
-                api, innerRef: altRef, mark, onClose: () => swap(false) })}
+                api, innerRef: altRef, mark, tab, onClose: () => swap(false) })}
         </div>
       </div>
       {/* An option may put the tell in the paper itself rather than in a glyph: a

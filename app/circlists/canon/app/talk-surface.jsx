@@ -370,7 +370,7 @@ const CandCornerSignal = ({ item }) => (item.watching ? <CandFold /> : null);
 // The head card, carrying the thought tucked under it. The feed's own row, at
 // its Active behaviour — not a lookalike.
 const CandSurfaceHead = ({ item, api, children }) => (
-  <CandCardRow item={item} tab="active" api={api} corner>{children}</CandCardRow>
+  <CandCardRow item={item} tab={item.read ? 'read' : 'active'} api={api} corner>{children}</CandCardRow>
 );
 
 const CandSurface = ({ item, api }) => {

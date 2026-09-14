@@ -67,9 +67,14 @@ const circCardMetrics = (density) => (density === 'compact'
   ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
   : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false, onAct = () => {} }) => {
-  const [favBroken, setFavBroken] = React.useState(false);
-  const [imgBroken, setImgBroken] = React.useState(false);
+// ---- Trailing action cluster — [posture] [⋮] (run 10, BIZ-136) ------------
+// Extracted so the same read-door + kebab (Share/Save/Delete) a Read card
+// shows in the feed can be reused verbatim wherever a Read-tab link's actions
+// are needed outside FeedCard itself (the thought's own open face, LM-652
+// alignment: a Read card's thought carries Read's actions, not Active's).
+// `edgeNudge` — the -13px optical-edge pull (BIZ-80 alignment study) is
+// skipped when a caller's own row already applies it, so the two don't stack.
+const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () => {}, onDelete, onToggleSaved, space, onAnnounce, onAct = () => {}, edgeNudge = true }) => {
   const m = circCardMetrics(density);
 
   // ---- Trailing kebab menu (run 10, BIZ-136: "[posture] [⋮]") --------------
@@ -164,6 +169,73 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
     borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
     color: 'var(--color-fg-1)', whiteSpace: 'nowrap',
   };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: edgeNudge ? -13 : 0, marginTop: m.actionPull, marginBottom: m.actionPull }}>
+      {/* [posture] [⋮] — one grammar, two visible targets, every surface
+          (run 10, BIZ-136 build brief A). The posture action is the
+          card's one high-frequency act and stays visible; everything
+          occasional (Share, Save, Delete) goes behind the kebab, ruled
+          32's Read-only Save included, destructive last. */}
+      {tab === 'read'
+        ? <SwellDoor item={item} />
+        : (
+          <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+            <Icon name="check" size={m.actionIcon.check} />
+          </button>
+        )}
+      <button ref={triggerRef} type="button"
+        className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+        onClick={() => { if (!menuOpen) onAct(); setMenuOpen((o) => !o); }}
+        aria-haspopup="menu" aria-expanded={menuOpen}
+        aria-label={'More actions for ' + menuLabel}
+        style={{ color: 'var(--color-fg-3)' }}>
+        <Icon name="more-vertical" size={m.actionIcon.more} />
+      </button>
+      {menuOpen && menuPortalTarget() && ReactDOM.createPortal(
+        <React.Fragment>
+          <div onClick={closeMenu} aria-hidden="true"
+            style={{ position: 'fixed', inset: 0, zIndex: 89, background: 'transparent' }} />
+          <div ref={menuRef} role="menu" aria-label={'Actions for ' + menuLabel}
+            style={{
+              position: 'fixed', zIndex: 90, minWidth: 168,
+              background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+              borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
+              visibility: menuStyle ? 'visible' : 'hidden',
+              top: menuStyle ? menuStyle.top : -9999, left: menuStyle ? menuStyle.left : -9999,
+            }}>
+            {window.CardShareMenuItem && (
+              <window.CardShareMenuItem item={item} space={space} announce={onAnnounce} onDone={closeMenu} />
+            )}
+            {tab === 'read' && onToggleSaved && (
+              <button role="menuitemcheckbox" aria-checked={!!item.saved}
+                className="circ-menuitem"
+                onClick={() => { onToggleSaved(item); closeMenu(); }}
+                style={menuItemBase}>
+                <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={16}
+                  style={{ color: 'var(--color-fg-2)' }} />
+                <span style={{ flex: 1 }}>Save</span>
+                {item.saved && <Icon name="check" size={15} />}
+              </button>
+            )}
+            <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
+            <button role="menuitem" className="circ-menuitem"
+              onClick={() => { onDelete(item); closeMenu(); }}
+              style={{ ...menuItemBase, color: 'var(--color-destructive)' }}>
+              <Icon name="trash" size={16} /> Delete
+            </button>
+          </div>
+        </React.Fragment>,
+        menuPortalTarget()
+      )}
+    </div>
+  );
+};
+
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false, onAct = () => {} }) => {
+  const [favBroken, setFavBroken] = React.useState(false);
+  const [imgBroken, setImgBroken] = React.useState(false);
+  const m = circCardMetrics(density);
 
   const former = /former member/i.test(item.attribution);
   // The current user always reads lower-case "you" in the shared view; normalise
@@ -315,104 +387,8 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             optical edge is pulled onto the image's right edge via the -13 nudge;
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
-          {/* [posture] [⋮] — one grammar, two visible targets, every surface
-              (run 10, BIZ-136 build brief A). The posture action is the
-              card's one high-frequency act and stays visible; everything
-              occasional (Share, Save, Delete) goes behind the kebab, ruled
-              32's Read-only Save included, destructive last. */}
-          {
-            <React.Fragment>
-              {tab === 'read'
-                ? <SwellDoor item={item} />
-                : (
-                  <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
-                    <Icon name="check" size={m.actionIcon.check} />
-                  </button>
-                )}
-              {/* Set apart from the posture slot in weight, not distance.
-                  The design review measured the Read row as two dot-triads of
-                  the same ink 44px apart — the way-through disc and this —
-                  and was right that more gap alone leaves two marooned marks
-                  rather than one action plus card chrome. Hierarchy by
-                  weight is the separation: this drops a step to fg-3 while
-                  the posture action keeps fg-2. RULING 14 (2026-09-14): a
-                  run on 2026-09-08 added a marginLeft here as a second,
-                  distance-based separation on top of the weight drop — that
-                  extra gap pushed the trigger's right edge past the
-                  thumbnail's and was ruled a defect, reverted. The row's own
-                  rule still holds: no drawn hairline, hover inset carries
-                  whatever separation distance is meant to contribute.
-                  The stronger answer is the review's first: lift the menu off
-                  the attribution line to the card's trailing corner, where
-                  Readwise puts it and where card-scoped actions belong. That
-                  is a structural move made late in a run, which is exactly how
-                  the last one shipped a broken container, so it is written up
-                  rather than taken. */}
-              <button ref={triggerRef} type="button"
-                className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
-                onClick={() => { if (!menuOpen) onAct(); setMenuOpen((o) => !o); }}
-                aria-haspopup="menu" aria-expanded={menuOpen}
-                aria-label={'More actions for ' + menuLabel}
-                style={{ color: 'var(--color-fg-3)' }}>
-                <Icon name="more-vertical" size={m.actionIcon.more} />
-              </button>
-              {menuOpen && menuPortalTarget() && ReactDOM.createPortal(
-                <React.Fragment>
-                  {/* Transparent full-screen click-catcher UNDER the menu
-                      (requirement 5) — closes the menu and stops a tap
-                      falling through to the FAB beneath it. position: fixed
-                      on both is what takes them out of the card's own
-                      stacking context (this card sits inside a
-                      `container-type: inline-size` list); a z-index written
-                      inside the card cannot win against the FAB's 80, same
-                      trap run 9's vent recorded for a `position: sticky`
-                      ancestor. */}
-                  <div onClick={closeMenu} aria-hidden="true"
-                    style={{ position: 'fixed', inset: 0, zIndex: 89, background: 'transparent' }} />
-                  <div ref={menuRef} role="menu" aria-label={'Actions for ' + menuLabel}
-                    style={{
-                      position: 'fixed', zIndex: 90, minWidth: 168,
-                      background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-                      borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
-                      visibility: menuStyle ? 'visible' : 'hidden',
-                      top: menuStyle ? menuStyle.top : -9999, left: menuStyle ? menuStyle.left : -9999,
-                    }}>
-                    {window.CardShareMenuItem && (
-                      <window.CardShareMenuItem item={item} space={space} announce={onAnnounce} onDone={closeMenu} />
-                    )}
-                    {tab === 'read' && onToggleSaved && (
-                      /* Save, as a checkable item — ONE stable label across
-                         both states (requirement 8): the state rides in
-                         aria-checked, not the words, same ARIA-toggle
-                         correctness the old button already used. Read-only
-                         (ruling 32), so this never renders on Active. */
-                      <button role="menuitemcheckbox" aria-checked={!!item.saved}
-                        className="circ-menuitem"
-                        onClick={() => { onToggleSaved(item); closeMenu(); }}
-                        style={menuItemBase}>
-                        <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={16}
-                          style={{ color: 'var(--color-fg-2)' }} />
-                        <span style={{ flex: 1 }}>Save</span>
-                        {item.saved && <Icon name="check" size={15} />}
-                      </button>
-                    )}
-                    {/* Ruled off from what precedes it. All three exemplars
-                        separate the destructive item; this app has the token
-                        for it and the row above is otherwise pure white. */}
-                    <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
-                    <button role="menuitem" className="circ-menuitem"
-                      onClick={() => { onDelete(item); closeMenu(); }}
-                      style={{ ...menuItemBase, color: 'var(--color-destructive)' }}>
-                      <Icon name="trash" size={16} /> Delete
-                    </button>
-                  </div>
-                </React.Fragment>,
-                menuPortalTarget()
-              )}
-            </React.Fragment>
-          }
-        </div>
+        <FeedCardActions item={item} tab={tab} density={density} onMarkRead={onMarkRead} onDelete={onDelete}
+          onToggleSaved={onToggleSaved} space={space} onAnnounce={onAnnounce} onAct={onAct} />
       </div>
     </article>
   );
@@ -810,5 +786,5 @@ const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }
   );
 };
 
-Object.assign(window, { FeedCard, FeedLoading, EmptyState, AddReveal, FAB, ConfirmDialog, DeleteDialog,
+Object.assign(window, { FeedCard, FeedCardActions, FeedLoading, EmptyState, AddReveal, FAB, ConfirmDialog, DeleteDialog,
   circViewerSpaces, circHiddenForMe, circHoldsForEveryone });

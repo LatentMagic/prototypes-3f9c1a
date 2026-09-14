@@ -904,6 +904,7 @@ const CircApp = () => {
     route, setRoute, setSpaces, returnToSpace, openLink,
     requestDelete: (item) => setConfirm({ kind: 'delete', item }),
     requestMarkRead: (item) => setReacting(item),
+    toggleSaved, announceOnce,
     isChampion, startCircle: gateActive ? onGate : openCreateSpace } : null;
   if (Cand && Cand.bind) Cand.bind(candApi);
 
