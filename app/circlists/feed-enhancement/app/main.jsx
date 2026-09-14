@@ -1076,7 +1076,10 @@ const CircApp = () => {
       // tab, so hopping to Read to see whether you already read Sam's link
       // keeps the lens. The asymmetry is deliberate; the chip stays on screen
       // across the switch, so the state is never hidden.
-      const who = (Lens ? lensWho[currentId] : null) || null;
+      // Multi-select (BIZ-136, ruling 2026-09-14): `who` is always an array —
+      // empty for "Everyone" — never null, so every reader below can test it
+      // with `.length` instead of re-deriving the same null-vs-array branch.
+      const who = (Lens ? lensWho[currentId] : null) || [];
       // TWO PREDICATES, deliberately (BIZ-136, ruling of 2026-09-07).
       // `lensActive` is CONCEALMENT — cards are being hidden — and it is what
       // suppresses the feed lead, because a lead counting things above a
@@ -1247,10 +1250,20 @@ const CircApp = () => {
         // waterline's suppression is NOT announced — a state never is.
         announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));
       };
-      const setWho = (next) => {
+      // Multi-select (BIZ-136, ruling 2026-09-14). One function serves three
+      // callers, each passing a contributor id: the panel's own row (toggles
+      // that person on or off), a chip's × (always toggles its own person
+      // off, since a chip is only rendered while its person is selected), and
+      // "Everyone" / the no-match recovery button (passes CIRC_LENS_ALL /
+      // null to clear every selection at once).
+      const setWho = (id) => {
+        const cur = lensWho[currentId] || [];
+        const next = (id === window.CIRC_LENS_ALL || id == null) ? []
+          : cur.indexOf(id) !== -1 ? cur.filter((w) => w !== id)
+          : cur.concat([id]);
         setLensWho((prev) => ({ ...prev, [currentId]: next }));
-        announceOnce(next
-          ? 'Showing links added by ' + window.circContributorLabel(next)
+        announceOnce(next.length
+          ? 'Showing links added by ' + next.map(window.circContributorLabel).join(', ')
           : 'Showing links from everyone');
       };
       // Density (BIZ-136 run 3): the gesture is acknowledged like every other
@@ -1274,7 +1287,7 @@ const CircApp = () => {
       // narrowing an otherwise-populated saved list is a MISS, not an empty
       // surface, and falls through to FeedNoMatch below like every other miss.
       const savedTabEmpty = effectiveSavedMode === 'surface' && tab === 'saved'
-        && !who && !searchActive && visible.length === 0;
+        && !who.length && !searchActive && visible.length === 0;
       // `cardTab` (run 7): the Saved tab shows READ items — a card there has
       // to render exactly as it does on Read (the save/un-save mark, the
       // Swell door), never as it does on Active (a "mark as read" button on
@@ -1419,9 +1432,9 @@ const CircApp = () => {
                 exactly as the lens/bar readings already do. */}
             {savedTabEmpty && window.SavedTabEmptyState
               ? <div><window.SavedTabEmptyState /></div>
-              : visible.length === 0 && (who || effectiveSavedOn || searchActive) && window.FeedNoMatch
+              : visible.length === 0 && (who.length || effectiveSavedOn || searchActive) && window.FeedNoMatch
               ? <div><window.FeedNoMatch who={who} tab={cardTab} saved={effectiveSavedOn} query={searchQueryVal}
-                  onClearWho={() => setWho(null)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
+                  onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
               /* Saved survives feed-lens.jsx on its own: its toggle and its
                  filter both live in feed-saved.jsx and neither is gated on the
                  lens. Before the fold, SavedNoMatch rendered for this case
@@ -1432,7 +1445,7 @@ const CircApp = () => {
                  is not degrading to the previous behaviour, which is what the
                  deletable-aid contract actually promises — so the old
                  component stays reachable for exactly the case it used to own. */
-              : visible.length === 0 && effectiveSavedOn && !who && window.SavedNoMatch
+              : visible.length === 0 && effectiveSavedOn && !who.length && window.SavedNoMatch
               ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
               : visible.length === 0 ? <div><EmptyState tab={cardTab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {

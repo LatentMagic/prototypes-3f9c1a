@@ -352,7 +352,11 @@ function circStateContext(api) {
     // own use below.
     const keyTab = finalTab || tab;
     setSortOrder({ [space]: order });
-    setLensWho(who ? { [space]: who } : {});
+    // Multi-select (BIZ-136, ruling 2026-09-14): `who` accepts a single name
+    // (a Scenario written before the ruling) or an array (several people at
+    // once), so every existing Scenario id keeps working unmigrated.
+    const whoList = Array.isArray(who) ? who : (who ? [who] : []);
+    setLensWho(whoList.length ? { [space]: whoList } : {});
     // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
     // sets it directly rather than keying it per circle.
     setDensity(density);

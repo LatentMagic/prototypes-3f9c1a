@@ -105,16 +105,23 @@ const circContributors = (space) => {
   });
 };
 
+// Multi-select (BIZ-136, Joe's ruling 2026-09-14). `who` is an array of
+// contributor names, or empty/null for "Everyone" — a bare string is still
+// accepted and treated as a one-name array, so a stale caller that has not
+// been migrated degrades to exactly the single-select behaviour it had.
+const circWhoList = (who) => (Array.isArray(who) ? who : (who ? [who] : []));
+
 // A view, exactly as the sort is. Stored order and stored membership are never
 // touched, so the divider maths, the pill's accept and the seeding all keep
 // reading what they always read.
 const circFilterItems = (items, who) => {
-  if (!who) return items || [];
+  const list = circWhoList(who);
+  if (!list.length) return items || [];
   // Case-insensitive, to agree with the deduping in circContributors: the two
   // must match on the same key or a legacy 'Added by You' item is offered under
   // a heading it then does not appear beneath.
-  const key = String(who).toLowerCase();
-  return (items || []).filter((it) => circContributorOf(it).toLowerCase() === key);
+  const keys = list.map((w) => String(w).toLowerCase());
+  return (items || []).filter((it) => keys.indexOf(circContributorOf(it).toLowerCase()) !== -1);
 };
 
 // THE REGION'S ONE RULE (BIZ-136, Joe's ruling of 2026-09-07). The door shows
@@ -131,13 +138,13 @@ const circFilterItems = (items, who) => {
 // Density never did either, and run 3 had already written the correct rule in
 // main.jsx's own words: "It hides no content, so it has nothing to disclose."
 // Order was the one control disobeying a rule the region already had.
-const circLensActive = (order, who) => !!who;
+const circLensActive = (order, who) => circWhoList(who).length > 0;
 
 // Whether ANYTHING in the door is off its default — a different question from
 // the one above, and the only place `order` still counts. Used for "keep the
 // door reachable", never for the lit state and never for a chip.
 const circLensNonDefault = (order, who) =>
-  !!who || !!(order && order !== (window.CIRC_SORT_DEFAULT || 'newest'));
+  circWhoList(who).length > 0 || !!(order && order !== (window.CIRC_SORT_DEFAULT || 'newest'));
 
 // THE VISIBLE HEIGHT, and it is not `100vh`.
 //
@@ -361,6 +368,26 @@ const LensSegmented = ({ label, caption, options, value, onPick }) => {
   );
 };
 
+// Multi-select keyboard behaviour for the contributor list (BIZ-136, ruling
+// 2026-09-14): arrows move focus only — they no longer also select, because
+// more than one row can be checked at once and a moving selection would
+// silently drag the filter along with focus. Space/Enter still toggles,
+// through the button's own native activation; nothing here has to handle it.
+const useLensListKeys = (options, refs) => (e) => {
+  const cur = refs.current.indexOf(document.activeElement);
+  const start = cur === -1 ? 0 : cur;
+  const last = options.length - 1;
+  let next = null;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next = start === last ? 0 : start + 1;
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = start === 0 ? last : start - 1;
+  else if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = last;
+  if (next === null) return;
+  e.preventDefault();
+  const el = refs.current[next];
+  if (el) el.focus({ preventScroll: true });
+};
+
 // Added by — stays a vertical list (N contributors, not two options to put
 // side by side), bounded so a large circle scrolls the list rather than
 // growing the panel. Selected mark is the app's own selected-list-row
@@ -373,9 +400,18 @@ const LensSegmented = ({ label, caption, options, value, onPick }) => {
 // — a capped list inside a scrolling sheet is two scrollers stacked, and a
 // thumb landing on the list scrolls the list while a thumb two pixels outside
 // it scrolls the sheet, which is the same gesture doing different things.
+//
+// MULTI-SELECT (BIZ-136, Joe's ruling 2026-09-14). `value` is the array of
+// selected contributors, not a single one — so this is a `group` of
+// checkboxes rather than a `radiogroup`, every row keeps its own tab stop
+// (there is no single "checked" row to rove tabindex around), and "Everyone"
+// is itself one of the rows: checked when the array is empty, and picking it
+// clears every contributor at once rather than toggling itself into the set.
 const LensList = ({ label, options, value, onPick, bounded = true }) => {
   const refs = React.useRef([]);
-  const onKey = useLensRadioKeys(options, value, onPick, refs);
+  const onKey = useLensListKeys(options, refs);
+  const selected = value || [];
+  const isOn = (o) => (o.everyone ? selected.length === 0 : selected.indexOf(o.id) !== -1);
   return (
     // No bottom padding: a half-cut row has to be cut BY the container edge to
     // read as "more below". Ten pixels of white under the slice read as a
@@ -383,7 +419,7 @@ const LensList = ({ label, options, value, onPick, bounded = true }) => {
     // so it takes the normal bottom pad back.
     <div style={{ padding: bounded ? '6px 10px 0' : '6px 10px 4px' }}>
       <LensLabel>{label}</LensLabel>
-      <div role="radiogroup" aria-label={label} onKeyDown={onKey} style={{
+      <div role="group" aria-label={label} onKeyDown={onKey} style={{
         display: 'flex', flexDirection: 'column', gap: 1,
         // 4 full 44px rows + a deliberately half-cut fifth, so a circle with more
         // contributors than fit SHOWS that it has more. A round multiple of the
@@ -391,12 +427,12 @@ const LensList = ({ label, options, value, onPick, bounded = true }) => {
         ...(bounded ? { maxHeight: 202, overflowY: 'auto' } : null),
       }}>
         {options.map((o, i) => {
-          const on = o.id === value;
+          const on = isOn(o);
           return (
             <button
               key={String(o.id)}
               ref={(el) => { refs.current[i] = el; }}
-              type="button" role="radio" aria-checked={on} tabIndex={on ? 0 : -1}
+              type="button" role="checkbox" aria-checked={on} tabIndex={0}
               onClick={() => onPick(o.id)}
               className="circ-lens-seg"
               style={{
@@ -589,11 +625,12 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   );
   // A filtered contributor whose last link is read away or deleted drops out of
   // `contributors` while the filter is still on. Without this the group has no
-  // checked option, every row is tabIndex -1, and the whole group becomes
-  // unreachable by keyboard while the chip still says the lens is applied.
-  if (who && !whoOptions.some((o) => o.id === who)) {
-    whoOptions.push({ id: who, label: circContributorLabel(who) });
-  }
+  // checked option for them, and the whole row becomes unreachable by keyboard
+  // while the chip still says the lens is applied. Multi-select (2026-09-14):
+  // any number of the selected names can be missing at once, not just one.
+  (who || []).forEach((w) => {
+    if (!whoOptions.some((o) => o.id === w)) whoOptions.push({ id: w, label: circContributorLabel(w) });
+  });
   // Both section eyebrows ride on this. A door holding only display controls
   // has one kind of thing in it, and a lone "DISPLAY" header over the whole
   // panel would be a heading naming the only thing there is — so with no
@@ -611,7 +648,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // "newest first, everyone" over a list narrowed to saved links, which is the
   // audible version of the grey trigger the design review caught.
   const spoken = 'View options: ' + (window.circSortLabel ? window.circSortLabel(order).toLowerCase() : order)
-    + ', ' + (who ? 'added by ' + circContributorLabel(who) : 'everyone')
+    + ', ' + ((who && who.length) ? 'added by ' + who.map(circContributorLabel).join(', ') : 'everyone')
     + (savedMode === 'lens' && saved ? ', saved only' : '');
 
   return (
@@ -1074,7 +1111,8 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // `order`/`onOrder` were props here until 2026-09-07 and are gone with the
   // Order chip — a component that takes a value it can no longer render is a
   // dead condition reading as a live one.
-  const active = circLensActive(null, who);
+  const whoList = who || [];
+  const active = circLensActive(null, whoList);
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
   const savedChipOn = savedMode === 'surface' ? false : !!saved;
@@ -1085,7 +1123,7 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // clear button undid a preference rather than restoring anything.
   // Where the order now reads instead: on its own row inside the door, and in
   // the feed itself, which is in that order. See `circLensActive`.
-  const anyChips = !!(who || savedChipOn);
+  const anyChips = !!(whoList.length || savedChipOn);
   if (!active && !savedChipOn && !showField) return null;
   // `reopenLabel` is a FUNCTION of the chip's own label, not one fixed string
   // (BIZ-136 run 7, from the review). It was 'Change filters' on every chip, and
@@ -1131,19 +1169,25 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
           instead. */}
       {showField && <Field value={searchQuery} onChange={onSearchChange} onClear={onSearchClear} />}
       {anyChips && (
+        // Chip order (BIZ-136, ruling 2026-09-14): Saved's chip always first,
+        // then one chip per selected contributor. Each contributor chip's ×
+        // removes only that one name — `onWho(w)` toggles it back off, the
+        // same call the panel's own row makes; "Everyone" is a separate
+        // click, not this row's clear.
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          {who && (
-            <LensChip
-              label={circAttributionPhrase(who, isMobile)}
-              clearLabel={'Showing links added by ' + circContributorLabel(who) + '. Show links from everyone'}
-              onClear={() => onWho(CIRC_LENS_ALL)} {...reopen} />
-          )}
           {savedChipOn && (
             <LensChip
               label="Saved"
               clearLabel="Showing saved links. Show all read links"
               onClear={() => onSaved(false)} {...reopen} />
           )}
+          {whoList.map((w) => (
+            <LensChip
+              key={w}
+              label={circAttributionPhrase(w, isMobile)}
+              clearLabel={'Showing links added by ' + circContributorLabel(w) + '. Remove this filter'}
+              onClear={() => onWho(w)} {...reopen} />
+          ))}
         </div>
       )}
     </div>
@@ -1182,8 +1226,30 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
 // standing view they return to; Saved is a shelf they went to on purpose, and
 // least deserves being undone by a button that was really about something
 // else.
+// Joins contributor labels the way a sentence would — "Priya" alone, "Priya
+// or Sam" for two, "Priya, Sam or Dev" for three or more (BIZ-136, ruling
+// 2026-09-14: the no-match state names every selected person, not just one).
+const circNaturalList = (labels) => {
+  if (labels.length <= 1) return labels[0] || '';
+  if (labels.length === 2) return labels[0] + ' or ' + labels[1];
+  return labels.slice(0, -1).join(', ') + ' or ' + labels[labels.length - 1];
+};
+
 const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClearSearch }) => {
-  const label = who ? circContributorLabel(who) : '';
+  const whoList = who || [];
+  const label = circNaturalList(whoList.map(circContributorLabel));
+  // Multi-select wording (BIZ-136, ruling 2026-09-14). Three shapes:
+  //   - no You in the selection: the existing "they" copy, which already
+  //     reads fine for more than one other person.
+  //   - You is the ONLY person selected: the existing first-person copy,
+  //     unchanged.
+  //   - You AND others: new copy, since "they" cannot be made to cover you
+  //     without describing you in the third person, which Joe's ruling rules
+  //     out. "They" here names only the OTHER selected people, same as it
+  //     always has — it is never used for the member reading the screen.
+  const includesYou = whoList.some(circIsYou);
+  const onlyYou = whoList.length === 1 && includesYou;
+  const mixedWithYou = includesYou && whoList.length > 1;
   const q = String(query || '').trim();
   let headline, support;
   if (q) {
@@ -1191,8 +1257,8 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     // narrowing, so nothing sitting in the chip row is missing from the
     // sentence — a member reading it should never have to check the chips to
     // know what "nothing" means here.
-    headline = who && saved ? 'Nothing saved from ' + label + ' matches “' + q + '”'
-      : who ? 'Nothing from ' + label + ' matches “' + q + '”'
+    headline = whoList.length && saved ? 'Nothing saved from ' + label + ' matches “' + q + '”'
+      : whoList.length ? 'Nothing from ' + label + ' matches “' + q + '”'
       : saved ? 'Nothing saved matches “' + q + '”'
       : 'Nothing matches “' + q + '”';
     // True in every one of the four cases — it says where the search ceiling
@@ -1207,29 +1273,36 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     // an understatement instead of an overstatement. "Title or address"
     // because those are one field: a card headed by its URL has no title.
     support = 'Search looks at what a card shows — its title or address, its source, and who added it.';
-  } else if (who && saved) {
-    // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim — except the
-    // self case, which speaks in the first person rather than "they" (see
-    // the Active/Read branch below for the same fix and its reasoning).
+  } else if (whoList.length && saved) {
+    // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim for a single
+    // non-You contributor — except the self case, which speaks in the first
+    // person rather than "they" (see the Active/Read branch below for the
+    // same fix and its reasoning).
     headline = 'Nothing saved from ' + label;
-    support = circIsYou(who)
+    support = onlyYou
       ? 'Your saved links don’t include anything you’ve added.'
+      : mixedWithYou
+      ? 'Your saved links don’t include anything you or they added.'
       : 'Your saved links don’t include anything they added.';
   } else if (saved) {
     // REGRESSION: feed-saved.jsx's SavedNoMatch, verbatim.
     headline = 'No saved links here';
     support = 'Nothing in this circle is saved.';
   } else {
-    // REGRESSION: this file's own LensNoMatch, verbatim — except the self
-    // case, which the template was never substituted through: "they" read
-    // naturally for another member's row but described the member themself
-    // in the third person when they filtered to their own. First person for
-    // You, unchanged for everyone else.
+    // REGRESSION: this file's own LensNoMatch, verbatim for a single non-You
+    // contributor — except the self case, which the template was never
+    // substituted through: "they" read naturally for another member's row but
+    // described the member themself in the third person when they filtered
+    // to their own. First person for You, unchanged for everyone else.
     headline = 'Nothing here from ' + label;
-    support = circIsYou(who)
+    support = onlyYou
       ? (tab === 'read'
         ? 'You haven’t read any of your own links yet.'
         : 'You haven’t added anything that’s still to read.')
+      : mixedWithYou
+      ? (tab === 'read'
+        ? 'You haven’t read anything you or they added yet.'
+        : 'Nothing you or they added is still waiting to be read.')
       : (tab === 'read'
         ? 'You have not read anything they added.'
         : 'They have not added anything you have left to read.');
@@ -1251,15 +1324,19 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
   // It applies only where a query is involved. The contributor+saved pair
   // WITHOUT a query is shipped behaviour under this component's regression
   // contract — it must keep emitting "Show everyone" and clearing only the
-  // contributor — so that case is deliberately left alone, dead end and all,
-  // and stays recorded as run 5's own ruling rather than quietly reversed here.
+  // contributor(s) — so that case is deliberately left alone, dead end and
+  // all, and stays recorded as run 5's own ruling rather than quietly
+  // reversed here. `onClearWho` clears every selected contributor at once —
+  // the same "Show everyone" a member reaches from the panel's own row — not
+  // just one of them, since the recovery action offered here has always been
+  // the full escape, never a per-person undo (that lives in the chip row).
   let onClear, buttonLabel, buttonColor;
-  if (q && (who || saved)) {
+  if (q && (whoList.length || saved)) {
     onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
     buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
   } else if (q) {
     onClear = onClearSearch; buttonLabel = 'Clear search'; buttonColor = 'var(--color-accent)';
-  } else if (who) {
+  } else if (whoList.length) {
     onClear = onClearWho; buttonLabel = 'Show everyone'; buttonColor = 'var(--color-accent)';
   } else {
     onClear = onClearSaved; buttonLabel = 'Show all read links'; buttonColor = 'var(--color-fg-1)';
