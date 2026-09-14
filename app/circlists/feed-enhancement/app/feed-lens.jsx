@@ -1271,7 +1271,7 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     }}>
       <p style={{
         margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)',
-        fontWeight: 600, color: 'var(--color-fg-1)',
+        fontWeight: 600, color: 'var(--color-fg-1)', maxWidth: 320, overflowWrap: 'anywhere',
       }}>{headline}</p>
       <p style={{
         margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
