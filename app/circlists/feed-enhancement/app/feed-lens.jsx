@@ -1319,11 +1319,11 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     support = onlyYou
       ? 'Your saved links don’t include anything you’ve added.'
       : mixedWithYou
-      ? 'Your saved links don’t include anything you or they added.'
+      ? 'None of your saved links match.'
       : 'Your saved links don’t include anything they added.';
   } else if (saved) {
     // REGRESSION: feed-saved.jsx's SavedNoMatch, verbatim.
-    headline = 'No saved links here';
+    headline = 'Nothing saved here';
     support = 'Nothing in this circle is saved.';
   } else {
     // REGRESSION: this file's own LensNoMatch, verbatim for a single non-You
@@ -1338,11 +1338,11 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
         : 'You haven’t added anything that’s still to read.')
       : mixedWithYou
       ? (tab === 'read'
-        ? 'You haven’t read anything you or they added yet.'
-        : 'Nothing you or they added is still waiting to be read.')
+        ? 'Nothing added has been read yet.'
+        : 'Nothing added is still waiting to be read.')
       : (tab === 'read'
-        ? 'You have not read anything they added.'
-        : 'They have not added anything you have left to read.');
+        ? 'You haven’t read anything they added.'
+        : 'They haven’t added anything that’s still to read.');
   }
   // Button label/colour/action all key off the SAME branch as the escape
   // precedence above — search wins, then contributor, then saved. The colour

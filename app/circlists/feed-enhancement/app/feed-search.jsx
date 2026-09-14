@@ -107,13 +107,18 @@ const circFilterSearch = (items, query) => {
 // Same 44×44 shape and colour language as SavedToggle (feed-saved.jsx),
 // deliberately — read that file's own header before touching either. `open`
 // (whether the field is currently disclosed) drives `aria-expanded`; `active`
-// (whether a query is actually typed) drives colour, exactly as SavedToggle's
-// `on` does for its own boolean. NO underline — the 2px accent bottom border
-// is the tab row's own selected-tab signifier and stays there; see
-// SavedToggle's header for the three ways borrowing it went wrong.
+// (whether the field is open, per main.jsx's wiring) drives colour AND the
+// underline, exactly as the lens trigger's own wrapper does (feed-lens.jsx,
+// the FeedLens return around its border-bottom comment) — every engaged
+// control in the bar carries the same accent + 2px underline mark (BIZ-136,
+// ruling 2026-09-14: the underline was never a tab-only rule). Reuses that
+// wrapper's own inline style rather than a second copy, so the two triggers
+// cannot drift apart.
 const SearchTrigger = ({ open, active, onToggle }) => (
   <div style={{
-    display: 'inline-flex', alignItems: 'center', alignSelf: 'stretch',
+    position: 'relative', display: 'inline-flex', alignItems: 'center', alignSelf: 'stretch',
+    borderBottom: '2px solid ' + (active ? 'var(--color-accent)' : 'transparent'),
+    marginBottom: -1,
     // Same separation, same reason, as SavedToggle's own marginRight: 8 — an
     // unlabelled 44px target abutting the next one is a mis-tap design.
     marginRight: 8,
