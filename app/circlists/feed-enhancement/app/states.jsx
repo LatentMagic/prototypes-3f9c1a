@@ -609,6 +609,58 @@ const CIRC_STATE_REGISTER = [
   { group: 'The feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
   { group: 'The feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
   { group: 'The feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
+  // THE RULING, made visible as a PAIR — drawn in both orders again as of
+  // 2026-09-11 (Joe's own reversal of Sally's same-day call that it should
+  // draw newest-first only). Same circle, same mark, one difference: the
+  // sort. Open them in order — the waterline is there in both, at the SAME
+  // mark, because the mark is visit state and a sort change never touches
+  // it; only which end of the list you meet it from changes. The label stays
+  // fixed `Earlier` in both, which Joe knows may not read true of the pile
+  // beneath it under oldest-first — parked deliberately, his own candidate
+  // words to follow.
+  { group: 'The feed', id: 'sort-waterline-newest', label: 'Waterline — under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
+  { group: 'The feed', id: 'sort-oldest-waterline', label: 'Waterline — same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11,
+  // three times the same day — the requirement this state first showed was
+  // reversed, then the carry it grew in that reversal was reversed too, then
+  // Joe overruled his own reversal of the carry: the same pill carrying the
+  // member under one order and not the other was the order-dependent
+  // inconsistency he had been objecting to all along). The pill still does
+  // not touch the sort: tapping it leaves the order exactly as it was, and
+  // the two arrivals land in sorted position — the FOOT, under oldest-first
+  // — below the waterline still drawn at its own unmoved mark. What's back
+  // is the carry: the member IS taken to the arrivals, same as
+  // `sort-waterline-newest` — the difference between the two states is
+  // which end of the list that carry lands on, not whether it happens.
+  // Known, accepted cost of the foot case: a long, unanchored glide past
+  // whatever backlog sat between the member and the foot.
+  { group: 'The feed', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill carries you to the foot', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
+  { group: 'The feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },
+  // The contributor filter, folded with sort into one lens control. Priya's
+  // two Active links sit either side of the last-visit mark, so the
+  // waterline still draws inside the filtered list — the ruling this state exists
+  // to show, in either sort order (both-orders-again, 2026-09-11).
+  { group: 'The feed', id: 'filter-waterline', label: 'Waterline — drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
+  { group: 'The feed', id: 'density-compact-waterline', label: 'Compact — the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
+  // The failure with NOTHING applied, so the plain shape reads first: shell and
+  // tabs live above, the region alone replaced.
+  { group: 'The feed', id: 'feed-load-error', label: 'Feed — the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
+  // The same failure under a lens. The chips STAY: the fetch failed, and the
+  // member's narrowing is still what they set — hiding it would make a failed
+  // load look like a cleared filter.
+  { group: 'The feed', id: 'feed-load-error-lens', label: 'Feed — the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
+  // Sharing a card (wild feature, 2026-09-07). The two ends of one address. A
+  // shared card link means "this card", and what the follower meets depends
+  // on THEIR OWN read-state — not on anything the sharer chose. Open them as
+  // a pair; the difference between them is the whole design.
+  //
+  // The third end has no entry of its own on purpose: a follower who is not in
+  // the circle, or whose card has been deleted for everyone, meets the
+  // not-found page (`not-found-page`). That page already refuses to say which
+  // of those it was, which is the privacy answer, and a second copy of it
+  // staged under a sharing label would imply it is a different screen.
+  { group: 'The feed', id: 'share-arrival-unread', label: 'Shared card — they have not read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
+  { group: 'The feed', id: 'share-arrival-read', label: 'Shared card — they have read it (Overview)', stage: (c) => c.stageSharedCard({ read: true }) },
 
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
@@ -616,6 +668,10 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
+  // A circle can say what it is for (BIZ-136 run 10). The seed carries a
+  // description on two circles and none on the rest, so the home already
+  // shows both halves of the rule; this stages what the seed cannot.
+  { group: 'Members & funding', id: 'circle-description-long-members', label: 'Circle description — at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
   { group: 'Members & funding', id: 'funding-ending', label: 'Funding — ending on a date', stage: (c) => c.stageFunding({ state: 'ending', endsAt: Date.now() + 18 * DAY }) },
   { group: 'Members & funding', id: 'funding-retrying', label: 'Funding — payment retrying', stage: (c) => c.stageFunding({ state: 'retrying', retryWindow: '30 days' }) },
   { group: 'Members & funding', id: 'circle-no-champion', label: 'Circle with no champion', stage: (c) => c.stageNoChampion() },
@@ -634,124 +690,16 @@ const CIRC_STATE_REGISTER = [
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
   { group: 'Account', id: 'account-sso', label: 'Email & password via SSO', stage: (c) => { c.setUser({ ...window.CircSeed.DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); c.goSpace('sp-backend', 'account'); } },
 
-  // ==========================================================================
-  // CANDIDATE BUILD — feed enhancement (BIZ-136)
-  //
-  // Everything the while-away runs build lands in this group, and nowhere else.
-  // One run, one set of entries, appended below the last run's. A state that is
-  // not reachable from here did not ship.
-  //
-  // Keep the group title exactly as written — it is how the work is found in
-  // the Scenarios palette without hunting through the app.
-  //
-  // Run 1 \u2014 Queue item 1 \u00b7 Sort.
-  // ==========================================================================
-  // Run 1's id, kept so the URL it published still resolves. The standalone sort
-  // menu it named no longer exists — run 2 folded it into the lens — so it now
-  // lands on the lens, same as `lens-panel-open`.
-  { group: 'Candidate build \u2014 superseded shapes', id: 'sort-menu-open', label: 'Sort \u2014 now folded into the lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest', menu: true }) },
-  // THE RULING, made visible as a PAIR — drawn in both orders again as of
-  // 2026-09-11 (Joe's own reversal of Sally's same-day call that it should
-  // draw newest-first only). Same circle, same mark, one difference: the
-  // sort. Open them in order — the waterline is there in both, at the SAME
-  // mark, because the mark is visit state and a sort change never touches
-  // it; only which end of the list you meet it from changes. The label stays
-  // fixed `Earlier` in both, which Joe knows may not read true of the pile
-  // beneath it under oldest-first — parked deliberately, his own candidate
-  // words to follow.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-waterline-newest', label: 'Waterline \u2014 under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-waterline', label: 'Waterline \u2014 same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
-  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11,
-  // three times the same day — the requirement this state first showed was
-  // reversed, then the carry it grew in that reversal was reversed too, then
-  // Joe overruled his own reversal of the carry: the same pill carrying the
-  // member under one order and not the other was the order-dependent
-  // inconsistency he had been objecting to all along). The pill still does
-  // not touch the sort: tapping it leaves the order exactly as it was, and
-  // the two arrivals land in sorted position — the FOOT, under oldest-first
-  // — below the waterline still drawn at its own unmoved mark. What's back
-  // is the carry: the member IS taken to the arrivals, same as
-  // `sort-waterline-newest` — the difference between the two states is
-  // which end of the list that carry lands on, not whether it happens.
-  // Known, accepted cost of the foot case: a long, unanchored glide past
-  // whatever backlog sat between the member and the foot.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-oldest-accept', label: 'Arrivals under oldest first \u2014 the pill carries you to the foot', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'sort-single-item', label: 'One link \u2014 no sort control', stage: (c) => c.stageSingleItem() },
-  // Run 2 \u2014 the contributor filter, folded with sort into one lens control.
-  // Priya's two Active links sit either side of the last-visit mark, so the
-  // waterline still draws inside the filtered list \u2014 the ruling this state exists
-  // to show, in either sort order (both-orders-again, 2026-09-11).
-  { group: 'Candidate build \u2014 feed enhancement', id: 'filter-waterline', label: 'Waterline \u2014 drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
-  // Run 3 \u2014 density (Comfortable/Compact).
-  { group: 'Candidate build \u2014 feed enhancement', id: 'density-compact-waterline', label: 'Compact \u2014 the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
-  // ---- Run 5 · item 5, and the arrangement half reopened ------------------
+  // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
+  // 8): the home screen (app/home.jsx + app/home-returns.jsx).
+  { group: 'Home', id: 'home-quiet', label: 'Home — quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
+  { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
+  { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
+  { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
+
   // The not-found page is staged as a bare route because that is what it
   // answers: an address that resolved to nothing, with no circle to be inside.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'not-found-page', label: 'Not found \u2014 one answer for a bad address', stage: (c) => c.stageNotFound() },
-  // The failure with NOTHING applied, so the plain shape reads first: shell and
-  // tabs live above, the region alone replaced.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error', label: 'Feed \u2014 the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
-  // The same failure under a lens. The chips STAY: the fetch failed, and the
-  // member's narrowing is still what they set — hiding it would make a failed
-  // load look like a cleared filter.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'feed-load-error-lens', label: 'Feed \u2014 the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
-
-  // ---- Run 7 \u2014 two readings of "saved", side by side with the shipped bar --
-  // Fixture parity, deliberate: every entry below stages sp-backend, scopes
-  // `saved` against the READ pool, and marks the same three links (indexes
-  // 0/1/2 of that pool's own newest-first order) \u2014 except saved-tab-empty,
-  // which marks none. Comparing two shapes of the same control against two
-  // different piles of links is not a comparison, so nothing here varies that.
-  // Run 9: these three stopped being a PROPOSAL and became the app. Their ids
-  // are unchanged \u2014 an id is an address and renaming one breaks every link
-  // already written to it \u2014 but "Reading A" is gone from the labels, because
-  // there is no longer a Reading B beside it on the shipped path to be read
-  // against. They now say what they show.
-  // The shape run 9 replaced, kept openable on purpose. The pick was made from
-  // a side-by-side, so the way back has to stay a side-by-side: this is the
-  // bookmark on the tab bar, three icons and all, to be overruled by looking
-  // rather than by reading an argument about it.
-  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-bar-superseded', label: 'Superseded \u2014 saved as a bookmark on the tab bar', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedOn: true, savedMode: 'bar' }) },
-  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab', label: 'Reading B \u2014 saved as its own tab, populated', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface', finalTab: 'saved' }) },
-  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-empty', label: 'Reading B \u2014 the Saved tab, nothing kept yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedMode: 'surface', finalTab: 'saved' }) },
-  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-read', label: 'Reading B \u2014 the Read tab, carrying no saved control at all', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], savedMode: 'surface' }) },
-  { group: 'Candidate build \u2014 superseded shapes', id: 'saved-tab-composed', label: 'Reading B \u2014 the Saved tab under a contributor lens', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [0, 1, 2], who: 'Priya N.', savedMode: 'surface', finalTab: 'saved' }) },
-
-  // ---- Run 8 \u2014 Home as a shared surface, and the cross-circle returns strip --
-  // The home screen (app/home.jsx + app/home-returns.jsx) and the "Go home"
-  // fix on every dead-end route. All seven land here, per this group's own
-  // rule: not reachable from this list, not shipped.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-quiet', label: 'Home \u2014 quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-crowded', label: 'Home \u2014 five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'home-asleep', label: 'Home \u2014 a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
-  { group: 'Candidate build \u2014 superseded shapes', id: 'not-found-home', label: 'Not found \u2014 Go home now goes home', stage: (c) => c.stageNotFound() },
-  // ---- Sharing a card (wild feature, 2026-09-07) --------------------------
-  // The two ends of one address. A shared card link means "this card", and what
-  // the follower meets depends on THEIR OWN read-state — not on anything the
-  // sharer chose. Open them as a pair; the difference between them is the whole
-  // design.
-  //
-  // The third end has no entry of its own on purpose: a follower who is not in
-  // the circle, or whose card has been deleted for everyone, meets
-  // `not-found-home` directly above. That page already refuses to say which of
-  // those it was, which is the privacy answer, and a second copy of it staged
-  // under a sharing label would imply it is a different screen.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-unread', label: 'Shared card \u2014 they have not read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'share-arrival-read', label: 'Shared card \u2014 they have read it (Overview)', stage: (c) => c.stageSharedCard({ read: true }) },
-
-  // The card's action row, folded into one door (BIZ-136 run 10). The row went
-  // from three actions on Active and four on Read to two on both: the posture
-  // action stays out, everything occasional goes behind the kebab. There is no
-  // state that stages the MENU open \u2014 it is opened by a tap, and a fixture that
-  // forced it would be staging an interaction rather than a screen. Tap the
-  // trailing dots on any card in the feed to see it.
-  { group: 'Candidate build \u2014 superseded shapes', id: 'card-row-superseded', label: 'Superseded \u2014 the row before it was folded', stage: (c) => c.stageLegacyRow({ tab: 'read' }) },
-
-  // A circle can say what it is for (BIZ-136 run 10). The seed carries a
-  // description on two circles and none on the rest, so the home already
-  // shows both halves of the rule; these stage what the seed cannot.
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-description-long-members', label: 'Circle description \u2014 at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
-  { group: 'Candidate build \u2014 feed enhancement', id: 'circle-micro-new-card', label: 'Home \u2014 the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
+  { group: 'Not found', id: 'not-found-page', label: 'Not found — one answer for a bad address', stage: (c) => c.stageNotFound() },
 ];
 
 // The catalogue's own address. Not a state, so it is not in the register.
