@@ -4,13 +4,13 @@ LatentMagic Claude Design prototypes plus a console that browses them.
 
 ## What this repo is
 
-- `app/<slug>/` — one self-contained Claude Design prototype each (markup, `tokens.css`, `app/*.jsx`, `favicon.svg`). Copied in verbatim; never hand-edited.
+- `app/<slug>/` — one self-contained Claude Design prototype each (markup, `tokens.css`, `app/*.jsx`, `favicon.svg`). Copied in verbatim — usually downstream of Claude Design, but fine to hand-edit if instructed.
 - `index.html` — the **Specimen Console** wrapper: a graphite shell with one tab per prototype.
 - `server.js` — zero-dependency Node static server.
 
 ## The working line — `canon`
 
-One state, not a shipped/coming split: **`canon`** is the single agreed-upon prototype — what's been settled on, whether or not it's built yet. Each new Claude Design export for the live line **replaces `app/circlists/canon/` wholesale** (verbatim, never hand-edited) and gains a `changelog` entry.
+One state, not a shipped/coming split: **`canon`** is the single agreed-upon prototype — what's been settled on, whether or not it's built yet. Each new Claude Design export for the live line **replaces `app/circlists/canon/` wholesale** (verbatim — usually downstream of Claude Design, but fine to hand-edit if instructed) and gains a `changelog` entry.
 
 Don't mint ticket-named slugs, and don't split off a separate "shipped" mirror — changes accrete into `canon` alone. Alternatives get explored as **playgrounds** inside Claude Design itself, not as separate console tabs.
 
