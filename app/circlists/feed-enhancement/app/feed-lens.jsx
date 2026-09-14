@@ -762,22 +762,21 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               || (btnRef.current && btnRef.current.contains(e.relatedTarget)))) return;
             if (e.relatedTarget) onOpenChange(false);
           }}
-          // ---- THE CONTAINER, settled in run 9's Form step ------------------
-          // A BOTTOM SHEET wherever this app counts itself mobile; the popover
-          // run 3 shipped, untouched, everywhere else.
+          // ---- THE CONTAINER, settled 2026-09-14 -----------------------------
+          // A BOTTOM SHEET wherever this app counts itself in sheet posture;
+          // the popover run 3 shipped, untouched, everywhere else.
           //
-          // THE BOUNDARY IS `isMobile`, WHICH IS NOT 640px. An earlier draft of
-          // this comment said 640, borrowing the number from the Add reveal's
-          // row in `ui.md`'s adaptive-exceptions table. It is wrong and was
-          // caught in review. `isMobile` (main.jsx) is `winW < 1024`, or forced
-          // true by the app posture and by the launcher's layout override — so
-          // this swaps at 1024, and can be true at any width at all. Two
-          // consequences worth stating rather than discovering: an 800px window
-          // gets the sheet, and a forced-mobile 1440px one gets it too. The
-          // first is deliberate — 1024 is the same boundary `View`'s Grid
-          // option already keys off, so the panel now changes shape on the line
-          // the panel's own contents already changed on. The second is the app
-          // posture behaving as it does for every other sheet it has.
+          // THE BOUNDARY IS 640px (BIZ-136, Joe's ruling 2026-09-14), not the
+          // 1024 `isMobile` (main.jsx) uses for layout posture (rail, columns).
+          // Run 9 tied this panel to `isMobile` deliberately, reading 1024 as
+          // the same boundary `View`'s Grid option already keys off — that
+          // reasoning is superseded. Every sheet-to-popover swap in the app now
+          // shares one boundary, ratified at the real app's own Add-surface
+          // value (`add-link-surface.component.css:38`, 40rem). The prop this
+          // component takes is still called `isMobile`; the caller
+          // (main.jsx) passes `isSheetPosture` (640, not 1024) into it. Posture
+          // overrides (app mode, the launcher's layout override) still win at
+          // any width, same as before — only the raw-width threshold moved.
           //
           // Why it changed at all: Reading A makes this four groups, and four
           // groups do not fit. MEASURED at 390x844 rather than estimated — the

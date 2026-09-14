@@ -3,9 +3,12 @@
 // (New circle) or the real account surface (account control) when this build
 // is embedded as an unauthenticated, click-around preview.
 //
-// Same mount/animate/scrim logic as AddReveal (feed.jsx): mobile gets a
-// bottom sheet, desktop gets a CENTRED modal over the scrim, both easing on
-// --ease-quiet. Centred, not anchored to whichever control was pressed: this is
+// Same mount/animate/scrim logic as AddReveal (feed.jsx): sheet posture gets a
+// bottom sheet, popover posture gets a CENTRED modal over the scrim, both
+// easing on --ease-quiet. The `isMobile` prop here is main.jsx's
+// `isSheetPosture` (640px, BIZ-136 2026-09-14) — the sheet-vs-dialog boundary,
+// not the 1024 layout boundary. Centred, not anchored to whichever control
+// was pressed: this is
 // a dead end for the whole session, not a menu belonging to one button, and a
 // card hung off a gear icon reads as a tooltip. Copy is identical regardless of
 // which control triggered it — placeholder pending real signup copy.

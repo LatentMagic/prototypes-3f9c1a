@@ -83,6 +83,15 @@ const CircApp = () => {
   const isApp = platform === 'app';
   const forcedMobile = tw.layout === 'mobile' || isApp;
   const isMobile = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
+  // The sheet-vs-popover/dialog boundary — shared by every surface that
+  // switches container shape rather than layout (BIZ-136, Joe's ruling
+  // 2026-09-14). 640px, matching the real app's Add surface
+  // (`add-link-surface.component.css:38`, 40rem) — not `isMobile`'s 1024,
+  // which governs layout posture (rail, columns) and stays put. Posture
+  // overrides (Config's layout override, app mode) still win here exactly as
+  // they do for `isMobile`; only the width threshold differs. Every surface
+  // that chooses bottom-sheet-vs-popover/dialog reads THIS, not `isMobile`.
+  const isSheetPosture = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 640;
   // Posture + wizard alignment as <html> data attrs — CSS that must follow the
   // POSTURE (not the raw viewport width) keys off these. See .circ-wizard-body.
   useEffect(() => {
@@ -1308,7 +1317,7 @@ const CircApp = () => {
         ? <Lens order={order} who={who} contributors={contributors} user={user}
             onOrder={setOrder} onWho={setWho}
             density={effectiveDensity} onDensity={setDensityView}
-            isMobile={isMobile}
+            isMobile={isSheetPosture}
             saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null} savedMode={effectiveSavedMode}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
@@ -1564,14 +1573,17 @@ const CircApp = () => {
               context at 49, so nothing written inside it can out-paint a FAB at
               80. Suppressing is also simply correct — a primary compose action
               should not be tappable under a scrim, whichever way they paint.
-              Mobile only, because at desktop the panel is an anchored popover
-              with no scrim and nothing is being covered. */}
+              Gated on `isSheetPosture` (640, BIZ-136 2026-09-14), not
+              `isMobile` (1024) — the FAB only needs to stand down where the
+              panel is actually a scrimmed sheet; above the sheet boundary
+              it's an anchored popover with no scrim and nothing is being
+              covered, even below the layout boundary. */}
           {/* The app posture floats this same FAB clear of its permanent
               bottom bar — Add is circle-scoped, so it stands inside a circle
               and nowhere else. The clearance is the chrome's number
               (APP_FAB_BOTTOM); with app/app-shell.jsx dropped there is no bar
               to clear and the FAB sits where the web posture puts it. */}
-          {!loadingFeed && !(isMobile && sortMenuOpen)
+          {!loadingFeed && !(isSheetPosture && sortMenuOpen)
             && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
                  bottom={isApp ? (window.APP_FAB_BOTTOM || null) : null} />}
           <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
@@ -1592,7 +1604,10 @@ const CircApp = () => {
       onMarkRead={(it, reaction) => markRead(it, reaction)}
       onClose={() => setReacting(null)} />
   );
-  const gateOverlayEl = GateOverlay ? <GateOverlay open={gateOpen} isMobile={isMobile} onClose={() => setGateOpen(false)} /> : null;
+  // `isSheetPosture` (640, BIZ-136 2026-09-14): the gate is a bottom sheet vs.
+  // centred dialog choice, the same shape decision as the lens panel — not a
+  // layout question, so it reads the sheet boundary, not `isMobile`'s 1024.
+  const gateOverlayEl = GateOverlay ? <GateOverlay open={gateOpen} isMobile={isSheetPosture} onClose={() => setGateOpen(false)} /> : null;
   // The one polite live region for the whole app: it sits in the page empty from
   // first render, because a region inserted together with its text announces
   // nothing. A gesture is acknowledged ("Refreshed"); the pill announces its own
