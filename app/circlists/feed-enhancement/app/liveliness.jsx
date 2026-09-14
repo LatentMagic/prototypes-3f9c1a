@@ -22,8 +22,7 @@
 // Rules this file exists to hold in one place:
 //   • No counts, no badges, no toasts, no status colour. The dot means unseen
 //     items, never presence.
-//   • Sage is the MARK's light, not a status colour — an arriving card washes
-//     sage and resolves to its own white (see .circ-glow in circlists.html).
+//   • An arriving card washes sage and resolves to its own white (see .circ-glow in circlists.html).
 //     Nothing travels across it, nothing rings it, and the colour never rests.
 //   • The receipt resolves into the full mark on BOTH outcomes: the spinner's own
 //     arc grows shut into a complete ring as the rotation eases to a halt, rests a

@@ -46,7 +46,7 @@ const CandProse = ({ text, size = 15, lh = 1.6, color = 'var(--color-fg-1)' }) =
 // ---- The fold — a signal that this card is being watched. Not pressable. ----
 // A soft emerald — the accent let down into the card's own surface, so the
 // corner reads as turned down rather than marked. Solid accent was too strong
-// for a state, and sage is the mark's colour, never a status. The outer corner
+// for a state. The outer corner
 // takes the card's own 11px inner radius so it sits flush in the corner.
 const CandFold = () => (
   <svg viewBox="0 0 24 24" width={24} height={24} aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, display: 'block', pointerEvents: 'none', zIndex: 2 }}>
