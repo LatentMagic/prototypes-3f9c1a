@@ -22,12 +22,26 @@ const ContentPage = ({ onBack, backLabel = 'Back', children, max = 'var(--max-fe
   </main>
 );
 
-// ---- Standalone calm full page (invalid invite / space full) ---------------
-const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
+// ---- Standalone calm full page (invalid invite / space full / web handoff) --
+// `children` is an optional slot between the body and the action, for a page
+// that has one more thing to show before the button (the web handoff's
+// circlists.com line). Everything else is fixed: one small wordmark, one title,
+// one body, one primary action — that fixity is what makes these pages read as
+// one family, so a page joins it rather than restating it.
+//
+// The wordmark is positioned against THIS page, not the phone frame, and the
+// column reserves the band it sits in (76px, symmetric so the centred block does
+// not move): a tall title on a short screen otherwise prints the eyebrow through
+// the wordmark, and a page that overflows otherwise scrolls its first line up
+// under a wordmark that never moves. `safe center` is the other half — it stops
+// centring the moment the content is taller than the screen, so the top of the
+// block stays reachable instead of overflowing off the top edge.
+const CalmPage = ({ eyebrow, title, body, actionLabel, onAction, children }) => (
   <div style={{
+    position: 'relative',
     minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    padding: '40px 24px', textAlign: 'center',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center',
+    padding: '76px 24px', textAlign: 'center',
   }}>
     <div style={{ position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)' }}><Wordmark size={21} /></div>
     <div style={{ maxWidth: 460 }}>
@@ -45,6 +59,7 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction }) => (
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.55,
         color: 'var(--color-fg-2)', margin: 'var(--space-8) auto 0', maxWidth: 400,
       }}>{body}</p>
+      {children && <div style={{ marginTop: 'var(--space-8)' }}>{children}</div>}
       <div style={{ marginTop: 'var(--space-8)' }}>
         <Button variant="primary" size="lg" onClick={onAction}>{actionLabel}</Button>
       </div>
@@ -66,16 +81,60 @@ const SpaceFull = ({ onHome }) => (
     actionLabel="Go home" onAction={onHome} />
 );
 
+// ---- Circle description — capped writing field ------------------------------
+// Reuses the mechanic behind the discourse candidate's thought composer
+// (talk-parts.jsx CandWrite, talk-add.jsx CandRoom): native `maxLength` stops
+// the field at the cap without an error, and a remaining count is drawn only
+// once it's close (<=60 left) — not written new. 250, not 500 (the thought /
+// comment cap): Slack's own cap for the same job, answering "why does this
+// exist" in a list of many, never room for an essay.
+// The cap is announced to assistive tech up front via a fixed hint, not only
+// the late-appearing visual count, which is aria-hidden exactly as the
+// mechanic it's drawn from leaves it.
+const CIRCLE_DESC_CAP = 250;
+const CircleDescriptionField = ({ id, value, onChange, placeholder }) => {
+  const [focus, setFocus] = React.useState(false);
+  const left = CIRCLE_DESC_CAP - String(value || '').length;
+  const hintId = id + '-hint';
+  return (
+    <div style={{ marginBottom: 'var(--space-4)' }}>
+      <label htmlFor={id} style={{
+        display: 'block', marginBottom: 6,
+        fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)',
+      }}>Description <span style={{ fontWeight: 400, color: 'var(--color-fg-3)' }}>(optional)</span></label>
+      <span id={hintId} className="circ-vh">Up to {CIRCLE_DESC_CAP} characters.</span>
+      <textarea id={id} value={value} maxLength={CIRCLE_DESC_CAP} placeholder={placeholder}
+        aria-describedby={hintId} rows={3}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+        style={{
+          display: 'block', width: '100%', boxSizing: 'border-box',
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
+          color: 'var(--color-fg-1)', resize: 'vertical',
+          border: '1px solid ' + (focus ? 'var(--color-accent)' : 'var(--color-border-1)'),
+          borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44,
+          background: 'var(--color-surface)', transition: 'border-color var(--duration-base)',
+        }} />
+      <div aria-hidden="true" style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 15, paddingTop: 4 }}>
+        {left <= 60 && <span style={{ font: '400 11.5px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{left} left</span>}
+      </div>
+    </div>
+  );
+};
+
 // ---- Create space (dedicated full page) ------------------------------------
-const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
+const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '' }) => {
   const [name, setName] = React.useState(initialName);
+  const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
   const ref = React.useRef(null);
   React.useEffect(() => { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); }, []);
   const submit = (e) => {
     e.preventDefault();
     if (!name.trim()) { setErr('Give your circle a name.'); return; }
-    onCreate(name.trim());
+    // A blank description never blocks Continue — trimmed here so
+    // whitespace-only behaves exactly as never-set from this point on.
+    onCreate(name.trim(), description.trim());
   };
   // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
   return (
@@ -88,6 +147,8 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '' }) => {
       <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
         <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
+        <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
+          placeholder="What’s this circle for?" />
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
         </Button>
@@ -129,13 +190,19 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   );
 };
 
-// ---- Rename-circle dialog — champion only ----------------------------------
+// ---- Edit-circle dialog — champion only -------------------------------------
 // Focused dialog (matches the Remove-member treatment). Auto-growing textarea so
 // a long name wraps and stays fully visible instead of scrolling out of a single
 // line; 60-char cap enforced silently; Save trims. Enter saves, Esc/scrim/Cancel
-// dismiss. No X, no explanatory subline — the title and one field carry it.
-const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
+// dismiss. No X, no explanatory subline — the title and its fields carry it.
+// Was RenameCircleDialog (name only); now carries the circle's optional
+// description too — one door, not two: the champion still reaches it from the
+// same edit affordance that used to open rename alone. Enter still saves from
+// the single-line name input; inside the description textarea it inserts a
+// newline instead, same as any multi-line field in this app.
+const EditCircleDialog = ({ currentName, currentDescription, onSave, onCancel }) => {
   const [draft, setDraft] = React.useState(currentName);
+  const [descDraft, setDescDraft] = React.useState(currentDescription || '');
   const [err, setErr] = React.useState(null);
   const areaRef = React.useRef(null);
   const invokerRef = React.useRef(null);
@@ -146,13 +213,15 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
     window.addEventListener('keydown', onKey);
     return () => { clearTimeout(id); window.removeEventListener('keydown', onKey); if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus(); };
   }, []);
-  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v); };
+  // Whitespace-only description is no description: trimmed here so it stores
+  // nothing and behaves exactly as never-set.
+  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v, descDraft.trim()); };
   return (
-    <div role="dialog" aria-modal="true" aria-label="Rename circle"
+    <div role="dialog" aria-modal="true" aria-label="Edit circle"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
-        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-5)' }}>Rename circle</h2>
+        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-5)' }}>Edit circle</h2>
         <input id="rename-circle-input" ref={areaRef} value={draft} maxLength={30} aria-label="Circle name" aria-invalid={!!err}
           onChange={(e) => { setDraft(e.target.value); if (err) setErr(null); }}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); } }}
@@ -162,7 +231,11 @@ const RenameCircleDialog = ({ currentName, onSave, onCancel }) => {
             <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{err}</span>
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-5)' }}>
+        <div style={{ marginTop: 'var(--space-5)' }}>
+          <CircleDescriptionField id="edit-circle-description" value={descDraft} onChange={setDescDraft}
+            placeholder="What’s this circle for?" />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button variant="primary" onClick={save} disabled={!draft.trim()}>Save</Button>
         </div>
@@ -227,7 +300,7 @@ const fundingStateLine = (f) => {
 // people (Remove); your own kebab acts on you (Leave), and is the only one a
 // non-champion sees — which is what marks it as yours without a label. Scope it
 // strictly to YOUR MEMBERSHIP OF THIS CIRCLE; it is not a settings drawer.
-const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onRename, onRemoveMember, onStartCircle, onLeave }) => {
+const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onEdit, onRemoveMember, onStartCircle, onLeave }) => {
   // onInvite is no longer consumed: getting a link does not add a member. A row
   // appearing the moment you get one is a delivery confirmation, and the app
   // makes none — someone appears in the roster when they join, outside the app.
@@ -241,10 +314,15 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   const unchampioned = !space.champion;
   const funding = space.funding || { state: 'active' };
   const fundingLine = fundingStateLine(funding);
+  // The optional description, read in full here — the one place it's shown
+  // whole rather than ellipsised. Nothing rendered when there is none, for
+  // anyone, champion included: an empty state is not a prompt to add one.
+  const description = ((space.description || '') + '').trim();
 
-  // Rename (champion only) — opens a focused dialog
-  const [renaming, setRenaming] = React.useState(false);
-  const beginRename = () => setRenaming(true);
+  // Edit (champion only) — opens a focused dialog carrying name + description.
+  // Was rename-only; onRename -> onEdit follows main.jsx's editSpace.
+  const [editingCircle, setEditingCircle] = React.useState(false);
+  const beginEdit = () => setEditingCircle(true);
 
   // Per-member kebab + removal (champion only)
   const [menuFor, setMenuFor] = React.useState(null);
@@ -260,27 +338,58 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 
   return (
     <ContentPage>
+      {/* The title block's bottom margin does NOT collapse when there is no
+          description. The pixel review measured the empty case closing to
+          ~0-4px, which re-formed the name and the Members row as a title-and-
+          subtitle pair — the exact reading demoting the count exists to break.
+          The gap the description would have provided is held open instead. */}
       {(
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', margin: '0 0 6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', margin: description ? '0 0 6px' : '0 0 var(--space-6)' }}>
           <h1 style={{
             fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.25,
             letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: 0,
           }}>{space.name}</h1>
           {isChampion && (
-            <button onClick={beginRename} aria-label="Rename circle" className="circ-cardaction circ-cardaction-icon"
+            <button onClick={beginEdit} aria-label="Edit circle" className="circ-cardaction circ-cardaction-icon"
               style={{ minWidth: 40, minHeight: 40, color: 'var(--color-fg-3)' }}>
               <Icon name="edit" size={18} />
             </button>
           )}
         </div>
       )}
-      {renaming && <RenameCircleDialog currentName={space.name} onSave={(v) => { onRename && onRename(v); setRenaming(false); }} onCancel={() => setRenaming(false)} />}
-      <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>
-        {space.members.length} of {SPACE_CAP} members
-      </p>
+      {editingCircle && <EditCircleDialog currentName={space.name} currentDescription={space.description}
+        onSave={(name, desc) => { onEdit && onEdit(name, desc); setEditingCircle(false); }}
+        onCancel={() => setEditingCircle(false)} />}
+      {/* The description — read in full here, wrapping rather than truncated.
+          Nothing rendered at all when there is none. Body prose (Decision-32 /
+          ui.md:9): authored words, not a computed datum, so full size/weight/
+          colour rather than the recessive metadata treatment.
+          Capped at 62ch: at 1280 an uncapped line measured 632px / ~88 characters,
+          well past the readable band, and prose at that measure stops reading as a
+          paragraph and starts reading as a stretched caption. Both exemplars this
+          was held against protect measure — GitHub's About panel is a ~300px
+          column, Linear's description is a document at a constrained width. */}
+      {description && (
+        <p style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'var(--text-base)', lineHeight: 1.55,
+          color: 'var(--color-fg-1)', margin: '0 0 var(--space-6)', maxWidth: '62ch',
+          whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+        }}>{description}</p>
+      )}
 
-      {/* Member list */}
-      <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)', marginBottom: 'var(--space-3)' }}>Members</div>
+      {/* Member list. The count rides the Members label row rather than its own
+          line — recessive metadata beside the section it counts, per
+          Decision-32. The trailing noun is dropped: the label two inches to the
+          left already says `Members`, so `3 of 10 members` said it twice on one
+          row. ui.md Decision-22's wording was written for a standalone line,
+          where the noun was the only thing naming what was counted; beside a
+          label it carries nothing. */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 13, color: 'var(--color-fg-2)' }}>Members</div>
+        <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)' }}>
+          {space.members.length} of {SPACE_CAP}
+        </div>
+      </div>
       <div style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
         borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-6)',

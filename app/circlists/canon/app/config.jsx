@@ -207,7 +207,7 @@ const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
               { value: 'web', label: 'Web' }, { value: 'app', label: 'Mobile' },
             ]} />
           </div>
-          <div className="circ-config-hint">Mobile renders the product as a native mobile app — bottom navigation, sheets, no floating button — on the same shared state. Always shown in a phone.</div>
+          <div className="circ-config-hint">Mobile renders the product as a native mobile app — a permanent bottom bar, sheets, and a floating button for adding inside a circle — on the same shared state. Always shown in a phone.</div>
 
           <div className="circ-config-row">
             <div className="circ-config-row-label">Viewport</div>

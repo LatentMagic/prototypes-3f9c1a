@@ -3,6 +3,20 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## The feed takes a lens, and home becomes a place — 2026-09-14
+
+- **A circle's feed can be ordered, narrowed and searched.** Order holds per circle across both
+  tabs. One list filters by Saved and by any number of people at once, each shown as a chip that
+  reopens the panel. Search narrows Read. Every zero-match state names what hid the links and
+  clears them in one move.
+- **A member can save a link and share a card**, from the card's own row and its ⋮ menu.
+- **Home is a shared surface.** A fresh visit lands there, with the circle list and a strip of
+  conversations waiting across circles. An address that resolves to nothing gets a not-found page,
+  and a feed that fails to load says so.
+- **The phone carries one bar at every level** (Home · Account), and Add floats inside a circle.
+  Sheets give way to popovers at 640px, not 1024. Landed as a candidate build first, merged after
+  ratification.
+
 ## The champion sends the invitation themselves — 2026-08-28
 
 - **The app no longer mails an invitation.** The champion enters a member's email address,

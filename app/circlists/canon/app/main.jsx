@@ -26,7 +26,13 @@ const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 // deletions a rail refresh reconciles away.)
 // A candidate-build entry sets window.CIRC_STATE_KEY before app scripts load so
 // its persisted state never mixes with the main app's. Absent -> unchanged.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v11';
+// v13: the seed drops Backend Pod from eleven members to ten (the cap is hard —
+// hld.md Decision-15 — so eleven was staging a state the product forbids, and it
+// rendered "11 of 10 members" on the members header). `spaces` is persisted, so
+// without this bump a returning visitor restores the eleven-member circle and the
+// fix is invisible to the one person it was made for. Same reasoning as
+// circlists-a3.html's own v1 -> v2 bump, for the same circle.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v13';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 
 // ---- Tweak defaults, baked in ----------------------------------------------
@@ -77,6 +83,15 @@ const CircApp = () => {
   const isApp = platform === 'app';
   const forcedMobile = tw.layout === 'mobile' || isApp;
   const isMobile = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
+  // The sheet-vs-popover/dialog boundary — shared by every surface that
+  // switches container shape rather than layout (BIZ-136, Joe's ruling
+  // 2026-09-14). 640px, matching the real app's Add surface
+  // (`add-link-surface.component.css:38`, 40rem) — not `isMobile`'s 1024,
+  // which governs layout posture (rail, columns) and stays put. Posture
+  // overrides (Config's layout override, app mode) still win here exactly as
+  // they do for `isMobile`; only the width threshold differs. Every surface
+  // that chooses bottom-sheet-vs-popover/dialog reads THIS, not `isMobile`.
+  const isSheetPosture = isApp ? true : tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 640;
   // Posture + wizard alignment as <html> data attrs — CSS that must follow the
   // POSTURE (not the raw viewport width) keys off these. See .circ-wizard-body.
   useEffect(() => {
@@ -113,11 +128,48 @@ const CircApp = () => {
   const onGate = () => setGateOpen(true);
 
   // core state
-  const [route, setRoute] = useState(SAVED?.route || 'space');
+  // Routes that are DEAD ENDS: full-page notices a member is sent to, never a
+  // place they chose to be. `route` is persisted (see the effect below), so
+  // without this a member who lands on one — or a reviewer who opens its staged
+  // state — has it written to localStorage, and their NEXT plain visit boots
+  // straight back onto "Page not found." with nothing saying why. The state is
+  // still perfectly reachable: a stager sets the route after boot, so only the
+  // RESTORE path is filtered. Pre-existing for the two invite notices; the
+  // not-found page would have been the third.
+  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full'];
+  // A fresh session (nothing stored) lands on home — home is a shared surface
+  // now, not an app-only chrome state (per
+  // MOBILE.md's promotion test). A RESTORED session goes back exactly where it
+  // was, circle included: only the no-stored-route case falls to 'home'.
+  const INITIAL_ROUTE = CIRC_UNRESUMABLE.includes(SAVED?.route) ? 'space' : (SAVED?.route || 'home');
+  const [route, setRoute] = useState(INITIAL_ROUTE);
   const [user, setUser] = useState(SAVED?.user || DEFAULT_USER);
   const [spaces, setSpaces] = useState(SAVED?.spaces || seedSpaces(DEFAULT_USER.email));
-  const [currentId, setCurrentId] = useState(SAVED?.currentId || 'sp-backend');
-  const [tab, setTab] = useState(SAVED?.tab || 'active');
+  // A fresh 'home' landing has to pair with NO current circle — goHome() itself
+  // never sets one either. Without this, a first-ever visit opened on home
+  // while currentId still defaulted to 'sp-backend', so the rail read Backend
+  // Pod as the ALREADY-ACTIVE circle and a click on it ran the refresh gesture
+  // instead of entering it — a real dead click, caught only by driving it.
+  // Home NEVER pairs with a current circle — which is what goHome() already
+  // guarantees, so the rule belongs here too rather than only on a cold boot.
+  // The first version of this guard read `!SAVED && INITIAL_ROUTE === 'home'`
+  // and closed only the first-ever visit: goHome() persists currentId as null,
+  // so on the NEXT load SAVED exists, the guard falls through, and `||` coerces
+  // that persisted null straight back to 'sp-backend'. The rail then marks a
+  // circle active while the member is standing on home, and RailBody routes a
+  // click on an active circle to the refresh gesture instead of entering it —
+  // a dead click on the landing screen, for every returning member. No staged
+  // state could show it, because every stager sets currentId explicitly.
+  const [currentId, setCurrentId] = useState(
+    INITIAL_ROUTE === 'home' ? null : (SAVED?.currentId || 'sp-backend')
+  );
+  // 'saved' is NOT a tab this app has any more (the third-tab reading was
+  // superseded and its stager removed, 2026-09-14) — but `tab` is persisted,
+  // so a browser still carrying an old 'saved' value in storage is a real
+  // case, not a hypothetical one. Restored as 'read', not 'active': the
+  // superseded Saved tab showed read links, so Read is where the member
+  // actually was.
+  const [tab, setTab] = useState(SAVED?.tab === 'saved' ? 'read' : (SAVED?.tab || 'active'));
 
   // ---- The address --------------------------------------------------------
   // Read ONCE at mount: `?state=<name>` names a state in the register
@@ -133,6 +185,13 @@ const CircApp = () => {
 
   // ephemeral
   const [loadingFeed, setLoadingFeed] = useState(false);
+  // The feed region's own load-failure.
+  // Separate from loadingFeed rather than a third value on it: a failed fetch
+  // is a state the region can SIT in (the member reads it, decides to retry),
+  // where loading is a state it only ever passes through, and collapsing the
+  // two would make "no longer loading" ambiguous between "succeeded" and
+  // "gave up" everywhere loadingFeed is already read as a boolean.
+  const [feedError, setFeedError] = useState(false);
   // Review-only: freeze a loading interstitial so it can be vetted at rest.
   // Auto-clears the moment the route leaves an interstitial (effect below), so
   // it never leaks into a real auth / billing flow.
@@ -151,8 +210,8 @@ const CircApp = () => {
   const [pendingEmail, setPendingEmail] = useState('sam.rivera@gmail.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
   // (Config launcher state + drag now live in app/config.jsx — a deletable aid.)
-  // funding flow: { mode: 'new' | 'refund', name, spaceId }
-  const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', spaceId: null });
+  // funding flow: { mode: 'new' | 'refund', name, description, spaceId }
+  const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', description: '', spaceId: null });
   const [manageIntent, setManageIntent] = useState('manage');
 
   // ---- Liveliness (BIZ-96) ------------------------------------------------
@@ -171,11 +230,74 @@ const CircApp = () => {
   // state, never persisted — a browser reload is a teardown, so it draws no line.
   const [dividerAt, setDividerAt] = useState(null);
   const [announce, setAnnounce] = useState('');
+  // Feed sort. Held per circle alone, keyed by
+  // circle id — same reasoning as lensWho/savedOn below: switching tab is
+  // never a reset of a view option (fuzz finding 3, ruled 2026-09-14). VISIT
+  // STATE, never persisted: newest-first is the product's contract and the
+  // substrate the whole arrivals machinery stands on, so a non-default order
+  // is a reading posture for this session rather than a preference that
+  // silently outlives it.
+  const [sortOrder, setSortOrder] = useState({});
+  // Keyed by circle alone — see the note at the render site for why the
+  // contributor lens is not held per tab as the order is.
+  const [lensWho, setLensWho] = useState({});
+  // Saved filter. Keyed by circle alone,
+  // same as lensWho and for the same reason: "show me what I've kept" is a
+  // question about the circle, not about which tab you happen to be on.
+  // VISIT STATE, never persisted — like sortOrder/lensWho, a narrowed view is
+  // a reading posture for this session, not a preference that silently
+  // outlives it. The saved FLAG on an item is the opposite: it lives on
+  // `spaces` below, because it is a fact about the link, not a lens on it.
+  const [savedOn, setSavedOn] = useState({});
+  // Search. Keyed `<circleId>:<tab>` —
+  // unlike sortOrder, this stays tab-scoped (fuzz finding 3's ruling covers
+  // order only): Read only, so the key's tab half is always 'read' in
+  // practice, but sharing the key shape rather than inventing a circle-only
+  // one keeps this state reading as the same kind of thing as sortOrder was
+  // at a glance. VISIT STATE, never persisted — same reasoning as sortOrder's
+  // own comment above: a typed query is a reading posture for this session,
+  // not a preference that silently outlives it. `searchOpen` is the field's own
+  // disclosure — a query can be non-empty with the field "closed" (nothing
+  // moves it shut once typed; see feed-search.jsx's SearchField comment), so
+  // the two are tracked separately rather than one implying the other.
+  const [searchQuery, setSearchQuery] = useState({});
+  const [searchOpen, setSearchOpen] = useState({});
+  // Density (BIZ-136 run 3): ONE value for the whole feed surface — comfortable
+  // or compact — never per tab or per circle. Unlike sortOrder/lensWho this IS
+  // persisted (per device, in the app-state blob below): it is a reading
+  // preference the member sets once, not a lens applied to one moment's view.
+  const [density, setDensity] = useState(SAVED?.density === 'compact' ? 'compact' : 'comfortable');
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  // Whether the home screen's cross-circle returns strip
+  // (app/home-returns.jsx) is expanded. Controlled here, same
+  // idiom as sortMenuOpen above, so a staged state can open it directly — the
+  // strip has no circle context of its own to reset it against, so unlike the
+  // per-circle bar it simply holds until the member (or a stager) changes it.
+  // Collapsed by default. Ruling 97 landed it open, arguing collapsed shows
+  // three circle names and hides every real thing behind a chevron — Joe
+  // overturned that on 2026-09-13: open-by-default reads as content bloat on
+  // a screen the member has not asked anything of yet. The open shape stays
+  // reachable as its own state (`home-strip-open`) so either can be looked at
+  // without reading this.
+  const [homeStripOpen, setHomeStripOpen] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
+  // A menu left open while the view changes underneath it would point at a list
+  // that is no longer there, so switching tab or circle closes it.
+  useEffect(() => { setSortMenuOpen(false); }, [tab, currentId]);
   const spacesRef = useRef(spaces); spacesRef.current = spaces;
   const currentRef = useRef(currentId); currentRef.current = currentId;
   const tabRef = useRef(tab); tabRef.current = tab;
+  // Same reason as the three above. Arrivals no longer revert the sort (Joe's
+  // reversal, 2026-09-11, of the same-day ruling that had them do so), so they
+  // land in sorted position — the head under newest-first, the foot under
+  // oldest-first — and the carry to them (below) has to know which, live, at
+  // the moment it runs rather than from whatever render queued the gesture:
+  // `refreshSpace` lands 900ms after the click that queued it, and a member
+  // who flips the order WHILE the reload is running would otherwise point the
+  // carry at the wrong end (this ref is what closed that race, design audit
+  // finding 5, when it was still deciding whether to restore the order).
+  const sortOrderRef = useRef(sortOrder); sortOrderRef.current = sortOrder;
   // One polite announcement, re-fired cleanly for a repeated gesture: a live
   // region only speaks when its text CHANGES, so it is cleared first.
   const announceTimer = useRef(null);
@@ -187,16 +309,37 @@ const CircApp = () => {
       announceTimer.current = setTimeout(() => setAnnounce(''), 1600);
     }, 60);
   }, []);
-  // Carry the member to arrivals that landed at the top of the feed. The window
-  // scrolls on web; the phone screen is the scroller in the app posture.
-  const scrollToArrivals = () => {
+  // Carry the member to the arrivals — wherever they actually landed, in
+  // BOTH orders (Joe's call, 2026-09-11, overruling his own same-day
+  // instinct that it should be newest-first only: the same control doing
+  // two different things depending on the sort is exactly the order-
+  // dependent inconsistency objected to all session, and it outweighs the
+  // no-anchor-at-the-foot cost). `toFoot` reads the LIVE order at the moment
+  // of the carry (see `sortOrderRef` above): under newest-first the arrivals
+  // are at the head, under oldest-first — since accepting no longer reverts
+  // the sort — they are at the foot. Not something Joe's ruling itself asked
+  // for to begin with: it is Decision-29's own promise ("carrying the member
+  // to them"), which the build had never kept in either order until this
+  // pass; building it is my own read of that decision, flagged in the
+  // report, his call to make throughout.
+  //
+  // INSTANT, not smooth (adversarial spec pass, 2026-09-11): the monorepo's
+  // own `feed-view.component.ts` answers this same carry with a bare
+  // `scrollTop = 0` and states why in its own comment — "smooth would be
+  // motion the app invented." `behavior: 'smooth'` here was a prototype
+  // defect against that decision, not a considered choice, and it is what
+  // made the foot-carry measure as a long, sustained glide in an earlier
+  // pass's report; instant, the distance costs nothing. The window scrolls
+  // on web; the phone screen is the scroller in the app posture.
+  const scrollToArrivals = (toFoot) => {
     const el = document.querySelector('.circ-phone-screen');
-    if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
-    else window.scrollTo({ top: 0, behavior: 'smooth' });
+    const top = toFoot ? (el ? el.scrollHeight : document.documentElement.scrollHeight) : 0;
+    if (el) el.scrollTo({ top });
+    else window.scrollTo({ top });
   };
 
-  // open Create-a-space fresh (clears any carried name)
-  const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', spaceId: null }); setRoute('create-space'); };
+  // open Create-a-space fresh (clears any carried name + description)
+  const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', description: '', spaceId: null }); setRoute('create-space'); };
 
   // Home — the account level. Historically this was only the landing place for a
   // user who holds no membership; in the app posture it is a real destination
@@ -215,8 +358,8 @@ const CircApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab })); } catch (e) {}
-  }, [route, user, spaces, currentId, tab]);
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab, density })); } catch (e) {}
+  }, [route, user, spaces, currentId, tab, density]);
 
   const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
   // ---- The viewer's own view of the circles --------------------------------
@@ -281,6 +424,109 @@ const CircApp = () => {
   // visit stamped the mark, it draws no line.
   useEffect(() => { if (route === 'space' && currentId) openVisit(currentId); }, []);
 
+  // ---- Arriving on a shared card (BIZ-136 wild feature) --------------------
+  // `?card=<id>` is the address a share hands over. Resolved ONCE at mount,
+  // against the member's own state — which is the whole design: the address
+  // means "this card", and what this card looks like depends on whether the
+  // person following it has read it.
+  //
+  //   not a member / deleted / no such card ──▶ not-found, which never says
+  //       which of those it was (hld.md Decision-44). The privacy answer needed
+  //       no new screen.
+  //   they have read it                     ──▶ Overview, the card's own page.
+  //   they have not                         ──▶ its circle, Active, pointed at.
+  //
+  // A staged `?state=` wins outright: that is the register's harness driving the
+  // app, and two boot resolutions racing would make every staged state a
+  // coin toss. Deletable — no card-share.jsx, no `circReadCardParam`, and an
+  // incoming address falls through to the ordinary boot.
+  const [pointedId, setPointedId] = useState(null);
+  useEffect(() => {
+    if (!window.circReadCardParam) return;
+    try { if (new URL(window.location.href).searchParams.get('state')) return; } catch (e) { return; }
+    const id = window.circReadCardParam();
+    if (!id) return;
+    const sp = spacesRef.current.find(s => (s.items || []).some(i => i.id === id));
+    const item = sp && (sp.items || []).find(i => i.id === id);
+    if (!sp || !item) { setRoute('not-found'); return; }
+    setCurrentId(sp.id);
+    if (item.read) {
+      // Overview is reachable from a read card, so a follower who has read it
+      // lands on the conversation. Guarded on the candidate module being
+      // present, exactly as every other consumer of it is.
+      const C = window.CircCandidate;
+      setTab('read');
+      if (C && C.goToCard) { C.goToCard({ id }); return; }
+    }
+    setTab('active');
+    setRoute('space');
+    setPointedId(id);
+  }, []);
+
+  // ---- HOW LONG THE MARK LIVES (ruled by Joe, 2026-09-10) -------------------
+  //
+  // **One visit to the surface it pointed at.** It says "this is the one you
+  // were sent", and that stops being news when the member has either engaged
+  // with the card or left the surface — not before.
+  //
+  //   survives   scrolling, and a glance away. Scrolling is LOOKING for it, not
+  //              being done with it, and the mark's whole job is to hold your
+  //              place in a feed you did not choose to be in.
+  //   clears     acting on the card — opening the link, marking it read,
+  //              opening the card's own menu (feed.jsx's `onAct`).
+  //   clears     changing surface — another tab, the Read tab included, or
+  //              another route: settings, members, home, a card's Overview.
+  //   never      survives a reload. Already true, and kept true: the address it
+  //              came from was cleaned out of the bar when it was read.
+  //
+  // It biases LATE deliberately. Clearing late costs a stale bar for a minute;
+  // clearing early costs the member their place, which is the very thing the
+  // mark exists to hold. That rules out both ends: a click anywhere is too
+  // jumpy, and clearing only on reload lets the mark outlive the visit and start
+  // lying about why you are there.
+  //
+  // A consequence worth knowing, because it is what earns the fade in
+  // card-share.jsx: since leaving the surface clears it, the only clear a member
+  // ever SEES happen is the one where they acted on the card.
+  const clearPointed = useCallback(() => setPointedId(null), []);
+
+  // The surface a point belongs to, captured when the point is set rather than
+  // read from a route the member may already have left. Declared before the
+  // clear-on-leave effect below so it is captured first on the render that sets
+  // the point — otherwise the point would clear itself on arrival.
+  const pointedOnRef = useRef(null);
+  useEffect(() => {
+    pointedOnRef.current = pointedId ? { route, tab, currentId } : null;
+  }, [pointedId]);
+
+  // Leaving the surface clears the point. Circle counts as surface alongside
+  // route and tab: a member who switches circles is no longer anywhere near the
+  // card, and returning later to a bar still lit would be the mark lying about
+  // why they are there.
+  useEffect(() => {
+    const on = pointedOnRef.current;
+    if (!pointedId || !on) return;
+    if (on.route !== route || on.tab !== tab || on.currentId !== currentId) clearPointed();
+  }, [route, tab, currentId, pointedId, clearPointed]);
+
+  // Bring it into view. A member sent to a card 30 rows down should not have to
+  // find it — that is the one thing an address has to do that scrolling to the
+  // top does not. Deferred to the frame after the feed has settled, because the
+  // card does not exist in the document until then, and `block: 'center'` so it
+  // lands mid-screen with the feed visible around it rather than jammed under
+  // the tab bar. Runs once per point; smooth unless the member asked for less
+  // motion, in which case it jumps, like every other movement in this app.
+  useEffect(() => {
+    if (!pointedId || loadingFeed) return;
+    const t = setTimeout(() => {
+      const el = document.querySelector('[data-card-id="' + (window.CSS && CSS.escape ? CSS.escape(pointedId) : pointedId) + '"]');
+      if (!el) return;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }, 120);
+    return () => clearTimeout(t);
+  }, [pointedId, loadingFeed]);
+
   // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
   // while the member sits on Read is pointing them AT Active, so it has to survive
   // until they arrive. An effect, not a branch inside enterSpace, so every way in
@@ -318,6 +564,13 @@ const CircApp = () => {
   };
   // Accept: the click is what moves the feed, and it is the one moment a card
   // travels. It stamps the mark; the drawn line stays exactly where it is.
+  //
+  // DOES NOT TOUCH THE SORT (Joe's reversal, 2026-09-11, of Sally's same-day
+  // ruling that it should restore newest-first). Arrivals land in sorted
+  // position like anything else — `circSortItems` places them by their own
+  // `at`, so under oldest-first that is the foot, not the head. Nothing here
+  // rewrites `sortOrder` and nothing is announced; there is no order change to
+  // report.
   const revealPending = () => {
     const id = currentRef.current;
     const sp = spacesRef.current.find(s => s.id === id);
@@ -327,6 +580,10 @@ const CircApp = () => {
       ? { ...s, items: [...s.pending, ...s.items], pending: [], lastSeenAt: Date.now() } : s));
     setArrived(a => [...a, ...ids]);
     setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
+    // Carries the member to wherever the arrivals actually landed — see
+    // `scrollToArrivals`'s own header for why this exists and whose call it is.
+    const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
+    requestAnimationFrame(() => scrollToArrivals(toFoot));
   };
   // The refresh gesture — selecting the circle already on screen. There is no
   // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
@@ -349,6 +606,10 @@ const CircApp = () => {
       const gone = (sp && sp.remoteDeleted) || [];
       const here = id === currentRef.current;
       const onActive = tabRef.current === 'active';
+      // DOES NOT TOUCH THE SORT, same reversal as `revealPending` above: a
+      // refresh that finds arrivals lands them in sorted position and leaves
+      // `sortOrder` alone, on this circle's Active tab or anywhere else.
+      const landingHere = found.length && here && onActive;
       if (found.length || gone.length) setSpaces(prev => prev.map(s => {
         if (s.id !== id) return s;
         return { ...s, items: [...found, ...s.items.filter(i => !gone.includes(i.id))],
@@ -358,9 +619,15 @@ const CircApp = () => {
           // Active, out of sight: the dot carries them, and clears on arrival there.
           unseen: (found.length && here && !onActive) ? true : s.unseen };
       }));
-      // Carried to the arrivals only when there are any — scrolling on an empty
-      // refresh would move the member for nothing.
-      if (found.length && here && onActive) requestAnimationFrame(scrollToArrivals);
+      // Carried to wherever the arrivals actually landed, only when there are
+      // any — scrolling on an empty refresh would move the member for
+      // nothing. Order read live off the ref, not this closure, so a member
+      // who flips the sort while the reload is running still gets carried to
+      // the end that is actually true when it lands.
+      if (landingHere) {
+        const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
+        requestAnimationFrame(() => scrollToArrivals(toFoot));
+      }
       announceOnce('Refreshed');
     }, 900);
   };
@@ -390,13 +657,6 @@ const CircApp = () => {
     if (pendCount > pendPrev.current && tab === 'active') announceOnce('New links');
     pendPrev.current = pendCount;
   }, [pendCount, tab, announceOnce]);
-
-  // Home is app-posture chrome. The web postures reach their circles through the
-  // rail, so a web session must never sit on it while the user holds circles —
-  // switching Platform back to Web lands you in a circle instead.
-  useEffect(() => {
-    if (!isApp && route === 'home' && spaces.length > 0) enterSpace(currentId || spaces[0].id);
-  }, [isApp, route, spaces.length, currentId, enterSpace]);
 
   // Review-only: hiding the TEST circles while inside one steps out to the first
   // remaining circle so the screenshot never shows a hidden circle's feed.
@@ -439,9 +699,24 @@ const CircApp = () => {
             ...(window.CircCandidate && window.CircCandidate.onMarkRead ? window.CircCandidate.onMarkRead(i) : null) }
         : i) }
     : s));
+  // Save toggle. Read-only chrome, so a
+  // flip never touches `read` — it walks spaces/items the same way markRead
+  // does, above, flipping just the one flag. The announcement fires here,
+  // against the item's PRE-flip state (the closure still holds it), since the
+  // updater above only runs later inside React's own batch.
+  const toggleSaved = (item) => {
+    setSpaces(prev => prev.map(s => s.id === currentId
+      ? { ...s, items: s.items.map(i => i.id === item.id ? { ...i, saved: !i.saved } : i) }
+      : s));
+    announceOnce(item.saved ? 'Removed from saved' : 'Saved');
+  };
   const deleteItem = (item) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, items: s.items.filter(i => i.id !== item.id) } : s));
   const inviteEmail = (email) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, members: [...s.members, M(email.split('@')[0].replace(/\b\w/g, c => c.toUpperCase()) + ' ', email)] } : s));
-  const renameSpace = (name) => setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, name } : s));
+  // Edit — name (unchanged) plus the optional description (CIRC-020's champion
+  // gate now covers both). Whitespace-only description trims to nothing and
+  // stores as never-set, exactly like an empty one.
+  const editSpace = (name, description) => setSpaces(prev => prev.map(s => s.id === currentId
+    ? { ...s, name, description: (description && description.trim()) ? description.trim() : undefined } : s));
   const removeMember = (memberName) => setSpaces(prev => prev.map(s => {
     if (s.id !== currentId) return s;
     // Removed member KEEPS their name on links they added; "former member" is
@@ -485,7 +760,9 @@ const CircApp = () => {
   };
 
   // ---- create = fund (name-first) ----
-  const beginCreateFund = (name) => { setFundFlow({ mode: 'new', name, spaceId: null }); setRoute('funding'); };
+  // Carries description alongside name so CIRC-007 AF-02's return-to-revise
+  // trip (create -> funding -> back) brings it back too.
+  const beginCreateFund = (name, description) => { setFundFlow({ mode: 'new', name, description, spaceId: null }); setRoute('funding'); };
   const onCheckoutSuccess = () => {
     if (fundFlow.mode === 'refund') {
       setSpaces(prev => prev.map(s => s.id === fundFlow.spaceId
@@ -498,6 +775,7 @@ const CircApp = () => {
   const finishProvisioning = () => {
     const sp = {
       id: 'sp-' + Date.now(), name: fundFlow.name || 'New circle',
+      description: fundFlow.description ? fundFlow.description : undefined,
       funded: true, dormancy: null, champion: 'You', championEmail: user.email,
       members: [M('You', user.email)], items: [],
     };
@@ -537,7 +815,12 @@ const CircApp = () => {
       // Land with NO spaces → the no-space home (create launches from there).
       setSpaces([]); setCurrentId(null); goHome();
     } else {
-      if (spaces.length === 0) goHome(); else enterSpace(currentId || spaces[0]?.id);
+      // Signing in lands on the home, whatever circles you hold. Ruling 89 is
+      // unconditional, and until this line it was true only of a cold boot with
+      // nothing stored — every actual auth path still entered a circle, so the
+      // slice claimed a landing it did not make. goHome() clears currentId too,
+      // so the rail does not mark a circle active behind the home.
+      goHome();
     }
   };
 
@@ -569,9 +852,11 @@ const CircApp = () => {
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
     ? window.buildStates({
         spaces, STATE_KEY,
-        setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
+        setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setFeedError, setHoldLoading,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
+        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+        setSearchQuery, setSearchOpen, setHomeStripOpen, setPointedId,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -609,7 +894,6 @@ const CircApp = () => {
       refreshingId={refreshing} settledId={settledId} onRefreshSpace={refreshSpace}
       onAccountGate={gateActive ? onGate : null}
       onSignOut={signOut}
-      onAdd={() => setAddOpen(true)} canAdd={!!opts.canAdd}
       subView={opts.subView || null}
     >{content}</Shell>
   );
@@ -630,13 +914,21 @@ const CircApp = () => {
   // so no checkout, price-entry, or provider surface is reachable in-app while
   // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
-  const PAYMENT_ROUTES = ['funding', 'checkout', 'manage-interstitial', 'manage-funding'];
+  // `create-space` is in this list because creating a circle IS a funding act:
+  // the circle does not exist until it is funded, so with payments off there is
+  // nothing on the phone for a name and description to attach to. The block
+  // therefore lands on the tap, BEFORE the member writes anything — walking them
+  // through the wizard first and blocking after throws that writing away.
+  const PAYMENT_ROUTES = ['create-space', 'funding', 'checkout', 'manage-interstitial', 'manage-funding'];
   if (isApp && !mobilePayments && PAYMENT_ROUTES.includes(route)) {
     const ctx = (route === 'manage-interstitial' || route === 'manage-funding')
       ? 'manage' : (fundFlow.mode === 'refund' ? 'refund' : 'new');
     const nm = ctx === 'new' ? fundFlow.name : (space ? space.name : fundFlow.name);
+    // New circles are launched from home, so "Back to your circles" returns to
+    // home. Re-funding and managing are reached from inside a circle, and go
+    // back to it.
     screen = window.WebHandoff
-      ? <WebHandoff context={ctx} spaceName={nm} onExit={exitToApp} />
+      ? <WebHandoff context={ctx} spaceName={nm} onExit={ctx === 'new' ? goHome : exitToApp} />
       : null;
   } else if (route === 'signin') {
     screen = <SignIn onSubmit={({ email }) => startSignin(email)} onGoogle={() => { setPostAuthTo('space'); setRoute('google-return'); }} onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
@@ -646,9 +938,9 @@ const CircApp = () => {
     screen = <OtcEntry email={pendingEmail} context={otc.context} initialError={otc.error}
       onVerify={finishOtc} onBack={() => setRoute(otc.context === 'signup' ? 'signup' : 'signin')} />;
   } else if (route === 'google-return') {
-    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); goHome(); } else if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} />;
+    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); } goHome(); }} />;
   } else if (route === 'recovery') {
-    screen = <Recovery onDone={() => { if (spaces.length === 0) goHome(); else enterSpace(currentId || 'sp-backend'); }} onBackToSignin={() => setRoute('signin')} />;
+    screen = <Recovery onDone={goHome} onBackToSignin={() => setRoute('signin')} />;
   } else if (route === 'funding') {
     screen = <FundingPage user={user} spaceName={fundFlow.name} mode={fundFlow.mode}
       onFund={() => setRoute('checkout')}
@@ -665,11 +957,22 @@ const CircApp = () => {
     screen = <ManageFunding user={user} spaceName={space ? space.name : ''} intent={manageIntent}
       onReturn={() => setRoute('members')} onCancelSub={cancelFunding} />;
   } else if (route === 'create-space') {
-    screen = <CreateSpace onCreate={beginCreateFund} initialName={fundFlow.name} canCancel={spaces.length > 0} onCancel={exitToApp} />;
+    screen = <CreateSpace onCreate={beginCreateFund} initialName={fundFlow.name} initialDescription={fundFlow.description} canCancel={spaces.length > 0} onCancel={exitToApp} />;
   } else if (route === 'invalid-invite') {
-    screen = <InvalidInvite onHome={() => goSpace('sp-backend')} />;
+    screen = <InvalidInvite onHome={goHome} />;
   } else if (route === 'space-full') {
-    screen = <SpaceFull onHome={() => goSpace('sp-backend')} />;
+    screen = <SpaceFull onHome={goHome} />;
+  } else if (route === 'not-found') {
+    // The 404's "Go home" button had no home to reach (`goSpace` is not
+    // defined anywhere in this file — a plain ReferenceError on click, not
+    // merely a wrong target). `goHome` is the real, defined action, and now
+    // that home is a shared surface it is also the RIGHT one to reach for
+    // every dead-end route on this page, not only this one. Closes the
+    // founder-reported defect: "the 404 includes a go-home button that does
+    // nothing currently. There is no home."
+    screen = window.CircNotFound
+      ? <window.CircNotFound onHome={goHome} />
+      : null;
   } else if (Cand && Cand.matchRoute && Cand.matchRoute(route)) {
     // Candidate-build route (e.g. a card's own surface). The overlay hands back
     // the body and the shell opts; the chrome is still inShell's.
@@ -679,7 +982,7 @@ const CircApp = () => {
     screen = inShell(<MembersSurface space={space} isChampion={isChampion(space)} championName={space ? space.champion : ''}
       onInvite={inviteEmail} onManageFunding={openManageFunding} onCancelFunding={() => setConfirm({ kind: 'cancel-funding' })}
       onResumeFunding={resumeFunding}
-      onRename={renameSpace} onRemoveMember={removeMember} onLeave={() => setConfirm({ kind: 'leave', spaceId: currentId })}
+      onEdit={editSpace} onRemoveMember={removeMember} onLeave={() => setConfirm({ kind: 'leave', spaceId: currentId })}
       onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {
@@ -691,7 +994,8 @@ const CircApp = () => {
     const CirclesHomeBody = window.CirclesHome;
     screen = inShell(
       (listSpaces.length > 0 && CirclesHomeBody)
-        ? <CirclesHomeBody spaces={listSpaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace} />
+        ? <CirclesHomeBody spaces={listSpaces} onSelect={enterSpace} onCreate={gateActive ? onGate : openCreateSpace}
+            stripOpen={homeStripOpen} onToggleStrip={setHomeStripOpen} />
         : <NoSpaceHome onCreate={gateActive ? onGate : openCreateSpace} />,
       { showMembers: false, home: true });
   } else {
@@ -703,12 +1007,251 @@ const CircApp = () => {
         { showMembers: false }
       );
     } else {
-      const visible = tab === 'active' ? activeItems : readItems;
+      const stored = tab === 'active' ? activeItems : readItems;
       const pending = (space && space.pending) || [];
+      // ---- Feed sort -------------------------------------------------------
+      // A deletable aid in the app's own idiom: no feed-lens.jsx ⇒ no control,
+      // no reorder, and the feed behaves exactly as it did.
+      const Lens = window.FeedLens || null;
+      // Order is keyed by circle alone (fuzz finding 3, ruled 2026-09-14) —
+      // `sortKey` below stays tab-scoped for search, which the ruling left
+      // untouched.
+      const order = sortOrder[currentId] || (window.CIRC_SORT_DEFAULT || 'newest');
+      const sortKey = currentId + ':' + tab;
+      // The contributor lens is held per CIRCLE, not per circle-and-tab as the
+      // order is. "What did Sam add" is a question about a person, not about a
+      // tab, so hopping to Read to see whether you already read Sam's link
+      // keeps the lens. The asymmetry is deliberate; the chip stays on screen
+      // across the switch, so the state is never hidden.
+      // Multi-select (BIZ-136, ruling 2026-09-14): `who` is always an array —
+      // empty for "Everyone" — never null, so every reader below can test it
+      // with `.length` instead of re-deriving the same null-vs-array branch.
+      const who = (Lens ? lensWho[currentId] : null) || [];
+      // TWO PREDICATES, deliberately (BIZ-136, ruling of 2026-09-07).
+      // `lensActive` is CONCEALMENT — cards are being hidden — and it is what
+      // suppresses the feed lead, because a lead counting things above a
+      // narrowed feed reads as broken. Sorting oldest-first hides nothing, so
+      // the lead correctly survives it now; it did not before.
+      // `lensOffDefault` is "anything in the door is off its default", and it
+      // exists for exactly one job below: keeping the door reachable.
+      const lensActive = Lens ? window.circLensActive(order, who) : false;
+      const lensOffDefault = Lens && window.circLensNonDefault
+        ? window.circLensNonDefault(order, who) : lensActive;
+      const sorted = (Lens && window.circSortItems) ? window.circSortItems(stored, order) : stored;
+      const lensed = Lens ? window.circFilterItems(sorted, who) : sorted;
+      // Offered from the whole circle, so the set does not reshuffle by tab.
+      const contributors = Lens ? window.circContributors(space) : [];
+      const pendingVisible = Lens ? window.circFilterItems(pending, who) : pending;
+      // ---- Saved -----------------------------------------------------------
+      // A deletable aid, same idiom as Lens above: no feed-saved.jsx ⇒ no
+      // toggle, no chip, no filter. Held per CIRCLE (see savedOn's own
+      // declaration) — same reasoning as `who`, not repeated here.
+      // Composed AFTER the lens, per the ruling: both can be on at once, and
+      // narrowing to one contributor's saved links is exactly what "compose"
+      // has to mean, not "replace".
+      const Saved = window.circFilterSaved || null;
+      const savedOnFlag = !!savedOn[currentId];
+      // Run 9: `&& tab === 'read'`. Saving is read-only by ruling — a card can
+      // only be saved from Read — so "saved" is a lens over the Read pile and
+      // over nothing else. Applied tab-blind, the stored per-circle flag also
+      // narrowed ACTIVE by a mark no Active card can carry, emptying the tab
+      // with nothing on screen explaining it. Fixed here rather than deferred:
+      // it renders inside the surface this run is asking to be judged.
+      const effectiveSavedOn = savedOnFlag && tab === 'read';
+      const savedFiltered = Saved ? Saved(lensed, effectiveSavedOn) : lensed;
+      // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
+      // is a fact about the circle, not about the current narrowing, and the
+      // toggle's presence rule (render site, below) reads it that way.
+      const hasSaved = !!(window.circHasSaved && window.circHasSaved(readItems));
+      // Read only — a ruled product decision (see feed-saved.jsx's header) —
+      // not loading, and present either because there is something to find or
+      // because the filter is already on: turning it off must stay reachable
+      // even after unsaving the last link it was showing.
+      //
+      // The third clause is the one worth keeping deliberately. Run 4 called it
+      // the region's third state, after "present" and "present and applied":
+      // NOT YET EARNED — the control does not exist until the member has made
+      // its reason to exist. That principle was recorded as a region rule and
+      // would have been lost by moving the control, which is exactly the kind
+      // of thing an audit of the whole picture is for catching.
+      const showSavedLens = tab === 'read' && !loadingFeed && (hasSaved || savedOnFlag);
+      const setSavedFilter = (next) => {
+        setSavedOn((prev) => ({ ...prev, [currentId]: next }));
+        announceOnce(next ? 'Showing saved links' : 'Showing all read links');
+      };
+      // ---- Search ----------------------------------------------------------
+      // A deletable aid, same idiom as Lens/Saved above: no feed-search.jsx ⇒
+      // no trigger, no field, no filter, and searchQueryVal below is always ''
+      // (Search stays null, so circFilterSearch's guard never runs).
+      // Composed LAST, after saved — the ruling is the same one that put saved
+      // after the lens: each step narrows further, never replaces, so
+      // searching a saved, contributor-filtered list is exactly what
+      // "compose" has to mean here too.
+      const Search = window.circFilterSearch || null;
+      // Read only, by ruled decision (see feed-search.jsx's own header) — on
+      // Active the query is always treated as empty, which composes to a
+      // no-op regardless of what a stale key might hold from a prior Read
+      // visit to this same circle.
+      const isReadLikeTab = tab === 'read';
+      const searchQueryVal = (Search && isReadLikeTab) ? (searchQuery[sortKey] || '') : '';
+      const visible = Search ? Search(savedFiltered, searchQueryVal) : savedFiltered;
+      // The field's own visible-ness: open because the trigger was tapped, OR
+      // because a query is already typed — clearing the query is the field's
+      // one way to close once that has happened (see SearchField's own
+      // comment), so a stager or a returning render never has to reconcile
+      // the two flags by hand anywhere else.
+      // A query of pure whitespace narrows NOTHING — circFilterSearch trims
+      // before it filters — so every question of the form "is a search
+      // applied?" has to trim too, or one press of the space bar lights the
+      // trigger, suppresses FeedLead and locks the field open while the pile
+      // is untouched. `searchQueryVal` stays raw: it is what the input shows.
+      const searchActive = !!searchQueryVal.trim();
+      const searchFieldOpen = isReadLikeTab && (!!searchOpen[sortKey] || searchActive);
+      // Present from two Read items up, OR whenever a query is already active
+      // — same "never strand the member with no way back" rule as showLens/
+      // showSavedLens above, not repeated here.
+      //
+      // `window.LensChips` is in the guard because the FIELD renders inside the
+      // chip row, which lives in feed-lens.jsx. Without this term, deleting
+      // that file leaves a search icon in the bar that opens nothing: the
+      // trigger flips aria-expanded, no field ever appears, and a screen
+      // reader announces an expanded control with no contents.
+      const showSearch = !!window.SearchTrigger && !!window.LensChips
+        && isReadLikeTab && !loadingFeed
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || searchActive);
+      const setSearchFieldOpen = (next) => {
+        // Closing WITH a query typed clears it. It used to return early and do
+        // nothing at all, which left a visible, focusable, accent-lit control
+        // that silently no-ops on tap — and no visible way to put the field
+        // away, since the member has to empty it by hand first. Closing the
+        // search is the obvious reading of tapping the search icon, so that is
+        // what it now does.
+        if (!next && searchActive) { clearSearch(); return; }
+        setSearchOpen((prev) => ({ ...prev, [sortKey]: next }));
+      };
+      const clearSearch = () => {
+        setSearchQuery((prev) => ({ ...prev, [sortKey]: '' }));
+        setSearchOpen((prev) => ({ ...prev, [sortKey]: false }));
+      };
+      const setSearchQueryVal = (next) => {
+        setSearchQuery((prev) => ({ ...prev, [sortKey]: next }));
+        // Announce the ZERO STATE ONLY — never a count, anywhere, including
+        // here (this app's feed marks are "boolean, wordless, never a
+        // count" — see feed-lens.jsx's own header). Computed against the
+        // pile this keystroke would actually produce, not the one already on
+        // screen, so a screen-reader user hears the miss on the same
+        // keystroke a sighted member sees it on.
+        const wouldMatch = Search ? Search(savedFiltered, next) : savedFiltered;
+        if (wouldMatch.length === 0 && next.trim()) announceOnce('Nothing matches');
+      };
+      const searchToggle = showSearch
+        ? <window.SearchTrigger open={searchFieldOpen} active={searchFieldOpen} onToggle={setSearchFieldOpen} />
+        : null;
+      // The control is absent below two items — a one-item list reads the same
+      // under either order, so the control could do nothing. Same instinct as
+      // the waterline's own "both sides or nothing".
+      //
+      // Absent while the feed is loading, for the same reason: the member is
+      // looking at the spinner, and a control offering to reorder a list that
+      // is not on screen yet is chrome acting on nothing.
+      // The control is present from two items up, OR whenever a lens is already
+      // applied — otherwise narrowing to one link removes the only way back.
+      // `lensOffDefault`, not `lensActive`: a member who sorted oldest-first and
+      // then read the pile down to one link must still be able to open the door
+      // and put it back. Concealment is not the test here — reachability is.
+      const showLens = !!Lens && !loadingFeed
+        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
+      const setOrder = (next) => {
+        setSortOrder((prev) => ({ ...prev, [currentId]: next }));
+        // The gesture is acknowledged, as every gesture in this app is. The
+        // waterline's suppression is NOT announced — a state never is.
+        announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));
+      };
+      // Multi-select (BIZ-136, ruling 2026-09-14). One function serves three
+      // callers, each passing a contributor id: the panel's own row (toggles
+      // that person on or off), a chip's × (always toggles its own person
+      // off, since a chip is only rendered while its person is selected), and
+      // "Everyone" / the no-match recovery button (passes CIRC_LENS_ALL /
+      // null to clear every selection at once).
+      const setWho = (id) => {
+        const cur = lensWho[currentId] || [];
+        const next = (id === window.CIRC_LENS_ALL || id == null) ? []
+          : cur.indexOf(id) !== -1 ? cur.filter((w) => w !== id)
+          : cur.concat([id]);
+        setLensWho((prev) => ({ ...prev, [currentId]: next }));
+        announceOnce(next.length
+          ? 'Showing links added by ' + next.map(window.circContributorLabel).join(', ')
+          : 'Showing links from everyone');
+      };
+      // Density (BIZ-136 run 3): the gesture is acknowledged like every other
+      // lens pick, but it never touches sortOrder/lensWho — no chip, no active
+      // trigger. It hides no content, so it has nothing to disclose.
+      const setDensityView = (next) => {
+        setDensity(next);
+        announceOnce(next === 'compact' ? 'Compact view' : 'Comfortable view');
+      };
+      // Grid was vetoed on 2026-09-09 (see CIRC_DENSITY_OPTIONS in
+      // feed-lens.jsx for the why). The option is gone, but `density` is a
+      // PERSISTED preference, so a member who picked Grid before the veto still
+      // has 'grid' in storage — normalised here, once, rather than left to
+      // render a mode that no longer exists. This line is the only reason the
+      // string 'grid' still appears in the build; it can go once no stored
+      // preference can plausibly still hold it.
+      const effectiveDensity = density === 'grid' ? 'comfortable' : density;
+      // `saved={effectiveSavedOn}`, not the raw flag — the third place the same
+      // fix was needed, and the one missed on the first pass. The trigger's lit
+      // state and its accessible name both read this prop: with the raw flag,
+      // standing on Active with saved stored ON lit the lens and announced
+      // "…, saved only" over a feed that was not narrowed, offering no way to
+      // clear it. A claim that is neither applied, shown, nor clearable.
+      const lensControl = showLens
+        ? <Lens order={order} who={who} contributors={contributors} user={user}
+            onOrder={setOrder} onWho={setWho}
+            density={effectiveDensity} onDensity={setDensityView}
+            isMobile={isSheetPosture}
+            saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null}
+            open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
+        : null;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
-      const divIdx = tab === 'active' ? window.circDividerIndex(visible, dividerAt) : -1;
-      const feed = loadingFeed ? (
+      //
+      // DRAWN IN BOTH ORDERS (Joe's reversal, 2026-09-11, of the "newest-first
+      // only" call Sally's ruling made the same day). The mark itself is
+      // untouched by a sort change — it is visit state, exactly like the rest
+      // of `dividerAt` — so the SAME two piles sit either side of it whichever
+      // way the feed is currently drawn; only which end of the list you meet
+      // first changes. `circDividerIndex` takes the order so it finds the
+      // right row in a reversed list (see its own header, liveliness.jsx) — get
+      // that branch wrong and the line silently stops drawing under
+      // oldest-first, which is the bug that cost a fortnight the first time.
+      // The label itself is order-dependent (ruling 25) — see FeedDivider in
+      // liveliness.jsx — but the line's position and the mark it's drawn from
+      // are untouched by which order the feed reads in.
+      const divIdx = (tab === 'active')
+        ? window.circDividerIndex(visible, dividerAt, order === 'newest') : -1;
+      const feed = (feedError && window.FeedError) ? (
+        // Load-error takes precedence over every other body state, loading
+        // included: a feed that failed to fetch has no waterline to draw (it
+        // does not know what landed since the mark), no lens or saved miss to
+        // report (it has no items to have missed among), and nothing to show
+        // loading over. Same container shape as the populated feed below, so
+        // only the body swaps and the page does not jump.
+        <main style={{ flex: 1, width: '100%' }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
+            {/* The load-error branch keeps its own container so the shell,
+                tabs and chips stay live while the feed region is replaced. */}
+            <div><window.FeedError onRetry={() => {
+              // Prototype affordance only: a real retry re-fires the fetch and
+              // lands on whatever it returns. There is nothing here to re-fetch,
+              // so the loading beat is staged by hand, just long enough to read
+              // as the gesture having done something.
+              setFeedError(false);
+              setLoadingFeed(true);
+              setTimeout(() => setLoadingFeed(false), 900);
+            }} /></div>
+          </div>
+        </main>
+      ) : loadingFeed ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
         <main style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -716,24 +1259,144 @@ const CircApp = () => {
         </main>
       ) : (
         <main style={{ flex: 1, width: '100%' }}>
-          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {Cand && Cand.FeedLead && <Cand.FeedLead api={candApi} tab={tab} />}
-            {tab === 'active' && pending.length > 0 && <NewPill onClick={revealPending} />}
-            {visible.length === 0 ? <EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} />
+          {/* One column at every width, capped at `--max-feed-width` for line
+              length. The two-column grid alternative that used to branch here
+              was vetoed on 2026-09-09; the desktop white-space question it was
+              guessing at is still open, and is not answered by this element. */}
+          <div style={{
+            maxWidth: 'var(--max-feed-width)', margin: '0 auto',
+            padding: isMobile ? '16px 16px 112px' : '28px 24px 120px',
+            '--circ-feed-pad-top': isMobile ? '16px' : '28px', width: '100%',
+            display: 'flex', flexDirection: 'column', gap: effectiveDensity === 'compact' ? 10 : 16,
+          }}>
+            {/* The discourse overlay's watching-digest summarises the whole
+                circle. Under a lens it contradicts the screen it sits on — "4
+                conversations you are watching" directly above "Nothing here
+                from Dev K." reads as the filter being broken. Hidden while a
+                lens is applied. This touches that overlay's surface only by
+                withholding it here, at the point the two features meet; nothing
+                about the digest itself is changed. Saved is folded into the
+                same condition for the same reason: "3 conversations you are
+                watching" above a feed narrowed to what was saved reads exactly
+                as broken. Search joins the same condition
+                for the same reason: "4 conversations you are watching" above
+                a feed a query has narrowed to nothing-like-that reads exactly
+                as broken too — a typed-but-empty field does NOT count, since
+                nothing is narrowed yet. */}
+            {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || searchActive)
+              && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
+            {/* The pill announces arrivals for the list you are LOOKING at. Under
+                a contributor lens, an arrival from somebody else is not one:
+                tapping the pill would land it straight into the hidden pile and
+                the feed would not move, which is the one thing the pill exists
+                to promise it will do. So it counts only arrivals the lens keeps.
+                Unmatched arrivals are not lost — they land whole the moment the
+                lens clears. */}
+            {/* A bare wrapper div here (as every other conditional row in this
+                list still uses) gives the pill a 44px stick range and kills
+                its `align-self: center` — canon renders it as a direct flex
+                child of this column and both work (finding 1, design audit,
+                2026-09-11). No wrapper. */}
+            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
+            {/* ONE zero-match register for all four narrowings (who / saved /
+                query), any combination — feed-lens.jsx's FeedNoMatch, which
+                replaces the three components this render site used to
+                choose between (LensNoMatch / SavedNoMatch / SavedLensNoMatch,
+                still defined and exported, deletable-aid idiom, just no
+                longer called from here). See that component's own header for
+                the regression contract and the escape-precedence reasoning —
+                not repeated here.
+                Falls through to EmptyState when NOTHING is narrowed — that is
+                a genuinely empty tab, the spec's own register, and stays
+                exactly as it was. window.FeedNoMatch guards the first branch
+                so dropping feed-lens.jsx whole degrades to EmptyState rather
+                than throwing on a missing component. */}
+            {visible.length === 0 && (who.length || effectiveSavedOn || searchActive) && window.FeedNoMatch
+              ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} query={searchQueryVal}
+                  onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
+              /* Saved survives feed-lens.jsx on its own: its toggle and its
+                 filter both live in feed-saved.jsx and neither is gated on the
+                 lens. Before the fold, SavedNoMatch rendered for this case
+                 whether or not feed-lens.jsx existed; folding it into
+                 FeedNoMatch quietly took that away, so a member filtering an
+                 unsaved pile would have met EmptyState's "there is nothing
+                 here / Start a circle" instead of "No saved links here". That
+                 is not degrading to the previous behaviour, which is what the
+                 deletable-aid contract actually promises — so the old
+                 component stays reachable for exactly the case it used to own. */
+              : visible.length === 0 && effectiveSavedOn && !who.length && window.SavedNoMatch
+              ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
+              : visible.length === 0 ? <div><EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
-                const card = <FeedCard item={item} tab={tab} user={user} showTime
-                  onOpen={openLink}
-                  onMarkRead={(it) => setReacting(it)}
-                  onDelete={(it) => setConfirm({ kind: 'delete', item: it })} />;
+                const pointed = pointedId === item.id;
+                const card = <FeedCard item={item} tab={tab} user={user} showTime density={effectiveDensity}
+                  onOpen={(it) => { clearPointed(); openLink(it); }}
+                  onMarkRead={(it) => { clearPointed(); setReacting(it); }}
+                  onAct={clearPointed}
+                  onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
+                  onToggleSaved={toggleSaved}
+                  space={space} onAnnounce={announceOnce} pointed={pointed} />;
                 const row = (Cand && Cand.CardRow)
                   ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
                   : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
-                const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
+                //
+                // A card a shared address pointed at glows too, and deliberately
+                // reuses this one rather than minting a second treatment: both
+                // mean LOOK HERE, the glow is already one-shot and already
+                // reduced-motion aware, and a card that is both new and shared
+                // glows once rather than twice. The accent bar is what makes the
+                // two distinguishable at rest — the glow resolves to nothing.
+                const fresh = pointed
+                  || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
                 return (
                   <React.Fragment key={item.id}>
-                    {i === divIdx && <FeedDivider />}
+                    {i === divIdx && <div><FeedDivider newestFirst={order === 'newest'} /></div>}
+                    {/* CircGlow's own div is this row's direct grid-cell
+                        child (the Fragment wrapping it renders no DOM node),
+                        so it needs BOTH halves of the fix:
+                        `height: '100%'` resolves it to the OUTER grid's row
+                        height explicitly (equivalent to what that row's own
+                        default stretch would give it, since a percentage
+                        height on an auto-sized track is treated as auto for
+                        the row's own sizing pass — verified: matches the
+                        stretched value exactly, never smaller).
+                        `display: 'grid'` then re-stretches ITS OWN child on
+                        both axes, which matters because the discourse
+                        candidate build (Cand.CardRow, always present in this
+                        build — see main.jsx's own Cand binding) inserts an
+                        unstyled `height: auto` wrapper div between this node
+                        and the card. Without this second half, that wrapper
+                        (and the card's own `height: 100%` in feed.jsx inside
+                        it) has nothing definite to resolve against, which
+                        collapsed one seed item's long, unclamped-by-nothing
+                        -webkit-line-clamp title to a blank 34px card
+                        (reproducible, not a timing race — see the run's own
+                        measured numbers). Flex was tried first for this half
+                        and rejected: it only stretches the cross axis, so it
+                        fixed the height and silently narrowed every card to
+                        its content's width instead. */}
+                    {/* NO height on the grid cell, and this was settled by
+                        measuring both ways rather than by argument — a stretch
+                        was tried here first and reverted.
+
+                        A grid item stretches to its row by default, but only
+                        while its height is auto. Pinning it to 100% resolves
+                        against a row the item is itself still sizing, and the
+                        card then grows to swallow the height of its row-mate's
+                        DISCOURSE strip — an appendage that belongs to the other
+                        card, not to the row. Measured at 1280 on this fixture:
+                        with the pin, three of ten cards carried 20-34px of
+                        empty white inside their own border; without it, zero
+                        did, and no card collapsed. A bordered card with a void
+                        in its lower third reads as content that failed to
+                        arrive, which is the exact impression the imageless
+                        grid card exists to avoid.
+
+                        So a shorter row-mate ends at its own content and leaves
+                        ground beneath it. The uneven bottoms that remain are
+                        the honest cost of a per-card appendage in a grid. */}
                     <CircGlow glow={fresh} rise={arrived.includes(item.id)}>{row}</CircGlow>
                   </React.Fragment>
                 );
@@ -743,12 +1406,61 @@ const CircApp = () => {
       );
       screen = inShell(
         <>
-          <Tabs active={tab} onChange={setTab} />
+          {/* The lens stays outermost (rightmost) so it never shifts position
+              between tabs — Active never carries search, so the lens trigger
+              moving with it would be the one thing in this bar that isn't
+              stable. Search is the last control to join this ceiling — the
+              region's own declared order, not a preference. */}
+          <Tabs active={tab} onChange={setTab} right={<>{searchToggle}{lensControl}</>} />
+          {/* What is applied, and the way out of it. Nothing at all in the
+              default state — the folded control means the chips are now the
+              only place the applied lens (or the saved filter, or a typed
+              query) is legible without opening it. */}
+          {/* LensChips (the chip ROW) is feed-lens.jsx's own component, so its
+              presence still gates on Lens, not Saved or Search — both the
+              saved chip and the search field ride inside that same row and
+              have nowhere to render without it. */}
+          {/* Run 9: the chip reads `effectiveSavedOn`, not the raw stored flag.
+              The chip row's one job is to disclose what is being CONCEALED, so
+              a Saved chip on a tab where the saved narrowing does not apply
+              would be the row reporting a concealment that is not happening —
+              the exact dishonesty this row exists to prevent. Same fix as the
+              lens group's own gate above, on the other half of the pair. */}
+          {/* No `order`/`onOrder` (ruling of 2026-09-07): the chip row is for
+              concealment, and an order conceals nothing. The component stopped
+              taking them rather than taking and ignoring them. */}
+          {Lens && !loadingFeed && <window.LensChips who={who} onWho={setWho}
+            saved={effectiveSavedOn} onSaved={setSavedFilter} isMobile={isMobile}
+            searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
+            onSearchChange={setSearchQueryVal} onSearchClear={clearSearch}
+            onReopenLens={() => setSortMenuOpen(true)} />}
           {feed}
-          {!loadingFeed && !isApp && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile} />}
-          <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
-        </>,
-        { canAdd: true }
+          {/* The FAB stands down while the lens sheet is up (run 9, from the
+              design review, which caught it painting green over a scrimmed
+              modal). It cannot be solved with z-index: the panel renders inside
+              the tab bar, which is `position: sticky` with its own stacking
+              context at 49, so nothing written inside it can out-paint a FAB at
+              80. Suppressing is also simply correct — a primary compose action
+              should not be tappable under a scrim, whichever way they paint.
+              Gated on `isSheetPosture` (640, BIZ-136 2026-09-14), not
+              `isMobile` (1024) — the FAB only needs to stand down where the
+              panel is actually a scrimmed sheet; above the sheet boundary
+              it's an anchored popover with no scrim and nothing is being
+              covered, even below the layout boundary. */}
+          {/* The app posture floats this same FAB clear of its permanent
+              bottom bar — Add is circle-scoped, so it stands inside a circle
+              and nowhere else. The clearance is the chrome's number
+              (APP_FAB_BOTTOM); with app/app-shell.jsx dropped there is no bar
+              to clear and the FAB sits where the web posture puts it. */}
+          {!loadingFeed && !(isSheetPosture && sortMenuOpen)
+            && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
+                 bottom={isApp ? (window.APP_FAB_BOTTOM || null) : null} />}
+          {/* `isSheetPosture` (640, BIZ-136 2026-09-14), not `isMobile`'s 1024
+              — sheet-vs-popover is the same boundary as FeedLens and
+              GateOverlay now share; the FAB above stays on `isMobile` since
+              its 24/32px offset is layout, not a sheet choice. */}
+          <AddReveal open={addOpen} isMobile={isSheetPosture} onClose={() => setAddOpen(false)} onAdd={addItem} />
+        </>
       );
     }
   }
@@ -765,7 +1477,10 @@ const CircApp = () => {
       onMarkRead={(it, reaction) => markRead(it, reaction)}
       onClose={() => setReacting(null)} />
   );
-  const gateOverlayEl = GateOverlay ? <GateOverlay open={gateOpen} isMobile={isMobile} onClose={() => setGateOpen(false)} /> : null;
+  // `isSheetPosture` (640, BIZ-136 2026-09-14): the gate is a bottom sheet vs.
+  // centred dialog choice, the same shape decision as the lens panel — not a
+  // layout question, so it reads the sheet boundary, not `isMobile`'s 1024.
+  const gateOverlayEl = GateOverlay ? <GateOverlay open={gateOpen} isMobile={isSheetPosture} onClose={() => setGateOpen(false)} /> : null;
   // The one polite live region for the whole app: it sits in the page empty from
   // first render, because a region inserted together with its text announces
   // nothing. A gesture is acknowledged ("Refreshed"); the pill announces its own

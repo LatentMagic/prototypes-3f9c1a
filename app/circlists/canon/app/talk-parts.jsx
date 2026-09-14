@@ -46,7 +46,7 @@ const CandProse = ({ text, size = 15, lh = 1.6, color = 'var(--color-fg-1)' }) =
 // ---- The fold — a signal that this card is being watched. Not pressable. ----
 // A soft emerald — the accent let down into the card's own surface, so the
 // corner reads as turned down rather than marked. Solid accent was too strong
-// for a state, and sage is the mark's colour, never a status. The outer corner
+// for a state. The outer corner
 // takes the card's own 11px inner radius so it sits flush in the corner.
 const CandFold = () => (
   <svg viewBox="0 0 24 24" width={24} height={24} aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, display: 'block', pointerEvents: 'none', zIndex: 2 }}>
@@ -212,6 +212,33 @@ const candOwnTurns = (item) => candTurns(item).filter(t => !t.deleted && t.by ==
 const candNames = (names) => names.length === 1 ? names[0]
   : names.length === 2 ? names[0] + ' and ' + names[1]
   : names[0] + ', ' + names[1] + ' and others';
+// `candRoster` (BIZ-136 run 9) — the SAME shape for a different job, and the
+// difference is why it is a second function rather than a parameter on the one
+// above. `candNames` names who SPOKE: an open-ended set where the exact number
+// is not the point, so it trails off at "and others". `candRoster` names who is
+// IN a circle: a bounded membership, capped at ten by spec, where size is part
+// of what distinguishes one circle from another — so it counts the remainder
+// instead of waving at it. Same voice, one word different, and the home screen
+// now speaks that voice in both of its registers.
+// Names up to three and counts beyond. Three is the turn because at exactly
+// three the count is WORSE than the name: "Joe M., Priya N. and 1 other" spends
+// the same words to say less than "Joe M., Priya N. and Sam R.", and leaves a
+// person in the circle unnamed for no gain. Driven and read before it was
+// settled — the book club has three others and rendered the first form.
+// `.trim()` per name, and it is not defensive padding: an invited member's
+// display name is built in main.jsx as `…toUpperCase()) + ' '` and carries a
+// TRAILING SPACE. Rendered as its own block that was invisible; concatenated
+// into a sentence here it reads `Sam.Rivera , Joe M. and 2 others`. A latent
+// bug this change surfaces rather than one it introduces — fixed at the point
+// that made it visible.
+const candRoster = (raw) => {
+  const names = (raw || []).map((n) => String(n).trim()).filter(Boolean);
+  return names.length === 0 ? 'Just you'
+  : names.length === 1 ? names[0]
+  : names.length === 2 ? names[0] + ' and ' + names[1]
+  : names.length === 3 ? names[0] + ', ' + names[1] + ' and ' + names[2]
+  : names[0] + ', ' + names[1] + ' and ' + (names.length - 2) + ' others';
+};
 // Item 5 (corrected 2026-08-19): TWO triggers enrol you — adding the link, or
 // speaking in the conversation (a turn or a reply). Speaking sets `watching`,
 // exactly as adding the link does. The mark is NOT touched: enrolling is not
@@ -256,5 +283,5 @@ const CandSurfaceCtx = React.createContext(false);
 
 Object.assign(window, { CandSendArrow, CandCrossGlyph, CandEditOut, CAND_PAPER, CAND_OWN_MIN, CAND_OWN_MINE, candWhen, candTitleOf, CandProse, CandFold, CandFoldGlyph, CandFoldToggle, CandSurfaceCtx,
   CandBubbleIcon, CandWayIcon, CandSwitch, CandWrite, CandEyebrow, candUpdateItem, candTurns, candFresh, candResponses, candOwnTurns,
-  candNames, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch, candAddThought, candEditThought, candDeleteThought,
+  candNames, candRoster, candAddTurn, candEditTurn, candDeleteTurn, candToggleWatch, candAddThought, candEditThought, candDeleteThought,
   candTurnUnseen, CAND_WASH });

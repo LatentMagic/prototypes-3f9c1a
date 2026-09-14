@@ -16,8 +16,11 @@
 //     smaller): an honest raw address, never a naked/broken card. Source still
 //     falls back to the bare domain.
 //   - Favicon is an optional garnish beside the source; genuine absence shows
-//     nothing (never a fabricated globe). No preview -> a calm source-keyed
-//     tint block (never a fabricated photo).
+//     nothing (never a fabricated globe). A missing preview is the SAME rule:
+//     no image means no image column, and the text takes the full width. The
+//     source-keyed tint block that used to stand in was removed 2026-09-09 —
+//     a coloured square in a picture's place is the fabrication the favicon
+//     rule already forbade, and it read as a broken image.
 //   - Mark-as-read (Active tab) opens the Swell flow; the Read tab shows the
 //     Swell door in its place. Delete opens the confirm dialog. Both unchanged.
 const feedHostOf = (url) => {
@@ -34,19 +37,133 @@ const feedDeriveTitle = (url) => {
     return seg.charAt(0).toUpperCase() + seg.slice(1);
   } catch (e) { return null; }
 };
-// Source-keyed tint blocks — the "bits of colour" fallback preview: never a
-// fabricated photo, just a calm two-tone block so a card is never naked. Muted,
-// paper-adjacent hues that sit inside the theme.
-const FEED_TINTS = [
-  ['#3a3a38', '#5a5a56'], ['#33413f', '#54655f'], ['#403830', '#645749'],
-  ['#343a4a', '#565f77'], ['#42323c', '#66505d'],
-];
-const feedHash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
-const feedTint = (key) => { const g = FEED_TINTS[feedHash(key) % FEED_TINTS.length]; return 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')'; };
+// The source-keyed tint palette lived here — a two-tone block rendered in the
+// image's place so "a card is never naked". Removed 2026-09-09 on Joe's ruling:
+// no image means no image column. Nothing replaces it, deliberately; a card with
+// no picture is a card whose text takes the full width.
 
-const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDelete }) => {
+// ---- Density (BIZ-136 run 3) ------------------------------------------------
+// Metrics only, never anatomy: every element present in comfortable stays
+// present in compact, in the same order. Comfortable's numbers are the card's
+// existing values, kept here as the single source so neither branch drifts.
+// actionPull is the one that earns compact its height. The footer row's height
+// is set by the action buttons' 44px touch floor, not by the avatar or the
+// text — so trimming padding and shrinking the thumbnail barely moved the card
+// (measured: 146 -> 124 at 1280, and only 153 -> 145 at 390). The floor is not
+// negotiable, so instead the button cluster is pulled vertically INTO the
+// card's own padding: the buttons still render and still hit at 44px, they
+// simply overlap the padding box, and the row measures ~32px. Costs nothing
+// and takes ~12px off every card at both widths.
+// bookmark joins check/trash at the same
+// two sizes — it only ever sits beside them, on Read, so it has to read at
+// the same scale or it would be the one action that didn't shrink with density.
+// `titleClamp` is read from here by every branch (not hardcoded at the JSX
+// call site) so the number lives in one place.
+// A third `grid` branch sat here until 2026-09-09, when grid was vetoed. It
+// reused comfortable's metrics and set a `grid: true` marker that dropped the
+// thumbnail and widened the clamp; both it and every reader of that marker are
+// gone. See CIRC_DENSITY_OPTIONS in feed-lens.jsx for why.
+const circCardMetrics = (density) => (density === 'compact'
+  ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
+  : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
+
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false, onAct = () => {} }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
+  const m = circCardMetrics(density);
+
+  // ---- Trailing kebab menu (run 10, BIZ-136: "[posture] [⋮]") --------------
+  // Copies spaces.jsx's per-row kebab (same glyph, same open/close, same aria)
+  // rather than inventing a menu.
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuStyle, setMenuStyle] = React.useState(null);
+  const triggerRef = React.useRef(null);
+  const menuRef = React.useRef(null);
+  const closeMenu = () => setMenuOpen(false);
+  const menuLabel = item.title || item.source || 'this link';
+
+  // Position against the visible viewport, not `vh` (requirement 4) — measured
+  // AFTER the menu mounts (off-screen, invisible) so its real height is known,
+  // in a useLayoutEffect so the correction lands before paint and nothing
+  // flickers. Flips above the trigger when it would run past the visible
+  // bottom; clamps horizontally so it never sits off screen.
+  React.useLayoutEffect(() => {
+    if (!menuOpen) { setMenuStyle(null); return; }
+    const trigger = triggerRef.current;
+    const menu = menuRef.current;
+    if (!trigger || !menu) return;
+    const tRect = trigger.getBoundingClientRect();
+    const mRect = menu.getBoundingClientRect();
+    const visibleH = window.visualViewport?.height ?? window.innerHeight;
+    const visibleW = window.visualViewport?.width ?? window.innerWidth;
+    const margin = 12;
+    let top = tRect.bottom + 4;
+    if (top + mRect.height > visibleH - margin) top = tRect.top - 4 - mRect.height;
+    if (top < margin) top = margin;
+    let left = tRect.right - mRect.width;
+    if (left < margin) left = margin;
+    if (left + mRect.width > visibleW - margin) left = visibleW - margin - mRect.width;
+    setMenuStyle({ top, left });
+  }, [menuOpen]);
+
+  // Focus the first item once positioned; return focus to the trigger on close
+  // (Escape, outside click, or after any item runs).
+  const wasMenuOpen = React.useRef(false);
+  React.useEffect(() => {
+    if (menuOpen && menuStyle && menuRef.current) {
+      const first = menuRef.current.querySelector('[role^="menuitem"]');
+      if (first) first.focus();
+    }
+    if (!menuOpen && wasMenuOpen.current && triggerRef.current) {
+      triggerRef.current.focus({ preventScroll: true });
+    }
+    wasMenuOpen.current = menuOpen;
+  }, [menuOpen, menuStyle]);
+
+  // Outside click, Escape, and arrow-key movement between items.
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const onDocDown = (e) => {
+      if (triggerRef.current && triggerRef.current.contains(e.target)) return;
+      if (menuRef.current && menuRef.current.contains(e.target)) return;
+      closeMenu();
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { closeMenu(); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = menuRef.current ? Array.from(menuRef.current.querySelectorAll('[role^="menuitem"]')) : [];
+      if (!items.length) return;
+      e.preventDefault();
+      const idx = items.indexOf(document.activeElement);
+      const next = e.key === 'ArrowDown'
+        ? (idx < 0 ? 0 : (idx + 1) % items.length)
+        : (idx < 0 ? items.length - 1 : (idx - 1 + items.length) % items.length);
+      items[next].focus();
+    };
+    document.addEventListener('mousedown', onDocDown);
+    window.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDocDown); window.removeEventListener('keydown', onKey); };
+  }, [menuOpen]);
+
+  // Same portal target as SwellDoor (swell-reactions.jsx): the forced-mobile
+  // frame's own screen element when present, else <body>. A card lives deep
+  // inside a scrolled, `container-type: inline-size` list — portalling is what
+  // takes the menu out of that ancestor's box for position:fixed math, the
+  // same reasoning that moved the reaction door out of the card.
+  const menuPortalTarget = () => (typeof document !== 'undefined'
+    && (document.querySelector('.circ-phone-screen') || document.body)) || null;
+
+  // minHeight 44, not spaces.jsx's 40 (ui.md's 44px floor for a primary
+  // control, restated ui.md:113 — a menu item you tap to delete a link is
+  // one, not a dense secondary display). spaces.jsx's own member-row items
+  // are 40 and pre-date this app going through this floor at every
+  // breakpoint; this build stays out of that gap rather than copying it in.
+  const menuItemBase = {
+    display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+    background: 'transparent', border: 0, cursor: 'pointer', padding: '11px 10px', minHeight: 44,
+    borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
+    color: 'var(--color-fg-1)', whiteSpace: 'nowrap',
+  };
 
   const former = /former member/i.test(item.attribution);
   // The current user always reads lower-case "you" in the shared view; normalise
@@ -66,7 +183,18 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
   const source = item.source || host;               // source is always present
   const title = item.title || feedDeriveTitle(item.url);
   const prettyUrl = item.url.replace(/^https?:\/\//, '');
-  const showImage = item.hasImage !== false;
+  // Per-item, and the rule is now literal: NO IMAGE MEANS NO IMAGE COLUMN.
+  // 2026-09-09, Joe's ruling. Until today a link with no preview rendered a
+  // source-keyed gradient block in the image's place — documented in this
+  // project's CLAUDE.md as deliberate, so it was not a slip, but it contradicted
+  // the rule sitting two lines above it in the same doc: a missing FAVICON
+  // "shows nothing (never a fabricated globe)". Same situation, opposite answer.
+  // A coloured block standing in for a picture is the same fabrication as a
+  // fabricated globe, and it reads as a broken image rather than as a choice.
+  // So: the card either has a picture or it has no image column, and the text
+  // takes the full width. 7 of the 22 seed links have none, so this is the
+  // common case, not the edge.
+  const showImage = item.hasImage !== false && !!item.image;
   const faviconOk = item.faviconExists !== false && !favBroken;
   // Favicons: baked-in local files win over Google's live service, so the demo
   // renders the real mark offline (see uploads/card-favicons/). Host is matched
@@ -89,22 +217,27 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
     return (
       <article className="circ-card" style={{
         background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-        borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+        borderRadius: 'var(--radius-lg)', padding: m.pad,
         display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: m.colGap }}>
             <span className="circ-skel" aria-hidden="true" style={{ width: 120, height: 13, borderRadius: 3 }} />
             <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-3)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>
           </div>
-          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: 60, height: 60, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
+          <span className="circ-skel" aria-hidden="true" style={{ flexShrink: 0, width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-2)' }} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-          <Avatar name={avatarName} size={28} accent={isYou} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: m.footerTop }}>
+          <Avatar name={avatarName} size={m.avatar} accent={isYou} />
           <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{attribution}</span>
-          <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, opacity: 0.4, pointerEvents: 'none' }}>
-            <span className="circ-cardaction circ-cardaction-icon"><Icon name="check" size={18} /></span>
-            <span className="circ-cardaction circ-cardaction-icon"><Icon name="trash" size={17} /></span>
+          <div aria-hidden="true" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull, opacity: 0.4, pointerEvents: 'none' }}>
+            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}><Icon name="check" size={m.actionIcon.check} /></span>
+            {/* Ghost row wears whichever shape the real row wears (requirement:
+                "bring it to [tick] [⋮] ... so it does not become the one row
+                still showing the old shape"). */}
+            <span className={'circ-cardaction circ-cardaction-icon' + m.actionClass}>
+              <Icon name="more-vertical" size={m.actionIcon.more} />
+            </span>
           </div>
         </div>
       </article>
@@ -112,15 +245,24 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
   }
 
   return (
-    <article className="circ-card" style={{
+    // `pointed` — this is the card a shared address sent the member to. Drawn
+    // with the app's own "this one" language (a 2px accent left bar, as the
+    // rail and the lens list both use), inset so the card does not grow and
+    // nothing beside it moves. Nothing else about the card changes.
+    <article className="circ-card" data-card-id={item.id} style={{
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-      borderRadius: 'var(--radius-lg)', padding: 'var(--space-4) var(--space-5)',
+      borderRadius: 'var(--radius-lg)', padding: m.pad,
       display: 'flex', flexDirection: 'column',
+      // Applied whether or not this card is pointed at: the fragment carries the
+      // transition that lets the mark fade OUT, and a fragment that disappears
+      // with the mark takes the transition with it. card-share.jsx explains why
+      // the alternative — a wrapper element — is forbidden on this card.
+      ...(window.circPointedStyle ? window.circPointedStyle(pointed) : null),
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
           the only open targets; nothing else in the card opens. */}
       <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: m.colGap }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             {faviconOk && (
               <span style={{ width: 15, height: 15, borderRadius: 3, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--color-border-2)', display: 'inline-flex' }}>
@@ -130,14 +272,14 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
             <span style={{ fontFamily: 'var(--font-sans)', fontWeight: item.source ? 600 : 500, fontSize: 13, color: 'var(--color-fg-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, flex: 1 }}>{source}</span>
           </div>
           {title
-            ? <a {...openLinkProps} className="circ-cardtitle" style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</a>
+            ? <a {...openLinkProps} className="circ-cardtitle" style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', textDecoration: 'none', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: m.titleClamp, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{title}</a>
             : <a {...openLinkProps} className="circ-cardtitle circ-cardurl" style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 14, lineHeight: 1.45, color: 'var(--color-fg-1)', textDecoration: 'none', wordBreak: 'break-all', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{prettyUrl}</a>}
         </div>
-        {showImage && (
-          <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: 60, height: 60, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
-            {item.image && !imgBroken
-              ? <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-              : <span style={{ display: 'block', width: '100%', height: '100%', background: feedTint(source) }} />}
+        {/* An image that fails to load is the same case as no image at all:
+            the column goes, rather than degrading to a block of colour. */}
+        {showImage && !imgBroken && (
+          <a {...openLinkProps} tabIndex={-1} aria-hidden="true" className="circ-thumblink" style={{ flexShrink: 0, display: 'block', width: m.thumb, height: m.thumb, borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border-2)' }}>
+            <img src={item.image} alt="" onError={() => setImgBroken(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
           </a>
         )}
       </div>
@@ -145,8 +287,8 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
       {/* Footer — attribution (left) + recessive actions (right). The action
           cluster's optical edge is pulled onto the card's content edge (= the
           image's right edge). On Read, the Swell door takes the tick's place. */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-        <Avatar name={former ? null : avatarName} size={28} accent={isYou} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: m.footerTop }}>
+        <Avatar name={former ? null : avatarName} size={m.avatar} accent={isYou} />
         <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 9 }}>
           <span style={{ minWidth: 0, fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 14, lineHeight: 1.3, color: 'var(--color-fg-1)', letterSpacing: '-0.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {attribPre
@@ -158,22 +300,118 @@ const FeedCard = ({ item, tab, user, showTime = true, onOpen, onMarkRead, onDele
           {when && (
             <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{when}</span>
           )}
+          {/* NO SAVED MARK HERE, deliberately — removed 2026-09-09, and do not
+              re-add it. Run 10 added it as compensation for the Save button
+              moving into the kebab, not because anything asked for it. It
+              duplicated state the menu already carries: the Save item is a
+              `menuitemcheckbox` (see the menu below), so reopening the kebab
+              shows a filled bookmark with a tick beside it. The control that
+              performed the action reflects its own state, which is where a
+              member looks. A permanent badge on every card, to confirm one tap,
+              taxed every card forever — and on the Saved lens, where every card
+              is saved, it carried nothing at all. */}
         </div>
-        {/* Edge-locked actions (BIZ-80 alignment study). The trailing delete's
+        {/* Edge-locked actions (BIZ-80 alignment study). The trailing action's
             optical edge is pulled onto the image's right edge via the -13 nudge;
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13 }}>
-          {tab === 'read'
-            ? <SwellDoor item={item} />
-            : (
-              <button className="circ-cardaction circ-cardaction-icon" onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
-                <Icon name="check" size={18} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: -13, marginTop: m.actionPull, marginBottom: m.actionPull }}>
+          {/* [posture] [⋮] — one grammar, two visible targets, every surface
+              (run 10, BIZ-136 build brief A). The posture action is the
+              card's one high-frequency act and stays visible; everything
+              occasional (Share, Save, Delete) goes behind the kebab, ruled
+              32's Read-only Save included, destructive last. */}
+          {
+            <React.Fragment>
+              {tab === 'read'
+                ? <SwellDoor item={item} />
+                : (
+                  <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+                    <Icon name="check" size={m.actionIcon.check} />
+                  </button>
+                )}
+              {/* Set apart from the posture slot in weight, not distance.
+                  The design review measured the Read row as two dot-triads of
+                  the same ink 44px apart — the way-through disc and this —
+                  and was right that more gap alone leaves two marooned marks
+                  rather than one action plus card chrome. Hierarchy by
+                  weight is the separation: this drops a step to fg-3 while
+                  the posture action keeps fg-2. RULING 14 (2026-09-14): a
+                  run on 2026-09-08 added a marginLeft here as a second,
+                  distance-based separation on top of the weight drop — that
+                  extra gap pushed the trigger's right edge past the
+                  thumbnail's and was ruled a defect, reverted. The row's own
+                  rule still holds: no drawn hairline, hover inset carries
+                  whatever separation distance is meant to contribute.
+                  The stronger answer is the review's first: lift the menu off
+                  the attribution line to the card's trailing corner, where
+                  Readwise puts it and where card-scoped actions belong. That
+                  is a structural move made late in a run, which is exactly how
+                  the last one shipped a broken container, so it is written up
+                  rather than taken. */}
+              <button ref={triggerRef} type="button"
+                className={'circ-cardaction circ-cardaction-icon' + m.actionClass}
+                onClick={() => { if (!menuOpen) onAct(); setMenuOpen((o) => !o); }}
+                aria-haspopup="menu" aria-expanded={menuOpen}
+                aria-label={'More actions for ' + menuLabel}
+                style={{ color: 'var(--color-fg-3)' }}>
+                <Icon name="more-vertical" size={m.actionIcon.more} />
               </button>
-            )}
-          <button className="circ-cardaction circ-cardaction-icon" onClick={() => onDelete(item)} aria-label="Delete this link" title="Delete">
-            <Icon name="trash" size={17} />
-          </button>
+              {menuOpen && menuPortalTarget() && ReactDOM.createPortal(
+                <React.Fragment>
+                  {/* Transparent full-screen click-catcher UNDER the menu
+                      (requirement 5) — closes the menu and stops a tap
+                      falling through to the FAB beneath it. position: fixed
+                      on both is what takes them out of the card's own
+                      stacking context (this card sits inside a
+                      `container-type: inline-size` list); a z-index written
+                      inside the card cannot win against the FAB's 80, same
+                      trap run 9's vent recorded for a `position: sticky`
+                      ancestor. */}
+                  <div onClick={closeMenu} aria-hidden="true"
+                    style={{ position: 'fixed', inset: 0, zIndex: 89, background: 'transparent' }} />
+                  <div ref={menuRef} role="menu" aria-label={'Actions for ' + menuLabel}
+                    style={{
+                      position: 'fixed', zIndex: 90, minWidth: 168,
+                      background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+                      borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
+                      visibility: menuStyle ? 'visible' : 'hidden',
+                      top: menuStyle ? menuStyle.top : -9999, left: menuStyle ? menuStyle.left : -9999,
+                    }}>
+                    {window.CardShareMenuItem && (
+                      <window.CardShareMenuItem item={item} space={space} announce={onAnnounce} onDone={closeMenu} />
+                    )}
+                    {tab === 'read' && onToggleSaved && (
+                      /* Save, as a checkable item — ONE stable label across
+                         both states (requirement 8): the state rides in
+                         aria-checked, not the words, same ARIA-toggle
+                         correctness the old button already used. Read-only
+                         (ruling 32), so this never renders on Active. */
+                      <button role="menuitemcheckbox" aria-checked={!!item.saved}
+                        className="circ-menuitem"
+                        onClick={() => { onToggleSaved(item); closeMenu(); }}
+                        style={menuItemBase}>
+                        <Icon name={item.saved ? 'bookmark-filled' : 'bookmark'} size={16}
+                          style={{ color: 'var(--color-fg-2)' }} />
+                        <span style={{ flex: 1 }}>Save</span>
+                        {item.saved && <Icon name="check" size={15} />}
+                      </button>
+                    )}
+                    {/* Ruled off from what precedes it. All three exemplars
+                        separate the destructive item; this app has the token
+                        for it and the row above is otherwise pure white. */}
+                    <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
+                    <button role="menuitem" className="circ-menuitem"
+                      onClick={() => { onDelete(item); closeMenu(); }}
+                      style={{ ...menuItemBase, color: 'var(--color-destructive)' }}>
+                      <Icon name="trash" size={16} /> Delete
+                    </button>
+                  </div>
+                </React.Fragment>,
+                menuPortalTarget()
+              )}
+            </React.Fragment>
+          }
         </div>
       </div>
     </article>
@@ -347,11 +585,14 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
 //   tick  — a brief post-add confirmation, then self-clears back to plus
 // Cancel goes cross→plus (no tick); submit goes cross→tick→plus. The tick grows
 // in as it resolves — a small, quiet moment, never a colour shift or halo.
-const FAB = ({ onClick, expanded, isMobile, confirm }) => {
+// `bottom` is the one piece of geometry a caller may set: the app posture floats
+// this same FAB above a permanent bottom bar, and the bar's clearance is the
+// chrome's number to know (APP_FAB_BOTTOM, app/app-shell.jsx), not the feed's.
+const FAB = ({ onClick, expanded, isMobile, confirm, bottom = null }) => {
   const glyph = confirm ? 'tick' : (expanded ? 'cross' : 'plus');
   return (
   <button onClick={onClick} aria-label="Add a link" style={{
-    position: 'fixed', right: isMobile ? 24 : 32, bottom: isMobile ? 24 : 32, zIndex: 80,
+    position: 'fixed', right: isMobile ? 24 : 32, bottom: bottom != null ? bottom : (isMobile ? 24 : 32), zIndex: 80,
     width: 56, height: 56, borderRadius: '50%',
     background: 'var(--color-accent)', color: '#fff', border: 0, cursor: 'pointer',
     boxShadow: '0 4px 14px rgba(4,120,87,0.28), 0 1px 3px rgba(10,10,10,0.12)',

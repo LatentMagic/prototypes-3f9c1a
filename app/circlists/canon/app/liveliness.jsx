@@ -4,7 +4,7 @@
 // the MEMBER asked (the rail refresh), what it finds simply lands.
 //
 //   circWhen(at)                  — the card's AGE: how long ago it was contributed
-//   circDividerIndex(items, mark) — where the waterline sits, or -1
+//   circDividerIndex(items, mark, newestFirst) — where the waterline sits, or -1
 //   CircleSignal                  — the per-circle slot in the rail / home list:
 //                                   the micro dot (unseen), the spinner (the refresh
 //                                   receipt running), or the mark it resolves into.
@@ -22,8 +22,7 @@
 // Rules this file exists to hold in one place:
 //   • No counts, no badges, no toasts, no status colour. The dot means unseen
 //     items, never presence.
-//   • Sage is the MARK's light, not a status colour — an arriving card washes
-//     sage and resolves to its own white (see .circ-glow in circlists.html).
+//   • An arriving card washes sage and resolves to its own white (see .circ-glow in circlists.html).
 //     Nothing travels across it, nothing rings it, and the colour never rests.
 //   • The receipt resolves into the full mark on BOTH outcomes: the spinner's own
 //     arc grows shut into a complete ring as the rotation eases to a halt, rests a
@@ -58,12 +57,29 @@ const circWhen = (at) => {
 };
 
 // ---- Waterline position ----------------------------------------------------
-// Index of the first item at-or-before the DRAWN mark — i.e. how many items
-// arrived since the last visit. The line is drawn above them, and only when items
-// sit on BOTH sides: a line with nothing below it names nothing.
-const circDividerIndex = (items, mark) => {
+// Where the line goes, in whichever order the list is drawn. It is the SAME
+// boundary either way — everything on one side arrived since the member last
+// looked, everything on the other was already there — read from whichever end
+// the list starts at.
+//
+// `newestFirst` (BIZ-136, ruled 2026-09-07; reinstated 2026-09-11 by Joe's own
+// reversal of the no-line-under-oldest-first call) is why this takes an order
+// at all. The list runs new→old by default, so the first item at-or-below the
+// mark IS the boundary. Reverse it and that test matches on row 0 immediately
+// — every list starts with its oldest item — so the plain test returns -1 and
+// the line simply vanishes under oldest-first. That read as a wording problem
+// for a fortnight; the position was broken underneath it. Get this branch
+// wrong again and the line is back to silently not drawing.
+//
+// The mirror is the same question asked from the other end: the first item
+// NEWER than the mark. Both branches keep the both-sides-or-nothing rule — a
+// line with nothing on one side of it names nothing — so a feed that is all
+// new, or all old, still draws none.
+const circDividerIndex = (items, mark, newestFirst = true) => {
   if (!mark || !items || items.length < 2) return -1;
-  const i = items.findIndex((it) => !it.at || it.at <= mark);
+  const i = newestFirst
+    ? items.findIndex((it) => !it.at || it.at <= mark)
+    : items.findIndex((it) => it.at && it.at > mark);
   return i > 0 && i < items.length ? i : -1;
 };
 
@@ -116,19 +132,34 @@ const NewPill = ({ onClick }) => {
 // ---- Feed divider ----------------------------------------------------------
 // The waterline: it sits where the last visit ended, BELOW the arrivals. A word
 // on that boundary is read as a header for what follows it, so the label names
-// the past — "Earlier" — and never claims the new cards above. No count, no
-// arrow, no affordance, and nothing closing off the items beneath it.
+// what follows the line, not a side of it.
+//
+// Order-dependent (ruling 25, 2026-09-14, settling the "one word in both
+// orders" hold from 2026-09-11): newest-first still reads `Earlier` — true of
+// the pile beneath the line in that order. Oldest-first reads `Recent`, with a
+// screen-reader label spelling out what it marks (`Recent — since your last
+// visit`) since the visible word alone doesn't carry that under this order.
+// The newest-first screen-reader label is unchanged. Line position and
+// everything else about the divider are untouched by the order.
 //
 // Expressed as a labelled member of the feed's own sequence, not a separator
 // laid across it — role="separator" is invalid inside a list (a list may only
 // contain list items), so it can't survive the feed carrying list semantics.
 // role="listitem" holds the same label and stays valid either way: inert, not
 // focusable, closes off nothing.
-const FeedDivider = () => (
-  <div className="circ-fdiv" role="listitem" aria-label="Earlier — before your last visit">
-    <span className="circ-fdiv-label">Earlier</span>
-  </div>
-);
+// Deliberately undated. `Since Tuesday` was tried and rejected: a date here is
+// a second timestamp on a screen whose cards already carry their own age.
+const FeedDivider = ({ newestFirst = true }) => {
+  const label = newestFirst ? 'Earlier' : 'Recent';
+  const a11yLabel = newestFirst
+    ? 'Earlier — before your last visit'
+    : 'Recent — since your last visit';
+  return (
+    <div className="circ-fdiv" role="listitem" aria-label={a11yLabel}>
+      <span className="circ-fdiv-label">{label}</span>
+    </div>
+  );
+};
 
 // ---- The two newness treatments -------------------------------------------
 // glow — any card above the waterline, fresh loads included. It waits until the
@@ -138,7 +169,7 @@ const FeedDivider = () => (
 //        card inserts into a feed the member is already watching.
 // Under prefers-reduced-motion the card does not travel and the glow still plays
 // (the CSS keeps circ-glow alive and drops circ-rise).
-const CircGlow = ({ glow, rise, children }) => {
+const CircGlow = ({ glow, rise, style, children }) => {
   const ref = React.useRef(null);
   const [inView, setInView] = React.useState(false);
   React.useEffect(() => {
@@ -160,7 +191,11 @@ const CircGlow = ({ glow, rise, children }) => {
     return () => { cancelAnimationFrame(raf); io.disconnect(); };
   }, [glow, inView]);
   const cls = ((glow && inView) ? 'circ-glow ' : '') + (rise ? 'circ-rise' : '');
-  return <div ref={ref} className={cls || undefined}>{children}</div>;
+  // `style` is grid's own doing (main.jsx passes height:'100%' there so this
+  // div — the row's direct grid-cell child, once the surrounding <Fragment>
+  // is skipped — stretches the card to match its neighbour). Undefined
+  // everywhere else, same as before this prop existed.
+  return <div ref={ref} className={cls || undefined} style={style}>{children}</div>;
 };
 
 // ---- Simulated arrivals (the timed check / Config staging) ------------------

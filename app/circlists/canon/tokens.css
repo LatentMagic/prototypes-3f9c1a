@@ -23,7 +23,7 @@
   --color-accent-soft:      #ECFDF5;  /* Reserved — focus-ring bg only */
 
   /* Sage — the mark's halo. Opaque brand colour (reads at 16px favicon on any
-     ground); NOT the accent, never a status or action colour. Brand mark only. */
+     ground); NOT the accent, never a status or action colour. */
   --color-sage:             #8BBFAD;
 
   /* NOT approved fallbacks. Kept in case a fallback is needed later — never use without raising it to the user first. */
