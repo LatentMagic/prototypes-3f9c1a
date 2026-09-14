@@ -514,10 +514,10 @@ const CIRC_DENSITY_OPTIONS = [
   { id: 'compact', label: 'Compact' },
 ];
 
-// `saved`/`onSaved` (feed-enhancement candidate build, ratified run 9): a
-// deletable aid inside a deletable aid. Absent feed-saved-readings.jsx ⇒ no
-// window.CIRC_SAVED_LENS_OPTIONS ⇒ `showSavedGroup` below is false, so the
-// panel degrades to two bare groups — no throw, no dead group.
+// `saved`/`onSaved` (feed-enhancement candidate build, ratified run 9): the
+// Saved group only shows where the caller offers a handler — `onSaved` is
+// null wherever Saved doesn't apply (BIZ-136, main.jsx `showSavedLens`), so
+// that presence is the whole gate. No throw, no dead group.
 const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
@@ -533,7 +533,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // here existed only for Grid, which was desktop-only; with Grid vetoed there
   // is nothing left that varies by viewport.
   const densityOptions = CIRC_DENSITY_OPTIONS;
-  const showSavedGroup = !!onSaved && !!window.CIRC_SAVED_LENS_OPTIONS;
+  const showSavedGroup = !!onSaved;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was
   // correct for the keyboard and wrong on screen: Chromium treats a

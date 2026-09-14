@@ -132,19 +132,15 @@ const NewPill = ({ onClick }) => {
 // ---- Feed divider ----------------------------------------------------------
 // The waterline: it sits where the last visit ended, BELOW the arrivals. A word
 // on that boundary is read as a header for what follows it, so the label names
-// the past — "Earlier" — and never claims the new cards above. No count, no
-// arrow, no affordance, and nothing closing off the items beneath it.
+// what follows the line, not a side of it.
 //
-// FIXED, one label, drawn in BOTH orders (Joe's call, 2026-09-11, reversing
-// Sally's same-day ruling that it should draw newest-first only). `Earlier`
-// reads as true of the pile beneath the line in a newest-first feed and is not
-// guaranteed to under oldest-first — Joe knows this and is parking it
-// deliberately, rather than accepting a boundary label (`Last visit`, tried
-// 2026-09-07) or an order-following pair (`Earlier`/`New`, tried the same
-// morning as this reversal). He is bringing his own candidate words next
-// session; until then the ONE word stays put in both orders. No order prop on
-// this component — the label never changes, only `circDividerIndex` above
-// takes the order, to find the right ROW in a reversed list.
+// Order-dependent (ruling 25, 2026-09-14, settling the "one word in both
+// orders" hold from 2026-09-11): newest-first still reads `Earlier` — true of
+// the pile beneath the line in that order. Oldest-first reads `Recent`, with a
+// screen-reader label spelling out what it marks (`Recent — since your last
+// visit`) since the visible word alone doesn't carry that under this order.
+// The newest-first screen-reader label is unchanged. Line position and
+// everything else about the divider are untouched by the order.
 //
 // Expressed as a labelled member of the feed's own sequence, not a separator
 // laid across it — role="separator" is invalid inside a list (a list may only
@@ -153,11 +149,17 @@ const NewPill = ({ onClick }) => {
 // focusable, closes off nothing.
 // Deliberately undated. `Since Tuesday` was tried and rejected: a date here is
 // a second timestamp on a screen whose cards already carry their own age.
-const FeedDivider = () => (
-  <div className="circ-fdiv" role="listitem" aria-label="Earlier — before your last visit">
-    <span className="circ-fdiv-label">Earlier</span>
-  </div>
-);
+const FeedDivider = ({ newestFirst = true }) => {
+  const label = newestFirst ? 'Earlier' : 'Recent';
+  const a11yLabel = newestFirst
+    ? 'Earlier — before your last visit'
+    : 'Recent — since your last visit';
+  return (
+    <div className="circ-fdiv" role="listitem" aria-label={a11yLabel}>
+      <span className="circ-fdiv-label">{label}</span>
+    </div>
+  );
+};
 
 // ---- The two newness treatments -------------------------------------------
 // glow — any card above the waterline, fresh loads included. It waits until the

@@ -1225,9 +1225,9 @@ const CircApp = () => {
       // right row in a reversed list (see its own header, liveliness.jsx) — get
       // that branch wrong and the line silently stops drawing under
       // oldest-first, which is the bug that cost a fortnight the first time.
-      // The label stays fixed `Earlier` regardless: Joe knows it may not read
-      // true of the pile beneath it in every order and is parking that
-      // deliberately, candidate words to follow from him directly.
+      // The label itself is order-dependent (ruling 25) — see FeedDivider in
+      // liveliness.jsx — but the line's position and the mark it's drawn from
+      // are untouched by which order the feed reads in.
       const divIdx = (tab === 'active')
         ? window.circDividerIndex(visible, dividerAt, order === 'newest') : -1;
       const feed = (feedError && window.FeedError) ? (
@@ -1354,7 +1354,7 @@ const CircApp = () => {
                   || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
                 return (
                   <React.Fragment key={item.id}>
-                    {i === divIdx && <div><FeedDivider /></div>}
+                    {i === divIdx && <div><FeedDivider newestFirst={order === 'newest'} /></div>}
                     {/* CircGlow's own div is this row's direct grid-cell
                         child (the Fragment wrapping it renders no DOM node),
                         so it needs BOTH halves of the fix:
