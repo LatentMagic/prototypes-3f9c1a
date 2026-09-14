@@ -377,16 +377,19 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
                     <Icon name="check" size={m.actionIcon.check} />
                   </button>
                 )}
-              {/* Set apart from the posture slot, in weight and in distance.
+              {/* Set apart from the posture slot in weight, not distance.
                   The design review measured the Read row as two dot-triads of
-                  the same ink 44px apart — the way-through disc and this — and
-                  was right that more gap alone leaves two marooned marks
-                  rather than one action plus card chrome. So the separation is
-                  the app's own mechanism instead: hierarchy by weight, never
-                  colour. This drops a step to fg-3 while the posture action
-                  keeps fg-2, and takes a real gap so the pair reads as two
-                  zones. NOT a drawn hairline — this row's own rule is that the
-                  hover inset carries separation.
+                  the same ink 44px apart — the way-through disc and this —
+                  and was right that more gap alone leaves two marooned marks
+                  rather than one action plus card chrome. Hierarchy by
+                  weight is the separation: this drops a step to fg-3 while
+                  the posture action keeps fg-2. RULING 14 (2026-09-14): a
+                  run on 2026-09-08 added a marginLeft here as a second,
+                  distance-based separation on top of the weight drop — that
+                  extra gap pushed the trigger's right edge past the
+                  thumbnail's and was ruled a defect, reverted. The row's own
+                  rule still holds: no drawn hairline, hover inset carries
+                  whatever separation distance is meant to contribute.
                   The stronger answer is the review's first: lift the menu off
                   the attribution line to the card's trailing corner, where
                   Readwise puts it and where card-scoped actions belong. That
@@ -398,7 +401,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
                 onClick={() => { if (!menuOpen) onAct(); setMenuOpen((o) => !o); }}
                 aria-haspopup="menu" aria-expanded={menuOpen}
                 aria-label={'More actions for ' + menuLabel}
-                style={{ color: 'var(--color-fg-3)', marginLeft: m.actionPull ? 4 : 8 }}>
+                style={{ color: 'var(--color-fg-3)' }}>
                 <Icon name="more-vertical" size={m.actionIcon.more} />
               </button>
               {menuOpen && menuPortalTarget() && ReactDOM.createPortal(
