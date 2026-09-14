@@ -1586,7 +1586,11 @@ const CircApp = () => {
           {!loadingFeed && !(isSheetPosture && sortMenuOpen)
             && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
                  bottom={isApp ? (window.APP_FAB_BOTTOM || null) : null} />}
-          <AddReveal open={addOpen} isMobile={isMobile} onClose={() => setAddOpen(false)} onAdd={addItem} />
+          {/* `isSheetPosture` (640, BIZ-136 2026-09-14), not `isMobile`'s 1024
+              — sheet-vs-popover is the same boundary as FeedLens and
+              GateOverlay now share; the FAB above stays on `isMobile` since
+              its 24/32px offset is layout, not a sheet choice. */}
+          <AddReveal open={addOpen} isMobile={isSheetPosture} onClose={() => setAddOpen(false)} onAdd={addItem} />
         </>
       );
     }
