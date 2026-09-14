@@ -368,15 +368,15 @@ const LensSegmented = ({ label, caption, options, value, onPick }) => {
   );
 };
 
-// Multi-select keyboard behaviour for the contributor list (BIZ-136, ruling
+// Multi-select keyboard behaviour for the merged filter list (BIZ-136, ruling
 // 2026-09-14): arrows move focus only — they no longer also select, because
 // more than one row can be checked at once and a moving selection would
 // silently drag the filter along with focus. Space/Enter still toggles,
 // through the button's own native activation; nothing here has to handle it.
-const useLensListKeys = (options, refs) => (e) => {
+const useLensListKeys = (rowCount, refs) => (e) => {
   const cur = refs.current.indexOf(document.activeElement);
   const start = cur === -1 ? 0 : cur;
-  const last = options.length - 1;
+  const last = rowCount - 1;
   let next = null;
   if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next = start === last ? 0 : start + 1;
   else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = start === 0 ? last : start - 1;
@@ -388,90 +388,109 @@ const useLensListKeys = (options, refs) => (e) => {
   if (el) el.focus({ preventScroll: true });
 };
 
-// Added by — stays a vertical list (N contributors, not two options to put
-// side by side), bounded so a large circle scrolls the list rather than
-// growing the panel. Selected mark is the app's own selected-list-row
-// language from shell.jsx (RailBody's active-circle bar): a 2px accent left
-// bar plus weight + colour. Unselected rows carry a transparent 2px bar of
-// the same width, so nothing shifts horizontally when the selection moves.
-// `bounded` (BIZ-136 run 9): whether this list caps its own height and scrolls.
-// True in the desktop popover, which is anchored and must not grow down the
-// page. FALSE in the mobile sheet, where the sheet itself is the scroll region
-// — a capped list inside a scrolling sheet is two scrollers stacked, and a
-// thumb landing on the list scrolls the list while a thumb two pixels outside
-// it scrolls the sheet, which is the same gesture doing different things.
+// FILTER, one checklist (BIZ-136, Joe's ruling 2026-09-14, "One list" from the
+// lens filter playground — source `_resources/lens-filter-playground/`,
+// `LfOneList`). Saved and the contributors share one list under the FILTER
+// eyebrow, with NO group headings and no "Everyone" row: nothing ticked is
+// already everything, the region's own rule (`circLensActive` above), so a
+// second control saying so was redundant with the door's own claim. Its
+// stated cost, not separately ruled: with nothing ticked, only the absent
+// chip row says the feed is complete — nothing on screen names the default.
 //
-// MULTI-SELECT (BIZ-136, Joe's ruling 2026-09-14). `value` is the array of
-// selected contributors, not a single one — so this is a `group` of
-// checkboxes rather than a `radiogroup`, every row keeps its own tab stop
-// (there is no single "checked" row to rove tabindex around), and "Everyone"
-// is itself one of the rows: checked when the array is empty, and picking it
-// clears every contributor at once rather than toggling itself into the set.
-const LensList = ({ label, options, value, onPick, bounded = true }) => {
+// Saved leads when it is offered (`showSaved` — the same presence rule the
+// group always carried, computed by the caller), set apart by a hairline,
+// carrying its privacy line as the row's own second line rather than a
+// caption above the group — there is no group label left to sit under.
+// Tapping a ticked row clears it, the same call a chip's × makes.
+//
+// `bounded` (BIZ-136 run 9, carried over): whether the list caps its own
+// height and scrolls. True in the desktop popover, which is anchored and
+// must not grow down the page. FALSE in the mobile sheet, where the sheet
+// itself is the scroll region — a capped list inside a scrolling sheet is two
+// scrollers stacked, and a thumb landing on the list scrolls the list while a
+// thumb two pixels outside it scrolls the sheet, which is the same gesture
+// doing different things. Saved rides inside the same scroll region as the
+// people below it now that they are one list.
+const LensFilterFace = ({ on }) => (
+  // The Saved mark as a face: the card's own filled bookmark in the avatar's
+  // circle, so it lines up with the people beneath it. Accent only while on.
+  <span aria-hidden="true" style={{
+    width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
+    color: on ? 'var(--color-accent)' : 'var(--color-fg-2)',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'color var(--duration-base) var(--ease-quiet)',
+  }}><Icon name="bookmark-filled" size={12} /></span>
+);
+
+const LensFilterRow = React.forwardRef(({ on, onClick, lead, label, sub }, ref) => (
+  <button ref={ref} type="button" role="checkbox" aria-checked={on} tabIndex={0}
+    onClick={onClick} className="circ-lens-seg"
+    style={{
+      width: '100%', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left',
+      background: 'transparent', border: 0, cursor: 'pointer', borderRadius: 'var(--radius-sm)',
+      minHeight: 'var(--tap-target-min)', fontFamily: 'var(--font-sans)', color: 'var(--color-fg-1)',
+      padding: sub ? '8px 10px' : '0 10px',
+    }}>
+    {lead}
+    <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <span style={{
+        fontSize: 'var(--text-sm)', fontWeight: on ? 600 : 500,
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}>{label}</span>
+      {sub && <span style={{ fontSize: 'var(--text-xs)', lineHeight: 1.35, color: 'var(--color-fg-3)' }}>{sub}</span>}
+    </span>
+    <span aria-hidden="true" style={{
+      width: 20, flexShrink: 0, display: 'inline-flex', justifyContent: 'center',
+      color: 'var(--color-accent)', opacity: on ? 1 : 0,
+      transform: on ? 'scale(1)' : 'scale(0.6)',
+      transition: 'opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet)',
+    }}><Icon name="check" size={16} /></span>
+  </button>
+));
+
+const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, bounded = true }) => {
   const refs = React.useRef([]);
-  const onKey = useLensListKeys(options, refs);
+  const rowCount = options.length + (showSaved ? 1 : 0);
+  const onKey = useLensListKeys(rowCount, refs);
   const selected = value || [];
-  const isOn = (o) => (o.everyone ? selected.length === 0 : selected.indexOf(o.id) !== -1);
+  let idx = 0;
   return (
     // No bottom padding: a half-cut row has to be cut BY the container edge to
     // read as "more below". Ten pixels of white under the slice read as a
     // rendering fault instead. In the sheet the list runs to its natural end,
     // so it takes the normal bottom pad back.
     <div style={{ padding: bounded ? '6px 10px 0' : '6px 10px 4px' }}>
-      <LensLabel>{label}</LensLabel>
-      <div role="group" aria-label={label} onKeyDown={onKey} style={{
+      <div role="group" aria-label="Filter links" onKeyDown={onKey} style={{
         display: 'flex', flexDirection: 'column', gap: 1,
         // 4 full 44px rows + a deliberately half-cut fifth, so a circle with more
-        // contributors than fit SHOWS that it has more. A round multiple of the
-        // row height ends flush and reads as a complete list.
+        // rows than fit SHOWS that it has more. A round multiple of the row
+        // height ends flush and reads as a complete list.
         ...(bounded ? { maxHeight: 202, overflowY: 'auto' } : null),
       }}>
-        {options.map((o, i) => {
-          const on = isOn(o);
+        {showSaved && (() => {
+          const savedIdx = idx++;
           return (
-            <button
-              key={String(o.id)}
-              ref={(el) => { refs.current[i] = el; }}
-              type="button" role="checkbox" aria-checked={on} tabIndex={0}
-              onClick={() => onPick(o.id)}
-              className="circ-lens-seg"
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', textAlign: 'left',
-                background: 'transparent', border: 0, cursor: 'pointer',
-                borderLeft: '2px solid ' + (on ? 'var(--color-accent)' : 'transparent'),
-                padding: '0 10px 0 8px', minHeight: 'var(--tap-target-min)',
-                fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
-                fontWeight: on ? 600 : 500,
-                // NOT accent text. The rail's selected circle row — this app's
-                // own list-selection language — marks itself with an accent bar
-                // and weight, and leaves the label in fg-1. Colouring the label
-                // too stacked a third signal on the one group that could not
-                // become a segmented control, which is the defect the whole
-                // rework exists to remove.
-                color: 'var(--color-fg-1)',
-              }}
-            >
-              {/* The face sits in the row's leading edge at 24px — the card's
-                  avatar, one step down for a dense secondary row. `Everyone` is
-                  the ABSENCE of a filter, so it takes the app's own `users`
-                  glyph rather than a face: a blank gap there reads as an avatar
-                  that failed to load, and a face would imply a person. Same
-                  circle chrome either way, so the label column stays aligned. */}
-              {o.everyone
-                ? <span aria-hidden="true" style={{
-                    width: 24, height: 24, borderRadius: '50%', flexShrink: 0, marginRight: 8,
-                    background: 'var(--color-surface-sunken)', border: '1px solid var(--color-border-1)',
-                    color: 'var(--color-fg-3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  }}><Icon name="users" size={13} /></span>
-                : <span aria-hidden="true" style={{ marginRight: 8, display: 'inline-flex' }}>
-                    {/* Same accent fill the card gives your own avatar
-                        everywhere else it appears — Joe's ruling overrides
-                        the earlier neutral-by-design call this comment used
-                        to record. */}
-                    <Avatar name={o.face} size={24} accent={o.accent} />
-                  </span>}
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.label}</span>
-            </button>
+            <React.Fragment>
+              <LensFilterRow ref={(el) => { refs.current[savedIdx] = el; }}
+                on={!!saved} onClick={() => onSaved(!saved)}
+                lead={<LensFilterFace on={!!saved} />} label="Saved" sub="Only you can see these" />
+              <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '4px 2px' }} />
+            </React.Fragment>
+          );
+        })()}
+        {options.map((o) => {
+          const i = idx++;
+          return (
+            <LensFilterRow key={String(o.id)} ref={(el) => { refs.current[i] = el; }}
+              on={selected.indexOf(o.id) !== -1} onClick={() => onPick(o.id)}
+              lead={<span aria-hidden="true" style={{ display: 'inline-flex' }}>
+                {/* Same accent fill the card gives your own avatar everywhere
+                    else it appears — Joe's ruling overrides the earlier
+                    neutral-by-design call this comment used to record. */}
+                <Avatar name={o.face} size={24} accent={o.accent} />
+              </span>}
+              label={o.label} />
           );
         })}
       </div>
@@ -610,19 +629,21 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // vocabulary: a former member resolves to null, which is what FeedCard passes
   // for the same person and what renders the two-dot mark. `isYou` picks up the
   // accent fill exactly as the card's does.
-  const whoOptions = [{ id: CIRC_LENS_ALL, label: 'Everyone', face: null, everyone: true }].concat(
-    (contributors || []).map((w) => ({
-      id: w,
-      label: circContributorLabel(w),
-      // The member's OWN initials, not the word's. Deriving the face from the
-      // label rendered 'YO' for a person every card in the same view calls
-      // 'SR' — one person, two avatars, one screen apart. displayName(user) is
-      // exactly what FeedCard resolves for the same row.
-      face: /^former member$/i.test(w) ? null
-        : (/^you$/i.test(w) && user ? displayName(user) : circContributorLabel(w)),
-      accent: circIsYou(w),
-    }))
-  );
+  //
+  // No "Everyone" row (BIZ-136, Joe's ruling 2026-09-14, "One list"): nothing
+  // ticked already means everyone, the region's own rule, so a row saying so
+  // was a second control making the same claim the door already makes.
+  const whoOptions = (contributors || []).map((w) => ({
+    id: w,
+    label: circContributorLabel(w),
+    // The member's OWN initials, not the word's. Deriving the face from the
+    // label rendered 'YO' for a person every card in the same view calls
+    // 'SR' — one person, two avatars, one screen apart. displayName(user) is
+    // exactly what FeedCard resolves for the same row.
+    face: /^former member$/i.test(w) ? null
+      : (/^you$/i.test(w) && user ? displayName(user) : circContributorLabel(w)),
+    accent: circIsYou(w),
+  }));
   // A filtered contributor whose last link is read away or deleted drops out of
   // `contributors` while the filter is still on. Without this the group has no
   // checked option for them, and the whole row becomes unreachable by keyboard
@@ -639,7 +660,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // feed-saved-readings.jsx and drop to a one-contributor circle and the panel
   // degrades to two bare groups rather than to a labelled section with a gap
   // where its sibling was.
-  const hasFilterGroups = showSavedGroup || whoOptions.length > 1;
+  const hasFilterGroups = showSavedGroup || whoOptions.length > 0;
 
   // The name carries the whole applied state, so a screen reader hears the lens
   // without opening it.
@@ -794,10 +815,10 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // safe-area inset, which is what AddReveal's own sheet uses.
             padding: '0 0 calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
             // ONE scroll region, which is the second thing four groups broke.
-            // The popover scrolled AND `Added by` scrolled inside it — a
+            // The popover scrolled AND the filter list scrolled inside it — a
             // scroller nested in a scroller, which Linear's own display popover
             // never does. Here the sheet is the only thing that scrolls and the
-            // contributor list is uncapped (see LensList's `bounded`), so a
+            // filter list is uncapped (see LensFilterList's `bounded`), so a
             // thumb dragging anywhere moves one list, not whichever of two it
             // happened to land on.
             //
@@ -910,50 +931,33 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             )}
             <LensSegmented label="View" value={density} onPick={onDensity} options={densityOptions} />
           </LensSectionBody>
-          {/* Reading A (BIZ-136 run 7): the fourth group, ABOVE "Added by" and
-              not below it.
-              It was built last, after Added by, and the design review caught
-              what that cost by looking: this panel scrolls
-              (maxHeight 60vh, overflowY auto) and "Added by" carries its own
-              202px inner scroller, so a group placed after it lands BELOW the
-              panel's clipped edge and is never seen. Worse, it was invisible to
-              every check we had — the element is laid out, so
-              getBoundingClientRect reports it on screen, and its text is in
-              innerText, so a content assertion passes. Only a screenshot showed
-              a heading and a caption with no control under them.
-              So it sits with the other two short groups, and the one divider
-              still separates the fixed controls from the contributor list.
-              The "only you" distinction rides on the caption, as ruled — the
-              position is about being seen at all, not about emphasis. */}
-          {/* Labelled `Show`, not `Saved` (run 9, from the design review). With
-              options `Everything / Saved` a group called `Saved` had its own
-              option for a name, so the applied state read back as
-              "Saved: Saved". `Show` is the question the two options answer, and
-              it keeps the caption anchored to the word `saved` where it
-              belongs — in the sentence that says only you can see it. */}
           {/* FILTER — the controls that conceal cards. These are the ones that
               light the trigger, put a chip in the row, and can be cleared.
               The rule between the two sections is the whole point of labelling
-              them: a member should never have to learn WHICH of these four
-              things the lit icon was talking about.
-              The divider moved here from just above `Added by`, where it used
-              to separate "the fixed controls" from "the contributor list" — a
-              split by control SHAPE. It now falls on the split that carries
-              meaning, and there is still exactly one rule in the panel. */}
+              them: a member should never have to learn WHICH of these things
+              the lit icon was talking about.
+              The divider falls on the split that carries meaning — display vs
+              conceal — and there is still exactly one rule in the panel.
+              ONE LIST (BIZ-136, Joe's ruling 2026-09-14 — the lens filter
+              playground's Option 1, source `_resources/lens-filter-
+              playground/`, `LfOneList`). Saved and the contributors used to be
+              two groups here — a `Show` segmented control (`Everything` /
+              `Saved`) above a separate `Added by` list. Both are gone: Saved
+              and people now share the one checklist `LensFilterList` renders,
+              with no group headings and no "Everyone" row — nothing ticked
+              already means everyone, so a row or a segmented control saying so
+              was a second control making the claim the door already makes.
+              Saved still sits first, above the contributors, for the reason
+              the run-7 comment it replaces recorded: this panel scrolls and a
+              group placed after the contributor rows would land below the
+              clipped edge and never be seen. */}
           {hasFilterGroups && (
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '10px 10px 0' }} aria-hidden="true" />
               <LensSection id="circ-lens-filter">Filter</LensSection>
               <LensSectionBody labelledBy="circ-lens-filter">
-                {showSavedGroup && (
-                  <LensSegmented label="Show" caption={window.CIRC_SAVED_LENS_CAPTION}
-                    value={saved ? 'only' : 'all'}
-                    onPick={(id) => onSaved(id === 'only')}
-                    options={window.CIRC_SAVED_LENS_OPTIONS} />
-                )}
-                {whoOptions.length > 1 && (
-                  <LensList label="Added by" value={who} onPick={onWho} options={whoOptions} bounded={!isMobile} />
-                )}
+                <LensFilterList options={whoOptions} value={who} onPick={onWho}
+                  saved={saved} onSaved={onSaved} showSaved={showSavedGroup} bounded={!isMobile} />
               </LensSectionBody>
             </React.Fragment>
           )}
@@ -1108,8 +1112,8 @@ const circAttributionName = (who) => (circIsYou(who) ? 'you'
 // kind of string any more: "Added by you" is a clause inside a sentence and
 // stays lower-case; standing alone as the WHOLE label (the 390px chip), bare
 // is a fragment on its own line, and a fragment opens capitalised the way any
-// other label in this panel does (LensList's own row labels: 'You', 'Former
-// member'). Only the first character changes — a contributor's own name
+// other label in this panel does (LensFilterList's own row labels: 'You',
+// 'Former member'). Only the first character changes — a contributor's own name
 // ('Sam R.') already opens capitalised and is untouched either way.
 const circAttributionPhrase = (who, bare) => {
   const name = circAttributionName(who);
