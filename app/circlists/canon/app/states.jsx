@@ -48,6 +48,20 @@ function circStateContext(api) {
     const s = seedSpaces(DEFAULT_USER.email);
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
   };
+
+  // Every Scenario reseeds before it stages (fuzz walk, 2026-09-14): Scenarios
+  // are order-dependent otherwise — a stager reuses whatever circles are
+  // already loaded, so damage one Scenario leaves behind (a sleeping circle, a
+  // read-marked link) leaks into the next. Non-navigating, unlike `reset`
+  // above (Config's "Reset to seeded data" keeps that one untouched): it just
+  // clears the slate — persisted state, the user, and every transient harness
+  // flag — for `stage()` to build on top of.
+  const reseed = (fresh) => {
+    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
+    setSpaces(fresh); setUser(DEFAULT_USER);
+    setLoadingFeed(false); setHoldLoading(false);
+    window.CIRC_INVITE_MINT_FAIL = false;
+  };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
@@ -175,7 +189,7 @@ function circStateContext(api) {
 
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
-    openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
+    openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageInviteRefusal,
   };
@@ -229,7 +243,21 @@ window.CIRC_STATES = CIRC_STATE_REGISTER.map(({ id, label, group }) => ({ id, la
 // ---- derived: the bound register main.jsx renders from ---------------------
 function buildStates(api) {
   const ctx = circStateContext(api);
-  const states = CIRC_STATE_REGISTER.map((s) => ({ id: s.id, label: s.label, group: s.group, go: () => s.stage(ctx) }));
+  const { seedSpaces, DEFAULT_USER } = window.CircSeed;
+  // Reseed, then stage against a context built on the FRESH seed, not the
+  // render's own `ctx` — several stagers read `spaces` directly off the
+  // context they're handed (`spaces.length`, a `pointed` lookup, the base a
+  // description edit maps over), and staging with the stale one would let
+  // those overwrite the reseed right back to the damaged data.
+  const states = CIRC_STATE_REGISTER.map((s) => ({
+    id: s.id, label: s.label, group: s.group,
+    go: () => {
+      const fresh = seedSpaces(DEFAULT_USER.email);
+      const c = circStateContext({ ...api, spaces: fresh });
+      c.reseed(fresh);
+      s.stage(c);
+    },
+  }));
   const byId = {};
   const groups = [];
   states.forEach((s) => {

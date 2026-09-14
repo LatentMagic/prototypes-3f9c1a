@@ -76,6 +76,27 @@ function circStateContext(api) {
     setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
     clearFeedError(); clearLegacyRow();
   };
+
+  // Every Scenario reseeds before it stages (fuzz walk, 2026-09-14): Scenarios
+  // are order-dependent otherwise — a stager reuses whatever circles and view
+  // state are already loaded, so damage one Scenario leaves behind (all links
+  // marked read, a circle put to sleep, a lens or search left open) leaks into
+  // the next. Non-navigating, unlike `reset` above (Config's "Reset to seeded
+  // data" keeps that one untouched): it just clears the slate — persisted
+  // state, the user, and every transient harness/view flag a stager would
+  // otherwise inherit — for `stage()` to build on top of.
+  const reseed = (fresh) => {
+    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
+    setSpaces(fresh); setUser(DEFAULT_USER);
+    setLoadingFeed(false); setHoldLoading(false);
+    window.CIRC_INVITE_MINT_FAIL = false;
+    clearFeedError(); clearLegacyRow();
+    setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
+    setSavedOn({}); setSearchQuery({}); setSearchOpen({});
+    if (setSavedMode) setSavedMode('lens');
+    if (setPointedId) setPointedId(null);
+    if (setHomeStripOpen) setHomeStripOpen(false);
+  };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
@@ -567,7 +588,7 @@ function circStateContext(api) {
 
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
-    openCreateSpace, reset, goSpace, stageDormant, stageFunding, stageNonChampion,
+    openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
     stageLegacyRow, stageCircleDescription, stageCircleMicro,
@@ -831,7 +852,22 @@ window.CIRC_STATES = CIRC_STATE_REGISTER.map(({ id, label, group }) => ({ id, la
 // ---- derived: the bound register main.jsx renders from ---------------------
 function buildStates(api) {
   const ctx = circStateContext(api);
-  const states = CIRC_STATE_REGISTER.map((s) => ({ id: s.id, label: s.label, group: s.group, go: () => s.stage(ctx) }));
+  const { seedSpaces, DEFAULT_USER } = window.CircSeed;
+  // Reseed, then stage against a context built on the FRESH seed, not the
+  // render's own `ctx` — several stagers read `spaces` directly off the
+  // context they're handed (`spaces.length`, `stageCircleDescription`'s base,
+  // `stageSort`'s `pointed`/`stageSharedCard` lookups), and staging with the
+  // stale one would let those overwrite the reseed right back to the damaged
+  // data.
+  const states = CIRC_STATE_REGISTER.map((s) => ({
+    id: s.id, label: s.label, group: s.group,
+    go: () => {
+      const fresh = seedSpaces(DEFAULT_USER.email);
+      const c = circStateContext({ ...api, spaces: fresh });
+      c.reseed(fresh);
+      s.stage(c);
+    },
+  }));
   const byId = {};
   const groups = [];
   states.forEach((s) => {
