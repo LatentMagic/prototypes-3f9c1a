@@ -2,12 +2,6 @@
 
 LatentMagic Claude Design prototypes plus a console that browses them.
 
-## What this repo is
-
-- `app/<slug>/` — one self-contained Claude Design prototype each (markup, `tokens.css`, `app/*.jsx`, `favicon.svg`). Copied in verbatim — usually downstream of Claude Design, but fine to hand-edit if instructed.
-- `index.html` — the **Specimen Console** wrapper: a graphite shell with one tab per prototype.
-- `server.js` — zero-dependency Node static server.
-
 ## The working line — `canon`
 
 One state, not a shipped/coming split: **`canon`** is the single agreed-upon prototype — what's been settled on, whether or not it's built yet. Each new Claude Design export for the live line **replaces `app/circlists/canon/` wholesale** (verbatim — usually downstream of Claude Design, but fine to hand-edit if instructed) and gains a `changelog` entry.
@@ -38,8 +32,6 @@ Register one with `kind: 'candidate'`, a `version` naming what it proposes (`pro
 
 ## How the console works
 
-- One `<iframe>` per prototype, so each runs in its own document — full runtime isolation, no shared globals.
-- Each iframe's `src` is set lazily on first tab activation, then tabs toggle with `display`. State survives switching; prototypes don't recompile on every switch.
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
 - **`desc` says what a node *is*, in one or two sentences — never what it carries.** It renders untruncated in the desktop info bar and again at the foot of the mobile drawer, so every feature appended to it is stage space taken from the prototype. Feature history has exactly one home: the `changelog` array behind the Changes button. When a fresh export lands, append a `changelog` entry and leave `desc` alone.
 - Each prototype's optional `changelog` array (same object, in `index.html`) is its actual changelog — rendered in a "recent changes" drawer, per-slug. `README.md`'s one-line-per-prototype summary is documentation, not the changelog; don't confuse the two.
@@ -50,15 +42,6 @@ Register one with `kind: 'candidate'`, a `version` naming what it proposes (`pro
 
 Each prototype's entry HTML (`circlists.html` on the working line; `latentpulse.html` on the legacy slugs) loads `app/*.jsx` via babel-standalone, which **XHR-fetches** each module. Over `file://` that fetch fails on CORS, so the app never mounts. `server.js` serves everything over `http://` on one origin, which makes the fetch succeed.
 
-## Run
-
-```
-npm install   # no-op — zero dependencies
-npm start     # → http://localhost:4321
-```
-
-Node >= 18. `npm install` exists only so the standard `install && start` flow works.
-
 ## Add a prototype
 
 1. Copy its whole export dir into `app/<slug>/` verbatim — the entry HTML (`circlists.html`), `tokens.css`, `favicon.svg`, `app/` with the `.jsx` modules, **any folder the app loads at runtime** (e.g. `brand/`, which holds the lockup/wordmark SVGs the app fetches via `<img>`), and every project doc the export ships (`CLAUDE.md`, `ABOUT.md`, `BRANDING.md`, `CHANGELOG.md`, `DEMO.md`, `INTENT.md`, `docs/`) — they're load-bearing reference material, not clutter. Drop only the authoring-session cruft: `.playwright-mcp/`, `.thumbnail`, `screenshots/`, `skills/`, `scraps/`, and any `uploads/*` subfolder the page itself doesn't fetch. Never strip a folder the browser fetches, or the assets 404.
@@ -66,7 +49,7 @@ Node >= 18. `npm install` exists only so the standard `install && start` flow wo
 
 **Updating the working line** — a fresh export for the live line replaces `app/circlists/canon/` in place (same verbatim rule as step 1 — copy the whole export, including `brand/`). Don't add a new slug; keep the single `canon` entry in `index.html` and append a `changelog` entry to it — the entry is where the new features go, not `desc`. `next` no longer takes updates — see "The working line" above.
 
-**Commit gate** — updates here can't be verified by the user. Commit and push once the agent has verified and is happy.
+**Commit gate** — updates here can't be verified by the user. Commit once the agent has verified and is happy. A push deploys, so the pre-push hook holds it until the user confirms.
 
 ## Deploy
 
