@@ -31,7 +31,7 @@ function log(...args) {
 }
 
 function parseArgs(argv) {
-  const opts = { slug: 'canon', widths: [1280, 390], states: null, port: 4321 };
+  const opts = { slug: 'canon', widths: [1280, 390], states: null, port: Number(process.env.PORT) || 4321 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--slug') opts.slug = argv[++i];
@@ -41,6 +41,7 @@ function parseArgs(argv) {
       opts.states = argv[++i].split(',').map((s) => s.trim()).filter(Boolean);
     } else if (a === '--port') {
       opts.port = parseInt(argv[++i], 10);
+      if (Number.isNaN(opts.port)) throw new Error('--port must be a number');
     } else {
       throw new Error(`unknown arg: ${a}`);
     }
@@ -352,7 +353,7 @@ async function main() {
     log(`summary: ${results.length} checks, ${results.length - fails.length - warned.length} ok, ${warned.length} warn, ${fails.length} FAIL`);
     if (fails.length) exitCode = 1;
   } finally {
-    if (browser) await browser.close();
+    try { if (browser) await browser.close(); } catch { /* still stop the server */ }
     if (serverProc) serverProc.kill();
   }
   process.exit(exitCode);

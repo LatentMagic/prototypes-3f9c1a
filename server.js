@@ -77,5 +77,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log('Prototype console → http://localhost:4321');
+  console.log('Prototype console → http://localhost:' + PORT);
 });
