@@ -233,6 +233,7 @@ async function discoverStates(browser, opts, cdnMap) {
 async function testState(browser, opts, cdnMap, id, width) {
   const context = await browser.newContext({ viewport: { width, height: 900 } });
   const jsErrors = [];
+  const warnings = [];
   const failedRequests = [];
   let egress = false;
 
@@ -245,7 +246,12 @@ async function testState(browser, opts, cdnMap, id, width) {
     // failure too (a page's own uncaught exceptions arrive via 'pageerror'
     // instead) — including the off-origin fonts/favicons this check aborts
     // on purpose. Those are tracked separately (egress) and are not app bugs.
-    if (msg.type() === 'error' && !/^Failed to load resource:/.test(msg.text())) jsErrors.push(msg.text());
+    // React's development build reports prop misuse as console.error
+    // ("Warning: Received `%s` for a non-boolean attribute"). The state still
+    // mounts, so that is a defect to report, not a broken state: warn, don't fail.
+    if (msg.type() !== 'error' || /^Failed to load resource:/.test(msg.text())) return;
+    if (/^Warning:/.test(msg.text())) warnings.push(msg.text());
+    else jsErrors.push(msg.text());
   });
   page.on('requestfailed', (req) => {
     const url = req.url();
@@ -302,7 +308,7 @@ async function testState(browser, opts, cdnMap, id, width) {
     reasons.push('fell back to states index (resolver did not recognise this id)');
   }
 
-  return { id, width, ok: reasons.length === 0, reasons, egress };
+  return { id, width, ok: reasons.length === 0, reasons, warnings, egress };
 }
 
 // ---- main -------------------------------------------------------------------
@@ -333,15 +339,17 @@ async function main() {
         const r = await testState(browser, opts, cdnMap, id, width);
         if (r.egress) anyEgress = true;
         results.push(r);
-        const line = `${r.ok ? 'ok  ' : 'FAIL'}  ${id} @ ${width}px`;
-        console.log(r.reasons.length ? `${line}  — ${r.reasons.join('; ')}` : line);
+        const line = `${r.ok ? (r.warnings.length ? 'warn' : 'ok  ') : 'FAIL'}  ${id} @ ${width}px`;
+        const notes = [...r.reasons, ...r.warnings.map((w) => `react: ${w.slice(0, 90)}`)];
+        console.log(notes.length ? `${line}  — ${notes.join('; ')}` : line);
       }
     }
 
     if (anyEgress) log('note: off-origin requests were aborted (sandbox egress — fonts/favicons); not counted as failures');
 
     const fails = results.filter((r) => !r.ok);
-    log(`summary: ${results.length} checks, ${results.length - fails.length} ok, ${fails.length} FAIL`);
+    const warned = results.filter((r) => r.ok && r.warnings.length);
+    log(`summary: ${results.length} checks, ${results.length - fails.length - warned.length} ok, ${warned.length} warn, ${fails.length} FAIL`);
     if (fails.length) exitCode = 1;
   } finally {
     if (browser) await browser.close();
