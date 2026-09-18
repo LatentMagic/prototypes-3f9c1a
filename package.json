@@ -1,12 +1,16 @@
 {
-  "name": "latentpulse-prototype-console",
+  "name": "prototype-console",
   "private": true,
   "version": "0.1.0",
-  "description": "Zero-dependency console for browsing LatentPulse Claude Design prototypes.",
+  "description": "Console for browsing LatentMagic prototypes (Circlists and others).",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "check": "node tools/check.js"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
   }
 }

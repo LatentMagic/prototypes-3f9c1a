@@ -1,6 +1,6 @@
 'use strict';
 
-// Zero-dependency static file server for the LatentPulse prototype console.
+// Zero-dependency static file server for the Circlists prototype console.
 // Serves the repo over http so each prototype's babel-standalone runtime can
 // XHR-fetch its app/*.jsx files (file:// fails on CORS).
 
@@ -8,7 +8,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 4321;
+const PORT = Number(process.env.PORT) || 4321;
 const HOST = '127.0.0.1';
 const ROOT = __dirname;
 
