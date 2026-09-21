@@ -81,9 +81,8 @@ const circleSummary = (s) => {
 const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip }) => {
   // The strip and its heading are a DELETABLE AID (app/home-returns.jsx),
   // guarded here at the one render site — dropping that file takes the whole
-  // "Conversations" register with it, since neither the heading nor the
-  // caught-up line beneath it means anything without the surface they answer
-  // for. `circleSummary`'s wording above is a direct edit to this file and
+  // "Conversations" register with it, since the heading means nothing without
+  // the surface it answers for. `circleSummary`'s wording above is a direct edit to this file and
   // stays regardless.
   const HomeReturns = window.CircHomeReturns;
   const funded = spaces.filter((s) => s.funded);
@@ -96,13 +95,16 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
   // where nothing connects the two. `--max-feed-width` is the value the feed
   // already uses; this is a reflow to it, not a second layout.
   <main style={{ flex: 1, width: '100%', maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: '18px 16px 28px' }}>
-    {HomeReturns && (
+    {HomeReturns && (HomeReturns.any(funded) || stripOpen) && (
       <React.Fragment>
         <h2 style={HOME_EYEBROW}>Conversations</h2>
-        {/* Always rendered, in every state. The component owns its own empty
-            case (a card saying you are caught up) rather than being swapped out
-            for a caption, so this section never becomes a heading with nothing
-            under it and never changes height between states. */}
+        {/* Heading and strip stand or fall together. When nothing is waiting the
+            whole register is absent — no card, no empty state, no eyebrow. The
+            predicate is the strip module's own (`CircHomeReturns.any`), so the
+            two cannot disagree and leave a heading with nothing under it.
+            `|| stripOpen` keeps an open panel standing on its frozen rows: the
+            hold contract says nothing moves while it is open, and unmounting
+            the section under the member would be the loudest possible move. */}
         <HomeReturns spaces={funded} open={stripOpen} onToggle={onToggleStrip} onEnterSpace={onSelect} />
       </React.Fragment>
     )}

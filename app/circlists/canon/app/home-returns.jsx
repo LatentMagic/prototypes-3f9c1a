@@ -69,7 +69,7 @@
 //
 // DELETABLE AID: guarded at its one render site in app/home.jsx
 // (`window.CircHomeReturns &&`), so deleting this file takes the whole
-// "Conversations" register with it — heading, strip and caught-up card alike —
+// "Conversations" register with it — heading and strip alike —
 // and leaves the circles list standing. It does NOT revert the whole build: the
 // circle row's wording change (`circleSummary`, app/home.jsx) is a direct edit
 // to that file and survives this file's deletion. Saying "exactly as before"
@@ -167,29 +167,15 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
   const rows = open && held ? held.rows : candCrossSnap(live.kept);
   const leftover = open && held ? held.leftover : live.leftover;
 
-  // The caught-up state is rendered HERE, inside the same card, rather than by
-  // the caller in place of this component. Two reasons, and the second is the
-  // one that matters. (1) The design review measured the old shape and called
-  // it a labelled void: an eyebrow over a bare grey caption where a white card
-  // had been, which reads as "the thing that belongs here is missing" rather
-  // than as arrival. Keeping the card, the rule and the head's own weight makes
-  // it a REPORT — the section says what is true instead of vanishing, and its
-  // height stops changing between states. (2) The caller previously computed
-  // its own `anyFresh` to decide between this component and a caption, so one
-  // predicate lived in two places; if they had ever disagreed the result was a
-  // heading with nothing beneath it, which is exactly the headless-group defect
-  // that got through every check one run ago. One source of truth now.
-  if (!rows.length) {
-    return (
-      <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow-raised)', overflow: 'hidden', marginBottom: 22 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '10px 14px' }}>
-          <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-border-1)', flexShrink: 0 }} />
-          <span style={{ flex: 1, minWidth: 0, ...CROSS_HEAD }}>You&rsquo;re caught up.</span>
-        </div>
-      </div>
-    );
-  }
+  // No conversation waiting means no preview AT ALL — no card, no caption, no
+  // eyebrow (the heading is guarded in app/home.jsx by CircHomeReturns.any,
+  // this module's own predicate, so the section cannot become a heading with
+  // nothing beneath it). Ruled 2026-09-21: home says nothing when there is
+  // nothing to say, because the circle rows beneath already report their own
+  // state. The earlier "You're caught up." card was a report nobody needed
+  // twice. Its cost is that the section's height now changes between states;
+  // that is the accepted trade, not an oversight.
+  if (!rows.length) return null;
 
   return (
     <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-lg)',
@@ -245,6 +231,14 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
       )}
     </div>
   );
+};
+
+// The section's own predicate, so the caller can drop the eyebrow in the same
+// breath the strip drops its card. One source of truth: it is the same
+// bound-and-filtered list the render uses, not a second reading of the data.
+CircHomeReturns.any = (spaces) => {
+  const flat = candCrossRows(spaces);
+  return candCrossBounded(spaces, flat).kept.length > 0;
 };
 
 Object.assign(window, { CircHomeReturns });
