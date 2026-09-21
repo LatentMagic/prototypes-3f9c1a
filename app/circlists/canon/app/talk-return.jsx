@@ -44,6 +44,42 @@ const candBarWho = (item) => {
 // name to a subline.
 const candBarSnap = (rows) => rows.map(i => ({ id: i.id, title: candTitleOf(i), titled: !!i.title, who: candBarWho(i) }));
 
+// ---- clearing the bar (ratified 2026-09-21; the study is
+// docs/specs/lm-652-discourse/playground-clear-in-circle/, the reasoning
+// note-2026-09-21-clear-in-circle.md) -----------------------------------------
+//
+// WHAT CLEARING IS. It moves `talkSeenAt` forward on every card the bar stands
+// for — the same write the conversation surface makes when you leave it
+// (app/talk-surface.jsx). Nothing is deleted, nothing is marked read, and
+// nobody else's view moves; a new reply brings the row back.
+//
+// WHY IT IS A FOOTNOTE AND NOT A ROW, A BAND OR A BUTTON. Four shapes were
+// played and rejected — a sunken band with a bordered control (bloat), the
+// head's freed second line (a hover-filled control has no business in the
+// head), a bare cross in the card's corner (reads "hide this bar"), and this
+// same act drawn in the LIST's register at 13px/500/fg-2, which read as a fifth
+// conversation that had lost its subtitle. The finding that settled it: the
+// register has to change, not the placement. So the act takes the voice the
+// product already uses for a footnote at the foot of a panel — "More in the
+// circles below." on home — 12px, 400, fg-3, no fill, an underline on hover,
+// with the rows' own hairline above it as the boundary between registers.
+//
+// NO TEACHING LINE, deliberately: MICROCOPY TEACHES WHERE THE ACT HAS A
+// CONSEQUENCE THE MEMBER CANNOT SEE. Mark-as-read has one (it moves in your
+// view and not in theirs). Clearing has none, so a sentence explaining it is
+// bloat in the place the product is meant to be calmest.
+//
+// NO UNDO, for now: reversal is a separate question and is not ratified.
+const candBarClear = (api, sp) => {
+  if (!api || !sp) return;
+  const ids = candBarRows(sp).map(i => i.id);
+  if (!ids.length) return;
+  const at = Date.now();
+  api.setSpaces(prev => prev.map(s => s.id !== sp.id ? s : ({
+    ...s, items: s.items.map(i => ids.includes(i.id) ? { ...i, talkSeenAt: at } : i),
+  })));
+};
+
 const CandFeedLead = ({ api }) => {
   const [open, setOpen] = React.useState(false);
   const [held, setHeld] = React.useState(null);
@@ -111,6 +147,11 @@ const CandFeedLead = ({ api }) => {
     if (open) { setOpen(false); setHeld(null); }
     else { setHeld(candBarSnap(rows)); setOpen(true); }
   };
+  // The panel closes first: the rows it is listing are about to not exist, and
+  // an open panel playing its removal full of rows is the bar arguing with
+  // itself. Collapsing also releases the held removal, so the bar leaves in its
+  // ordinary motion rather than needing one of its own.
+  const clear = () => { setOpen(false); setHeld(null); candBarClear(api, sp); };
 
   const slot = { '--cand-bar-mb': 'max(0px, calc(var(--circ-feed-pad-top, 16px) - 16px))', marginBottom: 'var(--cand-bar-mb)' };
   if (barH != null) slot['--cand-bar-h'] = barH + 'px';
@@ -139,24 +180,47 @@ const CandFeedLead = ({ api }) => {
           </span>
         </button>
         {open && (
-          <div style={{ borderTop: '1px solid var(--color-border-2)', padding: '4px 6px 6px' }}>
-            {snap.map(r => (
-              <button key={r.id} type="button" className="circ-menuitem"
-                onClick={() => { const C = window.CircCandidate; if (C && C.goToCard) C.goToCard({ id: r.id }); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
-                  background: 'transparent', border: 0, cursor: 'pointer', minHeight: 48, padding: '7px 8px', borderRadius: 'var(--radius-md)',
-                  borderTop: '1px solid var(--color-border-2)', borderTopColor: 'var(--color-border-2)' }}
-                data-cand-listrow="">
-                <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {/* No title: the address IS the name, set in mono as the card
-                      sets it (app/feed.jsx:134) — one treatment for a title-less
-                      link wherever it is named. */}
-                  <span style={{ font: r.titled ? '600 13.5px/1.35 var(--font-sans)' : '600 12.5px/1.45 var(--font-mono)', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</span>
-                  <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candNames(r.who)}</span>
-                </span>
-                <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
-              </button>
+          <div style={{ borderTop: '1px solid var(--color-border-2)', padding: '3px 6px', display: 'flex', flexDirection: 'column' }}>
+            {snap.map((r, i) => (
+              <React.Fragment key={r.id}>
+                {/* BETWEEN rows and nowhere else (fixed 2026-09-21, with the
+                    home strip's own composition — LM-652). Every row used to
+                    carry a `borderTop`, so a hairline landed a few pixels under
+                    the card's head seam and the two read as one smudged double
+                    rule; the first row's border was then made transparent from
+                    the stylesheet, which kept its 1px of offset and left the
+                    list unevenly spaced. Inset to the text rather than
+                    full-bleed, so the rule belongs to the list instead of
+                    cutting the card in half. */}
+                {i > 0 && <span role="separator" style={{ height: 1, margin: '3px 0', background: 'var(--color-border-2)' }} />}
+                <button type="button" className="circ-menuitem"
+                  onClick={() => { const C = window.CircCandidate; if (C && C.goToCard) C.goToCard({ id: r.id }); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+                    background: 'transparent', border: 0, cursor: 'pointer', minHeight: 48, padding: '11px 8px 11px 10px', borderRadius: 'var(--radius-md)' }}
+                  data-cand-listrow="">
+                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {/* No title: the address IS the name, set in mono as the card
+                        sets it (app/feed.jsx:134) — one treatment for a title-less
+                        link wherever it is named. */}
+                    <span style={{ font: r.titled ? '600 13.5px/1.35 var(--font-sans)' : '600 12.5px/1.45 var(--font-mono)', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</span>
+                    <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candNames(r.who)}</span>
+                  </span>
+                  <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
+                </button>
+              </React.Fragment>
             ))}
+            {/* The act, last in the panel. The hairline is the rows' own rule, so
+                the boundary between the list and the footnote introduces nothing
+                new; the hit area is 44px while the type is 12px (governance
+                standards/ui-design.md, touch floor — padding carries the target,
+                not the type size). */}
+            <span role="separator" style={{ height: 1, margin: '3px 0', background: 'var(--color-border-2)' }} />
+            <span style={{ display: 'flex' }}>
+              <button type="button" onClick={clear} className="circ-btn-tertiary"
+                style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 10px',
+                  background: 'transparent', border: 0, cursor: 'pointer',
+                  font: '400 var(--text-xs)/1.4 var(--font-sans)', color: 'var(--color-fg-3)' }}>Clear</button>
+            </span>
           </div>
         )}
       </div>

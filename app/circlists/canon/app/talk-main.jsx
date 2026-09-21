@@ -46,7 +46,14 @@ window.CircCandidate = {
   goToCard(item) {
     const api = this.api;
     if (!api || !item) return;
-    api.setRoute('card:' + item.id);
+    const next = 'card:' + item.id;
+    // LM-797 — the reveal's carrying control reloads the page it opened from,
+    // and from the pre-read Overview that page is this one. There is no route
+    // change to make, so the surface reloads itself: a loading state, then the
+    // conversation, real now because the read transition committed with the
+    // reaction.
+    if (api.route === next) { if (window.candReloadSurface) window.candReloadSurface(item.id); return; }
+    api.setRoute(next);
   },
   matchRoute: (r) => typeof r === 'string' && r.slice(0, 5) === 'card:',
   renderRoute: (r, api) => ({

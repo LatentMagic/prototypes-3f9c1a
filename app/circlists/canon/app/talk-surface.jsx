@@ -7,6 +7,17 @@
 // the conversation is anchored beneath it, never free-floating.
 // ============================================================================
 
+// ---- The surface reloading itself (LM-797) ---------------------------------
+// The Swell's reveal keeps its own carrying control, and that control reloads
+// the page it opened from. Pressed on a card's own Overview there is no route
+// change to make — the address is already this page — so the surface is asked
+// to reload itself instead. A two-line signal rather than app state: the
+// reload is nothing main.jsx has to know about, and a flag on the api bridge
+// would be a third thing to keep in step.
+const candSurfaceReloadSubs = new Set();
+const candOnSurfaceReload = (fn) => { candSurfaceReloadSubs.add(fn); return () => { candSurfaceReloadSubs.delete(fn); }; };
+const candReloadSurface = (id) => { candSurfaceReloadSubs.forEach((fn) => fn(id)); };
+
 // The watching control now lives in the fold itself (CandFoldToggle). Kept as an
 // export so the C2 playground's override still resolves; no longer mounted.
 const CandWatchControl = ({ item, api }) => {
@@ -60,13 +71,17 @@ const CandIntro = ({ item, api }) => {
 // in a product that ships no who-read-it signals) and not its bell (the
 // notification-anxiety vocabulary this product avoids by design). The cost is
 // stated: no recognition on arrival, learned by use.
-const CandThreadHead = ({ item, api }) => {
+// `withheld` (LM-797) — the pre-read Overview keeps the row and its label, and
+// loses the glyph: there is nothing to watch yet. Withdrawn, not disabled —
+// prefer a statement to a disabled control, and the statement is the quiet line
+// below, which says when the conversation opens.
+const CandThreadHead = ({ item, api, withheld = false }) => {
   const on = !!item.watching;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 20 }}>
       <CandEyebrow style={{ flexShrink: 0 }}>the conversation</CandEyebrow>
       <span aria-hidden="true" style={{ flex: 1, height: 1, background: 'var(--color-border-2)' }} />
-      <button type="button" className="cand-watchglyph" aria-pressed={on}
+      {!withheld && <button type="button" className="cand-watchglyph" aria-pressed={on}
         aria-label={on ? 'Stop watching this conversation' : 'Watch this conversation'}
         title={on ? 'Stop watching this conversation' : 'Watch this conversation'}
         onClick={() => candToggleWatch(api, item)}
@@ -75,7 +90,7 @@ const CandThreadHead = ({ item, api }) => {
           minHeight: 44, minWidth: 44, padding: 12, margin: '-12px -12px -12px 0',
           color: on ? 'var(--color-accent)' : 'var(--color-fg-3)' }}>
         <CandFoldGlyph size={17} filled={on} />
-      </button>
+      </button>}
     </div>
   );
 };
@@ -373,7 +388,32 @@ const CandSurfaceHead = ({ item, api, children }) => (
   <CandCardRow item={item} tab={item.read ? 'read' : 'active'} api={api} corner>{children}</CandCardRow>
 );
 
-const CandSurface = ({ item, api }) => {
+// The quiet line the conversation's region carries while the card is unread
+// (LM-797). One line, in the conversation's own empty-state register — same
+// size, same secondary ink as "Nothing has been said yet." — because it is the
+// same kind of statement: this region has nothing in it yet, and here is why.
+const CandTalkWithheld = () => (
+  <p style={{ margin: 0, font: '400 13.5px/1.55 var(--font-sans)', color: 'var(--color-fg-3)' }}>The conversation opens once you’ve read this.</p>
+);
+
+// `withheld` (LM-797) — the page has not been handed the conversation. Passed
+// IN rather than read off `item.read`, because the two part company for the
+// length of the Swell: the reaction commits the read transition the moment it
+// is placed, but this page is not told until it reloads. Deriving it here would
+// let the surface behind the reveal re-render as read — the head card gaining
+// its reaction door, the composer appearing — which is a prototype artefact of
+// sharing one store, never something a served page could do.
+//
+// So the head card is rendered from a FROZEN copy of the item, still unread:
+// Mark-as-Read keeps the reaction door's slot exactly as on the Active feed.
+// Below it the composer, the turns and the reaction record are ABSENT, not
+// hidden — nothing in that region renders — and the head row loses its watch
+// glyph.
+const CandSurface = ({ item, api, withheld: withheldProp }) => {
+  const withheld = withheldProp == null ? !item.read : withheldProp;
+  // What the card is allowed to know. Identity is stable while nothing about
+  // the withholding changes, so the card does not remount under the reveal.
+  const shown = React.useMemo(() => (withheld ? { ...item, read: false } : item), [item, withheld]);
   // Extension points for the C5 playground (see skills/build-playground). Read at
   // render, absent in the candidate itself:
   //   CandOpening   — replaces the eyebrow + the contributor's thought, i.e. owns
@@ -385,7 +425,7 @@ const CandSurface = ({ item, api }) => {
   //   CandFoldCtl — what the card's corner draws (C6 swapped the control here).
   const FoldCtl = window.CandFoldCtl || CandCornerSignal;
   const card = (
-    <FeedCard item={item} tab={item.read ? 'read' : 'active'} user={api.user}
+    <FeedCard item={shown} tab={shown.read ? 'read' : 'active'} user={api.user}
       onMarkRead={() => api.requestMarkRead(item)} onDelete={() => api.requestDelete(item)} />
   );
   return (
@@ -394,19 +434,19 @@ const CandSurface = ({ item, api }) => {
       <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%',
         padding: api.isMobile ? '16px 16px 22px' : '28px 24px 22px', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="cand-headcard" style={{ position: 'relative' }}>
-          {HeadWrap ? <HeadWrap item={item} api={api}>{card}</HeadWrap> : card}
+          {HeadWrap ? <HeadWrap item={shown} api={api}>{card}</HeadWrap> : card}
           {/* A card with a thought carries its own corner inside the link card
               (it has to travel and be clipped with it); a card without one has
               no stack, so the corner is drawn here. */}
-          {!(item.thought && !item.pending) && <FoldCtl item={item} api={api} />}
+          {!(shown.thought && !shown.pending) && <FoldCtl item={shown} api={api} />}
         </div>
         <section style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '2px 4px 0' }}>
-          {Opening
+          {Opening && !withheld
             ? <Opening item={item} api={api} />
-            : <CandThreadHead item={item} api={api} />}
-          <CandTalk item={item} api={api} />
+            : <CandThreadHead item={shown} api={api} withheld={withheld} />}
+          {withheld ? <CandTalkWithheld /> : <CandTalk item={item} api={api} />}
         </section>
-        <CandOwnDoor item={item} api={api} />
+        {!withheld && <CandOwnDoor item={item} api={api} />}
       </div>
     </main>
     </CandSurfaceCtx.Provider>
@@ -418,15 +458,50 @@ const CandSurface = ({ item, api }) => {
 const CandSurfaceRoute = ({ api, itemId }) => {
   const item = api.space && api.space.items.find(i => i.id === itemId);
   React.useEffect(() => { if (!item) api.returnToSpace(); }, [!!item]);
+  // What this page has been SERVED, which is not what the store holds. Latched
+  // at arrival and moved only by a reload: a read transition that commits while
+  // the member is standing here does not reach the page until it asks again.
+  // That is the withholding the whole state depends on, and in a prototype
+  // where the surface and the store are the same object it has to be held
+  // deliberately.
+  const [served, setServed] = React.useState(() => !!(item && item.read));
+  // The reload the reveal asks for (LM-797). The loading state is the FEED's own
+  // — one centred brand spinner filling the content region, no skeleton, no
+  // caption — not a third pattern: Overview is an in-shell content region under
+  // the same chrome as the feed, and the full-screen interstitial is for
+  // whole-app waits (signing in, provisioning a circle), which this is not.
+  // Same 700ms as entering a circle, so the two read the same.
+  const [reloading, setReloading] = React.useState(false);
+  React.useEffect(() => {
+    if (!window.candOnSurfaceReload) return;
+    return window.candOnSurfaceReload((id) => {
+      if (id && id !== itemId) return;
+      setReloading(true);
+      setTimeout(() => { setReloading(false); setServed(true); }, 700);
+    });
+  }, [itemId]);
   // The mark moves forward on the way OUT, not on the way in: entry has to leave
   // the mark where it was, or there is nothing for the wash to be read against.
   const apiRef = React.useRef(api);
   apiRef.current = api;
+  // …and only for a page that was actually SERVED the conversation. A withheld
+  // visit showed none of it, so it has seen nothing: stamping the mark there
+  // would make every turn already on the card read as old the first time the
+  // follower actually meets it.
+  const readRef = React.useRef(false);
+  readRef.current = served;
   React.useEffect(() => () => {
+    if (!readRef.current) return;
     candUpdateItem(apiRef.current, itemId, i => ({ ...i, talkSeenAt: Date.now() }));
   }, [itemId]);
   if (!item) return null;
-  return <CandSurface item={item} api={api} />;
+  if (reloading) return (
+    <main style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <FeedLoading />
+    </main>
+  );
+  return <CandSurface item={item} api={api} withheld={!served} />;
 };
 
-Object.assign(window, { CandSurface, CandSurfaceHead, CandSurfaceRoute, CandThreadHead, CandCornerSignal, CandWatchControl, CandTalk, CandTurn, CandTurnMenu, CandIntro, CandOwnDoor });
+Object.assign(window, { candOnSurfaceReload, candReloadSurface, CandTalkWithheld,
+  CandSurface, CandSurfaceHead, CandSurfaceRoute, CandThreadHead, CandCornerSignal, CandWatchControl, CandTalk, CandTurn, CandTurnMenu, CandIntro, CandOwnDoor });

@@ -51,7 +51,7 @@ function circStateContext(api) {
     setOtc, setPostAuthTo, setManageIntent,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-    setSearchQuery, setSearchOpen, setHomeStripOpen, setPointedId,
+    setSearchQuery, setSearchOpen, setHomeStripOpen,
     setFeedError,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
@@ -86,7 +86,6 @@ function circStateContext(api) {
     clearFeedError();
     setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
     setSavedOn({}); setSearchQuery({}); setSearchOpen({});
-    if (setPointedId) setPointedId(null);
     if (setHomeStripOpen) setHomeStripOpen(false);
   };
   const goSpace = (id, toRoute) => {
@@ -302,7 +301,7 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pointed = null, pendingCount = 0 }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0 }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead`. Applied BEFORE
@@ -354,23 +353,6 @@ function circStateContext(api) {
     // to a query is the trigger, which sets the flag; it happened only on the
     // ?state= URLs, which are exactly the links Joe follows.
     setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
-    // The pointed card (BIZ-136 wild feature — sharing). `pointed` is an INDEX
-    // into the staged tab's own sorted order, not an item id, for the same
-    // reason `saved` is: an id is a seed detail that moves the day the seed
-    // does, and every other index in this stager is positional.
-    // Always fully replaced, so an entry that says nothing about sharing lands
-    // with nothing pointed at rather than inheriting the last entry's card.
-    if (setPointedId) setPointedId(null);
-    if (setPointedId && pointed !== null) {
-      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
-      const scoped = ((sp && sp.items) || []).filter(i => (tab === 'read' ? i.read : !i.read));
-      const sortedScope = window.circSortItems ? window.circSortItems(scoped, order) : scoped;
-      const target = sortedScope[pointed];
-      // After the tab and circle writes settle, for the same reason the lens
-      // panel's own open is deferred: main.jsx clears transient view state on a
-      // tab or circle change, and an entry sets both.
-      if (target) setTimeout(() => setPointedId(target.id), 80);
-    }
     setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
     setTab(tab);
     // Opened AFTER the route settles, not before, and AFTER the tab/circle
@@ -455,23 +437,21 @@ function circStateContext(api) {
     setCurrentId('sp-one'); setTab('active'); setRoute('space'); setLoadingFeed(false);
   };
 
-  // Arriving on a shared card address (BIZ-136 wild feature). ONE stager for
-  // both ends, because in the product they are one route: the address means
-  // "this card", and the follower's own read-state decides what they meet.
-  // Staging them from two different helpers would have made them look like two
-  // features, which is the thing the design is arguing against.
+  // Arriving on a shared card address (BIZ-136 wild feature; LM-797). ONE
+  // stager, and now one destination: the address always opens the card's
+  // Overview, and read-state decides what that Overview shows. `read` picks
+  // which of the two states the entry stands the reviewer in front of, and it
+  // sets the tab underneath, because that is where Back lands.
   const stageSharedCard = ({ space = 'sp-backend', read = false, index = 1 } = {}) => {
-    stageSort({ space, tab: read ? 'read' : 'active', order: 'newest', pointed: read ? null : index });
-    if (!read) return;
-    // The read branch lands on Overview, which is the candidate module's own
-    // route. Deferred past the tab and circle writes for the same reason every
-    // other post-stage act here is: main.jsx clears transient view state when
-    // either changes.
+    stageSort({ space, tab: read ? 'read' : 'active', order: 'newest' });
+    // Overview is the candidate module's own route. Deferred past the tab and
+    // circle writes for the same reason every other post-stage act here is:
+    // main.jsx clears transient view state when either changes.
     setTimeout(() => {
       const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
-      const scoped = ((sp && sp.items) || []).filter(i => i.read);
+      const scoped = ((sp && sp.items) || []).filter(i => (read ? i.read : !i.read));
       const sorted = window.circSortItems ? window.circSortItems(scoped, 'newest') : scoped;
-      const target = sorted[index];
+      const target = sorted[index] || sorted[0];
       const C = window.CircCandidate;
       if (target && C && C.goToCard) C.goToCard({ id: target.id });
     }, 160);
@@ -603,18 +583,20 @@ const CIRC_STATE_REGISTER = [
   // member's narrowing is still what they set — hiding it would make a failed
   // load look like a cleared filter.
   { group: 'The feed', id: 'feed-load-error-lens', label: 'Feed — the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
-  // Sharing a card (wild feature, 2026-09-07). The two ends of one address. A
-  // shared card link means "this card", and what the follower meets depends
-  // on THEIR OWN read-state — not on anything the sharer chose. Open them as
-  // a pair; the difference between them is the whole design.
+  // Sharing a card (wild feature, 2026-09-07; LM-797). Two states of ONE
+  // destination: the address always opens the card's Overview, and what the
+  // follower meets there depends on THEIR OWN read-state — not on anything the
+  // sharer chose. Open them as a pair; the difference between them is the whole
+  // design. The unread entry is the only way to reach the pre-read Overview
+  // without walking an address in from outside the app.
   //
   // The third end has no entry of its own on purpose: a follower who is not in
   // the circle, or whose card has been deleted for everyone, meets the
   // not-found page (`not-found-page`). That page already refuses to say which
   // of those it was, which is the privacy answer, and a second copy of it
   // staged under a sharing label would imply it is a different screen.
-  { group: 'The feed', id: 'share-arrival-unread', label: 'Shared card — they have not read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
-  { group: 'The feed', id: 'share-arrival-read', label: 'Shared card — they have read it (Overview)', stage: (c) => c.stageSharedCard({ read: true }) },
+  { group: 'The feed', id: 'share-arrival-unread', label: 'Shared card — Overview before they have read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
+  { group: 'The feed', id: 'share-arrival-read', label: 'Shared card — Overview once they have read it', stage: (c) => c.stageSharedCard({ read: true }) },
 
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
@@ -670,7 +652,7 @@ function buildStates(api) {
   // Reseed, then stage against a context built on the FRESH seed, not the
   // render's own `ctx` — several stagers read `spaces` directly off the
   // context they're handed (`spaces.length`, `stageCircleDescription`'s base,
-  // `stageSort`'s `pointed`/`stageSharedCard` lookups), and staging with the
+  // `stageSharedCard`'s own lookup), and staging with the
   // stale one would let those overwrite the reseed right back to the damaged
   // data.
   const states = CIRC_STATE_REGISTER.map((s) => ({

@@ -5,8 +5,6 @@
 //   CardShareMenuItem    — the act, as an item in the card's kebab menu (run 10).
 //   circCardLocalUrl     — the address it hands over.
 //   circReadCardParam    — reading one back on boot.
-//   circPointedStyle     — how a card that was pointed at is drawn, and how
-//                          that mark fades when it clears.
 //
 // A DELETABLE AID. Drop this file and every share affordance disappears, the
 // action rows return to what they were, and an incoming card address falls
@@ -22,43 +20,25 @@
 // reason a share button is worth a slot in a row this app keeps deliberately
 // thin.
 //
-// ---- WHAT THE FOLLOWER MEETS, WHICH IS THE HARD PART -----------------------
+// ---- WHAT THE FOLLOWER MEETS (LM-797) --------------------------------------
 //
-// One address, two states, decided by the FOLLOWER'S OWN read-state rather than
-// by the sharer.
+// **One address, one destination: the card's Overview.** Read or unread, the
+// address resolves to the same place. What read-state decides is what that
+// Overview SHOWS — pre-read it withholds the conversation and stands
+// Mark-as-Read in the head card's door slot (app/talk-surface.jsx) — never
+// where the address leads.
 //
-//   they have read it   ──▶ Overview. The card's own surface, the conversation
-//                           on it, everything. Nothing new is built for this.
-//   they have not       ──▶ the feed, on Active, scrolled to that card, with
-//                           the card POINTED AT.
+// This replaces a two-destination arrival: read went to Overview, unread went
+// to the Active feed with the card POINTED AT, wearing a 2px accent bar and the
+// arrival glow. Both the second destination and its treatment are retired. The
+// rule it was protecting — an unread card carries no way through — is intact:
+// nothing on the Active feed opens an unread card's Overview, and the shared
+// address remains the only way in. The conversation is not spoiled either,
+// because the pre-read Overview does not render it.
 //
-// The second branch exists because of a product rule, not a technical limit:
-// an unread card carries no way through, so Overview is reachable only from a
-// card the member has already read. Landing a follower on Overview would break
-// that rule AND spoil the conversation before they had read the thing it is
-// about. So the address means "this card" and the app decides what this card
-// looks like for you — which also means the sharer never has to think about the
-// state of the person they are sending it to.
-//
-// **Not a scrim, and not a lift.** The obvious drawing of "pointed at" is to
-// dim the feed and raise the card. Both were rejected: a scrim implies
-// modality — something to dismiss — and there is nothing here to dismiss, the
-// card is not a dialog; and a raised card with a shadow reads as picked up or
-// dragging, which is a gesture this app does not have.
-//
-// What it uses instead is the app's OWN language for "this one": the 2px accent
-// left bar that RailBody draws on the active circle and LensList draws on the
-// selected contributor. A card wearing that bar reads as the one being pointed
-// at, in a vocabulary the member has already met twice, and it costs two
-// pixels. It is joined by the arrival glow — `CircGlow`, already built, already
-// one-shot, already reduced-motion aware — because a card someone sent you IS
-// an arrival, and the glow is this app's existing way of saying look here.
-//
-// **No banner.** "Shared with you" above the feed was considered and cut. The
-// person who sent it told you what it was in the message they sent it in; a
-// strip repeating that is chrome earning nothing. The bar and the scroll are
-// the whole affordance. If that proves too quiet on a phone, the strip is the
-// thing to add — recorded rather than built.
+// What the sharer has to think about is unchanged, which was always the point:
+// nothing. The address means "this card", and the app decides what this card
+// looks like for the person who follows it.
 //
 // ---- WHO MAY FOLLOW ONE ----------------------------------------------------
 //
@@ -224,41 +204,6 @@ const circReadCardParam = () => {
   } catch (e) { return null; }
 };
 
-// The pointed-at treatment, as a style fragment rather than a component, so the
-// card keeps its single `article` element and nothing wraps it. A wrapper would
-// have broken the grid's own row sizing, which run 5 had to fix once already.
-//
-// The bar is drawn INSIDE the card's border box, so the card does not grow and
-// nothing beside it shifts — a pointed card must not move the cards around it,
-// or arriving at one rearranges the feed you were sent to.
-//
-// ---- WHY THE FRAGMENT IS RETURNED FOR UNPOINTED CARDS TOO ------------------
-//
-// The clear FADES; the arrival does not. In at zero — the mark is the answer to
-// "where is it?", and an answer that eases in is an answer arriving late — and
-// out over `--duration-slow`, because a bar that snaps off reads as a glitch
-// rather than as a state ending.
-//
-// A transition cannot run on a property that is being removed along with the
-// element's whole declaration, and the wrapper that would normally carry it is
-// forbidden here for the reason above. So **the fragment is applied to every
-// card, pointed or not**, and it is `boxShadow` that changes: the accent bar
-// when pointed, a zero-width transparent shadow when not. Transitioning to
-// `none` would snap; transitioning to a matching zero shadow interpolates, and
-// that interpolation is the fade. The unpointed value paints nothing, and
-// `.circ-card` sets no shadow of its own for it to overwrite.
-//
-// Reduced motion is not handled here. `tokens.css` already zeroes every
-// `transition-duration` under `prefers-reduced-motion: reduce` with
-// `!important`, which beats this inline declaration — the same one mechanism the
-// arrival glow rides. Inventing a second one here would be a second vocabulary.
-const circPointedStyle = (pointed = true) => ({
-  boxShadow: pointed
-    ? 'inset 2px 0 0 0 var(--color-accent)'
-    : 'inset 0 0 0 0 transparent',
-  transition: 'box-shadow var(--duration-slow) var(--ease-quiet)',
-});
-
 Object.assign(window, {
-  circCardLocalUrl, circReadCardParam, circPointedStyle, CardShareButton, CardShareMenuItem,
+  circCardLocalUrl, circReadCardParam, CardShareButton, CardShareMenuItem,
 });

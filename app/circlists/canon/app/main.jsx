@@ -353,8 +353,9 @@ const CircApp = () => {
   const [accountFrom, setAccountFrom] = useState('space');
   const openAccount = () => { setAccountFrom(route === 'home' ? 'home' : 'space'); setRoute('account'); };
 
-  // ✕ exit / return destination: no-space home if no membership, else default space
-  const exitToApp = () => { if (spaces.length === 0) goHome(); else enterSpace(currentId || (spaces[0] && spaces[0].id)); };
+  // ✕ exit / return destination: HLD Decision-57 — abandoning circle creation
+  // always lands on the home, never on another of the member's circles.
+  const exitToApp = () => goHome();
 
   // persist
   useEffect(() => {
@@ -424,7 +425,7 @@ const CircApp = () => {
   // visit stamped the mark, it draws no line.
   useEffect(() => { if (route === 'space' && currentId) openVisit(currentId); }, []);
 
-  // ---- Arriving on a shared card (BIZ-136 wild feature) --------------------
+  // ---- Arriving on a shared card (BIZ-136 wild feature; LM-797) ------------
   // `?card=<id>` is the address a share hands over. Resolved ONCE at mount,
   // against the member's own state — which is the whole design: the address
   // means "this card", and what this card looks like depends on whether the
@@ -433,14 +434,20 @@ const CircApp = () => {
   //   not a member / deleted / no such card ──▶ not-found, which never says
   //       which of those it was (hld.md Decision-44). The privacy answer needed
   //       no new screen.
-  //   they have read it                     ──▶ Overview, the card's own page.
-  //   they have not                         ──▶ its circle, Active, pointed at.
+  //   otherwise                             ──▶ the card's Overview, read or
+  //       unread alike. ONE destination (LM-797): read-state decides what
+  //       Overview SHOWS (talk-surface.jsx's withheld state), never where the
+  //       address leads. The old second branch — the Active feed with the card
+  //       pointed at — is retired, and the pointed-card treatment with it.
+  //
+  // The tab is still set, because it is where Back lands: Active while the card
+  // is unread, Read once the Swell has committed (the hand-off is in
+  // `reactOverlay`).
   //
   // A staged `?state=` wins outright: that is the register's harness driving the
   // app, and two boot resolutions racing would make every staged state a
   // coin toss. Deletable — no card-share.jsx, no `circReadCardParam`, and an
   // incoming address falls through to the ordinary boot.
-  const [pointedId, setPointedId] = useState(null);
   useEffect(() => {
     if (!window.circReadCardParam) return;
     try { if (new URL(window.location.href).searchParams.get('state')) return; } catch (e) { return; }
@@ -450,82 +457,15 @@ const CircApp = () => {
     const item = sp && (sp.items || []).find(i => i.id === id);
     if (!sp || !item) { setRoute('not-found'); return; }
     setCurrentId(sp.id);
-    if (item.read) {
-      // Overview is reachable from a read card, so a follower who has read it
-      // lands on the conversation. Guarded on the candidate module being
-      // present, exactly as every other consumer of it is.
-      const C = window.CircCandidate;
-      setTab('read');
-      if (C && C.goToCard) { C.goToCard({ id }); return; }
-    }
-    setTab('active');
+    setTab(item.read ? 'read' : 'active');
+    // Overview is the candidate module's own route, so the address resolves
+    // through it — guarded, exactly as every other consumer of it is. With the
+    // module dropped there is no Overview to open, and the address falls back
+    // to the circle the card is in.
+    const C = window.CircCandidate;
+    if (C && C.goToCard) { C.goToCard({ id }); return; }
     setRoute('space');
-    setPointedId(id);
   }, []);
-
-  // ---- HOW LONG THE MARK LIVES (ruled by Joe, 2026-09-10) -------------------
-  //
-  // **One visit to the surface it pointed at.** It says "this is the one you
-  // were sent", and that stops being news when the member has either engaged
-  // with the card or left the surface — not before.
-  //
-  //   survives   scrolling, and a glance away. Scrolling is LOOKING for it, not
-  //              being done with it, and the mark's whole job is to hold your
-  //              place in a feed you did not choose to be in.
-  //   clears     acting on the card — opening the link, marking it read,
-  //              opening the card's own menu (feed.jsx's `onAct`).
-  //   clears     changing surface — another tab, the Read tab included, or
-  //              another route: settings, members, home, a card's Overview.
-  //   never      survives a reload. Already true, and kept true: the address it
-  //              came from was cleaned out of the bar when it was read.
-  //
-  // It biases LATE deliberately. Clearing late costs a stale bar for a minute;
-  // clearing early costs the member their place, which is the very thing the
-  // mark exists to hold. That rules out both ends: a click anywhere is too
-  // jumpy, and clearing only on reload lets the mark outlive the visit and start
-  // lying about why you are there.
-  //
-  // A consequence worth knowing, because it is what earns the fade in
-  // card-share.jsx: since leaving the surface clears it, the only clear a member
-  // ever SEES happen is the one where they acted on the card.
-  const clearPointed = useCallback(() => setPointedId(null), []);
-
-  // The surface a point belongs to, captured when the point is set rather than
-  // read from a route the member may already have left. Declared before the
-  // clear-on-leave effect below so it is captured first on the render that sets
-  // the point — otherwise the point would clear itself on arrival.
-  const pointedOnRef = useRef(null);
-  useEffect(() => {
-    pointedOnRef.current = pointedId ? { route, tab, currentId } : null;
-  }, [pointedId]);
-
-  // Leaving the surface clears the point. Circle counts as surface alongside
-  // route and tab: a member who switches circles is no longer anywhere near the
-  // card, and returning later to a bar still lit would be the mark lying about
-  // why they are there.
-  useEffect(() => {
-    const on = pointedOnRef.current;
-    if (!pointedId || !on) return;
-    if (on.route !== route || on.tab !== tab || on.currentId !== currentId) clearPointed();
-  }, [route, tab, currentId, pointedId, clearPointed]);
-
-  // Bring it into view. A member sent to a card 30 rows down should not have to
-  // find it — that is the one thing an address has to do that scrolling to the
-  // top does not. Deferred to the frame after the feed has settled, because the
-  // card does not exist in the document until then, and `block: 'center'` so it
-  // lands mid-screen with the feed visible around it rather than jammed under
-  // the tab bar. Runs once per point; smooth unless the member asked for less
-  // motion, in which case it jumps, like every other movement in this app.
-  useEffect(() => {
-    if (!pointedId || loadingFeed) return;
-    const t = setTimeout(() => {
-      const el = document.querySelector('[data-card-id="' + (window.CSS && CSS.escape ? CSS.escape(pointedId) : pointedId) + '"]');
-      if (!el) return;
-      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    }, 120);
-    return () => clearTimeout(t);
-  }, [pointedId, loadingFeed]);
 
   // Reaching ACTIVE is the accept: the dot clears there and only there. A dot lit
   // while the member sits on Read is pointing them AT Active, so it has to survive
@@ -585,6 +525,17 @@ const CircApp = () => {
     const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
     requestAnimationFrame(() => scrollToArrivals(toFoot));
   };
+  // UI Decision-56: a staged arrival meeting a genuinely empty Active tab
+  // lands itself — there is no reader's feed for the pill to protect, so no
+  // gesture is asked. Fires the same accept path revealPending uses for a
+  // click (same glow), just without the click. `activeItems.length` is the
+  // RAW pile, untouched by a lens/saved/search narrowing — deliberately, so
+  // an arrival hidden by one of those stays queued behind the pill exactly
+  // as it did before; this only covers the tab EmptyState itself renders for.
+  useEffect(() => {
+    if (route !== 'space' || tab !== 'active' || loadingFeed || !currentId) return;
+    if (activeItems.length === 0 && space && (space.pending || []).length > 0) revealPending();
+  }, [route, tab, loadingFeed, currentId, activeItems.length, space && (space.pending || []).length]);
   // The refresh gesture — selecting the circle already on screen. There is no
   // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
   // and resolves into the full mark on BOTH outcomes. What it finds LANDS, with no
@@ -726,14 +677,13 @@ const CircApp = () => {
   const changeEmail = (email) => setUser(u => ({ ...u, email }));
 
   const openLink = (item) => { window.open(item.url, '_blank', 'noopener'); };
-  // Leaving a circle: it drops from the switcher and the member lands on their
-  // next default circle — or the no-circle home if this was their only one.
+  // Leaving a circle: it drops from the switcher and the member lands on the
+  // home (HLD Decision-57) — always, even when other circles remain.
   const leaveSpace = (id) => {
     const target = id || currentId;
     const rest = spacesRef.current.filter(s => s.id !== target);
     setSpaces(rest);
-    const next = rest.find(s => !isTestSpace(s)) || rest[0];
-    if (!next) { setCurrentId(null); goHome(); } else enterSpace(next.id);
+    goHome();
   };
   // Account deletion. Circles this member champions run to the end of their paid
   // period unmanaged and then go dormant — nothing here announces that to anyone.
@@ -856,7 +806,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
-        setSearchQuery, setSearchOpen, setHomeStripOpen, setPointedId,
+        setSearchQuery, setSearchOpen, setHomeStripOpen,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1298,7 +1248,11 @@ const CircApp = () => {
                 its `align-self: center` — canon renders it as a direct flex
                 child of this column and both work (finding 1, design audit,
                 2026-09-11). No wrapper. */}
-            {tab === 'active' && pendingVisible.length > 0 && <NewPill onClick={revealPending} />}
+            {/* UI Decision-56: the pill stands over cards alone — never over an
+                empty Active tab, where there is no reader's feed to protect.
+                `visible.length > 0` is the same test EmptyState's own branch
+                uses below, so the two conditions can never disagree. */}
+            {tab === 'active' && pendingVisible.length > 0 && visible.length > 0 && <NewPill onClick={revealPending} />}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to
@@ -1327,30 +1281,25 @@ const CircApp = () => {
                  component stays reachable for exactly the case it used to own. */
               : visible.length === 0 && effectiveSavedOn && !who.length && window.SavedNoMatch
               ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
-              : visible.length === 0 ? <div><EmptyState tab={tab} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
+              : visible.length === 0 ? <div><EmptyState tab={tab} isChampion={isChampion(space)} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
               : visible.map((item, i) => {
-                const pointed = pointedId === item.id;
                 const card = <FeedCard item={item} tab={tab} user={user} showTime density={effectiveDensity}
-                  onOpen={(it) => { clearPointed(); openLink(it); }}
-                  onMarkRead={(it) => { clearPointed(); setReacting(it); }}
-                  onAct={clearPointed}
+                  onOpen={openLink}
+                  onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
                   onToggleSaved={toggleSaved}
-                  space={space} onAnnounce={announceOnce} pointed={pointed} />;
+                  space={space} onAnnounce={announceOnce} />;
                 const row = (Cand && Cand.CardRow)
                   ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
                   : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
                 //
-                // A card a shared address pointed at glows too, and deliberately
-                // reuses this one rather than minting a second treatment: both
-                // mean LOOK HERE, the glow is already one-shot and already
-                // reduced-motion aware, and a card that is both new and shared
-                // glows once rather than twice. The accent bar is what makes the
-                // two distinguishable at rest — the glow resolves to nothing.
-                const fresh = pointed
-                  || (tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt);
+                // The waterline is now its only trigger. A shared address used to
+                // borrow it for the card it pointed at; that arrival lands on the
+                // card's own Overview instead (LM-797), so there is no pointed
+                // card on this feed to glow.
+                const fresh = tab === 'active' && dividerAt != null && !!item.at && item.at > dividerAt;
                 return (
                   <React.Fragment key={item.id}>
                     {i === divIdx && <div><FeedDivider newestFirst={order === 'newest'} /></div>}
@@ -1475,8 +1424,30 @@ const CircApp = () => {
     <SwellReactionFlow
       item={reacting}
       swellOpts={{ centerDot: true, breath: true, snap: true }}
-      onMarkRead={(it, reaction) => markRead(it, reaction)}
-      onClose={() => setReacting(null)} />
+      onMarkRead={(it, reaction) => {
+        markRead(it, reaction);
+        // Marked read from the card's own Overview (LM-797): the card is on the
+        // Read tab from here on, and Back has to land where the card is. The
+        // feed's own mark-as-read is untouched — there the card leaves Active
+        // and the member stays where they were.
+        if (Cand && Cand.matchRoute && Cand.matchRoute(route)) setTab('read');
+      }}
+      onClose={() => {
+        // Leaving the Swell from a card's own Overview (LM-797). If the read
+        // transition committed, the page is still holding its withheld state
+        // and has to ask again — whether the member came out through the
+        // reveal's own control or closed it. Without this, dismissing the
+        // reveal leaves a stale page offering Mark-as-Read on a card that is
+        // already read. Abandoned with nothing placed, the card is still
+        // unread and nothing reloads: the pre-read Overview is unchanged.
+        const it = reacting;
+        setReacting(null);
+        if (!it || !window.candReloadSurface) return;
+        if (!(Cand && Cand.matchRoute && Cand.matchRoute(route))) return;
+        const sp = spacesRef.current.find(s => s.id === currentId);
+        const now = sp && (sp.items || []).find(i => i.id === it.id);
+        if (now && now.read) window.candReloadSurface(it.id);
+      }} />
   );
   // `isSheetPosture` (640, BIZ-136 2026-09-14): the gate is a bottom sheet vs.
   // centred dialog choice, the same shape decision as the lens panel — not a

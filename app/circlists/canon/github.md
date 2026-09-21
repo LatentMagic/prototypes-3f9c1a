@@ -98,11 +98,50 @@ is never stale.
 
 ## Last sync
 
-date: 2026-08-17T11:22:03Z
-wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for the add
-surface's writing-face placeholder). Nothing mirrored; no tree/commit resolved this turn.
+date: 2026-09-21T08:23:34Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (the binding
+cross-app design law) and `specs/projects/circlists/requirements/`
+`CIRC-034-see-which-circles-hold-something.md`, both grounding LM-652 work on
+home’s Conversations panel and the in-circle returns bar. Searched
+`specs/projects/circlists/` for the returns bar and found nothing: the bar is
+not specced upstream yet, so the prototype is ahead of the spec here. Nothing
+mirrored; no commit sha resolved (tree hash only).
 
 ### Updated in this project
+- Home’s Conversations panel recomposed (`app/home-returns.jsx`): the
+  per-circle headings are gone, the circle now reads on each row’s metadata
+  line beside who spoke, and the head carries intent rather than a count —
+  CIRC-034 states the home raises no count of any kind.
+- The in-circle returns bar gained one act (`app/talk-return.jsx`): a footnote
+  "Clear" at the foot of the open panel, which moves `talkSeenAt` forward on
+  every watched card and marks nothing read.
+- Row separators and hover geometry fixed in both: hairlines sit between rows
+  only, sharing the hover fill’s edges, with the fill stopping clear of them.
+
+## Previous sync
+
+date: 2026-09-14T10:44:02Z
+prototypes-3f9c1a: pulled from `app/circlists/canon/` (branch main) — this was a
+reverse sync, not the usual publish-out. Work happened in a separate clone of
+this project while the workspace was offline, and landed in the downstream
+canon copy instead of here first. Brought back: `circlists.html`, `tokens.css`,
+`swell.css`, `support.js`, `playgrounds.html`, `playgrounds.json`, and all of
+`app/*.jsx` (7 new files, 16 changed, 14 unchanged). `brand/` assets differed
+only by C2PA provenance metadata baked in by whatever tool touched them —
+content unchanged, left alone. Root docs (`CLAUDE.md`, `ARCHITECTURE.md`,
+`MOBILE.md`, `GOTCHA.md`, `CHANGELOG.md`, this file) and `docs/specs/` /
+`docs/archive/` were NOT overwritten — canon's copies are missing ticket
+folders this workspace has (`docs/specs/_handoffs`,
+`docs/specs/switch-off-track-contrast`), so a blind overwrite would have lost
+work; those need a real two-way reconciliation, not a pull. No commit sha
+resolved (tree-only copy).
+
+### Updated in this project
+- Feed gained sort, lens (view/filter panel), saved, search and card-share
+  surfaces (`app/feed-sort.jsx`, `feed-lens.jsx`, `feed-saved.jsx`,
+  `feed-search.jsx`, `card-share.jsx`), plus `app/home-returns.jsx` and
+  `app/not-found.jsx`. `main.jsx`, `home.jsx`, `states.jsx`, `spaces.jsx` and
+  others grew substantially to wire these in.
 - Add-surface direction 2: the writing face's placeholder is now
   "Say why you're sharing it, or leave it blank." — the Swell caption's own
   command + command construction, which is what makes it parse.

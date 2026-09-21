@@ -3,6 +3,16 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## A thought reads the same on Read as on Active — 2026-09-14
+
+- **A card's thought is no longer Active-only.** The tucked-under band opens on Read too, with
+  the same preview, mark, and write-your-own slot for a card of yours that has none yet.
+- **The thought's open face now carries its own tab's actions**, not a fixed Active default:
+  Read shows the conversation door and the Share/Save/Delete kebab, Active keeps mark-as-read
+  and delete. Holds on the conversation surface's head card too.
+- Not a design pass — an implementation decision made to bring this prototype in line with the
+  deployed app.
+
 ## The feed takes a lens, and home becomes a place — 2026-09-14
 
 - **A circle's feed can be ordered, narrowed and searched.** Order holds per circle across both

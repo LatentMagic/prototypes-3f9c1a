@@ -232,7 +232,7 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
   );
 };
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, pointed = false, onAct = () => {} }) => {
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, onAct = () => {} }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
@@ -317,19 +317,10 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
   }
 
   return (
-    // `pointed` — this is the card a shared address sent the member to. Drawn
-    // with the app's own "this one" language (a 2px accent left bar, as the
-    // rail and the lens list both use), inset so the card does not grow and
-    // nothing beside it moves. Nothing else about the card changes.
     <article className="circ-card" data-card-id={item.id} style={{
       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
       borderRadius: 'var(--radius-lg)', padding: m.pad,
       display: 'flex', flexDirection: 'column',
-      // Applied whether or not this card is pointed at: the fragment carries the
-      // transition that lets the mark fade OUT, and a fragment that disappears
-      // with the mark takes the transition with it. card-share.jsx explains why
-      // the alternative — a wrapper element — is forbidden on this card.
-      ...(window.circPointedStyle ? window.circPointedStyle(pointed) : null),
     }}>
       {/* Open zone — source + title (left), preview (right). Title + image are
           the only open targets; nothing else in the card opens. */}
@@ -419,7 +410,7 @@ const EMPTY_COPY = {
     supporting: 'Links you mark as read land here, but stay in everyone else\u2019s list.',
   },
 };
-const EmptyState = ({ tab, onStartCircle }) => {
+const EmptyState = ({ tab, isChampion, onStartCircle }) => {
   const c = EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
     <div style={{
@@ -435,13 +426,20 @@ const EmptyState = ({ tab, onStartCircle }) => {
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.5,
         color: 'var(--color-fg-2)', margin: 0, maxWidth: 420,
       }}>{c.supporting}</p>
-      {/* Door: quiet line, only the verb phrase is the link. */}
-      <p style={{
-        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
-        color: 'var(--color-fg-3)', margin: 0,
-      }}>When you want a circle of your own, <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
-        backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
-      }}>start one</button>.</p>
+      {/* Door: quiet line, only the verb phrase is the link. UI Decision-57 —
+          hidden from the circle's own champion, per-circle: inviting a
+          champion to start the circle they already run reads as not knowing
+          them. `isChampion === false` (not falsy) holds the door back until
+          the reader's relationship to THIS circle is known — absent rather
+          than present, so a champion never sees it flash and vanish. */}
+      {isChampion === false && (
+        <p style={{
+          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5,
+          color: 'var(--color-fg-3)', margin: 0,
+        }}>When you want a circle of your own, <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
+          backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
+        }}>start one</button>.</p>
+      )}
     </div>
   );
 };
