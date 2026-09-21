@@ -70,13 +70,17 @@ const candBarSnap = (rows) => rows.map(i => ({ id: i.id, title: candTitleOf(i), 
 // bloat in the place the product is meant to be calmest.
 //
 // NO UNDO, for now: reversal is a separate question and is not ratified.
-const candBarClear = (api, sp) => {
+//
+// IT CLEARS ONLY WHAT THE MEMBER COULD SEE: the ids come from the open list's
+// own frozen snapshot, and the mark is set to the moment that snapshot was
+// taken — so a turn that arrived while the bar was held open, on a listed card
+// or a new one, is untouched and brings the bar back naming only itself.
+const candBarClear = (api, sp, ids, at) => {
   if (!api || !sp) return;
-  const ids = candBarRows(sp).map(i => i.id);
-  if (!ids.length) return;
-  const at = Date.now();
+  if (!ids || !ids.length) return;
+  const when = at || Date.now();
   api.setSpaces(prev => prev.map(s => s.id !== sp.id ? s : ({
-    ...s, items: s.items.map(i => ids.includes(i.id) ? { ...i, talkSeenAt: at } : i),
+    ...s, items: s.items.map(i => ids.includes(i.id) ? { ...i, talkSeenAt: when } : i),
   })));
 };
 
@@ -94,6 +98,9 @@ const CandFeedLead = ({ api }) => {
   const first = React.useRef(true);
   const where = React.useRef(spaceId);
   const lastSnap = React.useRef([]);
+  // When the open list was frozen. The clear's mark is set to this, not to the
+  // press, so words that landed during the hold stay unseen.
+  const heldAt = React.useRef(0);
 
   // Arrival and removal. A change of circle is navigation, not the bar coming or
   // going, so the new circle's state is taken as it stands, unanimated. A removal
@@ -145,13 +152,13 @@ const CandFeedLead = ({ api }) => {
   const sub = candNames(names) + ' spoke';
   const toggle = () => {
     if (open) { setOpen(false); setHeld(null); }
-    else { setHeld(candBarSnap(rows)); setOpen(true); }
+    else { heldAt.current = Date.now(); setHeld(candBarSnap(rows)); setOpen(true); }
   };
   // The panel closes first: the rows it is listing are about to not exist, and
   // an open panel playing its removal full of rows is the bar arguing with
   // itself. Collapsing also releases the held removal, so the bar leaves in its
   // ordinary motion rather than needing one of its own.
-  const clear = () => { setOpen(false); setHeld(null); candBarClear(api, sp); };
+  const clear = () => { setOpen(false); setHeld(null); candBarClear(api, sp, snap.map(r => r.id), heldAt.current); };
 
   const slot = { '--cand-bar-mb': 'max(0px, calc(var(--circ-feed-pad-top, 16px) - 16px))', marginBottom: 'var(--cand-bar-mb)' };
   if (barH != null) slot['--cand-bar-h'] = barH + 'px';
