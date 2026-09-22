@@ -1,6 +1,6 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-09-19",
+  "generated": "2026-09-22",
   "tickets": [
     { "id": "A3", "slug": "a3-invite-link", "name": "Invite link", "state": "active", "touched": "2026-08-28",
       "entries": [
@@ -76,7 +76,17 @@
         { "kind": "playground", "name": "Desktop container options", "path": "docs/specs/lm-570/create-fund-desktop-container-options.html" }
       ] },
     { "id": "BIZ-80", "slug": "biz-80-metadata", "name": "Card metadata", "state": "active", "touched": "2026-07-24", "entries": [] },
-    { "id": "—", "slug": "motion", "name": "Brand + loading motion", "state": "active", "entries": [] },
+    { "id": "—", "slug": "motion", "base": "docs/archive/", "name": "Brand + loading motion", "state": "archive", "entries": [] },
+    { "id": "—", "slug": "text-input-font-floor", "base": "docs/archive/", "name": "Text-input font floor", "state": "archive",
+      "entries": [
+        { "kind": "playground", "name": "The text-input font floor", "path": "docs/archive/text-input-font-floor/playground/circlists-font-floor.html", "note": "Every option puts the field at 16px; what they disagree about is the words beside it." },
+        { "kind": "playground", "name": "The font floor, in the app", "path": "docs/archive/text-input-font-floor/playground/circlists-font-floor-app.html", "note": "The floor played inside the app itself." }
+      ] },
+    { "id": "LM-797", "slug": "lm-797", "name": "LM-797 delta", "state": "active", "entries": [] },
+    { "id": "LM-716", "slug": "lm-716-714-793-empty-tab-and-home", "name": "Empty tab and home", "state": "active", "entries": [] },
+    { "id": "LM-638", "slug": "lm-638-resume-funding", "name": "Resume funding", "state": "active", "entries": [] },
+    { "id": "—", "slug": "switch-off-track-contrast", "name": "Switch OFF-track contrast", "state": "active", "entries": [] },
+    { "id": "—", "slug": "demo-removal", "name": "Demo removal", "state": "active", "entries": [] },
 
     { "id": "—", "slug": "option-studies", "base": "docs/archive/", "name": "Option studies", "state": "archive",
       "entries": [

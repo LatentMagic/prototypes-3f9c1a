@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="../../../../" />
+<title>Circlists — the text-input font floor</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--color-page); color: var(--color-fg-1); }
+body { min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+#root { min-height: 100dvh; }
+/* verbatim from circlists.html — the writing field and its in-field send */
+.cand-write:focus-visible { outline: none; }
+.cand-infield { width: 34px; height: 34px; border-radius: var(--radius-md); border: 1px solid var(--color-border-1); background: var(--color-surface); color: var(--color-fg-3); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: background var(--duration-base), border-color var(--duration-base), color var(--duration-base); }
+.cand-infield[data-live] { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.cand-infield[data-live]:hover { background: var(--color-accent-hover, var(--color-accent)); }
+.cand-infield:not([data-live]) { cursor: default; }
+.pg-seg { display: inline-flex; background: var(--color-surface-sunken); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 2px; gap: 2px; }
+.pg-seg button { font: 500 13px/1 var(--font-sans); border: 0; background: transparent; color: var(--color-fg-2); padding: 0 14px; height: 34px; border-radius: 6px; cursor: pointer; }
+.pg-seg button[aria-pressed="true"] { background: var(--color-surface); color: var(--color-fg-1); box-shadow: var(--shadow-raised); }
+.pg-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 900px) { .pg-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/talk-parts.jsx"></script>
+<script type="text/babel" src="docs/archive/text-input-font-floor/playground/pg-font-floor.jsx"></script>
+</body>
+</html>
