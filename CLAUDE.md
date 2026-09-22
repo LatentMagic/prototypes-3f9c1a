@@ -4,6 +4,8 @@ LatentMagic Claude Design prototypes plus a console (`index.html`) that browses 
 
 Written from two routes, both live: a Claude Design export for the live line replaces `app/circlists/canon/` wholesale (verbatim, gains a `changelog` entry); Claude Code sessions also edit prototype code here directly. Neither is the only route.
 
+Working in `app/circlists/` — reading canon's code, opening a state (`?state=<id>`), screenshots (`npm run check`), playgrounds — load the `circlists-prototypes` skill (`.claude/skills/circlists-prototypes/SKILL.md`).
+
 ## The working line — `canon`
 
 One state, not a shipped/coming split: **`canon`** is the single agreed-upon prototype. Changes accrete into it alone — don't mint ticket-named slugs, don't split a "shipped" mirror. Alternatives are explored as playgrounds and candidates beside it, not as separate console tabs. `next`/`main`/`baseline`/`lm-*` slugs are retired — removed, not archived; don't revive them.
