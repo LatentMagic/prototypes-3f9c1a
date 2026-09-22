@@ -4,7 +4,8 @@
 // A floating, draggable pill with two halves, both prototype aids and neither
 // part of the product:
 //   settings glyph → Config. Review settings only: posture, viewport, payments,
-//                    gate, TEST circles, seed, liveliness staging.
+//                    gate, TEST circles, seed, liveliness and notifications
+//                    staging.
 //   list glyph     → States (app/states-ui.jsx). Where you GO — a state to jump
 //                    to, and a link to hand someone.
 //
@@ -27,7 +28,8 @@ const { useState: useCState, useRef: useCRef, useEffect: useCEffect } = React;
 const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
                          onReset, gateOn, onGateChange, layout, onLayoutChange,
                          platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
-                         showTest, onShowTestChange, live, onLiveChange, liveActions }) => {
+                         showTest, onShowTestChange, live, onLiveChange, liveActions,
+                         push, onPushStage }) => {
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   // draggable launcher-button position. null = default bottom-right.
@@ -125,6 +127,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
           mobilePayments={mobilePayments} onMobilePaymentsChange={onMobilePaymentsChange}
           showTest={showTest} onShowTestChange={onShowTestChange}
           live={live} onLiveChange={onLiveChange} liveActions={liveActions}
+          push={push} onPushStage={onPushStage}
           onClose={() => closeAt(setOpen)}
         />
       )}
@@ -146,8 +149,23 @@ const ConfigSeg = ({ options, value, onChange }) => (
 // ---- The modal itself ----
 const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
                        platform, onPlatformChange, mobilePayments, onMobilePaymentsChange,
-                       showTest, onShowTestChange, live, onLiveChange, liveActions, onClose }) => {
+                       showTest, onShowTestChange, live, onLiveChange, liveActions,
+                       push, onPushStage, onClose }) => {
   const isApp = platform === 'app';
+  // Notifications staging. The ×'s wait is read from the feature's own schedule
+  // (app/push.jsx), so this aid can never disagree with the rule the app runs.
+  const pushSnoozes = (push && push.snoozes) || 0;
+  const pushWait = window.pushWaitDays ? window.pushWaitDays(pushSnoozes) : 0;
+  const askHidden = !!push && pushSnoozes > 0 && Date.now() - (push.snoozeAt || 0) < pushWait * 864e5;
+  // One writer for both ask rows, so the count and the phase can never drift:
+  // hidden leaves the timestamp fresh, showing back-dates it past the wait.
+  const stageAsk = (n, hidden) => {
+    const days = window.pushWaitDays ? window.pushWaitDays(n) : 3;
+    onPushStage({
+      ask: 'pending', snoozes: n,
+      snoozeAt: n === 0 ? 0 : (hidden ? Date.now() : Date.now() - (days + 1) * 864e5),
+    });
+  };
   const [arrivalCount, setArrivalCount] = useCState(1);
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
@@ -296,6 +314,79 @@ const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
                 </div>
               </div>
               <div className="circ-config-hint">Nothing surfaces either one. Selecting this circle in the rail lands the arrival{arrivalCount === 1 ? '' : 's'} directly and takes the deleted link away — that gesture is the only thing that finds them.</div>
+            </React.Fragment>
+          )}
+
+          {/* ---- Notifications (LM-769) -------------------------------------
+              The three facts the app cannot read for itself — whether delivery
+              is possible at all, what the device has answered, and where the
+              ask stands in its schedule — held as modes, so any surface can be
+              met in any of them. The grammar is not a setting: the banner, its
+              motion, the card's wording and the 3/7/30 schedule are the
+              product. Guarded on the module as well as the state, because
+              app/push.jsx is droppable and with it gone there is nothing here
+              to stage. */}
+          {push && window.CircPushSetting && (
+            <React.Fragment>
+              <div className="circ-config-sep" />
+              <div className="circ-config-eyebrow">Notifications</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Delivery</div>
+                <ConfigSeg value={['ios-tab', 'unsupported'].includes(push.channel) ? push.channel : 'ok'} onChange={(v) => onPushStage({ channel: v })} options={[
+                  { value: 'ok', label: 'Deliverable' }, { value: 'ios-tab', label: 'iOS tab' }, { value: 'unsupported', label: 'In-app' },
+                ]} />
+              </div>
+              <div className="circ-config-hint">Two ways a browser cannot deliver. iOS tab: an iPhone or iPad in a browser tab — the Account card states the Home Screen route instead of carrying a switch, and the ask never appears. In-app: a browser inside another app, where there is no permission to give and no route to name — so notifications are not mentioned anywhere, on Active or on Account. Staged, never sniffed: this prototype has no real user agent to read.</div>
+
+              <div className="circ-config-row">
+                <div className="circ-config-row-label">Device permission</div>
+                <ConfigSeg value={push.perm || 'default'}
+                  onChange={(v) => onPushStage(v === 'default'
+                    ? { perm: 'default', on: false, ask: 'pending', snoozes: 0, snoozeAt: 0 }
+                    : { perm: v, on: v === 'granted', ask: 'gone' })}
+                  options={[
+                    { value: 'default', label: 'Unasked' }, { value: 'granted', label: 'Allowed' }, { value: 'denied', label: 'Refused' },
+                  ]} />
+              </div>
+              <div className="circ-config-hint">The device's own answer, which only the device can change. Either answer finishes the ask for good; unasked returns it to the start of its schedule.</div>
+
+              {push.perm === 'granted' && (
+                <React.Fragment>
+                  <div className="circ-config-row">
+                    <div className="circ-config-row-label">In Circlists</div>
+                    <ConfigSeg value={push.on ? 'on' : 'off'} onChange={(v) => onPushStage({ on: v === 'on' })} options={[
+                      { value: 'on', label: 'On' }, { value: 'off', label: 'Off' },
+                    ]} />
+                  </div>
+                  <div className="circ-config-hint">The Account switch, held apart from the permission — turning notifications off in Circlists does not throw away an answer the device has already given.</div>
+                </React.Fragment>
+              )}
+
+              {push.perm === 'default' && push.channel === 'ok' && (
+                <React.Fragment>
+                  <div className="circ-config-row">
+                    <div className="circ-config-row-label">The ask</div>
+                    <ConfigSeg value={askHidden ? 'hidden' : 'showing'}
+                      onChange={(v) => stageAsk(v === 'hidden' ? Math.max(1, pushSnoozes) : pushSnoozes, v === 'hidden')}
+                      options={[{ value: 'showing', label: 'Showing' }, { value: 'hidden', label: 'Hidden' }]} />
+                  </div>
+
+                  <div className="circ-config-row">
+                    <div className="circ-config-row-label">Dismissals</div>
+                    <div className="circ-config-stepper">
+                      <button type="button" aria-label="Fewer" onClick={() => stageAsk(Math.max(0, pushSnoozes - 1), askHidden && pushSnoozes > 1)}>−</button>
+                      <span>{pushSnoozes}</span>
+                      <button type="button" aria-label="More" onClick={() => stageAsk(Math.min(5, pushSnoozes + 1), askHidden)}>+</button>
+                    </div>
+                  </div>
+                  <div className="circ-config-hint">× hides the ask rather than ending it: it comes back 3 days after the first, 7 after the second, then every 30. {pushSnoozes === 0 ? 'Never dismissed, so it is due.' : `${pushSnoozes} dismissal${pushSnoozes === 1 ? '' : 's'} sets a ${pushWait}-day wait — hidden leaves that wait running, showing stands past it.`} It shows on Active, in a circle with links.</div>
+                </React.Fragment>
+              )}
+
+              {push.perm !== 'default' && (
+                <div className="circ-config-hint">The ask is finished with: the device dialog has been raised, and nothing brings it back. Set permission to unasked to stage it again.</div>
+              )}
             </React.Fragment>
           )}
 

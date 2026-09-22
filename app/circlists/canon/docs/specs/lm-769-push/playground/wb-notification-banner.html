@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Reference — the notification banner</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:64ch;margin:12px 0 0;text-wrap:pretty}
+.lede b{font-weight:600;color:var(--color-fg-1)}
+.rule{height:1px;background:var(--color-border-1);margin:36px 0 0}
+h2{font:600 17px/1.3 var(--font-sans);letter-spacing:-.01em;margin:36px 0 0}
+.note{font:400 13.5px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:66ch;margin:10px 0 0;text-wrap:pretty}
+.note b{font-weight:600;color:var(--color-fg-1)}
+.cap{font:500 11px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3);margin:0 0 10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:20px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+ul.rules{margin:12px 0 0;padding:0 0 0 18px}
+ul.rules li{font:400 13.5px/1.7 var(--font-sans);color:var(--color-fg-2);margin:0 0 6px;text-wrap:pretty}
+ul.rules li b{font-weight:600;color:var(--color-fg-1)}
+code{font:500 12.5px/1 var(--font-mono);background:var(--color-surface-sunken);border:1px solid var(--color-border-2);border-radius:var(--radius-sm);padding:2px 5px}
+
+/* --- grounds: the banner never sits on our page, so neither does it here --- */
+.ground{border-radius:var(--radius-lg);padding:16px 10px 22px;overflow:hidden}
+.g-ios{background:linear-gradient(#3a4a44,#222826)}
+.g-and{background:linear-gradient(#2b2f33,#1b1e20)}
+.g-mac{background:linear-gradient(#4a4a52,#2c2c31)}
+.g-win{background:#1b1b1d}
+
+/* ============ iOS 17 heads-up banner — approximation ============ */
+.ios{width:358px;max-width:100%;margin:0 auto;border-radius:22px;padding:14px;display:flex;gap:12px;
+  background:rgba(250,250,250,.86);backdrop-filter:blur(20px);box-shadow:0 8px 24px rgba(0,0,0,.28);
+  font-family:-apple-system,"SF Pro Text",BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:#000}
+.ios .ico{width:38px;height:38px;border-radius:9px;flex-shrink:0;overflow:hidden;background:#FAFAF7}
+.ios .ico img{width:100%;height:100%;display:block}
+.ios .body{flex:1;min-width:0}
+.ios .hdr{display:flex;align-items:baseline;gap:8px}
+.ios .app{flex:1;min-width:0;font:600 13px/1.3 inherit;letter-spacing:.01em;color:rgba(0,0,0,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ios .time{font:400 13px/1.3 inherit;color:rgba(0,0,0,.45);flex-shrink:0}
+.ios .ttl{font:600 15px/1.33 inherit;letter-spacing:-.01em;margin-top:1px;text-wrap:pretty}
+.ios .txt{font:400 15px/1.33 inherit;color:rgba(0,0,0,.72);margin-top:1px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+
+/* ============ Android 14 / Material 3 heads-up — approximation ============ */
+.and{width:358px;max-width:100%;margin:0 auto;border-radius:28px;padding:16px;
+  background:#FEF7FF;box-shadow:0 8px 24px rgba(0,0,0,.3);
+  font-family:Roboto,"Noto Sans",system-ui,sans-serif;color:#1D1B20}
+.and .hdr{display:flex;align-items:center;gap:6px;font:500 12px/1.3 inherit;color:#49454F}
+.and .badge{width:16px;height:16px;flex-shrink:0;color:#49454F}
+.and .chev{margin-left:auto;width:16px;height:16px;color:#49454F}
+.and .ttl{font:500 14px/1.43 inherit;margin-top:6px;text-wrap:pretty}
+.and .txt{font:400 14px/1.43 inherit;color:#49454F;margin-top:1px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+.and .row{display:flex;gap:12px;align-items:flex-start}
+.and .big{width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#FAFAF7;margin-top:6px}
+.and .big img{width:100%;height:100%;display:block}
+.and .col{flex:1;min-width:0}
+
+/* ============ macOS native notification (Chrome delivers) ============ */
+.mac{width:344px;max-width:100%;margin:0 auto;border-radius:14px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start;
+  background:rgba(58,58,62,.92);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.4);
+  font-family:-apple-system,"SF Pro Text",system-ui,sans-serif;color:#fff}
+.mac .ico{width:38px;height:38px;border-radius:8px;flex-shrink:0;overflow:hidden;background:#FAFAF7}
+.mac .ico img{width:100%;height:100%;display:block}
+.mac .body{flex:1;min-width:0}
+.mac .hdr{display:flex;align-items:baseline;gap:8px}
+.mac .app{font:400 12px/1.3 inherit;color:rgba(255,255,255,.6);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mac .time{font:400 12px/1.3 inherit;color:rgba(255,255,255,.5)}
+.mac .ttl{font:600 13px/1.4 inherit;margin-top:2px;text-wrap:pretty}
+
+/* ============ Chrome's own notification (Windows / Linux / ChromeOS) ============ */
+.win{width:360px;max-width:100%;margin:0 auto;border-radius:8px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;
+  background:#2B2B2E;box-shadow:0 8px 24px rgba(0,0,0,.45);
+  font-family:"Segoe UI",system-ui,sans-serif;color:#E8E8E5}
+.win .body{flex:1;min-width:0}
+.win .ttl{font:600 14px/1.4 inherit;text-wrap:pretty}
+.win .org{font:400 12px/1.4 inherit;color:rgba(232,232,229,.5);margin-top:6px}
+.win .ico{width:44px;height:44px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#FAFAF7}
+.win .ico img{width:100%;height:100%;display:block}
+
+/* --- icon study --- */
+</style>
+</head>
+<body>
+<template id="badge">
+  <svg class="badgesvg" viewBox="0 0 48 48" aria-hidden="true"><defs><mask id="m-BADGEID"><rect width="48" height="48" fill="#000"></rect><circle cx="24" cy="24" r="22.5" fill="#fff"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#000" stroke-width="1.6"></circle></mask></defs><rect width="48" height="48" fill="currentColor" mask="url(#m-BADGEID)"></rect></svg>
+</template>
+
+<div class="wrap">
+  <div class="eyebrow">PWA notifications · reference</div>
+  <h1>The notification banner</h1>
+  <p class="lede">One push per circle, one live at a time. <b>The title is the whole design</b> — no body, no actions, no badge count; tap opens the circle’s Active tab. Everything else in the banner belongs to the operating system.</p>
+  <p class="lede">Real pixel sizes, on a neutral ground standing in for whatever is behind.</p>
+
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <p class="cap">iOS 17 · installed PWA</p>
+      <div class="ground g-ios">
+        <div class="ios">
+          <div class="ico"><img src="brand/assets/apple-touch-icon.png" alt=""></div>
+          <div class="body">
+            <div class="hdr"><span class="app">CIRCLISTS</span><span class="time">now</span></div>
+            <div class="ttl">New links in Tea Club</div>
+          </div>
+        </div>
+      </div>
+      <p class="note">Safari delivers title, body, <code>tag</code> and <code>data</code> only, and fills the icon slot from the installed app icon. The <code>icon</code> we pass is discarded; <code>badge</code>, <code>image</code> and <code>actions</code> do not exist here.</p>
+    </div>
+    <div>
+      <p class="cap">Android 14 · Chrome web push</p>
+      <div class="ground g-and">
+        <div class="and">
+          <div class="row">
+            <div class="col">
+              <div class="hdr"><span class="badge" data-badge></span><span>Circlists</span><span>·</span><span>now</span><span class="chev" data-chev></span></div>
+              <div class="ttl">New links in Tea Club</div>
+            </div>
+            <div class="big"><img src="brand/assets/maskable-icon-192.png" alt=""></div>
+          </div>
+        </div>
+      </div>
+      <p class="note">Chromium honours <code>icon</code> at 40dp and a 16dp <code>badge</code> in the header. The badge is masked to its alpha channel and tinted, so it needs its own silhouette asset — specced in <code>prompt-android-notification-badge.md</code>.</p>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <p class="cap">macOS · Notification Centre</p>
+      <div class="ground g-mac">
+        <div class="mac">
+          <div class="ico"><img src="brand/assets/icon-192.png" alt=""></div>
+          <div class="body">
+            <div class="hdr"><span class="app">Circlists</span><span class="time">now</span></div>
+            <div class="ttl">New links in Tea Club</div>
+          </div>
+        </div>
+      </div>
+      <p class="note">Chrome honours the icon we pass; Safari uses the installed app icon instead. The words are identical either way.</p>
+    </div>
+    <div>
+      <p class="cap">Windows / Linux / ChromeOS · Chrome’s own</p>
+      <div class="ground g-win">
+        <div class="win">
+          <div class="body">
+            <div class="ttl">New links in Tea Club</div>
+            <div class="org">circlists.app</div>
+          </div>
+          <div class="ico"><img src="brand/assets/icon-192.png" alt=""></div>
+        </div>
+      </div>
+      <p class="note">Chrome draws this one itself: title, origin, our icon at 44px.</p>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+  <h2>What we pass</h2>
+  <ul class="rules">
+    <li><code>title</code> — “New links in Tea Club”.</li>
+    <li><code>tag: "circle-&lt;id&gt;"</code> with <code>renotify: false</code> — a second link updates the banner already there, silently. This is what makes one-per-circle true.</li>
+    <li><code>data.url</code> — the circle’s Active tab. Tap is the only affordance.</li>
+    <li><code>icon</code>, <code>badge</code> — Chromium only, never a dependency.</li>
+    <li>No <code>body</code>, no <code>actions</code>, no counts.</li>
+  </ul>
+  <p class="note" style="margin-top:20px;color:var(--color-fg-3)">Platform behaviour checked against MDN’s <code>showNotification()</code> reference, 2026-09-22.</p>
+</div>
+
+<script>
+const BADGE = '<svg viewBox="0 0 48 48" aria-hidden="true" style="display:block;width:100%;height:100%;color:currentColor"><mask id="MID"><rect width="48" height="48" fill="#000"></rect><circle cx="24" cy="24" r="22.5" fill="#fff"></circle><circle cx="24" cy="24" r="14.925" fill="none" stroke="#000" stroke-width="1.7"></circle></mask><rect width="48" height="48" fill="currentColor" mask="url(#MID)"></rect></svg>';
+let uid = 0;
+function badge(){ return BADGE.replace(/MID/g, 'bm' + (++uid)); }
+document.querySelectorAll('[data-badge]').forEach(el => { el.innerHTML = badge(); });
+document.querySelectorAll('[data-chev]').forEach(el => {
+  el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;width:100%;height:100%"><path d="M6 9l6 6 6-6"></path></svg>';
+});
+function line(cls, text){ return text ? '<div class="' + cls + '">' + text + '</div>' : ''; }
+document.querySelectorAll('[data-and]').forEach(el => {
+  const d = el.dataset;
+  el.innerHTML = '<div class="and"><div class="row"><div class="col">' +
+    '<div class="hdr"><span class="badge">' + badge() + '</span><span>Circlists</span><span>·</span><span>now</span>' +
+    '<span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;width:100%;height:100%"><path d="M6 9l6 6 6-6"></path></svg></span></div>' +
+    '<div class="ttl">' + d.title + '</div>' + line('txt', d.body) +
+    '</div><div class="big"><img src="brand/assets/maskable-icon-192.png" alt=""></div></div></div>';
+});
+document.querySelectorAll('[data-ios]').forEach(el => {
+  const d = el.dataset;
+  el.innerHTML = '<div class="ios"><div class="ico"><img src="brand/assets/apple-touch-icon.png" alt=""></div><div class="body">' +
+    '<div class="hdr"><span class="app">CIRCLISTS</span><span class="time">now</span></div>' +
+    '<div class="ttl">' + d.title + '</div>' + line('txt', d.body) + '</div></div>';
+});
+document.querySelectorAll('[data-mac]').forEach(el => {
+  const d = el.dataset;
+  el.innerHTML = '<div class="mac"><div class="ico"><img src="brand/assets/icon-192.png" alt=""></div><div class="body">' +
+    '<div class="hdr"><span class="app">Circlists</span><span class="time">now</span></div>' +
+    '<div class="ttl">' + d.title + '</div>' + line('txt', d.body) + '</div></div>';
+});
+</script>
+</body>
+</html>

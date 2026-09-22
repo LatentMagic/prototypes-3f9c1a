@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists</title>
+<base href="../../../../" />
+<title>Circlists — the notifications ask</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -598,44 +599,23 @@
   @container (min-width: 400px) { .circ-invite-row { flex-direction: row; align-items: flex-start; } .circ-invite-act { --circ-invite-btnw: auto; } }
 
   /* ---- push notifications: the ask (LM-769; app/push.jsx) ----
-     A BANNER — chrome above the list, not an object in it. Bled to the FULL
-     content row (the width of <main>), so it spans everything right of the rail
-     on desktop and the whole screen in the app posture. The bleed is MEASURED
-     in JS against the feed column's own parent (push.jsx), never a viewport
-     unit: the app-posture phone frame carries a transform, so 100vw lies inside
-     it. It goes on the SLOT, which owns the height animation and therefore
-     clips — a strip wider than the slot would simply be cut at the column edge.
-     It arrives by sliding down out from under the tabs while its slot opens
-     beneath it, and leaves by the same motion reversed and quicker: the returns
-     bar's own pair of timings (560 in, 400 out), which is the grammar the app
-     already uses for something landing at the head of the feed.
-     THE MARGIN TRAVELS WITH THE HEIGHT. The slot's negative top margin cancels
-     the feed's own top padding so the banner sits flush under the tabs; with
-     only the height collapsing, the feed rested that margin high until the
-     unmount removed it and then dropped — a pop after the motion had already
-     finished. Both keyframes animate the pair, so the feed makes one move.
-     The ×'s hit box stays the full 44px; only the visible hover fill is inset,
-     the same treatment .circ-cardaction-icon already uses. */
-  .circ-pushask-slot { --circ-pushask-mt: calc(0px - var(--circ-feed-pad-top, 16px)); overflow: hidden; margin-top: var(--circ-pushask-mt); }
-  .circ-pushask-slot-in { animation: circ-pushask-open 560ms var(--ease-quiet) both; }
-  .circ-pushask-slot-in > .circ-pushask { animation: circ-pushask-drop 560ms var(--ease-quiet) both; }
-  .circ-pushask-slot-out { animation: circ-pushask-shut 400ms var(--ease-quiet) both; }
-  .circ-pushask-slot-out > .circ-pushask { animation: circ-pushask-lift 400ms var(--ease-quiet) both; }
-  @keyframes circ-pushask-open { from { height: 0; margin-top: 0; } to { height: var(--circ-pushask-h); margin-top: var(--circ-pushask-mt); } }
-  @keyframes circ-pushask-shut { from { height: var(--circ-pushask-h); margin-top: var(--circ-pushask-mt); } to { height: 0; margin-top: 0; } }
-  @keyframes circ-pushask-drop { from { transform: translateY(-100%); } to { transform: none; } }
-  @keyframes circ-pushask-lift { from { transform: none; } to { transform: translateY(-100%); } }
-  @media (prefers-reduced-motion: reduce) { .circ-pushask-slot-in, .circ-pushask-slot-in > .circ-pushask, .circ-pushask-slot-out, .circ-pushask-slot-out > .circ-pushask { animation-duration: 1ms !important; } }
-  .circ-pushask { --circ-pushask-padx: 16px; display: flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 4px var(--circ-pushask-padx); background: var(--color-surface-sunken); border-bottom: 1px solid var(--color-border-2); }
-  .circ-pushask-text { flex: 1; min-width: 0; font: 400 13.5px/1.5 var(--font-sans); color: var(--color-fg-2); margin: 0; text-wrap: balance; }
-  .circ-pushask-go { background: transparent; border: 0; padding: 0; font: 500 13.5px/1.5 var(--font-sans); cursor: pointer; }
-  .circ-pushask-x { flex-shrink: 0; width: 44px; height: 44px; margin-right: -10px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--color-fg-3); cursor: pointer; position: relative; }
+     ONE LINE on the feed's own ground — no box, no fill, no card. It is a
+     passing offer, not an object in the list, so it carries none of a card's
+     weight: a sentence with an accent text link in it, and a × that sits AT
+     THE END OF THE SENTENCE. The × belongs to the line, so it travels with the
+     line's last word rather than being pushed to the column edge — parked at
+     the edge of a wide desktop column it reads as an orphan control with a
+     corridor of dead space between it and the thing it closes. Its hit box
+     stays the full 44px; only the visible hover fill is inset, the same
+     treatment .circ-cardaction-icon already uses. */
+  .circ-pushask { display: flex; align-items: center; gap: 0; padding: 2px 0; }
+  .circ-pushask-text { flex: 0 1 auto; min-width: 0; font: 400 13.5px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 0; text-wrap: pretty; }
+  .circ-pushask-go { background: transparent; border: 0; padding: 0; font: 500 13.5px/1.6 var(--font-sans); cursor: pointer; }
+  .circ-pushask-x { flex-shrink: 0; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--color-fg-3); cursor: pointer; position: relative; }
   .circ-pushask-x::before { content: ''; position: absolute; inset: 9px; border-radius: var(--radius-sm); transition: background var(--duration-base); }
   .circ-pushask-x:hover { color: var(--color-fg-1); }
   .circ-pushask-x:hover::before { background: var(--color-surface-sunken); }
   .circ-pushask-x > svg { position: relative; }
-  @media (min-width: 760px) { .circ-pushask { --circ-pushask-padx: 24px; } }
-
 
   /* ---- the simulated DEVICE dialog (app/push.jsx) ----
      Deliberately not Circlists UI. System alert box, system font stack, system
@@ -651,6 +631,65 @@
   .circ-osdialog-acts > button { min-height: 44px; background: transparent; border: 0; cursor: pointer; font: 400 17px/1 inherit; color: #007aff; }
   .circ-osdialog-acts > button + button { border-left: 1px solid rgba(0,0,0,0.16); font-weight: 600; }
   .circ-osdialog-acts > button:active { background: rgba(0,0,0,0.06); }
+
+  /* ---- the three forms under test (pg-push-asks.jsx) ----
+     All three stand in the SAME slot. Only the kind of thing they are differs. */
+
+  /* 1 — prose, CENTRED in the column. The × sits at the end of the sentence,
+     not at the column edge: parked there it reads as an orphan control with a
+     corridor of dead space between it and the thing it closes. And the group
+     is centred because left-aligned it reads as a fragment that failed to fill
+     its row — the app's one other transient, once-only, column-spanning thing
+     in this slot is the New pill, and that is centred too. */
+  .pgp-sentence { display: flex; align-items: center; justify-content: center; padding: 2px 0; }
+  .pgp-sentence[data-align="left"] { justify-content: flex-start; }
+  .pgp-sentence-text { flex: 0 1 auto; min-width: 0; font: 400 13.5px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 0; text-align: center; text-wrap: balance; }
+  .pgp-sentence[data-align="left"] .pgp-sentence-text { text-align: left; text-wrap: pretty; }
+  .pgp-sentence-go { background: transparent; border: 0; padding: 0; font: 500 13.5px/1.6 var(--font-sans); cursor: pointer; }
+
+  /* 2 — an object, in the card's own vocabulary. */
+  .pgp-card { position: relative; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5) var(--space-5); }
+  .pgp-card-title { font: 600 15px/1.35 var(--font-sans); color: var(--color-fg-1); padding-right: 40px; }
+  .pgp-card-body { font: 400 14px/1.55 var(--font-sans); color: var(--color-fg-2); margin: 4px 0 0; max-width: 52ch; text-wrap: pretty; }
+  .pgp-card-act { margin-top: var(--space-4); }
+  .pgp-card-x { position: absolute; top: 4px; right: 6px; }
+
+  /* 3 — furniture, in the divider's vocabulary (.circ-fdiv): hairlines above
+     and below, no fill, no border box, no radius. A seam in the list rather
+     than a thing in it. Container query, never a posture flag. */
+  .pgp-band { container-type: inline-size; border-top: 1px solid var(--color-border-2); border-bottom: 1px solid var(--color-border-2); padding: var(--space-3) 0; }
+  .pgp-band-in { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+  .pgp-band-text { font: 400 14px/1.55 var(--font-sans); color: var(--color-fg-1); margin: 0; text-wrap: pretty; }
+  .pgp-band-acts { display: flex; align-items: center; gap: var(--space-1); flex-shrink: 0; }
+  @container (min-width: 480px) { .pgp-band-in { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-5); } }
+
+  /* 4 — option 3 with the hairlines taken off and nothing put in their place.
+     Same row, same container query, standing on the feed's own ground. */
+  .pgp-row { container-type: inline-size; padding: 2px 0; margin-top: calc(16px - var(--circ-feed-pad-top, 16px)); }
+  @container (min-width: 480px) { .pgp-row > .pgp-band-in { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-5); } }
+
+  /* the dismiss, shared by all four: full 44px target, inset hover fill — the
+     same treatment .circ-cardaction-icon already uses. */
+  .pgp-x { flex-shrink: 0; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--color-fg-3); cursor: pointer; position: relative; }
+  .pgp-x::before { content: ''; position: absolute; inset: 9px; border-radius: var(--radius-sm); transition: background var(--duration-base); }
+  .pgp-x:hover { color: var(--color-fg-1); }
+  .pgp-x:hover::before { background: var(--color-surface-sunken); }
+  .pgp-x > svg { position: relative; }
+
+  /* All three now stand FIRST in the column, so each cancels the feed's own top
+     padding down to the 16px rhythm — .circ-newpill's trick. */
+  .pgp-sentence, .pgp-card, .pgp-band { margin-top: calc(16px - var(--circ-feed-pad-top, 16px)); }
+
+
+  /* ---- playground chrome ----
+     The bar is pinned above the app and the app scrolls beneath it, so the
+     shipped sticky top bar and tabs stick to the top of the APP, not the
+     window, and nothing shipped is overlaid. */
+  html, body { height: 100%; }
+  body { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  #pgbar { flex: 0 0 auto; background: #161614; border-bottom: 1px solid #2A2926; color: #FBFBF9; z-index: 600; }
+  #root { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    --circ-vh: calc(100dvh - var(--pgbar-h, 120px)); }
 
 </style>
 </head>
@@ -674,7 +713,21 @@
      Details, and why the resolver looks inert in a design tool, are in
      ARCHITECTURE.md -> Addressable states.
      ============================================================================ -->
+<div id="pgbar"></div>
 <div id="root"></div>
+
+<script>
+  window.CIRC_STATE_KEY = 'pg_push_state_v1';
+  // Land IN a circle, on Active, with links: the ask has no other home, and a
+  // rig that opens on home reads as broken. Only on a cold start — a returning
+  // reviewer keeps wherever they were. `spaces` is deliberately absent, so
+  // main.jsx seeds it itself.
+  try {
+    if (!localStorage.getItem(window.CIRC_STATE_KEY)) {
+      localStorage.setItem(window.CIRC_STATE_KEY, JSON.stringify({ route: 'space', currentId: 'sp-backend', tab: 'active' }));
+    }
+  } catch (e) {}
+</script>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -728,6 +781,12 @@
      app/spaces.jsx reads per render — so it loads after that file and before
      main.jsx, which mounts on load. -->
 <script type="text/babel" src="app/invite-link.jsx"></script>
+<!-- The rig. pg-push-wire.jsx replaces window.CircPushAsk, which app/main.jsx
+     reads per render — so it only has to land before main.jsx mounts. -->
+<script type="text/babel" src="docs/specs/lm-769-push/playground/pg-push-store.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-769-push/playground/pg-push-asks.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-769-push/playground/pg-push-wire.jsx"></script>
+<script type="text/babel" src="docs/specs/lm-769-push/playground/pg-push-topbar.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

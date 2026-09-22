@@ -280,6 +280,47 @@ const CircApp = () => {
   // reachable as its own state (`home-strip-open`) so either can be looked at
   // without reading this.
   const [homeStripOpen, setHomeStripOpen] = useState(false);
+  // ---- Push notifications (LM-769) ---------------------------------------
+  // ONE object, because the four fields only make sense read together:
+  //   perm    — the DEVICE-level answer: 'default' (never asked) | 'granted' |
+  //             'denied'. 'denied' is terminal from the app's side: nothing here
+  //             can raise the device dialog again, only the member's own device
+  //             or browser settings can undo it.
+  //   on      — the member's in-app switch. Only meaningful under 'granted';
+  //             held separately so turning notifications off in Circlists does
+  //             not throw away a permission the member has already given.
+  //   ask     — 'pending' | 'gone'. The in-app banner. 'gone' the moment the
+  //             DEVICE dialog has been raised — from the banner's button or from
+  //             the Account switch — and permanent from then on, whatever the
+  //             answer was: the question the banner asks has been put.
+  //   snoozes / snoozeAt — the ×. Dismissing HIDES the banner rather than ending
+  //             it: it returns 3 days after the first ×, 7 after the second,
+  //             then every 30. A count and a timestamp, because the interval is
+  //             a function of how many times it has been waved away. The
+  //             schedule itself lives in app/push.jsx (`pushWaitDays`), with
+  //             the feature that owns it.
+  //   channel — 'ok' | 'ios-tab' | 'unsupported'.
+  //             'ios-tab': an iPhone or iPad running Circlists in a browser tab
+  //             — only the Home Screen app can receive notifications, so the
+  //             card names that route and the ask stays away.
+  //             'unsupported': a browser that cannot deliver at all, such as an
+  //             in-app browser opened inside another app. Nothing about
+  //             notifications appears anywhere: no ask, and no Account card.
+  //             Staged, never inferred — this prototype has no real UA to
+  //             read, and guessing would make a statement the device
+  //             disagrees with.
+  // PERSISTED, with the app-state blob: a permission answer that reset on
+  // reload would let the device dialog be raised twice, which is the one thing
+  // the platform never does.
+  const PUSH_DEFAULT = { perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0 };
+  const [push, setPush] = useState(() => ({ ...PUSH_DEFAULT, ...(SAVED?.push || null) }));
+  // The simulated DEVICE dialog. Raised by exactly two gestures — the ask's
+  // button and turning the Account setting on while perm is 'default' — and by
+  // nothing else, ever. Ephemeral: it is a moment, not a state.
+  const [permAsk, setPermAsk] = useState(false);
+  // The device preview: staged only, and rendered INSTEAD of the app (it is not
+  // a surface of the product, so it has no route and no chrome).
+  const [devicePreview, setDevicePreview] = useState(false);
   // Timers and handlers read state through refs: a setSpaces updater cannot hand
   // values back to the handler that queued it.
   // A menu left open while the view changes underneath it would point at a list
@@ -359,8 +400,8 @@ const CircApp = () => {
 
   // persist
   useEffect(() => {
-    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab, density })); } catch (e) {}
-  }, [route, user, spaces, currentId, tab, density]);
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab, density, push })); } catch (e) {}
+  }, [route, user, spaces, currentId, tab, density, push]);
 
   const isTestSpace = (s) => /^TEST\b/i.test(s.name || '');
   // ---- The viewer's own view of the circles --------------------------------
@@ -752,6 +793,42 @@ const CircApp = () => {
   };
 
   // ---- auth flows ----
+  // ---- Push notifications: the only two gestures that reach the device ----
+  // `pushWantOn` is the single door. Both callers (the ask's button, the
+  // Account switch turned on) go through it, so the rule "only a control whose
+  // whole purpose is turning notifications on may raise the device dialog"
+  // holds by there being nowhere else to call.
+  //   'denied' is a no-op here rather than a guarded branch: the Account card
+  // does not render a switch in that state and the ask is gone, so nothing can
+  // call this — and if something ever does, doing nothing is the correct
+  // behaviour, not re-raising a dialog the platform would refuse.
+  const pushWantOn = () => {
+    if (push.perm === 'granted') { setPush((p) => ({ ...p, on: true })); return; }
+    if (push.perm === 'denied') return;
+    setPermAsk(true);
+  };
+  // The device's answer. Either way the in-app line is finished with: the
+  // member has answered the question it was asking.
+  const pushAnswer = (allowed) => {
+    setPermAsk(false);
+    setPush((p) => ({ ...p, perm: allowed ? 'granted' : 'denied', on: !!allowed, ask: 'gone' }));
+  };
+  const pushSetOn = (v) => { if (v) pushWantOn(); else setPush((p) => ({ ...p, on: false })); };
+  // × hides the banner; it does not end it. The interval is the dismissal
+  // count's own — 3 days, then 7, then 30 for every one after — and nothing
+  // brings it back once the device dialog has been raised (`ask: 'gone'`).
+  const pushDismissAsk = () => setPush((p) => ({ ...p, snoozes: (p.snoozes || 0) + 1, snoozeAt: Date.now() }));
+  const pushSnoozeOver = () => {
+    const n = push.snoozes || 0;
+    if (!n) return true;
+    const days = window.pushWaitDays ? window.pushWaitDays(n) : 3;
+    return Date.now() - (push.snoozeAt || 0) >= days * 864e5;
+  };
+  // Deliverable at all? An iOS browser tab and an in-app browser cannot receive
+  // notifications, so there is nothing for the ask to offer there.
+  const pushAskVisible = window.CircPushAsk && push.ask === 'pending'
+    && push.perm === 'default' && push.channel === 'ok' && pushSnoozeOver();
+
   const signOut = () => { setUser(DEFAULT_USER); setRoute('signin'); };
   const startSignup = ({ firstName, lastName, email }) => {
     setPendingEmail(email);
@@ -803,6 +880,7 @@ const CircApp = () => {
     ? window.buildStates({
         spaces, STATE_KEY,
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setFeedError, setHoldLoading,
+        setPush, setDevicePreview,
         setOtc, setPostAuthTo, setManageIntent,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
@@ -937,7 +1015,8 @@ const CircApp = () => {
       onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {
-    screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} onDeleteAccount={() => setConfirm({ kind: 'delete-account' })} />,
+    screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} onDeleteAccount={() => setConfirm({ kind: 'delete-account' })}
+      push={push} onPushChange={pushSetOn} />,
       { subView: { title: 'Account', onBack: () => (accountFrom === 'home' ? goHome() : returnToSpace()) } });
   } else if (route === 'home' || (!space && listSpaces.length === 0)) {
     // Home — the account level. With circles, the circles list (app/home.jsx, a
@@ -1234,6 +1313,27 @@ const CircApp = () => {
                 a feed a query has narrowed to nothing-like-that reads exactly
                 as broken too — a typed-but-empty field does NOT count, since
                 nothing is narrowed yet. */}
+            {/* The ask (LM-769) stands FIRST in the column, above the returns
+                bar and above the pill (Joe's call, 2026-09-22). Both of those
+                are live content about THIS circle; the ask is a one-time,
+                account-level offer that speaks for every circle the member is
+                in, and it gets exactly one chance to be read. Under the bar it
+                read as an afterthought to a conversation digest.
+                Active only, and only over a list that has links in it —
+                `visible.length > 0`, the same test the pill and EmptyState
+                already share, so the empty Active tab can never grow a banner.
+                A DIRECT child of the column, not wrapped: it now owns the
+                first-child slot, so its own top margin cancels the feed's top
+                padding (28px desktop / 16px mobile) down to the column's 16px
+                rhythm — the same trick .circ-newpill uses, and the reason the
+                wrapper div every other conditional row here carries would be
+                wrong for this one.
+                KNOWN, pre-existing: the pill's negative margin pulls it 12px
+                closer to whatever sits above it on desktop. That was already
+                true of the pill under the returns bar; the ask does not make
+                it worse, and fixing it is the pill's own question. */}
+            {tab === 'active' && visible.length > 0 && pushAskVisible
+              && <window.CircPushAsk onTurnOn={pushWantOn} onDismiss={pushDismissAsk} />}
             {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || searchActive)
               && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
@@ -1458,7 +1558,11 @@ const CircApp = () => {
   // nothing. A gesture is acknowledged ("Refreshed"); the pill announces its own
   // arrival; a state is never announced.
   const liveRegion = <div className="circ-vh" role="status" aria-live="polite">{announce}</div>;
-  const appTree = <>{screen}{overlay}{reactOverlay}{gateOverlayEl}{liveRegion}</>;
+  // The simulated device dialog sits above everything the app draws, including
+  // its own overlays — it is the operating system, not a layer of ours.
+  const permOverlay = (permAsk && window.CircPermissionAsk)
+    ? <window.CircPermissionAsk onAnswer={pushAnswer} /> : null;
+  const appTree = <>{screen}{overlay}{reactOverlay}{gateOverlayEl}{permOverlay}{liveRegion}</>;
 
   return (
     <>
@@ -1466,6 +1570,14 @@ const CircApp = () => {
         <StatesIndexView reason={landing} groups={STATE_GROUPS}
           onGo={(id) => { goState(id); setLanding(null); }}
           onDismiss={() => setLanding(null)} />
+      ) : (devicePreview && window.CircDevicePreview) ? (
+        // Outside the app's own frame, so it replaces the app rather than
+        // rendering inside a shell or a phone bezel of ours — the preview
+        // draws its own device. Same top-level slot as the states index, for
+        // the same reason: neither is a surface of the product.
+        <window.CircDevicePreview spaces={listSpaces}
+          onOpenCircle={(id) => { setDevicePreview(false); enterSpace(id); }}
+          onExit={() => setDevicePreview(false)} />
       ) : forcedMobile ? (
         <div className="circ-stage">
           <div className="circ-phone"><div className="circ-phone-clip"><div className="circ-phone-screen">{appTree}</div></div></div>
@@ -1482,6 +1594,7 @@ const CircApp = () => {
         mobilePayments={mobilePayments} onMobilePaymentsChange={setMobilePayments}
         showTest={showTest} onShowTestChange={setShowTest}
         live={live} onLiveChange={setLiveOpt} liveActions={liveActions}
+        push={push} onPushStage={(patch) => setPush((p) => ({ ...p, ...patch }))}
         layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
 
       {/* Tweaks panel — deleting app/circ-tweaks.jsx removes it, no edit here */}

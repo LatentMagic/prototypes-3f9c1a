@@ -49,6 +49,7 @@ function circStateContext(api) {
     spaces, STATE_KEY,
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
+    setPush, setDevicePreview,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
     setSearchQuery, setSearchOpen, setHomeStripOpen,
@@ -87,6 +88,12 @@ function circStateContext(api) {
     setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
     setSavedOn({}); setSearchQuery({}); setSearchOpen({});
     if (setHomeStripOpen) setHomeStripOpen(false);
+    // Push (LM-769) is PERSISTED state, so unlike the view flags above it would
+    // otherwise survive a reseed and leak an answered permission into a state
+    // built to show the unanswered one. Cleared to the shipped default here,
+    // and every push entry sets what it needs on top.
+    if (setPush) setPush({ perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0 });
+    if (setDevicePreview) setDevicePreview(false);
   };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
@@ -521,6 +528,45 @@ function circStateContext(api) {
     setCurrentId('sp-test-backend'); setTab('active'); setRoute('members');
   };
 
+  // ---- Push notifications (LM-769) ---------------------------------------
+  // The ask, and the resting states of the Account setting. Both stagers fully
+  // replace the push object, so no entry inherits an answer another left behind.
+  //   The ask cannot be staged "on an empty Active list" — that is the point of
+  // it, and `empty-feed` already stands for the screen it must stay off of.
+  //   `patch` is how the RETURN is shown without waiting days: a dismissal count
+  // plus a back-dated `snoozeAt` is exactly the state the schedule reads, so the
+  // staged state is the real one and not a demo mode.
+  const stagePushAsk = (patch) => {
+    stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    if (setPush) setPush({ perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0, ...patch });
+  };
+  // The Account surface, at one of its four notification states.
+  //   granted+on / granted+off — the control.
+  //   denied     — the statement naming the device settings.
+  //   ios-tab    — the statement naming the Home Screen route. An iOS browser
+  //                tab cannot receive notifications at all, and `channel` is
+  //                staged rather than sniffed: this prototype has no real user
+  //                agent to read, and a guess would make a statement the
+  //                device disagrees with.
+  //   unsupported — NO CARD. A browser inside another app cannot deliver and
+  //                has no route that would, so Account does not mention
+  //                notifications at all — the state to check is what is
+  //                ABSENT from the page.
+  const stagePushSetting = (patch) => {
+    goSpace('sp-backend', 'account');
+    if (setPush) setPush({ perm: 'granted', on: true, ask: 'gone', channel: 'ok', snoozes: 0, snoozeAt: 0, ...patch });
+  };
+  // The device preview. Rendered INSTEAD of the app (main.jsx's own top-level
+  // branch), so the route beneath it only decides where "Back to the app"
+  // lands — home, since the preview speaks for every circle rather than one.
+  const stageDevicePreview = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setCurrentId(null); setRoute('home'); setLoadingFeed(false);
+    if (setPush) setPush({ perm: 'granted', on: true, ask: 'gone', channel: 'ok', snoozes: 0, snoozeAt: 0 });
+    if (setDevicePreview) setDevicePreview(true);
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
@@ -528,6 +574,7 @@ function circStateContext(api) {
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
+    stagePushAsk, stagePushSetting, stageDevicePreview,
   };
 }
 
@@ -625,6 +672,17 @@ const CIRC_STATE_REGISTER = [
 
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
   { group: 'Account', id: 'account-sso', label: 'Email & password via SSO', stage: (c) => { c.setUser({ ...window.CircSeed.DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); c.goSpace('sp-backend', 'account'); } },
+
+  // Push notifications (LM-769). The ask, the setting's four resting states,
+  // and the device preview.
+  { group: 'Notifications', id: 'push-ask', label: 'The ask — on an Active list with links', stage: (c) => c.stagePushAsk() },
+  { group: 'Notifications', id: 'push-ask-back', label: 'The ask — back after one dismiss (3 days on)', stage: (c) => c.stagePushAsk({ snoozes: 1, snoozeAt: Date.now() - 4 * 864e5 }) },
+  { group: 'Notifications', id: 'push-setting-on', label: 'Account — notifications on', stage: (c) => c.stagePushSetting({ on: true }) },
+  { group: 'Notifications', id: 'push-setting-off', label: 'Account — notifications off', stage: (c) => c.stagePushSetting({ on: false }) },
+  { group: 'Notifications', id: 'push-setting-refused', label: 'Account — refused at the device', stage: (c) => c.stagePushSetting({ perm: 'denied', on: false }) },
+  { group: 'Notifications', id: 'push-setting-safari-tab', label: 'Account — an iOS browser tab', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
+  { group: 'Notifications', id: 'push-no-channel', label: 'Account — a browser that cannot deliver (no card)', stage: (c) => c.stagePushSetting({ channel: 'unsupported', perm: 'default', on: false, ask: 'pending' }) },
+  { group: 'Notifications', id: 'push-device-preview', label: 'On the device — two circles with news', stage: (c) => c.stageDevicePreview() },
 
   // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
   // 8): the home screen (app/home.jsx + app/home-returns.jsx).

@@ -2,6 +2,12 @@
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "generated": "2026-09-22",
   "tickets": [
+    { "id": "LM-769", "slug": "lm-769-push", "name": "Push notifications", "state": "active", "touched": "2026-09-22",
+      "entries": [
+        { "kind": "playground", "name": "The ask, round two", "path": "docs/specs/lm-769-push/playground-ask-v2/pg-the-ask-v2.html", "note": "Five forms of the one-time offer in a real Active list, after the reset: the block, the card, the shelf, the setting, the tail. Same words, same device dialog — what differs is what kind of thing the ask is." },
+        { "kind": "playground", "name": "The ask", "path": "docs/specs/lm-769-push/playground/pg-the-ask.html", "note": "Three forms of the one-time line that offers notifications, in a real Active list: prose, an object in the pile, or a seam. Same slot, same words, same device dialog. Alignment is a lever on option 1." },
+        { "kind": "playground", "name": "The notification banner", "path": "docs/specs/lm-769-push/playground/wb-notification-banner.html", "note": "Reference board: the banner on iOS, Android and desktop at real size, the icon study, and what the platform actually lets us specify." }
+      ] },
     { "id": "A3", "slug": "a3-invite-link", "name": "Invite link", "state": "active", "touched": "2026-08-28",
       "entries": [
         { "kind": "candidate", "name": "Invite link candidate", "path": "docs/specs/a3-invite-link/circlists-a3.html", "on": false, "off": "Merged into the main build 2026-08-28.", "note": "The champion copies a link and sends it themselves. The app mails nothing." },

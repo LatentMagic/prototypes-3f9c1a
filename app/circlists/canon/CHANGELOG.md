@@ -3,6 +3,21 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Circlists can notify you when links land — 2026-09-22
+
+- **A member can turn notifications on.** A banner at the head of a circle's Active list offers
+  it once — the full content row, sunken, sliding down from under the tabs — and its button
+  raises the device's own permission dialog. ✕ hides the banner rather than ending it: it
+  returns 3 days on, then 7, then every 30, and never once the dialog has been raised.
+- **Account holds the permanent control**, scoped in words to the device it is on. Where the app
+  cannot change the fact it makes a statement instead of showing a dead switch: refused at the
+  device names the one place that can undo it.
+- **Where notifications cannot be delivered, nothing offers them.** An iOS browser tab gets the
+  Home Screen route and no switch; a browser inside another app gets no card at all and no
+  banner — Account simply does not mention notifications.
+- **A preview of the device's own notification** stands outside the app, as the one place the
+  message itself can be reviewed.
+
 ## A thought reads the same on Read as on Active — 2026-09-14
 
 - **A card's thought is no longer Active-only.** The tucked-under band opens on Read too, with

@@ -548,7 +548,7 @@ const SupportLine = () => (
   </p>
 );
 
-const AccountSettings = ({ user, onChangeEmail, onDeleteAccount }) => {
+const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushChange }) => {
   const [cur, setCur] = React.useState('');
   const [np, setNp] = React.useState('');
   const [np2, setNp2] = React.useState('');
@@ -572,8 +572,9 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount }) => {
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>{user.email}</p>
 
       {user.ssoProvider ? (
-        <><SsoManaged /><div style={{ height: 'var(--space-5)' }} /><DeleteAccount onDelete={onDeleteAccount} /><SupportLine /></>
+        <><PushRow push={push} onChange={onPushChange} /><SsoManaged /><div style={{ height: 'var(--space-5)' }} /><DeleteAccount onDelete={onDeleteAccount} /><SupportLine /></>
       ) : (<>
+      <PushRow push={push} onChange={onPushChange} />
       <ChangeEmail user={user} onChangeEmail={onChangeEmail} />
 
       <div style={{ height: 'var(--space-5)' }} />
@@ -605,6 +606,22 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount }) => {
     </ContentPage>
   );
 };
+
+// ---- Notifications (LM-769) ------------------------------------------------
+// FIRST on the page. The rest of Account is identity and security — email,
+// password, then the one terminal act — and that sequence reads as a single
+// escalating block; a device preference dropped into the middle of it is an
+// interruption, which is what the first pass did. It is also the only row here
+// a member visits casually, so it goes where a casual visit lands: the top.
+// Same slot in the password and SSO branches, so the page reads the same way
+// whichever account a member has.
+//   app/push.jsx is a droppable module, so absent -> no row, no edit here. It
+// also withdraws the card entirely on a browser that cannot deliver at all
+// (`pushCardShown`), and the row's own spacer goes with it — otherwise the page
+// would carry a gap where the card used to be.
+const PushRow = ({ push, onChange }) => ((window.CircPushSetting && (!window.pushCardShown || window.pushCardShown(push)))
+  ? <><window.CircPushSetting push={push} onChange={onChange} /><div style={{ height: 'var(--space-5)' }} /></>
+  : null);
 
 // ---- Delete your account ---------------------------------------------------
 // Its own card, matching the two above it. The page's rule is that an action
