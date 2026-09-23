@@ -41,6 +41,11 @@ const DAY = 864e5;
 // not need (see this project's CLAUDE.md, "Seed data — the standing rule").
 const CIRC_BARE_URL = 'https://analytics-internal-example.com/?trace=8823ff1c9e0a4b12-2026-03-retro-followups-database-migration-incident-action-items-and-owners-final-draft-v3';
 
+// The link a member arrives HOLDING, staged for the share intake (LM-771).
+// Long enough that the picker's one mono line actually truncates — a link that
+// fits proves nothing about the state being staged.
+const CIRC_SHARE_LINK = 'https://martinfowler.com/articles/patterns-of-distributed-systems/replicated-log.html';
+
 // ---- staging context -------------------------------------------------------
 // Built per render from main.jsx's setters; every stage() closes over nothing
 // but this. Same staging behaviour as the old Config scenarios, verbatim.
@@ -49,6 +54,7 @@ function circStateContext(api) {
     spaces, STATE_KEY,
     setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
     setOtc, setPostAuthTo, setManageIntent,
+    setShareLink,
     setPush, setDevicePreview,
     enterSpace, openCreateSpace,
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
@@ -94,6 +100,12 @@ function circStateContext(api) {
     // and every push entry sets what it needs on top.
     if (setPush) setPush({ perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0 });
     if (setDevicePreview) setDevicePreview(false);
+    // The held share link (LM-771) is transient app state, so unlike the view
+    // flags above it survives a stager that says nothing about it — and a
+    // leftover link would put the intake's lead above a plain sign-in card, or
+    // prefill an add in a circle nobody shared anything into. Cleared to
+    // nothing here; the share entries set what they need on top.
+    if (setShareLink) setShareLink('');
   };
   const goSpace = (id, toRoute) => {
     setUser(u => u && u.email ? u : DEFAULT_USER);
@@ -567,6 +579,39 @@ function circStateContext(api) {
     if (setDevicePreview) setDevicePreview(true);
   };
 
+  // ---- Share intake (LM-771) ---------------------------------------------
+  // The screen a member lands on after sharing a link in from another app.
+  // One stager, `stageHome`'s style: every flag fully replaced on each call,
+  // so an entry is idempotent whatever the last one in the palette left set.
+  //   only  — keep exactly this one circle (the one-circle member).
+  //   sleep — put ONE named circle to sleep, leaving the others funded: the
+  //           picker's rows are home's rows, so an asleep circle has to be
+  //           readable AMONG the others, saying "Asleep", to show that.
+  //   empty — no circles at all, landing on the home's empty state inside the
+  //           picker's shell.
+  //   link  — FALSE stages a bare arrival: the same page with no link line.
+  //   signedOut — the canon sign-in card with the intake's lead above it.
+  //           `postAuthTo` is what makes signing in RETURN to the picker, and
+  //           it is staged rather than implied, because it is the only thing
+  //           that distinguishes this from an ordinary sign-in.
+  // TEST circles are dropped, exactly as `stageHome` drops them and for the
+  // same reason: the list of circles IS this screen's subject.
+  const stageShareIntake = ({ only = null, sleep = null, empty = false, link = true, signedOut = false } = {}) => {
+    setUser(DEFAULT_USER);
+    let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    if (only) s = s.filter((sp) => sp.id === only);
+    if (sleep) s = s.map((sp) => (sp.id === sleep
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      : sp));
+    setSpaces(s);
+    clearFeedError();
+    setLoadingFeed(false);
+    if (setShareLink) setShareLink(link ? CIRC_SHARE_LINK : '');
+    setCurrentId(null);
+    if (signedOut) { setPostAuthTo('share-intake'); setRoute('signin'); return; }
+    setRoute('share-intake');
+  };
+
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
@@ -574,6 +619,7 @@ function circStateContext(api) {
     stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
+    stageShareIntake,
     stagePushAsk, stagePushSetting, stageDevicePreview,
   };
 }
@@ -690,6 +736,16 @@ const CIRC_STATE_REGISTER = [
   { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
   { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
   { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
+
+  // Share intake (LM-771): the screen a member lands on after sharing a link
+  // into Circlists from another app. The picker is the one new surface; the
+  // tap-through lands on screens that already have addresses (a circle's feed
+  // with its own add open, a circle's wake-up page), so it gets no entry.
+  { group: 'Share intake', id: 'share-intake-picker', label: 'Pick a circle — several, one asleep', stage: (c) => c.stageShareIntake({ sleep: 'sp-book' }) },
+  { group: 'Share intake', id: 'share-intake-one-circle', label: 'Pick a circle — a member with one', stage: (c) => c.stageShareIntake({ only: 'sp-backend' }) },
+  { group: 'Share intake', id: 'share-intake-bare', label: 'A bare arrival — no link held', stage: (c) => c.stageShareIntake({ link: false }) },
+  { group: 'Share intake', id: 'share-intake-no-circles', label: 'Nowhere to put it — no circles yet', stage: (c) => c.stageShareIntake({ empty: true }) },
+  { group: 'Share intake', id: 'share-intake-signed-out', label: 'Signed out, holding a link', stage: (c) => c.stageShareIntake({ signedOut: true }) },
 
   // The not-found page is staged as a bare route because that is what it
   // answers: an address that resolved to nothing, with no circle to be inside.

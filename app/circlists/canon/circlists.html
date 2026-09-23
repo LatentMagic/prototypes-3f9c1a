@@ -696,6 +696,12 @@
 <script type="text/babel" src="app/auth.jsx"></script>
 <script type="text/babel" src="app/wizard.jsx"></script>
 <script type="text/babel" src="app/spaces.jsx"></script>
+<!-- Share intake (LM-771). A droppable module: main.jsx reads
+     window.CircShareIntake per render, so removing this file removes the
+     intake route and nothing else. Loads after wizard.jsx (its shell),
+     home.jsx (its rows), spaces.jsx (the empty state) and auth.jsx (the
+     sign-in lead's frame). -->
+<script type="text/babel" src="app/share-intake.jsx"></script>
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/not-found.jsx"></script>
 <!-- Push notifications (LM-769). Droppable modules: main.jsx reads them off

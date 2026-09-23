@@ -136,7 +136,11 @@ const CircApp = () => {
   // still perfectly reachable: a stager sets the route after boot, so only the
   // RESTORE path is filtered. Pre-existing for the two invite notices; the
   // not-found page would have been the third.
-  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full'];
+  // `share-intake` (LM-771) is in the list for the same reason, from the other
+  // direction: the held link is ephemeral by design, so a RESTORED picker is a
+  // share screen with nothing being shared — the member's next ordinary visit
+  // would open on a question nobody asked, dressed as a bare arrival.
+  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full', 'share-intake'];
   // A fresh session (nothing stored) lands on home — home is a shared surface
   // now, not an app-only chrome state (per
   // MOBILE.md's promotion test). A RESTORED session goes back exactly where it
@@ -197,6 +201,16 @@ const CircApp = () => {
   // it never leaks into a real auth / billing flow.
   const [holdLoading, setHoldLoading] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  // ---- Share intake (LM-771) ---------------------------------------------
+  // `shareLink` is the link a member arrived HOLDING, from a share in another
+  // app. Ephemeral, never persisted: an arrival is a moment, and a link still
+  // sitting in storage a day later would re-open the picker on a link nobody
+  // shared. Cleared the moment it is spent (a row tapped) or abandoned (×).
+  // `addPrefill` is what the circle's own add surface opens holding — held
+  // apart from `shareLink` because by the time the sheet opens the intake is
+  // finished with, and the FAB's own add must never inherit it.
+  const [shareLink, setShareLink] = useState('');
+  const [addPrefill, setAddPrefill] = useState('');
   // FAB success beat: a successful add flips this true, resolving the FAB glyph to
   // a tick, then self-clears back to the plus. Cancel never sets it.
   const [addConfirm, setAddConfirm] = useState(false);
@@ -398,6 +412,25 @@ const CircApp = () => {
   // always lands on the home, never on another of the member's circles.
   const exitToApp = () => goHome();
 
+  // ---- Share intake (LM-771): the tap-through -----------------------------
+  // A row does exactly what the same row does on home — `enterSpace`, nothing
+  // else — plus the one thing this flow adds: the circle's own add opens with
+  // the link already in its slot. There is no new code path after the tap.
+  //   An ASLEEP circle falls out at the guard: enterSpace lands it on its own
+  // wake-up page (main.jsx's dormant branch) and the link is not carried.
+  //   The delay is the feed's own load beat (enterSpace holds `loadingFeed`
+  // for 700ms). "As if the member had tapped the circle's add button" means
+  // the sheet slides up over a circle that has arrived, not over a spinner.
+  const shareIntakePick = (id) => {
+    const sp = spacesRef.current.find((s) => s.id === id);
+    const link = shareLink;
+    setShareLink('');
+    enterSpace(id);
+    if (!sp || !sp.funded) return;
+    setAddPrefill(link);
+    setTimeout(() => setAddOpen(true), 760);
+  };
+
   // persist
   useEffect(() => {
     try { localStorage.setItem(STATE_KEY, JSON.stringify({ route, user, spaces, currentId, tab, density, push })); } catch (e) {}
@@ -414,7 +447,14 @@ const CircApp = () => {
     return f ? f(spaces, user) : spaces;
   }, [spaces, user]);
   const listSpaces = useMemo(() => showTest ? viewSpaces : viewSpaces.filter(s => !isTestSpace(s)), [viewSpaces, showTest]);
-  const space = useMemo(() => viewSpaces.find(s => s.id === currentId) || null, [viewSpaces, currentId]);  const activeItems = space ? space.items.filter(i => !i.read) : [];
+  const space = useMemo(() => viewSpaces.find(s => s.id === currentId) || null, [viewSpaces, currentId]);
+  // LM-771, ruled: a share arrival with no circles lands on home's own empty
+  // state ("You're not in a circle yet"), unchanged and with no added line.
+  // The link has nowhere to go, so it is dropped here rather than held.
+  useEffect(() => {
+    if (route === 'share-intake' && listSpaces.length === 0) { setShareLink(''); setRoute('home'); }
+  }, [route, listSpaces.length]);
+  const activeItems = space ? space.items.filter(i => !i.read) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
   const isChampion = (s) => !!s && s.champion === 'You';
 
@@ -835,9 +875,12 @@ const CircApp = () => {
     setUser({ firstName, lastName, name: 'You', email });
     setOtc({ context: 'signup', error: null }); setPostAuthTo('post-signup'); setRoute('otc');
   };
-  const startSignin = (email) => { setPendingEmail(email); setUser({ ...DEFAULT_USER, email }); setOtc({ context: 'device', error: null }); setPostAuthTo('space'); setRoute('otc'); };
+  const startSignin = (email, to) => { setPendingEmail(email); setUser({ ...DEFAULT_USER, email }); setOtc({ context: 'device', error: null }); setPostAuthTo(to || 'space'); setRoute('otc'); };
 
   const finishOtc = () => {
+    // LM-771: signed out with a shared link in hand, sign-in returns to the
+    // picker — the link is still held, so the arrival resumes where it stopped.
+    if (postAuthTo === 'share-intake') { setRoute('share-intake'); return; }
     if (postAuthTo === 'post-signup') {
       // Land with NO spaces → the no-space home (create launches from there).
       setSpaces([]); setCurrentId(null); goHome();
@@ -882,6 +925,7 @@ const CircApp = () => {
         setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setFeedError, setHoldLoading,
         setPush, setDevicePreview,
         setOtc, setPostAuthTo, setManageIntent,
+        setShareLink,
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
         setSearchQuery, setSearchOpen, setHomeStripOpen,
@@ -960,14 +1004,23 @@ const CircApp = () => {
       ? <WebHandoff context={ctx} spaceName={nm} onExit={ctx === 'new' ? goHome : exitToApp} />
       : null;
   } else if (route === 'signin') {
-    screen = <SignIn onSubmit={({ email }) => startSignin(email)} onGoogle={() => { setPostAuthTo('space'); setRoute('google-return'); }} onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
+    // LM-771: arriving signed out with a shared link adds exactly ONE thing to
+    // the canon card — the lead above it — and points the return at the picker.
+    // Guarded on the module: no app/share-intake.jsx, no lead and no return.
+    const ShareLead = window.ShareSignInLead;
+    const shareArrival = !!shareLink && !!window.CircShareIntake;
+    screen = <SignIn lead={(shareArrival && ShareLead) ? <ShareLead link={shareLink} /> : null}
+      subtitle={(shareArrival && window.SHARE_SIGNIN_SUBTITLE) || undefined}
+      onSubmit={({ email }) => startSignin(email, shareArrival ? 'share-intake' : 'space')}
+      onGoogle={() => { setPostAuthTo(shareArrival ? 'share-intake' : 'space'); setRoute('google-return'); }}
+      onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
   } else if (route === 'signup') {
     screen = <SignUp onSubmit={startSignup} onGoogle={() => { setPostAuthTo('post-signup'); setRoute('google-return'); }} onGoSignin={() => setRoute('signin')} />;
   } else if (route === 'otc') {
     screen = <OtcEntry email={pendingEmail} context={otc.context} initialError={otc.error}
       onVerify={finishOtc} onBack={() => setRoute(otc.context === 'signup' ? 'signup' : 'signin')} />;
   } else if (route === 'google-return') {
-    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); } goHome(); }} />;
+    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'share-intake') { setRoute('share-intake'); return; } if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); } goHome(); }} />;
   } else if (route === 'recovery') {
     screen = <Recovery onDone={goHome} onBackToSignin={() => setRoute('signin')} />;
   } else if (route === 'funding') {
@@ -1018,6 +1071,18 @@ const CircApp = () => {
     screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} onDeleteAccount={() => setConfirm({ kind: 'delete-account' })}
       push={push} onPushChange={pushSetOn} />,
       { subView: { title: 'Account', onBack: () => (accountFrom === 'home' ? goHome() : returnToSpace()) } });
+  } else if (route === 'share-intake' && window.CircShareIntake) {
+    // The share intake (LM-771). FRAMELESS, in every posture — it borrows the
+    // Create-a-circle wizard's shape, so it is not inShell any more than the
+    // wizard is. The rows are handed `listSpaces`, the same list home renders,
+    // so their order and content cannot diverge from home's. × goes home with
+    // no confirm (ratified), dropping the held link on the way out.
+    // With no circles the arrival never reaches here: the effect by `space`
+    // above sends it to home's empty state.
+    screen = <window.CircShareIntake spaces={listSpaces} link={shareLink}
+      onPick={shareIntakePick}
+      onExit={() => { setShareLink(''); goHome(); }}
+      onCreate={gateActive ? onGate : openCreateSpace} />;
   } else if (route === 'home' || (!space && listSpaces.length === 0)) {
     // Home — the account level. With circles, the circles list (app/home.jsx, a
     // droppable body); with none, the same screen's empty state.
@@ -1503,13 +1568,18 @@ const CircApp = () => {
               (APP_FAB_BOTTOM); with app/app-shell.jsx dropped there is no bar
               to clear and the FAB sits where the web posture puts it. */}
           {!loadingFeed && !(isSheetPosture && sortMenuOpen)
-            && <FAB onClick={() => setAddOpen(true)} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
+            && <FAB onClick={() => { setAddPrefill(''); setAddOpen(true); }} expanded={addOpen} confirm={addConfirm} isMobile={isMobile}
                  bottom={isApp ? (window.APP_FAB_BOTTOM || null) : null} />}
           {/* `isSheetPosture` (640, BIZ-136 2026-09-14), not `isMobile`'s 1024
               — sheet-vs-popover is the same boundary as FeedLens and
               GateOverlay now share; the FAB above stays on `isMobile` since
               its 24/32px offset is layout, not a sheet choice. */}
-          <AddReveal open={addOpen} isMobile={isSheetPosture} onClose={() => setAddOpen(false)} onAdd={addItem} />
+          {/* `initialUrl` is the share intake's one reach into this surface
+              (LM-771): the link slot opens already holding the shared link.
+              Empty for every other way in — the FAB clears it on the tap — so
+              the add is otherwise the canon surface, unchanged. */}
+          <AddReveal open={addOpen} isMobile={isSheetPosture} initialUrl={addPrefill}
+            onClose={() => { setAddOpen(false); setAddPrefill(''); }} onAdd={addItem} />
         </>
       );
     }

@@ -3,6 +3,17 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## A link shared from another app lands in Circlists — 2026-09-23
+
+- **Sharing a link into Circlists opens a picker: "Add to which circle?"** It shows the link
+  on one line that scrolls sideways, then a hairline, then your circles as they appear on home.
+  Tapping a circle is the act, with nothing pre-selected. With one circle the picker still
+  asks, and × goes home with no confirm.
+- **Signed out, sign-in comes first and returns to the picker.** The link sits above the
+  sign-in card in the same form, and the card's subtitle says what signing in is for.
+- **With no circles, the arrival is an ordinary empty home.** The link is dropped silently,
+  and so it is when an asleep circle is picked and the wake-up page opens.
+
 ## Circlists can notify you when links land — 2026-09-22
 
 - **A member can turn notifications on.** A banner at the head of a circle's Active list offers

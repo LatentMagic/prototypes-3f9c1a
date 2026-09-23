@@ -78,6 +78,64 @@ const circleSummary = (s) => {
   return s.funded ? people : 'Asleep · ' + people;
 };
 
+// ONE ROW, one file. Extracted from the list below (LM-771) so the share
+// intake's picker renders the member's circles by CALLING this rather than by
+// copying it: "rendered exactly as Home renders them" is a claim only a shared
+// component can keep. Nothing about the row changed in the extraction — the
+// markup, the summary line, the signal and the reasoning below are verbatim.
+// It reads `circleSummary` above, so the meta line cannot differ between the
+// two surfaces either.
+const CircleRow = ({ space: s, onSelect }) => (
+  <button onClick={() => onSelect && onSelect(s.id)} className="circ-appsheet-row" style={{
+    display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer',
+    background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
+    borderRadius: 'var(--radius-lg)', padding: '13px 14px', minHeight: 64,
+    boxShadow: 'var(--shadow-raised)', fontFamily: 'var(--font-sans)',
+  }}>
+    {/* No monogram tile. Removed 2026-09-09: `homeTile` was local to this
+        file and used nowhere else, while the app's avatar grammar
+        (primitives.jsx `Avatar`, round initials) marks PEOPLE at every one
+        of its call sites. A rounded-square monogram on a circle copied
+        that grammar onto a non-person, so a circle read as a user account
+        — and the letter carried nothing: every circle sharing an initial
+        drew the same tile, and it was `aria-hidden`, which is the markup
+        conceding it was decoration. */}
+    <span style={{ flex: 1, minWidth: 0 }}>
+      {/* Run 9: `15.5` and `12.5` were sizes the scale does not contain.
+          tokens.css runs 12/13/15/16/18/20/24/32/40 and every older module
+          honours it; this file and home-returns.jsx were a day old and
+          already off it, which is the literal form of "has it been done
+          beautifully". Snapped to `--text-md` and `--text-sm`. */}
+      <span style={{ display: 'block', fontWeight: 600, fontSize: 'var(--text-md)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
+      <span style={{ display: 'block', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{circleSummary(s)}</span>
+    </span>
+    {/* The micro dot the web rail carries, meaning exactly what it means
+        there: `unseen` — arrivals since the member last looked. Opening
+        the circle is the accept, so home needs no refresh gesture.
+        REVERTED 2026-09-07, on Joe's ruling. Run 9 widened this to fire
+        on unread items too, reasoning that dropping `New links` from the
+        meta line otherwise lost a signal. That was the wrong move twice
+        over. **The home screen does not indicate unread at all** — it is
+        implicit in there being a Read pile, and he had already said so —
+        and the fix for "the words and the dot say different things" is
+        never to redefine the dot. One mark, one meaning, in both places
+        it appears; the rail and the home row can now be read as the same
+        signal because they are.
+        Consequence, accepted: a circle with plenty unread and nothing new
+        carries no mark. That is the definition working. */}
+    <CircleSignal state={s.unseen ? 'unseen' : null} />
+    {/* No trailing chevron. Removed 2026-09-09: every row in this list
+        navigates, so a mark that never varies carries no information — it
+        is furniture at the end of each row. It also collided with the
+        `chevron-down` the Conversations strip above uses to collapse
+        (home-returns.jsx), leaving one glyph family carrying two meanings
+        on one screen, separated only by 90° of rotation at 16px in fg-3.
+        The strip's chevron DOES vary with state, so it earns its place and
+        is now the only chevron on the screen. The whole card is the
+        target; its border, raised shadow and hover carry that. */}
+  </button>
+);
+
 const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip }) => {
   // The strip and its heading are a DELETABLE AID (app/home-returns.jsx),
   // guarded here at the one render site — dropping that file takes the whole
@@ -110,56 +168,7 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
     )}
     <h2 style={HOME_EYEBROW}>Your circles</h2>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {spaces.map((s) => (
-        <button key={s.id} onClick={() => onSelect && onSelect(s.id)} className="circ-appsheet-row" style={{
-          display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer',
-          background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
-          borderRadius: 'var(--radius-lg)', padding: '13px 14px', minHeight: 64,
-          boxShadow: 'var(--shadow-raised)', fontFamily: 'var(--font-sans)',
-        }}>
-          {/* No monogram tile. Removed 2026-09-09: `homeTile` was local to this
-              file and used nowhere else, while the app's avatar grammar
-              (primitives.jsx `Avatar`, round initials) marks PEOPLE at every one
-              of its call sites. A rounded-square monogram on a circle copied
-              that grammar onto a non-person, so a circle read as a user account
-              — and the letter carried nothing: every circle sharing an initial
-              drew the same tile, and it was `aria-hidden`, which is the markup
-              conceding it was decoration. */}
-          <span style={{ flex: 1, minWidth: 0 }}>
-            {/* Run 9: `15.5` and `12.5` were sizes the scale does not contain.
-                tokens.css runs 12/13/15/16/18/20/24/32/40 and every older module
-                honours it; this file and home-returns.jsx were a day old and
-                already off it, which is the literal form of "has it been done
-                beautifully". Snapped to `--text-md` and `--text-sm`. */}
-            <span style={{ display: 'block', fontWeight: 600, fontSize: 'var(--text-md)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
-            <span style={{ display: 'block', fontWeight: 500, fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{circleSummary(s)}</span>
-          </span>
-          {/* The micro dot the web rail carries, meaning exactly what it means
-              there: `unseen` — arrivals since the member last looked. Opening
-              the circle is the accept, so home needs no refresh gesture.
-              REVERTED 2026-09-07, on Joe's ruling. Run 9 widened this to fire
-              on unread items too, reasoning that dropping `New links` from the
-              meta line otherwise lost a signal. That was the wrong move twice
-              over. **The home screen does not indicate unread at all** — it is
-              implicit in there being a Read pile, and he had already said so —
-              and the fix for "the words and the dot say different things" is
-              never to redefine the dot. One mark, one meaning, in both places
-              it appears; the rail and the home row can now be read as the same
-              signal because they are.
-              Consequence, accepted: a circle with plenty unread and nothing new
-              carries no mark. That is the definition working. */}
-          <CircleSignal state={s.unseen ? 'unseen' : null} />
-          {/* No trailing chevron. Removed 2026-09-09: every row in this list
-              navigates, so a mark that never varies carries no information — it
-              is furniture at the end of each row. It also collided with the
-              `chevron-down` the Conversations strip above uses to collapse
-              (home-returns.jsx), leaving one glyph family carrying two meanings
-              on one screen, separated only by 90° of rotation at 16px in fg-3.
-              The strip's chevron DOES vary with state, so it earns its place and
-              is now the only chevron on the screen. The whole card is the
-              target; its border, raised shadow and hover carry that. */}
-        </button>
-      ))}
+      {spaces.map((s) => <CircleRow key={s.id} space={s} onSelect={onSelect} />)}
     </div>
     <button onClick={onCreate} className="circ-appsheet-row" style={{
       display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer',
@@ -178,4 +187,4 @@ const CirclesHome = ({ spaces = [], onSelect, onCreate, stripOpen, onToggleStrip
   );
 };
 
-Object.assign(window, { CirclesHome });
+Object.assign(window, { CirclesHome, CircleRow, circleSummary });

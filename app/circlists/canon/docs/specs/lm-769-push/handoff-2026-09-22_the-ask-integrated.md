@@ -173,10 +173,9 @@ worth knowing before anyone tests the schedule live.
 ## Action Items & Next Steps
 
 1. ~~"on this device" vs "for this device"~~ — settled: **on**.
-2. **Ask about the `CHANGELOG.md` entry.** Push notifications is a feature
-   introduced and has no entry; the shape is now ratified, so one terse title
-   plus 2–4 shape-level bullets is due — but writing it is a decision, not a
-   tidy. Do not write it unprompted.
+2. ~~The `CHANGELOG.md` entry~~ — written 2026-09-22 ("Circlists can notify you
+   when links land"), four shape-level bullets. Written once; do not amend it as
+   the feature iterates.
 3. Archiving both rigs — queued, needs his word.
 4. The rest of the unratified set, one at a time: Notifications first on
    Account, the preview's three frames, desktop firing frequency, the badge

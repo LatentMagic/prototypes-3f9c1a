@@ -6,7 +6,10 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ---- Shared frame ----------------------------------------------------------
-const AuthFrame = ({ title, subtitle, children, footer, onBack }) => (
+// `lead` is an optional block ABOVE the card (LM-771's share intake uses it to
+// name the link the member arrived holding). Absent everywhere else, so no
+// existing auth surface changes shape.
+const AuthFrame = ({ title, subtitle, children, footer, onBack, lead }) => (
   <div style={{
     minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -22,6 +25,7 @@ const AuthFrame = ({ title, subtitle, children, footer, onBack }) => (
       <Wordmark size={22} />
       {onBack && <span style={{ width: 20 }} />}
     </div>
+    {lead}
     <div style={{
       width: '100%', maxWidth: 400, background: 'var(--color-surface)',
       border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-lg)',
@@ -90,7 +94,7 @@ const OrDivider = () => (
 );
 
 // ---- Sign in ---------------------------------------------------------------
-const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
+const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup, lead, subtitle = 'Pick up your list where you left off.' }) => {
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [err, setErr] = React.useState({});
@@ -103,7 +107,7 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup }) => {
     if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
   };
   return (
-    <AuthFrame title="Sign in" subtitle="Pick up your list where you left off."
+    <AuthFrame lead={lead} title="Sign in" subtitle={subtitle}
       footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"

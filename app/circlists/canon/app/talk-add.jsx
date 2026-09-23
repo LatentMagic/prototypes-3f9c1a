@@ -107,7 +107,10 @@ const CandRoom = React.forwardRef(({ value, onChange, max, placeholder, maxPx },
   );
 });
 
-const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
+// `initialUrl` — the shipped AddReveal's own prop (LM-771), carried here
+// because this file re-publishes window.AddReveal and the intake's prefill
+// must not depend on which of the two is loaded.
+const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
   const [url, setUrl] = React.useState('');
   const [error, setError] = React.useState(null);
   const [thought, setThought] = React.useState('');
@@ -141,7 +144,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd }) => {
   React.useEffect(() => {
     if (open) {
       invokerRef.current = document.activeElement;
-      setUrl(''); setError(null); setThought(''); setMarkRead(false); setFace(0);
+      setUrl(initialUrl || ''); setError(null); setThought(''); setMarkRead(false); setFace(0);
       setSwell({ glyph: null, intensity: null, nx: 0.5, ny: 0.5 });
       const id = setTimeout(() => inputRef.current && inputRef.current.focus({ preventScroll: true }), 60);
       return () => clearTimeout(id);

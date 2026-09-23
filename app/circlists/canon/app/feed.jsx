@@ -446,7 +446,11 @@ const EmptyState = ({ tab, isChampion, onStartCircle }) => {
 
 // ---- Add reveal surface — sheet (mobile) / popover (desktop) ---------------
 const URL_RE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
-const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
+// `initialUrl` prefills the link slot (LM-771: a share intake opens this same
+// surface with the shared link already in it). Read on OPEN only, exactly
+// where the reset below already runs, so the sheet a member opens themselves
+// is byte-for-byte unchanged — no caller, no prop, empty field.
+const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
   const [url, setUrl] = React.useState('');
   const [error, setError] = React.useState(null);
   const inputRef = React.useRef(null);
@@ -470,7 +474,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd }) => {
   React.useEffect(() => {
     if (open) {
       invokerRef.current = document.activeElement;
-      setUrl(''); setError(null);
+      setUrl(initialUrl || ''); setError(null);
       const id = setTimeout(() => inputRef.current && inputRef.current.focus(), 60);
       return () => clearTimeout(id);
     } else if (invokerRef.current && invokerRef.current.focus) {

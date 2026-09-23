@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Option board — the signed-out lead</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+:root{--circ-vh:100vh}
+body{margin:0;background:var(--color-surface-sunken);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.wrap{max-width:1260px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1.pg{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:64ch;margin:12px 0 0;text-wrap:pretty}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px}
+@media (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
+.opthead{display:flex;align-items:baseline;gap:10px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 17px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claim{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-2);margin:8px 0 0;text-wrap:pretty}
+.cost{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);margin:4px 0 0;text-wrap:pretty}
+.frame{--circ-vh:760px;margin-top:14px;width:100%;max-width:400px;border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);overflow:hidden;pointer-events:auto}
+.circ-textlink:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/auth.jsx"></script>
+<script type="text/babel" src="app/wizard.jsx"></script>
+<script type="text/babel" src="app/share-intake.jsx"></script>
+<script type="text/babel">
+const SL_LINK = 'https://www.nytimes.com/2026/09/21/technology/ai-agents-software-engineering-teams.html?unlocked_article_code=1.8U0.aB3x&smid=url-share';
+const SL_W = { width: '100%', maxWidth: 400 };
+const slRule = { height: 1, width: '100%', background: 'var(--color-border-2)' };
+
+// 01 — the reference's grammar: heading, rule, item. The instruction becomes a
+// heading and the link the one item under it.
+const Lead1 = () => (
+  <div style={{ ...SL_W, marginBottom: 'var(--space-6)', textAlign: 'left' }}>
+    <h2 style={{ margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-lg)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>Sign in to add this to a circle</h2>
+    <div style={{ ...slRule, margin: '12px 0 8px' }}></div>
+    <ShareHeldLink link={SL_LINK} />
+  </div>
+);
+
+// 02 — the link as an object: a chip carrying the link icon, instruction under
+// it as a plain line.
+const Lead2 = () => (
+  <div style={{ ...SL_W, marginBottom: 'var(--space-6)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', minWidth: 0, background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)', padding: '6px 12px' }}>
+      <span style={{ flex: 'none', color: 'var(--color-fg-2)', display: 'inline-flex' }}><Icon name="link" size={16} /></span>
+      <div style={{ flex: 1, minWidth: 0 }}><ShareHeldLink link={SL_LINK} /></div>
+    </div>
+    <p style={{ margin: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)', textAlign: 'center' }}>Sign in to add this to a circle.</p>
+  </div>
+);
+
+// 03 — split by role: the link stands alone above the card, ruled off like the
+// picker; the instruction moves into the card as its subtitle.
+const Lead3 = () => (
+  <div style={SL_W}>
+    <ShareHeldLink link={SL_LINK} />
+    <div style={{ ...slRule, margin: '16px 0 24px' }}></div>
+  </div>
+);
+
+// 04 — the picker's own sequence: WizardTitle, link, rule. The card then plays
+// the part the rows play on the picker.
+const Lead4 = () => (
+  <div style={{ ...SL_W, marginBottom: 'var(--space-2)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <WizardTitle mb={12}>Add this to a circle</WizardTitle>
+    <ShareHeldLink link={SL_LINK} />
+    <div style={{ ...slRule, margin: '16px 0 24px' }}></div>
+  </div>
+);
+
+// 05 — option 3 with a quiet line above the link.
+const Lead5 = () => (
+  <div style={{ ...SL_W, marginBottom: 'var(--space-2)' }}>
+    <p style={{ margin: '0 0 8px', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14, color: 'var(--color-fg-2)', textAlign: 'left' }}>Adding this link</p>
+    <ShareHeldLink link={SL_LINK} />
+    <div style={{ ...slRule, margin: '16px 0 24px' }}></div>
+  </div>
+);
+
+const SL_OPTIONS_OUT = ['02'];
+const SL_OPTIONS = [
+  { n: '04', name: 'Picker grammar', claim: 'The picker screen exactly: heading, link, rule, then the thing you act on. Here that is the card, whose subtitle says what signing in is for.', cost: 'The page has two headings, but they stack the way the picker title does over its rows.', lead: <Lead4 />, subtitle: 'Sign in to choose which one.' },
+  { n: '05', name: 'Split, with a line', claim: 'Option 3, plus a quiet line above the link so the instruction is still read before the card.', cost: 'Says it twice: once above, once in the card.', lead: <Lead5 />, subtitle: 'Sign in to add this link to a circle.' },
+  { n: '01', name: 'Heading, rule, link', claim: 'The instruction becomes a heading and the link sits under a hairline, the way the release-notes block lists an item under its title.', cost: 'Two headings on one screen: this one and the card’s Sign in.', lead: <Lead1 /> },
+  { n: '02', name: 'Link chip', claim: 'The link becomes an object with an icon; the instruction is a plain line beneath it.', cost: 'The chip is a box above the card: one more card-like shape.', lead: <Lead2 /> },
+  { n: '03', name: 'Split by role', claim: 'The link stands alone above the card, ruled off as on the picker. The instruction replaces the card’s subtitle, so it sits with the task it describes.', cost: 'Changes the sign-in subtitle for share arrivals only.', lead: <Lead3 />, subtitle: 'To add this link to a circle.' },
+];
+
+const SlBoard = () => (
+  <div className="wrap">
+    <div className="eyebrow">LM-771 · Share intake</div>
+    <h1 className="pg">The signed-out lead</h1>
+    <p className="lede">Ways to separate the held link from the instruction above the sign-in card, in the picker’s syntax. The card is the shipped sign-in. 02 (chip) vetoed.</p>
+    <div className="grid">
+      {SL_OPTIONS.filter((o) => !SL_OPTIONS_OUT.includes(o.n)).sort((a, b) => a.n.localeCompare(b.n)).map((o) => (
+        <div key={o.n}>
+          <div className="opthead"><span className="num">{o.n}</span><span className="name">{o.name}</span></div>
+          <p className="claim">{o.claim}</p>
+          <p className="cost">{o.cost}</p>
+          <div className="frame">
+            <SignIn lead={o.lead} subtitle={o.subtitle} onSubmit={() => {}} onGoogle={() => {}} onForgot={() => {}} onGoSignup={() => {}} />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<SlBoard />);
+</script>
+</body>
+</html>
