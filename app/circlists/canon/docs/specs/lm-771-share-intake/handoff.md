@@ -1,5 +1,56 @@
 # LM-771 — share intake · handoff
 
+## 2026-09-23 — five fixes on canon (fuzz pass + intent audit)
+
+Latest round. The sections below it are the 2026-09-22 build record; the
+audit's own rulings are in `handoff-2026-09-23_share-intake-audit.md`.
+
+**Built** (all in `app/main.jsx` unless named):
+1. **Sign-out clears the held link** — `signOut` calls `cancelShareAdd()` +
+   `setShareLink('')`. Completing sign-up (OTC and Google, `post-signup`)
+   clears it too. Clearing is on *completion*, not on tapping "Create an
+   account", so going back to sign-in still shows the lead.
+2. **Add timer cancels on early exit** — `shareAddTimer` ref holds
+   `{ id, spaceId }` while the 760ms beat runs. An effect on `[route,
+   currentId]` cancels (clearTimeout + `setAddPrefill('')`) the moment
+   `route !== 'space'` or `currentId !== spaceId`. The timer nulls the ref when
+   it fires. Staying in the circle is unchanged.
+3. **Recovery returns to the picker** — `onForgot` sets `postAuthTo` to
+   `'share-intake'` on a share arrival (else `'space'`), as Google already did;
+   `Recovery`'s `onDone` returns to `share-intake` when `postAuthTo` says so
+   *and* a link is held, else `goHome()`.
+4. **Signed out, no link** — no change needed; `shareArrival` is still gated on
+   `shareLink`, which items 1–2 now keep empty.
+5. **Text-plus-link** — `circShareExtractUrl` (top of `main.jsx`), applied
+   inside the `setShareLink` wrapper, so every writer (arrival, stagers, ×,
+   pick) goes through it. `shareLink` → picker line → `addPrefill` only ever
+   hold the bare URL; no URL ⇒ `''` ⇒ bare arrival. The thought field is
+   untouched.
+6. **Register** — `share-intake-text-link` in `app/states.jsx`;
+   `stageShareIntake`'s `link` now also takes a raw payload string
+   (`CIRC_SHARE_TEXT`).
+
+**Choices, and why:**
+- **Regex:** first match of `https?://[^\s<>"'\`]+`, then trailing `.,;:!?` and
+  closing curly quotes are stripped, and a closing `)`/`]`/`}` is stripped only
+  when unbalanced (keeps `/Foo_(bar)`, drops the `)` of `(https://a.b)`). A match
+  with no host is rejected. It runs **in the setter**, not on arrival, because
+  the setter is the one door every path uses — a guarantee at one point rather
+  than a rule each caller must remember.
+- **Mock string:** `Replicated Log — Patterns of Distributed Systems https://martinfowler.com/…/replicated-log.html`
+  — headline then link, the shape reader and news apps hand over, reusing the
+  existing long link so the line still scrolls.
+- **Leaving the circle** = any route other than `space`, or a different
+  `currentId`. This also cancels if Account opens inside the 760ms; that drops
+  the link, the safe side of the rule.
+
+**Unresolved:** nothing new. Sign-up and asleep-circle drops stand as ratified.
+
+**Next:** the owner walks the acceptance list at 390 and 1280, especially the
+760ms early exit (tap a circle, then Home or another circle at once).
+
+---
+
 **Date:** 2026-09-22 · **State:** built into the main app, unratified. The owner
 audits it in place.
 
@@ -32,8 +83,9 @@ confirm.
 | A bare arrival (no link held) | `share-intake-bare` |
 | No circles yet | `share-intake-no-circles` |
 | Signed out, holding a link | `share-intake-signed-out` |
+| Picker, link extracted from shared text | `share-intake-text-link` |
 
-The tap-through has no entry of its own: it lands on a circle's feed with its
+The tap-through of its own: it lands on a circle's feed with its
 own add open, and on a circle's wake-up page — both already addressable.
 
 Nothing was added to **Config**. The launcher's own split is that a setting is a

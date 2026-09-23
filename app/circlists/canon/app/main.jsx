@@ -10,6 +10,26 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 // ---- Seed fixtures + user default live in app/seed-data.jsx (loaded first) ----
 const { M, seedSpaces, DEFAULT_USER } = window.CircSeed;
 
+// ---- Share intake (LM-771): the URL inside a shared payload ----------------
+// The first http(s) URL in the text, nothing else; '' when there is none.
+// Runs to the first whitespace or quote/angle bracket, then sheds trailing
+// sentence punctuation ("…see https://a.b/c." holds https://a.b/c) and a
+// closing bracket only when it is unbalanced, so wiki-style ".../Foo_(bar)"
+// survives but "(https://a.b)" does not carry the ")".
+const circShareExtractUrl = (payload) => {
+  const m = String(payload || '').match(/https?:\/\/[^\s<>"'`]+/i);
+  if (!m) return '';
+  let u = m[0];
+  for (;;) {
+    const last = u.slice(-1);
+    if (/[.,;:!?\u2019\u201d]/.test(last)) { u = u.slice(0, -1); continue; }
+    const pair = { ')': '(', ']': '[', '}': '{' }[last];
+    if (pair && u.split(last).length > u.split(pair).length) { u = u.slice(0, -1); continue; }
+    break;
+  }
+  return /^https?:\/\/[^/]+/i.test(u) ? u : '';
+};
+
 // ---- Persistence -----------------------------------------------------------
 // Key is versioned: bump the suffix whenever seed data changes so returning
 // sessions pick up the new seed instead of rehydrating stale state. (v2 adds
@@ -209,8 +229,16 @@ const CircApp = () => {
   // `addPrefill` is what the circle's own add surface opens holding — held
   // apart from `shareLink` because by the time the sheet opens the intake is
   // finished with, and the FAB's own add must never inherit it.
-  const [shareLink, setShareLink] = useState('');
+  // The setter is the one door into `shareLink`, so the extraction lives on it:
+  // whatever payload is handed in (a bare URL, or "Read this: https://…"),
+  // only the first http(s) URL in it is held; words are dropped, and a payload
+  // with no URL holds nothing (a bare arrival). See circShareExtractUrl.
+  const [shareLink, setShareLinkRaw] = useState('');
+  const setShareLink = useCallback((payload) => setShareLinkRaw(circShareExtractUrl(payload)), []);
   const [addPrefill, setAddPrefill] = useState('');
+  // The share's pending add: { id, spaceId } while the 760ms beat runs, else
+  // null. Cleared the moment the member leaves that circle (effect below).
+  const shareAddTimer = useRef(null);
   // FAB success beat: a successful add flips this true, resolving the FAB glyph to
   // a tick, then self-clears back to the plus. Cancel never sets it.
   const [addConfirm, setAddConfirm] = useState(false);
@@ -428,8 +456,23 @@ const CircApp = () => {
     enterSpace(id);
     if (!sp || !sp.funded) return;
     setAddPrefill(link);
-    setTimeout(() => setAddOpen(true), 760);
+    if (shareAddTimer.current) clearTimeout(shareAddTimer.current.id);
+    const tid = setTimeout(() => { shareAddTimer.current = null; setAddOpen(true); }, 760);
+    shareAddTimer.current = { id: tid, spaceId: id };
   };
+  // Early exit: leaving the circle the pick just entered (another circle, home,
+  // any other route) before the beat elapses cancels the add and drops the
+  // link, so it never opens there, in the next circle, or on a later visit.
+  const cancelShareAdd = () => {
+    if (!shareAddTimer.current) return;
+    clearTimeout(shareAddTimer.current.id);
+    shareAddTimer.current = null;
+    setAddPrefill('');
+  };
+  useEffect(() => {
+    const p = shareAddTimer.current;
+    if (p && (route !== 'space' || currentId !== p.spaceId)) cancelShareAdd();
+  }, [route, currentId]);
 
   // persist
   useEffect(() => {
@@ -869,7 +912,7 @@ const CircApp = () => {
   const pushAskVisible = window.CircPushAsk && push.ask === 'pending'
     && push.perm === 'default' && push.channel === 'ok' && pushSnoozeOver();
 
-  const signOut = () => { setUser(DEFAULT_USER); setRoute('signin'); };
+  const signOut = () => { cancelShareAdd(); setShareLink(''); setUser(DEFAULT_USER); setRoute('signin'); };
   const startSignup = ({ firstName, lastName, email }) => {
     setPendingEmail(email);
     setUser({ firstName, lastName, name: 'You', email });
@@ -882,6 +925,8 @@ const CircApp = () => {
     // picker — the link is still held, so the arrival resumes where it stopped.
     if (postAuthTo === 'share-intake') { setRoute('share-intake'); return; }
     if (postAuthTo === 'post-signup') {
+      // LM-771: a new account has no circles, so a held link is dropped — gone.
+      setShareLink('');
       // Land with NO spaces → the no-space home (create launches from there).
       setSpaces([]); setCurrentId(null); goHome();
     } else {
@@ -1013,16 +1058,18 @@ const CircApp = () => {
       subtitle={(shareArrival && window.SHARE_SIGNIN_SUBTITLE) || undefined}
       onSubmit={({ email }) => startSignin(email, shareArrival ? 'share-intake' : 'space')}
       onGoogle={() => { setPostAuthTo(shareArrival ? 'share-intake' : 'space'); setRoute('google-return'); }}
-      onForgot={() => setRoute('recovery')} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
+      onForgot={() => { setPostAuthTo(shareArrival ? 'share-intake' : 'space'); setRoute('recovery'); }} onGoSignup={() => { setSpaces([]); setRoute('signup'); }} />;
   } else if (route === 'signup') {
     screen = <SignUp onSubmit={startSignup} onGoogle={() => { setPostAuthTo('post-signup'); setRoute('google-return'); }} onGoSignin={() => setRoute('signin')} />;
   } else if (route === 'otc') {
     screen = <OtcEntry email={pendingEmail} context={otc.context} initialError={otc.error}
       onVerify={finishOtc} onBack={() => setRoute(otc.context === 'signup' ? 'signup' : 'signin')} />;
   } else if (route === 'google-return') {
-    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'share-intake') { setRoute('share-intake'); return; } if (postAuthTo === 'post-signup') { setSpaces([]); setCurrentId(null); } goHome(); }} />;
+    screen = <GoogleReturn onDone={holdLoading ? () => {} : () => { if (postAuthTo === 'share-intake') { setRoute('share-intake'); return; } if (postAuthTo === 'post-signup') { setShareLink(''); setSpaces([]); setCurrentId(null); } goHome(); }} />;
   } else if (route === 'recovery') {
-    screen = <Recovery onDone={goHome} onBackToSignin={() => setRoute('signin')} />;
+    // LM-771: recovery from the signed-out share returns to the picker, the
+    // link still held — sign-in's own return, via the `postAuthTo` onForgot set.
+    screen = <Recovery onDone={() => { if (postAuthTo === 'share-intake' && shareLink) { setRoute('share-intake'); return; } goHome(); }} onBackToSignin={() => setRoute('signin')} />;
   } else if (route === 'funding') {
     screen = <FundingPage user={user} spaceName={fundFlow.name} mode={fundFlow.mode}
       onFund={() => setRoute('checkout')}

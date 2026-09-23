@@ -45,6 +45,9 @@ const CIRC_BARE_URL = 'https://analytics-internal-example.com/?trace=8823ff1c9e0
 // Long enough that the picker's one mono line actually truncates — a link that
 // fits proves nothing about the state being staged.
 const CIRC_SHARE_LINK = 'https://martinfowler.com/articles/patterns-of-distributed-systems/replicated-log.html';
+// A text-plus-link share, the shape a news or reader app hands over: headline,
+// then the link. Only the URL may ever reach the picker or the add.
+const CIRC_SHARE_TEXT = 'Replicated Log — Patterns of Distributed Systems ' + CIRC_SHARE_LINK;
 
 // ---- staging context -------------------------------------------------------
 // Built per render from main.jsx's setters; every stage() closes over nothing
@@ -590,6 +593,8 @@ function circStateContext(api) {
   //   empty — no circles at all, landing on the home's empty state inside the
   //           picker's shell.
   //   link  — FALSE stages a bare arrival: the same page with no link line.
+  //           A STRING stages that raw payload (text plus link); main.jsx's
+  //           setter extracts the URL, so the stager hands it over unedited.
   //   signedOut — the canon sign-in card with the intake's lead above it.
   //           `postAuthTo` is what makes signing in RETURN to the picker, and
   //           it is staged rather than implied, because it is the only thing
@@ -606,7 +611,7 @@ function circStateContext(api) {
     setSpaces(s);
     clearFeedError();
     setLoadingFeed(false);
-    if (setShareLink) setShareLink(link ? CIRC_SHARE_LINK : '');
+    if (setShareLink) setShareLink(typeof link === 'string' ? link : (link ? CIRC_SHARE_LINK : ''));
     setCurrentId(null);
     if (signedOut) { setPostAuthTo('share-intake'); setRoute('signin'); return; }
     setRoute('share-intake');
@@ -746,6 +751,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Share intake', id: 'share-intake-bare', label: 'A bare arrival — no link held', stage: (c) => c.stageShareIntake({ link: false }) },
   { group: 'Share intake', id: 'share-intake-no-circles', label: 'Nowhere to put it — no circles yet', stage: (c) => c.stageShareIntake({ empty: true }) },
   { group: 'Share intake', id: 'share-intake-signed-out', label: 'Signed out, holding a link', stage: (c) => c.stageShareIntake({ signedOut: true }) },
+  { group: 'Share intake', id: 'share-intake-text-link', label: 'Pick a circle — link extracted from shared text', stage: (c) => c.stageShareIntake({ link: CIRC_SHARE_TEXT }) },
 
   // The not-found page is staged as a bare route because that is what it
   // answers: an address that resolved to nothing, with no circle to be inside.
