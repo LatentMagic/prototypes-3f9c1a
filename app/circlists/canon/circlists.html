@@ -129,6 +129,11 @@
   .circ-fdiv { display: flex; align-items: center; gap: var(--space-3); padding: 0 0 4px; }
   .circ-fdiv::after { content: ''; flex: 1; height: 1px; background: var(--color-border-2); }
   .circ-fdiv-label { font: 600 10.5px/1 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  /* History's end line (LM-786): the waterline's own drawing, closing the list. */
+  .circ-fdiv-end { padding: 8px 0 0; }
+  /* The failed-load foot's Try again: the doorlink's own treatment (accent,
+     quiet underline, set by .circ-doorlink); this only gives it a 44px target. */
+  .circ-pagefoot-retry { background: transparent; border: 0; cursor: pointer; padding: 0 12px; min-height: 44px; font: 600 14px/1 var(--font-sans); border-radius: var(--radius-md); }
   @media (prefers-reduced-motion: reduce) {
     /* The card does not travel; the glow still plays — it is the cue, and removing
        it would leave a reduced-motion reader with no arrival treatment at all. */
@@ -688,6 +693,7 @@
 <script type="text/babel" src="app/liveliness.jsx"></script>
 <script type="text/babel" src="app/swell-reactions.jsx"></script>
 <script type="text/babel" src="app/feed.jsx"></script>
+<script type="text/babel" src="app/feed-history.jsx"></script>
 <script type="text/babel" src="app/feed-sort.jsx"></script>
 <script type="text/babel" src="app/feed-lens.jsx"></script>
 <script type="text/babel" src="app/feed-saved.jsx"></script>

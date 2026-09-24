@@ -49,6 +49,51 @@ const CIRC_SHARE_LINK = 'https://martinfowler.com/articles/patterns-of-distribut
 // then the link. Only the URL may ever reach the picker or the add.
 const CIRC_SHARE_TEXT = 'Replicated Log — Patterns of Distributed Systems ' + CIRC_SHARE_LINK;
 
+// The late joiner (LM-786): an established circle the member joined three days
+// ago, with a Horizon a week before that. [url, title, source, who]. `now` is
+// from the Horizon on and still waiting (Active); `done` is the little they
+// have marked since joining; `past` is the long run from before the Horizon,
+// which History draws as ordinary Unread cards.
+const CIRC_LATE = {
+  now: [
+    ['https://aeon.co/essays/why-we-keep-lists-we-never-finish', 'Why we keep lists we never finish', 'Aeon', 'Ana R.'],
+    ['https://www.bbc.co.uk/sounds/play/m001-slow-cooking', 'The Food Programme: the case for slow cooking', 'BBC Sounds', 'Dan M.'],
+    ['https://www.theatlantic.com/culture/archive/2026/09/the-return-of-the-letter/', 'The return of the letter', 'The Atlantic', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=studio-session-1971', 'How a 1971 studio session changed recorded sound', 'YouTube', 'Lena K.'],
+    ['https://www.seriouseats.com/the-only-focaccia-method-you-need', 'The only focaccia method you need', 'Serious Eats', 'Joe M.'],
+    ['https://nautil.us/the-physics-of-a-perfect-skim-stone/', 'The physics of a perfect skimming stone', 'Nautilus', 'Ana R.'],
+  ],
+  done: [
+    ['https://www.theguardian.com/cities/2026/sep/quiet-return-of-the-neighbourhood-library', 'The quiet return of the neighbourhood library', 'The Guardian', 'Priya S.'],
+    ['https://www.newyorker.com/culture/the-weekend-essay/walking-without-headphones', 'The case for walking without headphones', 'The New Yorker', 'Dan M.'],
+    ['https://longreads.com/2026/09/the-last-lighthouse-keepers/', 'The last lighthouse keepers', 'Longreads', 'Lena K.'],
+  ],
+  past: [
+    ['https://www.lrb.co.uk/the-paper/v48/n16/on-gardens', 'On gardens, and the people who leave them', 'London Review of Books', 'Joe M.'],
+    ['https://www.bbc.co.uk/sounds/play/in-our-time-public-library', 'In Our Time: the history of the public library', 'BBC Sounds', 'Dan M.'],
+    ['https://aeon.co/essays/the-art-of-doing-one-thing-at-a-time', 'The art of doing one thing at a time', 'Aeon', 'Ana R.'],
+    ['https://www.theguardian.com/food/2026/jul/a-year-of-sunday-lunches', 'A year of Sunday lunches', 'The Guardian', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=how-maps-lie', 'How maps quietly shape what we notice', 'YouTube', 'Lena K.'],
+    ['https://www.newyorker.com/magazine/2026/06/the-slow-craft-of-bookbinding', 'The slow craft of bookbinding', 'The New Yorker', 'Joe M.'],
+    ['https://www.theatlantic.com/family/archive/2026/06/friendship-after-forty/', 'Friendship after forty', 'The Atlantic', 'Ana R.'],
+    ['https://nautil.us/why-birdsong-changes-in-cities/', 'Why birdsong changes in cities', 'Nautilus', 'Dan M.'],
+    ['https://www.seriouseats.com/how-to-make-stock-from-scraps', 'How to make stock from scraps', 'Serious Eats', 'Priya S.'],
+    ['https://longreads.com/2026/05/the-river-swimmers/', 'The river swimmers', 'Longreads', 'Lena K.'],
+    ['https://www.bbc.co.uk/sounds/play/desert-island-discs-archive', 'Desert Island Discs: from the archive', 'BBC Sounds', 'Joe M.'],
+    ['https://aeon.co/essays/what-we-owe-to-the-places-we-grew-up', 'What we owe to the places we grew up', 'Aeon', 'Ana R.'],
+    ['https://www.lrb.co.uk/the-paper/v48/n09/letters-from-a-small-island', 'Letters from a small island', 'London Review of Books', 'Dan M.'],
+    ['https://www.theguardian.com/lifeandstyle/2026/apr/learning-to-sew-at-sixty', 'Learning to sew at sixty', 'The Guardian', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=a-day-in-a-bakery', 'A day in a village bakery', 'YouTube', 'Lena K.'],
+    ['https://www.newyorker.com/culture/cultural-comment/the-pleasure-of-rereading', 'The pleasure of rereading', 'The New Yorker', 'Joe M.'],
+    ['https://www.theatlantic.com/ideas/archive/2026/03/the-case-for-boredom/', 'The case for boredom', 'The Atlantic', 'Ana R.'],
+    ['https://nautil.us/the-hidden-life-of-hedgerows/', 'The hidden life of hedgerows', 'Nautilus', 'Dan M.'],
+    ['https://www.seriouseats.com/a-guide-to-winter-citrus', 'A guide to winter citrus', 'Serious Eats', 'Priya S.'],
+    ['https://longreads.com/2026/02/night-shift-at-the-observatory/', 'Night shift at the observatory', 'Longreads', 'Lena K.'],
+    ['https://www.bbc.co.uk/sounds/play/short-cuts-first-light', 'Short Cuts: first light', 'BBC Sounds', 'Joe M.'],
+    ['https://aeon.co/essays/on-keeping-a-commonplace-book', 'On keeping a commonplace book', 'Aeon', 'Ana R.'],
+  ],
+};
+
 // ---- staging context -------------------------------------------------------
 // Built per render from main.jsx's setters; every stage() closes over nothing
 // but this. Same staging behaviour as the old Config scenarios, verbatim.
@@ -63,6 +108,7 @@ function circStateContext(api) {
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
     setSearchQuery, setSearchOpen, setHomeStripOpen,
     setFeedError,
+    setIncludeActive, setFeedPages, setPageStatus,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
   // that set it: every other flag here is overwritten by the next stager, and a
@@ -323,7 +369,7 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0 }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pageFail = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     // Search — `bareRead`. Applied BEFORE
@@ -405,6 +451,9 @@ function circStateContext(api) {
     // Set AFTER enterSpace, which clears it on the way in — the failure is the
     // state being staged, not something the entry should wash away.
     if (setFeedError) setTimeout(() => setFeedError(!!feedError), 0);
+    // The older-links failure (LM-786): the first page is on screen and the
+    // fetch for the next one has failed. After the entry, which clears paging.
+    if (pageFail && setPageStatus) setTimeout(() => setPageStatus({ [space + ':' + tab]: 'failed' }), 80);
     // The waterline pair. entering a circle draws the mark from the stored
     // lastSeenAt and stamps it to now in the same breath, so a staged visit
     // cannot reliably reproduce a mid-pile mark by timing alone. These two
@@ -457,6 +506,38 @@ function circStateContext(api) {
     setSpaces(prev => [one, ...prev.filter(s => s.id !== 'sp-one')]);
     setSortOrder({}); setSortMenuOpen(false);
     setCurrentId('sp-one'); setTab('active'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // The late joiner (LM-786). Built as its own circle, as stageSingleItem is,
+  // so nothing else in the app is disturbed. Opens on History, switch off:
+  // the three cards marked done, then the long run from before the Horizon,
+  // each an ordinary Unread card with nothing marking where the member began.
+  const stageLateJoiner = () => {
+    setUser(DEFAULT_USER);
+    const now = Date.now();
+    const joined = now - 3 * DAY;
+    const horizon = joined - 7 * DAY;
+    const mk = (row, n, read, at) => ({ id: 'late-' + n, url: row[0], title: row[1], source: row[2],
+      attribution: 'Added by ' + row[3], read, at, reactions: read ? [{ name: 'You', skipped: true }] : [] });
+    let n = 0;
+    const items = [
+      ...CIRC_LATE.now.map((r, i) => mk(r, n++, false, now - (i * 30 + 2) * 3600e3)),
+      ...CIRC_LATE.done.map((r, i) => mk(r, n++, true, horizon + (i + 1) * 1.5 * DAY)),
+      ...CIRC_LATE.past.map((r, i) => mk(r, n++, false, horizon - (i * 8 + 2) * DAY)),
+    ];
+    const late = {
+      id: 'sp-late', name: 'Sunday Reads', funded: true, dormancy: null,
+      champion: 'Ana R.', championEmail: 'ana.r@example.com',
+      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
+        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      items, joinedAt: joined, horizon,
+      lastSeenAt: now, unseen: false, pending: [], queued: [],
+    };
+    setSpaces(prev => [late, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-late')]);
+    setSortOrder({}); setLensWho({}); setSavedOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
+    clearFeedError();
+    setCurrentId('sp-late'); setTab('read'); setRoute('space'); setLoadingFeed(false);
+    if (setIncludeActive) setTimeout(() => setIncludeActive(false), 0);
   };
 
   // Arriving on a shared card address (BIZ-136 wild feature; LM-797). ONE
@@ -621,7 +702,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageNotFound, stageHome, stageSharedCard,
+    stageSort, stageSingleItem, stageLateJoiner, stageNotFound, stageHome, stageSharedCard,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
     stageShareIntake,
@@ -674,6 +755,12 @@ const CIRC_STATE_REGISTER = [
   // to show, in either sort order (both-orders-again, 2026-09-11).
   { group: 'The feed', id: 'filter-waterline', label: 'Waterline — drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
   { group: 'The feed', id: 'density-compact-waterline', label: 'Compact — the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
+  // History (LM-786). The late joiner: the circle's past, from before the
+  // member's Horizon, drawn in History as Unread cards with no label. The
+  // failed page: History's first page loaded, the next one failed; the foot
+  // is the same on Active.
+  { group: 'The feed', id: 'history-late-joiner', label: 'History — joined late, the circle’s past drawn as unread', stage: (c) => c.stageLateJoiner() },
+  { group: 'The feed', id: 'feed-older-failed', label: 'Older links failed to load — the cards stay', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', pageFail: true }) },
   // The failure with NOTHING applied, so the plain shape reads first: shell and
   // tabs live above, the region alone replaced.
   { group: 'The feed', id: 'feed-load-error', label: 'Feed — the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },

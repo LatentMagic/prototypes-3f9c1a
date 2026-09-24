@@ -180,7 +180,7 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
       {tab === 'read'
         ? <SwellDoor item={item} />
         : (
-          <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as read" title="Mark as read">
+          <button className={'circ-cardaction circ-cardaction-icon' + m.actionClass} onClick={() => onMarkRead(item)} aria-label="Mark as done" title="Mark as done">
             <Icon name="check" size={m.actionIcon.check} />
           </button>
         )}
@@ -407,11 +407,12 @@ const EMPTY_COPY = {
   },
   read: {
     primary: 'Nothing here.',
-    supporting: 'Links you mark as read land here, but stay in everyone else\u2019s list.',
+    supporting: 'What you mark as done stays here. Only your list changes.',
   },
 };
-const EmptyState = ({ tab, isChampion, onStartCircle }) => {
-  const c = EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
+// `copy` — History's own pair (feed-history.jsx) when that module is present.
+const EmptyState = ({ tab, isChampion, onStartCircle, copy = null }) => {
+  const c = copy || EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
     <div style={{
       textAlign: 'center', minHeight: 320, padding: '72px 24px',

@@ -273,7 +273,7 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark, tab }) => {
         )}
         {tab !== 'read' && (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="circ-cardaction circ-cardaction-icon cand-altaction" aria-label="Mark as read" title="Mark as read"
+          <button className="circ-cardaction circ-cardaction-icon cand-altaction" aria-label="Mark as done" title="Mark as done"
             onClick={() => { onClose(); api.requestMarkRead(item); }}>
             <Icon name="check" size={18} />
           </button>
@@ -292,7 +292,7 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark, tab }) => {
 // the head, the hairline, your name below it — with a field where the words go
 // and Add in the foot row beside the source. Sending closes the card back onto
 // its band, now carrying them: writing is a round trip, out and back.
-const CandWriteFace = ({ item, api, innerRef, onClose, onDone }) => {
+const CandWriteFace = ({ item, api, innerRef, onClose, onDone, open = true }) => {
   const [draft, setDraft] = React.useState('');
   const onSurface = React.useContext(CandSurfaceCtx);
   const send = () => { const text = draft.trim(); if (!text) return; candAddThought(api, item, text); onDone(); };
@@ -316,7 +316,7 @@ const CandWriteFace = ({ item, api, innerRef, onClose, onDone }) => {
           <span style={{ font: '600 14px/1.25 var(--font-sans)', letterSpacing: '-0.006em', color: 'var(--color-fg-1)' }}>You</span>
         </div>
         <CandWrite value={draft} onChange={setDraft} placeholder="What made you share it?" ariaLabel="Add a thought"
-          max={500} minLines={2} autoFocus size={16} />
+          max={500} minLines={2} autoFocus={open} size={16} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: onSurface ? 0 : -2 }}>
         <div style={{ flex: 1, minWidth: 0 }}><CandSourceLine item={item} foot /></div>
@@ -505,7 +505,7 @@ const CandCardRow = ({ item, tab, api, children, Face, mark = 'lines', openPaper
              at full width, taking the whole conversation up with it. */
           width: open ? '100%' : 'calc(100% + ' + (CAND_INSET * 2) + 'px)' }} aria-hidden={!open}>
           {heldFace === 'write' || (!item.thought && !heldFace)
-            ? <CandWriteFace item={item} api={api} innerRef={altRef} onClose={() => swap(false)} onDone={wrote} />
+            ? <CandWriteFace item={item} api={api} innerRef={altRef} open={open} onClose={() => swap(false)} onDone={wrote} />
             : React.createElement(Face || CandAltFace, {
                 item: heldFace === 'alt' ? { ...item, thought: lastThought.current } : item,
                 api, innerRef: altRef, mark, tab, onClose: () => swap(false) })}

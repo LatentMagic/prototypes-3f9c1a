@@ -238,7 +238,7 @@ const TopBar = ({ isMobile, space, showMembers = true, onMenu, onMembers, subVie
 const Tabs = ({ active, onChange, right = null }) => {
   const tabItems = [
     { id: 'active', label: 'Active' },
-    { id: 'read', label: 'Read' },
+    { id: 'read', label: 'History' },
   ];
   return (
     <div style={{

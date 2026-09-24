@@ -98,6 +98,20 @@ is never stale.
 
 ## Last sync
 
+date: 2026-09-24T11:26:21Z
+wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for
+History's empty-state copy). business-ops: fetched one LM-786 prompt image
+(`lm-786-feed-controls/_outputs/prompts/2026-09-24_history-end-line.png`) to test
+whether the prompt's linked images can be read; the copy was deleted afterwards.
+Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- LM-786: the Read tab is now History (every card), with the "Include cards in
+  Active" switch, paging on both tabs, the failed-load foot and History's end line
+  (`app/feed-history.jsx`, `main.jsx`). Handoff in `docs/specs/lm-786-history/`.
+
+## Previous sync
+
 date: 2026-09-21T08:23:34Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (the binding
 cross-app design law) and `specs/projects/circlists/requirements/`

@@ -277,8 +277,8 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
                   onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }} />
                 <CandThoughtRow words={words} onOpen={toWriting} />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 44, marginTop: 4 }}>
-                  <span style={{ font: '500 14px/1.3 var(--font-sans)', color: 'var(--color-fg-1)' }}>Mark as read</span>
-                  <CandSwitch on={markRead} onChange={toggleRead} label="Mark as read" />
+                  <span style={{ font: '500 14px/1.3 var(--font-sans)', color: 'var(--color-fg-1)' }}>Mark as done</span>
+                  <CandSwitch on={markRead} onChange={toggleRead} label="Mark as done" />
                 </div>
                 <div style={{ overflow: 'hidden', height: markRead ? swellH : 0, transition: 'height 300ms var(--ease-quiet)' }} aria-hidden={!markRead}>
                   <div ref={swellRef} style={{ paddingTop: 8 }}>

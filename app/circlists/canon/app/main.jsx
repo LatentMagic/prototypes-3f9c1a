@@ -266,6 +266,22 @@ const CircApp = () => {
   const [refreshing, setRefreshing] = useState(null);   // circle id whose receipt is running
   const [settledId, setSettledId] = useState(null);     // circle whose receipt is resolving into the mark
   const [arrived, setArrived] = useState([]);           // item ids that TRAVEL (pill accept only)
+  // ---- History and paging (LM-786, app/feed-history.jsx) --------------------
+  // All three are VISIT state: never persisted, cleared on every entry to a
+  // circle, so leaving or reloading starts both tabs at the top with the
+  // switch off. A tab switch keeps them: each tab holds its own loaded pages
+  // and its own scroll place, keyed `<circle>:<tab>`.
+  const [includeActive, setIncludeActive] = useState(false);
+  const [feedPages, setFeedPages] = useState({});
+  const [pageStatus, setPageStatus] = useState({});
+  const pageStatusRef = useRef({});
+  pageStatusRef.current = pageStatus;
+  const tabScroll = useRef({});
+  const visitGen = useRef(0);
+  const resetVisitView = () => {
+    visitGen.current += 1;
+    setIncludeActive(false); setFeedPages({}); setPageStatus({}); tabScroll.current = {};
+  };
   // The DRAWN waterline: the stored mark as it was when this visit began. Entry
   // stamps the mark to now, so the line the member reads against is held here for
   // the lifetime of the visit and nothing landing afterwards can move it. Visit
@@ -497,8 +513,41 @@ const CircApp = () => {
   useEffect(() => {
     if (route === 'share-intake' && listSpaces.length === 0) { setShareLink(''); setRoute('home'); }
   }, [route, listSpaces.length]);
-  const activeItems = space ? space.items.filter(i => !i.read) : [];
+  // Active excludes cards from before the member's Horizon (LM-786); with
+  // feed-history.jsx dropped there is no Horizon and it is every unread card.
+  const inActive = window.circInActive || ((s, i) => !i.read);
+  const activeItems = space ? space.items.filter(i => inActive(space, i)) : [];
   const readItems = space ? space.items.filter(i => i.read) : [];
+  // History: every card, less those in Active while the switch is off.
+  const historyItems = !space ? []
+    : window.circHistoryItems ? window.circHistoryItems(space, space.items, includeActive) : readItems;
+  // ---- Each tab keeps its own place (LM-786) --------------------------------
+  const feedScroller = () => document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
+  const switchTab = (next) => {
+    if (next === tab) { setTab(next); return; }
+    const el = feedScroller();
+    if (el && currentId) tabScroll.current[currentId + ':' + tab] = el.scrollTop;
+    setTab(next);
+  };
+  React.useLayoutEffect(() => {
+    const el = feedScroller();
+    if (!el || !currentId) return;
+    el.scrollTop = tabScroll.current[currentId + ':' + tab] || 0;
+  }, [tab]);
+  useEffect(() => { resetVisitView(); }, [currentId]);
+  // The next older page. One fetch at a time per tab; a visit that ends
+  // mid-fetch drops the result. `fail` is the staged failure (states.jsx).
+  const loadOlder = (key) => {
+    if (pageStatusRef.current[key] === 'loading') return;
+    const gen = visitGen.current;
+    setPageStatus((prev) => ({ ...prev, [key]: 'loading' }));
+    setTimeout(() => {
+      if (gen !== visitGen.current) return;
+      const size = window.CIRC_PAGE_SIZE || 8;
+      setFeedPages((prev) => ({ ...prev, [key]: (prev[key] || size) + size }));
+      setPageStatus((prev) => ({ ...prev, [key]: 'idle' }));
+    }, window.CIRC_PAGE_DELAY || 800);
+  };
   const isChampion = (s) => !!s && s.champion === 'You';
 
   // Release a review-only loading hold as soon as we're off an interstitial.
@@ -531,6 +580,7 @@ const CircApp = () => {
     if (id) setCurrentId(id);
     setRoute('space');
     setArrived([]); setSettledId(null);
+    resetVisitView();
     // Leaving with a pill unaccepted folds those arrivals into the feed and leaves
     // the circle holding unseen items. Nothing records where the member crossed —
     // the dot's own test (a circle holding unseen items) already covers them.
@@ -974,6 +1024,7 @@ const CircApp = () => {
         enterSpace, openCreateSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
         setSearchQuery, setSearchOpen, setHomeStripOpen,
+        setIncludeActive, setFeedPages, setPageStatus,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1149,7 +1200,7 @@ const CircApp = () => {
         { showMembers: false }
       );
     } else {
-      const stored = tab === 'active' ? activeItems : readItems;
+      const stored = tab === 'active' ? activeItems : historyItems;
       const pending = (space && space.pending) || [];
       // ---- Feed sort -------------------------------------------------------
       // A deletable aid in the app's own idiom: no feed-lens.jsx ⇒ no control,
@@ -1219,7 +1270,7 @@ const CircApp = () => {
       const showSavedLens = tab === 'read' && !loadingFeed && (hasSaved || savedOnFlag);
       const setSavedFilter = (next) => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
-        announceOnce(next ? 'Showing saved links' : 'Showing all read links');
+        announceOnce(next ? 'Showing saved links' : 'Showing all links');
       };
       // ---- Search ----------------------------------------------------------
       // A deletable aid, same idiom as Lens/Saved above: no feed-search.jsx ⇒
@@ -1301,8 +1352,12 @@ const CircApp = () => {
       // `lensOffDefault`, not `lensActive`: a member who sorted oldest-first and
       // then read the pile down to one link must still be able to open the door
       // and put it back. Concealment is not the test here — reachability is.
+      // History counts the whole circle, not what the switch lets through: with
+      // the switch off and every card in Active, the panel is the only way to
+      // the switch, so it must not vanish with the list.
+      const lensBase = (tab === 'read' && space) ? space.items.length : stored.length;
       const showLens = !!Lens && !loadingFeed
-        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
+        && (lensBase >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
       const setOrder = (next) => {
         setSortOrder((prev) => ({ ...prev, [currentId]: next }));
         // The gesture is acknowledged, as every gesture in this app is. The
@@ -1352,8 +1407,19 @@ const CircApp = () => {
             density={effectiveDensity} onDensity={setDensityView}
             isMobile={isSheetPosture}
             saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null}
+            includeActive={includeActive}
+            onIncludeActive={(tab === 'read' && window.IncludeActiveRow) ? setIncludeActive : null}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
+      // ---- Paging (LM-786) -------------------------------------------------
+      // The loaded window of the composed list. Without feed-history.jsx the
+      // whole list renders and nothing pages.
+      const pageKey = currentId + ':' + tab;
+      const Foot = window.FeedPageFoot || null;
+      const pageSize = window.CIRC_PAGE_SIZE || 8;
+      const loadedCount = Foot ? (feedPages[pageKey] || pageSize) : Infinity;
+      const paged = visible.slice(0, loadedCount);
+      const moreToLoad = visible.length > paged.length;
       // The waterline, Active only — Read is a shelf, not a timeline. Drawn from
       // the visit's own frozen mark, never from the stored one.
       //
@@ -1370,7 +1436,7 @@ const CircApp = () => {
       // liveliness.jsx — but the line's position and the mark it's drawn from
       // are untouched by which order the feed reads in.
       const divIdx = (tab === 'active')
-        ? window.circDividerIndex(visible, dividerAt, order === 'newest') : -1;
+        ? window.circDividerIndex(paged, dividerAt, order === 'newest') : -1;
       const feed = (feedError && window.FeedError) ? (
         // Load-error takes precedence over every other body state, loading
         // included: a feed that failed to fetch has no waterline to draw (it
@@ -1493,16 +1559,21 @@ const CircApp = () => {
                  component stays reachable for exactly the case it used to own. */
               : visible.length === 0 && effectiveSavedOn && !who.length && window.SavedNoMatch
               ? <div><window.SavedNoMatch onClear={() => setSavedFilter(false)} /></div>
-              : visible.length === 0 ? <div><EmptyState tab={tab} isChampion={isChampion(space)} onStartCircle={gateActive ? onGate : openCreateSpace} /></div>
-              : visible.map((item, i) => {
-                const card = <FeedCard item={item} tab={tab} user={user} showTime density={effectiveDensity}
+              : visible.length === 0 ? <div><EmptyState tab={tab} isChampion={isChampion(space)} onStartCircle={gateActive ? onGate : openCreateSpace}
+                  copy={(tab === 'read' && window.HISTORY_EMPTY_COPY)
+                    ? window.HISTORY_EMPTY_COPY[(!includeActive && activeItems.length > 0) ? 'allActive' : 'empty'] : null} /></div>
+              : paged.map((item, i) => {
+                // History draws each card as it is on its home tab: an Unread
+                // card (pre-Horizon ones included) exactly as Active draws it.
+                const cardTab = (tab === 'read' && !item.read) ? 'active' : tab;
+                const card = <FeedCard item={item} tab={cardTab} user={user} showTime density={effectiveDensity}
                   onOpen={openLink}
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
                   onToggleSaved={toggleSaved}
                   space={space} onAnnounce={announceOnce} />;
                 const row = (Cand && Cand.CardRow)
-                  ? <Cand.CardRow item={item} tab={tab} api={candApi}>{card}</Cand.CardRow>
+                  ? <Cand.CardRow item={item} tab={cardTab} api={candApi}>{card}</Cand.CardRow>
                   : card;
                 // Above the waterline → the glow, played when the card comes into
                 // view. Accepted from the pill → the travel, once.
@@ -1563,6 +1634,15 @@ const CircApp = () => {
                   </React.Fragment>
                 );
               })}
+            {/* The foot (LM-786). Older cards remain: the sentinel, the loading
+                mark or the failed-load foot. All loaded: History closes with
+                its end line; Active simply ends. */}
+            {visible.length > 0 && Foot && moreToLoad && (
+              <Foot key={pageKey + ':' + paged.length} status={pageStatus[pageKey] || 'idle'}
+                onNeed={() => loadOlder(pageKey)} onRetry={() => loadOlder(pageKey)} />
+            )}
+            {visible.length > 0 && !moreToLoad && tab === 'read' && window.HistoryEnd
+              && <window.HistoryEnd newestFirst={order === 'newest'} />}
           </div>
         </main>
       );
@@ -1573,7 +1653,7 @@ const CircApp = () => {
               moving with it would be the one thing in this bar that isn't
               stable. Search is the last control to join this ceiling — the
               region's own declared order, not a preference. */}
-          <Tabs active={tab} onChange={setTab} right={<>{searchToggle}{lensControl}</>} />
+          <Tabs active={tab} onChange={switchTab} right={<>{searchToggle}{lensControl}</>} />
           {/* What is applied, and the way out of it. Nothing at all in the
               default state — the folded control means the chips are now the
               only place the applied lens (or the saved filter, or a typed

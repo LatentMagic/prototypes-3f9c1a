@@ -114,7 +114,7 @@ const SavedNoMatch = ({ onClear }) => (
       border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
       fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
       color: 'var(--color-fg-1)', minHeight: 'var(--tap-target-min)', padding: '0 16px',
-    }}>Show all read links</button>
+    }}>Show all links</button>
   </div>
 );
 

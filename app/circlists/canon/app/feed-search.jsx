@@ -127,8 +127,8 @@ const SearchTrigger = ({ open, active, onToggle }) => (
       type="button"
       onClick={() => onToggle(!open)}
       aria-expanded={open}
-      aria-label="Search read links"
-      title="Search read links"
+      aria-label="Search History"
+      title="Search History"
       className="circ-lens-trigger"
       style={{
         background: 'transparent', border: 0, cursor: 'pointer', padding: 0,
@@ -197,7 +197,7 @@ const SearchField = ({ value, onChange, onClear }) => {
     <label htmlFor="circ-search-input" style={{
       position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
       overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0,
-    }}>Search read links</label>
+    }}>Search History</label>
     <input
       id="circ-search-input"
       className="cand-searchinput"
@@ -206,7 +206,7 @@ const SearchField = ({ value, onChange, onClear }) => {
       inputMode="search"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      placeholder="Search read links"
+      placeholder="Search History"
       style={{
         flex: 1, minWidth: 0, border: 0, background: 'transparent',
         fontFamily: 'var(--font-sans)', fontSize: 16, color: 'var(--color-fg-1)',

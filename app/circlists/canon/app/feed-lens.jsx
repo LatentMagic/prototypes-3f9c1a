@@ -516,7 +516,7 @@ const CIRC_DENSITY_OPTIONS = [
 // Saved group only shows where the caller offers a handler — `onSaved` is
 // null wherever Saved doesn't apply (BIZ-136, main.jsx `showSavedLens`), so
 // that presence is the whole gate. No throw, no dead group.
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved }) => {
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, includeActive = false, onIncludeActive = null }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   // Saved IS one of this door's narrowings, so the door has to say so. The
@@ -916,6 +916,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               nothing to disclose"); Order joins it. */}
           {hasFilterGroups && <LensSection id="circ-lens-display">Display</LensSection>}
           <LensSectionBody labelledBy={hasFilterGroups ? 'circ-lens-display' : undefined}>
+            {/* "Include cards in Active" (LM-786), History only: main.jsx passes
+                onIncludeActive there and nowhere else. First in Display (option
+                2 of the lm-786 option board, ratified 2026-09-24): it lights
+                nothing and makes no chip, which is Display's contract, not
+                Filter's. Same pattern as Saved: a row one tab carries. */}
+            {onIncludeActive && window.IncludeActiveRow
+              && <window.IncludeActiveRow on={includeActive} onChange={onIncludeActive} />}
             {window.CIRC_SORT_OPTIONS && (
               <LensSegmented label="Order" value={order} onPick={onOrder} options={window.CIRC_SORT_OPTIONS} />
             )}
@@ -1203,7 +1210,7 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
           {savedChipOn && (
             <LensChip
               label="Saved" icon="bookmark-filled"
-              clearLabel="Showing saved links. Show all read links"
+              clearLabel="Showing saved links. Show all links"
               onClear={() => onSaved(false)} {...reopen} />
           )}
           {whoList.map((w) => (
@@ -1322,15 +1329,15 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
     headline = 'Nothing here from ' + label;
     support = onlyYou
       ? (tab === 'read'
-        ? 'You haven’t read any of your own links yet.'
-        : 'You haven’t added anything that’s still to read.')
+        ? 'You haven’t finished anything you added yet.'
+        : 'You haven’t added anything that’s still waiting for you.')
       : mixedWithYou
       ? (tab === 'read'
-        ? 'Nothing added has been read yet.'
-        : 'Nothing added is still waiting to be read.')
+        ? 'Nothing added has been finished yet.'
+        : 'Nothing added is still waiting for you.')
       : (tab === 'read'
-        ? 'You haven’t read anything they added.'
-        : 'They haven’t added anything that’s still to read.');
+        ? 'You haven’t finished anything they added.'
+        : 'They haven’t added anything that’s still waiting for you.');
   }
   // Button label/colour/action all key off the SAME branch as the escape
   // precedence above — search wins, then contributor, then saved. The colour
@@ -1357,16 +1364,16 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
   let onClear, buttonLabel, buttonColor;
   if (q && (whoList.length || saved)) {
     onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
-    buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
+    buttonLabel = 'Show all links'; buttonColor = 'var(--color-accent)';
   } else if (q) {
     onClear = onClearSearch; buttonLabel = 'Clear search'; buttonColor = 'var(--color-accent)';
   } else if (whoList.length && saved) {
     onClear = () => { onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
-    buttonLabel = 'Show all read links'; buttonColor = 'var(--color-accent)';
+    buttonLabel = 'Show all links'; buttonColor = 'var(--color-accent)';
   } else if (whoList.length) {
     onClear = onClearWho; buttonLabel = 'Show everyone'; buttonColor = 'var(--color-accent)';
   } else {
-    onClear = onClearSaved; buttonLabel = 'Show all read links'; buttonColor = 'var(--color-fg-1)';
+    onClear = onClearSaved; buttonLabel = 'Show all links'; buttonColor = 'var(--color-fg-1)';
   }
   return (
     <div style={{
@@ -1414,11 +1421,11 @@ const LensNoMatch = ({ who, tab, onClear }) => (
     }}>
       {circIsYou(who)
         ? (tab === 'read'
-          ? 'You haven’t read any of your own links yet.'
-          : 'You haven’t added anything that’s still to read.')
+          ? 'You haven’t finished anything you added yet.'
+          : 'You haven’t added anything that’s still waiting for you.')
         : (tab === 'read'
-          ? 'You have not read anything they added.'
-          : 'They have not added anything you have left to read.')}
+          ? 'You have not finished anything they added.'
+          : 'They have not added anything that’s still waiting for you.')}
     </p>
     <button type="button" onClick={onClear} style={{
       marginTop: 10, background: 'transparent', cursor: 'pointer',

@@ -814,7 +814,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
     onMarkRead(item, rx); setMine(rx);
     // Commit feedback for AT (4.1.3): the reveal is aria-hidden, so THIS is what
     // tells a screen-reader user their action worked and where the item went.
-    setStatus((rxIsSkip(rx) ? 'Marked as read.' : ('Reaction saved as ' + glyphName(rx.glyph) + ', ' + depthWord(rx) + '.')) + ' Moved to your Read tab.');
+    setStatus((rxIsSkip(rx) ? 'Marked as done.' : ('Reaction saved as ' + glyphName(rx.glyph) + ', ' + depthWord(rx) + '.')) + ' Moved to History.');
     setStep('reveal');   // always reveal — the first reader gets the first-one-here circle too, react or skip
   };
 

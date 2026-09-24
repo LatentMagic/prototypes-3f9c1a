@@ -1,7 +1,11 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-09-23",
+  "generated": "2026-09-24",
   "tickets": [
+    { "id": "LM-786", "slug": "lm-786-history", "name": "History, and a feed that pages", "state": "active", "touched": "2026-09-24",
+      "entries": [
+        { "kind": "playground", "name": "Include cards in Active", "path": "docs/specs/lm-786-history/playground/wb-include-switch.html", "note": "Three ways the switch joins the view-options panel: its own section, one of Display, the panel's lead. The shipped panel, open on History, beside the current build." }
+      ] },
     { "id": "LM-771", "slug": "lm-771-share-intake", "name": "Share intake", "state": "active", "touched": "2026-09-23",
       "entries": [
         { "kind": "playground", "name": "The held link", "path": "docs/specs/lm-771-share-intake/playground/wb-held-link.html", "note": "Three ways to show the whole shared link on the picker without wrapping: ruled, sunken strip, baseline." },

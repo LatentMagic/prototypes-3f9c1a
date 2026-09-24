@@ -160,7 +160,11 @@ const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxP
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, maxPx) + 'px';
   }, [value, maxPx]);
-  React.useEffect(() => { if (autoFocus && ref.current) ref.current.focus({ preventScroll: true }); }, []);
+  // Keyed on autoFocus, not mount-only: a writing face mounted hidden (the
+  // card's back face, always in the DOM) passes false until it is opened, so
+  // it never takes focus from wherever the member is (LM-786: a card mounting
+  // as a list changes stole focus and closed the view-options panel).
+  React.useEffect(() => { if (autoFocus && ref.current) ref.current.focus({ preventScroll: true }); }, [autoFocus]);
   const left = max - String(value || '').length;
   const gutter = onSend ? 40 : 0;
   return (
