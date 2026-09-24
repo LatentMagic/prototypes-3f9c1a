@@ -409,7 +409,9 @@ const useLensListKeys = (rowCount, refs) => (e) => {
 // thumb two pixels outside it scrolls the sheet, which is the same gesture
 // doing different things. Saved rides inside the same scroll region as the
 // people below it now that they are one list.
-const LensFilterFace = ({ on }) => (
+// `icon`: Saved passes nothing and keeps its one recoloured glyph. Watching
+// (LM-786) passes 'bell' / 'bell-filled' by state — two glyphs swapped.
+const LensFilterFace = ({ on, icon = 'bookmark-filled' }) => (
   // The Saved mark as a face: the card's own filled bookmark in the avatar's
   // circle, so it lines up with the people beneath it. Accent only while on.
   <span aria-hidden="true" style={{
@@ -418,7 +420,7 @@ const LensFilterFace = ({ on }) => (
     color: on ? 'var(--color-accent)' : 'var(--color-fg-2)',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     transition: 'color var(--duration-base) var(--ease-quiet)',
-  }}><Icon name="bookmark-filled" size={12} /></span>
+  }}><Icon name={icon} size={12} /></span>
 );
 
 const LensFilterRow = React.forwardRef(({ on, onClick, lead, label, sub }, ref) => (
@@ -447,9 +449,9 @@ const LensFilterRow = React.forwardRef(({ on, onClick, lead, label, sub }, ref) 
   </button>
 ));
 
-const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, bounded = true }) => {
+const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, watching, onWatching, showWatching, bounded = true }) => {
   const refs = React.useRef([]);
-  const rowCount = options.length + (showSaved ? 1 : 0);
+  const rowCount = options.length + (showSaved ? 1 : 0) + (showWatching ? 1 : 0);
   const onKey = useLensListKeys(rowCount, refs);
   const selected = value || [];
   let idx = 0;
@@ -474,6 +476,15 @@ const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, bou
                 on={!!saved} onClick={() => onSaved(!saved)}
                 lead={<LensFilterFace on={!!saved} />} label="Saved" />
             </React.Fragment>
+          );
+        })()}
+        {/* Watching (LM-786): directly after Saved, before the people. */}
+        {showWatching && (() => {
+          const wIdx = idx++;
+          return (
+            <LensFilterRow ref={(el) => { refs.current[wIdx] = el; }}
+              on={!!watching} onClick={() => onWatching(!watching)}
+              lead={<LensFilterFace on={!!watching} icon={watching ? 'bell-filled' : 'bell'} />} label="Watching" />
           );
         })()}
         {options.map((o) => {
@@ -516,7 +527,7 @@ const CIRC_DENSITY_OPTIONS = [
 // Saved group only shows where the caller offers a handler — `onSaved` is
 // null wherever Saved doesn't apply (BIZ-136, main.jsx `showSavedLens`), so
 // that presence is the whole gate. No throw, no dead group.
-const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, includeActive = false, onIncludeActive = null }) => {
+const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfortable', onDensity, open, onOpenChange, isMobile, user = null, saved = false, onSaved, watching = false, onWatching = null, includeActive = false, onIncludeActive = null }) => {
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
   // Saved IS one of this door's narrowings, so the door has to say so. The
@@ -526,12 +537,13 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   //
   // Every term below conceals cards. That is the whole test now (see
   // `circLensActive`): `order` is absent from this line on purpose.
-  const active = circLensActive(order, who) || !!saved;
+  const active = circLensActive(order, who) || !!saved || !!watching;
   // Both options are offered at every width. The width filter that used to sit
   // here existed only for Grid, which was desktop-only; with Grid vetoed there
   // is nothing left that varies by viewport.
   const densityOptions = CIRC_DENSITY_OPTIONS;
   const showSavedGroup = !!onSaved;
+  const showWatchingGroup = !!onWatching;
 
   // Focus the PANEL on open, not the checked option. Focusing the option was
   // correct for the keyboard and wrong on screen: Chromium treats a
@@ -652,7 +664,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // feed-saved.jsx and drop to a one-contributor circle and the panel
   // degrades to two bare groups rather than to a labelled section with a gap
   // where its sibling was.
-  const hasFilterGroups = showSavedGroup || whoOptions.length > 0;
+  const hasFilterGroups = showSavedGroup || showWatchingGroup || whoOptions.length > 0;
 
   // The name carries the whole applied state, so a screen reader hears the lens
   // without opening it. The saved narrowing is set behind this door, so it
@@ -661,7 +673,8 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // is the audible version of the grey trigger the design review caught.
   const spoken = 'View options: ' + (window.circSortLabel ? window.circSortLabel(order).toLowerCase() : order)
     + ', ' + ((who && who.length) ? 'added by ' + who.map(circContributorLabel).join(', ') : 'everyone')
-    + (saved ? ', saved only' : '');
+    + (saved ? ', saved only' : '')
+    + (watching ? ', watching only' : '');
 
   return (
     // Stretches to the bar's full height so the border-bottom lands flush with
@@ -954,7 +967,8 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               <LensSection id="circ-lens-filter">Filter</LensSection>
               <LensSectionBody labelledBy="circ-lens-filter">
                 <LensFilterList options={whoOptions} value={who} onPick={onWho}
-                  saved={saved} onSaved={onSaved} showSaved={showSavedGroup} bounded={!isMobile} />
+                  saved={saved} onSaved={onSaved} showSaved={showSavedGroup}
+                  watching={watching} onWatching={onWatching} showWatching={showWatchingGroup} bounded={!isMobile} />
               </LensSectionBody>
             </React.Fragment>
           )}
@@ -1004,7 +1018,8 @@ const ChipBox = () => (
 const ChipLabel = ({ label, icon }) => (
   <React.Fragment>
     {icon && <Icon name={icon} size={13} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />}
-    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+    {/* lineHeight 1.3: at the chip's inherited 1, overflow:hidden clipped descenders ("Watching"'s g). */}
+    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{label}</span>
   </React.Fragment>
 );
 const chipText = {
@@ -1124,7 +1139,7 @@ const circAttributionPhrase = (who, bare) => {
 // and the render-site note in main.jsx) — so this component's OWN render
 // condition below is widened to `active || saved` rather than touching that
 // shared predicate.
-const LensChips = ({ who, onWho, saved, onSaved, isMobile,
+const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, isMobile,
   // Search: `searchOpen` is already the
   // COMPOSITE flag main.jsx computes ("field open OR a query is already
   // typed") — this component does not re-derive it, it only asks whether
@@ -1143,6 +1158,7 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   const Field = window.SearchField || null;
   const showField = !!Field && !!searchOpen;
   const savedChipOn = !!saved;
+  const watchingChipOn = !!watching && !!onWatching;
   // ORDER HAS NO CHIP (BIZ-136, ruling of 2026-09-07). This row means exactly
   // one thing — cards are being hidden from you — and every chip in it is a
   // thing you can drop to get them back. Sorting oldest-first hides nothing, so
@@ -1150,8 +1166,8 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
   // clear button undid a preference rather than restoring anything.
   // Where the order now reads instead: on its own row inside the door, and in
   // the feed itself, which is in that order. See `circLensActive`.
-  const anyChips = !!(whoList.length || savedChipOn);
-  if (!active && !savedChipOn && !showField) return null;
+  const anyChips = !!(whoList.length || savedChipOn || watchingChipOn);
+  if (!active && !savedChipOn && !watchingChipOn && !showField) return null;
   // `reopenLabel` is a FUNCTION of the chip's own label, not one fixed string
   // (BIZ-136 run 7, from the review). It was 'Change filters' on every chip, and
   // aria-label overrides a button's own text — so with two chips applied a
@@ -1183,9 +1199,13 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
       // widths, per the field's own no-adaptive-exception rule. When the field
       // is absent this collapses to exactly the single wrapping row it always
       // was; `gap: 8` reads the same either way.
+      // Lines up with the TAB ROW directly above (user, 2026-09-24), not the
+      // feed column: the column is centred and capped, so on a wide pane the
+      // chips sat far inside "Active" and read as displaced — worst over an
+      // empty or no-match list, where no card explained the indent. 16px is
+      // Tabs' own inset (shell.jsx), at every width.
       display: 'flex', flexDirection: 'column', gap: 8,
-      padding: isMobile ? '8px 16px' : '8px 24px',
-      maxWidth: 'var(--max-feed-width)', margin: '0 auto', width: '100%',
+      padding: '8px 16px', width: '100%',
     }}>
       {/* THE DISCLOSURE, not a chip. A search chip would have to be both a
           label (what's typed) and an edit affordance (tap to change it),
@@ -1212,6 +1232,12 @@ const LensChips = ({ who, onWho, saved, onSaved, isMobile,
               label="Saved" icon="bookmark-filled"
               clearLabel="Showing saved links. Show all links"
               onClear={() => onSaved(false)} {...reopen} />
+          )}
+          {watchingChipOn && (
+            <LensChip
+              label="Watching" icon="bell-filled"
+              clearLabel="Showing cards you’re watching. Show all cards"
+              onClear={() => onWatching(false)} {...reopen} />
           )}
           {whoList.map((w) => (
             <LensChip
@@ -1267,7 +1293,7 @@ const circNaturalList = (labels) => {
   return labels.slice(0, -1).join(', ') + ' or ' + labels[labels.length - 1];
 };
 
-const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClearSearch }) => {
+const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onClearSaved, onClearWatching, onClearSearch }) => {
   const whoList = who || [];
   const label = circNaturalList(whoList.map(circContributorLabel));
   // Multi-select wording (BIZ-136, ruling 2026-09-14). Three shapes:
@@ -1284,7 +1310,34 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
   const mixedWithYou = includesYou && whoList.length > 1;
   const q = String(query || '').trim();
   let headline, support;
-  if (q) {
+  const searchSupport = 'Search looks at what a card shows — its title or address, its source, and who added it.';
+  if (watching) {
+    // WATCHING (LM-786). Its own branch, ahead of the regression chain below,
+    // so every pre-existing combination still renders character for
+    // character. No "link(s)", no "read": "finished" in sentences.
+    // Supporting line only where true; the triple (watching + saved + people,
+    // no query) and You-plus-others get none.
+    const qual = saved ? 'saved that you’re watching' : 'you’re watching';
+    const from = whoList.length ? ' from ' + label : '';
+    if (q) {
+      headline = 'Nothing ' + qual + from + ' matches “' + q + '”';
+      support = searchSupport;
+    } else if (whoList.length && saved) {
+      headline = 'Nothing ' + qual + from;
+      support = null;
+    } else if (whoList.length) {
+      headline = 'Nothing you’re watching from ' + label;
+      support = onlyYou ? 'You aren’t watching anything you added that you’ve finished.'
+        : mixedWithYou ? null
+        : 'You aren’t watching anything they added that you’ve finished.';
+    } else if (saved) {
+      headline = 'Nothing saved that you’re watching';
+      support = 'None of your saved cards are ones you’re watching.';
+    } else {
+      headline = 'Nothing here you’re watching';
+      support = 'Cards you watch show here once you’ve finished them.';
+    }
+  } else if (q) {
     // The four search combinations. The headline names EVERY active
     // narrowing, so nothing sitting in the chip row is missing from the
     // sentence — a member reading it should never have to check the chips to
@@ -1362,7 +1415,14 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
   // them, since the recovery action offered here has always been the full
   // escape, never a per-person undo (that lives in the chip row).
   let onClear, buttonLabel, buttonColor;
-  if (q && (whoList.length || saved)) {
+  if (watching && (q || whoList.length || saved)) {
+    // Watching on top of anything else: the full escape, as run 8's ruling 7.
+    onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); onClearWatching && onClearWatching(); };
+    buttonLabel = 'Show everything'; buttonColor = 'var(--color-accent)';
+  } else if (watching) {
+    // Alone: Saved-alone's neutral recovery.
+    onClear = onClearWatching; buttonLabel = 'Show everything'; buttonColor = 'var(--color-fg-1)';
+  } else if (q && (whoList.length || saved)) {
     onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
     buttonLabel = 'Show all links'; buttonColor = 'var(--color-accent)';
   } else if (q) {
@@ -1384,10 +1444,10 @@ const FeedNoMatch = ({ who, tab, saved, query, onClearWho, onClearSaved, onClear
         margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)',
         fontWeight: 600, color: 'var(--color-fg-1)', maxWidth: 320, overflowWrap: 'anywhere',
       }}>{headline}</p>
-      <p style={{
+      {support && <p style={{
         margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
         color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
-      }}>{support}</p>
+      }}>{support}</p>}
       <button type="button" onClick={onClear} style={{
         marginTop: 10, background: 'transparent', cursor: 'pointer',
         border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',

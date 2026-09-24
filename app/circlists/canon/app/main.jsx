@@ -307,6 +307,9 @@ const CircApp = () => {
   // outlives it. The saved FLAG on an item is the opposite: it lives on
   // `spaces` below, because it is a fact about the link, not a lens on it.
   const [savedOn, setSavedOn] = useState({});
+  // Watching filter (LM-786). Keyed and held exactly as savedOn: per circle,
+  // visit state, never persisted.
+  const [watchingOn, setWatchingOn] = useState({});
   // Search. Keyed `<circleId>:<tab>` —
   // unlike sortOrder, this stays tab-scoped (fuzz finding 3's ruling covers
   // order only): Read only, so the key's tab half is always 'read' in
@@ -1022,7 +1025,7 @@ const CircApp = () => {
         setOtc, setPostAuthTo, setManageIntent,
         setShareLink,
         enterSpace, openCreateSpace,
-        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+        setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
         setSearchQuery, setSearchOpen, setHomeStripOpen,
         setIncludeActive, setFeedPages, setPageStatus,
       })
@@ -1272,6 +1275,20 @@ const CircApp = () => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
         announceOnce(next ? 'Showing saved links' : 'Showing all links');
       };
+      // ---- Watching (LM-786) -----------------------------------------------
+      // Saved's pattern at every point: deletable aid, per-circle visit state,
+      // History only, composed after saved, offered once the circle holds a
+      // card the member is watching AND has done (or the filter is already on).
+      const Watching = window.circFilterWatching || null;
+      const watchingOnFlag = !!watchingOn[currentId];
+      const effectiveWatchingOn = !!Watching && watchingOnFlag && tab === 'read';
+      const watchFiltered = Watching ? Watching(savedFiltered, effectiveWatchingOn) : savedFiltered;
+      const hasWatching = !!(window.circHasWatching && window.circHasWatching(readItems));
+      const showWatchingLens = !!Watching && tab === 'read' && !loadingFeed && (hasWatching || watchingOnFlag);
+      const setWatchingFilter = (next) => {
+        setWatchingOn((prev) => ({ ...prev, [currentId]: next }));
+        announceOnce(next ? 'Showing cards you’re watching' : 'Showing all cards');
+      };
       // ---- Search ----------------------------------------------------------
       // A deletable aid, same idiom as Lens/Saved above: no feed-search.jsx ⇒
       // no trigger, no field, no filter, and searchQueryVal below is always ''
@@ -1287,7 +1304,7 @@ const CircApp = () => {
       // visit to this same circle.
       const isReadLikeTab = tab === 'read';
       const searchQueryVal = (Search && isReadLikeTab) ? (searchQuery[sortKey] || '') : '';
-      const visible = Search ? Search(savedFiltered, searchQueryVal) : savedFiltered;
+      const visible = Search ? Search(watchFiltered, searchQueryVal) : watchFiltered;
       // The field's own visible-ness: open because the trigger was tapped, OR
       // because a query is already typed — clearing the query is the field's
       // one way to close once that has happened (see SearchField's own
@@ -1334,7 +1351,7 @@ const CircApp = () => {
         // pile this keystroke would actually produce, not the one already on
         // screen, so a screen-reader user hears the miss on the same
         // keystroke a sighted member sees it on.
-        const wouldMatch = Search ? Search(savedFiltered, next) : savedFiltered;
+        const wouldMatch = Search ? Search(watchFiltered, next) : watchFiltered;
         if (wouldMatch.length === 0 && next.trim()) announceOnce('Nothing matches');
       };
       const searchToggle = showSearch
@@ -1407,6 +1424,7 @@ const CircApp = () => {
             density={effectiveDensity} onDensity={setDensityView}
             isMobile={isSheetPosture}
             saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null}
+            watching={effectiveWatchingOn} onWatching={showWatchingLens ? setWatchingFilter : null}
             includeActive={includeActive}
             onIncludeActive={(tab === 'read' && window.IncludeActiveRow) ? setIncludeActive : null}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
@@ -1512,7 +1530,7 @@ const CircApp = () => {
                 it worse, and fixing it is the pill's own question. */}
             {tab === 'active' && visible.length > 0 && pushAskVisible
               && <window.CircPushAsk onTurnOn={pushWantOn} onDismiss={pushDismissAsk} />}
-            {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || searchActive)
+            {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || effectiveWatchingOn || searchActive)
               && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
                 a contributor lens, an arrival from somebody else is not one:
@@ -1544,9 +1562,10 @@ const CircApp = () => {
                 exactly as it was. window.FeedNoMatch guards the first branch
                 so dropping feed-lens.jsx whole degrades to EmptyState rather
                 than throwing on a missing component. */}
-            {visible.length === 0 && (who.length || effectiveSavedOn || searchActive) && window.FeedNoMatch
-              ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} query={searchQueryVal}
-                  onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)} onClearSearch={clearSearch} /></div>
+            {visible.length === 0 && (who.length || effectiveSavedOn || effectiveWatchingOn || searchActive) && window.FeedNoMatch
+              ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} watching={effectiveWatchingOn} query={searchQueryVal}
+                  onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)}
+                  onClearWatching={() => setWatchingFilter(false)} onClearSearch={clearSearch} /></div>
               /* Saved survives feed-lens.jsx on its own: its toggle and its
                  filter both live in feed-saved.jsx and neither is gated on the
                  lens. Before the fold, SavedNoMatch rendered for this case
@@ -1672,7 +1691,8 @@ const CircApp = () => {
               concealment, and an order conceals nothing. The component stopped
               taking them rather than taking and ignoring them. */}
           {Lens && !loadingFeed && <window.LensChips who={who} onWho={setWho}
-            saved={effectiveSavedOn} onSaved={setSavedFilter} isMobile={isMobile}
+            saved={effectiveSavedOn} onSaved={setSavedFilter}
+            watching={effectiveWatchingOn} onWatching={setWatchingFilter} isMobile={isMobile}
             searchOpen={searchFieldOpen} searchQuery={searchQueryVal}
             onSearchChange={setSearchQueryVal} onSearchClear={clearSearch}
             onReopenLens={() => setSortMenuOpen(true)} />}

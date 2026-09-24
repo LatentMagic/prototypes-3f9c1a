@@ -3,6 +3,15 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## History can be narrowed to cards you are watching — 2026-09-24
+
+- **A Watching row joins the view-options filter list**, after Saved and before the people,
+  with a bell that is outlined off and filled on.
+- **It shows only cards you are watching and have finished.** It is offered on History alone,
+  once at least one card qualifies, and never on Active.
+- **Applied, it behaves as Saved does:** it lights the trigger, adds a chip, combines with the
+  people filter and search, and hides the Returns bar exactly when Saved would.
+
 ## A link shared from another app lands in Circlists — 2026-09-23
 
 - **Sharing a link into Circlists opens a picker: "Add to which circle?"** It shows the link

@@ -105,7 +105,7 @@ function circStateContext(api) {
     setShareLink,
     setPush, setDevicePreview,
     enterSpace, openCreateSpace,
-    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn,
+    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
     setSearchQuery, setSearchOpen, setHomeStripOpen,
     setFeedError,
     setIncludeActive, setFeedPages, setPageStatus,
@@ -141,7 +141,7 @@ function circStateContext(api) {
     window.CIRC_INVITE_MINT_FAIL = false;
     clearFeedError();
     setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
-    setSavedOn({}); setSearchQuery({}); setSearchOpen({});
+    setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({});
     if (setHomeStripOpen) setHomeStripOpen(false);
     // Push (LM-769) is PERSISTED state, so unlike the view flags above it would
     // otherwise survive a reseed and leak an answered permission into a state
@@ -407,6 +407,7 @@ function circStateContext(api) {
     // Held per circle, same as `who` — always fully replaced, so switching
     // between staged entries never inherits a filter the last one turned on.
     setSavedOn(savedOn ? { [space]: true } : {});
+    if (setWatchingOn) setWatchingOn({});
     // Search. Keyed `<circle>:<tab>` —
     // unlike sortOrder, search stays tab-scoped (fuzz finding 3's ruling
     // covers order only) — always fully replaced, same reasoning as
@@ -534,7 +535,7 @@ function circStateContext(api) {
       lastSeenAt: now, unseen: false, pending: [], queued: [],
     };
     setSpaces(prev => [late, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-late')]);
-    setSortOrder({}); setLensWho({}); setSavedOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
+    setSortOrder({}); setLensWho({}); setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
     clearFeedError();
     setCurrentId('sp-late'); setTab('read'); setRoute('space'); setLoadingFeed(false);
     if (setIncludeActive) setTimeout(() => setIncludeActive(false), 0);
