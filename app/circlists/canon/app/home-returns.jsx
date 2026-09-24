@@ -183,7 +183,7 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
       <button type="button" onClick={() => onToggle(!open)} aria-expanded={open} className="circ-menuitem"
         style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', minHeight: 56, padding: '0 12px 0 14px',
           background: 'transparent', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-        <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-sage)', flexShrink: 0 }} />
+        <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-new-words)', flexShrink: 0 }} />
         {/* Evergreen and stateless: the line is true on the first read and the
             two-hundredth, and it does not change when the panel opens — opening
             changes the list, and nothing else. */}

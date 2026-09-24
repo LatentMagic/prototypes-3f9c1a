@@ -174,7 +174,7 @@ const CandFeedLead = ({ api }) => {
         <button type="button" onClick={toggle} aria-expanded={open} className="circ-menuitem"
           style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', minHeight: 56, padding: '0 12px 0 14px',
             background: 'transparent', border: 0, cursor: 'pointer', textAlign: 'left' }}>
-          <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-sage)', flexShrink: 0 }} />
+          <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-new-words)', flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ font: '600 14px/1.35 var(--font-sans)', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', whiteSpace: 'nowrap' }}>{head}</span>
             <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</span>

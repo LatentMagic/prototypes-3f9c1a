@@ -26,6 +26,11 @@
      ground); NOT the accent, never a status or action colour. */
   --color-sage:             #8BBFAD;
 
+  /* New words — the unseen-comment tab (CIRC-037). Its own colour, not the sage:
+     #8BBFAD fails WCAG 1.4.11 on the white surface; #5E9C86 clears 3:1. Dark
+     value (for when a dark theme exists): #8BBFAD. */
+  --color-new-words:        #5E9C86;
+
   /* NOT approved fallbacks. Kept in case a fallback is needed later — never use without raising it to the user first. */
   --color-accent-warm:      #0D9488;  /* deep chromatic teal */
   --color-accent-cool:      #166534;  /* deep forest hunter  */

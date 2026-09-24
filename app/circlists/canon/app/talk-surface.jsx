@@ -176,7 +176,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
   // the turn it answers. Only the furniture recedes: a smaller avatar, a smaller
   // and lighter name and time, with the rail and the indent carrying the rest.
   const av = depth ? 22 : 26;
-  // The mark for words you have not seen: the return banner's own tab (sage,
+  // The mark for words you have not seen: the return banner's own tab (new-words,
   // 3×22, radius 2), standing in the row's flow at the row's own gap. It is
   // always in the geometry, so a turn does not move when it colours — only the
   // colour comes and goes. Replaces the full-turn wash, which had no shape of its
@@ -184,7 +184,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
   // ratified 2026-08-17).
   const tab = (bright) => (
     <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, flexShrink: 0, marginTop: 2,
-      background: bright ? 'var(--color-sage)' : 'transparent' }} />
+      background: bright ? 'var(--color-new-words)' : 'transparent' }} />
   );
   if (t.deleted) return (
     <div style={{ display: 'flex', gap: 10, padding: '1px 0' }}>
@@ -201,6 +201,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
       <Avatar name={me ? displayName(api.user) : t.by} size={av} accent={me} />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, minWidth: 0, flexWrap: 'wrap' }}>
+          {fresh && <span className="circ-vh">New </span>}
           <span style={{ font: '600 ' + (depth ? 12.5 : 13.5) + 'px/1.3 var(--font-sans)', color: depth ? 'var(--color-fg-2)' : 'var(--color-fg-1)' }}>{t.by}</span>
           <span style={{ font: '400 ' + (depth ? 11 : 11.5) + 'px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{candWhen(t.at)}{t.edited ? ' \u00b7 edited' : ''}</span>
           {me && !editing && <CandTurnMenu item={item} t={t} api={api} onEdit={() => { setDraft(t.text); setEditing(true); }} />}
