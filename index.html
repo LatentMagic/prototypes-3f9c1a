@@ -967,6 +967,16 @@
           changelog: [
             {
               date: '2026-09-25',
+              title: 'Sort order works with pagination',
+              items: [
+                'One order per circle, for the visit, covering both tabs. Leaving the circle or reloading returns it to newest first.',
+                'Under oldest first, pages stop at the last card from before the visit. New cards join only through the New pill, which reads “New · newest first”, or through a rail refresh.',
+                'Taking new cards under oldest first switches the circle to newest first and goes to the top, replacing the 11 Sep carry to the foot.',
+                'Every order change opens the list at its start. Under oldest first, History ends “Nothing newer in the circle”, and a failed page says “Couldn’t load newer cards”. LM-786.'
+              ]
+            },
+            {
+              date: '2026-09-25',
               title: 'The Returns bar headline wraps instead of clipping',
               items: [
                 'On a narrow screen the bar’s headline ("3 conversations you are watching") now wraps to a second line rather than being cut off, collapsed or open. The names line under it still truncates.',

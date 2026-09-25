@@ -59,8 +59,10 @@ const IncludeActiveRow = ({ on, onChange }) => {
 //           a foot still in view keeps loading until the list outgrows it.
 // loading — the feed's own loading mark, small. No skeleton, no words.
 // failed  — two lines. The loaded cards stay above it. Try again fetches that
-//           page once; nothing retries on its own.
-const FeedPageFoot = ({ status = 'idle', onNeed, onRetry }) => {
+//           page once; nothing retries on its own. The word follows the
+//           order (LM-786 sort, lean 2): under oldest first the next page is
+//           newer, so it says "newer".
+const FeedPageFoot = ({ status = 'idle', onNeed, onRetry, newestFirst = true }) => {
   const ref = React.useRef(null);
   const needRef = React.useRef(onNeed);
   needRef.current = onNeed;
@@ -84,7 +86,7 @@ const FeedPageFoot = ({ status = 'idle', onNeed, onRetry }) => {
   if (status === 'failed') {
     return (
       <div role="status" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 2, padding: '8px 16px 0' }}>
-        <p style={{ margin: 0, font: '400 14px/1.5 var(--font-sans)', color: 'var(--color-fg-2)' }}>Couldn’t load older cards.</p>
+        <p style={{ margin: 0, font: '400 14px/1.5 var(--font-sans)', color: 'var(--color-fg-2)' }}>{newestFirst ? 'Couldn’t load older cards.' : 'Couldn’t load newer cards.'}</p>
         <button type="button" onClick={onRetry} className="circ-doorlink circ-pagefoot-retry">Try again</button>
       </div>
     );
@@ -96,9 +98,9 @@ const FeedPageFoot = ({ status = 'idle', onNeed, onRetry }) => {
 // The waterline's own class: a word and a hairline, inert, undated, uncounted.
 // The word names what is reached at the foot, so it follows the order, as the
 // waterline's does: newest first, the foot is the circle's start; oldest first,
-// the foot is the present.
+// the foot says nothing newer exists (ruled 2026-09-25, replacing "Up to now").
 const HistoryEnd = ({ newestFirst = true }) => {
-  const label = newestFirst ? 'Start of the circle' : 'Up to now';
+  const label = newestFirst ? 'Start of the circle' : 'Nothing newer in the circle';
   return (
     <div className="circ-fdiv circ-fdiv-end" role="listitem" aria-label={label}>
       <span className="circ-fdiv-label">{label}</span>

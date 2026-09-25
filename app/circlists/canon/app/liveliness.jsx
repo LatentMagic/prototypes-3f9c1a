@@ -119,12 +119,22 @@ const CircleSignal = ({ state }) => {
 // ---- New pill --------------------------------------------------------------
 // Announced by the live region in main.jsx, which is already sitting in the page
 // empty — a region inserted together with its text announces nothing.
-const NewPill = ({ onClick }) => {
+//
+// Under oldest first (LM-786 sort, ratified 2026-09-25) the tap switches the
+// order to newest first, so the pill says so: "New · newest first", the second
+// half at regular weight (quieter by weight, never by colour), one line, same
+// pill. Its words come from the sort control's own label so the two can't
+// drift. Under newest first it is unchanged.
+const NewPill = ({ onClick, order = 'newest' }) => {
   const { MicroDot } = window;
+  const oldest = order === 'oldest';
+  const newestLabel = (window.circSortLabel ? window.circSortLabel('newest') : 'Newest first').toLowerCase();
   return (
-    <button type="button" className="circ-newpill" onClick={onClick}>
+    <button type="button" className="circ-newpill" onClick={onClick}
+      aria-label={oldest ? 'New cards, ' + newestLabel : undefined}
+      style={oldest ? { whiteSpace: 'nowrap' } : undefined}>
       <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={9} /></span>
-      New
+      <span>New{oldest && <span style={{ fontWeight: 400 }}>{' · ' + newestLabel}</span>}</span>
     </button>
   );
 };

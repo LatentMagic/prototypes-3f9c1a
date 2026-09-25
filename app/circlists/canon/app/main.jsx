@@ -270,7 +270,9 @@ const CircApp = () => {
   // All three are VISIT state: never persisted, cleared on every entry to a
   // circle, so leaving or reloading starts both tabs at the top with the
   // switch off. A tab switch keeps them: each tab holds its own loaded pages
-  // and its own scroll place, keyed `<circle>:<tab>`.
+  // and its own scroll place, keyed `<circle>:<tab>`. An ORDER change clears
+  // both tabs' pages and places for the circle (LM-786 sort, lean 1:
+  // `resetOrderPlace` below) — nothing is remembered across an order change.
   const [includeActive, setIncludeActive] = useState(false);
   const [feedPages, setFeedPages] = useState({});
   const [pageStatus, setPageStatus] = useState({});
@@ -281,6 +283,10 @@ const CircApp = () => {
   const resetVisitView = () => {
     visitGen.current += 1;
     setIncludeActive(false); setFeedPages({}); setPageStatus({}); tabScroll.current = {};
+    // The order is part of the visit (LM-786 sort, ratified): a member who
+    // leaves and comes back finds newest first. Filters and density are left
+    // alone here — filters are settled in separate work; density is device.
+    setSortOrder({});
   };
   // The DRAWN waterline: the stored mark as it was when this visit began. Entry
   // stamps the mark to now, so the line the member reads against is held here for
@@ -288,13 +294,11 @@ const CircApp = () => {
   // state, never persisted — a browser reload is a teardown, so it draws no line.
   const [dividerAt, setDividerAt] = useState(null);
   const [announce, setAnnounce] = useState('');
-  // Feed sort. Held per circle alone, keyed by
-  // circle id — same reasoning as lensWho/savedOn below: switching tab is
-  // never a reset of a view option (fuzz finding 3, ruled 2026-09-14). VISIT
-  // STATE, never persisted: newest-first is the product's contract and the
-  // substrate the whole arrivals machinery stands on, so a non-default order
-  // is a reading posture for this session rather than a preference that
-  // silently outlives it.
+  // Feed sort. ONE order for the whole circle, across both tabs, for the
+  // visit (LM-786 sort, ratified). Keyed by circle id; switching tab never
+  // resets it. Cleared by `resetVisitView` when a visit starts (entering a
+  // circle); a reload starts empty. Never persisted: newest-first is the
+  // product's contract and the substrate the arrivals machinery stands on.
   const [sortOrder, setSortOrder] = useState({});
   // Keyed by circle alone — see the note at the render site for why the
   // contributor lens is not held per tab as the order is.
@@ -411,19 +415,13 @@ const CircApp = () => {
       announceTimer.current = setTimeout(() => setAnnounce(''), 1600);
     }, 60);
   }, []);
-  // Carry the member to the arrivals — wherever they actually landed, in
-  // BOTH orders (Joe's call, 2026-09-11, overruling his own same-day
-  // instinct that it should be newest-first only: the same control doing
-  // two different things depending on the sort is exactly the order-
-  // dependent inconsistency objected to all session, and it outweighs the
-  // no-anchor-at-the-foot cost). `toFoot` reads the LIVE order at the moment
-  // of the carry (see `sortOrderRef` above): under newest-first the arrivals
-  // are at the head, under oldest-first — since accepting no longer reverts
-  // the sort — they are at the foot. Not something Joe's ruling itself asked
-  // for to begin with: it is Decision-29's own promise ("carrying the member
-  // to them"), which the build had never kept in either order until this
-  // pass; building it is my own read of that decision, flagged in the
-  // report, his call to make throughout.
+  // Carry the member to the arrivals. SUPERSEDED 2026-09-25 (LM-786 sort,
+  // ratified): the 11 Sep carry-to-the-foot under oldest-first is gone. The
+  // pill and a rail refresh that lands on Active now always end at the TOP:
+  // under newest-first that is where the arrivals are; under oldest-first
+  // the gesture first switches the order to newest-first
+  // (`switchToNewestTop` below). `toFoot` is kept as a parameter for any
+  // caller that still needs the foot; none of the arrivals paths pass it.
   //
   // INSTANT, not smooth (adversarial spec pass, 2026-09-11): the monorepo's
   // own `feed-view.component.ts` answers this same carry with a bare
@@ -439,6 +437,24 @@ const CircApp = () => {
     if (el) el.scrollTo({ top });
     else window.scrollTo({ top });
   };
+  // Lean 1 (LM-786 sort, for Joe to judge): any order change opens the list at
+  // its start. Drops this circle's loaded pages, page status and scroll place
+  // on BOTH tabs, and voids any page fetch in flight.
+  const resetOrderPlace = (id) => {
+    visitGen.current += 1;
+    const drop = (prev) => { const n = { ...prev }; delete n[id + ':active']; delete n[id + ':read']; return n; };
+    setFeedPages(drop); setPageStatus(drop);
+    delete tabScroll.current[id + ':active']; delete tabScroll.current[id + ':read'];
+  };
+  // The oldest-first pill tap / rail refresh (ratified): switch this circle to
+  // newest first and land at the top. History switches too — the order is
+  // circle-wide — and opens at its own top next time. The caller announces.
+  const switchToNewestTop = (id) => {
+    setSortOrder((prev) => ({ ...prev, [id]: 'newest' }));
+    resetOrderPlace(id);
+    requestAnimationFrame(() => scrollToArrivals(false));
+  };
+  const isOldestNow = (id) => (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
 
   // open Create-a-space fresh (clears any carried name + description)
   const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', description: '', spaceId: null }); setRoute('create-space'); };
@@ -682,13 +698,15 @@ const CircApp = () => {
   // Accept: the click is what moves the feed, and it is the one moment a card
   // travels. It stamps the mark; the drawn line stays exactly where it is.
   //
-  // DOES NOT TOUCH THE SORT (Joe's reversal, 2026-09-11, of Sally's same-day
-  // ruling that it should restore newest-first). Arrivals land in sorted
-  // position like anything else — `circSortItems` places them by their own
-  // `at`, so under oldest-first that is the foot, not the head. Nothing here
-  // rewrites `sortOrder` and nothing is announced; there is no order change to
-  // report.
-  const revealPending = () => {
+  // Under newest-first: arrivals land at the head, member goes to the top.
+  // Under oldest-first (LM-786 sort, ratified 2026-09-25 — supersedes the
+  // 11 Sep "leave the order, carry to the foot" ruling): the tap switches
+  // this circle to newest first and lands at the top, with the new cards in
+  // their glow. One announcement, the sort control's own ("Sorted newest
+  // first"). `auto` is Decision-56's empty-Active self-land below: no member
+  // gesture, so it never rewrites the member's order.
+  const revealPending = (opts) => {
+    const auto = !!(opts && opts.auto === true);
     const id = currentRef.current;
     const sp = spacesRef.current.find(s => s.id === id);
     if (!sp || !(sp.pending || []).length) return;
@@ -697,10 +715,12 @@ const CircApp = () => {
       ? { ...s, items: [...s.pending, ...s.items], pending: [], lastSeenAt: Date.now() } : s));
     setArrived(a => [...a, ...ids]);
     setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
-    // Carries the member to wherever the arrivals actually landed — see
-    // `scrollToArrivals`'s own header for why this exists and whose call it is.
-    const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
-    requestAnimationFrame(() => scrollToArrivals(toFoot));
+    if (!auto && isOldestNow(id)) {
+      switchToNewestTop(id);
+      announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel('newest').toLowerCase() : 'newest first'));
+    } else {
+      requestAnimationFrame(() => scrollToArrivals(false));
+    }
   };
   // UI Decision-56: a staged arrival meeting a genuinely empty Active tab
   // lands itself — there is no reader's feed for the pill to protect, so no
@@ -711,7 +731,7 @@ const CircApp = () => {
   // as it did before; this only covers the tab EmptyState itself renders for.
   useEffect(() => {
     if (route !== 'space' || tab !== 'active' || loadingFeed || !currentId) return;
-    if (activeItems.length === 0 && space && (space.pending || []).length > 0) revealPending();
+    if (activeItems.length === 0 && space && (space.pending || []).length > 0) revealPending({ auto: true });
   }, [route, tab, loadingFeed, currentId, activeItems.length, space && (space.pending || []).length]);
   // The refresh gesture — selecting the circle already on screen. There is no
   // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
@@ -734,9 +754,11 @@ const CircApp = () => {
       const gone = (sp && sp.remoteDeleted) || [];
       const here = id === currentRef.current;
       const onActive = tabRef.current === 'active';
-      // DOES NOT TOUCH THE SORT, same reversal as `revealPending` above: a
-      // refresh that finds arrivals lands them in sorted position and leaves
-      // `sortOrder` alone, on this circle's Active tab or anywhere else.
+      // Under oldest-first, a refresh of THIS circle that finds cards does
+      // exactly what the pill tap does (LM-786 sort, ratified 2026-09-25): switch
+      // to newest first and go to the top, on whichever tab the member is on.
+      // An empty refresh changes nothing.
+      const switchHere = found.length && here && isOldestNow(id);
       const landingHere = found.length && here && onActive;
       if (found.length || gone.length) setSpaces(prev => prev.map(s => {
         if (s.id !== id) return s;
@@ -747,15 +769,12 @@ const CircApp = () => {
           // Active, out of sight: the dot carries them, and clears on arrival there.
           unseen: (found.length && here && !onActive) ? true : s.unseen };
       }));
-      // Carried to wherever the arrivals actually landed, only when there are
-      // any — scrolling on an empty refresh would move the member for
-      // nothing. Order read live off the ref, not this closure, so a member
-      // who flips the sort while the reload is running still gets carried to
-      // the end that is actually true when it lands.
-      if (landingHere) {
-        const toFoot = (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
-        requestAnimationFrame(() => scrollToArrivals(toFoot));
-      }
+      // Only when there are any — scrolling on an empty refresh would move the
+      // member for nothing. Order read live off the ref, not this closure, so a
+      // member who flips the sort while the reload runs gets the true branch.
+      // The announcement stays "Refreshed" alone: one announcement per gesture.
+      if (switchHere) switchToNewestTop(id);
+      else if (landingHere) requestAnimationFrame(() => scrollToArrivals(false));
       announceOnce('Refreshed');
     }, 900);
   };
@@ -782,7 +801,7 @@ const CircApp = () => {
   const pendCount = (space && (space.pending || []).length) || 0;
   const pendPrev = useRef(pendCount);
   useEffect(() => {
-    if (pendCount > pendPrev.current && tab === 'active') announceOnce('New links');
+    if (pendCount > pendPrev.current && tab === 'active') announceOnce('New cards');
     pendPrev.current = pendCount;
   }, [pendCount, tab, announceOnce]);
 
@@ -1377,6 +1396,12 @@ const CircApp = () => {
         && (lensBase >= (window.CIRC_SORT_MIN_ITEMS || 2) || lensOffDefault);
       const setOrder = (next) => {
         setSortOrder((prev) => ({ ...prev, [currentId]: next }));
+        // Lean 1: the other order opens at its start — top for newest first,
+        // the oldest card for oldest first — on both tabs.
+        if (next !== order) {
+          resetOrderPlace(currentId);
+          requestAnimationFrame(() => scrollToArrivals(false));
+        }
         // The gesture is acknowledged, as every gesture in this app is. The
         // waterline's suppression is NOT announced — a state never is.
         announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel(next).toLowerCase() : next));
@@ -1548,7 +1573,7 @@ const CircApp = () => {
                 empty Active tab, where there is no reader's feed to protect.
                 `visible.length > 0` is the same test EmptyState's own branch
                 uses below, so the two conditions can never disagree. */}
-            {tab === 'active' && pendingVisible.length > 0 && visible.length > 0 && <NewPill onClick={revealPending} />}
+            {tab === 'active' && pendingVisible.length > 0 && visible.length > 0 && <NewPill order={order} onClick={() => revealPending()} />}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to
@@ -1657,7 +1682,7 @@ const CircApp = () => {
                 mark or the failed-load foot. All loaded: History closes with
                 its end line; Active simply ends. */}
             {visible.length > 0 && Foot && moreToLoad && (
-              <Foot key={pageKey + ':' + paged.length} status={pageStatus[pageKey] || 'idle'}
+              <Foot key={pageKey + ':' + paged.length} status={pageStatus[pageKey] || 'idle'} newestFirst={order === 'newest'}
                 onNeed={() => loadOlder(pageKey)} onRetry={() => loadOlder(pageKey)} />
             )}
             {visible.length > 0 && !moreToLoad && tab === 'read' && window.HistoryEnd

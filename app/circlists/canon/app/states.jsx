@@ -54,6 +54,37 @@ const CIRC_SHARE_TEXT = 'Replicated Log — Patterns of Distributed Systems ' + 
 // from the Horizon on and still waiting (Active); `done` is the little they
 // have marked since joining; `past` is the long run from before the Horizon,
 // which History draws as ordinary Unread cards.
+// The oldest-first pile (LM-786 sort): 26 cards, four pages at eight, none
+// sharing a URL with the simulated arrivals in liveliness.jsx.
+const CIRC_PILE = [
+  ['https://aeon.co/essays/the-art-of-noticing-small-things', 'The art of noticing small things', 'Aeon', 'Ana R.'],
+  ['https://www.theguardian.com/science/2026/aug/why-rivers-meander', 'Why rivers meander', 'The Guardian', 'Dan M.'],
+  ['https://nautil.us/the-mathematics-of-queues/', 'The mathematics of waiting in line', 'Nautilus', 'Priya S.'],
+  ['https://www.lrb.co.uk/the-paper/v48/n14/on-maps', 'On maps, and what they leave out', 'London Review of Books', 'Lena K.'],
+  ['https://longreads.com/2026/07/the-night-ferry/', 'The night ferry', 'Longreads', 'Joe M.'],
+  ['https://www.bbc.co.uk/sounds/play/in-our-time-tides', 'In Our Time: the tides', 'BBC Sounds', 'Dan M.'],
+  ['https://www.newyorker.com/culture/annals-of-inquiry/the-science-of-habit', 'What we get wrong about habits', 'The New Yorker', 'Ana R.'],
+  ['https://www.atlasobscura.com/articles/the-last-letterpress-shops', 'The last letterpress shops', 'Atlas Obscura', 'Priya S.'],
+  ['https://www.smithsonianmag.com/history/the-long-history-of-the-pencil', 'The long history of the pencil', 'Smithsonian', 'Lena K.'],
+  ['https://aeon.co/essays/what-it-means-to-be-a-good-neighbour', 'What it means to be a good neighbour', 'Aeon', 'Joe M.'],
+  ['https://www.theatlantic.com/ideas/archive/2026/06/the-case-for-letters/', 'The case for writing letters again', 'The Atlantic', 'Ana R.'],
+  ['https://nautil.us/how-birds-find-their-way-home/', 'How birds find their way home', 'Nautilus', 'Dan M.'],
+  ['https://www.lithub.com/on-keeping-a-commonplace-book/', 'On keeping a commonplace book', 'Literary Hub', 'Priya S.'],
+  ['https://www.bbc.co.uk/sounds/play/the-listening-project-kitchens', 'The Listening Project: kitchens', 'BBC Sounds', 'Lena K.'],
+  ['https://longreads.com/2026/05/the-weather-watchers/', 'The weather watchers', 'Longreads', 'Joe M.'],
+  ['https://www.theguardian.com/books/2026/may/the-joy-of-second-hand-bookshops', 'The joy of second-hand bookshops', 'The Guardian', 'Ana R.'],
+  ['https://www.newyorker.com/magazine/2026/04/the-orchard-keepers', 'The orchard keepers', 'The New Yorker', 'Dan M.'],
+  ['https://www.atlasobscura.com/articles/salt-marshes-and-the-people-who-mind-them', 'Salt marshes and the people who mind them', 'Atlas Obscura', 'Priya S.'],
+  ['https://aeon.co/essays/why-we-walk-in-circles-when-lost', 'Why we walk in circles when we are lost', 'Aeon', 'Lena K.'],
+  ['https://www.smithsonianmag.com/science-nature/the-quiet-life-of-moss', 'The quiet life of moss', 'Smithsonian', 'Joe M.'],
+  ['https://www.lrb.co.uk/the-paper/v48/n10/on-rereading', 'On rereading, slowly', 'London Review of Books', 'Ana R.'],
+  ['https://nautil.us/the-physics-of-bread/', 'The physics of a good loaf', 'Nautilus', 'Dan M.'],
+  ['https://www.theatlantic.com/family/archive/2026/03/the-shared-table/', 'The shared table', 'The Atlantic', 'Priya S.'],
+  ['https://longreads.com/2026/03/the-lock-keeper/', 'The lock keeper', 'Longreads', 'Lena K.'],
+  ['https://www.bbc.co.uk/sounds/play/in-our-time-the-almanac', 'In Our Time: the almanac', 'BBC Sounds', 'Joe M.'],
+  ['https://www.theguardian.com/lifeandstyle/2026/feb/learning-to-mend', 'Learning to mend things', 'The Guardian', 'Ana R.'],
+];
+
 const CIRC_LATE = {
   now: [
     ['https://aeon.co/essays/why-we-keep-lists-we-never-finish', 'Why we keep lists we never finish', 'Aeon', 'Ana R.'],
@@ -386,6 +417,9 @@ function circStateContext(api) {
     // applies to both tabs, the same way density and the contributor filter
     // already do, so there is no tab to get right or wrong here any more.
     setSortOrder({ [space]: order });
+    // Re-applied after the entry (LM-786 sort): the order is visit state now,
+    // so `enterSpace`/`resetVisitView` clears it on the way in.
+    setTimeout(() => setSortOrder({ [space]: order }), 40);
     // Multi-select (BIZ-136, ruling 2026-09-14): `who` accepts a single name
     // (a Scenario written before the ruling) or an array (several people at
     // once), so every existing Scenario id keeps working unmigrated.
@@ -465,7 +499,7 @@ function circStateContext(api) {
     if (waterline) {
       setTimeout(() => setDividerAt(Date.now() - 8.5 * 3600e3), 0);
     }
-    // Arrivals behind the pill (`sort-oldest-accept`, requirements 6–8): the
+    // Arrivals behind the pill (`pendingCount`): the
     // same simulated-drop generator the live check uses, staged directly
     // rather than waited for. After the entry above, same reason `waterline`
     // is: entering a circle clears transient arrival state on the way in.
@@ -539,6 +573,56 @@ function circStateContext(api) {
     clearFeedError();
     setCurrentId('sp-late'); setTab('read'); setRoute('space'); setLoadingFeed(false);
     if (setIncludeActive) setTimeout(() => setIncludeActive(false), 0);
+  };
+
+  // The oldest-first pile (LM-786 sort). Its own circle, as the late joiner is,
+  // with enough cards for four pages, so a page boundary is reached by
+  // scrolling. Everything is applied after the entry clears the visit.
+  //   read       — every card done, so the pile is History's (Active empty)
+  //   partway    — two pages loaded, scrolled to the middle
+  //   loadAll    — every page loaded (History's end line)
+  //   pending    — arrivals already behind the pill
+  //   arriveAfter/arriveCount — arrivals that land while the member reads
+  //   queued     — arrivals only a rail refresh finds
+  //   pageFail   — the next page failed
+  const stagePile = ({ tab = 'active', read = false, partway = false, nearFoot = false, loadAll = false, pending = 0, arriveAfter = 0, arriveCount = 0, queued = 0, pageFail = false } = {}) => {
+    setUser(DEFAULT_USER);
+    const now = Date.now();
+    const token = {}; window.__circPileToken = token;
+    const items = CIRC_PILE.map((r, i) => ({ id: 'pile-' + i, url: r[0], title: r[1], source: r[2],
+      attribution: 'Added by ' + r[3], read, at: now - (i * 18 + 3) * 3600e3,
+      reactions: read ? [{ name: 'You', skipped: true }] : [] }));
+    const drops = (n) => { const out = []; for (let k = 0; k < n; k += 1) out.push(window.circNextDrop()); return out; };
+    const pile = {
+      id: 'sp-pile', name: 'Field Notes', funded: true, dormancy: null,
+      champion: 'Ana R.', championEmail: 'ana.r@example.com',
+      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
+        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      items, lastSeenAt: now, unseen: false, pending: [], queued: [],
+    };
+    setSpaces(prev => [pile, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-pile')]);
+    setLensWho({}); setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
+    clearFeedError();
+    setCurrentId('sp-pile'); setTab(tab); setRoute('space'); setLoadingFeed(false);
+    const key = 'sp-pile:' + tab;
+    const size = window.CIRC_PAGE_SIZE || 8;
+    setTimeout(() => {
+      setSortOrder({ 'sp-pile': 'oldest' });
+      if (setIncludeActive) setIncludeActive(false);
+      if (setFeedPages) setFeedPages(loadAll ? { [key]: CIRC_PILE.length } : nearFoot ? { [key]: size * 3 } : partway ? { [key]: size * 2 } : {});
+      if (pageFail && setPageStatus) setPageStatus({ [key]: 'failed' });
+      if (pending || queued) setSpaces(prev => prev.map(s => s.id !== 'sp-pile' ? s
+        : { ...s, pending: drops(pending), queued: drops(queued) }));
+    }, 80);
+    if (partway || nearFoot) setTimeout(() => {
+      const el = document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
+      el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) * (nearFoot ? 0.8 : 0.5));
+    }, 400);
+    if (arriveAfter && arriveCount) setTimeout(() => {
+      if (window.__circPileToken !== token) return;
+      setSpaces(prev => prev.map(s => s.id !== 'sp-pile' ? s
+        : { ...s, pending: [...drops(arriveCount), ...(s.pending || [])] }));
+    }, arriveAfter);
   };
 
   // Arriving on a shared card address (BIZ-136 wild feature; LM-797). ONE
@@ -703,7 +787,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageLateJoiner, stageNotFound, stageHome, stageSharedCard,
+    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
     stageShareIntake,
@@ -734,21 +818,17 @@ const CIRC_STATE_REGISTER = [
   // words to follow.
   { group: 'The feed', id: 'sort-waterline-newest', label: 'Waterline — under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
   { group: 'The feed', id: 'sort-oldest-waterline', label: 'Waterline — same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
-  // Arrivals staged UNDER oldest-first, then accepted (reworded 2026-09-11,
-  // three times the same day — the requirement this state first showed was
-  // reversed, then the carry it grew in that reversal was reversed too, then
-  // Joe overruled his own reversal of the carry: the same pill carrying the
-  // member under one order and not the other was the order-dependent
-  // inconsistency he had been objecting to all along). The pill still does
-  // not touch the sort: tapping it leaves the order exactly as it was, and
-  // the two arrivals land in sorted position — the FOOT, under oldest-first
-  // — below the waterline still drawn at its own unmoved mark. What's back
-  // is the carry: the member IS taken to the arrivals, same as
-  // `sort-waterline-newest` — the difference between the two states is
-  // which end of the list that carry lands on, not whether it happens.
-  // Known, accepted cost of the foot case: a long, unanchored glide past
-  // whatever backlog sat between the member and the foot.
-  { group: 'The feed', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill carries you to the foot', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true, pendingCount: 2 }) },
+  // Arrivals under oldest first (LM-786 sort, ratified 2026-09-25 — supersedes
+  // the 11 Sep "the pill carries you to the foot" ruling this id first
+  // showed). Opened part-way down a four-page pile with two arrivals behind
+  // the pill, which reads "New · newest first". The tap switches the circle
+  // to newest first and lands at the top, the new cards glowing at the head.
+  { group: 'The feed', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill switches to newest first', stage: (c) => c.stagePile({ partway: true, pending: 2 }) },
+  // The one to read in: arrivals land a few seconds in, and a third waits
+  // where only a rail refresh finds it (tap this circle in the rail).
+  { group: 'The feed', id: 'sort-oldest-arriving', label: 'Oldest first — new cards arrive while you read', stage: (c) => c.stagePile({ partway: true, arriveAfter: 4000, arriveCount: 2, queued: 1 }) },
+  { group: 'The feed', id: 'feed-newer-failed', label: 'Oldest first — newer cards failed to load', stage: (c) => c.stagePile({ pageFail: true }) },
+  { group: 'The feed', id: 'history-oldest-end', label: 'History, oldest first — scroll on to the last page, nothing newer', stage: (c) => c.stagePile({ tab: 'read', read: true, nearFoot: true }) },
   { group: 'The feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },
   // The contributor filter, folded with sort into one lens control. Priya's
   // two Active links sit either side of the last-visit mark, so the
