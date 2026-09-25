@@ -98,6 +98,20 @@ is never stale.
 
 ## Last sync
 
+date: 2026-09-25T13:50:01Z
+monorepo: read live — `specs/projects/circlists/ui.md` Decision-29 (the New pill's
+accept: spinner in the pill's face, spent fade, silent failure) and Decision-31 (no
+minimum beat), grounding LM-786 sort's pill loading. Nothing mirrored; no commit sha
+resolved.
+
+### Updated in this project
+- LM-786 sort: one order per circle for the visit; the New pill loads in both
+  orders and, under oldest first, switches to newest first once the cards land;
+  refresh never changes the order; the sort control loads the new order's first
+  page. Handoff in `docs/specs/lm-786-sort/`.
+
+## Previous sync
+
 date: 2026-09-24T11:26:21Z
 wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for
 History's empty-state copy). business-ops: fetched one LM-786 prompt image

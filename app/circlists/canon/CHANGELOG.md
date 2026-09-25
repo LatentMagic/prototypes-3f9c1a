@@ -7,11 +7,11 @@ exhaustively; entries capture the shape of each significant step, not every chan
 
 - **One order per circle, for the visit.** It covers both tabs. Leaving the circle or reloading
   returns it to newest first.
-- **Under oldest first, pages stop at the last card from before the visit.** New cards join only
-  through the New pill, which reads "New · newest first", or through a rail refresh.
-- **Taking new cards under oldest first switches the circle to newest first and goes to the top.**
-  This replaces the 11 Sep carry to the foot.
-- **Every order change opens the list at its start.** Under oldest first, History ends "Nothing
+- **Under oldest first, pages stop at the last card from before the visit.** New cards, including
+  those a rail refresh finds, wait behind the New pill, which reads "New · newest first".
+- **Tapping New under oldest first switches the circle to newest first and goes to the top.**
+  This replaces the 11 Sep carry to the foot. A refresh never changes the order.
+- **Every order change loads the new order's first page, then opens the list at its start.** Under oldest first, History ends "Nothing
   newer in the circle", and a failed page says "Couldn't load newer cards".
 
 ## History can be narrowed to cards you are watching — 2026-09-24

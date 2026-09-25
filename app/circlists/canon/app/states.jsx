@@ -139,7 +139,7 @@ function circStateContext(api) {
     setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
     setSearchQuery, setSearchOpen, setHomeStripOpen,
     setFeedError,
-    setIncludeActive, setFeedPages, setPageStatus,
+    setIncludeActive, setFeedPages, setPageStatus, setOrderLoad, refreshSpace,
   } = api;
   // The feed's load-failure is the first staged flag that can OUTLIVE the state
   // that set it: every other flag here is overwritten by the next stager, and a
@@ -170,8 +170,9 @@ function circStateContext(api) {
     setSpaces(fresh); setUser(DEFAULT_USER);
     setLoadingFeed(false); setHoldLoading(false);
     window.CIRC_INVITE_MINT_FAIL = false;
+    window.CIRC_ACCEPT_FAIL = false;
     clearFeedError();
-    setSortOrder({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
+    setSortOrder({}); if (setOrderLoad) setOrderLoad({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
     setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({});
     if (setHomeStripOpen) setHomeStripOpen(false);
     // Push (LM-769) is PERSISTED state, so unlike the view flags above it would
@@ -585,13 +586,17 @@ function circStateContext(api) {
   //   arriveAfter/arriveCount — arrivals that land while the member reads
   //   queued     — arrivals only a rail refresh finds
   //   pageFail   — the next page failed
-  const stagePile = ({ tab = 'active', read = false, partway = false, nearFoot = false, loadAll = false, pending = 0, arriveAfter = 0, arriveCount = 0, queued = 0, pageFail = false } = {}) => {
+  //   order/orderFail — the order just changed and its first page failed
+  //   orderHold  — the order just changed; its first page held loading
+  //   read: n    — cards from index n (the older ones) are done, so both tabs hold cards
+  //   refreshAfter — runs the rail refresh itself, after that many ms
+  const stagePile = ({ tab = 'active', read = false, partway = false, nearFoot = false, loadAll = false, pending = 0, arriveAfter = 0, arriveCount = 0, queued = 0, pageFail = false, order = 'oldest', orderFail = false, orderHold = false, refreshAfter = 0 } = {}) => {
     setUser(DEFAULT_USER);
     const now = Date.now();
     const token = {}; window.__circPileToken = token;
     const items = CIRC_PILE.map((r, i) => ({ id: 'pile-' + i, url: r[0], title: r[1], source: r[2],
-      attribution: 'Added by ' + r[3], read, at: now - (i * 18 + 3) * 3600e3,
-      reactions: read ? [{ name: 'You', skipped: true }] : [] }));
+      attribution: 'Added by ' + r[3], read: read === true || (typeof read === 'number' && i >= read), at: now - (i * 18 + 3) * 3600e3,
+      reactions: (read === true || (typeof read === 'number' && i >= read)) ? [{ name: 'You', skipped: true }] : [] }));
     const drops = (n) => { const out = []; for (let k = 0; k < n; k += 1) out.push(window.circNextDrop()); return out; };
     const pile = {
       id: 'sp-pile', name: 'Field Notes', funded: true, dormancy: null,
@@ -607,7 +612,8 @@ function circStateContext(api) {
     const key = 'sp-pile:' + tab;
     const size = window.CIRC_PAGE_SIZE || 8;
     setTimeout(() => {
-      setSortOrder({ 'sp-pile': 'oldest' });
+      setSortOrder({ 'sp-pile': order });
+      if (setOrderLoad) setOrderLoad(orderFail ? { 'sp-pile': 'failed' } : orderHold ? { 'sp-pile': 'loading' } : {});
       if (setIncludeActive) setIncludeActive(false);
       if (setFeedPages) setFeedPages(loadAll ? { [key]: CIRC_PILE.length } : nearFoot ? { [key]: size * 3 } : partway ? { [key]: size * 2 } : {});
       if (pageFail && setPageStatus) setPageStatus({ [key]: 'failed' });
@@ -618,6 +624,9 @@ function circStateContext(api) {
       const el = document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
       el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) * (nearFoot ? 0.8 : 0.5));
     }, 400);
+    if (refreshAfter && refreshSpace) setTimeout(() => {
+      if (window.__circPileToken === token) refreshSpace('sp-pile');
+    }, refreshAfter);
     if (arriveAfter && arriveCount) setTimeout(() => {
       if (window.__circPileToken !== token) return;
       setSpaces(prev => prev.map(s => s.id !== 'sp-pile' ? s
@@ -825,8 +834,26 @@ const CIRC_STATE_REGISTER = [
   // to newest first and lands at the top, the new cards glowing at the head.
   { group: 'The feed', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill switches to newest first', stage: (c) => c.stagePile({ partway: true, pending: 2 }) },
   // The one to read in: arrivals land a few seconds in, and a third waits
-  // where only a rail refresh finds it (tap this circle in the rail).
+  // where only a rail refresh finds it (tap this circle in the rail). That
+  // refresh parks it behind New and never changes the order (ruled 2026-09-25).
   { group: 'The feed', id: 'sort-oldest-arriving', label: 'Oldest first — new cards arrive while you read', stage: (c) => c.stagePile({ partway: true, arriveAfter: 4000, arriveCount: 2, queued: 1 }) },
+  // The order-change load (LM-786 sort, ruled 2026-09-25): the member has just
+  // switched oldest first → newest first and the new order's first page failed.
+  // Try again shows the spinner, then the list at its top.
+  // A rail refresh under oldest first that finds cards (ruled 2026-09-25): the
+  // order never changes; the cards wait behind the pill; the member stays put.
+  // Runs the refresh itself 1.2s in, so the rail receipt is seen. From History
+  // the pill is out of sight, so the live-signal dot lights on the circle.
+  { group: 'The feed', id: 'sort-oldest-refresh-active', label: 'Oldest first — a refresh finds cards; they wait behind New', stage: (c) => c.stagePile({ partway: true, queued: 2, refreshAfter: 1200 }) },
+  { group: 'The feed', id: 'sort-oldest-refresh-history', label: 'Oldest first, History — a refresh finds cards; the dot lights', stage: (c) => c.stagePile({ tab: 'read', read: 13, queued: 2, refreshAfter: 1200 }) },
+  // A failed pill tap (ui.md Decision-29): tap New and the spinner runs in the
+  // pill's face, then the pill silently returns to rest. The arrivals stay
+  // staged, the list is unchanged and nothing is announced. Under oldest
+  // first, the circle stays oldest first. Every tap in these states fails.
+  { group: 'The feed', id: 'pill-tap-failed-newest', label: 'New tapped, newest first — the reload fails, the pill returns to rest', stage: (c) => { c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', pendingCount: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'The feed', id: 'pill-tap-failed-oldest', label: 'New tapped, oldest first — the reload fails, still oldest first', stage: (c) => { c.stagePile({ partway: true, pending: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'The feed', id: 'sort-control-loading', label: 'Sort control — the new order’s first page loading', stage: (c) => c.stagePile({ order: 'newest', orderHold: true }) },
+  { group: 'The feed', id: 'sort-order-failed', label: 'Sort control — the new order’s first page failed', stage: (c) => c.stagePile({ order: 'newest', orderFail: true }) },
   { group: 'The feed', id: 'feed-newer-failed', label: 'Oldest first — newer cards failed to load', stage: (c) => c.stagePile({ pageFail: true }) },
   { group: 'The feed', id: 'history-oldest-end', label: 'History, oldest first — scroll on to the last page, nothing newer', stage: (c) => c.stagePile({ tab: 'read', read: true, nearFoot: true }) },
   { group: 'The feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },

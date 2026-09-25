@@ -125,16 +125,28 @@ const CircleSignal = ({ state }) => {
 // half at regular weight (quieter by weight, never by colour), one line, same
 // pill. Its words come from the sort control's own label so the two can't
 // drift. Under newest first it is unchanged.
-const NewPill = ({ onClick, order = 'newest' }) => {
-  const { MicroDot } = window;
+//
+// phase (ui.md Decision-29/31): 'busy' puts the brand spinner in the pill's
+// face from the tap until the cards land, with the box and name held (the
+// label stays laid out but hidden, so the width cannot jump). 'spent' fades
+// the pill on the receipt's curve once the cards stand beneath it. null is
+// the pill at rest.
+const NewPill = ({ onClick, order = 'newest', phase = null }) => {
+  const { MicroDot, BrandSpinner } = window;
   const oldest = order === 'oldest';
   const newestLabel = (window.circSortLabel ? window.circSortLabel('newest') : 'Newest first').toLowerCase();
+  const working = phase === 'busy' || phase === 'spent';
   return (
-    <button type="button" className="circ-newpill" onClick={onClick}
-      aria-label={oldest ? 'New cards, ' + newestLabel : undefined}
-      style={oldest ? { whiteSpace: 'nowrap' } : undefined}>
-      <span aria-hidden="true" style={{ display: 'inline-flex' }}><MicroDot size={9} /></span>
-      <span>New{oldest && <span style={{ fontWeight: 400 }}>{' · ' + newestLabel}</span>}</span>
+    <button type="button" className={'circ-newpill' + (phase === 'spent' ? ' circ-newpill-spent' : '')}
+      onClick={working ? undefined : onClick}
+      aria-label={oldest ? 'New cards, ' + newestLabel : 'New'}
+      aria-busy={phase === 'busy' ? 'true' : undefined}
+      style={{ position: 'sticky', whiteSpace: 'nowrap' }}>
+      <span aria-hidden="true" style={{ display: 'inline-flex', visibility: working ? 'hidden' : 'visible' }}><MicroDot size={9} /></span>
+      <span aria-hidden="true" style={{ visibility: working ? 'hidden' : 'visible' }}>New{oldest && <span style={{ fontWeight: 400 }}>{' · ' + newestLabel}</span>}</span>
+      {working && BrandSpinner && (
+        <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BrandSpinner size={20} /></span>
+      )}
     </button>
   );
 };

@@ -286,7 +286,7 @@ const CircApp = () => {
     // The order is part of the visit (LM-786 sort, ratified): a member who
     // leaves and comes back finds newest first. Filters and density are left
     // alone here — filters are settled in separate work; density is device.
-    setSortOrder({});
+    setSortOrder({}); setOrderLoad({}); setPillPhase(null);
   };
   // The DRAWN waterline: the stored mark as it was when this visit began. Entry
   // stamps the mark to now, so the line the member reads against is held here for
@@ -300,6 +300,11 @@ const CircApp = () => {
   // circle); a reload starts empty. Never persisted: newest-first is the
   // product's contract and the substrate the arrivals machinery stands on.
   const [sortOrder, setSortOrder] = useState({});
+  // The order-change load (LM-786 sort): `{ [circleId]: 'loading' | 'failed' }`,
+  // absent when the list is showing. Visit state; see `startOrderLoad`.
+  const [orderLoad, setOrderLoad] = useState({});
+  // The New pill's accept (Decision-29/31): { id, phase: 'busy' | 'spent' } or null.
+  const [pillPhase, setPillPhase] = useState(null);
   // Keyed by circle alone — see the note at the render site for why the
   // contributor lens is not held per tab as the order is.
   const [lensWho, setLensWho] = useState({});
@@ -404,6 +409,9 @@ const CircApp = () => {
   // carry at the wrong end (this ref is what closed that race, design audit
   // finding 5, when it was still deciding whether to restore the order).
   const sortOrderRef = useRef(sortOrder); sortOrderRef.current = sortOrder;
+  // The order the pill was tapped under, so its spent face keeps its words
+  // while it fades after the switch to newest first.
+  const pillOrderRef = useRef('newest');
   // One polite announcement, re-fired cleanly for a repeated gesture: a live
   // region only speaks when its text CHANGES, so it is cleared first.
   const announceTimer = useRef(null);
@@ -446,13 +454,29 @@ const CircApp = () => {
     setFeedPages(drop); setPageStatus(drop);
     delete tabScroll.current[id + ':active']; delete tabScroll.current[id + ':read'];
   };
-  // The oldest-first pill tap / rail refresh (ratified): switch this circle to
-  // newest first and land at the top. History switches too — the order is
-  // circle-wide — and opens at its own top next time. The caller announces.
+  // The oldest-first pill tap, once its cards have landed: switch this circle
+  // to newest first and land at the top, with no list spinner (the pill's own
+  // spinner carried the load). History switches too, because the order is
+  // circle-wide, and opens at its own top next time. The caller announces.
   const switchToNewestTop = (id) => {
     setSortOrder((prev) => ({ ...prev, [id]: 'newest' }));
     resetOrderPlace(id);
     requestAnimationFrame(() => scrollToArrivals(false));
+  };
+  // A sort-control order change "loads" the new order's first page (LM-786
+  // sort, ruled 2026-09-25; the sort control's alone): the list region shows the brand spinner, then opens at its
+  // start. The rail, bar, tabs and chips stay as they are. `failed` shows
+  // FeedError; Try again runs this again. Voided by any later order change or
+  // a new visit (both bump `visitGen`).
+  const startOrderLoad = (id) => {
+    const gen = visitGen.current;
+    setOrderLoad((prev) => ({ ...prev, [id]: 'loading' }));
+    requestAnimationFrame(() => scrollToArrivals(false));
+    setTimeout(() => {
+      if (gen !== visitGen.current) return;
+      setOrderLoad((prev) => { const n = { ...prev }; delete n[id]; return n; });
+      requestAnimationFrame(() => scrollToArrivals(false));
+    }, window.CIRC_PAGE_DELAY || 800);
   };
   const isOldestNow = (id) => (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
 
@@ -698,29 +722,54 @@ const CircApp = () => {
   // Accept: the click is what moves the feed, and it is the one moment a card
   // travels. It stamps the mark; the drawn line stays exactly where it is.
   //
-  // Under newest-first: arrivals land at the head, member goes to the top.
-  // Under oldest-first (LM-786 sort, ratified 2026-09-25 — supersedes the
-  // 11 Sep "leave the order, carry to the foot" ruling): the tap switches
-  // this circle to newest first and lands at the top, with the new cards in
-  // their glow. One announcement, the sort control's own ("Sorted newest
-  // first"). `auto` is Decision-56's empty-Active self-land below: no member
-  // gesture, so it never rewrites the member's order.
-  const revealPending = (opts) => {
-    const auto = !!(opts && opts.auto === true);
-    const id = currentRef.current;
+  // It LOADS, in both orders (ui.md Decision-29 as amended by Decision-31;
+  // LM-786 sort, ruled 2026-09-25). From the click, the brand spinner takes the
+  // pill's face, with its box and accessible name held, for exactly as long
+  // as the reload runs: no minimum beat. Once the arrivals stand in the list,
+  // the spent pill fades on the receipt's curve. A failed reload returns the
+  // pill to rest with the arrivals still staged, the list unchanged and nothing
+  // said. Under newest first the carry to the head happens at the click.
+  // Under oldest first the list stays up, and the order switches to newest
+  // first, at the top, only once the cards land ("Sorted newest first"). A
+  // failed tap leaves the circle oldest first. The list spinner belongs to the
+  // sort control alone. `auto` is Decision-56's empty-Active self-land below:
+  // no gesture, no pill and no load, and it never rewrites the order.
+  const acceptBusy = useRef(false);
+  const landPending = (id) => {
     const sp = spacesRef.current.find(s => s.id === id);
-    if (!sp || !(sp.pending || []).length) return;
+    if (!sp || !(sp.pending || []).length) return false;
     const ids = sp.pending.map(i => i.id);
     setSpaces(prev => prev.map(s => s.id === id
       ? { ...s, items: [...s.pending, ...s.items], pending: [], lastSeenAt: Date.now() } : s));
     setArrived(a => [...a, ...ids]);
     setTimeout(() => setArrived(a => a.filter(x => !ids.includes(x))), 900);
-    if (!auto && isOldestNow(id)) {
-      switchToNewestTop(id);
-      announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel('newest').toLowerCase() : 'newest first'));
-    } else {
-      requestAnimationFrame(() => scrollToArrivals(false));
-    }
+    return true;
+  };
+  const revealPending = (opts) => {
+    const auto = !!(opts && opts.auto === true);
+    const id = currentRef.current;
+    const sp = spacesRef.current.find(s => s.id === id);
+    if (!sp || !(sp.pending || []).length) return;
+    if (auto) { landPending(id); requestAnimationFrame(() => scrollToArrivals(false)); return; }
+    if (acceptBusy.current) return;
+    acceptBusy.current = true;
+    const gen = visitGen.current;
+    setPillPhase({ id, phase: 'busy' });
+    if (!isOldestNow(id)) requestAnimationFrame(() => scrollToArrivals(false));
+    setTimeout(() => {
+      acceptBusy.current = false;
+      // A visit ended, or the order was changed by hand, mid-reload: the pill
+      // goes back to rest and the arrivals stay staged.
+      if (gen !== visitGen.current || currentRef.current !== id || window.CIRC_ACCEPT_FAIL) { setPillPhase(null); return; }
+      const switching = isOldestNow(id);
+      if (!landPending(id)) { setPillPhase(null); return; }
+      if (switching) {
+        switchToNewestTop(id);
+        announceOnce('Sorted ' + (window.circSortLabel ? window.circSortLabel('newest').toLowerCase() : 'newest first'));
+      }
+      setPillPhase({ id, phase: 'spent' });
+      setTimeout(() => setPillPhase(p => (p && p.id === id && p.phase === 'spent') ? null : p), 520);
+    }, window.CIRC_ACCEPT_DELAY || 700);
   };
   // UI Decision-56: a staged arrival meeting a genuinely empty Active tab
   // lands itself — there is no reader's feed for the pill to protect, so no
@@ -735,9 +784,10 @@ const CircApp = () => {
   }, [route, tab, loadingFeed, currentId, activeItems.length, space && (space.pending || []).length]);
   // The refresh gesture — selecting the circle already on screen. There is no
   // refresh button. Nothing blanks: the receipt runs in that circle's own rail slot
-  // and resolves into the full mark on BOTH outcomes. What it finds LANDS, with no
-  // pill — the gesture already gave consent — and it reconciles away what other
-  // members deleted. One polite announcement: "Refreshed".
+  // and resolves into the full mark on BOTH outcomes. Under newest first what it
+  // finds LANDS, with no pill — the gesture already gave consent; under oldest
+  // first it waits behind the pill (below). Either way it reconciles away what
+  // other members deleted. One polite announcement: "Refreshed".
   const refreshSpace = (id) => {
     if (refreshing || loadingFeed) return;
     setRefreshing(id); setSettledId(null);
@@ -754,14 +804,20 @@ const CircApp = () => {
       const gone = (sp && sp.remoteDeleted) || [];
       const here = id === currentRef.current;
       const onActive = tabRef.current === 'active';
-      // Under oldest-first, a refresh of THIS circle that finds cards does
-      // exactly what the pill tap does (LM-786 sort, ratified 2026-09-25): switch
-      // to newest first and go to the top, on whichever tab the member is on.
-      // An empty refresh changes nothing.
-      const switchHere = found.length && here && isOldestNow(id);
-      const landingHere = found.length && here && onActive;
+      // Under oldest-first (LM-786 sort, ruled 2026-09-25, replacing the same
+      // day's "refresh switches to newest first"): a refresh of THIS circle
+      // never changes the order, on either tab. What it finds waits behind the
+      // New pill and the member stays put; the pill tap is the only switch.
+      // Pending cards are never in `items`, so they stay out of History too,
+      // with "Include cards in Active" on. Newest-first refresh is unchanged.
+      const holdHere = !!(here && isOldestNow(id));
+      const landingHere = found.length && here && onActive && !holdHere;
+      if (holdHere && found.length) suppressPendAnnounce.current = true;
       if (found.length || gone.length) setSpaces(prev => prev.map(s => {
         if (s.id !== id) return s;
+        if (holdHere) return { ...s, items: s.items.filter(i => !gone.includes(i.id)),
+          queued: [], pending: found, remoteDeleted: [],
+          unseen: (found.length && !onActive) ? true : s.unseen };
         return { ...s, items: [...found, ...s.items.filter(i => !gone.includes(i.id))],
           queued: [], pending: [], remoteDeleted: [],
           lastSeenAt: found.length ? Date.now() : s.lastSeenAt,
@@ -773,8 +829,7 @@ const CircApp = () => {
       // member for nothing. Order read live off the ref, not this closure, so a
       // member who flips the sort while the reload runs gets the true branch.
       // The announcement stays "Refreshed" alone: one announcement per gesture.
-      if (switchHere) switchToNewestTop(id);
-      else if (landingHere) requestAnimationFrame(() => scrollToArrivals(false));
+      if (landingHere) requestAnimationFrame(() => scrollToArrivals(false));
       announceOnce('Refreshed');
     }, 900);
   };
@@ -800,8 +855,12 @@ const CircApp = () => {
   // member who cannot see it is told it is there. Focus does not move.
   const pendCount = (space && (space.pending || []).length) || 0;
   const pendPrev = useRef(pendCount);
+  // A refresh that parks cards behind the pill (oldest first) says "Refreshed"
+  // only — one announcement per gesture.
+  const suppressPendAnnounce = useRef(false);
   useEffect(() => {
-    if (pendCount > pendPrev.current && tab === 'active') announceOnce('New cards');
+    if (pendCount > pendPrev.current && tab === 'active' && !suppressPendAnnounce.current) announceOnce('New cards');
+    if (pendCount !== pendPrev.current) suppressPendAnnounce.current = false;
     pendPrev.current = pendCount;
   }, [pendCount, tab, announceOnce]);
 
@@ -1043,10 +1102,10 @@ const CircApp = () => {
         setPush, setDevicePreview,
         setOtc, setPostAuthTo, setManageIntent,
         setShareLink,
-        enterSpace, openCreateSpace,
+        enterSpace, openCreateSpace, refreshSpace,
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
         setSearchQuery, setSearchOpen, setHomeStripOpen,
-        setIncludeActive, setFeedPages, setPageStatus,
+        setIncludeActive, setFeedPages, setPageStatus, setOrderLoad,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1400,7 +1459,7 @@ const CircApp = () => {
         // the oldest card for oldest first — on both tabs.
         if (next !== order) {
           resetOrderPlace(currentId);
-          requestAnimationFrame(() => scrollToArrivals(false));
+          startOrderLoad(currentId);
         }
         // The gesture is acknowledged, as every gesture in this app is. The
         // waterline's suppression is NOT announced — a state never is.
@@ -1502,7 +1561,15 @@ const CircApp = () => {
             }} /></div>
           </div>
         </main>
-      ) : loadingFeed ? (
+      ) : (orderLoad[currentId] === 'failed' && window.FeedError) ? (
+        // The new order's first page failed (LM-786 sort). Same shape as the
+        // load-error branch above; Try again re-runs the order load.
+        <main style={{ flex: 1, width: '100%' }}>
+          <div style={{ maxWidth: 'var(--max-feed-width)', margin: '0 auto', padding: isMobile ? '16px 16px 112px' : '28px 24px 120px', width: '100%' }}>
+            <div><window.FeedError onRetry={() => startOrderLoad(currentId)} /></div>
+          </div>
+        </main>
+      ) : (loadingFeed || orderLoad[currentId] === 'loading') ? (
         // Loading: the spinner is the whole view, centred in the content region
         // (fills main, which flex:1-stretches below the top bar + tabs).
         <main style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -1573,7 +1640,11 @@ const CircApp = () => {
                 empty Active tab, where there is no reader's feed to protect.
                 `visible.length > 0` is the same test EmptyState's own branch
                 uses below, so the two conditions can never disagree. */}
-            {tab === 'active' && pendingVisible.length > 0 && visible.length > 0 && <NewPill order={order} onClick={() => revealPending()} />}
+            {tab === 'active' && visible.length > 0 && (pendingVisible.length > 0 || (pillPhase && pillPhase.id === currentId)) && (
+              <NewPill order={pillPhase && pillPhase.id === currentId && pillPhase.phase === 'spent' ? pillOrderRef.current : order}
+                phase={pillPhase && pillPhase.id === currentId ? pillPhase.phase : null}
+                onClick={() => { pillOrderRef.current = order; revealPending(); }} />
+            )}
             {/* ONE zero-match register for all four narrowings (who / saved /
                 query), any combination — feed-lens.jsx's FeedNoMatch, which
                 replaces the three components this render site used to
