@@ -71,8 +71,8 @@ const SavedToggle = ({ on, onToggle }) => (
       type="button"
       onClick={() => onToggle(!on)}
       aria-pressed={on}
-      aria-label="Saved links"
-      title="Saved links"
+      aria-label="Saved cards"
+      title="Saved cards"
       className="circ-lens-trigger"
       style={{
         background: 'transparent', border: 0, cursor: 'pointer', padding: 0,
@@ -100,7 +100,7 @@ const SavedNoMatch = ({ onClear }) => (
     <p style={{
       margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)',
       fontWeight: 600, color: 'var(--color-fg-1)',
-    }}>No saved links here</p>
+    }}>No saved cards here</p>
     <p style={{
       margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
       color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
@@ -114,7 +114,7 @@ const SavedNoMatch = ({ onClear }) => (
       border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
       fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
       color: 'var(--color-fg-1)', minHeight: 'var(--tap-target-min)', padding: '0 16px',
-    }}>Show all links</button>
+    }}>Show all cards</button>
   </div>
 );
 
@@ -157,7 +157,7 @@ const SavedLensNoMatch = ({ who, onClearWho }) => (
     <p style={{
       margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
       color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
-    }}>Your saved links don’t include anything they added.</p>
+    }}>Your saved cards don’t include anything they added.</p>
     <button type="button" onClick={onClearWho} style={{
       marginTop: 10, background: 'transparent', cursor: 'pointer',
       border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',

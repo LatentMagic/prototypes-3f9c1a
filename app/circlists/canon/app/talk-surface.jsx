@@ -215,12 +215,22 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
             <CandProse text={t.text} size={14.5} lh={1.55} />
             {/* Reply lives at the foot of the reply GROUP (CandTalk). A turn with
                 no replies has no group, so the control stays here — which is the
-                foot of an empty group, the same place. */}
-            {depth === 0 && showReply && (
-              <div style={{ display: 'flex', gap: 16, marginTop: 1 }}>
-                <button type="button" className="cand-quiet" style={candQuietBtn} onClick={onReply}>Reply</button>
-              </div>
-            )}
+                foot of an empty group, the same place.
+                The react control (app/talk-reactions.jsx, droppable) belongs to
+                the WORDS, not the group, so it stands here on every live turn —
+                a reply, a turn with no replies (beside Reply), and a turn whose
+                Reply has moved to its group's foot (alone). */}
+            {(() => {
+              const React_ = window.CandReactions;
+              const reply = depth === 0 && showReply;
+              if (!reply && !React_) return null;
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 1, flexWrap: 'wrap' }}>
+                  {reply && <button type="button" className="cand-quiet" style={candQuietBtn} onClick={onReply}>Reply</button>}
+                  {React_ && <React_ item={item} t={t} api={api} />}
+                </div>
+              );
+            })()}
           </React.Fragment>
         )}
       </div>

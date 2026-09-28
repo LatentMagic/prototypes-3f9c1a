@@ -89,6 +89,9 @@ const circSearchMatch = (item, query) => {
   const words = q.toLowerCase().split(/\s+/).filter(Boolean);
   const fields = [
     circSearchHeadline(item),
+    // The full address, always — not only when the card has no title (LM-786
+    // audit, ratified 2026-09-28).
+    (item && item.url) || '',
     circSearchSource(item),
     (item && item.attribution) || '',
     (item && item.description) || '',

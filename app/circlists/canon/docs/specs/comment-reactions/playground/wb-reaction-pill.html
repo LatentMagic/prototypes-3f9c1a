@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../" />
+<title>Option board — the reaction pill</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-surface-sunken);color:var(--color-fg-1);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 24px 96px}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font:600 26px/1.2 var(--font-sans);letter-spacing:-.015em;margin:10px 0 0}
+.lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);max-width:64ch;margin:12px 0 0;text-wrap:pretty}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;margin-top:28px}
+@media (max-width:1140px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
+.opthead{display:flex;align-items:baseline;gap:10px}
+.num{font:500 12px/1 var(--font-mono);color:var(--color-fg-3);letter-spacing:.06em}
+.name{font:600 17px/1.2 var(--font-sans);letter-spacing:-.01em}
+.claim{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-2);margin:8px 0 0;text-wrap:pretty}
+.cost{font:400 13px/1.6 var(--font-sans);color:var(--color-fg-3);margin:4px 0 0;text-wrap:pretty}
+.facts{font:400 12px/1.5 var(--font-mono);color:var(--color-fg-2);margin:8px 0 0}
+.frame{margin-top:14px;width:100%;max-width:360px;background:var(--color-page);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);padding:16px 14px;display:flex;flex-direction:column;gap:18px}
+.turn{display:flex;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font:600 10px/1 var(--font-sans);color:var(--color-fg-2);background:var(--color-surface);border:1px solid var(--color-border-2)}
+.body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.who{display:flex;align-items:baseline;gap:7px}
+.who b{font:600 13.5px/1.3 var(--font-sans)}
+.who span{font:400 11.5px/1.3 var(--font-sans);color:var(--color-fg-3)}
+.prose{margin:0;font:400 14.5px/1.55 var(--font-sans);text-wrap:pretty}
+.line{display:flex;align-items:center;gap:12px;margin-top:1px;flex-wrap:wrap}
+.reply{font:500 12px/1.3 var(--font-sans);color:var(--color-fg-3);min-height:44px;display:inline-flex;align-items:center;margin:-9px 0}
+.ctl{display:inline-flex;align-items:center;gap:var(--g,12px)}
+.face{color:var(--color-fg-3);display:inline-flex;min-height:44px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:var(--pg,6px);height:var(--ph,28px);padding:0 var(--pp,8px);border-radius:var(--pr,var(--radius-md));background:var(--pb,var(--color-surface));border:1px solid var(--pbd,var(--color-border-1))}
+.pill.mine{border-color:var(--pbm,var(--color-accent))}
+.gl{display:inline-flex;align-items:center}
+.gl i{font-style:normal;width:var(--gw,18px);height:var(--gw,18px);font-size:var(--gs,15px);line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.gl i+i{margin-left:var(--go,-2px)}
+.n{font:600 12px/1 var(--font-sans);font-variant-numeric:tabular-nums;color:var(--color-fg-2)}
+.mine .n{color:var(--color-accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">Comment reactions · option board</div>
+<h1>The reaction pill</h1>
+<p class="lede">Each option shows the same two comments: one with four reactions including yours, and one with a single reaction from someone else. The react button, the glyphs, the order and the tap behaviour stay the same in every option. The options differ in the pill's size and box, and in the gap between the react button and the pill.</p>
+<div class="grid" id="grid"></div>
+</div>
+<script>
+const FACE='<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" style="display:block;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><path d="M20.2 12.6A8.4 8.4 0 1 1 11.4 3.6"/><path d="M8 14.2c.9 1.3 2.1 2 3.5 2s2.6-.7 3.5-2"/><circle cx="8.6" cy="9.6" r=".6" fill="currentColor"/><circle cx="14.4" cy="9.6" r=".6" fill="currentColor"/><path d="M19 2.5v6M16 5.5h6"/></svg>';
+const OPTS=[
+{num:'00',name:'As built',claim:'28px box, 8px padding, 15px glyphs, 12px gap after the react button.',cost:'The box is more than twice the height of Reply, and the accent border makes it the loudest thing on the line.',facts:'box 28 · pad 8 · glyph 15 · gap 12',v:{}},
+{num:'01',name:'Tightened',claim:'The same bordered box, cut down to 24px with 6px padding and 14px glyphs. The gap after the react button drops to 8px.',cost:'The box is still there, but it no longer dominates the line.',facts:'box 24 · pad 6 · glyph 14 · gap 8',v:{'--ph':'24px','--pp':'6px','--gs':'14px','--gw':'16px','--pg':'4px','--g':'8px'}},
+{num:'02',name:'Text height',claim:'A 20px chip with radius-sm and 13px glyphs, about the height of the Reply line.',cost:'At 13px, the glyphs are close to the smallest size at which an emoji stays legible.',facts:'box 20 · pad 5 · glyph 13 · gap 8',v:{'--ph':'20px','--pp':'5px','--gs':'13px','--gw':'15px','--pg':'4px','--g':'8px','--pr':'var(--radius-sm)','--go':'-1px'}},
+{num:'03',name:'Filled, no border',claim:'A 24px sunken fill with no outline. Yours is shown by the accent count alone.',cost:'Without a border, yours is marked only by the number. With a single reaction there is no number, so yours goes unmarked. On warm paper, a grey fill can look like a smudge.',facts:'box 24 · pad 6 · glyph 14 · gap 8 · no border',v:{'--ph':'24px','--pp':'6px','--gs':'14px','--gw':'16px','--pg':'4px','--g':'8px','--pb':'var(--color-surface-sunken)','--pbd':'transparent','--pbm':'transparent'}},
+{num:'04',name:'Bare',claim:'No box: the glyphs and count sit on the line like the card\u2019s reaction cluster. The fill appears only on hover or when open.',cost:'At rest, nothing shows that it can be tapped, and yours is marked only by the count.',facts:'no box · glyph 15 · gap 8',v:{'--ph':'24px','--pp':'0px','--pg':'4px','--g':'8px','--pb':'transparent','--pbd':'transparent','--pbm':'transparent','--go':'-3px'}}
+];
+const turn=(ini,by,when,text,reply,glyphs,n,mine)=>`<div class="turn"><span class="av">${ini}</span><div class="body"><div class="who"><b>${by}</b><span>${when}</span></div><p class="prose">${text}</p><div class="line">${reply?'<span class="reply">Reply</span>':''}<span class="ctl"><span class="face">${FACE}</span><span class="pill${mine?' mine':''}"><span class="gl">${glyphs.map(g=>'<i>'+g+'</i>').join('')}</span>${n>1?'<span class="n">'+n+'</span>':''}</span></span></div></div></div>`;
+document.getElementById('grid').innerHTML=OPTS.map(o=>{
+const st=Object.entries(o.v).map(([k,v])=>k+':'+v).join(';');
+return `<section><div class="opthead"><span class="num">${o.num}</span><span class="name">${o.name}</span></div><p class="claim">${o.claim}</p><p class="cost">${o.cost}</p><div class="facts">${o.facts}</div><div class="frame" style="${st}">${turn('PN','Priya N.','1d','The done-channel pattern here is exactly what the ingest service is missing.',true,['\uD83D\uDD25','\uD83D\uDCA1','\uD83D\uDC4D'],4,true)}${turn('DK','Dev K.','1d','Same. I started a branch that threads a context through the pipeline stages.',true,['\uD83D\uDC4D'],1,false)}</div></section>`;}).join('');
+</script>
+</body>
+</html>

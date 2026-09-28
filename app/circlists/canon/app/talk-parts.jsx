@@ -254,7 +254,12 @@ const candAddTurn = (api, item, text, replyTo) => candUpdateItem(api, item.id, i
 const candEditTurn = (api, item, turnId, text) => candUpdateItem(api, item.id, i => ({ ...i,
   talk: (i.talk || []).map(t => t.id === turnId ? { ...t, text, edited: true } : t) }));
 const candDeleteTurn = (api, item, turnId) => candUpdateItem(api, item.id, i => ({ ...i,
-  talk: (i.talk || []).map(t => t.id === turnId ? { ...t, deleted: true, text: '' } : t) }));
+  talk: (i.talk || []).map(t => {
+    if (t.id !== turnId) return t;
+    // A removed turn's reactions go with it (comment reactions).
+    const { reactions, ...rest } = t;
+    return { ...rest, deleted: true, text: '' };
+  }) }));
 const candToggleWatch = (api, item) => candUpdateItem(api, item.id, i => ({ ...i,
   watching: !i.watching, ...(i.watching ? {} : { talkSeenAt: Date.now() }) }));
 // The contributor's own thought, edited and removed the way a turn is (item 3).

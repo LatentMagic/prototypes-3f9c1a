@@ -36,6 +36,20 @@ Supersedes items 2 and 5 above and the "Panel layout" call.
 - **States.** `active-filter-empty-waiting` relabelled for the one-line miss. New `history-saved-empty`: History, nothing saved, Saved ticked.
 - **States page.** Groups collapse and start collapsed; a search opens every matching group. Per-group notes (`CIRC_STATE_GROUP_NOTES` in `app/states.jsx`, also `window.CIRC_STATE_NOTES`) show at the foot of an open group. The old "The feed" group is split into Feed / waterline / arrivals and New / loading and failures / filters and search / Shared card (group labels only; ids unchanged). The filters-and-search group's notes carry "pipelines" and "chan". Open/closed is not remembered. `?state=` routes unchanged.
 
+## Audit follow-up, 2026-09-28 — five changes (ratified)
+Written against prototypes 9c2ec59.
+1. **Search always on History.** `showSearch` (`app/main.jsx`) dropped its `CIRC_SORT_MIN_ITEMS` clause; it shows on an empty or one-card History. Active still has none. Order's two-card floor unchanged.
+2. **Filter and search changes start at the top.** `filterToTop` in `main.jsx` drops the tab's remembered scroll and lands at the top. Called from `setWho`, `setSavedFilter`, `setWatchingFilter`, `setSearchQueryVal`, `clearSearch`, `includeActiveNow` and the panel's Include-cards-in-Active switch (the switch does what "Include them" does, so it follows the same rule).
+3. **"links" → "cards"** in member-facing filter, Saved and search strings: chip clear labels, "Show all cards", the saved misses, the Saved trigger's name ("Saved cards"), the filter list's default label ("Filter cards") and the matching announcements. Comments untouched.
+4. **History people miss with the switch on** reads "Nothing here from ‹name›." alone. `FeedNoMatch` takes `includeActive`; the "finished" support line holds only while it is off.
+5. **Search matches the full URL** (`circSearchMatch`, `app/feed-search.jsx`), and the miss's support line names the address.
+
+New states (`stageSort` gained `noneDone`, `watchUrls`, `watchingOn`, `includeActive`):
+- `?state=history-search-empty`: nothing finished, switch off; the search trigger shows.
+- `?state=history-filter-miss-switch-on`: switch on, Lena P. ticked (she added nothing); the one-line miss.
+- `?state=history-watching-on`: two finished cards watched, Watching ticked.
+- `?state=history-filter-active-hit`: Priya N. ticked; finished cards here, two waiting in Active; the Active-match line under the chips.
+
 ## Unresolved / next
 - Not verified by eye in this session beyond the background verifier. Walk all four addresses.
 - No CHANGELOG entry: this may qualify as a shape change. Ask Joe before adding one.

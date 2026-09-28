@@ -401,9 +401,19 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pendingBy = null, doneUrl = null, pageFail = false }) => {
+  const stageSort = ({ noneDone = false, watchUrls = null, watchingOn = false, includeActive = false, space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pendingBy = null, doneUrl = null, pageFail = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    // LM-786 audit: `noneDone` empties History (nothing finished); `watchUrls`
+    // marks the finished cards at those URL prefixes as watched.
+    if (noneDone) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : { ...s, items: s.items.map(i => ({ ...i, read: false })) }));
+    }
+    if (watchUrls) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => watchUrls.some(u => i.url.indexOf(u) === 0) ? { ...i, watching: true } : i),
+      }));
+    }
     // LM-786 feed controls: a card "just marked done" — matched by URL prefix.
     if (doneUrl) {
       setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
@@ -473,6 +483,8 @@ function circStateContext(api) {
     setTimeout(() => {
       setLensWho(whoState);
       setSavedOn(savedOn ? { [space]: true } : {});
+      if (setWatchingOn) setWatchingOn(watchingOn ? { [space]: true } : {});
+      if (setIncludeActive) setIncludeActive(!!includeActive);
       setSearchQuery(query ? { [space + ':' + tab]: query } : {});
       setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
     }, 40);
@@ -671,6 +683,19 @@ function circStateContext(api) {
     }, 160);
   };
 
+  // Comment reactions: open a Read card's Overview by URL. `whoOn` names a turn
+  // whose who-reacted view opens on arrival (read once by CandReactions).
+  const stageCommentReactions = ({ space = 'sp-backend', url, whoOn = null } = {}) => {
+    stageSort({ space, tab: 'read', order: 'newest' });
+    setTimeout(() => {
+      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
+      const target = sp && sp.items.find(i => i.url === url);
+      window.__candWhoOpen = whoOn;
+      const C = window.CircCandidate;
+      if (target && C && C.goToCard) C.goToCard({ id: target.id });
+    }, 160);
+  };
+
   // A circle's description (BIZ-136 run 10). The seed gives two circles one and
   // leaves the rest without, so the home's fallback is visible with no staging
   // at all — these two stage the cases the seed cannot: a description at the
@@ -813,7 +838,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard,
+    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
     stageShareIntake,
@@ -895,6 +920,15 @@ const CIRC_STATE_REGISTER = [
   { group: 'Feed: filters and search', id: 'active-filter-hides-pill', label: 'Active filter — the New pill hides, arrivals are someone else’s', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', pendingCount: 2, pendingBy: 'Sam R.' }) },
   { group: 'Feed: filters and search', id: 'history-search-active-hit', label: 'History search — also matches cards in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'fowler' }) },
   { group: 'Feed: filters and search', id: 'history-filter-active-miss', label: 'History filter — nothing done, something waiting in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
+  // LM-786 audit (2026-09-28). `history-search-empty`: nothing finished, switch
+  // off, search still offered. `history-filter-miss-switch-on`: Lena P. has
+  // added nothing, so the miss is the one line. `history-watching-on`: two
+  // finished cards watched. `history-filter-active-hit`: Priya N. has finished
+  // cards here and two waiting in Active, so the Active-match line shows.
+  { group: 'Feed: filters and search', id: 'history-search-empty', label: 'History, nothing finished — search still offered', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', noneDone: true }) },
+  { group: 'Feed: filters and search', id: 'history-filter-miss-switch-on', label: 'History filter, Active cards included — nothing from a ticked person, one line', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Lena P.', includeActive: true }) },
+  { group: 'Feed: filters and search', id: 'history-watching-on', label: 'History, Watching ticked — the watched finished cards', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', watchUrls: ['https://go.dev/blog/pipelines', 'https://jvns.ca/'], watchingOn: true }) },
+  { group: 'Feed: filters and search', id: 'history-filter-active-hit', label: 'History filter — finished cards here, more waiting in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.' }) },
   { group: 'Feed: filters and search', id: 'history-saved-empty', label: 'History, Saved ticked — nothing saved yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
   { group: 'Feed: loading and failures', id: 'feed-older-failed', label: 'Older links failed to load — the cards stay', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', pageFail: true }) },
   // The failure with NOTHING applied, so the plain shape reads first: shell and
@@ -918,6 +952,11 @@ const CIRC_STATE_REGISTER = [
   // staged under a sharing label would imply it is a different screen.
   { group: 'Shared card', id: 'share-arrival-unread', label: 'Shared card — Overview before they have read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
   { group: 'Shared card', id: 'share-arrival-read', label: 'Shared card — Overview once they have read it', stage: (c) => c.stageSharedCard({ read: true }) },
+
+  // Comment reactions. Seeded in app/talk-data.jsx (search `@fixture comment-reactions`).
+  { group: 'Comment reactions', id: 'comment-reactions-counted', label: 'Conversation — a counted pill with yours in it', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }) },
+  { group: 'Comment reactions', id: 'comment-reactions-who-sheet', label: 'Conversation — who reacted, open on a four-person pill', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines', whoOn: 'gp1' }) },
+  { group: 'Comment reactions', id: 'comment-reactions-former-member', label: 'Conversation — a reaction from a deleted account', stage: (c) => c.stageCommentReactions({ url: 'https://jvns.ca/blog/2026/02/dns-resolvers/', whoOn: 'jv0a' }) },
 
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },

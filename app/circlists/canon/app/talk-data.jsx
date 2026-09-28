@@ -17,6 +17,9 @@
     const byUrl = {};
     spaces.forEach(sp => sp.items.forEach(it => { byUrl[it.url] = it; }));
     const set = (url, fields) => { const it = byUrl[url]; if (it) Object.assign(it, fields); };
+    // Comment reactions: one entry per person, in the order they reacted.
+    const RX = (who, glyph, hoursAgo) => ({ who, glyph, at: NOW - hoursAgo * H });
+    const G = { heart: '\u2764\uFE0F', fire: '\uD83D\uDD25', up: '\uD83D\uDC4D', idea: '\uD83D\uDCA1', laugh: '\uD83D\uDE02' };
 
     // ---- Backend Pod: thoughts on Active cards (the tucked-under band) ----
     // @fixture item-7-near-miss — YOUR card, first on Active, three replies from
@@ -66,12 +69,16 @@
       watching: true, talkSeenAt: NOW - 20 * H,
       thought: { by: 'You', text: 'The fan-in section is the one to slow down for. It finally made our worker pool shutdown bug make sense.', at: NOW - 40 * H },
       talk: [
-        T('gp1', 'Priya N.', 30, 'The done-channel pattern here is exactly what the ingest service is missing. We cancel by killing the process.'),
-        T('gp2', 'Dev K.', 26, 'Same. I started a branch that threads a context through the pipeline stages \u2014 will link it when it holds up.'),
+        // @fixture comment-reactions-counted — a counted pill with yours in it.
+        T('gp1', 'Priya N.', 30, 'The done-channel pattern here is exactly what the ingest service is missing. We cancel by killing the process.',
+          { reactions: [RX('Dev K.', G.fire, 29), RX('You', G.idea, 28), RX('Ada L.', G.fire, 27), RX('Marcus T.', G.up, 25)] }),
+        T('gp2', 'Dev K.', 26, 'Same. I started a branch that threads a context through the pipeline stages \u2014 will link it when it holds up.',
+          { reactions: [RX('Priya N.', G.up, 25)] }),
         // Your own reply — the second count the item-7 line needs. It lands
         // BEFORE Ada's, so the one turn carrying the unseen tab is one you could
         // not have read: a turn of your own beneath it would prove you had.
-        T('gp4', 'You', 3, 'Both worth doing. I will take the shutdown path and thread a context through it this week.'),
+        T('gp4', 'You', 3, 'Both worth doing. I will take the shutdown path and thread a context through it this week.',
+          { reactions: [RX('Ada L.', G.idea, 2.5), RX('Priya N.', G.up, 2)] }),
         T('gp3', 'Ada L.', 2, 'Worth reading beside the errgroup docs. Half of this file is errgroup now, done better.'),
       ],
     });
@@ -83,13 +90,16 @@
         // tail control can be judged. Two of them landed after this card's mark,
         // in the held-back tail — so the group has to open on arrival.
         T('jv0', 'Marcus T.', 28, 'The stub-resolver section is the part I would have everyone read twice. Half our timeouts are the stub giving up, not the upstream.'),
-        T('jv0a', 'Ada L.', 26, 'We set a two second timeout in the container image and then wonder why the first lookup of the morning fails.', { replyTo: 'jv0' }),
+        // @fixture comment-reactions-former-member — a reaction from a deleted account.
+        T('jv0a', 'Ada L.', 26, 'We set a two second timeout in the container image and then wonder why the first lookup of the morning fails.',
+          { replyTo: 'jv0', reactions: [RX('Former member.', G.up, 25), RX('Dev K.', G.up, 24), RX('Marcus T.', G.idea, 22)] }),
         T('jv0b', 'Dev K.', 24, 'That is the one. And the retry goes to the same broken resolver, in order, every time.', { replyTo: 'jv0' }),
         T('jv0c', 'Priya N.', 22, 'Migration plan should name the timeout and the attempts explicitly rather than inheriting whatever the base image ships.', { replyTo: 'jv0' }),
         T('jv0d', 'Lena P.', 20, 'Agreed. I will put the current values in the doc so we are arguing about real numbers.', { replyTo: 'jv0' }),
         T('jv0e', 'Sam R.', 6, 'Numbers are in. Two seconds, two attempts, and the search list is five entries long \u2014 that is ten lookups for one name.', { replyTo: 'jv0' }),
         T('jv0f', 'Ada L.', 4, 'Ten lookups explains the morning failures on its own. The search list is where I would start.', { replyTo: 'jv0' }),
-        T('jv1', 'Lena P.', 5, 'The negative-caching part explains the ghost outage from March. TTL zero is not \u201cno caching\u201d everywhere.'),
+        T('jv1', 'Lena P.', 5, 'The negative-caching part explains the ghost outage from March. TTL zero is not \u201cno caching\u201d everywhere.',
+          { reactions: [RX('Former member.', G.laugh, 4)] }),
       ],
     });
     // A third of yours, further down Read.

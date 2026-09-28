@@ -570,6 +570,15 @@
   [data-cand-listrow]:first-child { border-top-color: transparent !important; }
   .cand-watch[aria-pressed="true"]:hover { color: var(--color-accent-strong, var(--color-accent)); }
   .cand-quiet:hover { color: var(--color-fg-1); text-decoration: underline; text-underline-offset: 2px; }
+  /* Comment reactions (app/talk-reactions.jsx) */
+  .cand-crbtn { color: var(--color-fg-3); transition: color var(--duration-base) var(--ease-quiet); }
+  .cand-crbtn:hover, .cand-crbtn[aria-expanded="true"] { color: var(--color-fg-1); }
+  .cand-crglyph:not([aria-pressed="true"]):hover { background: var(--color-surface-sunken) !important; }
+  .cand-crpill-face { transition: background var(--duration-base) var(--ease-quiet), border-color var(--duration-base) var(--ease-quiet); }
+  .cand-crpill:hover .cand-crpill-face, .cand-crpill[aria-expanded="true"] .cand-crpill-face { background: var(--color-surface-sunken) !important; }
+  .cand-crpill:not([data-mine]):hover .cand-crpill-face { border-color: var(--color-border-3) !important; }
+  .cand-crpill:focus-visible { outline: none; }
+  .cand-crpill:focus-visible .cand-crpill-face { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; }
 
   /* ---- entrance animations ----
      Overlays rest at their visible end-state with NO entrance keyframe, so they
@@ -745,6 +754,8 @@
 <script type="text/babel" src="app/talk-add.jsx"></script>
 <script type="text/babel" src="app/talk-card.jsx"></script>
 <script type="text/babel" src="app/talk-reveal.jsx"></script>
+<!-- Comment reactions. Droppable: CandTurn reads window.CandReactions per render. -->
+<script type="text/babel" src="app/talk-reactions.jsx"></script>
 <script type="text/babel" src="app/talk-surface.jsx"></script>
 <script type="text/babel" src="app/talk-return.jsx"></script>
 <!-- The home screen's cross-circle returns strip.

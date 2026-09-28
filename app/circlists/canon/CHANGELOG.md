@@ -3,6 +3,12 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Comment reactions — 2026-09-28
+
+- **Any comment or reply takes one of the Swell's five glyphs**, one per person, from a react button in its action line.
+- **One pill per comment** stacks up to three glyphs, counts from two people up, and marks yours. Tapping it lists who reacted, with you first.
+- **A reaction sends no signal.** It does not touch Watching or the Returns bar, and sends no notification.
+
 ## Replies to followed conversations push and light the dot — 2026-09-28
 
 - **A second push kind: "New replies in {circle}"**, sent for replies on a card you watch. Title only,

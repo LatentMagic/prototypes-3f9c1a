@@ -967,6 +967,15 @@
           changelog: [
             {
               date: '2026-09-28',
+              title: 'Comment reactions',
+              items: [
+                'Every live turn draws an action line — Reply where it already stood, plus a react button. Tapping it opens a quick bar of five glyphs; picking one adds a pill (count + your glyph state) after the button. A top-level turn with replies gets its own action line under its words, holding the react button and pill only — Reply stays at the group’s foot.',
+                'Tapping the pill opens who reacted — a sheet on phone, a popover on desktop — with your row first, a button trailing "Remove". Removing the last reaction closes the view and focuses the react button. No count shows below two people, one pill per comment, five glyphs only, no notification.',
+                'Presentation (button, quick bar, pill sizing and placement, who-reacted view) is not yet ratified — see the spec for open calls. Staged at ?state=comment-reactions-counted, comment-reactions-who-sheet, comment-reactions-former-member.'
+              ]
+            },
+            {
+              date: '2026-09-28',
               title: 'Active is the queue, History is everything',
               items: [
                 'Active’s people filter lists only who has a card still waiting; History lists the whole circle, including members who’ve never added a card. Filters are kept per tab — one on Active doesn’t narrow History, and the reverse.',

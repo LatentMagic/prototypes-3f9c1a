@@ -1,7 +1,12 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-09-25",
+  "generated": "2026-09-28",
   "tickets": [
+    { "id": "—", "slug": "comment-reactions", "name": "Comment reactions", "state": "active", "touched": "2026-09-28",
+      "entries": [
+        { "kind": "playground", "name": "Removing your reaction", "path": "docs/specs/comment-reactions/playground/wb-reaction-remove.html", "note": "Four ways the who-reacted view offers removal: trailing word, shaped button, close glyph, action at the foot." },
+        { "kind": "playground", "name": "The reaction pill", "path": "docs/specs/comment-reactions/playground/wb-reaction-pill.html", "note": "Five treatments of the pill beside Reply: as built, tightened, text height, filled, bare." }
+      ] },
     { "id": "LM-786", "slug": "lm-786-sort", "name": "One order per circle", "state": "active", "touched": "2026-09-25", "entries": [] },
     { "id": "LM-786", "slug": "lm-786-history", "name": "History, and a feed that pages", "state": "active", "touched": "2026-09-24",
       "entries": [

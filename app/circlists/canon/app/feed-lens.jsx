@@ -458,7 +458,7 @@ const LensFilterRow = React.forwardRef(({ on, onClick, lead, label, sub }, ref) 
   </button>
 ));
 
-const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, watching, onWatching, showWatching, bounded = true, label = 'Filter links' }) => {
+const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, watching, onWatching, showWatching, bounded = true, label = 'Filter cards' }) => {
   const refs = React.useRef([]);
   const rowCount = options.length + (showSaved ? 1 : 0) + (showWatching ? 1 : 0);
   const onKey = useLensListKeys(rowCount, refs);
@@ -1242,7 +1242,7 @@ const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, i
           {savedChipOn && (
             <LensChip
               label="Saved" icon="bookmark-filled"
-              clearLabel="Showing saved links. Show all links"
+              clearLabel="Showing saved cards. Show all cards"
               onClear={() => onSaved(false)} {...reopen} />
           )}
           {watchingChipOn && (
@@ -1255,7 +1255,7 @@ const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, i
             <LensChip
               key={w}
               label={circAttributionPhrase(w, true)}
-              clearLabel={'Showing links added by ' + circContributorLabel(w) + '. Remove this filter'}
+              clearLabel={'Showing cards added by ' + circContributorLabel(w) + '. Remove this filter'}
               onClear={() => onWho(w)} {...reopen} />
           ))}
         </div>
@@ -1305,7 +1305,7 @@ const circNaturalList = (labels) => {
   return labels.slice(0, -1).join(', ') + ' or ' + labels[labels.length - 1];
 };
 
-const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onClearSaved, onClearWatching, onClearSearch, onIncludeActive = null }) => {
+const FeedNoMatch = ({ who, tab, includeActive = false, saved, watching = false, query, onClearWho, onClearSaved, onClearWatching, onClearSearch, onIncludeActive = null }) => {
   const whoList = who || [];
   const label = circNaturalList(whoList.map(circContributorLabel));
   // Multi-select wording (BIZ-136, ruling 2026-09-14). Three shapes:
@@ -1322,7 +1322,7 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
   const mixedWithYou = includesYou && whoList.length > 1;
   const q = String(query || '').trim();
   let headline, support;
-  const searchSupport = 'Search looks at a card’s title, source and description, and who added it.';
+  const searchSupport = 'Search looks at a card’s title, address, source and description, and who added it.';
   if (watching) {
     // WATCHING (LM-786). Its own branch, ahead of the regression chain below,
     // so every pre-existing combination still renders character for
@@ -1369,7 +1369,7 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     // (a zero state asserting something untrue about the search), arriving as
     // an understatement instead of an overstatement. "Title or address"
     // because those are one field: a card headed by its URL has no title.
-    support = 'Search looks at a card’s title, source and description, and who added it.';
+    support = 'Search looks at a card’s title, address, source and description, and who added it.';
   } else if (whoList.length && saved) {
     // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim for a single
     // non-You contributor — except the self case, which speaks in the first
@@ -1377,10 +1377,10 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     // same fix and its reasoning).
     headline = 'Nothing saved from ' + label;
     support = onlyYou
-      ? 'Your saved links don’t include anything you’ve added.'
+      ? 'Your saved cards don’t include anything you’ve added.'
       : mixedWithYou
-      ? 'None of your saved links match.'
-      : 'Your saved links don’t include anything they added.';
+      ? 'None of your saved cards match.'
+      : 'Your saved cards don’t include anything they added.';
   } else if (saved) {
     // REGRESSION: feed-saved.jsx's SavedNoMatch, verbatim.
     headline = 'Nothing saved here';
@@ -1395,7 +1395,10 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     // Active: the headline alone (LM-786 follow-up, ratified 2026-09-28). A
     // new card from them can wait behind the New pill, which is hidden under
     // any people filter, so a "nothing waiting" line could be untrue.
-    support = tab !== 'read' ? null
+    // History with "Include cards in Active" on: the same one line (LM-786
+    // audit, ratified 2026-09-28). The "finished" wording holds only while the
+    // switch is off, since with it on the list is not only finished cards.
+    support = (tab !== 'read' || includeActive) ? null
       : onlyYou
       ? (tab === 'read'
         ? 'You haven’t finished anything you added yet.'
@@ -1440,16 +1443,16 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     onClear = onClearWatching; buttonLabel = 'Show everything'; buttonColor = 'var(--color-fg-1)';
   } else if (q && (whoList.length || saved)) {
     onClear = () => { onClearSearch && onClearSearch(); onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
-    buttonLabel = 'Show all links'; buttonColor = 'var(--color-accent)';
+    buttonLabel = 'Show all cards'; buttonColor = 'var(--color-accent)';
   } else if (q) {
     onClear = onClearSearch; buttonLabel = 'Clear search'; buttonColor = 'var(--color-accent)';
   } else if (whoList.length && saved) {
     onClear = () => { onClearWho && onClearWho(); onClearSaved && onClearSaved(); };
-    buttonLabel = 'Show all links'; buttonColor = 'var(--color-accent)';
+    buttonLabel = 'Show all cards'; buttonColor = 'var(--color-accent)';
   } else if (whoList.length) {
     onClear = onClearWho; buttonLabel = 'Show everyone'; buttonColor = 'var(--color-accent)';
   } else {
-    onClear = onClearSaved; buttonLabel = 'Show all links'; buttonColor = 'var(--color-fg-1)';
+    onClear = onClearSaved; buttonLabel = 'Show all cards'; buttonColor = 'var(--color-fg-1)';
   }
   return (
     <div style={{

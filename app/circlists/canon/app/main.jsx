@@ -1410,9 +1410,16 @@ const CircApp = () => {
       // before anything is saved — ticking it with nothing to show gives its
       // own empty state. Supersedes the "not yet earned" gate described above.
       const showSavedLens = tab === 'read' && !loadingFeed;
+      // Any filter or search change starts the list at its top, on either tab
+      // (LM-786 audit, ratified 2026-09-28). Nothing remembers the old place.
+      const filterToTop = () => {
+        delete tabScroll.current[currentId + ':' + tab];
+        requestAnimationFrame(() => scrollToArrivals(false));
+      };
       const setSavedFilter = (next) => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
-        announceOnce(next ? 'Showing saved links' : 'Showing all links');
+        filterToTop();
+        announceOnce(next ? 'Showing saved cards' : 'Showing all cards');
       };
       // ---- Watching (LM-786) -----------------------------------------------
       // Saved's pattern at every point: deletable aid, per-circle visit state,
@@ -1426,6 +1433,7 @@ const CircApp = () => {
       const showWatchingLens = !!Watching && tab === 'read' && !loadingFeed;
       const setWatchingFilter = (next) => {
         setWatchingOn((prev) => ({ ...prev, [currentId]: next }));
+        filterToTop();
         announceOnce(next ? 'Showing cards you’re watching' : 'Showing all cards');
       };
       // ---- Search ----------------------------------------------------------
@@ -1456,9 +1464,8 @@ const CircApp = () => {
       // is untouched. `searchQueryVal` stays raw: it is what the input shows.
       const searchActive = !!searchQueryVal.trim();
       const searchFieldOpen = isReadLikeTab && (!!searchOpen[sortKey] || searchActive);
-      // Present from two Read items up, OR whenever a query is already active
-      // — same "never strand the member with no way back" rule as showLens/
-      // showSavedLens above, not repeated here.
+      // Always offered on History, with no card floor (LM-786 audit, ratified
+      // 2026-09-28): an empty History and a one-card History both offer it.
       //
       // `window.LensChips` is in the guard because the FIELD renders inside the
       // chip row, which lives in feed-lens.jsx. Without this term, deleting
@@ -1466,8 +1473,7 @@ const CircApp = () => {
       // trigger flips aria-expanded, no field ever appears, and a screen
       // reader announces an expanded control with no contents.
       const showSearch = !!window.SearchTrigger && !!window.LensChips
-        && isReadLikeTab && !loadingFeed
-        && (stored.length >= (window.CIRC_SORT_MIN_ITEMS || 2) || searchActive);
+        && isReadLikeTab && !loadingFeed;
       const setSearchFieldOpen = (next) => {
         // Closing WITH a query typed clears it. It used to return early and do
         // nothing at all, which left a visible, focusable, accent-lit control
@@ -1481,9 +1487,11 @@ const CircApp = () => {
       const clearSearch = () => {
         setSearchQuery((prev) => ({ ...prev, [sortKey]: '' }));
         setSearchOpen((prev) => ({ ...prev, [sortKey]: false }));
+        filterToTop();
       };
       const setSearchQueryVal = (next) => {
         setSearchQuery((prev) => ({ ...prev, [sortKey]: next }));
+        filterToTop();
         // Announce the ZERO STATE ONLY — never a count, anywhere, including
         // here (this app's feed marks are "boolean, wordless, never a
         // count" — see feed-lens.jsx's own header). Computed against the
@@ -1504,7 +1512,7 @@ const CircApp = () => {
         : (Search ? Search(Lens ? window.circFilterItems(activeItems, who) : activeItems, searchQueryVal)
           : (Lens ? window.circFilterItems(activeItems, who) : activeItems));
       const offerIncludeActive = checkActive && activeMatches.length > 0;
-      const includeActiveNow = () => { setIncludeActive(true); announceOnce('Including cards in Active'); };
+      const includeActiveNow = () => { setIncludeActive(true); filterToTop(); announceOnce('Including cards in Active'); };
       const searchToggle = showSearch
         ? <window.SearchTrigger open={searchFieldOpen} active={searchFieldOpen} onToggle={setSearchFieldOpen} />
         : null;
@@ -1550,9 +1558,10 @@ const CircApp = () => {
           : cur.indexOf(id) !== -1 ? cur.filter((w) => w !== id)
           : cur.concat([id]);
         setLensWho((prev) => ({ ...prev, [sortKey]: next }));
+        filterToTop();
         announceOnce(next.length
-          ? 'Showing links added by ' + next.map(window.circContributorLabel).join(', ')
-          : 'Showing links from everyone');
+          ? 'Showing cards added by ' + next.map(window.circContributorLabel).join(', ')
+          : 'Showing cards from everyone');
       };
       // Density (BIZ-136 run 3): the gesture is acknowledged like every other
       // lens pick, but it never touches sortOrder/lensWho — no chip, no active
@@ -1583,7 +1592,7 @@ const CircApp = () => {
             saved={effectiveSavedOn} onSaved={showSavedLens ? setSavedFilter : null}
             watching={effectiveWatchingOn} onWatching={showWatchingLens ? setWatchingFilter : null}
             includeActive={includeActive}
-            onIncludeActive={(tab === 'read' && window.IncludeActiveRow) ? setIncludeActive : null}
+            onIncludeActive={(tab === 'read' && window.IncludeActiveRow) ? ((v) => { setIncludeActive(v); filterToTop(); }) : null}
             open={sortMenuOpen} onOpenChange={setSortMenuOpen} />
         : null;
       // ---- Paging (LM-786) -------------------------------------------------
@@ -1735,7 +1744,7 @@ const CircApp = () => {
                 so dropping feed-lens.jsx whole degrades to EmptyState rather
                 than throwing on a missing component. */}
             {visible.length === 0 && (who.length || effectiveSavedOn || effectiveWatchingOn || searchActive) && window.FeedNoMatch
-              ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} watching={effectiveWatchingOn} query={searchQueryVal}
+              ? <div><window.FeedNoMatch who={who} tab={tab} includeActive={includeActive} saved={effectiveSavedOn} watching={effectiveWatchingOn} query={searchQueryVal}
                   onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)}
                   onClearWatching={() => setWatchingFilter(false)} onClearSearch={clearSearch}
                   onIncludeActive={offerIncludeActive ? includeActiveNow : null} /></div>
