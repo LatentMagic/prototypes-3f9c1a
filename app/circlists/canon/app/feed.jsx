@@ -414,7 +414,7 @@ const EMPTY_COPY = {
 const EmptyState = ({ tab, isChampion, onStartCircle, copy = null }) => {
   const c = copy || EMPTY_COPY[tab === 'read' ? 'read' : 'active'];
   return (
-    <div style={{
+    <div data-empty-state="" tabIndex={-1} style={{
       textAlign: 'center', minHeight: 320, padding: '72px 24px',
       display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
       gap: 28,

@@ -98,6 +98,18 @@ is never stale.
 
 ## Last sync
 
+date: 2026-09-28T05:20:01Z
+monorepo: read live — `specs/projects/circlists/ui.md` Decision-74 (a visit spans
+both tabs) and Decision-75 (Overview's back returns to the tab it was opened from).
+Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- LM-863: Overview's back restores the originating tab, scroll and focus (the
+  Way-through mark, the next card, or the empty Active tab). Handoff in
+  `docs/specs/lm-863-keep-your-place/`.
+
+## Previous sync
+
 date: 2026-09-25T13:50:01Z
 monorepo: read live — `specs/projects/circlists/ui.md` Decision-29 (the New pill's
 accept: spinner in the pill's face, spent fade, silent failure) and Decision-31 (no

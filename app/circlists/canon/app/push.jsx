@@ -69,12 +69,13 @@ const CircSwitch = ({ on, onChange, label }) => (
 // offer is in the vocabulary the product already uses for a way through.
 //   × HIDES it; main.jsx owns when it comes back (3 days, then 7, then every
 // 30) and when it is finished with for good (the device dialog raised).
-const CircPushAsk = ({ onTurnOn, onDismiss }) => {
+const CircPushAsk = ({ onTurnOn, onDismiss, atRest = false }) => {
   const slot = React.useRef(null);
   const strip = React.useRef(null);
   const [box, setBox] = React.useState(null);
   const [h, setH] = React.useState(null);
   const [leaving, setLeaving] = React.useState(false);
+  const [still] = React.useState(atRest);
   // The bleed goes on the SLOT, not the strip: the slot owns the height
   // animation and therefore clips, so a strip wider than it would simply be cut
   // off at the column's edge. Everything is measured against the COLUMN — which
@@ -113,7 +114,7 @@ const CircPushAsk = ({ onTurnOn, onDismiss }) => {
     setTimeout(onDismiss, quick ? 1 : 400);
   };
   const cls = 'circ-pushask-slot'
-    + (h != null && !leaving ? ' circ-pushask-slot-in' : '')
+    + (h != null && !leaving && !still ? ' circ-pushask-slot-in' : '')
     + (leaving ? ' circ-pushask-slot-out' : '');
   return (
     <div ref={slot} className={cls} style={wrap}>

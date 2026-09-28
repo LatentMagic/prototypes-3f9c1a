@@ -966,6 +966,15 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-09-28',
+              title: 'Back from a card keeps your place',
+              items: [
+                'Opening a card from a circle records where it was opened from — the circle, the tab, the feed’s scroll and the card order as drawn. Back restores the tab and scroll, then moves focus rather than scrolling to the card.',
+                'If the card is still in the list, focus goes to its conversation mark (or the card itself where it carries none). If it was read away on Active, focus goes to the card that took its place, or the card above if it was last, or the empty tab’s content if none remain. With no recorded origin — a direct address or a circle change — back lands on History.',
+                'The Returns bar opens through the same path, so back lands on the tab it was pressed on. The notifications ask, once met in a visit, now stands at rest on a return rather than entering again. LM-863.'
+              ]
+            },
+            {
               date: '2026-09-25',
               title: 'Sort order works with pagination',
               items: [

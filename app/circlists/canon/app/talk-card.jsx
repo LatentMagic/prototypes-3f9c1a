@@ -539,7 +539,7 @@ const CandConvoButton = ({ item }) => {
   // same mark, filled.
   const unseen = !!item.watching && candFresh(item).length > 0;
   return (
-  <button type="button" className="circ-cardaction circ-cardaction-icon"
+  <button type="button" className="circ-cardaction circ-cardaction-icon circ-waythrough"
     aria-label={unseen ? 'Open this card\u2019s conversation \u2014 it has words you have not seen' : 'Open this card\u2019s conversation'}
     title={unseen ? 'Unseen words' : 'Conversation'}
     onClick={() => { const C = window.CircCandidate; if (C && C.goToCard) C.goToCard(item); }}>

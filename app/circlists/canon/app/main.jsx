@@ -279,10 +279,13 @@ const CircApp = () => {
   const pageStatusRef = useRef({});
   pageStatusRef.current = pageStatus;
   const tabScroll = useRef({});
+  // Decision-75: the Notifications ask, met already in this visit, stands at
+  // rest on a return rather than entering again.
+  const pushAskMet = useRef(false);
   const visitGen = useRef(0);
   const resetVisitView = () => {
     visitGen.current += 1;
-    setIncludeActive(false); setFeedPages({}); setPageStatus({}); tabScroll.current = {};
+    setIncludeActive(false); setFeedPages({}); setPageStatus({}); tabScroll.current = {}; pushAskMet.current = false;
     // The order is part of the visit (LM-786 sort, ratified): a member who
     // leaves and comes back finds newest first. Filters and density are left
     // alone here — filters are settled in separate work; density is device.
@@ -492,6 +495,54 @@ const CircApp = () => {
   // Returning to a circle you were already in must NOT re-run the feed's load
   // state — the feed never left.
   const returnToSpace = () => setRoute('space');
+  useEffect(() => { if (route === 'space' && tab === 'active' && pushAskVisible) pushAskMet.current = true; });
+  // LM-863 — the card page remembers where it was opened from: the circle, the
+  // tab on screen, the feed's scroll and the card order as drawn. Back lands
+  // there. After a mark-read on Active the opened card has left the list, so
+  // focus goes to the card that took its place (UI Decision-74/75).
+  const cardOrigin = useRef(null);
+  const routeToCard = (r) => {
+    if (typeof r === 'string' && r.slice(0, 5) === 'card:' && route === 'space' && currentId) {
+      const el = feedScroller();
+      cardOrigin.current = { id: currentId, tab, scroll: el ? el.scrollTop : 0, itemId: r.slice(5),
+        order: Array.from(document.querySelectorAll('.circ-card[data-card-id]')).map(n => n.getAttribute('data-card-id')) };
+    }
+    setRoute(r);
+  };
+  const returnFromCard = () => {
+    const o = cardOrigin.current; cardOrigin.current = null;
+    // Opened by direct address, with no tab before it: back lands on History.
+    if (!o || o.id !== currentId) { setTab('read'); returnToSpace(); return; }
+    tabScroll.current[o.id + ':' + o.tab] = o.scroll;
+    setTab(o.tab); setRoute('space');
+    const settle = () => {
+      const el = feedScroller();
+      if (el) el.scrollTop = o.scroll;
+      const q = (id) => document.querySelector('.circ-card[data-card-id="' + id + '"]');
+      // Decision-75: the card still in the list → its Way-through mark (or the
+      // card itself where it carries none); read away on Active → the card that
+      // took its place, else the card above, else the empty tab's content.
+      const own = q(o.itemId);
+      let target = own && (own.querySelector('.circ-waythrough') || own);
+      if (!own && o.tab === 'active') {
+        const at = o.order.indexOf(o.itemId);
+        for (const id of o.order.slice(at + 1).concat(o.order.slice(0, Math.max(at, 0)).reverse())) { target = q(id); if (target) break; }
+        if (!target) target = document.querySelector('[data-empty-state]');
+      }
+      if (!target) return;
+      if (!target.matches('button,a,[tabindex]')) target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+      // Place kept, not scrolled to the card — moved only as far as it takes
+      // to show the focus target whole.
+      if (el) {
+        const r = target.getBoundingClientRect(), v = el === document.scrollingElement || el === document.documentElement
+          ? { top: 0, bottom: window.innerHeight } : el.getBoundingClientRect();
+        if (r.top < v.top) el.scrollTop += r.top - v.top;
+        else if (r.bottom > v.bottom) el.scrollTop += Math.min(r.bottom - v.bottom, r.top - v.top);
+      }
+    };
+    requestAnimationFrame(() => requestAnimationFrame(settle));
+  };
   const [accountFrom, setAccountFrom] = useState('space');
   const openAccount = () => { setAccountFrom(route === 'home' ? 'home' : 'space'); setRoute('account'); };
 
@@ -1150,7 +1201,7 @@ const CircApp = () => {
   // Candidate-build API — the one bridge a cand-* overlay reads app state and
   // mutations through. Assembled per render; bind() hands it over.
   const candApi = Cand ? { user, spaces, space, currentId, tab, isMobile, isApp,
-    route, setRoute, setSpaces, returnToSpace, openLink,
+    route, setRoute: routeToCard, setSpaces, returnToSpace: returnFromCard, openLink,
     requestDelete: (item) => setConfirm({ kind: 'delete', item }),
     requestMarkRead: (item) => setReacting(item),
     toggleSaved, announceOnce,
@@ -1621,7 +1672,8 @@ const CircApp = () => {
                 true of the pill under the returns bar; the ask does not make
                 it worse, and fixing it is the pill's own question. */}
             {tab === 'active' && visible.length > 0 && pushAskVisible
-              && <window.CircPushAsk onTurnOn={pushWantOn} onDismiss={pushDismissAsk} />}
+              && <window.CircPushAsk onTurnOn={pushWantOn} onDismiss={pushDismissAsk}
+                atRest={pushAskMet.current} />}
             {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || effectiveWatchingOn || searchActive)
               && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
             {/* The pill announces arrivals for the list you are LOOKING at. Under
