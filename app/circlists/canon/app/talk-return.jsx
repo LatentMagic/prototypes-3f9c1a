@@ -26,13 +26,63 @@ const CAND_BAR_IN_MS = 560, CAND_BAR_OUT_MS = 400;
 // The bar's rows: watched cards, MARKED READ (ratified 2026-08-19 — hearing about
 // a card starts at the mark), carrying words the member has not seen. Newest
 // first, so the head line's names — taken in row order — read newest first too.
+// Comment reactions reach the bar (docs/specs/comment-reactions/
+// handoff-returns-bar.md): reactions OTHERS placed on YOUR words since your
+// mark. Author-only by construction — only turns by 'You' are read, and your
+// own reaction is never counted. The list is what stands now: a reaction taken
+// back is gone from it, a swap keeps its time and shows its new glyph, so a
+// reaction-only row left with nothing drops out on its own. No push reads this.
+const candFreshRx = (item) => {
+  const m = item && item.talkSeenAt;
+  if (!m) return [];
+  const out = [];
+  candTurns(item).forEach(t => {
+    if (t.deleted || t.by !== 'You') return;
+    (t.reactions || []).forEach(r => { if (r.who !== 'You' && r.at > m) out.push(r); });
+  });
+  return out.sort((a, b) => a.at - b.at);
+};
+const candBarAt = (i) => Math.max(0, ...candFresh(i).map(t => t.at), ...candFreshRx(i).map(r => r.at));
 const candBarRows = (sp) => {
   if (!sp) return [];
   return sp.items
-    .filter(i => i.watching && i.read && candFresh(i).length > 0)
-    .map(i => ({ i, at: Math.max(...candFresh(i).map(t => t.at)) }))
+    .filter(i => i.watching && i.read && (candFresh(i).length > 0 || candFreshRx(i).length > 0))
+    .map(i => ({ i, at: candBarAt(i) }))
     .sort((a, b) => b.at - a.at)
     .map(r => r.i);
+};
+const candRxName = (who) => { const n = String(window.circContributorLabel ? window.circContributorLabel(who) : who); return n === 'Former member.' ? 'Former member' : n; };
+const candBarRx = (item) => {
+  const who = [], glyphs = [];
+  candFreshRx(item).forEach(r => {
+    const n = candRxName(r.who);
+    if (!who.includes(n)) who.push(n);
+    if (r.glyph && !glyphs.includes(r.glyph) && glyphs.length < 3) glyphs.push(r.glyph);
+  });
+  return { who, glyphs };
+};
+// A row's one line: names only, as canon — everyone behind what moved on the
+// card, repliers first, then reactors (user, 2026-09-28). The stack says
+// reactions were part of it.
+const candBarLine = (r) => {
+  const all = [...r.who];
+  (r.rx || []).forEach(n => { if (!all.includes(n)) all.push(n); });
+  return candNames(all);
+};
+// The stack: up to three distinct glyphs, bare, at the row's end. Outside the
+// text column, so reactions never lengthen the row's words.
+const CandRxStack = ({ glyphs }) => {
+  if (!glyphs || !glyphs.length) return null;
+  const said = glyphs.map(g => (window.glyphName ? window.glyphName(g) : g)).join(', ');
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+      <span className="circ-vh">Reactions: {said}</span>
+      {glyphs.map((g, k) => (
+        <span key={g} aria-hidden="true" style={{ width: 16, height: 16, fontSize: 14, lineHeight: 1, marginLeft: k ? -2 : 0,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{g}</span>
+      ))}
+    </span>
+  );
 };
 const candBarWho = (item) => {
   const who = [];
@@ -42,7 +92,10 @@ const candBarWho = (item) => {
 // A row, frozen. Everything the open bar draws is taken from this snapshot, so a
 // turn arriving while it is open cannot move a row, reorder the list, or add a
 // name to a subline.
-const candBarSnap = (rows) => rows.map(i => ({ id: i.id, title: candTitleOf(i), titled: !!i.title, who: candBarWho(i) }));
+const candBarSnap = (rows) => rows.map(i => {
+  const rx = candBarRx(i);
+  return { id: i.id, title: candTitleOf(i), titled: !!i.title, who: candBarWho(i), rx: rx.who, glyphs: rx.glyphs };
+});
 
 // ---- clearing the bar (ratified 2026-09-21; the study is
 // docs/specs/lm-652-discourse/playground-clear-in-circle/, the reasoning
@@ -101,6 +154,27 @@ const CandFeedLead = ({ api }) => {
   // When the open list was frozen. The clear's mark is set to this, not to the
   // press, so words that landed during the hold stay unseen.
   const heldAt = React.useRef(0);
+  // Staged states open the bar with `cand-bar-open` (app/states.jsx).
+  const rowsRef = React.useRef(rows);
+  rowsRef.current = rows;
+  // A pending flag, consumed once rows exist and the circle has settled, so a
+  // space-change reset cannot close it after it opens.
+  const [pend, setPend] = React.useState(0);
+  React.useEffect(() => {
+    const go = () => { window.__candBarOpen = true; setPend(p => p + 1); };
+    window.addEventListener('cand-bar-open', go);
+    return () => window.removeEventListener('cand-bar-open', go);
+  }, []);
+  React.useEffect(() => {
+    if (!window.__candBarOpen || !rows.length || where.current !== spaceId) return;
+    const t = setTimeout(() => {
+      const r = rowsRef.current;
+      if (!window.__candBarOpen || !r.length) return;
+      window.__candBarOpen = false;
+      heldAt.current = Date.now(); setHeld(candBarSnap(r)); setOpen(true);
+    }, 60);
+    return () => clearTimeout(t);
+  }, [pend, rows.length, spaceId]);
 
   // Arrival and removal. A change of circle is navigation, not the bar coming or
   // going, so the new circle's state is taken as it stands, unanimated. A removal
@@ -141,15 +215,25 @@ const CandFeedLead = ({ api }) => {
   if (!snap.length) snap = lastSnap.current; else lastSnap.current = snap;
   if (!snap.length) return null;
 
-  const names = [];
-  snap.forEach(r => r.who.forEach(n => { if (!names.includes(n)) names.push(n); }));
+  // Reactors join the name list after the speakers of their row. The verb
+  // follows what the named people did: all spoke, all only reacted, or both.
+  const names = [], spoke = [];
+  snap.forEach(r => {
+    r.who.forEach(n => { if (!names.includes(n)) names.push(n); if (!spoke.includes(n)) spoke.push(n); });
+    (r.rx || []).forEach(n => { if (!names.includes(n)) names.push(n); });
+  });
+  const verb = spoke.length === names.length ? ' replied' : spoke.length ? ' replied and reacted' : ' reacted';
+  // The head adapts from mobile: on a phone it names ONE person and "others"
+  // so it fits; wider, it takes the usual two names. Every row restates its own.
+  const narrow = window.innerWidth < 520 || !!document.querySelector('.circ-phone-screen');
+  const headNames = narrow && names.length > 1 ? names[0] + ' and others' : candNames(names);
   const n = snap.length;
   // Two lines, each parsing on its own. The head is the count — fixed-length by
   // construction, so it never truncates at any width. The names are the subline
   // and are the half allowed to truncate: every row restates them.
   const head = open ? 'Pick one to open its conversation'
     : n + (n === 1 ? ' conversation' : ' conversations') + ' you are watching';
-  const sub = candNames(names) + ' spoke';
+  const sub = headNames + verb;
   const toggle = () => {
     if (open) { setOpen(false); setHeld(null); }
     else { heldAt.current = Date.now(); setHeld(candBarSnap(rows)); setOpen(true); }
@@ -210,8 +294,9 @@ const CandFeedLead = ({ api }) => {
                         sets it (app/feed.jsx:134) — one treatment for a title-less
                         link wherever it is named. */}
                     <span style={{ font: r.titled ? '600 13.5px/1.35 var(--font-sans)' : '600 12.5px/1.45 var(--font-mono)', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</span>
-                    <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candNames(r.who)}</span>
+                    <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candBarLine(r)}</span>
                   </span>
+                  <CandRxStack glyphs={r.glyphs} />
                   <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
                 </button>
               </React.Fragment>
@@ -235,4 +320,4 @@ const CandFeedLead = ({ api }) => {
   );
 };
 
-Object.assign(window, { CandFeedLead, candBarRows, candBarWho });
+Object.assign(window, { CandFeedLead, candBarRows, candBarWho, candBarAt, candBarLine, candFreshRx, CandRxStack });

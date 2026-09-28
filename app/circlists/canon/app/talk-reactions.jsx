@@ -10,8 +10,9 @@
 // cards and turns use). A removed turn has no reactions (candDeleteTurn).
 //
 // No wider signal: reacting writes the turn's list and nothing else — not
-// `watching`, not `talkSeenAt`, no notification. Do not route it through
-// candAddTurn.
+// `watching`, not `talkSeenAt`, no push. Do not route it through
+// candAddTurn. The returns bar reads a reaction on YOUR words from the list
+// itself (candFreshRx, app/talk-return.jsx).
 // ============================================================================
 
 const CR_GLYPHS = window.RX_GLYPHS || ['\u2764\uFE0F', '\uD83D\uDD25', '\uD83D\uDC4D', '\uD83D\uDCA1', '\uD83D\uDE02'];

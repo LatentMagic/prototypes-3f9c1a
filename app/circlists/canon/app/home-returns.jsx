@@ -85,7 +85,7 @@ const candCrossRows = (spaces) => {
   const flat = [];
   (spaces || []).filter((s) => s.funded).forEach((s) => {
     candBarRows(s).forEach((item) => {
-      const at = Math.max(...candFresh(item).map((t) => t.at));
+      const at = candBarAt(item);
       flat.push({ circleId: s.id, circleName: s.name, item, at });
     });
   });
@@ -216,9 +216,10 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
                     <span style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 3, font: CROSS_METAF, color: 'var(--color-fg-3)' }}>
                       <span style={{ flexShrink: 0 }}>{r.circleName}</span>
                       <span aria-hidden="true" style={{ flexShrink: 0 }}>&middot;</span>
-                      <span style={{ flex: 1, minWidth: 0, ...CROSS_CLIP }}>{candNames(r.who)}</span>
+                      <span style={{ flex: 1, minWidth: 0, ...CROSS_CLIP }}>{candBarLine(r)}</span>
                     </span>
                   </span>
+                  <CandRxStack glyphs={r.glyphs} />
                   <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
                 </button>
               </React.Fragment>

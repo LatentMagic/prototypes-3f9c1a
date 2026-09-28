@@ -116,6 +116,16 @@
       ],
     });
     // kernel.org stays bare on purpose — the empty conversation, compose only.
+    // @fixture returns-bar-one-reaction — one reaction on your reply, nothing
+    // else new: the row reads "Sam R. reacted" with one glyph.
+    set('https://martinfowler.com/bliki/FormerMember.html', {
+      watching: true, talkSeenAt: NOW - 12 * H,
+      talk: [
+        T('fm1', 'Sam R.', 40, 'The renaming section is the one we needed before the v2 client shipped.'),
+        T('fm2', 'You', 30, 'We still carry the old field names in the ingest schema for exactly this reason.',
+          { replyTo: 'fm1', reactions: [RX('Sam R.', G.up, 3)] }),
+      ],
+    });
 
     // ---- New: your own card in Backend Pod (you champion it → item 7's
     // "another circle" line). Read, well-reacted, a real conversation. ----
@@ -128,7 +138,9 @@
     ], { title: 'Postmortems: Learning From Failure at Scale', source: 'ACM Queue', hasImage: false });
     acm.at = NOW - 9 * 24 * H;
     acm.watching = true;
-    acm.talkSeenAt = NOW;
+    // @fixture returns-bar-three-reactors — three people, three glyphs, on your
+    // reply ac3, after your mark and with no new words: "{names} reacted".
+    acm.talkSeenAt = NOW - 3 * H;
     acm.thought = { by: 'You', text: 'Sharing after our own incident review on Tuesday. The section on blameless language is where I want us to raise our bar.', at: NOW - 60 * H };
     acm.talk = [
       T('ac1', 'Priya N.', 50, 'The \u201csecond story\u201d framing is the whole thing. The first story always ends at a person; the second one ends at a system.'),
@@ -139,7 +151,8 @@
       T('ac1d', 'Dev K.', 45, 'We tried rotating it. It works when the facilitator was not on call that week.', { replyTo: 'ac1' }),
       T('ac1e', 'Lena P.', 43, 'Rotating it also stops the same two people carrying every review.', { replyTo: 'ac1' }),
       T('ac2', 'Marcus T.', 46, 'I want the incident channel template rewritten around their four questions. Happy to draft it.'),
-      T('ac3', 'You', 44, 'Please do \u2014 bring it to Thursday.', { replyTo: 'ac2' }),
+      T('ac3', 'You', 44, 'Please do \u2014 bring it to Thursday.', { replyTo: 'ac2',
+        reactions: [RX('Priya N.', G.fire, 2), RX('Marcus T.', G.idea, 1.5), RX('Lena P.', G.heart, 1)] }),
       T('ac4', 'Ada L.', 40, 'The maths on recurrence rates is thin, but the practice holds. The appendix checklist alone is worth the read.', { edited: true }),
       T('ac5', 'Dev K.', 38, '', { deleted: true }),
       T('ac6', 'Lena P.', 36, 'Still true even with that gone: we never schedule the follow-ups we write down.', { replyTo: 'ac5' }),

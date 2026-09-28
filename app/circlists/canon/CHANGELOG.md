@@ -3,6 +3,13 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Comment reactions reach the Returns bar — 2026-09-28
+
+- **A reaction to your comment or reply brings that card into your Returns bar**, and no one else's. Your own reaction never does, and it still sends no push.
+- **A row names everyone behind what moved**, people who replied first and then people who reacted, with up to three distinct glyphs at the end. A card with only reactions counts as a row like any other.
+- **The head keeps a verb that follows what happened:** "replied", "reacted" or "replied and reacted". On a phone it names one person and "others".
+- **The Home's Conversation preview carries the same rows.**
+
 ## Comment reactions — 2026-09-28
 
 - **Any comment or reply takes one of the Swell's five glyphs**, one per person, from a react button in its action line.

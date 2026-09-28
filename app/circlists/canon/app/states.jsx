@@ -696,6 +696,21 @@ function circStateContext(api) {
     }, 160);
   };
 
+  // Returns bar with comment reactions: Backend Pod from a fresh seed, two
+  // words-only cards quietened so the bar holds one of each row kind — words
+  // (jvns.ca), one reaction (FormerMember), three reactors (ACM), both (go.dev
+  // pipelines) — then opened.
+  const stageReturnsBarReactions = () => {
+    stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    const fresh = seedSpaces(DEFAULT_USER.email).find(x => x.id === 'sp-backend');
+    const quiet = ['https://go.dev/blog/errors-are-values', 'https://docs.internal-infra-example.org/runbooks/ingest-backfill-2026-03'];
+    const now = Date.now();
+    if (fresh) setSpaces(prev => withSpace(prev, 'sp-backend').map(s => s.id !== 'sp-backend' ? s
+      : { ...s, items: fresh.items.map(i => (quiet.includes(i.url) ? { ...i, talkSeenAt: now } : i)) }));
+    window.__candBarOpen = true;
+    setTimeout(() => window.dispatchEvent(new Event('cand-bar-open')), 260);
+  };
+
   // A circle's description (BIZ-136 run 10). The seed gives two circles one and
   // leaves the rest without, so the home's fallback is visible with no staging
   // at all — these two stage the cases the seed cannot: a description at the
@@ -838,7 +853,7 @@ function circStateContext(api) {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
     openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
-    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions,
+    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions, stageReturnsBarReactions,
     stageCircleDescription, stageCircleMicro,
     stageInviteRefusal,
     stageShareIntake,
@@ -957,6 +972,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Comment reactions', id: 'comment-reactions-counted', label: 'Conversation — a counted pill with yours in it', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }) },
   { group: 'Comment reactions', id: 'comment-reactions-who-sheet', label: 'Conversation — who reacted, open on a four-person pill', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines', whoOn: 'gp1' }) },
   { group: 'Comment reactions', id: 'comment-reactions-former-member', label: 'Conversation — a reaction from a deleted account', stage: (c) => c.stageCommentReactions({ url: 'https://jvns.ca/blog/2026/02/dns-resolvers/', whoOn: 'jv0a' }) },
+  { group: 'Comment reactions', id: 'returns-bar-reactions', label: 'Returns bar — words, one reaction, three reactors, both', stage: (c) => c.stageReturnsBarReactions() },
 
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },

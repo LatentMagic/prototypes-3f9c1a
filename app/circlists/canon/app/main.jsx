@@ -52,7 +52,8 @@ const circShareExtractUrl = (payload) => {
 // without this bump a returning visitor restores the eleven-member circle and the
 // fix is invisible to the one person it was made for. Same reasoning as
 // circlists-a3.html's own v1 -> v2 bump, for the same circle.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v13';
+// v14: the seed gains comment reactions that reach the returns bar.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v14';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 // Saved state can predate seeded descriptions (search-only meta); fill them in.
 if (SAVED && Array.isArray(SAVED.spaces) && window.CircSeed.SEED_DESC) {
