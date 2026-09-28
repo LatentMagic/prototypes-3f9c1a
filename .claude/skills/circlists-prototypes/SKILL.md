@@ -45,5 +45,5 @@ Read canon's own `skills/build-playground/SKILL.md` and its `references/`. Place
 </important>
 
 <important if="you are editing any file under app/circlists/canon/">
-Every Claude Design export replaces `canon/` wholesale, including its `CLAUDE.md`. A hand edit survives only if it is recorded in canon's `changelog` entry in the root `index.html` (see the root `CLAUDE.md`).
+Every Claude Design export replaces `canon/` wholesale, including its `CLAUDE.md`. A hand edit survives only if it is recorded in canon's `changelog` entry in the root `index.html` (see the root `AGENTS.md`).
 </important>
