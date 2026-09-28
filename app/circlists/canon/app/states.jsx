@@ -685,15 +685,16 @@ function circStateContext(api) {
   // as deliberate rather than as a rendering failure. The underlying items are
   // made consistent with the flag — a lit dot over an all-read circle would be
   // a fixture asserting something the product never does.
-  const stageCircleMicro = () => {
+  const stageCircleMicro = ({ reply = false } = {}) => {
     setUser(DEFAULT_USER);
     const base = seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
     const s = base.map((sp) => {
       if (sp.id === 'sp-backend') {
+        if (reply) return { ...sp, funded: true, dormancy: null, unseen: false, repliesUnseen: true };
         return { ...sp, funded: true, dormancy: null, unseen: true,
           items: sp.items.map((i, n) => (n === 0 ? { ...i, read: false } : i)) };
       }
-      return { ...sp, unseen: false,
+      return { ...sp, unseen: false, repliesUnseen: false,
         items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
     });
     setSpaces(s);
@@ -928,13 +929,14 @@ const CIRC_STATE_REGISTER = [
   { group: 'Notifications', id: 'push-setting-refused', label: 'Account — refused at the device', stage: (c) => c.stagePushSetting({ perm: 'denied', on: false }) },
   { group: 'Notifications', id: 'push-setting-safari-tab', label: 'Account — an iOS browser tab', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
   { group: 'Notifications', id: 'push-no-channel', label: 'Account — a browser that cannot deliver (no card)', stage: (c) => c.stagePushSetting({ channel: 'unsupported', perm: 'default', on: false, ask: 'pending' }) },
-  { group: 'Notifications', id: 'push-device-preview', label: 'On the device — two circles with news', stage: (c) => c.stageDevicePreview() },
+  { group: 'Notifications', id: 'push-device-preview', label: 'On the device — three circles with news, links and replies', stage: (c) => c.stageDevicePreview() },
 
   // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
   // 8): the home screen (app/home.jsx + app/home-returns.jsx).
   { group: 'Home', id: 'home-quiet', label: 'Home — quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
   { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
   { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
+  { group: 'Home', id: 'circle-micro-new-reply', label: 'Home — the micro on a circle whose only news is a reply', stage: (c) => c.stageCircleMicro({ reply: true }) },
   { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
 
   // Share intake (LM-771): the screen a member lands on after sharing a link

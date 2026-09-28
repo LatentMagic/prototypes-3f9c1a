@@ -744,6 +744,13 @@ const CircApp = () => {
     const sp = spacesRef.current.find(s => s.id === currentId);
     if (sp && sp.unseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, unseen: false } : s));
   }, [route, tab, loadingFeed, currentId, spaces]);
+  // LM-769 reply push: new replies on a Watched card are met by visiting the
+  // circle (opening any of its cards is inside that visit).
+  React.useEffect(() => {
+    if (!currentId || route === 'home') return;
+    const sp = spacesRef.current.find(s => s.id === currentId);
+    if (sp && sp.repliesUnseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, repliesUnseen: false } : s));
+  }, [route, currentId, spaces]);
 
   // ---- Arrivals -----------------------------------------------------------
   const peerName = (id) => {

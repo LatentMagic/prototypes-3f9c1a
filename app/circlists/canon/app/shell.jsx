@@ -45,7 +45,7 @@ const RailBody = ({ spaces, currentId, onSelect, onCreate, user, onClose, onMana
         // One slot, three exclusive states, so a circle never wears two signals.
         const signal = refreshingId === s.id ? 'busy'
           : settledId === s.id ? 'settled'
-          : s.unseen ? 'unseen' : null;
+          : (s.unseen || s.repliesUnseen) ? 'unseen' : null;
         // Clicking the circle you are ALREADY in is the refresh gesture — there is
         // no refresh button. The entry gains nothing for it: no hint, no icon, no
         // distinct cursor, no altered name. It navigates nowhere, so the drawer

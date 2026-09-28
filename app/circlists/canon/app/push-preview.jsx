@@ -1,6 +1,6 @@
 // ============================================================================
 // Circlists — the device preview (LM-769). A staged view OUTSIDE the app's own
-// frame: what the member's phone shows when two circles have news. Not a
+// frame: what the member's phone shows when three circles have news. Not a
 // surface of the product, so it is never routed to from inside the app — the
 // states register is the only way in, and the way out is the control at the
 // top.
@@ -56,7 +56,18 @@ const PushClock = () => (
 
 // One notification. Title alone — there is no body, no count and no action, and
 // the smallest platform (Safari) would discard everything else anyway.
-const PushBanner = ({ name, onOpen }) => (
+const pushTitle = (n) => (n.kind === 'replies' ? 'New replies in ' : 'New links in ') + n.name;
+// One notification per circle per kind. The busiest circle carries both, the
+// next a link push only, the third a reply push only, so every case is seen.
+const pushStage = (circles) => {
+  const [a, b, c] = circles, out = [];
+  if (a) out.push({ key: a.id + '-l', id: a.id, name: a.name, kind: 'links' }, { key: a.id + '-r', id: a.id, name: a.name, kind: 'replies' });
+  if (b) out.push({ key: b.id + '-l', id: b.id, name: b.name, kind: 'links' });
+  if (c) out.push({ key: c.id + '-r', id: c.id, name: c.name, kind: 'replies' });
+  return out;
+};
+
+const PushBanner = ({ n, onOpen }) => (
   <button type="button" onClick={onOpen} style={{
     display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left', cursor: 'pointer',
     background: 'rgba(255,255,255,0.82)', border: 0, borderRadius: 18, padding: '11px 13px',
@@ -68,7 +79,7 @@ const PushBanner = ({ name, onOpen }) => (
         <span style={{ font: '500 11.5px/1 var(--font-sans)', letterSpacing: '0.02em', color: 'rgba(0,0,0,0.55)' }}>CIRCLISTS</span>
         <span style={{ font: '400 11.5px/1 var(--font-sans)', color: 'rgba(0,0,0,0.45)' }}>now</span>
       </span>
-      <span style={{ display: 'block', font: '600 14px/1.35 var(--font-sans)', color: '#000', marginTop: 3 }}>New links in {name}</span>
+      <span style={{ display: 'block', font: '600 14px/1.35 var(--font-sans)', color: '#000', marginTop: 3 }}>{pushTitle(n)}</span>
     </span>
   </button>
 );
@@ -97,7 +108,7 @@ const PushBadgeMark = ({ size = 14, opacity = 1 }) => (
 // Android's notification shade. The badge — not the app icon — is what the OS
 // puts in the status bar and in the notification header; it is an alpha
 // silhouette the system tints, so it reads dark on this light shade.
-const PushAndroidShade = ({ circles, onOpen }) => (
+const PushAndroidShade = ({ notes, onOpen }) => (
   <div style={{ ...PUSH_GLASS, background: 'linear-gradient(180deg, #e9e8e3 0%, #dedcd6 100%)' }}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px 0', color: 'rgba(0,0,0,0.7)' }}>
       <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -110,8 +121,8 @@ const PushAndroidShade = ({ circles, onOpen }) => (
       <div style={{ font: '400 13px/1 var(--font-sans)', opacity: 0.7, marginTop: 6 }}>Tue, 22 September</div>
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 10px' }}>
-      {circles.map((s) => (
-        <button type="button" key={s.id} onClick={() => onOpen && onOpen(s.id)} style={{
+      {notes.map((s) => (
+        <button type="button" key={s.key} onClick={() => onOpen && onOpen(s.id)} style={{
           display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
           background: '#fff', border: 0, borderRadius: 24, padding: '12px 16px',
         }}>
@@ -120,7 +131,7 @@ const PushAndroidShade = ({ circles, onOpen }) => (
             <span style={{ font: '400 12px/1 var(--font-sans)', color: 'rgba(0,0,0,0.6)' }}>Circlists</span>
             <span style={{ font: '400 12px/1 var(--font-sans)', color: 'rgba(0,0,0,0.4)' }}>· now</span>
           </span>
-          <span style={{ display: 'block', font: '500 14px/1.35 var(--font-sans)', color: '#000' }}>New links in {s.name}</span>
+          <span style={{ display: 'block', font: '500 14px/1.35 var(--font-sans)', color: '#000' }}>{pushTitle(s)}</span>
         </button>
       ))}
     </div>
@@ -128,14 +139,16 @@ const PushAndroidShade = ({ circles, onOpen }) => (
 );
 
 const CircDevicePreview = ({ spaces = [], onOpenCircle, onExit }) => {
-  const circles = spaces.filter((s) => s.funded && !/^TEST\b/i.test(s.name || '')).slice(0, 2);
+  const circles = spaces.filter((s) => s.funded && !/^TEST\b/i.test(s.name || '')).slice(0, 3);
+  const notes = pushStage(circles);
+  const badge = new Set(notes.map((n) => n.id)).size;
   return (
     <div style={PUSH_DESK}>
       <div style={{ maxWidth: 1120, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 'clamp(20px, 4vh, 40px)' }}>
           <div>
             <div style={{ font: '500 11px/1 var(--font-mono)', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>Device preview</div>
-            <h1 style={{ font: '600 22px/1.25 var(--font-sans)', letterSpacing: '-0.01em', color: '#fff', margin: '8px 0 0' }}>Two circles with something new</h1>
+            <h1 style={{ font: '600 22px/1.25 var(--font-sans)', letterSpacing: '-0.01em', color: '#fff', margin: '8px 0 0' }}>Three circles with something new</h1>
           </div>
           <button type="button" onClick={onExit} style={{
             minHeight: 44, padding: '0 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
@@ -148,19 +161,19 @@ const CircDevicePreview = ({ spaces = [], onOpenCircle, onExit }) => {
             <div style={PUSH_SCREEN}><div style={PUSH_GLASS}>
               <PushClock />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '28px 12px 0' }}>
-                {circles.map((s) => <PushBanner key={s.id} name={s.name} onOpen={() => onOpenCircle && onOpenCircle(s.id)} />)}
+                {notes.map((n) => <PushBanner key={n.key} n={n} onOpen={() => onOpenCircle && onOpenCircle(n.id)} />)}
               </div>
             </div></div>
-            <p style={PUSH_CAPTION}>Lock screen — one per circle</p>
+            <p style={PUSH_CAPTION}>Lock screen — one per circle, per kind</p>
           </div>
           <div>
             <div style={PUSH_SCREEN}><div style={PUSH_GLASS}>
-              <div style={{ padding: '62px 22px 0' }}><PushHomeIcon badge={circles.length} /></div>
+              <div style={{ padding: '62px 22px 0' }}><PushHomeIcon badge={badge} /></div>
             </div></div>
-            <p style={PUSH_CAPTION}>Home screen — the badge counts circles</p>
+            <p style={PUSH_CAPTION}>Home screen — the badge counts circles, each once</p>
           </div>
           <div>
-            <div style={PUSH_SCREEN}><PushAndroidShade circles={circles} onOpen={onOpenCircle} /></div>
+            <div style={PUSH_SCREEN}><PushAndroidShade notes={notes} onOpen={onOpenCircle} /></div>
             <p style={PUSH_CAPTION}>Android — the brand’s notification badge</p>
           </div>
         </div>

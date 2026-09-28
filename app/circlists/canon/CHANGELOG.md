@@ -3,6 +3,15 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Replies to followed conversations push and light the dot — 2026-09-28
+
+- **A second push kind: "New replies in {circle}"**, sent for replies on a card you watch. Title only,
+  at most one per circle, alongside "New links in {circle}". One device switch covers both.
+- **One dot per circle.** New links or new replies light the Home row. Replies clear on visiting the circle.
+  The app badge still counts circles, each once.
+- **The ask and the Account card read "Get notified when new links land in your circles, or
+  conversations you're following."**
+
 ## Sort order works with pagination — 2026-09-25
 
 - **One order per circle, for the visit.** It covers both tabs. Leaving the circle or reloading

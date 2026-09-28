@@ -967,6 +967,15 @@
           changelog: [
             {
               date: '2026-09-28',
+              title: 'Push notifications cover replies, not just new links',
+              items: [
+                'A circle can now hold two kinds of push: new links, and a reply on a card you’re watching — “New replies in {circle}”, title only, no count or names. A circle waiting on both shows two notifications; either lights its one live-signal dot, and the app-icon badge still counts circles, never messages.',
+                'The device preview stages three circles at once — one with both kinds waiting, one with a link, one with a reply only — so the badge reads 3, not 4, proving it counts circles once each.',
+                'The notifications ask and the Account card now read “Get notified when new links land in your circles, or conversations you’re following.” — one sentence, both places, covering replies without naming Watching directly. LM-769.'
+              ]
+            },
+            {
+              date: '2026-09-28',
               title: 'Back from a card keeps your place',
               items: [
                 'Opening a card from a circle records where it was opened from — the circle, the tab, the feed’s scroll and the card order as drawn. Back restores the tab and scroll, then moves focus rather than scrolling to the card.',

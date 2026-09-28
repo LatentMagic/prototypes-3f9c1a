@@ -120,7 +120,7 @@ const CircPushAsk = ({ onTurnOn, onDismiss, atRest = false }) => {
     <div ref={slot} className={cls} style={wrap}>
       <div ref={strip} className="circ-pushask" role="region" aria-label="Notifications">
         <p className="circ-pushask-text">
-          Get notified when new links land in your circles.{' '}
+          Get notified when new links land in your circles, or conversations you're following.{' '}
           <button type="button" className="circ-doorlink circ-pushask-go" onClick={onTurnOn}>Set up notifications</button>
         </p>
         <button type="button" className="circ-pushask-x" onClick={leave} aria-label="Dismiss">
@@ -181,7 +181,7 @@ const CircPushSetting = ({ push = {}, onChange }) => {
             available width, balance only evens a wrap that actually happens. */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={PUSH_TITLE}>{statement ? 'Notifications' : 'Notifications on this device'}</div>
-          <p style={PUSH_BODY}>{statement || 'Get notified when new links land in your circles.'}</p>
+          <p style={PUSH_BODY}>{statement || "Get notified when new links land in your circles, or conversations you're following."}</p>
         </div>
         {!statement && <CircSwitch on={!!push.on} onChange={onChange} label="Notifications" />}
       </div>
