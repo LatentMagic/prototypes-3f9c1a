@@ -49,10 +49,10 @@ A single-file export (`<Name>.dc.html` + `support.js`, as `app/commentape/protot
 **Syncing an export into canon** — a fixed recipe; don't browse, don't QA.
 1. Replace `app/circlists/canon/` with the export, verbatim, including `brand/` and `uploads/` whole. Drop only `.thumbnail`, `screenshots/`, `scraps/`, `.playwright-mcp/`.
 2. Run `npm run check -- --widths 1280` (about 2 minutes, unattended). 0 FAIL is the pass; don't open the screenshots.
-3. Append a `changelog` entry to the `canon` node in `index.html`, written from the new handoff's "What changed" section. Read nothing else in the export, and leave `desc` untouched.
+3. Append a `changelog` entry to the `canon` node in `index.html`, written from the new top entry in the export's own `CHANGELOG.md` — it already ships one per its own editing rule. Read nothing else in the export, and leave `desc` untouched.
 4. Commit and push.
 
-The commit gate doesn't apply: nothing in an export can be fixed here. A failure goes back to the user as a note for Claude Design. The export's handoffs and QA lists are for the Claude Design session, not this one.
+The commit gate doesn't apply: nothing in an export can be fixed here. A failure goes back to the user as a note for Claude Design. The export's handoffs and QA lists are for the Claude Design session, not this one — never read one to write the changelog entry.
 
 **A full walk** — `npm run check` drives every registered state of a `app/circlists/<slug>/circlists.html` entry at 1280 and 390 and screenshots each to `.playwright-mcp/check/`; it fails on a module that didn't load or a state that lands on the index, and reports React dev warnings. Not the console shell, not a `.dc.html` export. Reach for it when a change touches many states; the Playwright CLI is the normal check.
 </important>
