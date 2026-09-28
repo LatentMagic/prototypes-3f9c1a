@@ -123,7 +123,7 @@ const CircleRow = ({ space: s, onSelect }) => (
         signal because they are.
         Consequence, accepted: a circle with plenty unread and nothing new
         carries no mark. That is the definition working. */}
-    <CircleSignal state={(s.unseen || s.repliesUnseen) ? 'unseen' : null} />
+    <CircleSignal state={s.unseen ? 'unseen' : null} />
     {/* No trailing chevron. Removed 2026-09-09: every row in this list
         navigates, so a mark that never varies carries no information — it
         is furniture at the end of each row. It also collided with the

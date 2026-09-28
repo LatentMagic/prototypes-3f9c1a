@@ -16,3 +16,14 @@
 
 ## Open / next
 - Seed data has no reply-push source; `repliesUnseen` is staged only, not set by live reply activity.
+
+## Delta — replies send a push, and nothing else (2026-09-28)
+
+### Changed
+- Removed state `circle-micro-new-reply` and its staging (`stageCircleMicro({ reply })`) from `app/states.jsx`.
+- Removed the `repliesUnseen` flag everywhere: Home row (`app/home.jsx`) and rail (`app/shell.jsx`) light on `unseen` only; the clear-on-visit effect in `app/main.jsx` is gone.
+- `push-device-preview`: badge counts distinct circles with a link notification (2 of the 3). The reply notification stays on the lock screen and Android shade. Caption now "Home screen — the badge counts circles with new links". Heading "Three circles with something new" is still true, so it stays.
+- Unchanged: reply push wording, ask and Account sentence.
+
+### Unresolved
+- None. The earlier gap (live replies never set `repliesUnseen`) no longer applies.

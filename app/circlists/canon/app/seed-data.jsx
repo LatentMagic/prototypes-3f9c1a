@@ -47,6 +47,17 @@ const SEED_META = {
   'https://internal-wiki-example.atlassian.net/wiki/spaces/ENG/pages/9982341/runbook-database-failover-procedure-for-the-primary-analytics-cluster-updated-march-2026': { title: 'Runbook: Database Failover Procedure for the Primary Analytics Cluster (Updated March 2026)', source: null, hasImage: false, faviconExists: false },
 };
 
+// Page descriptions (og/meta), a couple per circle. Search indexes them;
+// no card renders them.
+const CIRC_SEED_DESC = {
+  'https://danluu.com/percentile-latency/': 'Why averages hide tail latency, and what p99 measurements miss under load.',
+  'https://go.dev/blog/pipelines': 'Building concurrent data pipelines in Go with channels, fan-out and cancellation.',
+  'https://lithub.com/on-rereading-your-favorite-books/': 'An essay on returning to novels years later and finding them changed.',
+  'https://www.gutenberg.org/files/2701/2701-h/2701-h.htm': 'The full text of Moby-Dick; or, The Whale, by Herman Melville.',
+  'https://www.gutenberg.org/files/1342/1342-h/1342-h.htm': 'The full text of Pride and Prejudice, by Jane Austen.',
+  'https://longreads.com/2026/01/the-long-walk-home/': 'A memoir of walking three hundred miles back to a childhood town.',
+};
+
 function seedSpaces(userEmail) {
   const spaces = [
     {
@@ -105,7 +116,7 @@ function seedSpaces(userEmail) {
           { name: 'Sam R.', glyph: BULB, intensity: 0.4 },
           { name: 'Lena P.', glyph: HEART, intensity: 0.34 },
           { name: 'You', glyph: THUMB, intensity: 0.55 },
-        ]),
+        ], { saved: true }),
         IT('https://jvns.ca/blog/2026/02/dns-resolvers/', 'Added by Priya N.', true, [
           { name: 'Marcus T.', glyph: LOL, intensity: 0.86 },
           { name: 'Ada L.', glyph: BULB, intensity: 0.62 },
@@ -257,8 +268,12 @@ function seedSpaces(userEmail) {
       ],
     },
   ];
+  const SEED_DESC = CIRC_SEED_DESC;
   // Fold the extracted metadata onto each seed item (see SEED_META).
-  spaces.forEach((sp) => sp.items.forEach((it) => { if (SEED_META[it.url]) Object.assign(it, SEED_META[it.url]); }));
+  spaces.forEach((sp) => sp.items.forEach((it) => {
+    if (SEED_META[it.url]) Object.assign(it, SEED_META[it.url]);
+    if (SEED_DESC[it.url]) it.description = SEED_DESC[it.url];
+  }));
 
   // ---- Liveliness fields (see app/liveliness.jsx) --------------------------
   // it.at        — when the link landed. Drives the card's time line and the
@@ -296,7 +311,7 @@ function seedSpaces(userEmail) {
 
 const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'sam.rivera@gmail.com' };
 
-window.CircSeed = { M, IT, seedSpaces, DEFAULT_USER };
+window.CircSeed = { M, IT, seedSpaces, DEFAULT_USER, SEED_DESC: CIRC_SEED_DESC };
 
 // ---- Baked-in favicons -----------------------------------------------------
 // Real marks fetched from each site and stored locally, so the demo never

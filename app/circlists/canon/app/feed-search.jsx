@@ -11,11 +11,9 @@
 //                                     chip row (feed-lens.jsx's LensChips),
 //                                     never the tab bar.
 //
-// THE INDEX RULE, verbatim, because it is the whole design of this file: search
-// indexes exactly the text the card displays — the headline, the source line,
-// and the contributor label. Its promise is "find what you saw". Nothing that
-// is not on the card is indexed: no description/og text, no body text, no
-// contributor framing note.
+// THE INDEX RULE: search indexes the text the card displays — the headline,
+// the source line, and the contributor label — plus the page's description
+// (og/meta), which is never shown. No body text, no contributor framing note.
 //
 // THIS FILE FIRST GOT ITS OWN RULE WRONG, and the correction is the reason the
 // helpers below are shaped as they are. It indexed `item.url` unconditionally,
@@ -93,6 +91,7 @@ const circSearchMatch = (item, query) => {
     circSearchHeadline(item),
     circSearchSource(item),
     (item && item.attribution) || '',
+    (item && item.description) || '',
   ].map((f) => String(f || '').toLowerCase());
   return words.every((w) => fields.some((f) => f.indexOf(w) !== -1));
 };

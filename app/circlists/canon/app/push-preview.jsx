@@ -141,7 +141,7 @@ const PushAndroidShade = ({ notes, onOpen }) => (
 const CircDevicePreview = ({ spaces = [], onOpenCircle, onExit }) => {
   const circles = spaces.filter((s) => s.funded && !/^TEST\b/i.test(s.name || '')).slice(0, 3);
   const notes = pushStage(circles);
-  const badge = new Set(notes.map((n) => n.id)).size;
+  const badge = new Set(notes.filter((n) => n.kind === 'links').map((n) => n.id)).size;
   return (
     <div style={PUSH_DESK}>
       <div style={{ maxWidth: 1120, margin: '0 auto' }}>
@@ -170,7 +170,7 @@ const CircDevicePreview = ({ spaces = [], onOpenCircle, onExit }) => {
             <div style={PUSH_SCREEN}><div style={PUSH_GLASS}>
               <div style={{ padding: '62px 22px 0' }}><PushHomeIcon badge={badge} /></div>
             </div></div>
-            <p style={PUSH_CAPTION}>Home screen — the badge counts circles, each once</p>
+            <p style={PUSH_CAPTION}>Home screen — the badge counts circles with new links</p>
           </div>
           <div>
             <div style={PUSH_SCREEN}><PushAndroidShade notes={notes} onOpen={onOpenCircle} /></div>

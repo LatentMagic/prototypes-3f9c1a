@@ -56,22 +56,52 @@ const StatesRow = ({ state, onGo }) => {
   );
 };
 
-const StatesGroups = ({ groups, onGo }) => (
-  <div className="circ-states-groups">
-    {groups.map((g) => (
-      <div className="circ-states-group" key={g.title}>
-        <div className="circ-config-group-title">{g.title}</div>
-        {g.items.map((s) => <StatesRow key={s.id} state={s} onGo={onGo} />)}
-      </div>
-    ))}
-  </div>
-);
+// Each group collapses, and starts collapsed (Joe, 2026-09-28). Open/closed is
+// not remembered — no localStorage-backed view state (CLAUDE.md). A search
+// opens every group it matches, or the matches would sit hidden.
+// A group's `notes` (per group, from CIRC_STATE_GROUP_NOTES) sit at its foot.
+const StatesGroups = ({ groups, onGo, forceOpen = false }) => {
+  const [open, setOpen] = useStState({});
+  return (
+    <div className="circ-states-groups">
+      {groups.map((g) => {
+        const isOpen = forceOpen || !!open[g.title];
+        const bodyId = 'circ-states-g-' + g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        return (
+          <div className="circ-states-group" key={g.title}>
+            <button type="button" className="circ-states-group-head" aria-expanded={isOpen} aria-controls={bodyId}
+              onClick={() => setOpen((p) => ({ ...p, [g.title]: !isOpen }))} disabled={forceOpen}>
+              <span className="circ-config-group-title">{g.title}</span>
+              <span className="circ-states-group-count">{g.items.length}</span>
+              <span className="circ-states-group-chev" aria-hidden="true" style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}>
+                <Icon name="chevron-down" size={16} />
+              </span>
+            </button>
+            {isOpen && (
+              <div id={bodyId}>
+                <div className="circ-states-group-body">
+                  {g.items.map((s) => <StatesRow key={s.id} state={s} onGo={onGo} />)}
+                </div>
+                {g.notes && g.notes.length > 0 && (
+                  <div className="circ-states-notes">
+                    <div className="circ-states-notes-title">Notes</div>
+                    <ul>{g.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const circFilterGroups = (groups, q) => {
   const t = q.trim().toLowerCase();
   if (!t) return groups;
   return groups
-    .map((g) => ({ title: g.title, items: g.items.filter((s) => (s.label + ' ' + s.id + ' ' + g.title).toLowerCase().includes(t)) }))
+    .map((g) => ({ title: g.title, notes: g.notes, items: g.items.filter((s) => (s.label + ' ' + s.id + ' ' + g.title).toLowerCase().includes(t)) }))
     .filter((g) => g.items.length > 0);
 };
 
@@ -118,7 +148,7 @@ const StatesPalette = ({ groups, onGo, onOpenIndex, onClose }) => {
             onChange={(e) => setQ(e.target.value)} placeholder="Search states" aria-label="Search states" />
           {filtered.length === 0
             ? <div className="circ-config-hint" style={{ margin: '14px 0 0' }}>Nothing matches “{q}”.</div>
-            : <StatesGroups groups={filtered} onGo={onGo} />}
+            : <StatesGroups groups={filtered} onGo={onGo} forceOpen={!!q.trim()} />}
           <div className="circ-states-foot">
             <div className="circ-config-hint" style={{ margin: 0 }}>
               A link opens the app at that state. The names live in the register (app/states.jsx); a name
@@ -159,7 +189,7 @@ const StatesIndex = ({ reason, groups, onGo, onDismiss }) => {
         </div>
         {filtered.length === 0
           ? <div className="circ-config-hint">Nothing matches “{q}”.</div>
-          : <StatesGroups groups={filtered} onGo={onGo} />}
+          : <StatesGroups groups={filtered} onGo={onGo} forceOpen={!!q.trim()} />}
       </div>
     </div>
   );

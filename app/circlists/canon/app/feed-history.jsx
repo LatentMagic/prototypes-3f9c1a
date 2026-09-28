@@ -53,6 +53,20 @@ const IncludeActiveRow = ({ on, onChange }) => {
   );
 };
 
+// ---- Active also matches (LM-786 feed controls) -----------------------------
+// History, with a search or people filter that has found something here AND
+// matches a card waiting in Active. Sits below the field and chips, above the
+// list. The tap turns the switch on; query and ticks stay. Wording is a draft
+// (Gemini seat), open for Joe to react to.
+const ActiveMatchLine = ({ onInclude }) => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 6, marginTop: 'calc(17px - var(--circ-feed-pad-top, 16px))' }}>
+    <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', color: 'var(--color-fg-2)' }}>Also matches cards in Active</span>
+    <span aria-hidden="true" style={{ fontSize: 'var(--text-sm)', color: 'var(--color-fg-3)' }}>·</span>
+    <button type="button" onClick={onInclude} className="circ-doorlink" aria-label="Include cards in Active"
+      style={{ minHeight: 'var(--tap-target-min)', background: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600 }}>Include them</button>
+  </div>
+);
+
 // ---- The foot ---------------------------------------------------------------
 // idle    — a 1px sentinel. When it scrolls into view the next page is asked
 //           for; nothing asks for a tap. Re-observed after each page lands, so
@@ -118,5 +132,5 @@ const HISTORY_EMPTY_COPY = {
 
 Object.assign(window, {
   CIRC_PAGE_SIZE, CIRC_PAGE_DELAY, circPreHorizon, circInActive, circHistoryItems,
-  IncludeActiveRow, FeedPageFoot, HistoryEnd, HISTORY_EMPTY_COPY,
+  IncludeActiveRow, ActiveMatchLine, FeedPageFoot, HistoryEnd, HISTORY_EMPTY_COPY,
 });

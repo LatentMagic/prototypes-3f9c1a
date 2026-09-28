@@ -967,6 +967,16 @@
           changelog: [
             {
               date: '2026-09-28',
+              title: 'Active is the queue, History is everything',
+              items: [
+                'Active’s people filter lists only who has a card still waiting; History lists the whole circle, including members who’ve never added a card. Filters are kept per tab — one on Active doesn’t narrow History, and the reverse.',
+                'Filter is one list — Saved, then Watching, then names — with no “Added by” subheading. History always offers Saved and Watching, even before the member has saved or watched anything; Active offers neither.',
+                'On History, a search or people filter that misses can still match something waiting in Active: a search hit shows “Also matches cards in Active · Include them” above the results, a full miss offers “Include cards in Active” beside “Show everyone”. Active’s own people-filter miss is one line — “Nothing here from {name}.”',
+                'Leaving the circle or reloading clears every filter, search and the switch; View (density) survives. LM-786.'
+              ]
+            },
+            {
+              date: '2026-09-28',
               title: 'Push notifications cover replies, not just new links',
               items: [
                 'A circle can now hold two kinds of push: new links, and a reply on a card you’re watching — “New replies in {circle}”, title only, no count or names. A circle waiting on both shows two notifications; either lights its one live-signal dot, and the app-icon badge still counts circles, never messages.',

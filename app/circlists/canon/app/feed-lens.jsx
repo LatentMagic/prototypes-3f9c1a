@@ -85,10 +85,19 @@ const circContributorLabel = (who) => {
 // person is not a question about a tab), and a set that reshuffled underneath
 // it would make that feel broken. "You" leads, "Former member" trails, the rest
 // alphabetical.
+// Members come first (LM-786 follow-up, 2026-09-28: the filter lists everyone
+// in the circle, including a member who has never added a card), so their
+// spelling is the one offered; attribution then adds anyone no longer a member
+// (a leaver, "former member") whose cards are still here.
 const circContributors = (space) => {
   const items = (space && space.items) || [];
   const seen = [];
   const keys = [];
+  for (const mem of ((space && space.members) || [])) {
+    const who = ((mem && mem.name) || '').trim();
+    const key = who.toLowerCase();
+    if (who && keys.indexOf(key) === -1) { keys.push(key); seen.push(who); }
+  }
   for (const it of items) {
     const who = circContributorOf(it);
     // Deduped case-insensitively: persisted state from before the attribution
@@ -409,8 +418,8 @@ const useLensListKeys = (rowCount, refs) => (e) => {
 // thumb two pixels outside it scrolls the sheet, which is the same gesture
 // doing different things. Saved rides inside the same scroll region as the
 // people below it now that they are one list.
-// `icon`: Saved passes nothing and keeps its one recoloured glyph. Watching
-// (LM-786) passes 'bell' / 'bell-filled' by state — two glyphs swapped.
+// `icon`: Saved and Watching both swap glyphs by state — outlined off, filled
+// (and accent) on.
 const LensFilterFace = ({ on, icon = 'bookmark-filled' }) => (
   // The Saved mark as a face: the card's own filled bookmark in the avatar's
   // circle, so it lines up with the people beneath it. Accent only while on.
@@ -449,7 +458,7 @@ const LensFilterRow = React.forwardRef(({ on, onClick, lead, label, sub }, ref) 
   </button>
 ));
 
-const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, watching, onWatching, showWatching, bounded = true }) => {
+const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, watching, onWatching, showWatching, bounded = true, label = 'Filter links' }) => {
   const refs = React.useRef([]);
   const rowCount = options.length + (showSaved ? 1 : 0) + (showWatching ? 1 : 0);
   const onKey = useLensListKeys(rowCount, refs);
@@ -461,7 +470,7 @@ const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, wat
     // rendering fault instead. In the sheet the list runs to its natural end,
     // so it takes the normal bottom pad back.
     <div style={{ padding: bounded ? '6px 10px 0' : '6px 10px 4px' }}>
-      <div role="group" aria-label="Filter links" onKeyDown={onKey} style={{
+      <div role="group" aria-label={label} onKeyDown={onKey} style={{
         display: 'flex', flexDirection: 'column', gap: 1,
         // 4 full 44px rows + a deliberately half-cut fifth, so a circle with more
         // rows than fit SHOWS that it has more. A round multiple of the row
@@ -474,7 +483,7 @@ const LensFilterList = ({ options, value, onPick, saved, onSaved, showSaved, wat
             <React.Fragment>
               <LensFilterRow ref={(el) => { refs.current[savedIdx] = el; }}
                 on={!!saved} onClick={() => onSaved(!saved)}
-                lead={<LensFilterFace on={!!saved} />} label="Saved" />
+                lead={<LensFilterFace on={!!saved} icon={saved ? 'bookmark-filled' : 'bookmark'} />} label="Saved" />
             </React.Fragment>
           );
         })()}
@@ -965,8 +974,11 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             <React.Fragment>
               <div style={{ height: 1, background: 'var(--color-border-2)', margin: '10px 10px 0' }} aria-hidden="true" />
               <LensSection id="circ-lens-filter">Filter</LensSection>
+              {/* One list under Filter, no subheading (LM-786 follow-up,
+                  ratified 2026-09-28). History: Saved, Watching, then the
+                  names. Active: the names. */}
               <LensSectionBody labelledBy="circ-lens-filter">
-                <LensFilterList options={whoOptions} value={who} onPick={onWho}
+                <LensFilterList options={whoOptions} value={who} onPick={onWho} label="Filter"
                   saved={saved} onSaved={onSaved} showSaved={showSavedGroup}
                   watching={watching} onWatching={onWatching} showWatching={showWatchingGroup} bounded={!isMobile} />
               </LensSectionBody>
@@ -1293,7 +1305,7 @@ const circNaturalList = (labels) => {
   return labels.slice(0, -1).join(', ') + ' or ' + labels[labels.length - 1];
 };
 
-const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onClearSaved, onClearWatching, onClearSearch }) => {
+const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onClearSaved, onClearWatching, onClearSearch, onIncludeActive = null }) => {
   const whoList = who || [];
   const label = circNaturalList(whoList.map(circContributorLabel));
   // Multi-select wording (BIZ-136, ruling 2026-09-14). Three shapes:
@@ -1310,7 +1322,7 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
   const mixedWithYou = includesYou && whoList.length > 1;
   const q = String(query || '').trim();
   let headline, support;
-  const searchSupport = 'Search looks at what a card shows — its title or address, its source, and who added it.';
+  const searchSupport = 'Search looks at a card’s title, source and description, and who added it.';
   if (watching) {
     // WATCHING (LM-786). Its own branch, ahead of the regression chain below,
     // so every pre-existing combination still renders character for
@@ -1357,7 +1369,7 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     // (a zero state asserting something untrue about the search), arriving as
     // an understatement instead of an overstatement. "Title or address"
     // because those are one field: a card headed by its URL has no title.
-    support = 'Search looks at what a card shows — its title or address, its source, and who added it.';
+    support = 'Search looks at a card’s title, source and description, and who added it.';
   } else if (whoList.length && saved) {
     // REGRESSION: feed-saved.jsx's SavedLensNoMatch, verbatim for a single
     // non-You contributor — except the self case, which speaks in the first
@@ -1380,7 +1392,11 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
     // described the member themself in the third person when they filtered
     // to their own. First person for You, unchanged for everyone else.
     headline = 'Nothing here from ' + label;
-    support = onlyYou
+    // Active: the headline alone (LM-786 follow-up, ratified 2026-09-28). A
+    // new card from them can wait behind the New pill, which is hidden under
+    // any people filter, so a "nothing waiting" line could be untrue.
+    support = tab !== 'read' ? null
+      : onlyYou
       ? (tab === 'read'
         ? 'You haven’t finished anything you added yet.'
         : 'You haven’t added anything that’s still waiting for you.')
@@ -1448,12 +1464,25 @@ const FeedNoMatch = ({ who, tab, saved, watching = false, query, onClearWho, onC
         margin: 0, fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
         color: 'var(--color-fg-2)', maxWidth: 320, lineHeight: 1.5,
       }}>{support}</p>}
-      <button type="button" onClick={onClear} style={{
-        marginTop: 10, background: 'transparent', cursor: 'pointer',
-        border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
-        fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
-        color: buttonColor, minHeight: 'var(--tap-target-min)', padding: '0 16px',
-      }}>{buttonLabel}</button>
+      {/* LM-786 feed controls: when Active holds a match, History's miss
+          offers bringing it in as the main action, the recovery beside it.
+          Never under Saved or Watching — main.jsx passes the handler only
+          when neither is on, and this guards it again. */}
+      <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
+        {onIncludeActive && !saved && !watching && (
+          <button type="button" onClick={onIncludeActive} style={{
+            background: 'var(--color-accent)', cursor: 'pointer', border: '1px solid var(--color-accent)',
+            borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)',
+            fontWeight: 600, color: 'var(--color-fg-inverse)', minHeight: 'var(--tap-target-min)', padding: '0 16px',
+          }}>Include cards in Active</button>
+        )}
+        <button type="button" onClick={onClear} style={{
+          background: 'transparent', cursor: 'pointer',
+          border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-md)',
+          fontFamily: 'var(--font-sans)', fontSize: 'var(--text-sm)', fontWeight: 600,
+          color: buttonColor, minHeight: 'var(--tap-target-min)', padding: '0 16px',
+        }}>{buttonLabel}</button>
+      </div>
     </div>
   );
 };

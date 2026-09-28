@@ -401,9 +401,15 @@ function circStateContext(api) {
   // always fully replaced rather than merged. Omitted (the default) leaves
   // saved flags untouched, for every run-1-3 entry that has nothing to say
   // about them.
-  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pageFail = false }) => {
+  const stageSort = ({ space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pendingBy = null, doneUrl = null, pageFail = false }) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    // LM-786 feed controls: a card "just marked done" — matched by URL prefix.
+    if (doneUrl) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => i.url.indexOf(doneUrl) === 0 ? { ...i, read: true } : i),
+      }));
+    }
     // Search — `bareRead`. Applied BEFORE
     // the `saved` block below, so a stager that ever combines the two indexes
     // `saved` against the pile this card has already joined, not the one
@@ -424,8 +430,11 @@ function circStateContext(api) {
     // Multi-select (BIZ-136, ruling 2026-09-14): `who` accepts a single name
     // (a Scenario written before the ruling) or an array (several people at
     // once), so every existing Scenario id keeps working unmigrated.
+    // Keyed `<circle>:<tab>` (LM-786 feed controls): the filter belongs to the
+    // tab it is staged on.
     const whoList = Array.isArray(who) ? who : (who ? [who] : []);
-    setLensWho(whoList.length ? { [space]: whoList } : {});
+    const whoState = whoList.length ? { [space + ':' + tab]: whoList } : {};
+    setLensWho(whoState);
     // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
     // sets it directly rather than keying it per circle.
     setDensity(density);
@@ -459,6 +468,14 @@ function circStateContext(api) {
     setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
     setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
     setTab(tab);
+    // Every filter and search is visit state now (LM-786 feed controls), so
+    // the entry just above clears them — re-applied after it, as the order is.
+    setTimeout(() => {
+      setLensWho(whoState);
+      setSavedOn(savedOn ? { [space]: true } : {});
+      setSearchQuery(query ? { [space + ':' + tab]: query } : {});
+      setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
+    }, 40);
     // Opened AFTER the route settles, not before, and AFTER the tab/circle
     // writes just above (moved here in run 7 — read on). main.jsx closes the
     // panel on any tab/circle change (the `[tab, currentId]` effect in
@@ -519,7 +536,7 @@ function circStateContext(api) {
         const picked = [];
         for (let tries = 0; picked.length < pendingCount && tries < 20; tries += 1) {
           const drop = window.circNextDrop();
-          if (!seeded.has(drop.url)) picked.push(drop);
+          if (!seeded.has(drop.url)) picked.push(pendingBy ? { ...drop, attribution: 'Added by ' + pendingBy } : drop);
         }
         return { ...s, pending: picked };
       })), 0);
@@ -685,16 +702,15 @@ function circStateContext(api) {
   // as deliberate rather than as a rendering failure. The underlying items are
   // made consistent with the flag — a lit dot over an all-read circle would be
   // a fixture asserting something the product never does.
-  const stageCircleMicro = ({ reply = false } = {}) => {
+  const stageCircleMicro = () => {
     setUser(DEFAULT_USER);
     const base = seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
     const s = base.map((sp) => {
       if (sp.id === 'sp-backend') {
-        if (reply) return { ...sp, funded: true, dormancy: null, unseen: false, repliesUnseen: true };
         return { ...sp, funded: true, dormancy: null, unseen: true,
           items: sp.items.map((i, n) => (n === 0 ? { ...i, read: false } : i)) };
       }
-      return { ...sp, unseen: false, repliesUnseen: false,
+      return { ...sp, unseen: false,
         items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
     });
     setSpaces(s);
@@ -814,9 +830,9 @@ const CIRC_STATE_REGISTER = [
   { group: 'Onboarding', id: 'forgot-password', label: 'Forgot password', stage: (c) => c.setRoute('recovery') },
   { group: 'Onboarding', id: 'otc-error', label: 'One-time code — errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
 
-  { group: 'The feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
-  { group: 'The feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
-  { group: 'The feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
+  { group: 'Feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
+  { group: 'Feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
+  { group: 'Feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
   // THE RULING, made visible as a PAIR — drawn in both orders again as of
   // 2026-09-11 (Joe's own reversal of Sally's same-day call that it should
   // draw newest-first only). Same circle, same mark, one difference: the
@@ -826,18 +842,18 @@ const CIRC_STATE_REGISTER = [
   // fixed `Earlier` in both, which Joe knows may not read true of the pile
   // beneath it under oldest-first — parked deliberately, his own candidate
   // words to follow.
-  { group: 'The feed', id: 'sort-waterline-newest', label: 'Waterline — under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
-  { group: 'The feed', id: 'sort-oldest-waterline', label: 'Waterline — same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  { group: 'Feed: waterline', id: 'sort-waterline-newest', label: 'Waterline — under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
+  { group: 'Feed: waterline', id: 'sort-oldest-waterline', label: 'Waterline — same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
   // Arrivals under oldest first (LM-786 sort, ratified 2026-09-25 — supersedes
   // the 11 Sep "the pill carries you to the foot" ruling this id first
   // showed). Opened part-way down a four-page pile with two arrivals behind
   // the pill, which reads "New · newest first". The tap switches the circle
   // to newest first and lands at the top, the new cards glowing at the head.
-  { group: 'The feed', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill switches to newest first', stage: (c) => c.stagePile({ partway: true, pending: 2 }) },
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill switches to newest first', stage: (c) => c.stagePile({ partway: true, pending: 2 }) },
   // The one to read in: arrivals land a few seconds in, and a third waits
   // where only a rail refresh finds it (tap this circle in the rail). That
   // refresh parks it behind New and never changes the order (ruled 2026-09-25).
-  { group: 'The feed', id: 'sort-oldest-arriving', label: 'Oldest first — new cards arrive while you read', stage: (c) => c.stagePile({ partway: true, arriveAfter: 4000, arriveCount: 2, queued: 1 }) },
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-arriving', label: 'Oldest first — new cards arrive while you read', stage: (c) => c.stagePile({ partway: true, arriveAfter: 4000, arriveCount: 2, queued: 1 }) },
   // The order-change load (LM-786 sort, ruled 2026-09-25): the member has just
   // switched oldest first → newest first and the new order's first page failed.
   // Try again shows the spinner, then the list at its top.
@@ -845,38 +861,49 @@ const CIRC_STATE_REGISTER = [
   // order never changes; the cards wait behind the pill; the member stays put.
   // Runs the refresh itself 1.2s in, so the rail receipt is seen. From History
   // the pill is out of sight, so the live-signal dot lights on the circle.
-  { group: 'The feed', id: 'sort-oldest-refresh-active', label: 'Oldest first — a refresh finds cards; they wait behind New', stage: (c) => c.stagePile({ partway: true, queued: 2, refreshAfter: 1200 }) },
-  { group: 'The feed', id: 'sort-oldest-refresh-history', label: 'Oldest first, History — a refresh finds cards; the dot lights', stage: (c) => c.stagePile({ tab: 'read', read: 13, queued: 2, refreshAfter: 1200 }) },
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-refresh-active', label: 'Oldest first — a refresh finds cards; they wait behind New', stage: (c) => c.stagePile({ partway: true, queued: 2, refreshAfter: 1200 }) },
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-refresh-history', label: 'Oldest first, History — a refresh finds cards; the dot lights', stage: (c) => c.stagePile({ tab: 'read', read: 13, queued: 2, refreshAfter: 1200 }) },
   // A failed pill tap (ui.md Decision-29): tap New and the spinner runs in the
   // pill's face, then the pill silently returns to rest. The arrivals stay
   // staged, the list is unchanged and nothing is announced. Under oldest
   // first, the circle stays oldest first. Every tap in these states fails.
-  { group: 'The feed', id: 'pill-tap-failed-newest', label: 'New tapped, newest first — the reload fails, the pill returns to rest', stage: (c) => { c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', pendingCount: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
-  { group: 'The feed', id: 'pill-tap-failed-oldest', label: 'New tapped, oldest first — the reload fails, still oldest first', stage: (c) => { c.stagePile({ partway: true, pending: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
-  { group: 'The feed', id: 'sort-control-loading', label: 'Sort control — the new order’s first page loading', stage: (c) => c.stagePile({ order: 'newest', orderHold: true }) },
-  { group: 'The feed', id: 'sort-order-failed', label: 'Sort control — the new order’s first page failed', stage: (c) => c.stagePile({ order: 'newest', orderFail: true }) },
-  { group: 'The feed', id: 'feed-newer-failed', label: 'Oldest first — newer cards failed to load', stage: (c) => c.stagePile({ pageFail: true }) },
-  { group: 'The feed', id: 'history-oldest-end', label: 'History, oldest first — scroll on to the last page, nothing newer', stage: (c) => c.stagePile({ tab: 'read', read: true, nearFoot: true }) },
-  { group: 'The feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },
+  { group: 'Feed: arrivals and New', id: 'pill-tap-failed-newest', label: 'New tapped, newest first — the reload fails, the pill returns to rest', stage: (c) => { c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', pendingCount: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'Feed: arrivals and New', id: 'pill-tap-failed-oldest', label: 'New tapped, oldest first — the reload fails, still oldest first', stage: (c) => { c.stagePile({ partway: true, pending: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'Feed: loading and failures', id: 'sort-control-loading', label: 'Sort control — the new order’s first page loading', stage: (c) => c.stagePile({ order: 'newest', orderHold: true }) },
+  { group: 'Feed: loading and failures', id: 'sort-order-failed', label: 'Sort control — the new order’s first page failed', stage: (c) => c.stagePile({ order: 'newest', orderFail: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-newer-failed', label: 'Oldest first — newer cards failed to load', stage: (c) => c.stagePile({ pageFail: true }) },
+  { group: 'Feed: loading and failures', id: 'history-oldest-end', label: 'History, oldest first — scroll on to the last page, nothing newer', stage: (c) => c.stagePile({ tab: 'read', read: true, nearFoot: true }) },
+  { group: 'Feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },
   // The contributor filter, folded with sort into one lens control. Priya's
   // two Active links sit either side of the last-visit mark, so the
   // waterline still draws inside the filtered list — the ruling this state exists
   // to show, in either sort order (both-orders-again, 2026-09-11).
-  { group: 'The feed', id: 'filter-waterline', label: 'Waterline — drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
-  { group: 'The feed', id: 'density-compact-waterline', label: 'Compact — the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
+  { group: 'Feed: waterline', id: 'filter-waterline', label: 'Waterline — drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
+  { group: 'Feed: waterline', id: 'density-compact-waterline', label: 'Compact — the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
   // History (LM-786). The late joiner: the circle's past, from before the
   // member's Horizon, drawn in History as Unread cards with no label. The
   // failed page: History's first page loaded, the next one failed; the foot
   // is the same on Active.
-  { group: 'The feed', id: 'history-late-joiner', label: 'History — joined late, the circle’s past drawn as unread', stage: (c) => c.stageLateJoiner() },
-  { group: 'The feed', id: 'feed-older-failed', label: 'Older links failed to load — the cards stay', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', pageFail: true }) },
+  { group: 'Feed', id: 'history-late-joiner', label: 'History — joined late, the circle’s past drawn as unread', stage: (c) => c.stageLateJoiner() },
+  // Feed controls by tab (LM-786). The people filter lists every member on
+  // both tabs (follow-up, 2026-09-28). Dev K.'s one waiting card is done, so
+  // Active's miss shows its one line; Sam R.'s two arrivals wait behind a pill
+  // that stands down under any people filter; `fowler` matches one done card
+  // and one waiting; Dev K. has nothing done. `history-saved-empty`: nothing
+  // saved anywhere, Saved still offered and ticked.
+  { group: 'Feed: filters and search', id: 'active-filter-empty-waiting', label: 'Active filter — nothing here from a ticked person, one line', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Dev K.', doneUrl: 'https://engineering.stripe-shopfront-example.com', pendingCount: 2, pendingBy: 'Sam R.' }) },
+  { group: 'Feed: filters and search', id: 'active-filter-hides-pill', label: 'Active filter — the New pill hides, arrivals are someone else’s', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', pendingCount: 2, pendingBy: 'Sam R.' }) },
+  { group: 'Feed: filters and search', id: 'history-search-active-hit', label: 'History search — also matches cards in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'fowler' }) },
+  { group: 'Feed: filters and search', id: 'history-filter-active-miss', label: 'History filter — nothing done, something waiting in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
+  { group: 'Feed: filters and search', id: 'history-saved-empty', label: 'History, Saved ticked — nothing saved yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-older-failed', label: 'Older links failed to load — the cards stay', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', pageFail: true }) },
   // The failure with NOTHING applied, so the plain shape reads first: shell and
   // tabs live above, the region alone replaced.
-  { group: 'The feed', id: 'feed-load-error', label: 'Feed — the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-load-error', label: 'Feed — the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
   // The same failure under a lens. The chips STAY: the fetch failed, and the
   // member's narrowing is still what they set — hiding it would make a failed
   // load look like a cleared filter.
-  { group: 'The feed', id: 'feed-load-error-lens', label: 'Feed — the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-load-error-lens', label: 'Feed — the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
   // Sharing a card (wild feature, 2026-09-07; LM-797). Two states of ONE
   // destination: the address always opens the card's Overview, and what the
   // follower meets there depends on THEIR OWN read-state — not on anything the
@@ -889,8 +916,8 @@ const CIRC_STATE_REGISTER = [
   // not-found page (`not-found-page`). That page already refuses to say which
   // of those it was, which is the privacy answer, and a second copy of it
   // staged under a sharing label would imply it is a different screen.
-  { group: 'The feed', id: 'share-arrival-unread', label: 'Shared card — Overview before they have read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
-  { group: 'The feed', id: 'share-arrival-read', label: 'Shared card — Overview once they have read it', stage: (c) => c.stageSharedCard({ read: true }) },
+  { group: 'Shared card', id: 'share-arrival-unread', label: 'Shared card — Overview before they have read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
+  { group: 'Shared card', id: 'share-arrival-read', label: 'Shared card — Overview once they have read it', stage: (c) => c.stageSharedCard({ read: true }) },
 
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
@@ -936,7 +963,6 @@ const CIRC_STATE_REGISTER = [
   { group: 'Home', id: 'home-quiet', label: 'Home — quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
   { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
   { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
-  { group: 'Home', id: 'circle-micro-new-reply', label: 'Home — the micro on a circle whose only news is a reply', stage: (c) => c.stageCircleMicro({ reply: true }) },
   { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
 
   // Share intake (LM-771): the screen a member lands on after sharing a link
@@ -954,6 +980,18 @@ const CIRC_STATE_REGISTER = [
   // answers: an address that resolved to nothing, with no circle to be inside.
   { group: 'Not found', id: 'not-found-page', label: 'Not found — one answer for a bad address', stage: (c) => c.stageNotFound() },
 ];
+
+// Notes, per group (Joe, 2026-09-28): how to exercise what a staged state
+// can't hold still — a search term, a sequence of taps. Each line names the
+// state it serves. Shown at the foot of the group on the states page and
+// palette, and readable off window.CIRC_STATE_NOTES.
+const CIRC_STATE_GROUP_NOTES = {
+  'Feed: filters and search': [
+    'History search — also matches cards in Active: in Backend Pod, open History and search “pipelines”. The done Go pipelines card shows, and the line offers the Continuous Delivery card waiting in Active.',
+    'Search by description: in Backend Pod, search “chan” on History. The Go pipelines card matches on its description only.',
+  ],
+};
+window.CIRC_STATE_NOTES = CIRC_STATE_GROUP_NOTES;
 
 // The catalogue's own address. Not a state, so it is not in the register.
 const CIRC_STATE_INDEX_NAMES = ['index', 'states'];
@@ -986,7 +1024,7 @@ function buildStates(api) {
   states.forEach((s) => {
     byId[s.id] = s;
     let g = groups.find((x) => x.title === s.group);
-    if (!g) { g = { title: s.group, items: [] }; groups.push(g); }
+    if (!g) { g = { title: s.group, notes: CIRC_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
     g.items.push(s);
   });
   return { states, byId, groups, reset: ctx.reset };

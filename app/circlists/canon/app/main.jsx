@@ -54,6 +54,12 @@ const circShareExtractUrl = (payload) => {
 // circlists-a3.html's own v1 -> v2 bump, for the same circle.
 const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v13';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
+// Saved state can predate seeded descriptions (search-only meta); fill them in.
+if (SAVED && Array.isArray(SAVED.spaces) && window.CircSeed.SEED_DESC) {
+  SAVED.spaces.forEach((sp) => (sp.items || []).forEach((it) => {
+    if (!it.description && window.CircSeed.SEED_DESC[it.url]) it.description = window.CircSeed.SEED_DESC[it.url];
+  }));
+}
 
 // ---- Tweak defaults, baked in ----------------------------------------------
 // So the app renders at its intended look even when the Tweaks files
@@ -287,9 +293,11 @@ const CircApp = () => {
     visitGen.current += 1;
     setIncludeActive(false); setFeedPages({}); setPageStatus({}); tabScroll.current = {}; pushAskMet.current = false;
     // The order is part of the visit (LM-786 sort, ratified): a member who
-    // leaves and comes back finds newest first. Filters and density are left
-    // alone here — filters are settled in separate work; density is device.
+    // leaves and comes back finds newest first. So is every filter and search,
+    // on both tabs (LM-786 feed controls). Density alone survives: it is a
+    // device preference, not visit state.
     setSortOrder({}); setOrderLoad({}); setPillPhase(null);
+    setLensWho({}); setSavedOn({}); setWatchingOn({}); setSearchQuery({}); setSearchOpen({});
   };
   // The DRAWN waterline: the stored mark as it was when this visit began. Entry
   // stamps the mark to now, so the line the member reads against is held here for
@@ -308,8 +316,8 @@ const CircApp = () => {
   const [orderLoad, setOrderLoad] = useState({});
   // The New pill's accept (Decision-29/31): { id, phase: 'busy' | 'spent' } or null.
   const [pillPhase, setPillPhase] = useState(null);
-  // Keyed by circle alone — see the note at the render site for why the
-  // contributor lens is not held per tab as the order is.
+  // Keyed `<circleId>:<tab>`, as search is (LM-786 feed controls): anything
+  // that hides cards belongs to the tab where it was set.
   const [lensWho, setLensWho] = useState({});
   // Saved filter. Keyed by circle alone,
   // same as lensWho and for the same reason: "show me what I've kept" is a
@@ -744,13 +752,6 @@ const CircApp = () => {
     const sp = spacesRef.current.find(s => s.id === currentId);
     if (sp && sp.unseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, unseen: false } : s));
   }, [route, tab, loadingFeed, currentId, spaces]);
-  // LM-769 reply push: new replies on a Watched card are met by visiting the
-  // circle (opening any of its cards is inside that visit).
-  React.useEffect(() => {
-    if (!currentId || route === 'home') return;
-    const sp = spacesRef.current.find(s => s.id === currentId);
-    if (sp && sp.repliesUnseen) setSpaces(prev => prev.map(s => s.id === currentId ? { ...s, repliesUnseen: false } : s));
-  }, [route, currentId, spaces]);
 
   // ---- Arrivals -----------------------------------------------------------
   const peerName = (id) => {
@@ -1350,15 +1351,13 @@ const CircApp = () => {
       // untouched.
       const order = sortOrder[currentId] || (window.CIRC_SORT_DEFAULT || 'newest');
       const sortKey = currentId + ':' + tab;
-      // The contributor lens is held per CIRCLE, not per circle-and-tab as the
-      // order is. "What did Sam add" is a question about a person, not about a
-      // tab, so hopping to Read to see whether you already read Sam's link
-      // keeps the lens. The asymmetry is deliberate; the chip stays on screen
-      // across the switch, so the state is never hidden.
+      // The contributor lens is held per TAB (LM-786 feed controls, ratified):
+      // anything that hides cards belongs to the tab where it was set. Order
+      // and View still cover the whole circle.
       // Multi-select (BIZ-136, ruling 2026-09-14): `who` is always an array —
       // empty for "Everyone" — never null, so every reader below can test it
       // with `.length` instead of re-deriving the same null-vs-array branch.
-      const who = (Lens ? lensWho[currentId] : null) || [];
+      const who = (Lens ? lensWho[sortKey] : null) || [];
       // TWO PREDICATES, deliberately (BIZ-136, ruling of 2026-09-07).
       // `lensActive` is CONCEALMENT — cards are being hidden — and it is what
       // suppresses the feed lead, because a lead counting things above a
@@ -1371,8 +1370,10 @@ const CircApp = () => {
         ? window.circLensNonDefault(order, who) : lensActive;
       const sorted = (Lens && window.circSortItems) ? window.circSortItems(stored, order) : stored;
       const lensed = Lens ? window.circFilterItems(sorted, who) : sorted;
-      // Offered from the whole circle, so the set does not reshuffle by tab.
-      const contributors = Lens ? window.circContributors(space) : [];
+      // Every member of the circle, on both tabs (LM-786 follow-up, ratified
+      // 2026-09-28): nobody is hidden for having nothing on the tab in view.
+      // Ticking someone with nothing here shows the empty state.
+      const contributors = !Lens ? [] : window.circContributors(space);
       const pendingVisible = Lens ? window.circFilterItems(pending, who) : pending;
       // ---- Saved -----------------------------------------------------------
       // A deletable aid, same idiom as Lens above: no feed-saved.jsx ⇒ no
@@ -1394,7 +1395,6 @@ const CircApp = () => {
       // Whole-circle, unfiltered by the lens: "the circle holds a saved link"
       // is a fact about the circle, not about the current narrowing, and the
       // toggle's presence rule (render site, below) reads it that way.
-      const hasSaved = !!(window.circHasSaved && window.circHasSaved(readItems));
       // Read only — a ruled product decision (see feed-saved.jsx's header) —
       // not loading, and present either because there is something to find or
       // because the filter is already on: turning it off must stay reachable
@@ -1406,7 +1406,10 @@ const CircApp = () => {
       // its reason to exist. That principle was recorded as a region rule and
       // would have been lost by moving the control, which is exactly the kind
       // of thing an audit of the whole picture is for catching.
-      const showSavedLens = tab === 'read' && !loadingFeed && (hasSaved || savedOnFlag);
+      // LM-786 follow-up (ratified 2026-09-28): always offered on History, even
+      // before anything is saved — ticking it with nothing to show gives its
+      // own empty state. Supersedes the "not yet earned" gate described above.
+      const showSavedLens = tab === 'read' && !loadingFeed;
       const setSavedFilter = (next) => {
         setSavedOn((prev) => ({ ...prev, [currentId]: next }));
         announceOnce(next ? 'Showing saved links' : 'Showing all links');
@@ -1414,13 +1417,13 @@ const CircApp = () => {
       // ---- Watching (LM-786) -----------------------------------------------
       // Saved's pattern at every point: deletable aid, per-circle visit state,
       // History only, composed after saved, offered once the circle holds a
-      // card the member is watching AND has done (or the filter is already on).
+      // always offered there (see showWatchingLens).
       const Watching = window.circFilterWatching || null;
       const watchingOnFlag = !!watchingOn[currentId];
       const effectiveWatchingOn = !!Watching && watchingOnFlag && tab === 'read';
       const watchFiltered = Watching ? Watching(savedFiltered, effectiveWatchingOn) : savedFiltered;
-      const hasWatching = !!(window.circHasWatching && window.circHasWatching(readItems));
-      const showWatchingLens = !!Watching && tab === 'read' && !loadingFeed && (hasWatching || watchingOnFlag);
+      // Always offered on History, same ruling as Saved above.
+      const showWatchingLens = !!Watching && tab === 'read' && !loadingFeed;
       const setWatchingFilter = (next) => {
         setWatchingOn((prev) => ({ ...prev, [currentId]: next }));
         announceOnce(next ? 'Showing cards you’re watching' : 'Showing all cards');
@@ -1490,6 +1493,18 @@ const CircApp = () => {
         const wouldMatch = Search ? Search(watchFiltered, next) : watchFiltered;
         if (wouldMatch.length === 0 && next.trim()) announceOnce('Nothing matches');
       };
+      // ---- Active also matches (LM-786 feed controls) -----------------------
+      // History, switch off, a search and/or people filter applied, and never
+      // under Saved or Watching (done-only, they never reach into Active).
+      // Checked against the seeded Active cards directly — a prototype answer;
+      // the real cost of this check is engineering's to price.
+      const checkActive = tab === 'read' && !includeActive && !!window.IncludeActiveRow
+        && !effectiveSavedOn && !effectiveWatchingOn && (who.length > 0 || searchActive);
+      const activeMatches = !checkActive ? []
+        : (Search ? Search(Lens ? window.circFilterItems(activeItems, who) : activeItems, searchQueryVal)
+          : (Lens ? window.circFilterItems(activeItems, who) : activeItems));
+      const offerIncludeActive = checkActive && activeMatches.length > 0;
+      const includeActiveNow = () => { setIncludeActive(true); announceOnce('Including cards in Active'); };
       const searchToggle = showSearch
         ? <window.SearchTrigger open={searchFieldOpen} active={searchFieldOpen} onToggle={setSearchFieldOpen} />
         : null;
@@ -1530,11 +1545,11 @@ const CircApp = () => {
       // "Everyone" / the no-match recovery button (passes CIRC_LENS_ALL /
       // null to clear every selection at once).
       const setWho = (id) => {
-        const cur = lensWho[currentId] || [];
+        const cur = lensWho[sortKey] || [];
         const next = (id === window.CIRC_LENS_ALL || id == null) ? []
           : cur.indexOf(id) !== -1 ? cur.filter((w) => w !== id)
           : cur.concat([id]);
-        setLensWho((prev) => ({ ...prev, [currentId]: next }));
+        setLensWho((prev) => ({ ...prev, [sortKey]: next }));
         announceOnce(next.length
           ? 'Showing links added by ' + next.map(window.circContributorLabel).join(', ')
           : 'Showing links from everyone');
@@ -1678,18 +1693,17 @@ const CircApp = () => {
                 closer to whatever sits above it on desktop. That was already
                 true of the pill under the returns bar; the ask does not make
                 it worse, and fixing it is the pill's own question. */}
+            {tab === 'read' && visible.length > 0 && offerIncludeActive && window.ActiveMatchLine
+              && <window.ActiveMatchLine onInclude={includeActiveNow} />}
             {tab === 'active' && visible.length > 0 && pushAskVisible
               && <window.CircPushAsk onTurnOn={pushWantOn} onDismiss={pushDismissAsk}
                 atRest={pushAskMet.current} />}
             {Cand && Cand.FeedLead && !(lensActive || effectiveSavedOn || effectiveWatchingOn || searchActive)
               && <div><Cand.FeedLead api={candApi} tab={tab} /></div>}
-            {/* The pill announces arrivals for the list you are LOOKING at. Under
-                a contributor lens, an arrival from somebody else is not one:
-                tapping the pill would land it straight into the hidden pile and
-                the feed would not move, which is the one thing the pill exists
-                to promise it will do. So it counts only arrivals the lens keeps.
-                Unmatched arrivals are not lost — they land whole the moment the
-                lens clears. */}
+            {/* The pill announces arrivals for the unfiltered list only. Under
+                any people filter it stands down entirely (see the guard below);
+                `pendingVisible` still counts, but only while nobody is ticked,
+                where it equals the whole pending pile. */}
             {/* A bare wrapper div here (as every other conditional row in this
                 list still uses) gives the pill a 44px stick range and kills
                 its `align-self: center` — canon renders it as a direct flex
@@ -1699,7 +1713,10 @@ const CircApp = () => {
                 empty Active tab, where there is no reader's feed to protect.
                 `visible.length > 0` is the same test EmptyState's own branch
                 uses below, so the two conditions can never disagree. */}
-            {tab === 'active' && visible.length > 0 && (pendingVisible.length > 0 || (pillPhase && pillPhase.id === currentId)) && (
+            {/* Superseded (LM-786 feed controls, #790 req 7): the pill hides
+                whenever a people filter is on, on Active — whoever the
+                arrivals belong to. They land whole once the filter clears. */}
+            {tab === 'active' && visible.length > 0 && who.length === 0 && (pendingVisible.length > 0 || (pillPhase && pillPhase.id === currentId)) && (
               <NewPill order={pillPhase && pillPhase.id === currentId && pillPhase.phase === 'spent' ? pillOrderRef.current : order}
                 phase={pillPhase && pillPhase.id === currentId ? pillPhase.phase : null}
                 onClick={() => { pillOrderRef.current = order; revealPending(); }} />
@@ -1720,7 +1737,8 @@ const CircApp = () => {
             {visible.length === 0 && (who.length || effectiveSavedOn || effectiveWatchingOn || searchActive) && window.FeedNoMatch
               ? <div><window.FeedNoMatch who={who} tab={tab} saved={effectiveSavedOn} watching={effectiveWatchingOn} query={searchQueryVal}
                   onClearWho={() => setWho(window.CIRC_LENS_ALL)} onClearSaved={() => setSavedFilter(false)}
-                  onClearWatching={() => setWatchingFilter(false)} onClearSearch={clearSearch} /></div>
+                  onClearWatching={() => setWatchingFilter(false)} onClearSearch={clearSearch}
+                  onIncludeActive={offerIncludeActive ? includeActiveNow : null} /></div>
               /* Saved survives feed-lens.jsx on its own: its toggle and its
                  filter both live in feed-saved.jsx and neither is gated on the
                  lens. Before the fold, SavedNoMatch rendered for this case
