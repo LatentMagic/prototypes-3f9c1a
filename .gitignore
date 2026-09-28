@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 .playwright-cli/
 **/.build-cache/
+
+# Codex / other-agent mirrors of .claude
+.agents/
+.codex/
