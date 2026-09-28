@@ -12,7 +12,7 @@ One state, not a shipped/coming split: **`canon`** is the single agreed-upon pro
 
 Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natural — a hint for a later agent, not a ledger to maintain.
 
-**Commit gate** — updates here can't be verified by the user. Before committing a change to a prototype, drive it in a browser with the Playwright CLI (`lm-tooling:playwright-cli`, or `npx playwright-cli`) at the states the change touches, at desktop and phone width, and read what rendered; commit once you've verified and are happy. In a remote sandbox the CLI is absent and Chromium cannot reach the CDN — `CLOUD.md` carries the route there. A push to `main` deploys; a branch push deploys nothing. A hand edit under `app/circlists/canon/` lives only until the next export replaces the folder — record it in canon's `changelog` entry in `index.html` so the next sync knows to carry it, or it silently reverts.
+**Commit gate** — updates here can't be verified by the user. Before committing a hand change to a prototype (a Claude Design export sync is exempt — see "Syncing an export into canon"), drive it in a browser with the Playwright CLI (`lm-tooling:playwright-cli`, or `npx playwright-cli`) at the states the change touches, at desktop and phone width, and read what rendered; commit once you've verified and are happy. In a remote sandbox the CLI is absent and Chromium cannot reach the CDN — `CLOUD.md` carries the route there. A push to `main` deploys; a branch push deploys nothing. A hand edit under `app/circlists/canon/` lives only until the next export replaces the folder — record it in canon's `changelog` entry in `index.html` so the next sync knows to carry it, or it silently reverts.
 
 <important if="you are creating, editing, or otherwise touching any file under app/circlists/canon/">
 **`app/circlists/canon/CLAUDE.md`** is the Claude Design project's own file, and every export replaces it wholesale. Editing under `canon/` loads it automatically. Take from it: brand law, the states register, module load order, candidate/playground mechanics. Its ratification rule holds here too: a design or copy decision is the user's, never the session's. Its skills live in `canon/skills/`, read by path. Ignore its chat-reply rules, which are written for the Claude Design agent. Never edit it from here: a change goes into the Claude Design project, and arrives with the next export.
@@ -46,7 +46,13 @@ Prototype entry HTML loads `app/*.jsx` via babel-standalone, which XHR-fetches e
 
 A single-file export (`<Name>.dc.html` + `support.js`, as `app/commentape/prototype/`) ships none of the multi-file set above; copy the two files and register the `.dc.html` as `html`.
 
-**Updating canon** — a fresh export for the live line replaces `app/circlists/canon/` in place (same verbatim rule, including `brand/`). Don't add a new slug; append a `changelog` entry to the single `canon` entry and leave `desc` untouched.
+**Syncing an export into canon** — a fixed recipe; don't browse, don't QA.
+1. Replace `app/circlists/canon/` with the export, verbatim, including `brand/` and `uploads/` whole. Drop only `.thumbnail`, `screenshots/`, `scraps/`, `.playwright-mcp/`.
+2. Run `npm run check -- --widths 1280` (about 2 minutes, unattended). 0 FAIL is the pass; don't open the screenshots.
+3. Append a `changelog` entry to the `canon` node in `index.html`, written from the new handoff's "What changed" section. Read nothing else in the export, and leave `desc` untouched.
+4. Commit and push.
+
+The commit gate doesn't apply: nothing in an export can be fixed here. A failure goes back to the user as a note for Claude Design. The export's handoffs and QA lists are for the Claude Design session, not this one.
 
 **A full walk** — `npm run check` drives every registered state of a `app/circlists/<slug>/circlists.html` entry at 1280 and 390 and screenshots each to `.playwright-mcp/check/`; it fails on a module that didn't load or a state that lands on the index, and reports React dev warnings. Not the console shell, not a `.dc.html` export. Reach for it when a change touches many states; the Playwright CLI is the normal check.
 </important>
