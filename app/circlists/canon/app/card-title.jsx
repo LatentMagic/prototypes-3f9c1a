@@ -35,12 +35,10 @@ const circHeadline = (item) => {
   return item.title || (typeof feedDeriveTitle === 'function' ? feedDeriveTitle(item.url) : null);
 };
 
-// ---- The Edited marker (NOT RATIFIED) ----------------------------------------
-// The conversation's own grammar, verbatim: a turn reads "3h · edited", in the
-// time's own micro text. Here it rides the card's time the same way. Everyone
-// sees it, because everyone sees the title. To take it out, return null here —
-// nothing else reads it.
-const circTitleMark = (item) => (item && item.customTitle ? 'edited' : null);
+// ---- The Edited marker — removed 2026-09-29 -----------------------------------
+// A retitled card carries no marker. The hook stays so feed.jsx's reader needs
+// no change; it returns nothing. The thought's own "edited" is unaffected.
+const circTitleMark = () => null;
 
 const circMapItem = (setSpaces, itemId, fn) => setSpaces((prev) => prev.map((s) => (
   s.items.some((i) => i.id === itemId) ? { ...s, items: s.items.map((i) => (i.id === itemId ? fn(i) : i)) } : s)));

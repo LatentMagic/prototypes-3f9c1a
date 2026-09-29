@@ -38,9 +38,9 @@ refetch anywhere.
 2. Fetched, yours: The Pragmatic Engineer (existing).
 3. Failed fetch, yours: headline `claude.ai/artifact/9Kd2mQxV7wTn4BhRpYc3Lf` in mono under
    `claude.ai`.
-4. Custom title, yours: "The blameless reviews talk" over the USENIX fetched title, marked.
-5. Custom title, Marcus T.'s: "The queue rant, properly argued" over InfoQ, marked; no Edit
-   title in your menu.
+4. Custom title, yours: "The blameless reviews talk" over the USENIX fetched title.
+5. Custom title, Marcus T.'s: "The queue rant, properly argued" over InfoQ; no Edit title
+   in your menu.
 
 **Staged states: none registered.** Every case sits on the landing circle's first screen, so
 none is hard to reach, which is the register's bar (`ARCHITECTURE.md`). Config → Reset to
@@ -59,9 +59,9 @@ seeded data restores them.
   circle sees this title." Empty-save statement: "Give it a title."
 - **Cap: 80,** enforced by `maxLength`, no counter. A headline, not a sentence; two lines on
   a 320 card.
-- **Marker: "edited" after the time**, `11h · edited`, the conversation's grammar verbatim
-  (a turn reads `3h · edited`). 11px, fg-3. Everyone sees it, as everyone sees the title.
-  Removable in one place: return `null` from `circTitleMark`.
+- **Marker: removed 2026-09-29.** It was "edited" after the time (`11h · edited`).
+  `circTitleMark` now returns `null`; a retitled card carries no marker anywhere. The
+  thought's and comments' own "edited" are unchanged.
 - **While resolving: no Edit title.** A pending card has no menu at all, so nothing was needed.
 - **The editor opens holding** the custom title, else the fetched title; on a failed fetch it
   opens empty because the address is not a title.
@@ -92,17 +92,19 @@ by pressing its home row, the way a member does.
 - **Options 01 and 03 fork the editor** (`PgTitleEditor`) because canon's editor may not be
   edited for Step 2. It copies the shell and field; it will drift if canon's editor changes.
 - **Typing the fetched title exactly** over a custom one: kept as custom. Arguably a reset.
-- **Home's Conversations rows and the returns bar** still read `item.title` directly; a
-  retitled card shows its fetched title there. Not touched.
-- **Share** hands the platform sheet `item.title`, not the custom title. Not touched.
+- **Home's Conversations rows and the Returns bar** read the headline through
+  `candTitleOf` → `circHeadline`, so they show the custom title. Since 2026-09-29 a custom
+  title also sets the title face there (`candBarSnap`'s `titled`), so a retitled
+  failed-fetch card no longer shows in mono.
+- **Share** hands the platform sheet the headline (`circHeadline`): the custom title, else
+  the fetched title, else as before (2026-09-29).
 - Overlay screenshots are unreliable here (GOTCHA 2); menu and dialogs need a look in a real
   browser.
 
 ## Next
 
 1. Pick a removal route in the playground; merge it into `card-title.jsx` only.
-2. Rule on the marker.
-3. Decide whether home rows, the returns bar and Share read `circHeadline`.
+2. Decide on the old help line ("Everyone in the circle sees this title.").
 
 ## Round two — the editor route (2026-09-29)
 

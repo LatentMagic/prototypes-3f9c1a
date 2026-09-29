@@ -97,7 +97,8 @@ const candBarWho = (item) => {
 // name to a subline.
 const candBarSnap = (rows) => rows.map(i => {
   const rx = candBarRx(i);
-  return { id: i.id, title: candTitleOf(i), titled: !!i.title, who: candBarWho(i), rx: rx.who, glyphs: rx.glyphs };
+  // A custom title is a title even when the fetch failed (app/card-title.jsx).
+  return { id: i.id, title: candTitleOf(i), titled: !!(i.customTitle || i.title), who: candBarWho(i), rx: rx.who, glyphs: rx.glyphs };
 });
 
 // ---- clearing the bar (ratified 2026-09-21; the study is

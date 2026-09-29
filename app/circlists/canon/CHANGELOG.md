@@ -7,7 +7,6 @@ exhaustively; entries capture the shape of each significant step, not every chan
 
 - **A contributor can retitle a card they added**, fetched or failed, from Edit title in the card menu. Absent for every other member; absent while the link is still resolving.
 - **The custom title is stored beside the fetched one**, never over it, so removing it returns the headline to the fetched title or the address with no refetch. Clearing the field and saving restores the original.
-- **A retitled card reads "edited" after its time**, the conversation's own marker. Not ratified.
 
 ## Comment reactions reach the Returns bar — 2026-09-28
 

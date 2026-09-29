@@ -90,7 +90,8 @@ const CardShareButton = ({ item, space, className, size = 15, announce }) => {
 
   const share = async () => {
     const url = circCardLocalUrl(item);
-    const title = item.title || item.source || 'A link';
+    // The headline the card shows: a custom title, else the fetched one.
+    const title = (window.circHeadline && window.circHeadline(item)) || item.title || item.source || 'A link';
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
@@ -146,7 +147,8 @@ const CardShareMenuItem = ({ item, space, announce, onDone }) => {
 
   const share = async () => {
     const url = circCardLocalUrl(item);
-    const title = item.title || item.source || 'A link';
+    // The headline the card shows: a custom title, else the fetched one.
+    const title = (window.circHeadline && window.circHeadline(item)) || item.title || item.source || 'A link';
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
