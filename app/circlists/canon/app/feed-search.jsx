@@ -68,6 +68,7 @@ const circSearchHost = (url) => {
 // feed.jsx's `prettyUrl` renders it.
 const circSearchHeadline = (item) => {
   const url = String((item && item.url) || '');
+  if (window.circHeadline) { const h = window.circHeadline(item); if (h) return h; return url.replace(/^https?:\/\//, ''); }
   if (item && item.title) return item.title;
   const derived = (typeof feedDeriveTitle === 'function') ? feedDeriveTitle(url) : null;
   if (derived) return derived;

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists</title>
+<base href="../../../../" />
+<title>Circlists — removing a custom title</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -248,8 +249,6 @@
   @media (prefers-reduced-motion: reduce) { .circ-skel { animation: none !important; } }
   /* very narrow card: drop the "Added by " prefix (avatar already carries who) */
   @container (max-width: 380px) { .circ-attrib-pre { display: none; } .circ-attrib-rest { display: inline-block; } .circ-attrib-rest::first-letter { text-transform: capitalize; } }
-  /* Edit title: an address placeholder wears the card's own mono (app/card-title.jsx). */
-  .circ-titlefield-addr::placeholder { font-family: var(--font-mono); font-size: 14px; }
   .circ-url:hover { text-decoration: underline !important; text-decoration-color: var(--color-fg-3) !important; text-underline-offset: 3px; }
 
   /* ---- enriched card: open affordance = title + image only ---- */
@@ -685,29 +684,28 @@
   .circ-osdialog-acts > button + button { border-left: 1px solid rgba(0,0,0,0.16); font-weight: 600; }
   .circ-osdialog-acts > button:active { background: rgba(0,0,0,0.06); }
 
+  /* ---- playground bar (not product) ---- */
+  .pg-bar { background: #1c1c1a; color: #fff; padding: 8px 12px 10px; font-family: var(--font-sans); display: flex; flex-direction: column; gap: 6px; }
+  .pg-bar-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pg-seg { display: inline-flex; gap: 2px; padding: 3px; background: rgba(255,255,255,0.08); border-radius: var(--radius-md); flex-wrap: wrap; }
+  .pg-seg-btn { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 12px; border: 0; border-radius: var(--radius-sm); background: transparent; color: rgba(255,255,255,0.78); font: 500 13.5px/1 var(--font-sans); cursor: pointer; }
+  .pg-seg-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .pg-seg-btn[data-on] { background: #fff; color: #0a0a0a; }
+  .pg-num { font: 500 11px/1 var(--font-mono); opacity: 0.7; }
+  .pg-card { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font: 500 12px/1 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .pg-card select { font: 500 16px/1.2 var(--font-sans); letter-spacing: 0; text-transform: none; min-height: 38px; padding: 0 8px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.2); background: #2a2a27; color: #fff; }
+  .pg-restage { min-height: 38px; padding: 0 10px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; font: 500 13px/1 var(--font-sans); letter-spacing: 0; text-transform: none; cursor: pointer; }
+  .pg-restage:hover { background: rgba(255,255,255,0.08); }
+  .pg-line { margin: 0; font: 400 13px/1.45 var(--font-sans); color: rgba(255,255,255,0.72); text-wrap: pretty; }
+  @media (max-width: 640px) { .pg-card { margin-left: 0; } }
 </style>
 </head>
 <body>
-<!-- ============================================================================
-     ADDRESSABLE STATES. This prototype can be opened AT a named state:
-
-         circlists.html?state=dormant-circle
-
-     The names live in the register, app/states.jsx (one entry per state, its id
-     is its address). They are also published on the page as window.CIRC_STATES
-     — ids, labels and groups, nothing runnable.
-
-         ?state=index   the catalogue: every state, grouped, each one linkable
-         ?state=<name>  that state, overriding whatever local state was restored
-         a name the register does not hold  ->  the index, so a stale link shows
-                                               itself instead of opening the
-                                               wrong screen
-         nothing        the top circle, on Active, exactly as the real app opens
-
-     Details, and why the resolver looks inert in a design tool, are in
-     ARCHITECTURE.md -> Addressable states.
-     ============================================================================ -->
+<!-- Playground for docs/specs/card-title-editing. The real app, with the menu item and editor handles swapped on this page only (pg-title-removal.jsx). -->
+<div id="pg-bar"></div>
 <div id="root"></div>
+<div id="pg-host"></div>
+<script>window.CIRC_STATE_KEY = 'pg_card_title_removal_state_v1';</script>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -747,10 +745,6 @@
 <script type="text/babel" src="app/push-preview.jsx"></script>
 <script type="text/babel" src="app/tweaks-panel.jsx"></script>
 <script type="text/babel" src="app/circ-tweaks.jsx"></script>
-<script type="text/babel" src="app/states.jsx"></script>
-<script type="text/babel" src="app/states-ui.jsx"></script>
-<script type="text/babel" src="app/config.jsx"></script>
-<script type="text/babel" src="app/gate.jsx"></script>
 <!-- Conversation on a card (LM-652). Loads after the files it extends and before
      main.jsx, which reads its handle per render. -->
 <script type="text/babel" src="app/talk-parts.jsx"></script>
@@ -773,6 +767,11 @@
      app/spaces.jsx reads per render — so it loads after that file and before
      main.jsx, which mounts on load. -->
 <script type="text/babel" src="app/invite-link.jsx"></script>
+<script type="text/babel" src="docs/specs/card-title-editing/playground/pg-title-removal.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
+<script type="text/babel">
+ReactDOM.createRoot(document.getElementById('pg-bar')).render(<PgTitleBar />);
+ReactDOM.createRoot(document.getElementById('pg-host')).render(<PgRemoveHost />);
+</script>
 </body>
 </html>

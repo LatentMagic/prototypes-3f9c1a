@@ -54,7 +54,9 @@ const circShareExtractUrl = (payload) => {
 // circlists-a3.html's own v1 -> v2 bump, for the same circle.
 // v14: the seed gains comment reactions that reach the returns bar.
 // v15: the go.dev "both" row's reactions come from people who did not reply.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v15';
+// v16: Backend Pod gains the card-title fixtures (a failed fetch you added, a
+// custom title of yours, a custom title of Marcus's).
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v16';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 // Saved state can predate seeded descriptions (search-only meta); fill them in.
 if (SAVED && Array.isArray(SAVED.spaces) && window.CircSeed.SEED_DESC) {
@@ -252,6 +254,8 @@ const CircApp = () => {
   const [addConfirm, setAddConfirm] = useState(false);
   const addConfirmTimer = useRef(null);
   const [confirm, setConfirm] = useState(null);
+  // Edit title (app/card-title.jsx): the id of the card whose editor is open.
+  const [retitling, setRetitling] = useState(null);
   const [reverify, setReverify] = useState(false);
   // The Swell: mark-as-read opens the reaction flow (no confirm modal). Holds
   // the item being reacted to, or null.
@@ -1225,6 +1229,7 @@ const CircApp = () => {
     requestDelete: (item) => setConfirm({ kind: 'delete', item }),
     requestMarkRead: (item) => setReacting(item),
     toggleSaved, announceOnce,
+    requestEditTitle: window.CardTitleDialog ? (item) => setRetitling(item.id) : undefined,
     isChampion, startCircle: gateActive ? onGate : openCreateSpace } : null;
   if (Cand && Cand.bind) Cand.bind(candApi);
 
@@ -1784,6 +1789,7 @@ const CircApp = () => {
                   onMarkRead={(it) => setReacting(it)}
                   onDelete={(it) => setConfirm({ kind: 'delete', item: it })}
                   onToggleSaved={toggleSaved}
+                  onEditTitle={window.CardTitleDialog ? (it) => setRetitling(it.id) : undefined}
                   space={space} onAnnounce={announceOnce} />;
                 const row = (Cand && Cand.CardRow)
                   ? <Cand.CardRow item={item} tab={cardTab} api={candApi}>{card}</Cand.CardRow>
@@ -1929,7 +1935,13 @@ const CircApp = () => {
   // dialogs live above whichever screen
   // `item` and `space` are carried because the delete confirm offers two reaches
   // and has to know which link, in which circle, it is about (LM-666).
+  const retitleItem = retitling && window.CardTitleDialog
+    ? spaces.reduce((f, s) => f || s.items.find((i) => i.id === retitling), null) : null;
   const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
+    || (retitleItem && <window.CardTitleDialog item={retitleItem}
+      onSave={(text) => { window.circRetitle(setSpaces, retitleItem.id, text); setRetitling(null); }}
+      onRestore={() => { window.circUntitle(setSpaces, retitleItem.id); setRetitling(null); }}
+      onCancel={() => setRetitling(null)} />)
     || (reverify && <ReverifyDialog provider={user.ssoProvider} onPass={() => { setReverify(false); deleteAccount(); }} onCancel={() => setReverify(false)} />);  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (
     <SwellReactionFlow

@@ -1,7 +1,13 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-09-28",
+  "generated": "2026-09-29",
   "tickets": [
+    { "id": "—", "slug": "card-title-editing", "name": "Card titles", "state": "active", "touched": "2026-09-29",
+      "entries": [
+        { "kind": "playground", "name": "Clearing restores the title", "path": "docs/specs/card-title-editing/playground/card-title-clear.html", "note": "Round three, no new control: clear the field and save. The editor says so on open: a line under the field, the same line naming the original, or that line above the field." },
+        { "kind": "playground", "name": "Restoring the original title", "path": "docs/specs/card-title-editing/playground/card-title-restore.html", "note": "Round two, the editor route only: the button beside Cancel, the original named under the field with Restore, or the original as a row that fills the field." },
+        { "kind": "playground", "name": "Removing a custom title", "path": "docs/specs/card-title-editing/playground/card-title-removal.html", "note": "Three routes back to the earlier headline, in the real feed: in the editor, in the menu with a confirm, or by emptying the field. Pick the card: over a fetched title or over a failed fetch." }
+      ] },
     { "id": "—", "slug": "comment-reactions", "name": "Comment reactions", "state": "active", "touched": "2026-09-29",
       "entries": [
         { "kind": "playground", "name": "The pill, when yours is in it", "path": "docs/specs/comment-reactions/playground/wb-reaction-pill-mine.html", "note": "Three quieter marks for your own reaction than the green border, with more room: sunken, soft tint, ink edge." },

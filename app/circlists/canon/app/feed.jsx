@@ -74,7 +74,7 @@ const circCardMetrics = (density) => (density === 'compact'
 // alignment: a Read card's thought carries Read's actions, not Active's).
 // `edgeNudge` — the -13px optical-edge pull (BIZ-80 alignment study) is
 // skipped when a caller's own row already applies it, so the two don't stack.
-const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () => {}, onDelete, onToggleSaved, space, onAnnounce, onAct = () => {}, edgeNudge = true }) => {
+const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () => {}, onDelete, onToggleSaved, onEditTitle, space, onAnnounce, onAct = () => {}, edgeNudge = true }) => {
   const m = circCardMetrics(density);
 
   // ---- Trailing kebab menu (run 10, BIZ-136: "[posture] [⋮]") --------------
@@ -85,7 +85,7 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
   const triggerRef = React.useRef(null);
   const menuRef = React.useRef(null);
   const closeMenu = () => setMenuOpen(false);
-  const menuLabel = item.title || item.source || 'this link';
+  const menuLabel = (window.circHeadline ? window.circHeadline(item) : item.title) || item.source || 'this link';
 
   // Position against the visible viewport, not `vh` (requirement 4) — measured
   // AFTER the menu mounts (off-screen, invisible) so its real height is known,
@@ -218,6 +218,11 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
                 {item.saved && <Icon name="check" size={15} />}
               </button>
             )}
+            {/* Edit title (app/card-title.jsx): contributor only, absent for
+                everyone else. After Share and Save so nothing above it moves. */}
+            {window.CardTitleMenuItem && onEditTitle && (
+              <window.CardTitleMenuItem item={item} onEdit={() => { closeMenu(); onEditTitle(item); }} />
+            )}
             <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
             <button role="menuitem" className="circ-menuitem"
               onClick={() => { onDelete(item); closeMenu(); }}
@@ -232,7 +237,7 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
   );
 };
 
-const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, space, onAnnounce, onAct = () => {} }) => {
+const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', onOpen, onMarkRead, onDelete, onToggleSaved, onEditTitle, space, onAnnounce, onAct = () => {} }) => {
   const [favBroken, setFavBroken] = React.useState(false);
   const [imgBroken, setImgBroken] = React.useState(false);
   const m = circCardMetrics(density);
@@ -253,7 +258,9 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
 
   const host = feedHostOf(item.url);
   const source = item.source || host;               // source is always present
-  const title = item.title || feedDeriveTitle(item.url);
+  // app/card-title.jsx owns the headline when present (a custom title, or the
+  // address on a failed fetch); absent, the card's own expression stands.
+  const title = window.circHeadline ? window.circHeadline(item) : (item.title || feedDeriveTitle(item.url));
   const prettyUrl = item.url.replace(/^https?:\/\//, '');
   // Per-item, and the rule is now literal: NO IMAGE MEANS NO IMAGE COLUMN.
   // 2026-09-09, Joe's ruling. Until today a link with no preview rendered a
@@ -278,6 +285,9 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
   // never a count). Derived from the item's own timestamp so it stays honest as
   // the session ages; absent unless the item carries one.
   const when = showTime ? (window.circWhen ? window.circWhen(item.at) : null) : null;
+  // The Edited marker rides the time, as a turn's does (app/card-title.jsx).
+  const titleMark = window.circTitleMark ? window.circTitleMark(item) : null;
+  const microLine = [when, titleMark].filter(Boolean).join(' \u00b7 ');
 
   const open = () => onOpen && onOpen(item);
   const openLinkProps = { href: item.url, target: '_blank', rel: 'noopener noreferrer', onClick: open };
@@ -360,8 +370,8 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
           </span>
           {/* Micro text right after the attribution, separated by space alone — no
               interpunct. Never shrinks, so a long name ellipses first. */}
-          {when && (
-            <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{when}</span>
+          {microLine && (
+            <span style={{ flexShrink: 0, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 11, lineHeight: 1.3, color: 'var(--color-fg-3)', whiteSpace: 'nowrap' }}>{microLine}</span>
           )}
           {/* NO SAVED MARK HERE, deliberately — removed 2026-09-09, and do not
               re-add it. Run 10 added it as compensation for the Save button
@@ -379,7 +389,7 @@ const FeedCard = ({ item, tab, user, showTime = true, density = 'comfortable', o
             each action keeps a full 44px target with its hover fill inset, and
             that inset gap carries the separation — no drawn hairline. */}
         <FeedCardActions item={item} tab={tab} density={density} onMarkRead={onMarkRead} onDelete={onDelete}
-          onToggleSaved={onToggleSaved} space={space} onAnnounce={onAnnounce} onAct={onAct} />
+          onToggleSaved={onToggleSaved} onEditTitle={onEditTitle} space={space} onAnnounce={onAnnounce} onAct={onAct} />
       </div>
     </article>
   );

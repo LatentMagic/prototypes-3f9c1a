@@ -98,6 +98,16 @@ is never stale.
 
 ## Last sync
 
+date: 2026-09-29T07:06:13Z
+wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for Edit
+title copy). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Edit title in the card menu, the editor, the reset data model and the Edited marker
+  (`app/card-title.jsx`). Removal playground and handoff in `docs/specs/card-title-editing/`.
+
+## Previous sync
+
 date: 2026-09-28T05:20:01Z
 monorepo: read live — `specs/projects/circlists/ui.md` Decision-74 (a visit spans
 both tabs) and Decision-75 (Overview's back returns to the tab it was opened from).

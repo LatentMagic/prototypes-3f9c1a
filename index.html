@@ -967,6 +967,16 @@
           changelog: [
             {
               date: '2026-09-29',
+              title: 'Edit title on your cards',
+              items: [
+                'The card menu (⋮) gains Edit title, after Share and Save, on every card you added — fetched or failed — and absent for everyone else. Add a link is untouched.',
+                'The editor is a single-line dialog capped at 80 characters, opening on the headline the card shows now (empty on a failed fetch, where the headline is the address). On a card with a custom title, clearing the field and saving restores the original — the editor says "Clear to restore." under the field. Restoring returns to the stored fetched title, or the address if the fetch failed; nothing refetches.',
+                'A retitled card reads "edited" beside its time, visible to every member. The headline in the menu label, search and the conversation follows the custom title. The module is droppable: removing app/card-title.jsx returns every card to its fetched title.',
+                'Seed (Backend Pod): a failed fetch you added, a custom title of yours, a custom title of Marcus’s; saved-state key bumped to v16. No new ?state= entries. Three playgrounds on the removal route are registered in the playgrounds page.'
+              ]
+            },
+            {
+              date: '2026-09-29',
               title: 'Returns bar: names mean repliers, reactions are glyphs; Back from a bare card',
               items: [
                 'Only people who replied are named in the Returns bar — in a row and in the head, which now says only "replied". Reactors show as glyphs alone: a row keeps its glyph stack, and the head gains a roll-up of up to three glyphs. A card with only reactions has no names line, just its title, and every row holds one fixed height. The stack is spoken as "Reactions to you".',

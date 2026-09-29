@@ -16,7 +16,7 @@ const CAND_OWN_MIN = 3;
 const CAND_OWN_MINE = 1;
 
 const candWhen = (at) => (window.circWhen ? window.circWhen(at) : null);
-const candTitleOf = (item) => item.title || String(item.url || '').replace(/^https?:\/\//, '');
+const candTitleOf = (item) => (window.circHeadline ? window.circHeadline(item) : item.title) || String(item.url || '').replace(/^https?:\/\//, '');
 
 // ---- Plain text (item 8) ----------------------------------------------------
 // Line breaks are preserved; a line starting with a dash renders as a bullet.

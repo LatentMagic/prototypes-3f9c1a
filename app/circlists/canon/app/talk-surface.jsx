@@ -438,7 +438,7 @@ const CandSurface = ({ item, api, withheld: withheldProp }) => {
   const card = (
     <FeedCard item={shown} tab={shown.read ? 'read' : 'active'} user={api.user}
       onMarkRead={() => api.requestMarkRead(item)} onDelete={() => api.requestDelete(item)}
-      onToggleSaved={api.toggleSaved} space={api.space} onAnnounce={api.announceOnce} />
+      onToggleSaved={api.toggleSaved} onEditTitle={api.requestEditTitle} space={api.space} onAnnounce={api.announceOnce} />
   );
   return (
     <CandSurfaceCtx.Provider value={true}>

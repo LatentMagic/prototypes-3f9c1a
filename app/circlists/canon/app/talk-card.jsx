@@ -269,7 +269,7 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark, tab }) => {
         {tab === 'read' && (
           <window.FeedCardActions item={item} tab="read" edgeNudge={false}
             onDelete={() => { onClose(); api.requestDelete(item); }}
-            onToggleSaved={api.toggleSaved} space={api.space} onAnnounce={api.announceOnce} />
+            onToggleSaved={api.toggleSaved} onEditTitle={api.requestEditTitle} space={api.space} onAnnounce={api.announceOnce} />
         )}
         {tab !== 'read' && (
         <div style={{ display: 'flex', alignItems: 'center' }}>
