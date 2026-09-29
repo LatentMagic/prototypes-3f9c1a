@@ -100,7 +100,9 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel }) => {
     const id = setTimeout(() => {
       invokerRef.current = document.activeElement;
       const el = inputRef.current;
-      if (el) { el.focus({ preventScroll: true }); const n = el.value.length; el.setSelectionRange(n, n); }
+      // Opens with the whole title selected: typing replaces it, and a single
+      // delete clears it (which is how a custom title is restored).
+      if (el) { el.focus({ preventScroll: true }); el.select(); }
     }, 40);
     const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
     window.addEventListener('keydown', onKey);
