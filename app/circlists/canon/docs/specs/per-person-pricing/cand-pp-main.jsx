@@ -14,10 +14,22 @@ PpCand.createForm = () => {
   };
 };
 PpCand.checkoutOffer = () => {
-  const p = PP_PLANS[window.CircPP.get().plan];
+  const st = window.CircPP.get();
+  const p = PP_PLANS[st.plan];
+  const tk = window.__ppTkActive || null;
+  const title = 'Circlists \u00b7 ' + p.label + ' plan';
+  const later = 'Then ' + p.full + ' per ' + p.unit + ' from ' + ppNextDate(p.unit) + '.';
+  if (tk && tk.kind === 'lapsed') {
+    return { title, price: p.full, per: 'due today', note: 'Restarts your subscription and wakes all your circles. ' + later, button: 'Pay and restart' };
+  }
+  if (st.returning && !st.subscribed) {
+    return { title, price: p.full, per: 'due today',
+      note: 'You have subscribed before, so there is no free month. ' + later,
+      button: tk ? 'Pay and take over' : 'Pay and create circle' };
+  }
   return {
-    title: 'Circlists · ' + p.label + ' plan',
-    price: '£0.00', per: 'due today',
+    title,
+    price: '\u00a30.00', per: 'due today',
     note: 'Free for 30 days. Then ' + p.full + ' per ' + p.unit + ' from ' + ppChargeDate() + '. We email a reminder first.',
     button: 'Start free month',
   };
@@ -51,13 +63,13 @@ const PpSwitcher = () => {
           <div style={lab}>PLAN PICK LAYOUT</div>
           {seg(opts, st.option, (id) => window.CircPP.set({ option: id }))}
           <div style={lab}>ACCOUNT</div>
-          {seg([[false, 'Not subscribed'], [true, 'Subscribed']], st.subscribed, (v) => window.CircPP.set({ subscribed: v }))}
+          {seg([['none', 'Not subscribed'], ['subscribed', 'Subscribed'], ['returning', 'Subscribed before']], ppAccount(st), (v) => window.CircPP.set(PP_ACCOUNT_PATCH[v]))}
         </div>
       ) : (
         <button type="button" onClick={() => setOpen(true)} style={{
           minHeight: 40, padding: '0 14px', borderRadius: 999, cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 12,
           background: 'var(--color-surface-raised)', border: '1px solid var(--color-border-2)', color: 'var(--color-fg-1)', boxShadow: '0 4px 12px rgba(0,0,0,0.14)',
-        }}>Pricing review {'·'} {st.subscribed ? 'subscribed' : 'not subscribed'}</button>
+        }}>Pricing review {'·'} {{ none: 'not subscribed', subscribed: 'subscribed', returning: 'subscribed before' }[ppAccount(st)]}</button>
       )}
     </div>
   );

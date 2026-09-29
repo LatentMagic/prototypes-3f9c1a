@@ -81,22 +81,70 @@ const PpPickLead = ({ plan, onPick }) => {
   );
 };
 
+// Take-over (proposed): a member of a sleeping circle takes it over. Three versions by account,
+// and one for the lapsed champion restarting. Reached on the refund route; window.__ppTk says which.
+const PpTakeOver = ({ spaceName, onFund, onCancel, user }) => {
+  const st = usePP();
+  const tk = window.__ppTk;
+  const p = PP_PLANS[st.plan];
+  const lapsed = tk.kind === 'lapsed';
+  const acct = ppAccount(st);
+  const covered = !lapsed && acct === 'subscribed';
+  const free = !lapsed && acct === 'none';
+  const Pick = { cards: PpPickCards, toggle: PpPickToggle, lead: PpPickLead }[st.option] || PpPickCards;
+  const line = { fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' };
+  const bullets = lapsed ? ['One plan covers every circle you run', 'All your circles wake up together']
+    : covered ? ['Covered by your plan. Nothing more to pay', 'You become its champion. Members stay free']
+    : ['It runs on your subscription. One plan covers every circle you run',
+       free ? 'First month free. Everyone in the circle stays free' : 'Everyone in the circle stays free'];
+  const note = covered ? null
+    : free ? <>We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.</>
+    : (lapsed ? 'You had your free month before, so there is none this time. We charge ' : 'You have subscribed before, so there is no free month. We charge ') + p.full + ' today.';
+  const title = lapsed ? 'Restart your subscription' : 'Take over ' + (spaceName || 'this circle');
+  const button = lapsed ? 'Restart subscription' : covered ? 'Take over this circle' : free ? 'Start free month and take over' : 'Pay ' + p.full + ' and take over';
+  return (
+    <WizardShell subject={spaceName} onExit={onCancel}>
+      <WizardTitle mb={20}>{title}</WizardTitle>
+      {!covered && <Pick plan={st.plan} onPick={(id) => window.CircPP.set({ plan: id })} />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 16, width: '100%' }}>
+        {bullets.map((t) => (
+          <div key={t} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
+            <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
+            <span style={line}>{t}</span>
+          </div>
+        ))}
+      </div>
+      {note && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>{note}</p>}
+      <Button variant="primary" full size="lg" onClick={onFund}>{button}</Button>
+      {!covered && <div style={{ margin: '14px 0 0', display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)' }}>
+        <Icon name="lock" size={13} style={{ flex: 'none' }} /><span>Billed to {user ? user.email : 'your account'}</span>
+      </div>}
+    </WizardShell>
+  );
+};
+
 const PpFundingPage = (props) => {
   const st = usePP();
   const { mode, onFund, onBack, onCancel, user } = props;
   const skip = mode !== 'refund' && st.subscribed;
   React.useEffect(() => { if (skip) onFund(); }, [skip]);
-  if (mode === 'refund') return <PpShippedFundingPage {...props} />;
+  const auto = window.__ppAuto;
+  React.useEffect(() => {
+    if (mode !== 'refund') return;
+    if (auto === 'checkout') { window.__ppAuto = null; onFund(); } else if (auto) window.__ppAuto = null;
+  }, []);
+  if (mode === 'refund') return window.__ppTk ? <PpTakeOver {...props} /> : <PpShippedFundingPage {...props} />;
   if (skip) return null;
   const p = PP_PLANS[st.plan];
+  const back = st.returning;
   const Pick = { cards: PpPickCards, toggle: PpPickToggle, lead: PpPickLead }[st.option] || PpPickCards;
   const line = { fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' };
   return (
     <WizardShell flow={{ step: 1 }} onBack={onBack} onExit={onCancel}>
-      <WizardTitle mb={20}>Start your free month</WizardTitle>
+      <WizardTitle mb={20}>{back ? 'Restart your subscription' : 'Start your free month'}</WizardTitle>
       <Pick plan={st.plan} onPick={(id) => window.CircPP.set({ plan: id })} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 16, width: '100%' }}>
-        {['One plan covers every circle you run', 'First month free. Everyone you invite joins free'].map((t) => (
+        {['One plan covers every circle you run', back ? 'Everyone you invite joins free' : 'First month free. Everyone you invite joins free'].map((t) => (
           <div key={t} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
             <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
             <span style={line}>{t}</span>
@@ -104,9 +152,10 @@ const PpFundingPage = (props) => {
         ))}
       </div>
       <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>
-        We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.
+        {back ? 'You have subscribed before, so there is no free month. We charge ' + p.full + ' today.'
+          : <>We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.</>}
       </p>
-      <Button variant="primary" full size="lg" onClick={onFund}>Start your free month</Button>
+      <Button variant="primary" full size="lg" onClick={onFund}>{back ? 'Restart subscription' : 'Start your free month'}</Button>
       <div style={{ margin: '14px 0 0', display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)' }}>
         <Icon name="lock" size={13} style={{ flex: 'none' }} /><span>Billed to {user ? user.email : 'your account'}</span>
       </div>
@@ -115,12 +164,24 @@ const PpFundingPage = (props) => {
 };
 
 // The checkout: the shipped provider stand-in, priced by CircCandidate.checkoutOffer.
+// A take-over (refund route) is shown to the shipped component as a new subscription, so the offer applies.
 const PpCheckout = (props) => {
   const st = usePP();
-  const skip = !props.refund && st.subscribed;
-  React.useEffect(() => { if (skip) props.onSuccess(); }, [skip]);
-  if (props.refund) return <PpShippedCheckout {...props} />;
-  if (skip) return null;
-  return <PpShippedCheckout {...props} onSuccess={() => { window.CircPP.set({ subscribed: true }); props.onSuccess(); }} />;
+  const tk = props.refund ? window.__ppTk : null;
+  const passThrough = props.refund ? !!tk && tk.kind === 'member' && st.subscribed : st.subscribed;
+  const done = () => {
+    if (tk && tk.kind === 'lapsed' && window.__ppApi) {
+      window.__ppApi.setSpaces((prev) => prev.map((s) => (!s.funded && s.champion === 'You'
+        ? { ...s, funded: true, dormancy: null, funding: null, openUntil: null } : s)));
+    }
+    window.__ppTk = null;
+    if (!st.subscribed) window.CircPP.set({ subscribed: true, returning: false });
+    props.onSuccess();
+  };
+  React.useEffect(() => { if (passThrough) done(); }, [passThrough]);
+  if (props.refund && !tk) return <PpShippedCheckout {...props} />;
+  if (passThrough) return null;
+  window.__ppTkActive = tk;
+  return <PpShippedCheckout {...props} refund={false} onSuccess={done} />;
 };
 Object.assign(window, { FundingPage: PpFundingPage, Checkout: PpCheckout });

@@ -10,7 +10,7 @@ const PP_PLANS = {
   yearly:  { id: 'yearly',  label: 'Yearly',  price: '£50', per: 'year',  full: '£50.00', unit: 'year' },
 };
 window.CircPP = (() => {
-  let st = { option: 'cards', plan: 'yearly', subscribed: false, autoAdvance: true };
+  let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true };
   try { Object.assign(st, JSON.parse(localStorage.getItem(PP_KEY) || '{}')); } catch (e) {}
   const subs = new Set();
   return {
@@ -26,4 +26,9 @@ const usePP = () => {
 };
 // Day 30 of the trial, as a plain date ("29 Oct").
 const ppChargeDate = () => new Date(Date.now() + 30 * 864e5).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-Object.assign(window, { PP_PLANS, usePP, ppChargeDate });
+// First payment after the free month or a paid period: a month or a year on.
+const ppNextDate = (unit) => { const d = new Date(); if (unit === 'year') d.setFullYear(d.getFullYear() + 1); else d.setMonth(d.getMonth() + 1); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: unit === 'year' ? 'numeric' : undefined }); };
+// The three accounts the review can play: never subscribed, subscribed now, subscribed before and lapsed.
+const ppAccount = (st) => (st.subscribed ? 'subscribed' : st.returning ? 'returning' : 'none');
+const PP_ACCOUNT_PATCH = { none: { subscribed: false, returning: false }, subscribed: { subscribed: true, returning: false }, returning: { subscribed: false, returning: true } };
+Object.assign(window, { PP_PLANS, usePP, ppChargeDate, ppNextDate, ppAccount, PP_ACCOUNT_PATCH });
