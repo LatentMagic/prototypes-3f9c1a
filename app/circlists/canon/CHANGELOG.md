@@ -6,8 +6,8 @@ exhaustively; entries capture the shape of each significant step, not every chan
 ## Comment reactions reach the Returns bar — 2026-09-28
 
 - **A reaction to your comment or reply brings that card into your Returns bar**, and no one else's. Your own reaction never does, and it still sends no push.
-- **A row names everyone behind what moved**, people who replied first and then people who reacted, with up to three distinct glyphs at the end. A card with only reactions counts as a row like any other.
-- **The head keeps a verb that follows what happened:** "replied", "reacted" or "replied and reacted". On a phone it names one person and "others".
+- **Names in the bar mean people who replied.** Reactions show only as up to three distinct glyphs at the row's right end. A card with only reactions is its title alone and still counts as a row.
+- **The head's only verb is "replied".** Its glyph stack sits before the chevron, and when only reactions moved the head has no second line. On a phone it names one person and "others".
 - **The Home's Conversation preview carries the same rows.**
 
 ## Comment reactions — 2026-09-28

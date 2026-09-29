@@ -124,13 +124,14 @@ const CandReactPill = React.forwardRef(({ list, mine, open, onOpen, animate }, f
       <span ref={inner} className="cand-crpill-face" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, padding: '0 6px',
         borderRadius: 'var(--radius-md)', background: 'var(--color-surface)',
         border: '1px solid ' + (mine ? 'var(--color-accent)' : 'var(--color-border-1)') }}>
-        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        {/* Contents nudged down 1px: emoji and figures sit high in a line-height:1 box, so the gap above read smaller than below. */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', transform: 'translateY(1px)' }}>
           {glyphs.map((g, i) => (
             <span key={g} aria-hidden="true" style={{ width: 16, height: 16, fontSize: 14, lineHeight: 1, marginLeft: i ? -2 : 0,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{g}</span>
           ))}
         </span>
-        {n > 1 && <span aria-hidden="true" style={{ font: '600 12px/1 var(--font-sans)', fontVariantNumeric: 'tabular-nums',
+        {n > 1 && <span aria-hidden="true" style={{ font: '600 12px/1 var(--font-sans)', fontVariantNumeric: 'tabular-nums', transform: 'translateY(1px)',
           color: mine ? 'var(--color-accent)' : 'var(--color-fg-2)' }}>{n}</span>}
       </span>
     </button>

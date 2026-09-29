@@ -215,8 +215,10 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
                     <span style={{ display: 'block', font: r.titled ? '600 var(--text-base)/1.35 var(--font-sans)' : '600 12.5px/1.45 var(--font-mono)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)', ...CROSS_CLIP }}>{r.title}</span>
                     <span style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 3, font: CROSS_METAF, color: 'var(--color-fg-3)' }}>
                       <span style={{ flexShrink: 0 }}>{r.circleName}</span>
-                      <span aria-hidden="true" style={{ flexShrink: 0 }}>&middot;</span>
-                      <span style={{ flex: 1, minWidth: 0, ...CROSS_CLIP }}>{candBarLine(r)}</span>
+                      {/* Names mean people who wrote; a reaction-only row keeps its
+                          circle alone on this line, so every row holds one height. */}
+                      {candBarLine(r) && <span aria-hidden="true" style={{ flexShrink: 0 }}>&middot;</span>}
+                      {candBarLine(r) && <span style={{ flex: 1, minWidth: 0, ...CROSS_CLIP }}>{candBarLine(r)}</span>}
                     </span>
                   </span>
                   <CandRxStack glyphs={r.glyphs} />

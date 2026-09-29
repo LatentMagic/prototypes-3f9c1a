@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="../../../../">
+<title>Reaction pill — when yours is in it</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+body{margin:0;background:var(--color-page);color:var(--color-fg-1);font-family:var(--font-sans)}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 20px 64px}
+h1{font:600 20px/1.3 var(--font-sans);margin:0 0 6px}
+.lede{font:400 14px/1.5 var(--font-sans);color:var(--color-fg-2);margin:0 0 28px;max-width:64ch;text-wrap:pretty}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:16px}
+.cell{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:16px 18px 18px}
+.num{font:600 15px/1.3 var(--font-sans);margin:0}
+.claim{font:400 13px/1.45 var(--font-sans);color:var(--color-fg-2);margin:4px 0 2px}
+.cost{font:400 13px/1.45 var(--font-sans);color:var(--color-fg-3);margin:0 0 14px}
+.turn{border-top:1px solid var(--color-border-2);padding:14px 0 4px}
+.who{font:600 13px/1.3 var(--font-sans)}.who span{font-weight:400;color:var(--color-fg-3);margin-left:6px}
+.txt{font:400 14px/1.45 var(--font-sans);margin:4px 0 8px}
+.acts{display:flex;align-items:center;gap:14px}
+.reply{font:500 13px/1 var(--font-sans);color:var(--color-fg-3)}
+.tag{font:400 11px/1 var(--font-mono);color:var(--color-fg-3);margin-left:auto}
+.pill{display:inline-flex;align-items:center;border-radius:var(--radius-md);background:var(--color-surface);border:1px solid var(--color-border-1)}
+.g{display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.n{font:600 12px/1 var(--font-sans);font-variant-numeric:tabular-nums;color:var(--color-fg-2)}
+/* 0 today */
+.o0 .pill{height:24px;padding:0 6px;gap:4px}.o0 .g{width:16px;height:16px;font-size:14px}.o0 .g+.g{margin-left:-2px}
+.o0 .mine{border-color:var(--color-accent)}.o0 .mine .n{color:var(--color-accent)}
+/* shared room for 1–3 */
+.o1 .pill,.o2 .pill,.o3 .pill{height:28px;padding:0 9px;gap:6px}
+.o1 .g,.o2 .g,.o3 .g{width:16px;height:16px;font-size:15px}
+.o1 .gs,.o2 .gs,.o3 .gs{display:inline-flex;gap:2px}
+/* 1 sunken */
+.o1 .mine{background:var(--color-surface-sunken);border-color:var(--color-border-2)}.o1 .mine .n{color:var(--color-fg-1)}
+/* 2 soft tint */
+.o2 .mine{background:var(--color-accent-soft);border-color:transparent}.o2 .mine .n{color:var(--color-accent)}
+/* 3 ink edge */
+.o3 .mine{border-color:var(--color-border-strong)}.o3 .mine .n{color:var(--color-fg-1)}
+.gs{display:inline-flex}
+/* Optical centring: emoji and figures sit high in a line-height:1 box, so the top gap read smaller than the bottom. Nudge the contents down 1px in every treated option; 0 stays as today. */
+.o1 .pill>*,.o2 .pill>*,.o3 .pill>*,.o4 .pill>*,.o5 .pill>*,.o6 .pill>*{transform:translateY(1px)}
+/* 0.5: today exactly, contents nudged down 1px */
+.o05 .pill{height:24px;padding:0 6px;gap:4px}.o05 .g{width:16px;height:16px;font-size:14px}.o05 .g+.g{margin-left:-2px}
+.o05 .mine{border-color:var(--color-accent)}.o05 .mine .n{color:var(--color-accent)}
+.o05 .pill>*{transform:translateY(1px)}
+/* 4–6: today's green mark, treated */
+.o4 .pill,.o6 .pill{height:28px;padding:0 9px;gap:6px}
+.o4 .g,.o6 .g{width:16px;height:16px;font-size:15px}
+.o4 .gs,.o6 .gs{gap:2px}
+.o5 .pill{height:24px;padding:0 6px;gap:4px}.o5 .g{width:16px;height:16px;font-size:14px}.o5 .g+.g{margin-left:-2px}
+.o4 .mine{border-color:var(--color-accent)}.o4 .mine .n{color:var(--color-accent)}
+.o5 .mine{border-color:color-mix(in oklch,var(--color-accent) 45%,var(--color-border-1))}.o5 .mine .n{color:var(--color-accent)}
+.o6 .mine{border-color:color-mix(in oklch,var(--color-accent) 45%,var(--color-border-1));background:color-mix(in oklch,var(--color-accent) 5%,var(--color-surface))}.o6 .mine .n{color:var(--color-accent)}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;border-top:1px solid var(--color-border-2);padding-top:14px}
+.pair{display:flex;flex-direction:column;gap:8px}
+.lab{font:500 12px/1.3 var(--font-sans);color:var(--color-fg-3)}.lab.on{color:var(--color-fg-1);font-weight:600}
+</style></head><body><div class="wrap">
+<h1>The reaction pill, when yours is in it</h1>
+<p class="lede">Held fixed: the glyphs, the count, the who-reacted view behind the tap. Options 1 to 3 all get the same extra room (28px tall, 9px sides, glyphs 2px apart instead of overlapping). They differ only in how “yours is in it” is marked.</p>
+<div class="grid" id="grid"></div>
+</div>
+<script>
+const opts=[
+ ['o0','0 · Today','Green 1px border and green count.','Reads as a selected control, and the tight box makes it feel cramped.'],
+ ['o05','0.5 · Today, re-centred','Exactly today, with the glyphs and count moved down 1px so the gap above matches the gap below.','None beyond today’s.'],
+ ['o4','4 · Today, with room','The same green border and count, in the roomier pill with the glyphs apart.','Tests whether room alone fixes it; the line is as bright as today.'],
+ ['o5','5 · Today, softened line','Today’s size and padding, contents nudged down 1px, and the border mixed halfway toward grey. The count stays full green.','The green line is gentler but still says yours.'],
+ ['o6','6 · Today, softened and washed','As 5, plus a faint green wash inside the pill.','The wash may read as tinted status rather than yours.'],
+ ['o1','1 · Sunken','Yours fills the pill a step darker, like the selected glyph in the picker. The count turns ink.','No green at all, so “yours” is quieter.'],
+ ['o2','2 · Soft tint','A pale green fill with no border. The count stays green.','Still uses green; the tint could read as status.'],
+ ['o3','3 · Ink edge','A darker grey border and an ink count. No fill.','The most subtle; can be missed at a glance.'],
+];
+const rows=[
+ {lab:'You reacted',g:['🔥','💡','❤️'],n:4,m:true},
+ {lab:'You did not react',g:['🔥','💡','❤️'],n:4,m:false},
+ {lab:'You reacted',g:['👍'],n:2,m:true},
+ {lab:'You did not react',g:['👍'],n:2,m:false},
+];
+const pill=r=>'<span class="pill'+(r.m?' mine':'')+'"><span class="gs">'+r.g.map(x=>'<span class="g">'+x+'</span>').join('')+'</span><span class="n">'+r.n+'</span></span>';
+document.getElementById('grid').innerHTML=opts.map(([c,name,claim,cost])=>'<section class="cell '+c+'"><p class="num">'+name+'</p><p class="claim">'+claim+'</p><p class="cost">Cost: '+cost+'</p><div class="pairs">'+rows.map(r=>'<div class="pair"><span class="lab'+(r.m?' on':'')+'">'+r.lab+'</span><span class="acts"><span class="reply">Reply</span>'+pill(r)+'</span></div>').join('')+'</div></section>').join('');
+</script>
+</body></html>

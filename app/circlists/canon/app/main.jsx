@@ -53,7 +53,8 @@ const circShareExtractUrl = (payload) => {
 // fix is invisible to the one person it was made for. Same reasoning as
 // circlists-a3.html's own v1 -> v2 bump, for the same circle.
 // v14: the seed gains comment reactions that reach the returns bar.
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v14';
+// v15: the go.dev "both" row's reactions come from people who did not reply.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v15';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 // Saved state can predate seeded descriptions (search-only meta); fill them in.
 if (SAVED && Array.isArray(SAVED.spaces) && window.CircSeed.SEED_DESC) {
@@ -499,7 +500,7 @@ const CircApp = () => {
   // user who holds no membership; in the app posture it is a real destination
   // (the circles list) reached from the circle bar's Home slot. One route serves
   // both: the no-membership case is simply its empty state.
-  const goHome = () => { setCurrentId(null); setRoute('home'); };
+  const goHome = () => { cardOrigin.current = null; setCurrentId(null); setRoute('home'); };
   // Where Back should return to when Account was opened (home vs a circle).
   // Returning to a circle you were already in must NOT re-run the feed's load
   // state — the feed never left.
@@ -510,6 +511,9 @@ const CircApp = () => {
   // there. After a mark-read on Active the opened card has left the list, so
   // focus goes to the card that took its place (UI Decision-74/75).
   const cardOrigin = useRef(null);
+  // The origin belongs to the circle's feed and leaves with it: any change of
+  // circle (Home included) forgets it.
+  useEffect(() => { cardOrigin.current = null; }, [currentId]);
   const routeToCard = (r) => {
     if (typeof r === 'string' && r.slice(0, 5) === 'card:' && route === 'space' && currentId) {
       const el = feedScroller();
@@ -519,9 +523,16 @@ const CircApp = () => {
     setRoute(r);
   };
   const returnFromCard = () => {
-    const o = cardOrigin.current; cardOrigin.current = null;
-    // Opened by direct address, with no tab before it: back lands on History.
-    if (!o || o.id !== currentId) { setTab('read'); returnToSpace(); return; }
+    let o = cardOrigin.current; cardOrigin.current = null;
+    // No tab before it (shared link, watched conversation): back lands where the
+    // card lives now — Active if still waiting, else History — focused on it.
+    const bare = !o || o.id !== currentId;
+    if (bare) {
+      const itemId = typeof route === 'string' && route.slice(0, 5) === 'card:' ? route.slice(5) : null;
+      const it = space && itemId ? space.items.find(i => i.id === itemId) : null;
+      const t = it && inActive(space, it) ? 'active' : 'read';
+      o = { id: currentId, tab: t, scroll: tabScroll.current[currentId + ':' + t] || 0, itemId, order: [] };
+    }
     tabScroll.current[o.id + ':' + o.tab] = o.scroll;
     setTab(o.tab); setRoute('space');
     const settle = () => {
@@ -532,7 +543,7 @@ const CircApp = () => {
       // card itself where it carries none); read away on Active → the card that
       // took its place, else the card above, else the empty tab's content.
       const own = q(o.itemId);
-      let target = own && (own.querySelector('.circ-waythrough') || own);
+      let target = own && (bare ? own : (own.querySelector('.circ-waythrough') || own));
       if (!own && o.tab === 'active') {
         const at = o.order.indexOf(o.itemId);
         for (const id of o.order.slice(at + 1).concat(o.order.slice(0, Math.max(at, 0)).reverse())) { target = q(id); if (target) break; }

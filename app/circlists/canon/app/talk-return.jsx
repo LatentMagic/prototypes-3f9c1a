@@ -61,22 +61,25 @@ const candBarRx = (item) => {
   });
   return { who, glyphs };
 };
-// A row's one line: names only, as canon — everyone behind what moved on the
-// card, repliers first, then reactors (user, 2026-09-28). The stack says
-// reactions were part of it.
-const candBarLine = (r) => {
-  const all = [...r.who];
-  (r.rx || []).forEach(n => { if (!all.includes(n)) all.push(n); });
-  return candNames(all);
+// A row's one line: the repliers, and only them — a name in the bar only ever
+// means someone who wrote (comment-reactions, option E, ratified). Reactors stay
+// in the data for their glyphs and never reach the words. A reaction-only row
+// has no line: its title alone, centred in the row's fixed height.
+const candBarLine = (r) => (r.who && r.who.length ? candNames(r.who) : '');
+// The head's roll-up of glyphs across the rows, the way the names roll up.
+const candBarGlyphs = (snap) => {
+  const g = [];
+  snap.forEach(r => (r.glyphs || []).forEach(x => { if (!g.includes(x) && g.length < 3) g.push(x); }));
+  return g;
 };
 // The stack: up to three distinct glyphs, bare, at the row's end. Outside the
 // text column, so reactions never lengthen the row's words.
 const CandRxStack = ({ glyphs }) => {
   if (!glyphs || !glyphs.length) return null;
-  const said = glyphs.map(g => (window.glyphName ? window.glyphName(g) : g)).join(', ');
+  // Spoken as what it means — reactions to you — never as a list of emojis.
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-      <span className="circ-vh">Reactions: {said}</span>
+      <span className="circ-vh">Reactions to you.</span>
       {glyphs.map((g, k) => (
         <span key={g} aria-hidden="true" style={{ width: 16, height: 16, fontSize: 14, lineHeight: 1, marginLeft: k ? -2 : 0,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{g}</span>
@@ -215,14 +218,11 @@ const CandFeedLead = ({ api }) => {
   if (!snap.length) snap = lastSnap.current; else lastSnap.current = snap;
   if (!snap.length) return null;
 
-  // Reactors join the name list after the speakers of their row. The verb
-  // follows what the named people did: all spoke, all only reacted, or both.
-  const names = [], spoke = [];
-  snap.forEach(r => {
-    r.who.forEach(n => { if (!names.includes(n)) names.push(n); if (!spoke.includes(n)) spoke.push(n); });
-    (r.rx || []).forEach(n => { if (!names.includes(n)) names.push(n); });
-  });
-  const verb = spoke.length === names.length ? ' replied' : spoke.length ? ' replied and reacted' : ' reacted';
+  // Repliers only, verb "replied" only. Reactions are the head's glyph stack;
+  // when only reactions moved there is no second line at all.
+  const names = [];
+  snap.forEach(r => r.who.forEach(n => { if (!names.includes(n)) names.push(n); }));
+  const headGlyphs = candBarGlyphs(snap);
   // The head adapts from mobile: on a phone it names ONE person and "others"
   // so it fits; wider, it takes the usual two names. Every row restates its own.
   const narrow = window.innerWidth < 520 || !!document.querySelector('.circ-phone-screen');
@@ -233,7 +233,7 @@ const CandFeedLead = ({ api }) => {
   // and are the half allowed to truncate: every row restates them.
   const head = open ? 'Pick one to open its conversation'
     : n + (n === 1 ? ' conversation' : ' conversations') + ' you are watching';
-  const sub = headNames + verb;
+  const sub = names.length ? headNames + ' replied' : '';
   const toggle = () => {
     if (open) { setOpen(false); setHeld(null); }
     else { heldAt.current = Date.now(); setHeld(candBarSnap(rows)); setOpen(true); }
@@ -261,8 +261,9 @@ const CandFeedLead = ({ api }) => {
           <span aria-hidden="true" style={{ width: 3, height: 22, borderRadius: 2, background: 'var(--color-new-words)', flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <span style={{ font: '600 14px/1.35 var(--font-sans)', color: 'var(--color-fg-1)', textWrap: 'pretty', overflowWrap: 'break-word' }}>{head}</span>
-            <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</span>
+            {sub && <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</span>}
           </span>
+          <CandRxStack glyphs={headGlyphs} />
           <span aria-hidden="true" style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 'var(--radius-md)',
             border: '1px solid var(--color-border-1)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             color: 'var(--color-fg-2)', transform: open ? 'rotate(180deg)' : 'none',
@@ -287,14 +288,14 @@ const CandFeedLead = ({ api }) => {
                 <button type="button" className="circ-menuitem"
                   onClick={() => { const C = window.CircCandidate; if (C && C.goToCard) C.goToCard({ id: r.id }); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
-                    background: 'transparent', border: 0, cursor: 'pointer', minHeight: 48, padding: '11px 8px 11px 10px', borderRadius: 'var(--radius-md)' }}
+                    background: 'transparent', border: 0, cursor: 'pointer', height: 60, boxSizing: 'border-box', padding: '0 8px 0 10px', borderRadius: 'var(--radius-md)' }}
                   data-cand-listrow="">
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {/* No title: the address IS the name, set in mono as the card
                         sets it (app/feed.jsx:134) — one treatment for a title-less
                         link wherever it is named. */}
                     <span style={{ font: r.titled ? '600 13.5px/1.35 var(--font-sans)' : '600 12.5px/1.45 var(--font-mono)', color: 'var(--color-fg-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</span>
-                    <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candBarLine(r)}</span>
+                    {candBarLine(r) && <span style={{ font: '400 12px/1.3 var(--font-sans)', color: 'var(--color-fg-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candBarLine(r)}</span>}
                   </span>
                   <CandRxStack glyphs={r.glyphs} />
                   <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
@@ -320,4 +321,4 @@ const CandFeedLead = ({ api }) => {
   );
 };
 
-Object.assign(window, { CandFeedLead, candBarRows, candBarWho, candBarAt, candBarLine, candFreshRx, CandRxStack });
+Object.assign(window, { CandFeedLead, candBarRows, candBarWho, candBarAt, candBarLine, candBarGlyphs, candFreshRx, CandRxStack });

@@ -78,7 +78,7 @@
         // BEFORE Ada's, so the one turn carrying the unseen tab is one you could
         // not have read: a turn of your own beneath it would prove you had.
         T('gp4', 'You', 3, 'Both worth doing. I will take the shutdown path and thread a context through it this week.',
-          { reactions: [RX('Ada L.', G.idea, 2.5), RX('Priya N.', G.up, 2)] }),
+          { reactions: [RX('Lena P.', G.idea, 2.5), RX('Priya N.', G.up, 2)] }),
         T('gp3', 'Ada L.', 2, 'Worth reading beside the errgroup docs. Half of this file is errgroup now, done better.'),
       ],
     });
