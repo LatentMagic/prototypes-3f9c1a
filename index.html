@@ -974,13 +974,6 @@
               ]
             },
             {
-              date: '2026-09-30',
-              title: 'Per-person pricing candidate carried over the sync',
-              items: [
-                'The export does not contain the per-person pricing candidate, so it was restored by hand: its overlay files under docs/specs/per-person-pricing/, its playgrounds.json row, and its two droppable hooks (createForm in spaces.jsx, checkoutOffer in subscriptions.jsx). The next sync must carry all of them again, or the candidate silently disappears.'
-              ]
-            },
-            {
               date: '2026-09-29',
               title: 'Retitled cards carry no "edited" marker',
               items: [
@@ -1273,6 +1266,14 @@
               base: 'Canon\'s first sync — carries forward the agreed line next was holding.'
             }
           ]
+        },
+        {
+          slug: 'per-person-pricing',
+          version: 'Per-person pricing',
+          ticket: 'pricing-model proposal',
+          html: 'circlists.html',
+          kind: 'candidate',
+          desc: 'A full copy of canon with per-person pricing applied: start your free month at first circle, a subscribed account creates straight through, and the account page carries the subscription. Unratified.'
         }
       ]
     },

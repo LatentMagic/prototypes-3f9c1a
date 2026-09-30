@@ -163,7 +163,7 @@ const PpFundingPage = (props) => {
   );
 };
 
-// The checkout: the shipped provider stand-in, priced by CircCandidate.checkoutOffer.
+// The checkout: the shipped provider stand-in, priced by ppCheckoutOffer.
 // A take-over (refund route) is shown to the shipped component as a new subscription, so the offer applies.
 const PpCheckout = (props) => {
   const st = usePP();

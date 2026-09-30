@@ -1,0 +1,1121 @@
+// ============================================================================
+// Circlists — the states register (PROTOTYPE AID, not part of the product).
+//
+// THE SINGLE SOURCE for every staged state of the app. One entry per state:
+//
+//     { group, id, label, stage(ctx) }
+//
+//   id     — the state's ADDRESS. `?state=<id>` on the entry opens it, and a
+//            ticket in the real build links to exactly that. Once linked, an id
+//            is public: renaming or removing one breaks those links (an
+//            unresolved name lands on the states index, which is how that shows
+//            up rather than silently opening the wrong screen).
+//   label  — how it reads to a person, in the palette and the index.
+//   stage  — the staging function, handed the context built from main.jsx's
+//            setters. Moved here from the old buildScenarios in config.jsx.
+//
+// Everything else is DERIVED from this list and cannot drift from it: the URL
+// resolver below, window.CIRC_STATES (ids + labels only, for anything reading
+// the page), and the palette + index in app/states-ui.jsx.
+//
+// A deletable aid, in two files (this + app/states-ui.jsx). main.jsx guards on
+// window.buildStates / window.StatesIndex, so absent ⇒ no register, no palette,
+// no address reading, and the app behaves exactly as it ships. A build that
+// omits the aids simply does not list them.
+//
+// NOTE ON PREVIEW: the resolver reads location.search, and nothing in the design
+// tool can hand this page a URL — so `?state=` looks INERT here, in every
+// posture, however correct it is. It is exercised by driving the register
+// directly. See ARCHITECTURE.md → "Addressable states".
+// ============================================================================
+
+const DAY = 864e5;
+
+// Search. The one Read-tab card whose title
+// never resolved — seeded unread with no SEED_META entry (seed-data.jsx), so
+// it renders its bare URL as its own headline. `stageSort`'s `bareRead` flag
+// marks this exact URL read so search-bare-url can show the field matching a
+// headline that IS a URL, which is the one case circFilterSearch's index rule
+// most needs proving against. Not edited into the seed itself — a seed change
+// would oblige a parallel demo-seed edit and a state-key bump this slice does
+// not need (see this project's CLAUDE.md, "Seed data — the standing rule").
+const CIRC_BARE_URL = 'https://analytics-internal-example.com/?trace=8823ff1c9e0a4b12-2026-03-retro-followups-database-migration-incident-action-items-and-owners-final-draft-v3';
+
+// The link a member arrives HOLDING, staged for the share intake (LM-771).
+// Long enough that the picker's one mono line actually truncates — a link that
+// fits proves nothing about the state being staged.
+const CIRC_SHARE_LINK = 'https://martinfowler.com/articles/patterns-of-distributed-systems/replicated-log.html';
+// A text-plus-link share, the shape a news or reader app hands over: headline,
+// then the link. Only the URL may ever reach the picker or the add.
+const CIRC_SHARE_TEXT = 'Replicated Log — Patterns of Distributed Systems ' + CIRC_SHARE_LINK;
+
+// The late joiner (LM-786): an established circle the member joined three days
+// ago, with a Horizon a week before that. [url, title, source, who]. `now` is
+// from the Horizon on and still waiting (Active); `done` is the little they
+// have marked since joining; `past` is the long run from before the Horizon,
+// which History draws as ordinary Unread cards.
+// The oldest-first pile (LM-786 sort): 26 cards, four pages at eight, none
+// sharing a URL with the simulated arrivals in liveliness.jsx.
+const CIRC_PILE = [
+  ['https://aeon.co/essays/the-art-of-noticing-small-things', 'The art of noticing small things', 'Aeon', 'Ana R.'],
+  ['https://www.theguardian.com/science/2026/aug/why-rivers-meander', 'Why rivers meander', 'The Guardian', 'Dan M.'],
+  ['https://nautil.us/the-mathematics-of-queues/', 'The mathematics of waiting in line', 'Nautilus', 'Priya S.'],
+  ['https://www.lrb.co.uk/the-paper/v48/n14/on-maps', 'On maps, and what they leave out', 'London Review of Books', 'Lena K.'],
+  ['https://longreads.com/2026/07/the-night-ferry/', 'The night ferry', 'Longreads', 'Joe M.'],
+  ['https://www.bbc.co.uk/sounds/play/in-our-time-tides', 'In Our Time: the tides', 'BBC Sounds', 'Dan M.'],
+  ['https://www.newyorker.com/culture/annals-of-inquiry/the-science-of-habit', 'What we get wrong about habits', 'The New Yorker', 'Ana R.'],
+  ['https://www.atlasobscura.com/articles/the-last-letterpress-shops', 'The last letterpress shops', 'Atlas Obscura', 'Priya S.'],
+  ['https://www.smithsonianmag.com/history/the-long-history-of-the-pencil', 'The long history of the pencil', 'Smithsonian', 'Lena K.'],
+  ['https://aeon.co/essays/what-it-means-to-be-a-good-neighbour', 'What it means to be a good neighbour', 'Aeon', 'Joe M.'],
+  ['https://www.theatlantic.com/ideas/archive/2026/06/the-case-for-letters/', 'The case for writing letters again', 'The Atlantic', 'Ana R.'],
+  ['https://nautil.us/how-birds-find-their-way-home/', 'How birds find their way home', 'Nautilus', 'Dan M.'],
+  ['https://www.lithub.com/on-keeping-a-commonplace-book/', 'On keeping a commonplace book', 'Literary Hub', 'Priya S.'],
+  ['https://www.bbc.co.uk/sounds/play/the-listening-project-kitchens', 'The Listening Project: kitchens', 'BBC Sounds', 'Lena K.'],
+  ['https://longreads.com/2026/05/the-weather-watchers/', 'The weather watchers', 'Longreads', 'Joe M.'],
+  ['https://www.theguardian.com/books/2026/may/the-joy-of-second-hand-bookshops', 'The joy of second-hand bookshops', 'The Guardian', 'Ana R.'],
+  ['https://www.newyorker.com/magazine/2026/04/the-orchard-keepers', 'The orchard keepers', 'The New Yorker', 'Dan M.'],
+  ['https://www.atlasobscura.com/articles/salt-marshes-and-the-people-who-mind-them', 'Salt marshes and the people who mind them', 'Atlas Obscura', 'Priya S.'],
+  ['https://aeon.co/essays/why-we-walk-in-circles-when-lost', 'Why we walk in circles when we are lost', 'Aeon', 'Lena K.'],
+  ['https://www.smithsonianmag.com/science-nature/the-quiet-life-of-moss', 'The quiet life of moss', 'Smithsonian', 'Joe M.'],
+  ['https://www.lrb.co.uk/the-paper/v48/n10/on-rereading', 'On rereading, slowly', 'London Review of Books', 'Ana R.'],
+  ['https://nautil.us/the-physics-of-bread/', 'The physics of a good loaf', 'Nautilus', 'Dan M.'],
+  ['https://www.theatlantic.com/family/archive/2026/03/the-shared-table/', 'The shared table', 'The Atlantic', 'Priya S.'],
+  ['https://longreads.com/2026/03/the-lock-keeper/', 'The lock keeper', 'Longreads', 'Lena K.'],
+  ['https://www.bbc.co.uk/sounds/play/in-our-time-the-almanac', 'In Our Time: the almanac', 'BBC Sounds', 'Joe M.'],
+  ['https://www.theguardian.com/lifeandstyle/2026/feb/learning-to-mend', 'Learning to mend things', 'The Guardian', 'Ana R.'],
+];
+
+const CIRC_LATE = {
+  now: [
+    ['https://aeon.co/essays/why-we-keep-lists-we-never-finish', 'Why we keep lists we never finish', 'Aeon', 'Ana R.'],
+    ['https://www.bbc.co.uk/sounds/play/m001-slow-cooking', 'The Food Programme: the case for slow cooking', 'BBC Sounds', 'Dan M.'],
+    ['https://www.theatlantic.com/culture/archive/2026/09/the-return-of-the-letter/', 'The return of the letter', 'The Atlantic', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=studio-session-1971', 'How a 1971 studio session changed recorded sound', 'YouTube', 'Lena K.'],
+    ['https://www.seriouseats.com/the-only-focaccia-method-you-need', 'The only focaccia method you need', 'Serious Eats', 'Joe M.'],
+    ['https://nautil.us/the-physics-of-a-perfect-skim-stone/', 'The physics of a perfect skimming stone', 'Nautilus', 'Ana R.'],
+  ],
+  done: [
+    ['https://www.theguardian.com/cities/2026/sep/quiet-return-of-the-neighbourhood-library', 'The quiet return of the neighbourhood library', 'The Guardian', 'Priya S.'],
+    ['https://www.newyorker.com/culture/the-weekend-essay/walking-without-headphones', 'The case for walking without headphones', 'The New Yorker', 'Dan M.'],
+    ['https://longreads.com/2026/09/the-last-lighthouse-keepers/', 'The last lighthouse keepers', 'Longreads', 'Lena K.'],
+  ],
+  past: [
+    ['https://www.lrb.co.uk/the-paper/v48/n16/on-gardens', 'On gardens, and the people who leave them', 'London Review of Books', 'Joe M.'],
+    ['https://www.bbc.co.uk/sounds/play/in-our-time-public-library', 'In Our Time: the history of the public library', 'BBC Sounds', 'Dan M.'],
+    ['https://aeon.co/essays/the-art-of-doing-one-thing-at-a-time', 'The art of doing one thing at a time', 'Aeon', 'Ana R.'],
+    ['https://www.theguardian.com/food/2026/jul/a-year-of-sunday-lunches', 'A year of Sunday lunches', 'The Guardian', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=how-maps-lie', 'How maps quietly shape what we notice', 'YouTube', 'Lena K.'],
+    ['https://www.newyorker.com/magazine/2026/06/the-slow-craft-of-bookbinding', 'The slow craft of bookbinding', 'The New Yorker', 'Joe M.'],
+    ['https://www.theatlantic.com/family/archive/2026/06/friendship-after-forty/', 'Friendship after forty', 'The Atlantic', 'Ana R.'],
+    ['https://nautil.us/why-birdsong-changes-in-cities/', 'Why birdsong changes in cities', 'Nautilus', 'Dan M.'],
+    ['https://www.seriouseats.com/how-to-make-stock-from-scraps', 'How to make stock from scraps', 'Serious Eats', 'Priya S.'],
+    ['https://longreads.com/2026/05/the-river-swimmers/', 'The river swimmers', 'Longreads', 'Lena K.'],
+    ['https://www.bbc.co.uk/sounds/play/desert-island-discs-archive', 'Desert Island Discs: from the archive', 'BBC Sounds', 'Joe M.'],
+    ['https://aeon.co/essays/what-we-owe-to-the-places-we-grew-up', 'What we owe to the places we grew up', 'Aeon', 'Ana R.'],
+    ['https://www.lrb.co.uk/the-paper/v48/n09/letters-from-a-small-island', 'Letters from a small island', 'London Review of Books', 'Dan M.'],
+    ['https://www.theguardian.com/lifeandstyle/2026/apr/learning-to-sew-at-sixty', 'Learning to sew at sixty', 'The Guardian', 'Priya S.'],
+    ['https://www.youtube.com/watch?v=a-day-in-a-bakery', 'A day in a village bakery', 'YouTube', 'Lena K.'],
+    ['https://www.newyorker.com/culture/cultural-comment/the-pleasure-of-rereading', 'The pleasure of rereading', 'The New Yorker', 'Joe M.'],
+    ['https://www.theatlantic.com/ideas/archive/2026/03/the-case-for-boredom/', 'The case for boredom', 'The Atlantic', 'Ana R.'],
+    ['https://nautil.us/the-hidden-life-of-hedgerows/', 'The hidden life of hedgerows', 'Nautilus', 'Dan M.'],
+    ['https://www.seriouseats.com/a-guide-to-winter-citrus', 'A guide to winter citrus', 'Serious Eats', 'Priya S.'],
+    ['https://longreads.com/2026/02/night-shift-at-the-observatory/', 'Night shift at the observatory', 'Longreads', 'Lena K.'],
+    ['https://www.bbc.co.uk/sounds/play/short-cuts-first-light', 'Short Cuts: first light', 'BBC Sounds', 'Joe M.'],
+    ['https://aeon.co/essays/on-keeping-a-commonplace-book', 'On keeping a commonplace book', 'Aeon', 'Ana R.'],
+  ],
+};
+
+// ---- staging context -------------------------------------------------------
+// Built per render from main.jsx's setters; every stage() closes over nothing
+// but this. Same staging behaviour as the old Config scenarios, verbatim.
+function circStateContext(api) {
+  const {
+    spaces, STATE_KEY,
+    setSpaces, setUser, setCurrentId, setTab, setRoute, setLoadingFeed, setHoldLoading,
+    setOtc, setPostAuthTo, setManageIntent,
+    setShareLink,
+    setPush, setDevicePreview,
+    enterSpace, openCreateSpace,
+    setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
+    setSearchQuery, setSearchOpen, setHomeStripOpen,
+    setFeedError,
+    setIncludeActive, setFeedPages, setPageStatus, setOrderLoad, refreshSpace,
+  } = api;
+  // The feed's load-failure is the first staged flag that can OUTLIVE the state
+  // that set it: every other flag here is overwritten by the next stager, and a
+  // walker clicking from a load-error state to any other would otherwise carry
+  // the failure into it. So it is cleared defensively wherever a stager settles
+  // a route, and set only where a state asks for it. Guarded because main.jsx
+  // only passes it when app/not-found.jsx is present.
+  const clearFeedError = () => { if (setFeedError) setFeedError(false); };
+  const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
+
+  const reset = () => {
+    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
+    const s = seedSpaces(DEFAULT_USER.email);
+    setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
+    clearFeedError();
+  };
+
+  // Every Scenario reseeds before it stages (fuzz walk, 2026-09-14): Scenarios
+  // are order-dependent otherwise — a stager reuses whatever circles and view
+  // state are already loaded, so damage one Scenario leaves behind (all links
+  // marked read, a circle put to sleep, a lens or search left open) leaks into
+  // the next. Non-navigating, unlike `reset` above (Config's "Reset to seeded
+  // data" keeps that one untouched): it just clears the slate — persisted
+  // state, the user, and every transient harness/view flag a stager would
+  // otherwise inherit — for `stage()` to build on top of.
+  const reseed = (fresh) => {
+    try { localStorage.removeItem(STATE_KEY); } catch (e) {}
+    setSpaces(fresh); setUser(DEFAULT_USER);
+    setLoadingFeed(false); setHoldLoading(false);
+    window.CIRC_INVITE_MINT_FAIL = false;
+    window.CIRC_ACCEPT_FAIL = false;
+    clearFeedError();
+    setSortOrder({}); if (setOrderLoad) setOrderLoad({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
+    setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({});
+    if (setHomeStripOpen) setHomeStripOpen(false);
+    // Push (LM-769) is PERSISTED state, so unlike the view flags above it would
+    // otherwise survive a reseed and leak an answered permission into a state
+    // built to show the unanswered one. Cleared to the shipped default here,
+    // and every push entry sets what it needs on top.
+    if (setPush) setPush({ perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0 });
+    if (setDevicePreview) setDevicePreview(false);
+    // The held share link (LM-771) is transient app state, so unlike the view
+    // flags above it survives a stager that says nothing about it — and a
+    // leftover link would put the intake's lead above a plain sign-in card, or
+    // prefill an add in a circle nobody shared anything into. Cleared to
+    // nothing here; the share entries set what they need on top.
+    if (setShareLink) setShareLink('');
+  };
+  const goSpace = (id, toRoute) => {
+    setUser(u => u && u.email ? u : DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setCurrentId(id); setTab('active');
+    clearFeedError();
+    if (toRoute) setRoute(toRoute); else enterSpace(id);
+  };
+
+  // A staged circle can be gone from state (leaving drops it), so a stager works
+  // off a base that reseeds when the circle it needs is missing.
+  const withSpace = (prev, id) => prev.some(s => s.id === id) ? prev : seedSpaces(DEFAULT_USER.email);
+
+  // restage the dormant TEST - Weekend Reads to demo a dormancy state, then enter
+  // it. There is no role branch on that screen any more, so `champion` here only
+  // says who funded it last — the screen names nobody either way.
+  const stageDormant = (cfg) => {
+    setSpaces(prev => withSpace(prev, 'sp-test-weekend').map(s => s.id === 'sp-test-weekend'
+      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
+    setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // The app-level not-found page. A bare
+  // route with no circle context, because that is the honest staging: the page
+  // answers an address that resolved to nothing, so there is nothing for it to
+  // be "inside". Signed in, so the way home has somewhere to go.
+  const stageNotFound = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setLoadingFeed(false);
+    clearFeedError();
+    setRoute('not-found');
+  };
+
+  // The home screen — one stager,
+  // `stageSort`'s own style: an options object whose every flag is fully
+  // replaced on each call, so an entry is idempotent regardless of what the
+  // previous one in the palette left set.
+  //   only  — keep exactly this one circle (a single-circle or a single-
+  //           dormant-circle home), default: the whole seed.
+  //   quiet — the caught-up state. Three things have to be true at once or the
+  //           screen contradicts itself: no dot on any circle, no fresh turn on
+  //           any watched card (marks pulled up to now), AND no unread links —
+  //           because `circleSummary` reads unread links, so leaving them unread
+  //           renders "New links" on every row beneath a strip saying "You're
+  //           caught up." Clearing only the first two is the obvious fix and the
+  //           wrong one; this state's whole job is that the quiet reads as
+  //           arrival, so all three go.
+  //   empty — no circles at all, landing on NoSpaceHome.
+  //   open  — whether the returns strip is expanded. Defaults to FALSE, matching
+  //           the app's own landing default (main.jsx's homeStripOpen): open by
+  //           default reads as content bloat on a screen the member has not
+  //           asked anything of yet, so a stager that quietly opened it would
+  //           stage a screen the product never shows.
+  //   sleep — put ONE named circle to sleep, leaving the others funded. A
+  //           dormant circle shown on its own proves nothing: the claim being
+  //           demonstrated is that it sits AMONG the others saying "Asleep",
+  //           carries no dot, and is absent from the strip even when it holds
+  //           watched cards — and only a mixed list can show that.
+  //
+  // TEST circles are dropped from every home state. `listSpaces` hides them only
+  // while the review toggle is off, and the home's whole subject IS the circle
+  // list — five rows where a member has three makes the screen read as a debug
+  // view. Staging is where that belongs, not in the product code.
+  //   crowd — a member in FIVE talking circles, so the strip's ceiling is
+  //           actually on screen. Without this the bound ruled in 87 is
+  //           unfalsifiable: the seed yields five rows over two circles, every
+  //           other state sits under the cap, and the leftover line has never
+  //           rendered. The two extra circles are clones of the two that already
+  //           carry watched, read, freshly-answered cards, renamed — cloning is
+  //           what keeps this a fixture rather than a second seed to maintain.
+  const stageHome = ({ only = null, quiet = false, empty = false, open = false, sleep = null, crowd = false } = {}) => {
+    setUser(DEFAULT_USER);
+    let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    if (crowd) {
+      const clone = (src, id, name, shift) => ({
+        ...src, id, name, unseen: false,
+        items: src.items.map((i, n) => ({
+          ...i, id: id + '-' + n,
+          ...(i.talkSeenAt ? { talkSeenAt: i.talkSeenAt - shift } : {}),
+          talk: (i.talk || []).map((t) => ({ ...t, id: id + '-' + t.id, at: t.at - shift })),
+        })),
+      });
+      const pod = s.find((sp) => sp.id === 'sp-backend');
+      const club = s.find((sp) => sp.id === 'sp-book');
+      if (pod && club) s = s.concat([
+        clone(club, 'sp-crowd-a', 'Thursday Cinema', 36e5),
+        clone(pod, 'sp-crowd-b', 'Platform Guild', 72e5),
+      ]);
+    }
+    if (only) s = s.filter((sp) => sp.id === only);
+    if (sleep) s = s.map((sp) => (sp.id === sleep
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      : sp));
+    if (quiet) s = s.map((sp) => ({
+      ...sp, unseen: false,
+      items: sp.items.map((i) => ({ ...i, read: true, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : {}) })),
+    }));
+    setSpaces(s);
+    setCurrentId(null); setRoute('home'); setLoadingFeed(false);
+    if (setHomeStripOpen) setHomeStripOpen(open);
+  };
+
+  // Funding state on the champion's card: active / a scheduled ending / a renewal
+  // being retried. Lands on the members surface, where the card lives.
+  const stageFunding = (funding) => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setSpaces(prev => withSpace(prev, 'sp-backend').map(s => s.id === 'sp-backend'
+      ? { ...s, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email, funding } : s));
+    setCurrentId('sp-backend'); setTab('active'); setRoute('members');
+  };
+
+  // A plain member of a funded, championed circle (Leave lives beneath the roster).
+  // Restores the champion in case the no-champion staging below ran first.
+  const stageNonChampion = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setSpaces(prev => withSpace(prev, 'sp-book').map(s => s.id === 'sp-book'
+      ? { ...s, funded: true, dormancy: null, champion: 'Joe M.', championEmail: 'joe.m@example.com',
+          openUntil: null, funding: null,
+          members: s.members.some(m => m.name === 'Joe M.') ? s.members : [...s.members, M('Joe M.', 'joe.m@example.com')] } : s));
+    setCurrentId('sp-book'); setTab('active'); setRoute('members');
+  };
+
+  // A champion's account was deleted: their roster row and crown are gone, the
+  // circle runs to the end of the paid period unmanaged, then goes dormant.
+  const stageNoChampion = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setSpaces(prev => withSpace(prev, 'sp-book').map(s => s.id === 'sp-book'
+      ? { ...s, funded: true, dormancy: null, champion: null, championEmail: null,
+          openUntil: Date.now() + 12 * DAY, funding: null,
+          members: s.members.filter(m => m.name !== 'Joe M.') } : s));
+    setCurrentId('sp-book'); setTab('active'); setRoute('members');
+  };
+
+  // ---- Loading lane — hold each loading state at rest for review ----------
+  // Two states, matching the product: the in-shell feed indicator (held by
+  // keeping loadingFeed true, no auto-clear) and the one app-level full-screen
+  // state (held by routing to an app-level loading route with the app's
+  // holdLoading flag set, which no-ops the auto-advance in main.jsx). The
+  // per-flow routes all render the same AppLoading, so one representative
+  // (google-return) covers the app-level state for review.
+  const goFeedLoading = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setHoldLoading(false);
+    setCurrentId('sp-backend'); setTab('active'); setRoute('space');
+    setLoadingFeed(true);
+  };
+  const holdInterstitial = (toRoute) => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setLoadingFeed(false);
+    setHoldLoading(true);
+    setRoute(toRoute);
+  };
+
+  // Space with no items — lands on the empty-feed state directly.
+  const goEmptyFeed = () => {
+    setUser(DEFAULT_USER);
+    const emptySpace = {
+      id: 'sp-empty', name: 'Reading Room', funded: true, dormancy: null,
+      champion: 'You', championEmail: DEFAULT_USER.email,
+      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
+      items: [],
+    };
+    setSpaces(prev => [emptySpace, ...prev.filter(s => s.id !== 'sp-empty')]);
+    setCurrentId('sp-empty'); setTab('active'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // Space at the 10-member cap (champion view → "Space is full" on invite).
+  const goFullSpaceManage = () => {
+    setUser(DEFAULT_USER);
+    const fullSpace = {
+      id: 'sp-full', name: 'Design Guild', funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email,
+      members: [
+        M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'),
+        M('Marcus T.', 'marcus.t@example.com'), M('Joe M.', 'joe.m@example.com'), M('Ada L.', 'ada.l@example.com'),
+        M('Ravi P.', 'ravi.p@example.com'), M('Nina K.', 'nina.k@example.com'), M('Tom B.', 'tom.b@example.com'),
+        M('Lena F.', 'lena.f@example.com'),
+      ],
+      items: [
+        IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Ada L.'),
+        IT('https://rauno.me/craft/interaction-design', 'Added by Nina K.'),
+        IT('https://www.figma.com/blog/the-quiet-design-system/', 'Added by Sam R.'),
+      ],
+    };
+    setSpaces(prev => [fullSpace, ...prev.filter(s => s.id !== 'sp-full')]);
+    setCurrentId('sp-full'); setTab('active'); setRoute('members');
+  };
+
+  // ---- Feed sort -------------------------------------------------------------
+  // Sort is held per circle AND per tab, keyed `<circleId>:<tab>`, so a stager
+  // sets the key it wants and leaves the other tab alone.
+  // Stages the lens: the order (per circle and tab), the contributor (per
+  // circle), and whether the panel is open. `who` is an attribution name as the
+  // cards render it — 'Sam R.', 'you', 'former member' — since that string is
+  // the only contributor identity this product has.
+  // `saved`/`savedOn`: `saved` is an array of item
+  // indexes WITHIN THE STAGED TAB's own list, in the SAME ORDER main.jsx
+  // actually renders it — sorted by `order` (circSortItems), not raw storage
+  // order. Storage order and display order coincide for the plain seed, but
+  // NOT once the discourse seed extension (talk-data.jsx)
+  // inserts its two extra read fixtures at fixed array positions with their
+  // own timestamps — display order is the only one a person staging this ever
+  // sees, so it is the only one worth indexing against. Passing `saved`
+  // re-marks the WHOLE circle's saved flags (everything not named is
+  // explicitly un-saved), so a stager is idempotent regardless of what an
+  // earlier state in the palette left marked — the same reason `who` below is
+  // always fully replaced rather than merged. Omitted (the default) leaves
+  // saved flags untouched, for every run-1-3 entry that has nothing to say
+  // about them.
+  const stageSort = ({ noneDone = false, watchUrls = null, watchingOn = false, includeActive = false, space = 'sp-backend', tab = 'active', order = 'newest', menu = false, waterline = false, who = null, density = 'comfortable', saved = null, savedOn = false, feedError = false, query = '', searchOpen = false, bareRead = false, pendingCount = 0, pendingBy = null, doneUrl = null, pageFail = false }) => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    // LM-786 audit: `noneDone` empties History (nothing finished); `watchUrls`
+    // marks the finished cards at those URL prefixes as watched.
+    if (noneDone) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : { ...s, items: s.items.map(i => ({ ...i, read: false })) }));
+    }
+    if (watchUrls) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => watchUrls.some(u => i.url.indexOf(u) === 0) ? { ...i, watching: true } : i),
+      }));
+    }
+    // LM-786 feed controls: a card "just marked done" — matched by URL prefix.
+    if (doneUrl) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => i.url.indexOf(doneUrl) === 0 ? { ...i, read: true } : i),
+      }));
+    }
+    // Search — `bareRead`. Applied BEFORE
+    // the `saved` block below, so a stager that ever combines the two indexes
+    // `saved` against the pile this card has already joined, not the one
+    // before it. No entry in this run combines them, but the ordering is the
+    // honest one regardless.
+    if (bareRead) {
+      setSpaces(prev => withSpace(prev, space).map(s => s.id !== space ? s : {
+        ...s, items: s.items.map(i => i.url === CIRC_BARE_URL ? { ...i, read: true } : i),
+      }));
+    }
+    // Order is keyed by circle alone (fuzz finding 3, ruled 2026-09-14) — it
+    // applies to both tabs, the same way density and the contributor filter
+    // already do, so there is no tab to get right or wrong here any more.
+    setSortOrder({ [space]: order });
+    // Re-applied after the entry (LM-786 sort): the order is visit state now,
+    // so `enterSpace`/`resetVisitView` clears it on the way in.
+    setTimeout(() => setSortOrder({ [space]: order }), 40);
+    // Multi-select (BIZ-136, ruling 2026-09-14): `who` accepts a single name
+    // (a Scenario written before the ruling) or an array (several people at
+    // once), so every existing Scenario id keeps working unmigrated.
+    // Keyed `<circle>:<tab>` (LM-786 feed controls): the filter belongs to the
+    // tab it is staged on.
+    const whoList = Array.isArray(who) ? who : (who ? [who] : []);
+    const whoState = whoList.length ? { [space + ':' + tab]: whoList } : {};
+    setLensWho(whoState);
+    // Density (BIZ-136 run 3): ONE value for the whole surface, so a stager
+    // sets it directly rather than keying it per circle.
+    setDensity(density);
+    if (saved !== null) {
+      setSpaces(prev => withSpace(prev, space).map(s => {
+        if (s.id !== space) return s;
+        const scoped = s.items.filter(i => (tab === 'read' ? i.read : !i.read));
+        const sortedScope = window.circSortItems ? window.circSortItems(scoped, order) : scoped;
+        const scopeIds = sortedScope.map(i => i.id);
+        const keep = new Set(saved.map(i => scopeIds[i]).filter(Boolean));
+        return { ...s, items: s.items.map(i => ({ ...i, saved: keep.has(i.id) })) };
+      }));
+    }
+    // Held per circle, same as `who` — always fully replaced, so switching
+    // between staged entries never inherits a filter the last one turned on.
+    setSavedOn(savedOn ? { [space]: true } : {});
+    if (setWatchingOn) setWatchingOn({});
+    // Search. Keyed `<circle>:<tab>` —
+    // unlike sortOrder, search stays tab-scoped (fuzz finding 3's ruling
+    // covers order only) — always fully replaced, same reasoning as
+    // `who`/`savedOn` above, so an entry that says nothing about search
+    // always lands with the field shut and empty, never inheriting whatever
+    // the last-opened entry left typed.
+    setSearchQuery(query ? { [space + ':' + tab]: query } : {});
+    // A staged QUERY implies a staged OPEN. Without this, an entry that sets
+    // only `query` leaves `searchOpen` false and the field is open purely
+    // because a query exists — so backspacing to empty closes it mid-keystroke
+    // and drops focus. In real use that never happens, because the only route
+    // to a query is the trigger, which sets the flag; it happened only on the
+    // ?state= URLs, which are exactly the links Joe follows.
+    setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
+    setCurrentId(space); setTab(tab); setLoadingFeed(false); enterSpace(space);
+    setTab(tab);
+    // Every filter and search is visit state now (LM-786 feed controls), so
+    // the entry just above clears them — re-applied after it, as the order is.
+    setTimeout(() => {
+      setLensWho(whoState);
+      setSavedOn(savedOn ? { [space]: true } : {});
+      if (setWatchingOn) setWatchingOn(watchingOn ? { [space]: true } : {});
+      if (setIncludeActive) setIncludeActive(!!includeActive);
+      setSearchQuery(query ? { [space + ':' + tab]: query } : {});
+      setSearchOpen((searchOpen || query) ? { [space + ':' + tab]: true } : {});
+    }, 40);
+    // Opened AFTER the route settles, not before, and AFTER the tab/circle
+    // writes just above (moved here in run 7 — read on). main.jsx closes the
+    // panel on any tab/circle change (the `[tab, currentId]` effect in
+    // main.jsx), and an entry can change both, so opening the panel before
+    // that settles meant the close would win.
+    //
+    // THE DELAY IS THE ACTUAL FIX, not the statement order (run 7). Every
+    // menu:true entry before this run staged `tab: 'active'` — this app's own
+    // boot default — so the cleanup effect's deps never actually changed and
+    // its `setSortMenuOpen(false)` never re-ran; a bare setTimeout(…, 0)
+    // "worked" by there being no closing write left to race, regardless of
+    // where in this function it was called. `saved-lens-door` (run 7) is the
+    // first entry to open the menu on a tab that is NOT the boot default, so
+    // it is the first to actually change `tab` — and 0ms lost that race
+    // outright: every setState call in this function lands in ONE batched
+    // React commit no matter what order they're written in here, so moving
+    // this block earlier or later in the function changes nothing about when
+    // the resulting effect flush runs against a plain setTimeout(0) macrotask
+    // — and that flush settled the close FIRST. 60ms clears it with room to
+    // spare and is imperceptible against the 2600ms this app's own stagers
+    // are already read against. Kept after the tab/circle writes anyway,
+    // because reading top-to-bottom as "settle the route, THEN open the
+    // panel" is the honest shape even though the timer is what does the work.
+    if (menu) setTimeout(() => setSortMenuOpen(true), 60);
+    else setSortMenuOpen(false);
+    // Set AFTER enterSpace, which clears it on the way in — the failure is the
+    // state being staged, not something the entry should wash away.
+    if (setFeedError) setTimeout(() => setFeedError(!!feedError), 0);
+    // The older-links failure (LM-786): the first page is on screen and the
+    // fetch for the next one has failed. After the entry, which clears paging.
+    if (pageFail && setPageStatus) setTimeout(() => setPageStatus({ [space + ':' + tab]: 'failed' }), 80);
+    // The waterline pair. entering a circle draws the mark from the stored
+    // lastSeenAt and stamps it to now in the same breath, so a staged visit
+    // cannot reliably reproduce a mid-pile mark by timing alone. These two
+    // states exist to show one ruling, so the mark is placed explicitly —
+    // after the entry above, which would otherwise overwrite it — at a fixed
+    // point inside the circle's unread pile. Both states place the SAME mark;
+    // only the sort order differs, which is the whole point of the pair.
+    if (waterline) {
+      setTimeout(() => setDividerAt(Date.now() - 8.5 * 3600e3), 0);
+    }
+    // Arrivals behind the pill (`pendingCount`): the
+    // same simulated-drop generator the live check uses, staged directly
+    // rather than waited for. After the entry above, same reason `waterline`
+    // is: entering a circle clears transient arrival state on the way in.
+    //
+    // Skips any drop whose URL the circle already holds (design audit finding
+    // 3, 2026-09-11): `circNextDrop`'s pool opens with a New Yorker piece
+    // `sp-book` already seeds, so an unguarded draw landed the same source and
+    // headline three rows apart — the state built to show the ruling opened on
+    // what read as a duplicate-card bug. A small bounded retry, not a fixed
+    // skip-count, so this holds if the pool or the target circle's seed ever
+    // changes again.
+    if (pendingCount) {
+      setTimeout(() => setSpaces(prev => withSpace(prev, space).map(s => {
+        if (s.id !== space) return s;
+        const seeded = new Set((s.items || []).map((i) => i.url));
+        const picked = [];
+        for (let tries = 0; picked.length < pendingCount && tries < 20; tries += 1) {
+          const drop = window.circNextDrop();
+          if (!seeded.has(drop.url)) picked.push(pendingBy ? { ...drop, attribution: 'Added by ' + pendingBy } : drop);
+        }
+        return { ...s, pending: picked };
+      })), 0);
+    }
+  };
+
+  // One unread item only, so the sort control is absent (it appears from two up).
+  // Built as its own circle rather than by emptying a seeded one, so nothing
+  // else about the app is disturbed.
+  const stageSingleItem = () => {
+    setUser(DEFAULT_USER);
+    const one = {
+      id: 'sp-one', name: 'Reading Room', funded: true, dormancy: null,
+      champion: 'You', championEmail: DEFAULT_USER.email,
+      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
+      items: [IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Sam R.')],
+    };
+    one.items.forEach((it) => { it.at = Date.now() - 3600e3; });
+    one.lastSeenAt = Date.now(); one.unseen = false; one.pending = []; one.queued = [];
+    setSpaces(prev => [one, ...prev.filter(s => s.id !== 'sp-one')]);
+    setSortOrder({}); setSortMenuOpen(false);
+    setCurrentId('sp-one'); setTab('active'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // The late joiner (LM-786). Built as its own circle, as stageSingleItem is,
+  // so nothing else in the app is disturbed. Opens on History, switch off:
+  // the three cards marked done, then the long run from before the Horizon,
+  // each an ordinary Unread card with nothing marking where the member began.
+  const stageLateJoiner = () => {
+    setUser(DEFAULT_USER);
+    const now = Date.now();
+    const joined = now - 3 * DAY;
+    const horizon = joined - 7 * DAY;
+    const mk = (row, n, read, at) => ({ id: 'late-' + n, url: row[0], title: row[1], source: row[2],
+      attribution: 'Added by ' + row[3], read, at, reactions: read ? [{ name: 'You', skipped: true }] : [] });
+    let n = 0;
+    const items = [
+      ...CIRC_LATE.now.map((r, i) => mk(r, n++, false, now - (i * 30 + 2) * 3600e3)),
+      ...CIRC_LATE.done.map((r, i) => mk(r, n++, true, horizon + (i + 1) * 1.5 * DAY)),
+      ...CIRC_LATE.past.map((r, i) => mk(r, n++, false, horizon - (i * 8 + 2) * DAY)),
+    ];
+    const late = {
+      id: 'sp-late', name: 'Sunday Reads', funded: true, dormancy: null,
+      champion: 'Ana R.', championEmail: 'ana.r@example.com',
+      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
+        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      items, joinedAt: joined, horizon,
+      lastSeenAt: now, unseen: false, pending: [], queued: [],
+    };
+    setSpaces(prev => [late, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-late')]);
+    setSortOrder({}); setLensWho({}); setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
+    clearFeedError();
+    setCurrentId('sp-late'); setTab('read'); setRoute('space'); setLoadingFeed(false);
+    if (setIncludeActive) setTimeout(() => setIncludeActive(false), 0);
+  };
+
+  // The oldest-first pile (LM-786 sort). Its own circle, as the late joiner is,
+  // with enough cards for four pages, so a page boundary is reached by
+  // scrolling. Everything is applied after the entry clears the visit.
+  //   read       — every card done, so the pile is History's (Active empty)
+  //   partway    — two pages loaded, scrolled to the middle
+  //   loadAll    — every page loaded (History's end line)
+  //   pending    — arrivals already behind the pill
+  //   arriveAfter/arriveCount — arrivals that land while the member reads
+  //   queued     — arrivals only a rail refresh finds
+  //   pageFail   — the next page failed
+  //   order/orderFail — the order just changed and its first page failed
+  //   orderHold  — the order just changed; its first page held loading
+  //   read: n    — cards from index n (the older ones) are done, so both tabs hold cards
+  //   refreshAfter — runs the rail refresh itself, after that many ms
+  const stagePile = ({ tab = 'active', read = false, partway = false, nearFoot = false, loadAll = false, pending = 0, arriveAfter = 0, arriveCount = 0, queued = 0, pageFail = false, order = 'oldest', orderFail = false, orderHold = false, refreshAfter = 0 } = {}) => {
+    setUser(DEFAULT_USER);
+    const now = Date.now();
+    const token = {}; window.__circPileToken = token;
+    const items = CIRC_PILE.map((r, i) => ({ id: 'pile-' + i, url: r[0], title: r[1], source: r[2],
+      attribution: 'Added by ' + r[3], read: read === true || (typeof read === 'number' && i >= read), at: now - (i * 18 + 3) * 3600e3,
+      reactions: (read === true || (typeof read === 'number' && i >= read)) ? [{ name: 'You', skipped: true }] : [] }));
+    const drops = (n) => { const out = []; for (let k = 0; k < n; k += 1) out.push(window.circNextDrop()); return out; };
+    const pile = {
+      id: 'sp-pile', name: 'Field Notes', funded: true, dormancy: null,
+      champion: 'Ana R.', championEmail: 'ana.r@example.com',
+      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
+        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      items, lastSeenAt: now, unseen: false, pending: [], queued: [],
+    };
+    setSpaces(prev => [pile, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-pile')]);
+    setLensWho({}); setSavedOn({}); if (setWatchingOn) setWatchingOn({}); setSearchQuery({}); setSearchOpen({}); setSortMenuOpen(false);
+    clearFeedError();
+    setCurrentId('sp-pile'); setTab(tab); setRoute('space'); setLoadingFeed(false);
+    const key = 'sp-pile:' + tab;
+    const size = window.CIRC_PAGE_SIZE || 8;
+    setTimeout(() => {
+      setSortOrder({ 'sp-pile': order });
+      if (setOrderLoad) setOrderLoad(orderFail ? { 'sp-pile': 'failed' } : orderHold ? { 'sp-pile': 'loading' } : {});
+      if (setIncludeActive) setIncludeActive(false);
+      if (setFeedPages) setFeedPages(loadAll ? { [key]: CIRC_PILE.length } : nearFoot ? { [key]: size * 3 } : partway ? { [key]: size * 2 } : {});
+      if (pageFail && setPageStatus) setPageStatus({ [key]: 'failed' });
+      if (pending || queued) setSpaces(prev => prev.map(s => s.id !== 'sp-pile' ? s
+        : { ...s, pending: drops(pending), queued: drops(queued) }));
+    }, 80);
+    if (partway || nearFoot) setTimeout(() => {
+      const el = document.querySelector('.circ-phone-screen') || document.scrollingElement || document.documentElement;
+      el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) * (nearFoot ? 0.8 : 0.5));
+    }, 400);
+    if (refreshAfter && refreshSpace) setTimeout(() => {
+      if (window.__circPileToken === token) refreshSpace('sp-pile');
+    }, refreshAfter);
+    if (arriveAfter && arriveCount) setTimeout(() => {
+      if (window.__circPileToken !== token) return;
+      setSpaces(prev => prev.map(s => s.id !== 'sp-pile' ? s
+        : { ...s, pending: [...drops(arriveCount), ...(s.pending || [])] }));
+    }, arriveAfter);
+  };
+
+  // Arriving on a shared card address (BIZ-136 wild feature; LM-797). ONE
+  // stager, and now one destination: the address always opens the card's
+  // Overview, and read-state decides what that Overview shows. `read` picks
+  // which of the two states the entry stands the reviewer in front of, and it
+  // sets the tab underneath, because that is where Back lands.
+  const stageSharedCard = ({ space = 'sp-backend', read = false, index = 1 } = {}) => {
+    stageSort({ space, tab: read ? 'read' : 'active', order: 'newest' });
+    // Overview is the candidate module's own route. Deferred past the tab and
+    // circle writes for the same reason every other post-stage act here is:
+    // main.jsx clears transient view state when either changes.
+    setTimeout(() => {
+      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
+      const scoped = ((sp && sp.items) || []).filter(i => (read ? i.read : !i.read));
+      const sorted = window.circSortItems ? window.circSortItems(scoped, 'newest') : scoped;
+      const target = sorted[index] || sorted[0];
+      const C = window.CircCandidate;
+      if (target && C && C.goToCard) C.goToCard({ id: target.id });
+    }, 160);
+  };
+
+  // Comment reactions: open a Read card's Overview by URL. `whoOn` names a turn
+  // whose who-reacted view opens on arrival (read once by CandReactions).
+  const stageCommentReactions = ({ space = 'sp-backend', url, whoOn = null } = {}) => {
+    stageSort({ space, tab: 'read', order: 'newest' });
+    setTimeout(() => {
+      const sp = (spaces.length ? spaces : seedSpaces(DEFAULT_USER.email)).find(x => x.id === space);
+      const target = sp && sp.items.find(i => i.url === url);
+      window.__candWhoOpen = whoOn;
+      const C = window.CircCandidate;
+      if (target && C && C.goToCard) C.goToCard({ id: target.id });
+    }, 160);
+  };
+
+  // Returns bar with comment reactions: Backend Pod from a fresh seed, two
+  // words-only cards quietened so the bar holds one of each row kind — words
+  // (jvns.ca), one reaction (FormerMember), three reactors (ACM), both (go.dev
+  // pipelines) — then opened.
+  // onlyRx: every card with fresh replies is quietened too, so only
+  // reaction-only rows remain and the head has no second line.
+  const stageReturnsBarReactions = ({ onlyRx = false } = {}) => {
+    stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    const fresh = seedSpaces(DEFAULT_USER.email).find(x => x.id === 'sp-backend');
+    const quiet = ['https://go.dev/blog/errors-are-values', 'https://docs.internal-infra-example.org/runbooks/ingest-backfill-2026-03'];
+    const now = Date.now();
+    const hush = (i) => quiet.includes(i.url) || (onlyRx && window.candFresh && window.candFresh(i).length > 0);
+    if (fresh) setSpaces(prev => withSpace(prev, 'sp-backend').map(s => s.id !== 'sp-backend' ? s
+      : { ...s, items: fresh.items.map(i => (hush(i) ? { ...i, talkSeenAt: now } : i)) }));
+    if (onlyRx) return; // left closed: the head is what this state shows
+    window.__candBarOpen = true;
+    setTimeout(() => window.dispatchEvent(new Event('cand-bar-open')), 260);
+  };
+
+  // A circle's description (BIZ-136 run 10). The seed gives two circles one and
+  // leaves the rest without, so the home's fallback is visible with no staging
+  // at all — these two stage the cases the seed cannot: a description at the
+  // full 250-character cap, and the members surface reading one whole.
+  const CIRC_LONG_DESC = 'A place for the long reads none of us get through in a week — systems writing, post-mortems, the occasional essay that has nothing to do with work but everything to do with how we think about it. Drop it here and come back when you have an hour.';
+  const stageCircleDescription = ({ long = false, members = false, bare = false } = {}) => {
+    setUser(DEFAULT_USER);
+    const base = spaces.length ? spaces : seedSpaces(DEFAULT_USER.email);
+    const s = base.filter((sp) => !/^TEST\b/i.test(sp.name || '')).map((sp) => (sp.id === 'sp-backend'
+      ? { ...sp, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email,
+          ...(long ? { description: CIRC_LONG_DESC } : null) }
+      : sp));
+    setSpaces(s);
+    clearFeedError();
+    setLoadingFeed(false);
+    if (members) { setCurrentId('sp-backend'); setTab('active'); setRoute('members'); return; }
+    if (bare) { setCurrentId('sp-book'); setTab('active'); setRoute('members'); return; }
+    setCurrentId(null); setRoute('home');
+    if (setHomeStripOpen) setHomeStripOpen(true);
+  };
+
+  // The home's micro dot, staged by name. The dot means `unseen` — a card
+  // landed in the circle since the member last met its Active feed (ui.md
+  // Decision-29), which is exactly "this circle has a new card". The behaviour
+  // already shipped; nothing was addressable for it, so it could not be checked
+  // by looking.
+  // Staged as a CONTRAST rather than a single lit row: one circle with a card
+  // that arrived and has not been met, two without, so the dot's absence reads
+  // as deliberate rather than as a rendering failure. The underlying items are
+  // made consistent with the flag — a lit dot over an all-read circle would be
+  // a fixture asserting something the product never does.
+  const stageCircleMicro = () => {
+    setUser(DEFAULT_USER);
+    const base = seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    const s = base.map((sp) => {
+      if (sp.id === 'sp-backend') {
+        return { ...sp, funded: true, dormancy: null, unseen: true,
+          items: sp.items.map((i, n) => (n === 0 ? { ...i, read: false } : i)) };
+      }
+      return { ...sp, unseen: false,
+        items: sp.items.map((i) => ({ ...i, ...(i.talkSeenAt ? { talkSeenAt: Date.now() } : null) })) };
+    });
+    setSpaces(s);
+    clearFeedError();
+    setLoadingFeed(false);
+    setCurrentId(null); setRoute('home');
+    if (setHomeStripOpen) setHomeStripOpen(true);
+  };
+
+  // Minting refused: the invite card's request comes back with no usable link.
+  // On sp-test-backend, not sp-backend — sp-backend seeds at 11 members, over
+  // the cap, so the invite card is suppressed there.
+  // The arming flag is a transient window flag, NOT app state: app state is
+  // persisted, so a flag on the circle would leave a normal circle refusing the
+  // first press forever. Re-staging re-arms it; the card clears it on the press.
+  const stageInviteRefusal = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    window.CIRC_INVITE_MINT_FAIL = true;
+    setSpaces(prev => withSpace(prev, 'sp-test-backend').map(s => s.id === 'sp-test-backend'
+      ? { ...s, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email } : s));
+    setCurrentId('sp-test-backend'); setTab('active'); setRoute('members');
+  };
+
+  // ---- Push notifications (LM-769) ---------------------------------------
+  // The ask, and the resting states of the Account setting. Both stagers fully
+  // replace the push object, so no entry inherits an answer another left behind.
+  //   The ask cannot be staged "on an empty Active list" — that is the point of
+  // it, and `empty-feed` already stands for the screen it must stay off of.
+  //   `patch` is how the RETURN is shown without waiting days: a dismissal count
+  // plus a back-dated `snoozeAt` is exactly the state the schedule reads, so the
+  // staged state is the real one and not a demo mode.
+  const stagePushAsk = (patch) => {
+    stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    if (setPush) setPush({ perm: 'default', on: false, ask: 'pending', channel: 'ok', snoozes: 0, snoozeAt: 0, ...patch });
+  };
+  // The Account surface, at one of its four notification states.
+  //   granted+on / granted+off — the control.
+  //   denied     — the statement naming the device settings.
+  //   ios-tab    — the statement naming the Home Screen route. An iOS browser
+  //                tab cannot receive notifications at all, and `channel` is
+  //                staged rather than sniffed: this prototype has no real user
+  //                agent to read, and a guess would make a statement the
+  //                device disagrees with.
+  //   unsupported — NO CARD. A browser inside another app cannot deliver and
+  //                has no route that would, so Account does not mention
+  //                notifications at all — the state to check is what is
+  //                ABSENT from the page.
+  const stagePushSetting = (patch) => {
+    goSpace('sp-backend', 'account');
+    if (setPush) setPush({ perm: 'granted', on: true, ask: 'gone', channel: 'ok', snoozes: 0, snoozeAt: 0, ...patch });
+  };
+  // The device preview. Rendered INSTEAD of the app (main.jsx's own top-level
+  // branch), so the route beneath it only decides where "Back to the app"
+  // lands — home, since the preview speaks for every circle rather than one.
+  const stageDevicePreview = () => {
+    setUser(DEFAULT_USER);
+    if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
+    setCurrentId(null); setRoute('home'); setLoadingFeed(false);
+    if (setPush) setPush({ perm: 'granted', on: true, ask: 'gone', channel: 'ok', snoozes: 0, snoozeAt: 0 });
+    if (setDevicePreview) setDevicePreview(true);
+  };
+
+  // ---- Share intake (LM-771) ---------------------------------------------
+  // The screen a member lands on after sharing a link in from another app.
+  // One stager, `stageHome`'s style: every flag fully replaced on each call,
+  // so an entry is idempotent whatever the last one in the palette left set.
+  //   only  — keep exactly this one circle (the one-circle member).
+  //   sleep — put ONE named circle to sleep, leaving the others funded: the
+  //           picker's rows are home's rows, so an asleep circle has to be
+  //           readable AMONG the others, saying "Asleep", to show that.
+  //   empty — no circles at all, landing on the home's empty state inside the
+  //           picker's shell.
+  //   link  — FALSE stages a bare arrival: the same page with no link line.
+  //           A STRING stages that raw payload (text plus link); main.jsx's
+  //           setter extracts the URL, so the stager hands it over unedited.
+  //   signedOut — the canon sign-in card with the intake's lead above it.
+  //           `postAuthTo` is what makes signing in RETURN to the picker, and
+  //           it is staged rather than implied, because it is the only thing
+  //           that distinguishes this from an ordinary sign-in.
+  // TEST circles are dropped, exactly as `stageHome` drops them and for the
+  // same reason: the list of circles IS this screen's subject.
+  const stageShareIntake = ({ only = null, sleep = null, empty = false, link = true, signedOut = false } = {}) => {
+    setUser(DEFAULT_USER);
+    let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
+    if (only) s = s.filter((sp) => sp.id === only);
+    if (sleep) s = s.map((sp) => (sp.id === sleep
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      : sp));
+    setSpaces(s);
+    clearFeedError();
+    setLoadingFeed(false);
+    if (setShareLink) setShareLink(typeof link === 'string' ? link : (link ? CIRC_SHARE_LINK : ''));
+    setCurrentId(null);
+    if (signedOut) { setPostAuthTo('share-intake'); setRoute('signin'); return; }
+    setRoute('share-intake');
+  };
+
+  return {
+    setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
+    openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
+    stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
+    stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions, stageReturnsBarReactions,
+    stageCircleDescription, stageCircleMicro,
+    stageInviteRefusal,
+    stageShareIntake,
+    stagePushAsk, stagePushSetting, stageDevicePreview,
+  };
+}
+
+// ---- THE REGISTER ----------------------------------------------------------
+// Order here is the order the palette and the index read in. Group titles are
+// plain strings; a new group is simply a new title.
+const CIRC_STATE_REGISTER = [
+  { group: 'Onboarding', id: 'signup-first-circle', label: 'Sign up → first circle', stage: (c) => { c.setSpaces([]); c.setRoute('signup'); } },
+  { group: 'Onboarding', id: 'signin-new-device', label: 'Sign in (new device)', stage: (c) => c.setRoute('signin') },
+  { group: 'Onboarding', id: 'forgot-password', label: 'Forgot password', stage: (c) => c.setRoute('recovery') },
+  { group: 'Onboarding', id: 'otc-error', label: 'One-time code — errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
+
+  { group: 'Feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
+  { group: 'Feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
+  { group: 'Feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
+  // THE RULING, made visible as a PAIR — drawn in both orders again as of
+  // 2026-09-11 (Joe's own reversal of Sally's same-day call that it should
+  // draw newest-first only). Same circle, same mark, one difference: the
+  // sort. Open them in order — the waterline is there in both, at the SAME
+  // mark, because the mark is visit state and a sort change never touches
+  // it; only which end of the list you meet it from changes. The label stays
+  // fixed `Earlier` in both, which Joe knows may not read true of the pile
+  // beneath it under oldest-first — parked deliberately, his own candidate
+  // words to follow.
+  { group: 'Feed: waterline', id: 'sort-waterline-newest', label: 'Waterline — under newest first (the control)', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', waterline: true }) },
+  { group: 'Feed: waterline', id: 'sort-oldest-waterline', label: 'Waterline — same mark, read from the other end', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'oldest', waterline: true }) },
+  // Arrivals under oldest first (LM-786 sort, ratified 2026-09-25 — supersedes
+  // the 11 Sep "the pill carries you to the foot" ruling this id first
+  // showed). Opened part-way down a four-page pile with two arrivals behind
+  // the pill, which reads "New · newest first". The tap switches the circle
+  // to newest first and lands at the top, the new cards glowing at the head.
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-accept', label: 'Arrivals under oldest first — the pill switches to newest first', stage: (c) => c.stagePile({ partway: true, pending: 2 }) },
+  // The one to read in: arrivals land a few seconds in, and a third waits
+  // where only a rail refresh finds it (tap this circle in the rail). That
+  // refresh parks it behind New and never changes the order (ruled 2026-09-25).
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-arriving', label: 'Oldest first — new cards arrive while you read', stage: (c) => c.stagePile({ partway: true, arriveAfter: 4000, arriveCount: 2, queued: 1 }) },
+  // The order-change load (LM-786 sort, ruled 2026-09-25): the member has just
+  // switched oldest first → newest first and the new order's first page failed.
+  // Try again shows the spinner, then the list at its top.
+  // A rail refresh under oldest first that finds cards (ruled 2026-09-25): the
+  // order never changes; the cards wait behind the pill; the member stays put.
+  // Runs the refresh itself 1.2s in, so the rail receipt is seen. From History
+  // the pill is out of sight, so the live-signal dot lights on the circle.
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-refresh-active', label: 'Oldest first — a refresh finds cards; they wait behind New', stage: (c) => c.stagePile({ partway: true, queued: 2, refreshAfter: 1200 }) },
+  { group: 'Feed: arrivals and New', id: 'sort-oldest-refresh-history', label: 'Oldest first, History — a refresh finds cards; the dot lights', stage: (c) => c.stagePile({ tab: 'read', read: 13, queued: 2, refreshAfter: 1200 }) },
+  // A failed pill tap (ui.md Decision-29): tap New and the spinner runs in the
+  // pill's face, then the pill silently returns to rest. The arrivals stay
+  // staged, the list is unchanged and nothing is announced. Under oldest
+  // first, the circle stays oldest first. Every tap in these states fails.
+  { group: 'Feed: arrivals and New', id: 'pill-tap-failed-newest', label: 'New tapped, newest first — the reload fails, the pill returns to rest', stage: (c) => { c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', pendingCount: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'Feed: arrivals and New', id: 'pill-tap-failed-oldest', label: 'New tapped, oldest first — the reload fails, still oldest first', stage: (c) => { c.stagePile({ partway: true, pending: 2 }); window.CIRC_ACCEPT_FAIL = true; } },
+  { group: 'Feed: loading and failures', id: 'sort-control-loading', label: 'Sort control — the new order’s first page loading', stage: (c) => c.stagePile({ order: 'newest', orderHold: true }) },
+  { group: 'Feed: loading and failures', id: 'sort-order-failed', label: 'Sort control — the new order’s first page failed', stage: (c) => c.stagePile({ order: 'newest', orderFail: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-newer-failed', label: 'Oldest first — newer cards failed to load', stage: (c) => c.stagePile({ pageFail: true }) },
+  { group: 'Feed: loading and failures', id: 'history-oldest-end', label: 'History, oldest first — scroll on to the last page, nothing newer', stage: (c) => c.stagePile({ tab: 'read', read: true, nearFoot: true }) },
+  { group: 'Feed', id: 'sort-single-item', label: 'One link — no sort control', stage: (c) => c.stageSingleItem() },
+  // The contributor filter, folded with sort into one lens control. Priya's
+  // two Active links sit either side of the last-visit mark, so the
+  // waterline still draws inside the filtered list — the ruling this state exists
+  // to show, in either sort order (both-orders-again, 2026-09-11).
+  { group: 'Feed: waterline', id: 'filter-waterline', label: 'Waterline — drawn inside a filter', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', waterline: true }) },
+  { group: 'Feed: waterline', id: 'density-compact-waterline', label: 'Compact — the waterline still reads', stage: (c) => c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest', density: 'compact', waterline: true }) },
+  // History (LM-786). The late joiner: the circle's past, from before the
+  // member's Horizon, drawn in History as Unread cards with no label. The
+  // failed page: History's first page loaded, the next one failed; the foot
+  // is the same on Active.
+  { group: 'Feed', id: 'history-late-joiner', label: 'History — joined late, the circle’s past drawn as unread', stage: (c) => c.stageLateJoiner() },
+  // Feed controls by tab (LM-786). The people filter lists every member on
+  // both tabs (follow-up, 2026-09-28). Dev K.'s one waiting card is done, so
+  // Active's miss shows its one line; Sam R.'s two arrivals wait behind a pill
+  // that stands down under any people filter; `fowler` matches one done card
+  // and one waiting; Dev K. has nothing done. `history-saved-empty`: nothing
+  // saved anywhere, Saved still offered and ticked.
+  { group: 'Feed: filters and search', id: 'active-filter-empty-waiting', label: 'Active filter — nothing here from a ticked person, one line', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Dev K.', doneUrl: 'https://engineering.stripe-shopfront-example.com', pendingCount: 2, pendingBy: 'Sam R.' }) },
+  { group: 'Feed: filters and search', id: 'active-filter-hides-pill', label: 'Active filter — the New pill hides, arrivals are someone else’s', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', who: 'Priya N.', pendingCount: 2, pendingBy: 'Sam R.' }) },
+  { group: 'Feed: filters and search', id: 'history-search-active-hit', label: 'History search — also matches cards in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', query: 'fowler' }) },
+  { group: 'Feed: filters and search', id: 'history-filter-active-miss', label: 'History filter — nothing done, something waiting in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Dev K.' }) },
+  // LM-786 audit (2026-09-28). `history-search-empty`: nothing finished, switch
+  // off, search still offered. `history-filter-miss-switch-on`: Lena P. has
+  // added nothing, so the miss is the one line. `history-watching-on`: two
+  // finished cards watched. `history-filter-active-hit`: Priya N. has finished
+  // cards here and two waiting in Active, so the Active-match line shows.
+  { group: 'Feed: filters and search', id: 'history-search-empty', label: 'History, nothing finished — search still offered', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', noneDone: true }) },
+  { group: 'Feed: filters and search', id: 'history-filter-miss-switch-on', label: 'History filter, Active cards included — nothing from a ticked person, one line', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Lena P.', includeActive: true }) },
+  { group: 'Feed: filters and search', id: 'history-watching-on', label: 'History, Watching ticked — the watched finished cards', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', watchUrls: ['https://go.dev/blog/pipelines', 'https://jvns.ca/'], watchingOn: true }) },
+  { group: 'Feed: filters and search', id: 'history-filter-active-hit', label: 'History filter — finished cards here, more waiting in Active', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', who: 'Priya N.' }) },
+  { group: 'Feed: filters and search', id: 'history-saved-empty', label: 'History, Saved ticked — nothing saved yet', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', saved: [], savedOn: true }) },
+  { group: 'Feed: loading and failures', id: 'feed-older-failed', label: 'Older links failed to load — the cards stay', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'read', order: 'newest', pageFail: true }) },
+  // The failure with NOTHING applied, so the plain shape reads first: shell and
+  // tabs live above, the region alone replaced.
+  { group: 'Feed: loading and failures', id: 'feed-load-error', label: 'Feed — the region failed, the app did not', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', feedError: true }) },
+  // The same failure under a lens. The chips STAY: the fetch failed, and the
+  // member's narrowing is still what they set — hiding it would make a failed
+  // load look like a cleared filter.
+  { group: 'Feed: loading and failures', id: 'feed-load-error-lens', label: 'Feed — the failure keeps the lens applied', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'oldest', who: 'Priya N.', feedError: true }) },
+  // Sharing a card (wild feature, 2026-09-07; LM-797). Two states of ONE
+  // destination: the address always opens the card's Overview, and what the
+  // follower meets there depends on THEIR OWN read-state — not on anything the
+  // sharer chose. Open them as a pair; the difference between them is the whole
+  // design. The unread entry is the only way to reach the pre-read Overview
+  // without walking an address in from outside the app.
+  //
+  // The third end has no entry of its own on purpose: a follower who is not in
+  // the circle, or whose card has been deleted for everyone, meets the
+  // not-found page (`not-found-page`). That page already refuses to say which
+  // of those it was, which is the privacy answer, and a second copy of it
+  // staged under a sharing label would imply it is a different screen.
+  { group: 'Shared card', id: 'share-arrival-unread', label: 'Shared card — Overview before they have read it', stage: (c) => c.stageSharedCard({ read: false, index: 2 }) },
+  { group: 'Shared card', id: 'share-arrival-read', label: 'Shared card — Overview once they have read it', stage: (c) => c.stageSharedCard({ read: true }) },
+
+  // Comment reactions. Seeded in app/talk-data.jsx (search `@fixture comment-reactions`).
+  { group: 'Comment reactions', id: 'comment-reactions-counted', label: 'Conversation — a counted pill with yours in it', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }) },
+  { group: 'Comment reactions', id: 'comment-reactions-who-sheet', label: 'Conversation — who reacted, open on a four-person pill', stage: (c) => c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines', whoOn: 'gp1' }) },
+  { group: 'Comment reactions', id: 'comment-reactions-former-member', label: 'Conversation — a reaction from a deleted account', stage: (c) => c.stageCommentReactions({ url: 'https://jvns.ca/blog/2026/02/dns-resolvers/', whoOn: 'jv0a' }) },
+  { group: 'Comment reactions', id: 'returns-bar-reactions', label: 'Returns bar — words, one reaction, three reactors, both', stage: (c) => c.stageReturnsBarReactions() },
+  { group: 'Comment reactions', id: 'returns-bar-reactions-only', label: 'Returns bar — only reactions moved, head without a second line', stage: (c) => c.stageReturnsBarReactions({ onlyRx: true }) },
+
+  { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
+  { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
+
+  { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
+  { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
+  { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
+  // A circle can say what it is for (BIZ-136 run 10). The seed carries a
+  // description on two circles and none on the rest, so the home already
+  // shows both halves of the rule; this stages what the seed cannot.
+  { group: 'Members & funding', id: 'circle-description-long-members', label: 'Circle description — at the cap, read whole on the header', stage: (c) => c.stageCircleDescription({ long: true, members: true }) },
+  { group: 'Members & funding', id: 'funding-ending', label: 'Funding — ending on a date', stage: (c) => c.stageFunding({ state: 'ending', endsAt: Date.now() + 18 * DAY }) },
+  { group: 'Members & funding', id: 'funding-retrying', label: 'Funding — payment retrying', stage: (c) => c.stageFunding({ state: 'retrying', retryWindow: '30 days' }) },
+  { group: 'Members & funding', id: 'circle-no-champion', label: 'Circle with no champion', stage: (c) => c.stageNoChampion() },
+  { group: 'Members & funding', id: 'manage-funding', label: 'Manage funding (champion)', stage: (c) => { c.goSpace('sp-backend'); c.setManageIntent('manage'); c.setRoute('manage-interstitial'); } },
+  { group: 'Members & funding', id: 'create-and-fund', label: 'Create + fund a circle', stage: (c) => c.openCreateSpace() },
+
+  { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'suspended' }) },
+
+  { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },
+  { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — invalid', stage: (c) => c.setRoute('invalid-invite') },
+  { group: 'Invitations', id: 'invite-link-refused', label: 'Get a link — creation refused', stage: (c) => c.stageInviteRefusal() },
+  { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite — circle full', stage: (c) => c.setRoute('space-full') },
+
+  { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
+  { group: 'Account', id: 'account-sso', label: 'Email & password via SSO', stage: (c) => { c.setUser({ ...window.CircSeed.DEFAULT_USER, email: 'sam.rivera@googlemail.com', ssoProvider: 'Google' }); c.goSpace('sp-backend', 'account'); } },
+
+  // Push notifications (LM-769). The ask, the setting's four resting states,
+  // and the device preview.
+  { group: 'Notifications', id: 'push-ask', label: 'The ask — on an Active list with links', stage: (c) => c.stagePushAsk() },
+  { group: 'Notifications', id: 'push-ask-back', label: 'The ask — back after one dismiss (3 days on)', stage: (c) => c.stagePushAsk({ snoozes: 1, snoozeAt: Date.now() - 4 * 864e5 }) },
+  { group: 'Notifications', id: 'push-setting-on', label: 'Account — notifications on', stage: (c) => c.stagePushSetting({ on: true }) },
+  { group: 'Notifications', id: 'push-setting-off', label: 'Account — notifications off', stage: (c) => c.stagePushSetting({ on: false }) },
+  { group: 'Notifications', id: 'push-setting-refused', label: 'Account — refused at the device', stage: (c) => c.stagePushSetting({ perm: 'denied', on: false }) },
+  { group: 'Notifications', id: 'push-setting-safari-tab', label: 'Account — an iOS browser tab', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
+  { group: 'Notifications', id: 'push-no-channel', label: 'Account — a browser that cannot deliver (no card)', stage: (c) => c.stagePushSetting({ channel: 'unsupported', perm: 'default', on: false, ask: 'pending' }) },
+  { group: 'Notifications', id: 'push-device-preview', label: 'On the device — three circles with news, links and replies', stage: (c) => c.stageDevicePreview() },
+
+  // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
+  // 8): the home screen (app/home.jsx + app/home-returns.jsx).
+  { group: 'Home', id: 'home-quiet', label: 'Home — quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
+  { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
+  { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
+  { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
+
+  // Share intake (LM-771): the screen a member lands on after sharing a link
+  // into Circlists from another app. The picker is the one new surface; the
+  // tap-through lands on screens that already have addresses (a circle's feed
+  // with its own add open, a circle's wake-up page), so it gets no entry.
+  { group: 'Share intake', id: 'share-intake-picker', label: 'Pick a circle — several, one asleep', stage: (c) => c.stageShareIntake({ sleep: 'sp-book' }) },
+  { group: 'Share intake', id: 'share-intake-one-circle', label: 'Pick a circle — a member with one', stage: (c) => c.stageShareIntake({ only: 'sp-backend' }) },
+  { group: 'Share intake', id: 'share-intake-bare', label: 'A bare arrival — no link held', stage: (c) => c.stageShareIntake({ link: false }) },
+  { group: 'Share intake', id: 'share-intake-no-circles', label: 'Nowhere to put it — no circles yet', stage: (c) => c.stageShareIntake({ empty: true }) },
+  { group: 'Share intake', id: 'share-intake-signed-out', label: 'Signed out, holding a link', stage: (c) => c.stageShareIntake({ signedOut: true }) },
+  { group: 'Share intake', id: 'share-intake-text-link', label: 'Pick a circle — link extracted from shared text', stage: (c) => c.stageShareIntake({ link: CIRC_SHARE_TEXT }) },
+
+  // The not-found page is staged as a bare route because that is what it
+  // answers: an address that resolved to nothing, with no circle to be inside.
+  { group: 'Not found', id: 'not-found-page', label: 'Not found — one answer for a bad address', stage: (c) => c.stageNotFound() },
+];
+
+// Notes, per group (Joe, 2026-09-28): how to exercise what a staged state
+// can't hold still — a search term, a sequence of taps. Each line names the
+// state it serves. Shown at the foot of the group on the states page and
+// palette, and readable off window.CIRC_STATE_NOTES.
+const CIRC_STATE_GROUP_NOTES = {
+  'Feed: filters and search': [
+    'History search — also matches cards in Active: in Backend Pod, open History and search “pipelines”. The done Go pipelines card shows, and the line offers the Continuous Delivery card waiting in Active.',
+    'Search by description: in Backend Pod, search “chan” on History. The Go pipelines card matches on its description only.',
+  ],
+};
+window.CIRC_STATE_NOTES = CIRC_STATE_GROUP_NOTES;
+
+// The catalogue's own address. Not a state, so it is not in the register.
+const CIRC_STATE_INDEX_NAMES = ['index', 'states'];
+
+// ---- derived: what an agent or a script can read off the page --------------
+// Names and labels only. Nothing runnable, so reading it can't stage anything.
+window.CIRC_STATES = CIRC_STATE_REGISTER.map(({ id, label, group }) => ({ id, label, group }));
+
+// ---- derived: the bound register main.jsx renders from ---------------------
+function buildStates(api) {
+  const ctx = circStateContext(api);
+  const { seedSpaces, DEFAULT_USER } = window.CircSeed;
+  // Reseed, then stage against a context built on the FRESH seed, not the
+  // render's own `ctx` — several stagers read `spaces` directly off the
+  // context they're handed (`spaces.length`, `stageCircleDescription`'s base,
+  // `stageSharedCard`'s own lookup), and staging with the
+  // stale one would let those overwrite the reseed right back to the damaged
+  // data.
+  const states = CIRC_STATE_REGISTER.map((s) => ({
+    id: s.id, label: s.label, group: s.group,
+    go: () => {
+      const fresh = seedSpaces(DEFAULT_USER.email);
+      const c = circStateContext({ ...api, spaces: fresh });
+      c.reseed(fresh);
+      s.stage(c);
+    },
+  }));
+  const byId = {};
+  const groups = [];
+  states.forEach((s) => {
+    byId[s.id] = s;
+    let g = groups.find((x) => x.title === s.group);
+    if (!g) { g = { title: s.group, notes: CIRC_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
+    g.items.push(s);
+  });
+  return { states, byId, groups, reset: ctx.reset };
+}
+
+// ---- derived: the address ---------------------------------------------------
+// `?state=<id>`  → that state, overriding whatever local state was restored.
+// `?state=index` → the states index (the catalogue, linkable in its own right).
+// a name not in the register → the index, which is how a stale ticket link shows
+//   itself: the reader sees a list that does not contain the name they came for.
+// nothing at all → null, and the app opens on the top circle, as the real app does.
+function circResolveState() {
+  let raw = null;
+  try { raw = new URLSearchParams(window.location.search).get('state'); } catch (e) { return null; }
+  const name = (raw || '').trim().toLowerCase();
+  if (!name) return null;
+  if (CIRC_STATE_INDEX_NAMES.includes(name)) return { kind: 'index', name };
+  if (CIRC_STATE_REGISTER.some((s) => s.id === name)) return { kind: 'state', id: name };
+  return { kind: 'unresolved', name };
+}
+
+// A link someone can be handed. Served in the console's iframe, this page's own
+// address is not the address anyone can open — the console page is, and its URL
+// is the referrer. Falls back to this page's own address when unframed or when
+// no referrer is sent.
+function circStateLink(id) {
+  let base = window.location.origin + window.location.pathname;
+  if (window.parent !== window && document.referrer) {
+    try { const u = new URL(document.referrer); base = u.origin + u.pathname; } catch (e) {}
+  }
+  return base + '?state=' + id;
+}
+
+Object.assign(window, { buildStates, circResolveState, circStateLink });

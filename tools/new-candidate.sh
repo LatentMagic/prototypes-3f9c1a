@@ -1,26 +1,34 @@
 #!/usr/bin/env bash
-# Scaffold a Circlists candidate build entry from canon's circlists.html.
-# Usage: tools/new-candidate.sh <ticket-folder> [overlay.jsx ...]
-#   <ticket-folder> = docs/specs/<name> under app/circlists/canon (created if absent)
-#   overlays        = cand-*.jsx filenames in that folder, loaded in the order given,
-#                     after every app/ module and just before app/main.jsx.
-# Writes docs/specs/<name>/circlists-<name>.html per canon's candidate-build skill:
-# <base href="../../../">, its own persisted-state key, overlays before main.jsx.
-# Refuses to overwrite an existing entry. The entry copies canon's <head> by design
-# (the one accepted duplication); re-run into a new file, never over a hand-edited one.
+# Scaffold a Circlists candidate as its own rail node: a full copy of canon.
+# Usage: tools/new-candidate.sh <slug> ["Version name"] ["ticket"]
+#   Copies app/circlists/canon/ (minus docs/ and skills/) to app/circlists/<slug>/,
+#   gives its circlists.html a title and its own persisted-state key, and prints the
+#   index.html node block to paste after canon in APPS.circlists.prototypes.
+# Modify the copy directly; canon is never touched and nothing hooks into it.
+# Refuses to overwrite an existing folder. Delete the folder and node once ratified.
 set -euo pipefail
-name="${1:?usage: tools/new-candidate.sh <ticket-folder> [overlay.jsx ...]}"; shift
-canon="$(cd "$(dirname "$0")/.." && pwd)/app/circlists/canon"
-dir="$canon/docs/specs/$name"; out="$dir/circlists-$name.html"
-[ -e "$out" ] && { echo "exists: $out" >&2; exit 1; }
-mkdir -p "$dir"
-tags=""
-for f in "$@"; do tags+="<script type=\"text/babel\" src=\"docs/specs/$name/$f\"></script>\n"; done
-awk -v name="$name" -v tags="$tags" '
-  /<meta name="viewport"/ { print; print "<base href=\"../../../\" />"; next }
-  /<title>/ { print "<title>Circlists — " name " candidate</title>"; next }
-  /<script src="https:\/\/unpkg.com\/react@/ && !k { print "<script>window.CIRC_STATE_KEY = \"circ_" name "_state_v1\";</script>"; k=1 }
-  /src="app\/main.jsx"/ { printf "%s", tags }
+slug="${1:?usage: tools/new-candidate.sh <slug> [\"Version name\"] [\"ticket\"]}"
+version="${2:-$slug}"; ticket="${3:-—}"
+root="$(cd "$(dirname "$0")/.." && pwd)"
+src="$root/app/circlists/canon"; dst="$root/app/circlists/$slug"
+[ -e "$dst" ] && { echo "exists: $dst" >&2; exit 1; }
+mkdir -p "$dst"
+rsync -a --exclude docs --exclude skills "$src/" "$dst/"
+awk -v slug="$slug" '
+  /<title>Circlists<\/title>/ { print "<title>Circlists — " slug " candidate</title>"; next }
+  /<script src="https:\/\/unpkg.com\/react@/ && !k { print "<script>window.CIRC_STATE_KEY = \"circ_" slug "_state_v1\";</script>"; k=1 }
   { print }
-' "$canon/circlists.html" | sed 's/\\n/\n/g' > "$out"
-echo "$out"
+' "$src/circlists.html" > "$dst/circlists.html"
+echo "copied canon -> $dst"
+cat <<EOF
+
+Add after the canon node in index.html (APPS.circlists.prototypes):
+        {
+          slug: '$slug',
+          version: '$version',
+          ticket: '$ticket',
+          html: 'circlists.html',
+          kind: 'candidate',
+          desc: '<what this node is, one line>'
+        }
+EOF

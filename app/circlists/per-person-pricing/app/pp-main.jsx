@@ -1,19 +1,9 @@
 // ============================================================================
-// Per-person pricing candidate — assembly. Extends the ONE window.CircCandidate
-// handle (talk-main.jsx already publishes it) with the two hooks the create form
-// and the checkout read, and mounts the review switcher. Loads after the app
+// Per-person pricing candidate — assembly. Holds the checkout offer that
+// subscriptions.jsx reads, and mounts the review switcher. Loads after the app
 // files it re-publishes over and before app/main.jsx.
 // ============================================================================
-const PpCand = window.CircCandidate = window.CircCandidate || {};
-PpCand.createForm = () => {
-  const sub = window.CircPP.get().subscribed;
-  return {
-    intro: sub ? 'A shared list for up to 10 people. It runs on your plan; everyone joins free.'
-               : 'A shared list for up to 10 people. Everyone joins free.',
-    cta: sub ? 'Create circle' : null,
-  };
-};
-PpCand.checkoutOffer = () => {
+const ppCheckoutOffer = () => {
   const st = window.CircPP.get();
   const p = PP_PLANS[st.plan];
   const tk = window.__ppTkActive || null;
@@ -34,6 +24,7 @@ PpCand.checkoutOffer = () => {
     button: 'Start free month',
   };
 };
+window.ppCheckoutOffer = ppCheckoutOffer;
 
 // Review switcher: a labelled chip, tap to open. Steers the review only; not product.
 const PpSwitcher = () => {

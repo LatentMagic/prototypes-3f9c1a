@@ -124,6 +124,8 @@ const CircleDescriptionField = ({ id, value, onChange, placeholder }) => {
 
 // ---- Create space (dedicated full page) ------------------------------------
 const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '' }) => {
+  // Per-person pricing: a subscribed account creates straight through on its plan (state in pp-state.jsx).
+  const ppSub = window.CircPP.get().subscribed;
   const [name, setName] = React.useState(initialName);
   const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
@@ -143,14 +145,14 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
         color: 'var(--color-fg-2)', margin: '0 0 24px',
-      }}>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</p>
+      }}>{ppSub ? `A shared list for up to ${SPACE_CAP} people. It runs on your plan; everyone joins free.` : `A shared list for up to ${SPACE_CAP} people. Everyone joins free.`}</p>
       <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
         <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
         <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
           placeholder="What’s this circle for?" />
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>{ppSub ? 'Create circle' : 'Continue'}<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
         </Button>
       </form>
     </WizardShell>
