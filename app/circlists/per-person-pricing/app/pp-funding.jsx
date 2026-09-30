@@ -139,12 +139,20 @@ const PpFundingPage = (props) => {
   const back = st.returning;
   const Pick = { cards: PpPickCards, toggle: PpPickToggle, lead: PpPickLead }[st.option] || PpPickCards;
   const line = { fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' };
+  // Copy variants of the free-month screen (review only): A is the existing copy.
+  const cv = back ? 'A' : st.copy;
+  const bullets = cv === 'B' ? ['One plan covers every circle you run', 'Members are never charged']
+    : cv === 'C' ? ['Start as many circles as you like', 'Your members always join free']
+    : ['One plan covers every circle you run', back ? 'Everyone you invite joins free' : 'First month free. Everyone you invite joins free'];
+  const noteB = <>A card is needed to start. You pay nothing for 30 days, then {p.full} a {p.unit}, from {ppChargeDate()}. Cancel before then and you pay nothing.</>;
+  const noteC = <>We ask for your card now and charge {p.full} after 30 days, on {ppChargeDate()}. We email a reminder first.</>;
+  const pricingFirst = mode !== 'refund' && st.flow === 'pricing-first' && !st.subscribed;
   return (
-    <WizardShell flow={{ step: 1 }} onBack={onBack} onExit={onCancel}>
+    <WizardShell flow={{ step: 1 }} onBack={pricingFirst ? onCancel : onBack} onExit={onCancel}>
       <WizardTitle mb={20}>{back ? 'Restart your subscription' : 'Start your free month'}</WizardTitle>
       <Pick plan={st.plan} onPick={(id) => window.CircPP.set({ plan: id })} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 16, width: '100%' }}>
-        {['One plan covers every circle you run', back ? 'Everyone you invite joins free' : 'First month free. Everyone you invite joins free'].map((t) => (
+        {bullets.map((t) => (
           <div key={t} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
             <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
             <span style={line}>{t}</span>
@@ -153,6 +161,7 @@ const PpFundingPage = (props) => {
       </div>
       <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>
         {back ? 'You have subscribed before, so there is no free month. We charge ' + p.full + ' today.'
+          : cv === 'B' ? noteB : cv === 'C' ? noteC
           : <>We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.</>}
       </p>
       <Button variant="primary" full size="lg" onClick={onFund}>{back ? 'Restart subscription' : 'Start your free month'}</Button>
@@ -175,8 +184,10 @@ const PpCheckout = (props) => {
         ? { ...s, funded: true, dormancy: null, funding: null, openUntil: null } : s)));
     }
     window.__ppTk = null;
+    const first = !st.subscribed && !props.refund && st.flow === 'pricing-first';
     if (!st.subscribed) window.CircPP.set({ subscribed: true, returning: false });
-    props.onSuccess();
+    // Pricing-first: the card is in, so the circle form comes next, then the circle is made.
+    if (first && window.__ppApi) window.__ppApi.setRoute('create-space'); else props.onSuccess();
   };
   React.useEffect(() => { if (passThrough) done(); }, [passThrough]);
   if (props.refund && !tk) return <PpShippedCheckout {...props} />;
@@ -184,4 +195,14 @@ const PpCheckout = (props) => {
   window.__ppTkActive = tk;
   return <PpShippedCheckout {...props} refund={false} onSuccess={done} />;
 };
-Object.assign(window, { FundingPage: PpFundingPage, Checkout: PpCheckout });
+// Pricing-first (proposed): "Create" from an account that is not subscribed opens the pricing
+// screen before the circle form. Once subscribed, the shipped form runs as it does today.
+const PpShippedCreateSpace = window.CreateSpace;
+const PpCreateSpace = (props) => {
+  const st = usePP();
+  const gate = st.flow === 'pricing-first' && !st.subscribed;
+  React.useEffect(() => { if (gate && window.__ppApi) window.__ppApi.setRoute('funding'); }, [gate]);
+  if (gate) return null;
+  return <PpShippedCreateSpace {...props} />;
+};
+Object.assign(window, { FundingPage: PpFundingPage, Checkout: PpCheckout, CreateSpace: PpCreateSpace });

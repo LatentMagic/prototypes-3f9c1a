@@ -28,8 +28,8 @@ const PpDormantSpace = (props) => {
           <h1 className="circ-dormant-title">This circle is asleep.</h1>
           <p className="circ-dormant-body">{body}</p>
           <div className="circ-dormant-actions">
-            {!lapsed && onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
-            <Button variant="primary" size="lg" onClick={go}>{lapsed ? 'Restart your subscription' : 'Take over this circle'}</Button>
+            {!lapsed && onLeave && <Button variant="destructive-secondary" size="lg" style={{ minWidth: 240 }} onClick={onLeave}>Leave this circle</Button>}
+            <Button variant="primary" size="lg" style={{ minWidth: 240 }} onClick={go}>{lapsed ? 'Restart your subscription' : 'Take over this circle'}</Button>
           </div>
           <p className="circ-dormant-cap">{cap}</p>
         </div>

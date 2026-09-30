@@ -10,7 +10,9 @@ const PP_PLANS = {
   yearly:  { id: 'yearly',  label: 'Yearly',  price: '£50', per: 'year',  full: '£50.00', unit: 'year' },
 };
 window.CircPP = (() => {
-  let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true };
+  // flow: form-first | pricing-first (create-a-circle order).  copy: A | B | C (free-month copy).
+  // acct / sheet / champ: A | B | C designs of the account card, switch sheet, circle-settings line.
+  let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true, flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A' };
   try { Object.assign(st, JSON.parse(localStorage.getItem(PP_KEY) || '{}')); } catch (e) {}
   const subs = new Set();
   return {

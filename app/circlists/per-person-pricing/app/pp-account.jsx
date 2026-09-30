@@ -53,6 +53,39 @@ const PpaSwitchSheet = ({ from }) => {
   const trial = A.get().phase === 'trial';
   const date = ppaDay(trial ? PPA_TRIAL_DAYS : PPA_RENEW_DAYS);
   const close = () => A.set({ sheet: null });
+  const sv = window.CircPP.get().sheet;
+  const go = () => A.set({ phase: A.get().phase === 'trial' ? 'trial' : 'switched', pending: to.id, sheet: null });
+  if (sv === 'B' && !trial) {
+    const row = (t, v, hi) => (
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: hi ? 'var(--color-accent-soft)' : 'var(--color-surface-sunken)', border: hi ? '1px solid var(--color-accent)' : '1px solid transparent' }}>
+        <span style={ppaP({ color: 'var(--color-fg-1)' })}>{t}</span><span style={ppaP({ color: 'var(--color-fg-1)', fontWeight: 600 })}>{v}</span>
+      </div>);
+    return (
+      <PpaSheet title={'Switch to ' + to.label + '?'} onClose={close}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 'var(--space-3)' }}>
+          {row('Now', cur.full + ' per ' + cur.unit)}
+          {row('From ' + date, to.full + ' per ' + to.unit, true)}
+        </div>
+        <p style={ppaP({ marginBottom: 'var(--space-5)' })}>{to.id === 'yearly' ? 'That is 2 months free. ' : ''}Nothing is charged or refunded today.</p>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+          <Button variant="primary" onClick={go}>Switch to {to.label}</Button>
+          <Button variant="secondary" onClick={close}>Not now</Button>
+        </div>
+      </PpaSheet>
+    );
+  }
+  if (sv === 'C' && !trial) {
+    return (
+      <PpaSheet title={'Pay ' + (to.id === 'yearly' ? 'yearly' : 'monthly') + ' instead?'} onClose={close}>
+        <p style={ppaP({ fontSize: 15, color: 'var(--color-fg-1)', marginBottom: 'var(--space-5)' })}>
+          {to.id === 'yearly' ? 'Get 2 months free: ' : ''}{to.full} a {to.unit} from {date}, instead of {cur.full} a {cur.unit}. Nothing to pay today.
+        </p>
+        <Button variant="primary" full onClick={go}>Yes, switch to {to.label}</Button>
+        <div style={{ height: 'var(--space-2)' }} />
+        <Button variant="tertiary" full onClick={close}>Keep {cur.label}</Button>
+      </PpaSheet>
+    );
+  }
   return (
     <PpaSheet title={'Switch to ' + to.label} onClose={close}>
       <p style={ppaP({ marginBottom: 'var(--space-3)' })}>
@@ -106,7 +139,42 @@ const PpaSection = () => {
     </div>
   );
   let body;
-  if (s.phase === 'none') {
+  const av = window.CircPP.get().acct;
+  const other = PP_PLANS[ppaOther(s.plan)];
+  const link = (t, on, color) => (
+    <button type="button" onClick={on} style={{ background: 'none', border: 0, padding: 0, minHeight: 44, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 500, color: color || 'var(--color-accent)', textDecoration: 'underline', textUnderlineOffset: 3 }}>{t}</button>);
+  if (s.phase === 'active' && av === 'B') {
+    // B: one plain sentence, actions as links.
+    body = (<>
+      {head(<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="check" size={15} color="var(--color-fg-3)" />Active</span>)}
+      <p style={ppaP({ fontSize: 15, color: 'var(--color-fg-1)', margin: '4px 0 6px' })}>{plan.label} plan, {plan.full}. Renews {ppaDay(PPA_RENEW_DAYS)}.</p>
+      <p style={ppaP({ marginBottom: 'var(--space-3)' })}>Covers {n} circles: {names.join(', ')}.</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: 'var(--space-5)' }}>
+        {link('Update card', () => A.set({ sheet: 'card' }))}
+        {link('Switch to ' + other.label, () => A.set({ sheet: 'switch' }))}
+        {link('Cancel', () => A.set({ sheet: 'cancel' }), 'var(--color-destructive)')}
+      </div>
+    </>);
+  } else if (s.phase === 'active' && av === 'C') {
+    // C: price first, a yearly nudge on the card itself.
+    body = (<>
+      {head(<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="check" size={15} color="var(--color-fg-3)" />Active</span>)}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '6px 0 2px' }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 32, letterSpacing: '-0.02em', color: 'var(--color-fg-1)' }}>{plan.price}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-fg-2)' }}>per {plan.unit}</span>
+      </div>
+      <p style={ppaP({ marginBottom: 'var(--space-3)' })}>Next renewal {ppaDay(PPA_RENEW_DAYS)}. Covers {n} circles.</p>
+      {s.plan === 'monthly' && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 12px', marginBottom: 'var(--space-3)', borderRadius: 'var(--radius-md)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)' }}>
+          <span style={ppaP({ color: 'var(--color-fg-1)' })}>Yearly is £50. That is 2 months free.</span>
+          <Button variant="primary" size="sm" onClick={() => A.set({ sheet: 'switch' })}>Switch</Button>
+        </div>)}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+        <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => A.set({ sheet: 'card' })}>Update card</Button>
+        <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel</Button>
+      </div>
+    </>);
+  } else if (s.phase === 'none') {
     body = (<>{head()}<p style={ppaP()}>You don’t run a paid circle. Your subscription starts when you create your first circle.</p></>);
   } else {
     const ending = s.phase === 'ending', trial = s.phase === 'trial', switched = s.phase === 'switched';
@@ -174,6 +242,7 @@ window.AccountSettings = PpAccountSettings;
 
 const PpMembersSurface = (props) => {
   const ref = React.useRef(null);
+  const champ = usePP().champ;
   const on = props.isChampion && window.CircPP.get().subscribed;
   const slot = usePpaSlot(ref, (h) => {
     if (!on) return null;
@@ -181,11 +250,11 @@ const PpMembersSurface = (props) => {
   }, 'replace');
   return (<div ref={ref} style={{ display: 'contents' }}>
     <PpaShippedMembers {...props} />
-    {slot && ReactDOM.createPortal(
+    {slot && champ !== 'C' && ReactDOM.createPortal(
       <div style={{ ...ppaCard, padding: 'var(--space-5) var(--space-6)' }}>
-        <span style={ppaP({ color: 'var(--color-fg-1)' })}>Runs on your subscription {'·'} </span>
+        <span style={ppaP({ color: 'var(--color-fg-1)' })}>{champ === 'B' ? 'You\u2019re this circle\u2019s champion \u00b7 ' : 'Runs on your subscription \u00b7 '}</span>
         <button type="button" onClick={() => { window.CircPPA.set({ phase: 'active' }); window.__ppApi.setRoute('account'); }}
-          style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 500, color: 'var(--color-accent)', textDecoration: 'underline', textUnderlineOffset: 3, minHeight: 32 }}>Manage</button>
+          style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 500, color: 'var(--color-accent)', textDecoration: 'underline', textUnderlineOffset: 3, minHeight: 32 }}>{champ === 'B' ? 'Account' : 'Manage'}</button>
       </div>, slot)}
   </div>);
 };
@@ -193,13 +262,13 @@ window.MembersSurface = PpMembersSurface;
 
 // ---- addressable states ------------------------------------------------------
 const PPA_GROUP = 'Pricing candidate: account subscription';
-const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = null, account = 'subscribed', route = 'account', current = null }) => ({
+const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = null, account = 'subscribed', route = 'account', current = null, pp = {} }) => ({
   id, label, group: PPA_GROUP,
   go: (api, seed) => {
     const { DEFAULT_USER } = window.CircSeed;
     try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
     window.__ppTk = null; window.__ppAuto = null;
-    window.CircPP.set(PP_ACCOUNT_PATCH[account]);
+    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', ...PP_ACCOUNT_PATCH[account], ...pp });
     window.CircPPA.set({ phase, plan, pending, sheet });
     api.setUser(DEFAULT_USER); api.setSpaces(seed.filter((sp) => !/^TEST\b/i.test(sp.name || '')));
     api.setLoadingFeed(false); api.setHoldLoading(false);
@@ -216,6 +285,17 @@ const PPA_STATES = [
   ppaState('pp-account-trial', 'Account: free month, first payment date', { phase: 'trial', plan: 'yearly' }),
   ppaState('pp-account-none', 'Account: never subscribed', { phase: 'none', account: 'none' }),
   ppaState('pp-members-link', 'Circle settings, champion: runs on your subscription, Manage link', { phase: 'active', route: 'members', current: 'sp-backend' }),
+  // Design-option states (review only): B and C of each surface. A is the state above.
+  ppaState('pp-account-active-b', 'Account card B: one plain sentence, links', { phase: 'active', pp: { acct: 'B' } }),
+  ppaState('pp-account-active-c', 'Account card C: price first, yearly nudge', { phase: 'active', pp: { acct: 'C' } }),
+  ppaState('pp-account-switch-b', 'Switch sheet B: now vs from', { phase: 'active', sheet: 'switch', pp: { sheet: 'B' } }),
+  ppaState('pp-account-switch-c', 'Switch sheet C: one sentence', { phase: 'active', sheet: 'switch', pp: { sheet: 'C' } }),
+  ppaState('pp-members-link-b', 'Circle settings B: champion line, Account link', { phase: 'active', route: 'members', current: 'sp-backend', pp: { champ: 'B' } }),
+  ppaState('pp-members-link-c', 'Circle settings C: nothing, badge only', { phase: 'active', route: 'members', current: 'sp-backend', pp: { champ: 'C' } }),
+  // Create-a-circle, pricing first: start on home, not subscribed; tap Create. copy picks the free-month wording.
+  ppaState('pp-create-first', 'Create, pricing first: home, not subscribed (tap Create)', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first' } }),
+  ppaState('pp-create-first-b', 'Create, pricing first, copy B', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'B' } }),
+  ppaState('pp-create-first-c', 'Create, pricing first, copy C', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'C' } }),
 ];
 const PPA_IDS = PPA_STATES.map((s) => s.id);
 const ppaBuild = window.buildStates;
