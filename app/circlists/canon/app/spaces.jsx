@@ -124,6 +124,8 @@ const CircleDescriptionField = ({ id, value, onChange, placeholder }) => {
 
 // ---- Create space (dedicated full page) ------------------------------------
 const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '' }) => {
+  // Candidate hook (droppable): a cand-* overlay may publish CircCandidate.createForm() -> { intro, cta }. Absent -> as shipped.
+  const cf = (window.CircCandidate && window.CircCandidate.createForm) ? window.CircCandidate.createForm() : null;
   const [name, setName] = React.useState(initialName);
   const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
@@ -143,14 +145,14 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
         color: 'var(--color-fg-2)', margin: '0 0 24px',
-      }}>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</p>
+      }}>{(cf && cf.intro) || <>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</>}</p>
       <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
         <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
         <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
           placeholder="What’s this circle for?" />
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>{(cf && cf.cta) || 'Continue'}<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
         </Button>
       </form>
     </WizardShell>

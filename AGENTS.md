@@ -48,6 +48,7 @@ A single-file export (`<Name>.dc.html` + `support.js`, as `app/commentape/protot
 
 **Syncing an export into canon** — a fixed recipe; don't browse, don't QA.
 1. Replace `app/circlists/canon/` with the export, verbatim, including `brand/` and `uploads/` whole. Drop only `.thumbnail`, `screenshots/`, `scraps/`, `.playwright-mcp/`.
+   Then run `git status` before anything else: a `D` on a file the export never shipped is hand-added work (a candidate's overlay files, its hooks, its `playgrounds.json` row) — restore it from the prior commit and record the carry in the changelog. A candidate belongs in its own rail node, not inside `canon/`, where an export wipes it.
 2. Run `npm run check -- --widths 1280` (about 2 minutes, unattended). 0 FAIL is the pass; don't open the screenshots.
 3. Append a `changelog` entry to the `canon` node in `index.html`, written from `git diff` of the replace against the prior commit — the actual code change, not a doc the export ships. A doc can be stale or partial (the export's own `CHANGELOG.md` is major-milestones-only by its own rule); the diff can't be. Leave `desc` untouched.
 4. Commit and push.

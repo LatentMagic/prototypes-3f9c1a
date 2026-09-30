@@ -2,6 +2,10 @@
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "generated": "2026-09-29",
   "tickets": [
+    { "id": "—", "slug": "per-person-pricing", "name": "Per-person pricing", "state": "active", "touched": "2026-09-29",
+      "entries": [
+        { "kind": "candidate", "name": "Per-person pricing candidate", "path": "docs/specs/per-person-pricing/circlists-per-person-pricing.html", "note": "Start your free month at first circle; a subscribed account creates straight through. Three layouts of the plan pick behind the Pricing review chip. Unratified." }
+      ] },
     { "id": "—", "slug": "card-title-editing", "name": "Card titles", "state": "active", "touched": "2026-09-29",
       "entries": [
         { "kind": "playground", "name": "Clearing restores the title", "path": "docs/specs/card-title-editing/playground/card-title-clear.html", "note": "Round three, no new control: clear the field and save. The editor says so on open: a line under the field, the same line naming the original, or that line above the field." },
