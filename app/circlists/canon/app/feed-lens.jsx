@@ -25,8 +25,9 @@
 // what is already there, and FILTER (Show, Added by), which conceals cards.
 // The rule that follows from it governs the whole region:
 //
-//   The door shows you everything. The lit trigger and the chip row exist only
-//   to say SOMETHING IS BEING HIDDEN FROM YOU, and only those can be cleared.
+//   The door shows you everything. The chip row alone exists to say SOMETHING
+//   IS BEING HIDDEN FROM YOU, and only its chips can be cleared. The trigger
+//   keeps its look and its name under any filter (CIRC-042 AF-07, CIRC-043).
 //
 // One door rather than two buttons because the split in Linear and Jira tracks
 // filter WEIGHT — a query builder, compound conditions, saved views — and this
@@ -44,8 +45,8 @@
 //
 // NO COUNTS. The conventional signal for an active filter is a count badge on
 // the trigger. This product's register forbids it — its feed marks are
-// "boolean, wordless, never a count" — so the trigger carries a boolean active
-// state and the chips carry the words.
+// "boolean, wordless, never a count" — so the trigger carries no state at all
+// and the chips carry the words.
 // ============================================================================
 
 const CIRC_LENS_ALL = null; // "Everyone" — the default, no contributor filter.
@@ -134,8 +135,8 @@ const circFilterItems = (items, who) => {
 };
 
 // THE REGION'S ONE RULE (BIZ-136, Joe's ruling of 2026-09-07). The door shows
-// you everything; the lit trigger and the chip row exist ONLY to say something
-// is being HIDDEN from you, and only those things can be cleared.
+// you everything; the chip row alone exists to say something is being HIDDEN
+// from you, and only its chips can be cleared.
 //
 // So `circLensActive` is concealment, and concealment alone. `order` no longer
 // counts and is kept in the signature only because it is a published symbol
@@ -151,7 +152,7 @@ const circLensActive = (order, who) => circWhoList(who).length > 0;
 
 // Whether ANYTHING in the door is off its default — a different question from
 // the one above, and the only place `order` still counts. Used for "keep the
-// door reachable", never for the lit state and never for a chip.
+// door reachable", never for a chip.
 const circLensNonDefault = (order, who) =>
   circWhoList(who).length > 0 || !!(order && order !== (window.CIRC_SORT_DEFAULT || 'newest'));
 
@@ -199,22 +200,18 @@ const circSheetMaxHeight = (visible) =>
 // descending rules: that is this app's own `menu` glyph, and at mobile width it
 // already sits in the top bar 48px away, so the same mark twice on one screen
 // would have meant two different things a glance apart.
-//
-// The knobs slide when the lens is active, so the state is carried by the shape
-// as well as by colour. That matters twice over — the app's rule is hierarchy
-// through size and weight rather than colour, and an active state legible only
-// as a tint is exactly what that rule exists to catch.
-const CircLensIcon = ({ active }) => {
-  const w = active ? 2 : 1.6;
-  const knob = active ? 3.1 : 2.6;
+// One fixed shape: the door carries no state (CIRC-043).
+const CircLensIcon = () => {
+  const w = 1.6;
+  const knob = 2.6;
   return (
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"
       style={{ display: 'block', flexShrink: 0 }}>
       <line x1="3.5" y1="7" x2="20.5" y2="7" stroke="currentColor" strokeWidth={w} strokeLinecap="round" />
       <line x1="3.5" y1="17" x2="20.5" y2="17" stroke="currentColor" strokeWidth={w} strokeLinecap="round" />
-      <circle cx={active ? 15.5 : 9} cy="7" r={knob} fill="var(--color-surface)"
+      <circle cx={9} cy="7" r={knob} fill="var(--color-surface)"
         stroke="currentColor" strokeWidth={w} />
-      <circle cx={active ? 8.5 : 15} cy="17" r={knob} fill="var(--color-surface)"
+      <circle cx={15} cy="17" r={knob} fill="var(--color-surface)"
         stroke="currentColor" strokeWidth={w} />
     </svg>
   );
@@ -255,7 +252,7 @@ const LensLabel = ({ children }) => (
 // The section eyebrow — DISPLAY and FILTER (Joe's ruling, 2026-09-07). It names
 // the two kinds of thing this door holds: controls that redraw what is already
 // there, and controls that conceal cards. The distinction is the reason the
-// chip row and the lit trigger mean one thing rather than "some of these".
+// chip row means one thing rather than "some of these".
 //
 // It has to sit ABOVE the group labels without competing with them, and one
 // step of size is not enough on its own at 13→12px. So it borrows the app's
@@ -543,10 +540,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // design review caught the contradiction by looking: with only Saved
   // applied the trigger sat grey and unmarked while a Saved chip showed
   // directly beneath it — the lens declining to count a narrowing it now owns.
-  //
-  // Every term below conceals cards. That is the whole test now (see
-  // `circLensActive`): `order` is absent from this line on purpose.
-  const active = circLensActive(order, who) || !!saved || !!watching;
+  // Superseded: the trigger no longer lights (CIRC-042 AF-07, CIRC-043).
   // Both options are offered at every width. The width filter that used to sit
   // here existed only for Grid, which was desktop-only; with Grid vetoed there
   // is nothing left that varies by viewport.
@@ -680,10 +674,8 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   // belongs in the door's own spoken state — otherwise a screen-reader user
   // hears "newest first, everyone" over a list narrowed to saved links, which
   // is the audible version of the grey trigger the design review caught.
-  const spoken = 'View options: ' + (window.circSortLabel ? window.circSortLabel(order).toLowerCase() : order)
-    + ', ' + ((who && who.length) ? 'added by ' + who.map(circContributorLabel).join(', ') : 'everyone')
-    + (saved ? ', saved only' : '')
-    + (watching ? ', watching only' : '');
+  // Always the plain name (CIRC-042 AF-07); the chip row speaks the state.
+  const spoken = 'View options';
 
   return (
     // Stretches to the bar's full height so the border-bottom lands flush with
@@ -691,7 +683,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
     // panel hangs from this same edge. The 44px button floats centred inside.
     <div style={{
       position: 'relative', display: 'inline-flex', alignItems: 'center', alignSelf: 'stretch',
-      borderBottom: '2px solid ' + (active ? 'var(--color-accent)' : 'transparent'),
+      borderBottom: '2px solid transparent',
       marginBottom: -1,
     }}>
       <button
@@ -708,11 +700,10 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
         aria-label={spoken}
         className="circ-lens-trigger"
         style={{
-          // Transparent at rest AND active — a resting fill on ANY control is
+          // Transparent always — a resting fill on ANY control is
           // this app's hover-only affordance (see --color-surface-sunken's own
           // comment in tokens.css), so a persistent one here read as nothing
-          // else in the app does. Active is carried by the wrapper's
-          // border-bottom + the icon colour below; hover tint lives in the
+          // else in the app does. Hover tint lives in the
           // circ-lens-trigger CSS class.
           background: 'transparent',
           border: 0, cursor: 'pointer', padding: 0,
@@ -720,11 +711,11 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           // centred in the bar's 48px.
           height: 'var(--tap-target-min)', width: 'var(--tap-target-min)', flexShrink: 0,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          color: active ? 'var(--color-accent)' : 'var(--color-fg-2)',
+          color: 'var(--color-fg-2)',
           borderRadius: 'var(--radius-md)',
         }}
       >
-        <CircLensIcon active={active} />
+        <CircLensIcon />
       </button>
 
       {render && isMobile && (
@@ -954,7 +945,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
               light the trigger, put a chip in the row, and can be cleared.
               The rule between the two sections is the whole point of labelling
               them: a member should never have to learn WHICH of these things
-              the lit icon was talking about.
+              the chip row was talking about.
               The divider falls on the split that carries meaning — display vs
               conceal — and there is still exactly one rule in the panel.
               ONE LIST (BIZ-136, Joe's ruling 2026-09-14 — the lens filter
