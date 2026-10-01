@@ -16,12 +16,15 @@ window.CircPP = (() => {
     // v7 review options: v7 = pricing copy A|B|C (state 1) or S2; covers = on|off; nsub = A|B|C (non-subscriber card); label = overlay text.
     v7: null, covers: 'on', nsub: 'A', label: null,
     // v7 round 2: step = A | B | C (circle settings footer), stepSheet = null | choice | pick (C only), delp = delete-account line on.
-    step: null, stepSheet: null, delp: false };
+    step: null, stepSheet: null, delp: false,
+    // v8 round 3: one object so a single reset clears it. copy = B1|B2|B3 (state 1 lines), pill = P1|P2|P3 (yearly pill + picked card), al = L1|L2|L3 (account card actions).
+    v8: null };
   try { Object.assign(st, JSON.parse(localStorage.getItem(PP_KEY) || '{}')); } catch (e) {}
   const subs = new Set();
   return {
     get: () => st,
-    set(patch) { st = { ...st, ...patch }; try { localStorage.setItem(PP_KEY, JSON.stringify(st)); } catch (e) {} subs.forEach((f) => f()); },
+    // A builder that resets v7 (the older ones in pp-takeover do) also clears v8, so a v8 flag never leaks through localStorage into another state.
+    set(patch) { if (patch && patch.v7 === null && !('v8' in patch)) patch = { ...patch, v8: null }; st = { ...st, ...patch }; try { localStorage.setItem(PP_KEY, JSON.stringify(st)); } catch (e) {} subs.forEach((f) => f()); },
     subscribe(f) { subs.add(f); return () => subs.delete(f); },
   };
 })();

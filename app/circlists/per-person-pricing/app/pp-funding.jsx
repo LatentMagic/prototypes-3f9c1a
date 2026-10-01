@@ -9,7 +9,12 @@ const PpShippedFundingPage = window.FundingPage;
 const PpShippedCheckout = window.Checkout;
 
 const ppMono = { fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', letterSpacing: 'var(--tracking-wide)' };
-const PpPill = ({ children }) => (
+// v8 pill options: P3 turns the pill neutral (ink on sunken, no border). P1 and P2 keep today's green pill.
+const ppV8 = () => window.CircPP.get().v8 || {};
+const PpPill = ({ children }) => ppV8().pill === 'P3' ? (
+  <span style={{ ...ppMono, fontSize: 11, color: 'var(--color-fg-1)', background: 'var(--color-surface-sunken)',
+    border: '1px solid transparent', padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>{children}</span>
+) : (
   <span style={{ ...ppMono, fontSize: 11, color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
     border: '1px solid var(--color-accent)', padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>{children}</span>
 );
@@ -22,7 +27,7 @@ const PpPickCards = ({ plan, onPick }) => (
       return (
         <button key={id} type="button" role="radio" aria-checked={on} onClick={() => onPick(id)} style={{
           display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', width: '100%', minHeight: 64, cursor: 'pointer',
-          padding: '12px 14px', borderRadius: 'var(--radius-md)', background: on ? 'var(--color-accent-soft)' : 'var(--color-surface)',
+          padding: '12px 14px', borderRadius: 'var(--radius-md)', background: on && !/^P[23]$/.test(ppV8().pill) ? 'var(--color-accent-soft)' : 'var(--color-surface)',
           border: on ? '2px solid var(--color-accent)' : '1px solid var(--color-border-2)', color: 'var(--color-fg-1)',
         }}>
           <span aria-hidden style={{ width: 18, height: 18, borderRadius: '50%', flex: 'none', boxSizing: 'border-box',
@@ -161,6 +166,11 @@ const PpFundingPage = (props) => {
     : v7 === 'B' ? { title: 'Start your free month', line: null, sub: 'A card is needed to start. 30 days free, then ' + per + '.', button: 'Start free month' }
     : v7 === 'C' ? { title: 'Try it free for 30 days', line: 'Then ' + per + '. Cancel before day 30 and pay nothing.', sub: 'A card is needed to start', button: 'Start 30 days free' }
     : { title: 'Start your free month', line: '30 days free, then ' + per, sub: 'A card is needed to start', button: 'Start free month' };
+  // v8 copy under the bullets (state 1 only): deliberate lines, one sentence each, so nothing wraps into an overhang.
+  const v8c = V7 && !back && st.v8 && st.v8.copy;
+  const v8lines = !v8c ? null : ['A card is needed to start.', '30 days free, then ' + per + '.']
+    .concat(v8c === 'B2' ? ['Cancel before then and pay nothing.'] : v8c === 'B3' ? ['We email you before the first payment.'] : []);
+  if (v8lines) { V7.sub = null; V7.title = 'Start your free month'; V7.button = 'Start free month'; }
   const v7bul = ['Start as many circles as you like', 'Everyone you invite joins free'];
   const pricingFirst = mode !== 'refund' && st.flow === 'pricing-first' && !st.subscribed;
   return (
@@ -176,6 +186,7 @@ const PpFundingPage = (props) => {
           </div>
         ))}
       </div>
+      {v8lines && <div style={{ margin: '0 0 14px', fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center' }}>{v8lines.map((t) => <div key={t}>{t}</div>)}</div>}
       {V7 ? (V7.sub && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>{V7.sub}</p>) :
       <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>
         {back ? 'You have subscribed before, so there is no free month. We charge ' + p.full + ' today.'

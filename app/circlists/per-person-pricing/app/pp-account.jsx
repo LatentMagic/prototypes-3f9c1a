@@ -266,7 +266,41 @@ const PpaSection = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 0', borderTop: '1px solid var(--color-border-1)' }}>
         <span style={ppaP()}>{t}</span><span style={ppaP({ color: 'var(--color-fg-1)', fontWeight: strong ? 600 : 500, textAlign: 'right' })}>{v}</span>
       </div>);
+    const L = (window.CircPP.get().v8 || {}).al || null;
+    // L2 trailing text action: accent, medium weight, 44px hit height.
+    const act = (t, on, aria) => (<button type="button" aria-label={aria} onClick={on} style={{ background: 'none', border: 0, padding: '0 0 0 4px', minHeight: 44, minWidth: 44, margin: '-12px 0', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 500, color: 'var(--color-accent)' }}>{t}</button>);
     const status = ending ? 'Ends ' + ppaDay(PPA_RENEW_DAYS) : switched ? 'Switches to ' + pend.label + ' on ' + renew : trial ? 'Free month · ' + PPA_TRIAL_DAYS + ' days left' : 'Active';
+    // v8 round 3: three layouts of the actions. L1 full-width stack, L2 actions on their rows, L3 action list.
+    const toYearly = 'Switch to ' + PP_PLANS[ppaOther(s.plan)].label.toLowerCase();
+    const cancelBtn = (extra) => <Button variant="tertiary" style={{ color: 'var(--color-destructive)', ...extra }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel subscription</Button>;
+    const resume = (extra) => <Button variant="primary" full={L !== 'L2'} onClick={() => A.set({ phase: 'active', sheet: null })} style={extra}>Resume</Button>;
+    const listRow = (key, t, on, icon, danger) => (
+      <button key={key} type="button" onClick={on} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', minHeight: 52, padding: '0 2px', background: 'none', border: 0, borderBottom: '1px solid var(--color-border-1)', cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15, color: danger ? 'var(--color-destructive)' : 'var(--color-fg-1)' }}>
+        {icon}<span style={{ flex: 1 }}>{t}</span>{!danger && <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />}
+      </button>);
+    let v8Actions = null;
+    if (L === 'L1') {
+      v8Actions = (<>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 'var(--space-2)' }}>
+          <Button variant="secondary" full icon={<Icon name="card" size={16} />} onClick={() => A.set({ sheet: 'card' })}>Update card</Button>
+          {ending ? resume() : (!failed && !switched && <Button variant="secondary" full onClick={() => A.set({ sheet: 'switch' })}>{toYearly}</Button>)}
+        </div>
+        {!ending && <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--space-2)' }}>{cancelBtn()}</div>}
+      </>);
+    } else if (L === 'L2') {
+      v8Actions = (<div style={{ marginTop: 'var(--space-4)' }}>
+        {ending ? resume() : cancelBtn({ marginLeft: -6 })}
+      </div>);
+    } else if (L === 'L3') {
+      v8Actions = (<>
+        {ending && <div style={{ marginBottom: 'var(--space-3)' }}>{resume()}</div>}
+        <div style={{ borderTop: '1px solid var(--color-border-1)' }}>
+          {listRow('card', 'Update card', () => A.set({ sheet: 'card' }), <Icon name="card" size={16} color="var(--color-fg-2)" />)}
+          {!ending && !failed && !switched && listRow('sw', toYearly, () => A.set({ sheet: 'switch' }))}
+          {!ending && listRow('cx', 'Cancel subscription', () => A.set({ sheet: 'cancel' }), null, true)}
+        </div>
+      </>);
+    }
     body = (<>
       {head(<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{s.phase === 'active' && <Icon name="check" size={15} color="var(--color-fg-3)" />}{trial ? 'Free month · ' + PPA_TRIAL_DAYS + ' days left' : ending ? 'Ending' : failed ? 'Payment failed' : 'Active'}</span>)}
       {failed && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Update the card within 30 days to keep your circles awake.</p>}
@@ -274,15 +308,18 @@ const PpaSection = () => {
       {ending && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Your subscription ends on {ppaDay(PPA_RENEW_DAYS)}. Your circles then go to sleep, and whoever funds one next champions it. You can resume any time before that date.</p>}
       {switched && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Switches to {pend.label} on {renew}. Nothing changes until then.</p>}
       <div style={{ marginTop: 'var(--space-2)' }}>
-        {label('Plan', plan.label + ' · ' + plan.full + ' per ' + plan.unit, true)}
+        {label('Plan', L === 'L2' && !ending && !failed && !trial && !switched
+          ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>{plan.label + ' · ' + plan.full + ' per ' + plan.unit}{act('Change', () => A.set({ sheet: 'switch' }), 'Change plan')}</span>
+          : plan.label + ' · ' + plan.full + ' per ' + plan.unit, true)}
         {!ending && !trial && !failed && label(switched ? 'Renews on' : 'Next renewal', renew)}
+        {L === 'L2' && label('Card', <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>{'\u2022\u2022\u2022\u2022 4242'}{act('Update', () => A.set({ sheet: 'card' }), 'Update card')}</span>)}
         {showCovers && label('Covers', n === 1 ? '1 circle' : n + ' circles')}
         {!showCovers && <div style={{ borderTop: '1px solid var(--color-border-1)' }} />}
       </div>
       {showCovers && <p style={ppaP({ margin: '4px 0 var(--space-4)', fontSize: 13, color: 'var(--color-fg-3)' })}>{names.join(' · ')}</p>}
       {!showCovers && <div style={{ height: 'var(--space-3)' }} />}
       {ending && s.alert && <p role="alert" style={ppaP({ color: 'var(--color-destructive)', marginBottom: 'var(--space-3)' })}>{s.alert === 'asleep' ? 'Your subscription has ended and your circles are now asleep.' : 'The resumption could not be completed.'}</p>}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+      {L ? v8Actions : (<div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
         {ending ? (<>
           <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => A.set({ sheet: 'card' })}>Update card</Button>
           <Button variant="primary" onClick={() => A.set({ phase: 'active', sheet: null })}>Resume</Button>
@@ -293,8 +330,10 @@ const PpaSection = () => {
             : <Button variant="secondary" onClick={() => A.set({ sheet: 'switch' })}>Switch to {PP_PLANS[ppaOther(s.plan)].label}</Button>}
           <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel</Button>
         </>)}
-      </div>
-      <p style={ppaP({ margin: 'var(--space-4) 0 0', fontSize: 12.5, color: 'var(--color-fg-3)' })}>Billed to {email} · card ending 4242</p>
+      </div>)}
+      {L === 'L2' ? <p style={ppaP({ margin: 'var(--space-4) 0 0', fontSize: 12.5, color: 'var(--color-fg-3)' })}>Billed to {email}</p>
+        : L ? <p style={ppaP({ margin: 'var(--space-4) 0 0', fontSize: 12.5, color: 'var(--color-fg-3)' })}>Billed to {email}<br />Card ending 4242</p>
+        : <p style={ppaP({ margin: 'var(--space-4) 0 0', fontSize: 12.5, color: 'var(--color-fg-3)' })}>Billed to {email} · card ending 4242</p>}
     </>);
   }
   return (<>
@@ -423,7 +462,7 @@ const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = 
     const { DEFAULT_USER } = window.CircSeed;
     try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
     window.__ppTk = null; window.__ppAuto = null;
-    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', label: null, step: null, stepSheet: null, delp: false, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
+    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', label: null, step: null, stepSheet: null, delp: false, v8: null, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
     window.CircPPA.set({ phase, plan, pending, sheet, alert });
     api.setUser(DEFAULT_USER); api.setSpaces(seed.filter((sp) => !/^TEST\b/i.test(sp.name || '')));
     api.setLoadingFeed(false); api.setHoldLoading(false);
@@ -485,6 +524,19 @@ PPA_STATES.push(
 );
 PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0 = PPA_STATES.find((x) => x.id === 'pp-v7-delete').go;
 PPA_STATES.find((x) => x.id === 'pp-v7-delete').go = (api, seed) => { PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0(api, seed); window.__ppAutoDelete = true; };
+
+// ---- v8 round 3 options (review only).
+const V8P = (l, v8, extra = {}) => ({ flow: 'pricing-first', v7: 'B', v8, label: l, ...extra });
+PPA_STATES.push(
+  ppaState('pp-v8-price-b1', 'v8 pricing state 1, copy B1 tidy', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B1 Tidy', { copy: 'B1' }) }),
+  ppaState('pp-v8-price-b2', 'v8 pricing state 1, copy B2 cancel-safe', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B2 Cancel-safe', { copy: 'B2' }) }),
+  ppaState('pp-v8-price-b2-monthly', 'v8 pricing state 1, copy B2, monthly picked', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B2 · monthly', { copy: 'B2' }, { plan: 'monthly' }) }),
+  ppaState('pp-v8-price-b3', 'v8 pricing state 1, copy B3 reminder', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B3 Reminder', { copy: 'B3' }) }),
+);
+[['P1', 'Today'], ['P2', 'White card'], ['P3', 'White card, ink pill']].forEach(([k, n]) => [['', 'yearly'], ['-monthly', 'monthly']].forEach(([suf, plan]) => PPA_STATES.push(
+  ppaState('pp-v8-pill-' + k.toLowerCase() + suf, 'v8 pill ' + k + ' ' + n + ', ' + plan + ' picked', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pill · ' + k + ' ' + n + ' · ' + plan, { copy: 'B2', pill: k }, { plan }) }))));
+[['L1', 'Full-width stack'], ['L2', 'Actions on rows'], ['L3', 'Action list']].forEach(([k, n]) => [['active', { phase: 'active' }], ['failed', { phase: 'failed' }], ['ending', { phase: 'ending' }]].forEach(([ph, o]) => PPA_STATES.push(
+  ppaState('pp-v8-acct-' + k.toLowerCase() + '-' + ph, 'v8 account card ' + k + ' ' + n + ', ' + ph, { ...o, pp: { sheet: 'V3', v8: { al: k }, label: 'Account card · ' + k + ' ' + n + ' · ' + ph } }))));
 const PPA_IDS = PPA_STATES.map((s) => s.id);
 const ppaBuild = window.buildStates;
 window.buildStates = (api) => {
