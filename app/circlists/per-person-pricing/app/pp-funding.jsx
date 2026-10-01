@@ -100,21 +100,28 @@ const PpTakeOver = ({ spaceName, onFund, onCancel, user }) => {
   const note = covered ? null
     : free ? <>We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.</>
     : (lapsed ? 'You had your free month before, so there is none this time. We charge ' : 'You have subscribed before, so there is no free month. We charge ') + p.full + ' today.';
-  const title = lapsed ? 'Restart your subscription' : 'Take over ' + (spaceName || 'this circle');
-  const button = lapsed ? 'Restart subscription' : covered ? 'Take over this circle' : free ? 'Start free month and take over' : 'Pay ' + p.full + ' and take over';
+  // v7: the decided two-state screen. State 2 = used the free month (lapsed champion or subscribed before); state 1 = never paid.
+  const V7 = st.v7 && !covered ? (lapsed || !free ? { s2: true } : { s2: false }) : null;
+  const per = p.id === 'yearly' ? '£50 a year' : '£5 a month';
+  const nm = spaceName || 'this circle';
+  const v7bul = V7 && (lapsed ? ['One plan covers every circle you run', 'All your circles wake up together'] : ['It wakes up and you become its champion', 'Everyone you invite joins free']);
+  const title = V7 ? (V7.s2 ? 'Start your subscription' : 'Start your free month') : lapsed ? 'Restart your subscription' : 'Take over ' + (spaceName || 'this circle');
+  const button0 = V7 ? (V7.s2 ? 'Subscribe' : 'Start free month') : null;
+  const button = button0 ? button0 : lapsed ? 'Restart subscription' : covered ? 'Take over this circle' : free ? 'Start free month and take over' : 'Pay ' + p.full + ' and take over';
   return (
     <WizardShell subject={spaceName} onExit={onCancel}>
       <WizardTitle mb={20}>{title}</WizardTitle>
       {!covered && <Pick plan={st.plan} onPick={(id) => window.CircPP.set({ plan: id })} />}
+      {V7 && <p style={{ margin: '-4px 0 16px', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-base)', color: 'var(--color-fg-1)', textAlign: 'center' }}>{V7.s2 ? per + ', from today' : '30 days free, then ' + per}</p>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 16, width: '100%' }}>
-        {bullets.map((t) => (
+        {(V7 ? v7bul : bullets).map((t) => (
           <div key={t} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
             <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
             <span style={line}>{t}</span>
           </div>
         ))}
       </div>
-      {note && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>{note}</p>}
+      {V7 ? (!V7.s2 && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center' }}>A card is needed to start</p>) : note && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>{note}</p>}
       <Button variant="primary" full size="lg" onClick={onFund}>{button}</Button>
       {!covered && <div style={{ margin: '14px 0 0', display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)' }}>
         <Icon name="lock" size={13} style={{ flex: 'none' }} /><span>Billed to {user ? user.email : 'your account'}</span>

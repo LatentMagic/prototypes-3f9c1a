@@ -216,6 +216,15 @@ const PpaSection = () => {
         <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel</Button>
       </div>
     </>);
+  } else if (s.phase === 'none' && window.CircPP.get().v7 && window.CircPP.get().returning) {
+    // v7 lapsed card (item 6): used the free month, not subscribed. Same rows as non-subscriber B; leads to pricing state 2. No price.
+    const row = (t, v) => (<div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 0', borderTop: '1px solid var(--color-border-1)' }}><span style={ppaP()}>{t}</span><span style={ppaP({ color: 'var(--color-fg-1)', fontWeight: 500 })}>{v}</span></div>);
+    body = (<>
+      {head('Not subscribed')}
+      <div style={{ marginTop: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>{row('Card', 'None to manage')}{row('Creating circles', 'Needs a subscription')}</div>
+      <p style={ppaP({ marginBottom: 'var(--space-4)' })}>Your subscription ended. Start it again and you can create circles.</p>
+      <Button variant="secondary" onClick={() => window.__ppApi && window.__ppApi.setRoute('funding')}>Start your subscription</Button>
+    </>);
   } else if (s.phase === 'none' && window.CircPP.get().v7) {
     // v7 non-subscriber card (no price). Shared words: no card to manage because not paying; paying lets you create circles.
     const nv = window.CircPP.get().nsub;
@@ -313,6 +322,15 @@ const usePpaSlot = (root, find, mode) => {
 
 const PpAccountSettings = (props) => {
   const ref = React.useRef(null);
+  React.useEffect(() => {
+    let n = 0;
+    const t = setInterval(() => {
+      if (!window.__ppAutoDelete) { if (++n > 40) clearInterval(t); return; }
+      const b = Array.from(document.querySelectorAll('button')).find((x) => x.textContent === 'Delete your account');
+      if (b) { window.__ppAutoDelete = false; clearInterval(t); b.click(); } else if (++n > 40) clearInterval(t);
+    }, 100);
+    return () => clearInterval(t);
+  }, []);
   const slot = usePpaSlot(ref, (h) => { const p = h.querySelector('h1 + p'); return p; });
   return (<div ref={ref} style={{ display: 'contents' }}>
     <PpaShippedAccount {...props} />
@@ -321,9 +339,63 @@ const PpAccountSettings = (props) => {
 };
 window.AccountSettings = PpAccountSettings;
 
+const PpStepSheet = ({ members }) => {
+  const st = usePP(); const set = (p) => window.CircPP.set(p);
+  const close = () => set({ stepSheet: null });
+  const opt = (title, line, on) => (
+    <button type="button" onClick={on} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer', minHeight: 56, padding: '12px 14px', marginBottom: 'var(--space-2)', borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', border: '1px solid var(--color-border-2)' }}>
+      <span style={{ flex: 1 }}>
+        <span style={{ display: 'block', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, color: 'var(--color-fg-1)' }}>{title}</span>
+        <span style={ppaP({ display: 'block', marginTop: 2 })}>{line}</span>
+      </span>
+      <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
+    </button>);
+  if (st.stepSheet === 'pick') return (
+    <PpaSheet title="Hand it to a member" onClose={close}>
+      <p style={ppaP({ marginBottom: 'var(--space-4)' })}>They can accept only if they have, or start, a subscription. Until they accept, you stay champion.</p>
+      {members.slice(0, 4).map((m) => opt(m.name, 'Ask ' + m.name.split(' ')[0] + ' to take it over', close))}
+      <Button variant="secondary" onClick={() => set({ stepSheet: 'choice' })}>Back</Button>
+    </PpaSheet>);
+  return (
+    <PpaSheet title="Step back from this circle" onClose={close}>
+      <p style={ppaP({ marginBottom: 'var(--space-4)' })}>You stop paying for it. Your other circles are not affected. Pick what happens to this one.</p>
+      {opt('Let it sleep', 'It sleeps at once. Members keep everything, and any member can take it over.', close)}
+      {opt('Hand it to a member', 'Pick who takes it over. It keeps running with no gap.', () => set({ stepSheet: 'pick' }))}
+      <div style={{ height: 'var(--space-2)' }} />
+      <Button variant="secondary" onClick={close}>Keep it</Button>
+    </PpaSheet>);
+};
 const PpMembersSurface = (props) => {
   const ref = React.useRef(null);
   const champ = usePP().champ;
+  const stepSt = usePP(); const step = props.isChampion ? stepSt.step : null;
+  const fslot = usePpaSlot(ref, (h) => (!step ? null : Array.from(h.querySelectorAll('div')).find((d) => d.style.display === 'flex' && d.children.length === 2 && /^You champion this circle/.test(d.textContent))), 'replace');
+  const mail = <a href={'mailto:' + (window.OPERATOR_EMAIL || 'support@circlists.com')} className="circ-textlink" style={{ color: 'var(--color-fg-2)', textDecoration: 'underline', textUnderlineOffset: 3 }}>get in touch</a>;
+  const fbase = { display: 'flex', alignItems: 'flex-start', gap: 8, padding: '0 2px', marginTop: 'var(--space-5)', fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)' };
+  const crown = <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>;
+  const footer = !fslot ? null : step === 'A' ? (
+    <div style={fbase}>{crown}<span>You champion this circle, so you can’t leave it. To hand it to another member, {mail}.</span></div>
+  ) : step === 'B' ? (<div style={{ marginTop: 'var(--space-5)' }}>
+    <div style={{ ...fbase, marginTop: 0, marginBottom: 'var(--space-3)' }}>{crown}<span>You champion this circle, so you can’t leave it.</span></div>
+    <a href={'mailto:' + (window.OPERATOR_EMAIL || 'support@circlists.com')} style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '10px 16px', borderRadius: 'var(--radius-lg)', background: 'var(--color-surface)', border: '1px solid var(--color-border-1)', textDecoration: 'none' }}>
+      <Icon name="mail" size={18} color="var(--color-fg-2)" />
+      <span style={{ flex: 1 }}>
+        <span style={{ display: 'block', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>Hand this circle to another member</span>
+        <span style={ppaP({ display: 'block', fontSize: 12.5 })}>Get in touch and we will move it for you</span>
+      </span>
+      <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
+    </a></div>
+  ) : (<div style={{ marginTop: 'var(--space-5)' }}>
+    <button type="button" onClick={() => window.CircPP.set({ stepSheet: 'choice' })} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', cursor: 'pointer', minHeight: 56, padding: '10px 16px', borderRadius: 'var(--radius-lg)', background: 'var(--color-surface)', border: '1px solid var(--color-border-1)' }}>
+      {crown}
+      <span style={{ flex: 1 }}>
+        <span style={{ display: 'block', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>Step back from this circle</span>
+        <span style={ppaP({ display: 'block', fontSize: 12.5 })}>Let it sleep, or hand it to a member</span>
+      </span>
+      <Icon name="chevron-right" size={16} color="var(--color-fg-3)" />
+    </button>
+    <p style={{ ...fbase, marginTop: 'var(--space-2)' }}>You champion this circle, so you can’t leave it. Stepping back is how you let go.</p>
+  </div>);
   const on = props.isChampion && window.CircPP.get().subscribed;
   const slot = usePpaSlot(ref, (h) => {
     if (!on) return null;
@@ -331,6 +403,8 @@ const PpMembersSurface = (props) => {
   }, 'replace');
   return (<div ref={ref} style={{ display: 'contents' }}>
     <PpaShippedMembers {...props} />
+    {fslot && ReactDOM.createPortal(footer, fslot)}
+    {step === 'C' && stepSt.stepSheet && <PpStepSheet members={(props.space.members || []).filter((m) => m.name !== 'You')} />}
     {slot && champ !== 'C' && ReactDOM.createPortal(
       <div style={{ ...ppaCard, padding: 'var(--space-5) var(--space-6)' }}>
         <span style={ppaP({ color: 'var(--color-fg-1)' })}>{champ === 'B' ? 'You\u2019re this circle\u2019s champion \u00b7 ' : 'Runs on your subscription \u00b7 '}</span>
@@ -349,7 +423,7 @@ const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = 
     const { DEFAULT_USER } = window.CircSeed;
     try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
     window.__ppTk = null; window.__ppAuto = null;
-    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', label: null, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
+    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', label: null, step: null, stepSheet: null, delp: false, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
     window.CircPPA.set({ phase, plan, pending, sheet, alert });
     api.setUser(DEFAULT_USER); api.setSpaces(seed.filter((sp) => !/^TEST\b/i.test(sp.name || '')));
     api.setLoadingFeed(false); api.setHoldLoading(false);
@@ -399,6 +473,18 @@ const PPA_STATES = [
   ppaState('pp-v7-nosub-b', 'v7 non-subscriber card, B', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'B', flow: 'pricing-first', label: 'Non-subscriber card · B' } }),
   ppaState('pp-v7-nosub-c', 'v7 non-subscriber card, C', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'C', flow: 'pricing-first', label: 'Non-subscriber card · C' } }),
 ];
+const PPA_MEM = { phase: 'active', route: 'members', current: 'sp-backend' };
+PPA_STATES.push(
+  ppaState('pp-v7-step-a', 'v7 step back, A: get in touch in the footer', { ...PPA_MEM, pp: { champ: 'C', step: 'A', label: 'Circle settings footer · A · launch, get in touch' } }),
+  ppaState('pp-v7-step-b', 'v7 step back, B: get in touch as a row', { ...PPA_MEM, pp: { champ: 'C', step: 'B', label: 'Circle settings footer · B · get in touch as a row' } }),
+  ppaState('pp-v7-step-c', 'v7 step back, C: step back row (fast follow)', { ...PPA_MEM, pp: { champ: 'C', step: 'C', label: 'Circle settings footer · C · fast follow, not v1' } }),
+  ppaState('pp-v7-step-c-choice', 'v7 step back, C: the choice sheet', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'choice', label: 'Step back · C · fast follow, not v1 · the choice' } }),
+  ppaState('pp-v7-step-c-pick', 'v7 step back, C: pick a member', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'pick', label: 'Step back · C · fast follow, not v1 · hand to a member' } }),
+  ppaState('pp-v7-acct-lapsed', 'v7 lapsed account card', { phase: 'none', account: 'returning', pp: { v7: 'S', flow: 'pricing-first', label: 'Account card · lapsed (used the free month)' } }),
+  ppaState('pp-v7-delete', 'v7 delete account confirm, with get in touch line', { phase: 'active', pp: { delp: true, label: 'Delete account confirm · get in touch to hand over first' } }),
+);
+PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0 = PPA_STATES.find((x) => x.id === 'pp-v7-delete').go;
+PPA_STATES.find((x) => x.id === 'pp-v7-delete').go = (api, seed) => { PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0(api, seed); window.__ppAutoDelete = true; };
 const PPA_IDS = PPA_STATES.map((s) => s.id);
 const ppaBuild = window.buildStates;
 window.buildStates = (api) => {
@@ -415,3 +501,16 @@ window.circResolveState = () => {
   try { name = (new URLSearchParams(window.location.search).get('state') || '').trim().toLowerCase(); } catch (e) {}
   return PPA_IDS.includes(name) ? { kind: 'state', id: name } : ppaResolve();
 };
+
+// v7 delete-account confirm: one added line, only when the review switch is on. Shipped dialog otherwise.
+const PpShippedConfirm = window.ConfirmDialog;
+const PpConfirmDialog = (props) => {
+  const ref = React.useRef(null);
+  const on = usePP().delp && props.kind === 'delete-account';
+  const slot = usePpaSlot(ref, (h) => { if (!on) return null; const p = h.querySelector('[role=alertdialog] p'); if (p) p.style.marginBottom = '10px'; return p; });
+  return (<div ref={ref} style={{ display: 'contents' }}>
+    <PpShippedConfirm {...props} />
+    {slot && ReactDOM.createPortal(<p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>To hand a circle to someone first, <a href={'mailto:' + (window.OPERATOR_EMAIL || 'support@circlists.com')} className="circ-textlink" style={{ color: 'var(--color-fg-1)', textDecoration: 'underline', textUnderlineOffset: 3 }}>get in touch</a>.</p>, slot)}
+  </div>);
+};
+window.ConfirmDialog = PpConfirmDialog;
