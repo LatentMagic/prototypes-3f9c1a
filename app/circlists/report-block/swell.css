@@ -1,0 +1,57 @@
+/* ==========================================================================
+   The Swell — hover / focus / animation classes for swell-reactions.jsx.
+   Load AFTER the design tokens (colors_and_type.css). Everything else the
+   mechanism needs is inline in the JSX; only pseudo-states and keyframes
+   (which can't be inlined) live here.
+   ========================================================================== */
+
+/* Reaction door — borderless at rest, sunken pill on hover/focus (the card's
+   own hover language). It must NOT look like a button until touched. */
+/* Hover/focus fill is an INSET state layer (matches the card icon actions) so
+   the door reads as separate from the adjacent delete, with a real gap at the
+   hairline — the glyphs and edge alignment never move. */
+.circ-swell-door { position: relative; }
+.circ-swell-door > * { position: relative; z-index: 1; }
+.circ-swell-door::before { content: ''; position: absolute; inset: 5px; border-radius: var(--radius-md); transition: background var(--duration-fast) var(--ease-quiet); pointer-events: none; }
+.circ-swell-door:hover::before, .circ-swell-door:focus-visible::before { background: var(--color-surface-sunken); }
+.circ-swell-door:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); border-radius: var(--radius-md); }
+
+/* Review-modal roster rows (tap to pin a glyph's name). Focus ring is SOLID
+   accent, not the 30%-opacity ring token — a keyboard/SR user tabbing the
+   roster must see where they are (WCAG 1.4.11, 3:1 min). */
+.circ-swell-rrow:hover { background: var(--color-surface-sunken) !important; }
+.circ-swell-rrow:focus-visible { box-shadow: 0 0 0 2px var(--color-accent); }
+/* Disc glyphs (role=button) in the review circle — same visible-focus rule. */
+.circ-swell-glyph:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+
+/* Modal close (x). */
+.circ-rx-close { transition: background var(--duration-base), color var(--duration-base); }
+.circ-rx-close:hover { background: var(--color-surface-sunken) !important; color: var(--color-fg-1) !important; }
+.circ-rx-close:active { background: #E8E8E5 !important; }
+
+/* Input-step actions. */
+.circ-swell-skip:hover { color: var(--color-fg-1) !important; }
+.circ-swell-done:hover { background: var(--color-accent-hover) !important; }
+.circ-swell-done:active { background: var(--color-accent-press) !important; }
+
+/* Accessible input controls (always present under the drag-pad): the depth
+   slider (the pad) and the glyph radiogroup. Visible focus is required — the
+   pad's own puck/palette also reflect the state, but the ring is what a keyboard
+   user lands on. Circle rings match the round hit targets. */
+.circ-swell-pad:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+.circ-swell-radio:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+.circ-swell-rrow:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-accent); }
+
+/* Dialog / scrim fade-in. */
+@keyframes circ-anim-fade { from { opacity: 0; } to { opacity: 1; } }
+.circ-anim-fade { animation: circ-anim-fade var(--duration-base, 150ms) var(--ease-quiet) both; }
+
+/* Input pad's high-intensity "held breath" tremor (rides in via --breath-peak;
+   ~1.0 = imperceptible). Only applied by SwellPad when breath opt is on. */
+@keyframes circ-swell-breath { 0%, 100% { transform: scale(1); } 50% { transform: scale(var(--breath-peak, 1)); } }
+.circ-swell-breath { animation: circ-swell-breath 1700ms ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .circ-anim-fade { animation-duration: 0ms; }
+  .circ-swell-breath { animation: none; }
+}
