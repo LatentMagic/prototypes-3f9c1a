@@ -54,7 +54,7 @@ const ppState = (id, label, { account, sleep, champion = 'You', current = null, 
     if (sleep) list = ppSleep(sleep, champion, champion === 'You' ? DEFAULT_USER.email : 'priya.n@example.com')(list);
     if (awake) list = list.map((sp) => (sp.id === current ? { ...sp, champion: 'You', championEmail: DEFAULT_USER.email } : sp));
     window.__ppTk = null; window.__ppAuto = auto;
-    window.CircPP.set(PP_ACCOUNT_PATCH[account]);
+    window.CircPP.set({ v7: null, label: null, ...PP_ACCOUNT_PATCH[account] });
     api.setUser(DEFAULT_USER); api.setSpaces(list);
     api.setLoadingFeed(false); api.setHoldLoading(false);
     if (api.setHomeStripOpen) api.setHomeStripOpen(false);

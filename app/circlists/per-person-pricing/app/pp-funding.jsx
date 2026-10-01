@@ -146,25 +146,36 @@ const PpFundingPage = (props) => {
     : ['One plan covers every circle you run', back ? 'Everyone you invite joins free' : 'First month free. Everyone you invite joins free'];
   const noteB = <>A card is needed to start. You pay nothing for 30 days, then {p.full} a {p.unit}, from {ppChargeDate()}. Cancel before then and you pay nothing.</>;
   const noteC = <>We ask for your card now and charge {p.full} after 30 days, on {ppChargeDate()}. We email a reminder first.</>;
+  // v7 pricing copy (review only). v7 = A | B | C for state 1 (free month on offer); any v7 on a lapsed account is state 2.
+  const v7 = st.v7;
+  const per = p.id === 'yearly' ? '£50 a year' : '£5 a month';
+  const V7 = !v7 ? null : back
+    ? { title: 'Start your subscription', line: per + ', from today', sub: null, button: 'Subscribe' }
+    : v7 === 'B' ? { title: 'Start your free month', line: null, sub: 'A card is needed to start. 30 days free, then ' + per + '.', button: 'Start free month' }
+    : v7 === 'C' ? { title: 'Try it free for 30 days', line: 'Then ' + per + '. Cancel before day 30 and pay nothing.', sub: 'A card is needed to start', button: 'Start 30 days free' }
+    : { title: 'Start your free month', line: '30 days free, then ' + per, sub: 'A card is needed to start', button: 'Start free month' };
+  const v7bul = ['Start as many circles as you like', 'Everyone you invite joins free'];
   const pricingFirst = mode !== 'refund' && st.flow === 'pricing-first' && !st.subscribed;
   return (
     <WizardShell flow={{ step: 1 }} onBack={pricingFirst ? onCancel : onBack} onExit={onCancel}>
-      <WizardTitle mb={20}>{back ? 'Restart your subscription' : 'Start your free month'}</WizardTitle>
+      <WizardTitle mb={20}>{V7 ? V7.title : back ? 'Restart your subscription' : 'Start your free month'}</WizardTitle>
       <Pick plan={st.plan} onPick={(id) => window.CircPP.set({ plan: id })} />
+      {V7 && V7.line && <p style={{ margin: '-4px 0 16px', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-base)', color: 'var(--color-fg-1)', textAlign: 'center' }}>{V7.line}</p>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 16, width: '100%' }}>
-        {bullets.map((t) => (
+        {(V7 ? v7bul : bullets).map((t) => (
           <div key={t} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
             <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
             <span style={line}>{t}</span>
           </div>
         ))}
       </div>
+      {V7 ? (V7.sub && <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>{V7.sub}</p>) :
       <p style={{ margin: '0 0 14px', maxWidth: '34ch', fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>
         {back ? 'You have subscribed before, so there is no free month. We charge ' + p.full + ' today.'
           : cv === 'B' ? noteB : cv === 'C' ? noteC
           : <>We take your card today and charge {p.full} on {ppChargeDate()} (day 30). We email you a reminder before. Cancel any time before then and pay nothing.</>}
-      </p>
-      <Button variant="primary" full size="lg" onClick={onFund}>{back ? 'Restart subscription' : 'Start your free month'}</Button>
+      </p>}
+      <Button variant="primary" full size="lg" onClick={onFund}>{V7 ? V7.button : back ? 'Restart subscription' : 'Start your free month'}</Button>
       <div style={{ margin: '14px 0 0', display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)' }}>
         <Icon name="lock" size={13} style={{ flex: 'none' }} /><span>Billed to {user ? user.email : 'your account'}</span>
       </div>

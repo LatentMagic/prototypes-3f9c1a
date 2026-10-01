@@ -12,7 +12,9 @@ const PP_PLANS = {
 window.CircPP = (() => {
   // flow: form-first | pricing-first (create-a-circle order).  copy: A | B | C (free-month copy).
   // acct / sheet / champ: A | B | C designs of the account card, switch sheet, circle-settings line.
-  let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true, flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A' };
+  let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true, flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A',
+    // v7 review options: v7 = pricing copy A|B|C (state 1) or S2; covers = on|off; nsub = A|B|C (non-subscriber card); label = overlay text.
+    v7: null, covers: 'on', nsub: 'A', label: null };
   try { Object.assign(st, JSON.parse(localStorage.getItem(PP_KEY) || '{}')); } catch (e) {}
   const subs = new Set();
   return {

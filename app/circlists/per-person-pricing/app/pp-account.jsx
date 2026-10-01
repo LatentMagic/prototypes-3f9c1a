@@ -10,7 +10,7 @@ const PpaShippedMembers = window.MembersSurface;
 
 // phase: active | switched | ending | trial | none.  sheet: null | switch | cancel | card.
 window.CircPPA = (() => {
-  let st = { phase: 'active', plan: 'monthly', sheet: null };
+  let st = { phase: 'active', plan: 'monthly', sheet: null, alert: null };
   const subs = new Set();
   return {
     get: () => st,
@@ -47,8 +47,50 @@ const PpaSheet = ({ title, onClose, children }) => (
   </div>
 );
 
+const ppaPill = (t) => <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 11, color: 'var(--color-accent)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)', padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap' }}>{t}</span>;
+// v7 refinements of option C (the smallest). No dates: "your next renewal". "Keep ..." is a normal (secondary) button.
+// sv: V1 plain price, V2 price rows with the pill, V3 the saving in one sentence. Yearly to monthly and the free-month sheet are single designs.
+const PpaSheetV7 = ({ from, sv }) => {
+  const A = window.CircPPA; const to = PP_PLANS[ppaOther(from)]; const cur = PP_PLANS[from];
+  const trial = A.get().phase === 'trial'; const yearly = to.id === 'yearly';
+  const close = () => A.set({ sheet: null });
+  const go = () => A.set({ phase: trial ? 'trial' : 'switched', pending: to.id, sheet: null });
+  const big = ppaP({ fontSize: 15, color: 'var(--color-fg-1)', marginBottom: 'var(--space-3)' });
+  const small = ppaP({ marginBottom: 'var(--space-5)' });
+  let title = yearly ? 'Pay yearly instead?' : 'Switch to monthly?'; let body;
+  if (trial) {
+    body = (<><p style={big}>Your free month carries on. When it ends you will pay {to.price} a {to.unit} instead of {cur.price} a {cur.unit}.</p><p style={small}>Nothing to pay today.</p></>);
+  } else if (!yearly) {
+    body = (<><p style={big}>From your next renewal you will pay {to.price} a month instead of {cur.price} a year. Until then you stay on yearly.</p>
+      <p style={small}>Over a year, monthly adds up to £60, £10 more than yearly. Nothing is charged or refunded today.</p></>);
+  } else if (sv === 'V2') {
+    title = 'Switch to yearly?';
+    const row = (t, v, hi, pill) => (
+      <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)', background: hi ? 'var(--color-accent-soft)' : 'var(--color-surface-sunken)', border: hi ? '1px solid var(--color-accent)' : '1px solid transparent' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}><span style={ppaP({ color: 'var(--color-fg-1)' })}>{t}</span><span style={ppaP({ color: 'var(--color-fg-1)', fontWeight: 600, whiteSpace: 'nowrap' })}>{v}</span></div>
+        {pill && <div style={{ marginTop: 6 }}>{pill}</div>}
+      </div>);
+    body = (<><div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 'var(--space-3)' }}>{row('Now', cur.price + ' a ' + cur.unit)}{row('From next renewal', to.price + ' a ' + to.unit, true, ppaPill('2 months free'))}</div>
+      <p style={small}>Nothing to pay today.</p></>);
+  } else if (sv === 'V3') {
+    body = (<><p style={big}>Yearly is {to.price}, which is 2 months free compared with paying monthly. It starts at your next renewal.</p><p style={small}>Nothing to pay today.</p></>);
+  } else {
+    title = 'Switch to yearly?';
+    body = (<><p style={big}>From your next renewal you will pay {to.price} a year instead of {cur.price} a month. Nothing to pay today.</p>
+      <p style={small}>That is the price of 10 months, not 12.</p></>);
+  }
+  return (
+    <PpaSheet title={title} onClose={close}>
+      {body}
+      <Button variant="primary" full onClick={go}>Yes, switch to {to.label.toLowerCase()}</Button>
+      <div style={{ height: 'var(--space-2)' }} />
+      <Button variant="secondary" full onClick={close}>Keep {cur.label.toLowerCase()}</Button>
+    </PpaSheet>
+  );
+};
 const PpaSwitchSheet = ({ from }) => {
   const A = window.CircPPA;
+  if (/^V/.test(window.CircPP.get().sheet || '') || window.CircPP.get().sheet === 'T') return <PpaSheetV7 from={from} sv={window.CircPP.get().sheet} />;
   const to = PP_PLANS[ppaOther(from)]; const cur = PP_PLANS[from];
   const trial = A.get().phase === 'trial';
   const date = ppaDay(trial ? PPA_TRIAL_DAYS : PPA_RENEW_DAYS);
@@ -174,10 +216,41 @@ const PpaSection = () => {
         <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel</Button>
       </div>
     </>);
+  } else if (s.phase === 'none' && window.CircPP.get().v7) {
+    // v7 non-subscriber card (no price). Shared words: no card to manage because not paying; paying lets you create circles.
+    const nv = window.CircPP.get().nsub;
+    const create = () => window.__ppApi && window.__ppApi.setRoute('create-space');
+    if (nv === 'B') {
+      const row = (t, v) => (<div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 0', borderTop: '1px solid var(--color-border-1)' }}><span style={ppaP()}>{t}</span><span style={ppaP({ color: 'var(--color-fg-1)', fontWeight: 500 })}>{v}</span></div>);
+      body = (<>
+        {head('Not subscribed')}
+        <div style={{ marginTop: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>{row('Card', 'None to manage')}{row('Creating circles', 'Needs a subscription')}</div>
+        <p style={ppaP({ marginBottom: 'var(--space-4)' })}>There is no card to manage because you are not a paying member. Subscribe and you can create circles.</p>
+        <Button variant="secondary" onClick={create}>Create a circle</Button>
+      </>);
+    } else if (nv === 'C') {
+      body = (<>
+        {head()}
+        <div style={{ padding: '14px 14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--color-accent-soft)', border: '1px solid var(--color-accent)' }}>
+          <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)', marginBottom: 6 }}>Want to run a circle of your own?</div>
+          <p style={ppaP({ color: 'var(--color-fg-1)', marginBottom: 'var(--space-4)' })}>Paying members can create circles. You are not one yet, so there is no card to manage here.</p>
+          <Button variant="primary" onClick={create}>Create a circle</Button>
+        </div>
+      </>);
+    } else {
+      body = (<>
+        {head()}
+        <p style={ppaP({ fontSize: 15, color: 'var(--color-fg-1)', marginBottom: 'var(--space-2)' })}>No card to manage, because you are not a paying member.</p>
+        <p style={ppaP({ marginBottom: 'var(--space-3)' })}>Pay, and you can create circles.</p>
+        {link('Create a circle', create)}
+      </>);
+    }
   } else if (s.phase === 'none') {
     body = (<>{head()}<p style={ppaP()}>You don’t run a paid circle. Your subscription starts when you create your first circle.</p></>);
   } else {
-    const ending = s.phase === 'ending', trial = s.phase === 'trial', switched = s.phase === 'switched';
+    const ending = s.phase === 'ending', trial = s.phase === 'trial', switched = s.phase === 'switched', failed = s.phase === 'failed';
+    const showCovers = window.CircPP.get().covers !== 'off';
+    const email = (window.CircSeed && window.CircSeed.DEFAULT_USER && window.CircSeed.DEFAULT_USER.email) || 'you@example.com';
     const renew = ppaDay(trial ? PPA_TRIAL_DAYS : PPA_RENEW_DAYS);
     const pend = PP_PLANS[s.pending || ppaOther(s.plan)];
     const label = (t, v, strong) => (
@@ -186,25 +259,33 @@ const PpaSection = () => {
       </div>);
     const status = ending ? 'Ends ' + ppaDay(PPA_RENEW_DAYS) : switched ? 'Switches to ' + pend.label + ' on ' + renew : trial ? 'Free month · ' + PPA_TRIAL_DAYS + ' days left' : 'Active';
     body = (<>
-      {head(<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{s.phase === 'active' && <Icon name="check" size={15} color="var(--color-fg-3)" />}{trial ? 'Free month · ' + PPA_TRIAL_DAYS + ' days left' : ending ? 'Ending' : 'Active'}</span>)}
+      {head(<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{s.phase === 'active' && <Icon name="check" size={15} color="var(--color-fg-3)" />}{trial ? 'Free month · ' + PPA_TRIAL_DAYS + ' days left' : ending ? 'Ending' : failed ? 'Payment failed' : 'Active'}</span>)}
+      {failed && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Update the card within 30 days to keep your circles awake.</p>}
       {trial && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>First payment {plan.full} on {renew}. We email a reminder a week before.</p>}
-      {ending && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Ends {ppaDay(PPA_RENEW_DAYS)}. Your circles go to sleep then.</p>}
+      {ending && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Your subscription ends on {ppaDay(PPA_RENEW_DAYS)}. Your circles then go to sleep, and whoever funds one next champions it. You can resume any time before that date.</p>}
       {switched && <p style={ppaP({ marginBottom: 'var(--space-2)' })}>Switches to {pend.label} on {renew}. Nothing changes until then.</p>}
       <div style={{ marginTop: 'var(--space-2)' }}>
         {label('Plan', plan.label + ' · ' + plan.full + ' per ' + plan.unit, true)}
-        {!ending && !trial && label(switched ? 'Renews on' : 'Next renewal', renew)}
-        {label('Covers', n === 1 ? '1 circle' : n + ' circles')}
+        {!ending && !trial && !failed && label(switched ? 'Renews on' : 'Next renewal', renew)}
+        {showCovers && label('Covers', n === 1 ? '1 circle' : n + ' circles')}
+        {!showCovers && <div style={{ borderTop: '1px solid var(--color-border-1)' }} />}
       </div>
-      <p style={ppaP({ margin: '4px 0 var(--space-4)', fontSize: 13, color: 'var(--color-fg-3)' })}>{names.join(' · ')}</p>
+      {showCovers && <p style={ppaP({ margin: '4px 0 var(--space-4)', fontSize: 13, color: 'var(--color-fg-3)' })}>{names.join(' · ')}</p>}
+      {!showCovers && <div style={{ height: 'var(--space-3)' }} />}
+      {ending && s.alert && <p role="alert" style={ppaP({ color: 'var(--color-destructive)', marginBottom: 'var(--space-3)' })}>{s.alert === 'asleep' ? 'Your subscription has ended and your circles are now asleep.' : 'The resumption could not be completed.'}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
-        {ending ? <Button variant="primary" onClick={() => A.set({ phase: 'active', sheet: null })}>Resume</Button> : (<>
+        {ending ? (<>
           <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => A.set({ sheet: 'card' })}>Update card</Button>
-          {switched
+          <Button variant="primary" onClick={() => A.set({ phase: 'active', sheet: null })}>Resume</Button>
+        </>) : (<>
+          <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => A.set({ sheet: 'card' })}>Update card</Button>
+          {failed ? null : switched
             ? <Button variant="secondary" onClick={() => A.set({ phase: 'active', pending: null })}>Undo switch</Button>
             : <Button variant="secondary" onClick={() => A.set({ sheet: 'switch' })}>Switch to {PP_PLANS[ppaOther(s.plan)].label}</Button>}
           <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel</Button>
         </>)}
       </div>
+      <p style={ppaP({ margin: 'var(--space-4) 0 0', fontSize: 12.5, color: 'var(--color-fg-3)' })}>Billed to {email} · card ending 4242</p>
     </>);
   }
   return (<>
@@ -262,14 +343,14 @@ window.MembersSurface = PpMembersSurface;
 
 // ---- addressable states ------------------------------------------------------
 const PPA_GROUP = 'Pricing candidate: account subscription';
-const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = null, account = 'subscribed', route = 'account', current = null, pp = {} }) => ({
+const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = null, alert = null, account = 'subscribed', route = 'account', current = null, pp = {} }) => ({
   id, label, group: PPA_GROUP,
   go: (api, seed) => {
     const { DEFAULT_USER } = window.CircSeed;
     try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
     window.__ppTk = null; window.__ppAuto = null;
-    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', ...PP_ACCOUNT_PATCH[account], ...pp });
-    window.CircPPA.set({ phase, plan, pending, sheet });
+    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', label: null, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
+    window.CircPPA.set({ phase, plan, pending, sheet, alert });
     api.setUser(DEFAULT_USER); api.setSpaces(seed.filter((sp) => !/^TEST\b/i.test(sp.name || '')));
     api.setLoadingFeed(false); api.setHoldLoading(false);
     if (api.setHomeStripOpen) api.setHomeStripOpen(false);
@@ -296,6 +377,27 @@ const PPA_STATES = [
   ppaState('pp-create-first', 'Create, pricing first: home, not subscribed (tap Create)', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first' } }),
   ppaState('pp-create-first-b', 'Create, pricing first, copy B', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'B' } }),
   ppaState('pp-create-first-c', 'Create, pricing first, copy C', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'C' } }),
+  // ---- v7 options (review only). Each carries a visible label (pp.label).
+  ppaState('pp-v7-price-1a', 'v7 pricing screen, free month available, A', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'A', label: 'Pricing screen · free month available · A' } }),
+  ppaState('pp-v7-price-1b', 'v7 pricing screen, free month available, B', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'B', label: 'Pricing screen · free month available · B' } }),
+  ppaState('pp-v7-price-1c', 'v7 pricing screen, free month available, C', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'C', label: 'Pricing screen · free month available · C' } }),
+  ppaState('pp-v7-price-2', 'v7 pricing screen, free month used', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S', label: 'Pricing screen · free month used' } }),
+  ppaState('pp-v7-price-2-monthly', 'v7 pricing screen, free month used, monthly picked', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S', plan: 'monthly', label: 'Pricing screen · free month used · monthly' } }),
+  ppaState('pp-v7-switch-1', 'v7 switch to yearly, V1 plain price', { phase: 'active', sheet: 'switch', pp: { sheet: 'V1', label: 'Switch sheet · monthly to yearly · A' } }),
+  ppaState('pp-v7-switch-2', 'v7 switch to yearly, V2 price rows and pill', { phase: 'active', sheet: 'switch', pp: { sheet: 'V2', label: 'Switch sheet · monthly to yearly · B' } }),
+  ppaState('pp-v7-switch-3', 'v7 switch to yearly, V3 saving in a sentence', { phase: 'active', sheet: 'switch', pp: { sheet: 'V3', label: 'Switch sheet · monthly to yearly · C' } }),
+  ppaState('pp-v7-switch-yearly', 'v7 switch to monthly (on yearly)', { phase: 'active', plan: 'yearly', sheet: 'switch', pp: { sheet: 'V1', label: 'Switch sheet · yearly to monthly' } }),
+  ppaState('pp-v7-switch-trial', 'v7 switch during the free month', { phase: 'trial', plan: 'monthly', sheet: 'switch', pp: { sheet: 'T', label: 'Switch sheet · during the free month' } }),
+  ppaState('pp-v7-acct-trial', 'v7 account card A, free month', { phase: 'trial', plan: 'yearly', pp: { label: 'Account card A · free month' } }),
+  ppaState('pp-v7-acct-active-a', 'v7 account card A, active, with covers line', { phase: 'active', pp: { label: 'Account card A · active · covers line A (with)' } }),
+  ppaState('pp-v7-acct-active-b', 'v7 account card A, active, without covers line', { phase: 'active', pp: { covers: 'off', label: 'Account card A · active · covers line B (without)' } }),
+  ppaState('pp-v7-acct-ending', 'v7 account card A, ending, Update card kept', { phase: 'ending', pp: { label: 'Account card A · ending' } }),
+  ppaState('pp-v7-acct-failed', 'v7 account card A, payment failed', { phase: 'failed', pp: { label: 'Account card A · payment failed' } }),
+  ppaState('pp-v7-acct-resume-failed', 'v7 account card A, ending, resume failed', { phase: 'ending', alert: 'failed', pp: { label: 'Account card A · ending · resume failed' } }),
+  ppaState('pp-v7-acct-resume-asleep', 'v7 account card A, ending, already asleep', { phase: 'ending', alert: 'asleep', pp: { label: 'Account card A · ending · already asleep' } }),
+  ppaState('pp-v7-nosub-a', 'v7 non-subscriber card, A', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'A', flow: 'pricing-first', label: 'Non-subscriber card · A' } }),
+  ppaState('pp-v7-nosub-b', 'v7 non-subscriber card, B', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'B', flow: 'pricing-first', label: 'Non-subscriber card · B' } }),
+  ppaState('pp-v7-nosub-c', 'v7 non-subscriber card, C', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'C', flow: 'pricing-first', label: 'Non-subscriber card · C' } }),
 ];
 const PPA_IDS = PPA_STATES.map((s) => s.id);
 const ppaBuild = window.buildStates;
