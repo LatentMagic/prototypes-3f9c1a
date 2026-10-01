@@ -195,7 +195,7 @@ const RBNote = ({ note }) => {
         <div style={{ borderTop: '1px solid color-mix(in srgb, var(--color-surface) 20%, transparent)', marginTop: 2 }}>
           <button type="button" style={{ ...link, padding: '0', color: 'inherit', fontWeight: 500 }}
             onClick={() => rbSet({ note: null, panel: { kind: 'hide', who: note.who } })}>
-            Hide all of {first}{'’'}s links{'…'}
+            Hide all of {first}{'’'}s links and comments{'…'}
           </button>
         </div>
       )}

@@ -868,6 +868,15 @@ function circStateContext(api) {
 // ---- THE REGISTER ----------------------------------------------------------
 // Order here is the order the palette and the index read in. Group titles are
 // plain strings; a new group is simply a new title.
+// Candidate report-block: every rb-* state is seen from an ORDINARY member's seat.
+// Backend Pod's champion becomes Joe M. (taking Owen D.'s seat, so the circle stays
+// at ten), so the viewer has no crown, no Remove and no champion's Delete.
+// Runs after goSpace / stageCommentReactions so its update lands on their seed.
+const rbMemberSeat = (c) => c.setSpaces(prev => (prev.some(s => s.id === 'sp-backend') ? prev
+  : window.CircSeed.seedSpaces(window.CircSeed.DEFAULT_USER.email)).map(s => s.id !== 'sp-backend' ? s
+  : { ...s, champion: 'Joe M.', championEmail: 'joe.m@example.com',
+      members: s.members.map(m => (m.name === 'Owen D.' ? window.CircSeed.M('Joe M.', 'joe.m@example.com') : m)) }));
+
 const CIRC_STATE_REGISTER = [
   { group: 'Onboarding', id: 'signup-first-circle', label: 'Sign up → first circle', stage: (c) => { c.setSpaces([]); c.setRoute('signup'); } },
   { group: 'Onboarding', id: 'signin-new-device', label: 'Sign in (new device)', stage: (c) => c.setRoute('signin') },
@@ -1039,13 +1048,13 @@ const CIRC_STATE_REGISTER = [
   // The not-found page is staged as a bare route because that is what it
   // answers: an address that resolved to nothing, with no circle to be inside.
   // Candidate: report and block (app/report-block.jsx). Not ratified.
-  { group: 'Report and block (candidate)', id: 'rb-feed', label: 'Feed — others\u2019 links carry Report link in the menu', stage: (c) => { window.rbReset(); c.goSpace('sp-backend'); } },
-  { group: 'Report and block (candidate)', id: 'rb-comments', label: 'Conversation — others\u2019 comments carry a \u22ef with Report comment', stage: (c) => { window.rbReset(); c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }); } },
-  { group: 'Report and block (candidate)', id: 'rb-hide-confirm', label: 'Hide their links — the confirm', stage: (c) => { window.rbReset({ panel: { kind: 'hide', who: 'Sam R.' } }); c.goSpace('sp-backend'); } },
-  { group: 'Report and block (candidate)', id: 'rb-feed-hidden', label: 'Feed — Sam R.\u2019s links hidden, with the note', stage: (c) => { window.rbReset({ hidden: ['Sam R.'], note: { kind: 'hidden', who: 'Sam R.' } }); c.goSpace('sp-backend'); } },
-  { group: 'Report and block (candidate)', id: 'rb-members-hidden', label: 'Members — a hidden member, where you undo it', stage: (c) => { window.rbReset({ hidden: ['Sam R.'] }); c.goSpace('sp-backend', 'members'); } },
-  { group: 'Report and block (candidate)', id: 'rb-members-only', label: 'Alternative — report a member from Members only', stage: (c) => { window.rbReset({ variant: 'members-only' }); c.goSpace('sp-backend', 'members'); } },
-  { group: 'Report and block (candidate)', id: 'rb-members-only-panel', label: 'Alternative — the member report panel', stage: (c) => { window.rbReset({ variant: 'members-only', panel: { kind: 'member', who: 'Sam R.' } }); c.goSpace('sp-backend', 'members'); } },
+  { group: 'Report and block (candidate)', id: 'rb-feed', label: 'Feed — others\u2019 links carry Report link in the menu', stage: (c) => { window.rbReset(); c.goSpace('sp-backend'); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-comments', label: 'Conversation — others\u2019 comments carry a \u22ef with Report comment', stage: (c) => { window.rbReset(); c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-hide-confirm', label: 'Hide their links — the confirm', stage: (c) => { window.rbReset({ panel: { kind: 'hide', who: 'Priya N.' } }); c.goSpace('sp-backend'); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-feed-hidden', label: 'Feed — Priya N.\u2019s links hidden, with the note', stage: (c) => { window.rbReset({ hidden: ['Priya N.'], note: { kind: 'hidden', who: 'Priya N.' } }); c.goSpace('sp-backend'); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-members-hidden', label: 'Members — a hidden member, where you undo it', stage: (c) => { window.rbReset({ hidden: ['Priya N.'] }); c.goSpace('sp-backend', 'members'); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-members-only', label: 'Alternative — report a member from Members only', stage: (c) => { window.rbReset({ variant: 'members-only' }); c.goSpace('sp-backend', 'members'); rbMemberSeat(c); } },
+  { group: 'Report and block (candidate)', id: 'rb-members-only-panel', label: 'Alternative — the member report panel', stage: (c) => { window.rbReset({ variant: 'members-only', panel: { kind: 'member', who: 'Priya N.' } }); c.goSpace('sp-backend', 'members'); rbMemberSeat(c); } },
   { group: 'Not found', id: 'not-found-page', label: 'Not found — one answer for a bad address', stage: (c) => c.stageNotFound() },
 ];
 
