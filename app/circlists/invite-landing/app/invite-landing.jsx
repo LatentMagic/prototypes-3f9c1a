@@ -26,7 +26,7 @@ const SafariAppBanner = () => (
       </span>
       <span style={{ flex: 1, minWidth: 0, lineHeight: 1.25 }}>
         <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#000' }}>Circlists</span>
-        <span style={{ display: 'block', fontSize: 12, color: '#6e6e73' }}>LatentMagic</span>
+        <span style={{ display: 'block', fontSize: 12, color: '#6e6e73' }}>Harness Intent Ltd</span>
         <span style={{ display: 'block', fontSize: 12, color: '#6e6e73' }}>Open in the App Store</span>
       </span>
       <span style={{ fontSize: 15, fontWeight: 600, color: '#007aff', padding: '0 4px' }}>View</span>
