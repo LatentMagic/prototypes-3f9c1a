@@ -13,8 +13,8 @@ window.CircPP = (() => {
   // flow: form-first | pricing-first (create-a-circle order).  copy: A | B | C (free-month copy).
   // acct / sheet / champ: A | B | C designs of the account card, switch sheet, circle-settings line.
   let st = { option: 'cards', plan: 'yearly', subscribed: false, returning: false, autoAdvance: true, flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A',
-    // v7 review options: v7 = pricing copy A|B|C (state 1) or S2; covers = on|off; nsub = A|B|C (non-subscriber card); quiet = hide the review chip.
-    v7: null, covers: 'on', nsub: 'A', quiet: null,
+    // v7 review options: v7 = pricing copy A|B|C (state 1) or S2; covers = on|off; nsub = A|B|C (non-subscriber card).
+    v7: null, covers: 'on', nsub: 'A',
     // v7 round 2: step = A | B | C (circle settings footer), stepSheet = null | choice | pick (C only), delp = delete-account line on.
     step: null, stepSheet: null, delp: false,
     // v8 round 3: one object so a single reset clears it. copy = B1|B2|B3 (state 1 lines), pill = P1|P2|P3 (yearly pill + picked card), al = L1|L2|L3 (account card actions).

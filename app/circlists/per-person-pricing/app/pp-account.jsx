@@ -462,7 +462,7 @@ const ppaState = (id, label, { phase, plan = 'monthly', pending = null, sheet = 
     const { DEFAULT_USER } = window.CircSeed;
     try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
     window.__ppTk = null; window.__ppAuto = null;
-    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', quiet: null, step: null, stepSheet: null, delp: false, v8: null, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
+    window.CircPP.set({ flow: 'form-first', copy: 'A', acct: 'A', sheet: 'A', champ: 'A', v7: null, covers: 'on', nsub: 'A', step: null, stepSheet: null, delp: false, v8: null, option: 'cards', plan: 'yearly', ...PP_ACCOUNT_PATCH[account], ...pp });
     window.CircPPA.set({ phase, plan, pending, sheet, alert });
     api.setUser(DEFAULT_USER); api.setSpaces(seed.filter((sp) => !/^TEST\b/i.test(sp.name || '')));
     api.setLoadingFeed(false); api.setHoldLoading(false);
@@ -488,45 +488,47 @@ const PPA_STATES = [
   ppaState('pp-members-link-c', 'Circle settings C: nothing, badge only', { phase: 'active', route: 'members', current: 'sp-backend', pp: { champ: 'C' } }),
   // Create-a-circle, pricing first: start on home, not subscribed; tap Create. copy picks the free-month wording.
   ppaState('pp-create-first', 'Create, pricing first: home, not subscribed (tap Create)', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first' } }),
+  ppaState('pp-pick-toggle', 'Pricing page, plan pick as a toggle over one price', { phase: 'none', account: 'none', route: 'funding', pp: { option: 'toggle' } }),
+  ppaState('pp-pick-lead', 'Pricing page, one plan with a quiet link', { phase: 'none', account: 'none', route: 'funding', pp: { option: 'lead' } }),
   ppaState('pp-create-first-b', 'Create, pricing first, copy B', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'B' } }),
   ppaState('pp-create-first-c', 'Create, pricing first, copy C', { phase: 'none', account: 'none', route: 'home', pp: { flow: 'pricing-first', copy: 'C' } }),
   // ---- v7 options (review only). Each carries a visible label (pp.label).
-  ppaState('pp-v7-price-1a', 'v7 pricing screen, free month available, A', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'A', quiet: true } }),
-  ppaState('pp-v7-price-1b', 'v7 pricing screen, free month available, B', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'B', quiet: true } }),
-  ppaState('pp-v7-price-1c', 'v7 pricing screen, free month available, C', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'C', quiet: true } }),
-  ppaState('pp-v7-price-2', 'v7 pricing screen, free month used', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S', quiet: true } }),
-  ppaState('pp-v7-price-2-monthly', 'v7 pricing screen, free month used, monthly picked', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S', plan: 'monthly', quiet: true } }),
-  ppaState('pp-v7-switch-1', 'v7 switch to yearly, V1 plain price', { phase: 'active', sheet: 'switch', pp: { sheet: 'V1', quiet: true } }),
-  ppaState('pp-v7-switch-2', 'v7 switch to yearly, V2 price rows and pill', { phase: 'active', sheet: 'switch', pp: { sheet: 'V2', quiet: true } }),
-  ppaState('pp-v7-switch-3', 'v7 switch to yearly, V3 saving in a sentence', { phase: 'active', sheet: 'switch', pp: { sheet: 'V3', quiet: true } }),
-  ppaState('pp-v7-switch-yearly', 'v7 switch to monthly (on yearly)', { phase: 'active', plan: 'yearly', sheet: 'switch', pp: { sheet: 'V1', quiet: true } }),
-  ppaState('pp-v7-switch-trial', 'v7 switch during the free month', { phase: 'trial', plan: 'monthly', sheet: 'switch', pp: { sheet: 'T', quiet: true } }),
-  ppaState('pp-v7-acct-trial', 'v7 account card A, free month', { phase: 'trial', plan: 'yearly', pp: { quiet: true } }),
-  ppaState('pp-v7-acct-active-a', 'v7 account card A, active, with covers line', { phase: 'active', pp: { quiet: true } }),
-  ppaState('pp-v7-acct-active-b', 'v7 account card A, active, without covers line', { phase: 'active', pp: { covers: 'off', quiet: true } }),
-  ppaState('pp-v7-acct-ending', 'v7 account card A, ending, Update card kept', { phase: 'ending', pp: { quiet: true } }),
-  ppaState('pp-v7-acct-failed', 'v7 account card A, payment failed', { phase: 'failed', pp: { quiet: true } }),
-  ppaState('pp-v7-acct-resume-failed', 'v7 account card A, ending, resume failed', { phase: 'ending', alert: 'failed', pp: { quiet: true } }),
-  ppaState('pp-v7-acct-resume-asleep', 'v7 account card A, ending, already asleep', { phase: 'ending', alert: 'asleep', pp: { quiet: true } }),
-  ppaState('pp-v7-nosub-a', 'v7 non-subscriber card, A', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'A', flow: 'pricing-first', quiet: true } }),
-  ppaState('pp-v7-nosub-b', 'v7 non-subscriber card, B', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'B', flow: 'pricing-first', quiet: true } }),
-  ppaState('pp-v7-nosub-c', 'v7 non-subscriber card, C', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'C', flow: 'pricing-first', quiet: true } }),
+  ppaState('pp-v7-price-1a', 'v7 pricing screen, free month available, A', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'A' } }),
+  ppaState('pp-v7-price-1b', 'v7 pricing screen, free month available, B', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'B' } }),
+  ppaState('pp-v7-price-1c', 'v7 pricing screen, free month available, C', { phase: 'none', account: 'none', route: 'funding', pp: { flow: 'pricing-first', v7: 'C' } }),
+  ppaState('pp-v7-price-2', 'v7 pricing screen, free month used', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S' } }),
+  ppaState('pp-v7-price-2-monthly', 'v7 pricing screen, free month used, monthly picked', { phase: 'none', account: 'returning', route: 'funding', pp: { flow: 'pricing-first', v7: 'S', plan: 'monthly' } }),
+  ppaState('pp-v7-switch-1', 'v7 switch to yearly, V1 plain price', { phase: 'active', sheet: 'switch', pp: { sheet: 'V1' } }),
+  ppaState('pp-v7-switch-2', 'v7 switch to yearly, V2 price rows and pill', { phase: 'active', sheet: 'switch', pp: { sheet: 'V2' } }),
+  ppaState('pp-v7-switch-3', 'v7 switch to yearly, V3 saving in a sentence', { phase: 'active', sheet: 'switch', pp: { sheet: 'V3' } }),
+  ppaState('pp-v7-switch-yearly', 'v7 switch to monthly (on yearly)', { phase: 'active', plan: 'yearly', sheet: 'switch', pp: { sheet: 'V1' } }),
+  ppaState('pp-v7-switch-trial', 'v7 switch during the free month', { phase: 'trial', plan: 'monthly', sheet: 'switch', pp: { sheet: 'T' } }),
+  ppaState('pp-v7-acct-trial', 'v7 account card A, free month', { phase: 'trial', plan: 'yearly', pp: {} }),
+  ppaState('pp-v7-acct-active-a', 'v7 account card A, active, with covers line', { phase: 'active', pp: {} }),
+  ppaState('pp-v7-acct-active-b', 'v7 account card A, active, without covers line', { phase: 'active', pp: { covers: 'off' } }),
+  ppaState('pp-v7-acct-ending', 'v7 account card A, ending, Update card kept', { phase: 'ending', pp: {} }),
+  ppaState('pp-v7-acct-failed', 'v7 account card A, payment failed', { phase: 'failed', pp: {} }),
+  ppaState('pp-v7-acct-resume-failed', 'v7 account card A, ending, resume failed', { phase: 'ending', alert: 'failed', pp: {} }),
+  ppaState('pp-v7-acct-resume-asleep', 'v7 account card A, ending, already asleep', { phase: 'ending', alert: 'asleep', pp: {} }),
+  ppaState('pp-v7-nosub-a', 'v7 non-subscriber card, A', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'A', flow: 'pricing-first' } }),
+  ppaState('pp-v7-nosub-b', 'v7 non-subscriber card, B', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'B', flow: 'pricing-first' } }),
+  ppaState('pp-v7-nosub-c', 'v7 non-subscriber card, C', { phase: 'none', account: 'none', pp: { v7: 'A', nsub: 'C', flow: 'pricing-first' } }),
 ];
 const PPA_MEM = { phase: 'active', route: 'members', current: 'sp-backend' };
 PPA_STATES.push(
-  ppaState('pp-v7-step-a', 'v7 step back, A: get in touch in the footer', { ...PPA_MEM, pp: { champ: 'C', step: 'A', quiet: true } }),
-  ppaState('pp-v7-step-b', 'v7 step back, B: get in touch as a row', { ...PPA_MEM, pp: { champ: 'C', step: 'B', quiet: true } }),
-  ppaState('pp-v7-step-c', 'v7 step back, C: step back row (fast follow)', { ...PPA_MEM, pp: { champ: 'C', step: 'C', quiet: true } }),
-  ppaState('pp-v7-step-c-choice', 'v7 step back, C: the choice sheet', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'choice', quiet: true } }),
-  ppaState('pp-v7-step-c-pick', 'v7 step back, C: pick a member', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'pick', quiet: true } }),
-  ppaState('pp-v7-acct-lapsed', 'v7 lapsed account card', { phase: 'none', account: 'returning', pp: { v7: 'S', flow: 'pricing-first', quiet: true } }),
-  ppaState('pp-v7-delete', 'v7 delete account confirm, with get in touch line', { phase: 'active', pp: { delp: true, quiet: true } }),
+  ppaState('pp-v7-step-a', 'v7 step back, A: get in touch in the footer', { ...PPA_MEM, pp: { champ: 'C', step: 'A' } }),
+  ppaState('pp-v7-step-b', 'v7 step back, B: get in touch as a row', { ...PPA_MEM, pp: { champ: 'C', step: 'B' } }),
+  ppaState('pp-v7-step-c', 'v7 step back, C: step back row (fast follow)', { ...PPA_MEM, pp: { champ: 'C', step: 'C' } }),
+  ppaState('pp-v7-step-c-choice', 'v7 step back, C: the choice sheet', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'choice' } }),
+  ppaState('pp-v7-step-c-pick', 'v7 step back, C: pick a member', { ...PPA_MEM, pp: { champ: 'C', step: 'C', stepSheet: 'pick' } }),
+  ppaState('pp-v7-acct-lapsed', 'v7 lapsed account card', { phase: 'none', account: 'returning', pp: { v7: 'S', flow: 'pricing-first' } }),
+  ppaState('pp-v7-delete', 'v7 delete account confirm, with get in touch line', { phase: 'active', pp: { delp: true } }),
 );
 PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0 = PPA_STATES.find((x) => x.id === 'pp-v7-delete').go;
 PPA_STATES.find((x) => x.id === 'pp-v7-delete').go = (api, seed) => { PPA_STATES.find((x) => x.id === 'pp-v7-delete').go0(api, seed); window.__ppAutoDelete = true; };
 
 // ---- v8 round 3 options (review only).
-const V8P = (l, v8, extra = {}) => ({ flow: 'pricing-first', v7: 'B', v8, quiet: true, ...extra });
+const V8P = (l, v8, extra = {}) => ({ flow: 'pricing-first', v7: 'B', v8, ...extra });
 PPA_STATES.push(
   ppaState('pp-v8-price-b1', 'v8 pricing state 1, copy B1 tidy', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B1 Tidy', { copy: 'B1' }) }),
   ppaState('pp-v8-price-b2', 'v8 pricing state 1, copy B2 cancel-safe', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pricing · free month · B2 Cancel-safe', { copy: 'B2' }) }),
@@ -536,7 +538,7 @@ PPA_STATES.push(
 [['P1', 'Today'], ['P2', 'White card'], ['P3', 'White card, ink pill']].forEach(([k, n]) => [['', 'yearly'], ['-monthly', 'monthly']].forEach(([suf, plan]) => PPA_STATES.push(
   ppaState('pp-v8-pill-' + k.toLowerCase() + suf, 'v8 pill ' + k + ' ' + n + ', ' + plan + ' picked', { phase: 'none', account: 'none', route: 'funding', pp: V8P('Pill · ' + k + ' ' + n + ' · ' + plan, { copy: 'B2', pill: k }, { plan }) }))));
 [['L1', 'Full-width stack'], ['L2', 'Actions on rows'], ['L3', 'Action list']].forEach(([k, n]) => [['active', { phase: 'active' }], ['failed', { phase: 'failed' }], ['ending', { phase: 'ending' }]].forEach(([ph, o]) => PPA_STATES.push(
-  ppaState('pp-v8-acct-' + k.toLowerCase() + '-' + ph, 'v8 account card ' + k + ' ' + n + ', ' + ph, { ...o, pp: { sheet: 'V3', v8: { al: k }, quiet: true } }))));
+  ppaState('pp-v8-acct-' + k.toLowerCase() + '-' + ph, 'v8 account card ' + k + ' ' + n + ', ' + ph, { ...o, pp: { sheet: 'V3', v8: { al: k } } }))));
 const PPA_IDS = PPA_STATES.map((s) => s.id);
 const ppaBuild = window.buildStates;
 window.buildStates = (api) => {
