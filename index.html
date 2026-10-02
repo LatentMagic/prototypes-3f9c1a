@@ -966,6 +966,15 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-10-02',
+              title: 'Per-person pricing candidate, held inside canon',
+              items: [
+                'A full per-person-pricing candidate now ships inside canon as an internal entry point, not a rail node: docs/specs/per-person-pricing/circlists-per-person-pricing.html, with its playgrounds beside it and listed in playgrounds.json. Walk it from the new QA button in the launcher (app/qa.jsx, draft).',
+                'Canon carries droppable hooks for it, all no-ops while the candidate is absent: window.CircPricing in main.jsx (Create tap, route render, bind), spaces.jsx (create form title, lede, button, step dots, champion copy, Account card slot), feed.jsx (confirm copy) and subscriptions.jsx (an optional offer on Checkout).',
+                'Account card acts (Update email, Update password, Delete your account) are full width on a phone and right-aligned on desktop (.circ-acct-act).'
+              ]
+            },
+            {
               date: '2026-09-30',
               title: 'The view-options door no longer lights',
               items: [

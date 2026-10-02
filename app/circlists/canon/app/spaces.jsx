@@ -123,7 +123,9 @@ const CircleDescriptionField = ({ id, value, onChange, placeholder }) => {
 };
 
 // ---- Create space (dedicated full page) ------------------------------------
-const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '' }) => {
+// title / submitLabel: optional overrides for option boards (submitLabel may be
+// a function of the trimmed name). Absent ⇒ hook, then shipped copy.
+const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialDescription = '', title, submitLabel }) => {
   const [name, setName] = React.useState(initialName);
   const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
@@ -137,20 +139,23 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
     onCreate(name.trim(), description.trim());
   };
   // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
+  // Candidate hook (droppable): window.CircPricing may set the step dots and the
+  // lede. Absent ⇒ shipped behaviour.
+  const PH = window.CircPricing || null;
   return (
-    <WizardShell flow={{ step: 0 }} onExit={canCancel === false ? null : onCancel}>
-      <WizardTitle>Create a circle</WizardTitle>
+    <WizardShell flow={PH && PH.createFlow ? PH.createFlow() : { step: 0 }} onExit={canCancel === false ? null : onCancel}>
+      <WizardTitle>{title || (PH && PH.createTitle ? PH.createTitle() : 'Create a circle')}</WizardTitle>
       <p style={{
         fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
         color: 'var(--color-fg-2)', margin: '0 0 24px',
-      }}>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</p>
+      }}>{PH && PH.createLede ? PH.createLede(SPACE_CAP) : <>A shared list for up to {SPACE_CAP} people. You fund it as champion; everyone joins free.</>}</p>
       <form onSubmit={submit} noValidate style={{ width: '100%', textAlign: 'left' }}>
         <Field ref={ref} label="Circle name" name="space-name" placeholder="e.g. Backend Pod"
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
         <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
           placeholder="What’s this circle for?" />
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>
+          {submitLabel ? (typeof submitLabel === 'function' ? submitLabel(name.trim()) : submitLabel) : window.CircPricing && window.CircPricing.createLabel ? window.CircPricing.createLabel() : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>}
         </Button>
       </form>
     </WizardShell>
@@ -470,7 +475,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           padding: '0 2px', marginBottom: 'var(--space-5)',
           fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)',
         }}>
-          No one is championing this circle. It stays open until {space.openUntil ? circFmtDay(space.openUntil) : 'the end of the paid period'}, then goes to sleep — after that any member can fund it and champion it from then on.
+          No one is championing this circle. It stays open until {space.openUntil ? circFmtDay(space.openUntil) : 'the end of the paid period'}, then goes to sleep — {(window.CircPricing && window.CircPricing.copy && window.CircPricing.copy.unchampionedTail) || 'after that any member can fund it and champion it from then on.'}
         </div>
       ) : (
         <div style={{
@@ -479,7 +484,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         }}>
           <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>
           <span>
-            The Champion manages this circle’s membership and funding. You can{' '}
+            {(window.CircPricing && window.CircPricing.copy && window.CircPricing.copy.championManages) || 'The Champion manages this circle’s membership and funding.'} You can{' '}
             {/* Door: continuation of the same line, green on the last two words only. */}
             <button type="button" onClick={onStartCircle} className="circ-doorlink" style={{
               backgroundColor: 'transparent', border: 0, padding: 0, cursor: 'pointer', font: 'inherit',
@@ -488,8 +493,8 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         </div>
       )}
 
-      {/* Manage funding — champion only */}
-      {isChampion && (
+      {/* Manage funding — champion only (a candidate may withdraw it: window.CircPricing.hideFunding) */}
+      {isChampion && !(window.CircPricing && window.CircPricing.hideFunding) && (
         <div style={{
           background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
           borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)',
@@ -525,7 +530,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)',
         }}>
           <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>
-          <span>You champion this circle, so you can’t leave it. Cancel funding to step back.</span>
+          <span>{(window.CircPricing && window.CircPricing.ChampionFoot) ? <window.CircPricing.ChampionFoot space={space} /> : 'You champion this circle, so you can’t leave it. Cancel funding to step back.'}</span>
         </div>
       )}
 
@@ -570,6 +575,8 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
         letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 6px',
       }}>Account</h1>
       <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>{user.email}</p>
+      {/* Candidate hook (droppable): a subscription card leads the page when window.CircPricing publishes one. */}
+      {window.CircPricing && window.CircPricing.AccountCard && <><window.CircPricing.AccountCard user={user} /><div style={{ height: 'var(--space-5)' }} /></>}
 
       {user.ssoProvider ? (
         <><PushRow push={push} onChange={onPushChange} /><SsoManaged /><div style={{ height: 'var(--space-5)' }} /><DeleteAccount onDelete={onDeleteAccount} /><SupportLine /></>
@@ -590,7 +597,7 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
           value={np} onChange={(e) => { setNp(e.target.value); setErr(s => ({ ...s, np: null })); setDone(false); }} error={err.np} />
         <Field label="Confirm new password" name="np2" type="password" autoComplete="new-password" placeholder="Re-enter new password"
           value={np2} onChange={(e) => { setNp2(e.target.value); setErr(s => ({ ...s, np2: null })); setDone(false); }} error={err.np2} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginTop: 'var(--space-2)' }}>
+        <div className="circ-acct-act" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginTop: 'var(--space-2)' }}>
           {done && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>
               <Icon name="check" size={16} color="var(--color-accent)" /> Password updated.
@@ -659,7 +666,7 @@ const DeleteAccount = ({ onDelete }) => (
     <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: 0 }}>
       Your account goes, and your place in every circle. What you added stays, with your name.
     </p>
-    <div style={{ marginTop: 'var(--space-4)' }}>
+    <div className="circ-acct-act" style={{ marginTop: 'var(--space-4)' }}>
       <Button variant="destructive-secondary" onClick={() => onDelete && onDelete()}>Delete your account</Button>
     </div>
   </div>
@@ -811,7 +818,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
         <form onSubmit={start} noValidate>
           <Field label="New email" name="new-email" type="email" autoComplete="email" placeholder="new@example.com"
             value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginTop: 'var(--space-2)' }}>
+          <div className="circ-acct-act" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginTop: 'var(--space-2)' }}>
             {phase === 'done' && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: 'var(--color-fg-2)' }}>
                 <Icon name="check" size={16} color="var(--color-accent)" /> Email updated.
@@ -853,4 +860,4 @@ const NoSpaceHome = ({ onCreate }) => (
   </main>
 );
 
-Object.assign(window, { SPACE_CAP, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, SsoManaged, InvalidInvite, SpaceFull, SupportLine, ReverifyDialog });
+Object.assign(window, { SPACE_CAP, CalmPage, ContentPage, CreateSpace, NoSpaceHome, MembersSurface, AccountSettings, SsoManaged, InvalidInvite, SpaceFull, SupportLine, ReverifyDialog });

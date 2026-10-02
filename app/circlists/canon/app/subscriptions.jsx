@@ -108,7 +108,9 @@ const ProviderShell = ({ children, merchant = 'Circlists' }) => (
 );
 
 // ---- Hosted checkout (simulated) -------------------------------------------
-const Checkout = ({ user, spaceName, refund, onSuccess, onCancel }) => {
+// `offer` (optional, candidate hook): { lead, price, per, button } re-words the
+// summary and the pay button. Absent ⇒ the shipped per-circle text.
+const Checkout = ({ user, spaceName, refund, onSuccess, onCancel, offer }) => {
   const [card, setCard] = React.useState('');
   const [exp, setExp] = React.useState('');
   const [cvc, setCvc] = React.useState('');
@@ -128,11 +130,12 @@ const Checkout = ({ user, spaceName, refund, onSuccess, onCancel }) => {
   return (
     <ProviderShell>
       <div style={{ marginBottom: 22 }}>
-        <div style={{ fontWeight: 500, fontSize: 13, color: '#64748b', marginBottom: 4 }}>{refund ? 'Re-fund' : 'Fund'} {spaceName || 'your circle'} on Circlists</div>
+        <div style={{ fontWeight: 500, fontSize: 13, color: '#64748b', marginBottom: 4 }}>{offer ? offer.lead : <>{refund ? 'Re-fund' : 'Fund'} {spaceName || 'your circle'} on Circlists</>}</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 30, color: '#0f172a', letterSpacing: '-0.02em' }}>{`\u00a3${PRICE_PER_SPACE}.00`}</span>
-          <span style={{ fontWeight: 500, fontSize: 14, color: '#64748b' }}>per month</span>
+          <span style={{ fontWeight: 700, fontSize: 30, color: '#0f172a', letterSpacing: '-0.02em' }}>{offer ? offer.price : `\u00a3${PRICE_PER_SPACE}.00`}</span>
+          <span style={{ fontWeight: 500, fontSize: 14, color: '#64748b' }}>{offer ? offer.per : 'per month'}</span>
         </div>
+        {offer && offer.note && <div style={{ fontWeight: 500, fontSize: 13, lineHeight: 1.5, color: '#475569', marginTop: 8 }}>{offer.note}</div>}
       </div>
       <form onSubmit={pay}>
         <label style={lbl}>Email</label>
@@ -149,7 +152,7 @@ const Checkout = ({ user, spaceName, refund, onSuccess, onCancel }) => {
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         }}>
           {loading && <Spinner size={15} />}
-          {loading ? 'Processing\u2026' : `Pay \u00b7 \u00a3${PRICE_PER_SPACE}.00 / mo`}
+          {loading ? 'Processing\u2026' : (offer ? offer.button : `Pay \u00b7 \u00a3${PRICE_PER_SPACE}.00 / mo`)}
         </button>
       </form>
       <button onClick={onCancel} style={{
@@ -358,6 +361,6 @@ const WebHandoff = ({ context = 'new', spaceName, onExit }) => {
 };
 
 Object.assign(window, {
-  PRICE_PER_SPACE, OPERATOR_EMAIL, FundingPage, Checkout, ManageFunding,
+  PRICE_PER_SPACE, OPERATOR_EMAIL, FundingPage, Checkout, ManageFunding, ProviderShell,
   ProviderInterstitial, SettingUp, DormantSpace, WebHandoff,
 });

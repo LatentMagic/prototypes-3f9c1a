@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<base href="../../../../" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Option board · the not-subscribed card, with a button</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="docs/specs/per-person-pricing/playground/pg-ppp.css" />
+<style>.pgb-head{flex-wrap:wrap;align-items:center;row-gap:8px}.pgb-foot{margin-top:var(--space-4);padding-top:var(--space-4);border-top:1px solid var(--color-border-2)}.pgb-cq{container-type:inline-size}.pgb-btn{margin-top:var(--space-4)}@container (min-width:480px){.pgb-row .pgb-wrap{display:flex;align-items:center;gap:var(--space-6)}.pgb-row .ppp-card-body{flex:1;min-width:0}.pgb-row .pgb-btn{margin-top:0;flex:none}.pgb-end .pgb-btn{display:flex;justify-content:flex-end}.pgb-end .pgb-btn>*,.pgb-row .pgb-btn>*{width:auto!important}.pgb-half .pgb-btn{width:calc(50% - var(--space-1)).pgb-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-6)}.pgb-grid>*{grid-column:1}.pgb-grid>.pgb-btn{grid-column:2;grid-row:1 / span 2;margin-top:0}.pgb-grid>.pgb-btn>*{width:auto!important}.pgb-card .pgb-grid>.pgb-btn{align-self:center}.pgb-top .pgb-grid>.pgb-btn{align-self:start}}</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/wizard.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-store.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-pricing.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-account.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/playground/pg-ppp-board.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/playground/pg-not-subscribed-button.jsx"></script>
+</body>
+</html>

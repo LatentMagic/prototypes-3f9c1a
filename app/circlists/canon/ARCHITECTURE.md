@@ -45,6 +45,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/gate.jsx` | droppable module | preview gate gone; real flows run |
 | `app/config.jsx` | deletable aid | launcher + review settings gone |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
+| `app/qa.jsx` | deletable aid (draft) | QA half of the launcher gone; the states it points at stay |
 | `app/circ-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
 
 ## Addressable states

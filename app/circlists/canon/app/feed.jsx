@@ -755,7 +755,8 @@ const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }
     return <DeleteDialog item={item} space={space} onDeleteForMe={onDeleteForMe}
       onDeleteForEveryone={onConfirm} onClose={onCancel} />;
   }
-  const v = CONFIRM[kind];
+  // Candidate hook (droppable): window.CircPricing.confirmCopy may re-word a kind. Absent ⇒ shipped copy.
+  const v = (window.CircPricing && window.CircPricing.confirmCopy && window.CircPricing.confirmCopy[kind]) || CONFIRM[kind];
   const cancelRef = React.useRef(null);
   const invokerRef = React.useRef(null);
   React.useEffect(() => {

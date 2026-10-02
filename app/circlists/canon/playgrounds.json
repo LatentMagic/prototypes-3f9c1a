@@ -1,7 +1,19 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-09-29",
+  "generated": "2026-10-02",
   "tickets": [
+    { "id": "—", "slug": "per-person-pricing", "name": "Per-person pricing", "state": "active", "touched": "2026-10-02",
+      "entries": [
+        { "kind": "playground", "name": "The Subscription card's three acts", "path": "docs/specs/per-person-pricing/playground/pg-account-card.html", "note": "Three arrangements of Update, Switch and Cancel on the Account card, in every state at 320, 390 and desktop: one shape, pair and a foot, each act beside its fact. Plus Subscribe as a button or in the line." },
+        { "kind": "playground", "name": "The subscription page, on a phone", "path": "docs/specs/per-person-pricing/playground/pg-subscribe-phone.html", "note": "Three ways to say the free month, the yearly saving and the card terms: receipt, the offer under the heading, timeline. 01.1 and 01.2 refine the receipt; 01.2 is built into the candidate at every width." },
+        { "kind": "playground", "name": "The subscription page, on desktop", "path": "docs/specs/per-person-pricing/playground/pg-subscribe-desktop.html", "note": "Three layouts at 1280: centred column, centred with plans side by side, two columns with one panel. Settled by the phone board's 01.2, built as the centred column." },
+        { "kind": "playground", "name": "The Switch plan overlay", "path": "docs/specs/per-person-pricing/playground/pg-switch-sheet.html", "note": "The switch confirm as a bottom sheet at 320 and 390 and a centred modal on desktop, over the real card: one sentence, the card's own rows, the saving as the sentence." },
+        { "kind": "playground", "name": "The create form's heading and button", "path": "docs/specs/per-person-pricing/playground/pg-create-button.html", "note": "Three heading and button pairs on the real create form. 01 chosen (New circle / Create circle), built in." },
+        { "kind": "playground", "name": "The Subscription card when lapsed", "path": "docs/specs/per-person-pricing/playground/pg-lapsed-card.html", "note": "Three ways for Account to show a lapsed subscription. Superseded by the adviser's copy." },
+        { "kind": "playground", "name": "The not-subscribed card, with a button", "path": "docs/specs/per-person-pricing/playground/pg-not-subscribed-button.html", "note": "Places for the Subscribe button on the not-subscribed card. Superseded by the Account button rule (full width on a phone, right-aligned on desktop)." },
+        { "kind": "playground", "name": "The Cancel subscription overlay", "path": "docs/specs/per-person-pricing/playground/pg-cancel-sheet.html", "note": "Bodies for the cancel confirm, active and free month, sheet and modal. 02.4 chosen, built in." },
+        { "kind": "candidate", "name": "Per-person pricing candidate", "path": "docs/specs/per-person-pricing/circlists-per-person-pricing.html", "note": "One subscription per person covers every circle they run; members free. /subscribe in two states (one centred column, receipt rows), Create through pricing, the Account card in four states, take-over and the step-back line. Walk it from QA in the launcher." }
+      ] },
     { "id": "—", "slug": "card-title-editing", "name": "Card titles", "state": "active", "touched": "2026-09-29",
       "entries": [
         { "kind": "playground", "name": "Clearing restores the title", "path": "docs/specs/card-title-editing/playground/card-title-clear.html", "note": "Round three, no new control: clear the field and save. The editor says so on open: a line under the field, the same line naming the original, or that line above the field." },

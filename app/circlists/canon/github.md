@@ -98,6 +98,48 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-02T10:53:05Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start; reviewing the subscribe-page boards). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Subscription page in the per-person pricing candidate rebuilt as phone board 01.2, at every width.
+- CLAUDE.md: the rule for resolving layout-rule collisions (a role never changes; size, spacing, layout, then rewording).
+
+## Previous sync
+
+date: 2026-10-02T10:25:30Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start; reviewing the per-person pricing candidate). wiki: read live — `circlists-copy-voice.md` (Switch overlay copy). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Switch plan overlay option board: `docs/specs/per-person-pricing/playground/pg-switch-sheet.html`.
+- Per-person pricing candidate: the Switch overlay rebuilt as the ratified before-and-after panel (board 02.1).
+
+## Previous sync
+
+date: 2026-10-02T08:03:46Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — `store-launch/_subtasks/pricing-model/_context/decisions.md` ("2 months free" wording still open). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Three per-person pricing option boards in `docs/specs/per-person-pricing/playground/`: the Account card's acts, the subscription page on a phone, and on desktop.
+
+## Previous sync
+
+date: 2026-10-02T07:55:28Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start; Account card buttons). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Per-person pricing candidate: Account card back to canon Funding-card buttons; Resume error lines, states, Config and QA entries removed.
+
+## Previous sync
+
+date: 2026-10-02T07:25:16Z
+business-ops: read live — `work/apps/circlists/store-launch/_subtasks/pricing-model/` (CONTEXT.md, _context/decisions.md, _context/log.md, _resources/2026-10-02_joe-v7-read-thoughts.md). monorepo: read live — `specs/governance/standards/ui-design.md`. prototypes-3f9c1a: read `app/circlists/per-person-pricing/app/pp-*.jsx` (earlier studies, lifted from). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Per-person pricing candidate build: `docs/specs/per-person-pricing/` (entry + cand-ppp-*.jsx), with additive hooks in `app/main.jsx`, `spaces.jsx`, `subscriptions.jsx`, `feed.jsx`, `qa.jsx`. Handoff in the same folder.
+
+## Previous sync
+
 date: 2026-09-29T07:06:13Z
 wiki: read live — `wiki/products/circlists/circlists-copy-voice.md` (voice check for Edit
 title copy). Nothing mirrored; no commit sha resolved.

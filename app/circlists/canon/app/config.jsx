@@ -32,6 +32,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
                          push, onPushStage }) => {
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
+  const [qaOpen, setQaOpen] = useCState(false);
   // draggable launcher-button position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
     try { const v = JSON.parse(localStorage.getItem('circ_launcher_pos') || 'null'); return v && typeof v.x === 'number' ? v : null; } catch (e) { return null; }
@@ -93,6 +94,9 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   const tapped = (fn) => { if (dragRef.current.moved) { dragRef.current.moved = false; return; } fn(); };
   const StatesPalette = window.StatesPalette;
   const hasStates = !!StatesPalette && !!statesGroups && statesGroups.length > 0;
+  // QA (app/qa.jsx, draft): hidden only when the file is absent; an empty list shows its empty state.
+  const QaPalette = window.QaPalette;
+  const hasQa = hasStates && !!QaPalette;
 
   return (
     <div className="circ-config-wrap" ref={wrapRef} style={wrapStyle}>
@@ -111,7 +115,20 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             <Icon name="feed" size={17} />
           </button>
         )}
+        {hasQa && (
+          <button className="circ-launcher-half" onPointerDown={onPointerDown}
+            onClick={() => tapped(() => openAt(setQaOpen))}
+            aria-haspopup="dialog" aria-expanded={qaOpen} data-open={qaOpen ? '1' : undefined}
+            aria-label="QA" title="QA — drag to move">
+            <Icon name="check" size={17} />
+          </button>
+        )}
       </div>
+      {hasQa && qaOpen && (
+        <QaPalette statesGroups={statesGroups}
+          onGo={(id) => { onGoState(id); closeAt(setQaOpen); }}
+          onClose={() => closeAt(setQaOpen)} />
+      )}
       {hasStates && statesOpen && (
         <StatesPalette groups={statesGroups}
           onGo={(id) => { onGoState(id); closeAt(setStatesOpen); }}

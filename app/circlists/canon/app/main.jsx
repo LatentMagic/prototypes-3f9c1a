@@ -498,7 +498,13 @@ const CircApp = () => {
   const isOldestNow = (id) => (sortOrderRef.current[id] || window.CIRC_SORT_DEFAULT || 'newest') === 'oldest';
 
   // open Create-a-space fresh (clears any carried name + description)
-  const openCreateSpace = () => { setFundFlow({ mode: 'new', name: '', description: '', spaceId: null }); setRoute('create-space'); };
+  // Candidate hook (droppable): window.CircPricing.openCreate may take the tap
+  // (per-person pricing sends a non-subscriber to the pricing screen first).
+  const openCreateSpace = () => {
+    setFundFlow({ mode: 'new', name: '', description: '', spaceId: null });
+    if (window.CircPricing && window.CircPricing.openCreate) { window.CircPricing.openCreate(); return; }
+    setRoute('create-space');
+  };
 
   // Home — the account level. Historically this was only the landing place for a
   // user who holds no membership; in the app posture it is a real destination
@@ -1233,6 +1239,14 @@ const CircApp = () => {
     isChampion, startCircle: gateActive ? onGate : openCreateSpace } : null;
   if (Cand && Cand.bind) Cand.bind(candApi);
 
+  // Per-person pricing candidate hook (droppable). window.CircPricing reads app
+  // state and writes it only through this API; absent ⇒ every use below no-ops.
+  const Pricing = window.CircPricing || null;
+  if (Pricing && Pricing.bind) Pricing.bind({ user, spaces, space, currentId, route, isMobile, isApp,
+    isSheet: isSheetPosture, mobilePayments, fundFlow, layout: tw.layout,
+    setRoute, setSpaces, setCurrentId, setTab, setFundFlow, enterSpace, goHome, openAccount,
+    setLayout: (v) => setTweak('layout', v), isChampion });
+
   // ---- render route ----
   // App posture + mobile payments OFF: every path that would reach the funding /
   // checkout / provider surfaces lands on the finish-on-web handoff instead. One
@@ -1240,13 +1254,17 @@ const CircApp = () => {
   // so no checkout, price-entry, or provider surface is reachable in-app while
   // off. Web mode ignores mobilePayments entirely (payments always work on web).
   let screen = null;
+  // A candidate route renders first: frameless unless it asks for the shell.
+  const pricingRoute = (Pricing && Pricing.renderRoute) ? Pricing.renderRoute(route) : null;
   // `create-space` is in this list because creating a circle IS a funding act:
   // the circle does not exist until it is funded, so with payments off there is
   // nothing on the phone for a name and description to attach to. The block
   // therefore lands on the tap, BEFORE the member writes anything — walking them
   // through the wizard first and blocking after throws that writing away.
   const PAYMENT_ROUTES = ['create-space', 'funding', 'checkout', 'manage-interstitial', 'manage-funding'];
-  if (isApp && !mobilePayments && PAYMENT_ROUTES.includes(route)) {
+  if (pricingRoute) {
+    screen = pricingRoute.shell ? inShell(pricingRoute.body, pricingRoute.opts || {}) : pricingRoute.body;
+  } else if (isApp && !mobilePayments && PAYMENT_ROUTES.includes(route)) {
     const ctx = (route === 'manage-interstitial' || route === 'manage-funding')
       ? 'manage' : (fundFlow.mode === 'refund' ? 'refund' : 'new');
     const nm = ctx === 'new' ? fundFlow.name : (space ? space.name : fundFlow.name);

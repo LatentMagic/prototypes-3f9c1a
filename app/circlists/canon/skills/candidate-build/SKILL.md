@@ -1,6 +1,6 @@
 ---
 name: candidate-build
-description: Build a candidate build, and merge one when it ratifies. A candidate is a second, unratified state of the app that IS the app, carried by an overlay set loaded over the one shared `app/`, not by a fork or a playground. Use when a delta has to be played as the product rather than compared as options: an incoming delta prompt, a version of the app under review, anything where "the agreed app" and "the version being processed" must both exist and be switched between at zero cost. Covers when it applies, the invariants, the wiring, and teardown.
+description: Build a candidate build, and merge one when it ratifies. A candidate is a second, unratified state of the app that IS the app, carried by an overlay set loaded over the one shared `app/`, not by a fork or a playground. Use ONLY when the user explicitly asks for a candidate build — never inferred from an incoming delta prompt, from unratified items in a brief, or from the ratification rule; a prompt that says build it into the app goes into `app/`, and if that feels wrong, ask first. Also use before touching an existing candidate entry or its overlays, and before merging one. Covers the invariants, the wiring, and teardown.
 ---
 
 # Candidate builds
@@ -21,7 +21,13 @@ circlists-<ticket>.html   → app/*  +  cand-<ticket>-*.jsx   candidate — bein
 
 ## Which shape
 
-- **Candidate build** — the deliverable has to be the app: a whole delta, played
+**Requested, never inferred.** A candidate build happens only when the user
+asks for one by name. An incoming delta prompt is not a request for one, and
+neither is a brief with unratified pieces in it: a prompt that says build it
+into the app goes into `app/`. If that feels wrong, ask which shape before
+building — do not pick this one yourself.
+
+- **Candidate build** — the user asked for one, and the deliverable has to be the app: a whole delta, played
   end to end, judged as the product. Multiple named options are not the question;
   one direction being real is.
 - **Playground** (`skills/build-playground/SKILL.md`) — the question is a
