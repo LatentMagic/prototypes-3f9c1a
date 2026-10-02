@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<base href="../../../../" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Playground · taking over and creating while your subscription is ending</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--color-canvas)}
+body{display:flex;flex-direction:column;height:100dvh;font-family:var(--font-sans)}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.pg-bar{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:8px max(12px,env(safe-area-inset-left)) 8px max(12px,env(safe-area-inset-right));padding-top:max(8px,env(safe-area-inset-top));background:var(--color-fg-1);color:#fff}
+.pg-group{display:flex;align-items:center;gap:8px}
+.pg-label{font:500 11px/1 var(--font-mono);letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.72)}
+.pg-seg{display:inline-flex;gap:2px;padding:3px;background:rgba(255,255,255,0.1);border-radius:var(--radius-md)}
+.pg-seg button{min-height:36px;min-width:36px;padding:0 12px;border:0;border-radius:var(--radius-sm);background:transparent;color:#fff;font:500 13px/1 var(--font-sans);cursor:pointer}
+.pg-seg button:hover{background:rgba(255,255,255,0.12)}
+.pg-seg button[aria-pressed="true"]{background:var(--color-accent)}
+.pg-seg button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+@media (pointer:coarse){.pg-seg button{min-height:44px;min-width:44px}}
+.pg-frame{flex:1;min-height:0;width:100%;border:0;display:block;background:var(--color-canvas)}
+</style>
+</head>
+<body>
+<div class="pg-bar" role="toolbar" aria-label="Playground controls">
+<div class="pg-group"><span class="pg-label" id="l-opt">Option</span><div class="pg-seg" data-k="opt" aria-labelledby="l-opt"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div></div>
+<div class="pg-group"><span class="pg-label" id="l-st">State</span><div class="pg-seg" data-k="st" aria-labelledby="l-st"><button data-v="ending">Ending</button><button data-v="failed">Payment failed</button></div></div>
+<div class="pg-group"><span class="pg-label" id="l-sc">Start at</span><div class="pg-seg" data-k="scene" aria-labelledby="l-sc"><button data-v="circle">Sleeping circle</button><button data-v="create">New circle</button></div></div>
+<div class="pg-group"><span class="pg-label" id="l-vp">Viewport</span><div class="pg-seg" data-k="vp" aria-labelledby="l-vp"><button data-v="auto">Auto</button><button data-v="phone">Phone</button></div></div>
+</div>
+<iframe class="pg-frame" id="app" title="Circlists, per-person pricing candidate" src="docs/specs/per-person-pricing/playground/pg-lapsing-takeover-app.html"></iframe>
+<script>
+(function () {
+  var KEY = 'pg_lto_v1';
+  var sel = { opt: 1, st: 'ending', scene: 'circle', vp: 'auto' };
+  try { Object.assign(sel, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+  var frame = document.getElementById('app');
+  function paint() {
+    document.querySelectorAll('.pg-seg').forEach(function (g) {
+      g.querySelectorAll('button').forEach(function (b) {
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(String(sel[g.dataset.k]) === b.dataset.v));
+      });
+    });
+  }
+  document.querySelectorAll('.pg-seg').forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      var k = g.dataset.k; sel[k] = k === 'opt' ? Number(b.dataset.v) : b.dataset.v;
+      try { localStorage.setItem(KEY, JSON.stringify(sel)); } catch (e2) {}
+      paint();
+      var w = frame.contentWindow;
+      if (w && w.PgLto && w.PgLto.go) w.PgLto.go(Object.assign({}, sel));
+    });
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

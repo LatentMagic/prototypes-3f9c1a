@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Circlists</title>
+<title>Circlists · per-person pricing (candidate)</title>
 <link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
 <link rel="icon" href="brand/assets/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="brand/assets/favicon-32.png" />
@@ -97,13 +98,6 @@
      the micro dot's own halo echoing once on the card that just landed, which
      is why it fades to nothing rather than resting as a state. */
   .circ-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  /* Account card acts (Update email, Update password, Delete your account): full width
-     on a phone; own width, right-aligned on desktop. Joe, 2 Oct. Hook: .circ-acct-act in app/spaces.jsx. */
-  .circ-acct-act { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px; }
-  .circ-acct-act > button { width: 100% !important; }
-  @media (min-width: 760px) { .circ-acct-act > button { width: auto !important; } }
-  [data-circ-posture="mobile"] .circ-acct-act > button { width: 100% !important; }
-  [data-circ-posture="desktop"] .circ-acct-act > button { width: auto !important; }
   .circ-sig { display: inline-flex; align-items: center; flex-shrink: 0; }
   /* The refresh receipt resolving: the SAME arc grows shut into a complete ring
      at a constant rate (app/brand-motion.jsx) — nothing fades in, so nothing
@@ -698,7 +692,7 @@
 </style>
 
 <style>
-/* ==== Per-person pricing (app/pricing-*.jsx; merged 2026-10-02) ==== */
+/* ==== Per-person pricing candidate (docs/archive/per-person-pricing/cand-ppp-*.jsx) ==== */
 .ppp-page{height:var(--circ-vh);background:var(--color-canvas);display:flex;flex-direction:column}
 .ppp-head{display:flex;align-items:center;justify-content:space-between;padding:clamp(10px,1.2vw,16px) clamp(12px,1.4vw,20px);flex:none}
 .ppp-body{flex:1;min-height:0;overflow-y:auto;padding:clamp(12px,3vh,36px) 22px 40px}
@@ -743,11 +737,17 @@ div.ppp-plan{cursor:default}
 .ppp-card-foot{font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-3);margin:var(--space-4) 0 0}
 .ppp-card-cq{container-type:inline-size}
 .ppp-ns-btn{margin-top:var(--space-4)}
+/* Account rule (candidate, Joe 2 Oct): a card's act is full width on a phone; own width, right-aligned on desktop. */
+.circ-acct-act{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:12px}
+.circ-acct-act>button{width:100%!important}
+@media (min-width:760px){.circ-acct-act>button{width:auto!important}}
+[data-circ-posture="mobile"] .circ-acct-act>button{width:100%!important}
+[data-circ-posture="desktop"] .circ-acct-act>button{width:auto!important}
 .ppp-row-k,.ppp-row-v{white-space:nowrap}
 .ppp-pair{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-2);margin-top:var(--space-4)}
 .ppp-pair>:only-child{grid-column:1/-1}
 @container (min-width:440px){.ppp-pair{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.ppp-foot-wrap{overflow:hidden;margin-top:var(--space-4)}.ppp-fail-row+.ppp-foot-wrap{margin-top:0}
+.ppp-foot-wrap{overflow:hidden;margin-top:var(--space-4)}
 .ppp-foot{display:flex;flex-wrap:wrap;margin:0 0 0 -20px!important}
 .ppp-foot>span{position:relative;padding-left:20px;white-space:nowrap}
 .ppp-foot>span::before{content:'\00b7';position:absolute;left:7px}
@@ -805,6 +805,7 @@ div.ppp-plan{cursor:default}
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
+<script>window.CIRC_STATE_KEY = 'circ_state_ppp_v1';</script>
 <script type="text/babel" src="app/seed-data.jsx"></script>
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/brand-motion.jsx"></script>
@@ -866,14 +867,14 @@ div.ppp-plan{cursor:default}
      app/spaces.jsx reads per render — so it loads after that file and before
      main.jsx, which mounts on load. -->
 <script type="text/babel" src="app/invite-link.jsx"></script>
-<!-- Per-person pricing (merged 2026-10-02). Loads after the app files it extends, before main.jsx. -->
-<script type="text/babel" src="app/pricing-store.jsx"></script>
-<script type="text/babel" src="app/pricing-sheet.jsx"></script>
-<script type="text/babel" src="app/pricing-page.jsx"></script>
-<script type="text/babel" src="app/pricing-account.jsx"></script>
-<script type="text/babel" src="app/pricing-circle.jsx"></script>
-<script type="text/babel" src="app/pricing-states.jsx"></script>
-<script type="text/babel" src="app/pricing-main.jsx"></script>
+<!-- Per-person pricing candidate: loads after the app files it extends, before main.jsx. -->
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-store.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-sheet.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-pricing.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-account.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-circle.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-states.jsx"></script>
+<script type="text/babel" src="docs/archive/per-person-pricing/cand-ppp-main.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

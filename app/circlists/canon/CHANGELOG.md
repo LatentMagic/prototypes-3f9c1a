@@ -3,6 +3,14 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Per-person pricing — 2026-10-02
+
+- **One subscription per person covers every circle they fund.**
+- **The subscribe page.**
+- **The Account subscription card:** switch, cancel, payment failed, lapsed.
+- **Asleep circles that any member can take over.**
+- Landed as a candidate first; the candidate stays on the record, switched off.
+
 ## Edit title — 2026-09-29
 
 - **A contributor can retitle a card they added**, fetched or failed, from Edit title in the card menu. Absent for every other member; absent while the link is still resolving.

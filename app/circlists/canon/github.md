@@ -98,6 +98,15 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-02T14:55:18Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — pricing-model `CONTEXT.md`, `_resources/advice/2026-10-02_lapsing-create-brief.md`, the lapsing-takeover prompt folder. Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Lapsing take-over playground: `docs/specs/per-person-pricing/playground/pg-lapsing-takeover.html` (three options, Ending and Payment failed, take-over and create).
+- `app/spaces.jsx`: an absent-by-default `CircPricing.createFoot` hook under the create button.
+
+## Previous sync
+
 date: 2026-10-02T10:53:05Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start; reviewing the subscribe-page boards). Nothing mirrored; no commit sha resolved.
 

@@ -967,6 +967,15 @@
           changelog: [
             {
               date: '2026-10-02',
+              title: 'Per-person pricing merged into canon; price is £3 / £30',
+              items: [
+                'The per-person-pricing candidate is now canon itself: its code moved out of docs/specs into app/pricing-*.jsx, its styles into circlists.html, and the earlier copy went to docs/archive/per-person-pricing. The rail candidate node is removed.',
+                'Price change throughout: £3 a month or £30 a year (the yearly pill reads £2.50 a month). The QA button now walks a "Price change to £3 / £30" list.',
+                'The create form gains a foot slot for the pricing line (window.CircPricing.createFoot).'
+              ]
+            },
+            {
+              date: '2026-10-02',
               title: 'Per-person pricing candidate, held inside canon',
               items: [
                 'A full per-person-pricing candidate now ships inside canon as an internal entry point, not a rail node: docs/specs/per-person-pricing/circlists-per-person-pricing.html, with its playgrounds beside it and listed in playgrounds.json. Walk it from the new QA button in the launcher (app/qa.jsx, draft).',
@@ -1275,14 +1284,6 @@
               base: 'Canon\'s first sync — carries forward the agreed line next was holding.'
             }
           ]
-        },
-        {
-          slug: 'per-person-pricing',
-          version: 'Per-person pricing',
-          ticket: 'pricing-model proposal',
-          html: 'circlists.html',
-          kind: 'candidate',
-          desc: 'A full copy of canon with per-person pricing applied: start your free month at first circle, a subscribed account creates straight through, and the account page carries the subscription. Unratified.'
         }
       ]
     },

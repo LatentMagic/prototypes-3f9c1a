@@ -18,10 +18,10 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
-  { key: 'per-person-pricing', only: 'CircPricing', title: 'Per-person pricing (candidate)',
-    note: 'Each step stages the state; the window or Viewport sets the width. Plan is switched in Config, under Per-person pricing.',
+  { key: 'price-three', only: 'CircPricing', title: 'Price change to £3 / £30',
+    note: 'No £5, £50 or £10 anywhere. Yearly pill reads £2.50 a month. Free month: cancel, then Resume, returns to First payment on the same date.',
     steps: [
-      'ppp-price-free', 'ppp-price-used', 'ppp-create-not-subscribed', 'ppp-create-subscribed', 'ppp-not-subscribed', 'ppp-lapsed', 'ppp-lapsed-circle', 'ppp-lapsed-account', 'ppp-lapsed-none-asleep', 'ppp-active', 'ppp-free-month', 'ppp-payment-failed', 'ppp-ending', 'ppp-switch-yearly', 'ppp-cancel', 'ppp-takeover', 'ppp-takeover-pricing', 'ppp-takeover-subscribed', 'ppp-step-back', 'ppp-no-circles',
+      'ppp-price-free', 'ppp-price-used', 'ppp-create-not-subscribed', 'ppp-takeover-pricing', 'ppp-active', 'ppp-active-yearly', 'ppp-free-month', 'ppp-payment-failed', 'ppp-ending', 'ppp-pending-switch', 'ppp-lapsed-account', 'ppp-switch-yearly', 'ppp-switch-monthly', 'ppp-switch-free-month', 'ppp-cancel', 'ppp-cancel-free-month',
     ] },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);

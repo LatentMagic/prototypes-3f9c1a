@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<base href="../../../../" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Option board · the Account card on Payment failed</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="docs/specs/per-person-pricing/playground/pg-ppp.css" />
+<style>
+.pg-fc-own{display:flex;justify-content:flex-end;margin-top:var(--space-4)}
+.pg-fc-own>button{width:100%!important}
+.pg-fc-beside{display:flex;flex-direction:column;gap:var(--space-4);margin-top:var(--space-2)}
+.pg-fc-beside>.ppp-card-line{margin:0}
+.pg-fc-beside>button{width:100%!important}
+.pg-fc-trow{display:flex;flex-direction:column;gap:var(--space-3);padding:10px 0;border-top:1px solid var(--color-border-2)}
+.pg-fc-tline{flex:1;min-width:0;font:400 14px/1.4 var(--font-sans);color:var(--color-fg-2);text-wrap:pretty}
+.pg-fc-trow>button{width:100%!important}
+.pg-fc-cardrow{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-4)}
+.pg-fc-cardfoot{display:flex;flex-wrap:wrap;gap:0 12px;margin:0}
+.pg-fc-cardfoot>span{white-space:nowrap}
+.pg-fc-cardrow>button{width:100%!important}
+.pg-fc-panel{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-2);padding:var(--space-4);background:var(--color-surface-sunken);border-radius:var(--radius-md)}
+.pg-fc-pline{flex:1;min-width:0;font:400 14px/1.5 var(--font-sans);color:var(--color-fg-1);text-wrap:pretty}
+.pg-fc-panel>button{width:100%!important}
+@container (min-width:440px){
+.pg-fc-trow,.pg-fc-panel,.pg-fc-cardrow{flex-direction:row;align-items:center;justify-content:space-between;gap:var(--space-4)}
+.pg-fc-cardfoot{flex-direction:column}
+.pg-fc-trow>button,.pg-fc-panel>button,.pg-fc-cardrow>button{width:auto!important;flex:none}
+.pg-fc-own>button{width:auto!important}
+.pg-fc-beside{flex-direction:row;align-items:center;justify-content:space-between}
+.pg-fc-beside>button{width:auto!important;flex:none}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/wizard.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-store.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-sheet.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-pricing.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/cand-ppp-account.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/playground/pg-ppp-board.jsx"></script>
+<script type="text/babel" src="docs/specs/per-person-pricing/playground/pg-failed-card.jsx"></script>
+</body>
+</html>

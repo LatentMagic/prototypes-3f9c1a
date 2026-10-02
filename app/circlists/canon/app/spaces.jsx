@@ -157,6 +157,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
         <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
           {submitLabel ? (typeof submitLabel === 'function' ? submitLabel(name.trim()) : submitLabel) : window.CircPricing && window.CircPricing.createLabel ? window.CircPricing.createLabel() : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>}
         </Button>
+        {PH && PH.createFoot ? PH.createFoot() : null}
       </form>
     </WizardShell>
   );
