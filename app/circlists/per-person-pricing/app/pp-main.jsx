@@ -28,16 +28,10 @@ const ppCheckoutOffer = () => {
 window.ppCheckoutOffer = ppCheckoutOffer;
 
 // Review switcher: a labelled chip, tap to open. Steers the review only; not product.
-const PpLabel = () => {
-  const st = usePP();
-  if (!st.label) return null;
-  return <div data-pp-label style={{ position: 'fixed', top: 1, left: '50%', transform: 'translateX(-50%)', zIndex: 99999, pointerEvents: 'none', whiteSpace: 'nowrap',
-    padding: '1px 8px', borderRadius: 999, background: 'rgba(20,20,30,0.88)', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '0.03em' }}>{st.label}</div>;
-};
 const PpSwitcher = () => {
   const st = usePP();
   const [open, setOpen] = React.useState(false);
-  if (st.label) return null;
+  if (st.quiet) return null;
   const opts = [['cards', 'Two plan cards'], ['toggle', 'Toggle, one price'], ['lead', 'One plan, quiet link']];
   const seg = (items, val, on) => (
     <div role="radiogroup" style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -73,4 +67,4 @@ const PpSwitcher = () => {
     </div>
   );
 };
-(() => { const el = document.createElement('div'); document.body.appendChild(el); ReactDOM.createRoot(el).render(<><PpSwitcher /><PpLabel /></>); })();
+(() => { const el = document.createElement('div'); document.body.appendChild(el); ReactDOM.createRoot(el).render(<PpSwitcher />); })();

@@ -59,7 +59,7 @@ const ppState = (id, label, { account, sleep, champion = 'You', current = null, 
     if (sleep) list = ppSleep(sleep, champion, champion === 'You' ? DEFAULT_USER.email : 'priya.n@example.com')(list);
     if (awake) list = list.map((sp) => (sp.id === current ? { ...sp, champion: 'You', championEmail: DEFAULT_USER.email } : sp));
     window.__ppTk = null; window.__ppAuto = auto;
-    window.CircPP.set({ v7: null, label: null, step: null, stepSheet: null, delp: false, ...PP_ACCOUNT_PATCH[account], ...pp });
+    window.CircPP.set({ v7: null, quiet: null, step: null, stepSheet: null, delp: false, ...PP_ACCOUNT_PATCH[account], ...pp });
     api.setUser(DEFAULT_USER); api.setSpaces(list);
     api.setLoadingFeed(false); api.setHoldLoading(false);
     if (api.setHomeStripOpen) api.setHomeStripOpen(false);
@@ -83,7 +83,7 @@ const PP_STATES = [
   ppState('pp-takeover-awake', 'Taken over: the circle awake, you its champion', { account: 'subscribed', current: 'sp-book', route: 'members', awake: true }),
 ];
 // v7 take-over screen: the decided two-state pricing screen. never paid = state 1, used the free month = state 2.
-const PP_V7T = (l) => ({ v7: 'A', label: l });
+const PP_V7T = (l) => ({ v7: 'A', quiet: true });
 PP_STATES.push(
   ppState('pp-v7-takeover-1', 'v7 take over, never subscribed: state 1, free month', { account: 'none', ...PP_MEMBER, auto: 'funding', pp: PP_V7T('Take-over screen · state 1 · free month available') }),
   ppState('pp-v7-takeover-2', 'v7 take over, subscribed before: state 2, no free month', { account: 'returning', ...PP_MEMBER, auto: 'funding', pp: PP_V7T('Take-over screen · state 2 · free month used') }),
