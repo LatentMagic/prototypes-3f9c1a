@@ -82,13 +82,15 @@ const CardTitleMenuItem = ({ item, onEdit }) => {
 // greying the button (ui-design.md: prefer a statement to a disabled control;
 // deferred validation), and writes nothing. Saving the headline it opened with
 // writes nothing either, so no marker appears for a no-op.
-const CardTitleDialog = ({ item, onSave, onRestore, onCancel }) => {
+const CARD_TITLE_FAIL = "Couldn't save that title. Please try again.";
+const CardTitleDialog = ({ item, onSave, onRestore, onCancel, onAnnounce }) => {
   const custom = !!item.customTitle;
   const opening = item.customTitle || (item.fetchFailed ? '' : (circHeadline(item) || ''));
   const address = String(item.url || '').replace(/^https?:\/\//, '');
   const original = item.fetchFailed ? address : (item.title || circHeadline({ ...item, customTitle: null }) || address);
   const [draft, setDraft] = React.useState(opening);
   const [err, setErr] = React.useState(null);
+  const [failed, setFailed] = React.useState(false);
   const inputRef = React.useRef(null);
   const invokerRef = React.useRef(null);
   React.useEffect(() => {
@@ -112,9 +114,11 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel }) => {
   }, []);
   const v = draft.trim();
   const save = () => {
-    if (!v) { if (custom && onRestore) { onRestore(); return; } setErr('Give it a title.'); return; }
+    // A refused write (onSave / onRestore return false) leaves the dialog and the draft as they were.
+    const refused = () => { setFailed(true); if (onAnnounce) onAnnounce(CARD_TITLE_FAIL); };
+    if (!v) { if (custom && onRestore) { if (onRestore() === false) refused(); return; } setErr('Give it a title.'); return; }
     if (v === opening.trim()) { onCancel(); return; }
-    onSave(v);
+    if (onSave(v) === false) refused();
   };
   return (
     <div role="dialog" aria-modal="true" aria-label="Edit title"
@@ -125,7 +129,7 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel }) => {
         <input ref={inputRef} value={draft} maxLength={CARD_TITLE_CAP} aria-label="Title" aria-describedby="card-title-help" aria-invalid={!!err}
           placeholder={custom ? original : 'Give it a title'}
           className={custom && item.fetchFailed ? 'circ-titlefield-addr' : undefined}
-          onChange={(e) => { setDraft(e.target.value); if (err) setErr(null); }}
+          onChange={(e) => { setDraft(e.target.value); if (err) setErr(null); if (failed) setFailed(false); }}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); } }}
           style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.4, color: 'var(--color-fg-1)', border: '1px solid ' + (err ? 'var(--color-destructive)' : 'var(--color-border-1)'), borderRadius: 'var(--radius-md)', padding: '12px 14px', minHeight: 44, background: 'var(--color-surface)' }} />
         {err && (
@@ -133,8 +137,13 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel }) => {
             <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{err}</span>
           </div>
         )}
+        {failed && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 7, fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-destructive)' }}>
+            <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>{CARD_TITLE_FAIL}</span>
+          </div>
+        )}
         <p id="card-title-help" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: '8px 0 0' }}>{custom && onRestore ? 'Clear to restore.' : 'Everyone in the circle sees this title.'}</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-5)' }}>
+        <div className="circ-dlg-act" style={{ marginTop: 'var(--space-5)' }}>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button variant="primary" onClick={save}>Save</Button>
         </div>

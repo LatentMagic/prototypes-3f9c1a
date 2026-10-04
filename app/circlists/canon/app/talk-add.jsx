@@ -299,7 +299,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
                     </p>
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-3)' }}>
+                <div className="circ-dlg-act" style={{ marginTop: 'var(--space-3)' }}>
                   <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
                   <Button type="submit" variant="primary">Add</Button>
                 </div>

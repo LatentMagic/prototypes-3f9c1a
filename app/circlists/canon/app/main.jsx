@@ -1957,8 +1957,9 @@ const CircApp = () => {
     ? spaces.reduce((f, s) => f || s.items.find((i) => i.id === retitling), null) : null;
   const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
     || (retitleItem && <window.CardTitleDialog item={retitleItem}
-      onSave={(text) => { window.circRetitle(setSpaces, retitleItem.id, text); setRetitling(null); }}
-      onRestore={() => { window.circUntitle(setSpaces, retitleItem.id); setRetitling(null); }}
+      onAnnounce={announceOnce}
+      onSave={(text) => { if (window.circFailNext && window.circFailNext('title')) return false; window.circRetitle(setSpaces, retitleItem.id, text); setRetitling(null); }}
+      onRestore={() => { if (window.circFailNext && window.circFailNext('title')) return false; window.circUntitle(setSpaces, retitleItem.id); setRetitling(null); }}
       onCancel={() => setRetitling(null)} />)
     || (reverify && <ReverifyDialog provider={user.ssoProvider} onPass={() => { setReverify(false); deleteAccount(); }} onCancel={() => setReverify(false)} />);  // The Swell reaction moment, fired by Mark-as-read. Commits the read on Done/Skip.
   const reactOverlay = reacting && (

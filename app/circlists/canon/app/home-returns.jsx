@@ -202,7 +202,7 @@ const CircHomeReturns = ({ spaces, open, onToggle, onEnterSpace }) => {
               <React.Fragment key={r.id}>
                 {i > 0 && <span role="separator" style={{ height: 1, margin: '3px 0', background: 'var(--color-border-2)' }} />}
                 <button type="button" className="circ-menuitem" style={CROSS_ROW}
-                  aria-label={r.title + ' — ' + r.circleName}
+                  aria-label={r.title + ' — ' + r.circleName + (r.glyphs && r.glyphs.length ? '. Reactions to you.' : '')}
                   onClick={() => {
                     onEnterSpace(r.circleId);
                     const C = window.CircCandidate;

@@ -96,6 +96,8 @@ const circSearchMatch = (item, query) => {
     circSearchSource(item),
     (item && item.attribution) || '',
     (item && item.description) || '',
+    // The page's own title, always: a member's title shows, both match (2026-10).
+    (item && item.title) || '',
   ].map((f) => String(f || '').toLowerCase());
   return words.every((w) => fields.some((f) => f.indexOf(w) !== -1));
 };

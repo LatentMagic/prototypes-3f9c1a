@@ -104,6 +104,11 @@
   @media (min-width: 760px) { .circ-acct-act > button { width: auto !important; } }
   [data-circ-posture="mobile"] .circ-acct-act > button { width: 100% !important; }
   [data-circ-posture="desktop"] .circ-acct-act > button { width: auto !important; }
+  /* Dialog and sheet buttons: side by side, right-aligned; at phone width stacked, primary on top, each full width. */
+  .circ-dlg-act { display: flex; justify-content: flex-end; gap: var(--space-2); }
+  @media (max-width: 519px) { .circ-dlg-act { flex-direction: column-reverse; } .circ-dlg-act > button { width: 100% !important; } }
+  .circ-phone-screen .circ-dlg-act { flex-direction: column-reverse; }
+  .circ-phone-screen .circ-dlg-act > button { width: 100% !important; }
   .circ-sig { display: inline-flex; align-items: center; flex-shrink: 0; }
   /* The refresh receipt resolving: the SAME arc grows shut into a complete ring
      at a constant rate (app/brand-motion.jsx) — nothing fades in, so nothing
@@ -208,6 +213,9 @@
   @container (min-width: 520px) {
     .circ-dormant-actions { flex-direction: row; justify-content: center; width: auto; gap: var(--space-3); }
     .circ-dormant-actions > .circ-btn { width: auto; }
+    /* Leave + take-over: one shared width, the longer label's. Columns of 1fr size to the widest item. */
+    .circ-dormant-actions:has(> .circ-btn ~ .circ-btn) { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; justify-content: center; align-items: stretch; }
+    .circ-dormant-actions:has(> .circ-btn ~ .circ-btn) > .circ-btn { width: 100%; }
     .circ-dormant-actions > .circ-dormant-link { margin-left: var(--space-2); }
   }
   .circ-iconbtn:hover { background: var(--color-surface-sunken); }

@@ -18,11 +18,9 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
-  { key: 'price-three', only: 'CircPricing', title: 'Price change to £3 / £30',
-    note: 'No £5, £50 or £10 anywhere. Yearly pill reads £2.50 a month. Free month: cancel, then Resume, returns to First payment on the same date.',
-    steps: [
-      'ppp-price-free', 'ppp-price-used', 'ppp-create-not-subscribed', 'ppp-takeover-pricing', 'ppp-active', 'ppp-active-yearly', 'ppp-free-month', 'ppp-payment-failed', 'ppp-ending', 'ppp-pending-switch', 'ppp-lapsed-account', 'ppp-switch-yearly', 'ppp-switch-monthly', 'ppp-switch-free-month', 'ppp-cancel', 'ppp-cancel-free-month',
-    ] },
+  { key: 'takeover-same-width', only: 'CircPricing', title: 'Take-over buttons, same width',
+    note: 'Check at desktop width (container 520px or wider): Leave this circle and the take-over button are the same width in each state, row centred. Phone width is unchanged: stacked, full width, take-over on top.',
+    steps: ['ppp-takeover', 'ppp-takeover-subscribed', 'ppp-takeover-ending', 'ppp-takeover-failed'] },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);
 

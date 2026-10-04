@@ -85,7 +85,7 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
   const triggerRef = React.useRef(null);
   const menuRef = React.useRef(null);
   const closeMenu = () => setMenuOpen(false);
-  const menuLabel = (window.circHeadline ? window.circHeadline(item) : item.title) || item.source || 'this link';
+  const menuLabel = (window.circHeadline ? window.circHeadline(item) : item.title) || item.url;
 
   // Position against the visible viewport, not `vh` (requirement 4) — measured
   // AFTER the menu mounts (off-screen, invisible) so its real height is known,
@@ -557,7 +557,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
           onChange={(e) => { setUrl(e.target.value); if (error) setError(null); }}
           error={error}
         />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-1)' }}>
+        <div className="circ-dlg-act" style={{ marginTop: 'var(--space-1)' }}>
           <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="primary">Add</Button>
         </div>
@@ -791,7 +791,7 @@ const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }
           fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55,
           color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)',
         }}>{v.body}</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+        <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>{v.dismiss || 'Cancel'}</Button>
           <Button variant={v.variant} onClick={onConfirm}>{v.primary}</Button>
         </div>

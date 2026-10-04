@@ -1018,6 +1018,10 @@ const CIRC_STATE_REGISTER = [
   { group: 'Notifications', id: 'push-no-channel', label: 'Account — a browser that cannot deliver (no card)', stage: (c) => c.stagePushSetting({ channel: 'unsupported', perm: 'default', on: false, ask: 'pending' }) },
   { group: 'Notifications', id: 'push-device-preview', label: 'On the device — three circles with news, links and replies', stage: (c) => c.stageDevicePreview() },
 
+  // Shipped 2026-10. One-shot refusals: the next save is refused, the one after succeeds.
+  { group: 'Refusals', id: 'title-save-fails', label: 'Edit title — the next save fails (Backend Pod, Active)', stage: (c) => { window.circFail.title = true; c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }); } },
+  { group: 'Refusals', id: 'comment-reaction-refused', label: 'Conversation — the next reaction is refused', stage: (c) => { window.circFail.reaction = true; c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }); } },
+
   // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
   // 8): the home screen (app/home.jsx + app/home-returns.jsx).
   { group: 'Home', id: 'home-quiet', label: 'Home — quiet, caught up', stage: (c) => c.stageHome({ quiet: true }) },
@@ -1046,12 +1050,19 @@ const CIRC_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.CIRC_STATE_NOTES.
 const CIRC_STATE_GROUP_NOTES = {
+  'Refusals': [
+    'Edit title: open a card you added, the menu, Edit title, change the text, Save. The first save is refused: the dialog stays and the line shows. Save again to succeed.',
+    'Comment reaction: open the conversation, press React, pick a glyph. The first pick is refused: the line shows under the comment and the previous reaction stays.',
+  ],
   'Feed: filters and search': [
     'History search — also matches cards in Active: in Backend Pod, open History and search “pipelines”. The done Go pipelines card shows, and the line offers the Continuous Delivery card waiting in Active.',
     'Search by description: in Backend Pod, search “chan” on History. The Go pipelines card matches on its description only.',
   ],
 };
 window.CIRC_STATE_NOTES = CIRC_STATE_GROUP_NOTES;
+// One-shot refusal flags read by card-title / talk-reactions via window.circFailNext.
+window.circFail = window.circFail || {};
+window.circFailNext = (k) => { if (window.circFail[k]) { window.circFail[k] = false; return true; } return false; };
 
 // The catalogue's own address. Not a state, so it is not in the register.
 const CIRC_STATE_INDEX_NAMES = ['index', 'states'];

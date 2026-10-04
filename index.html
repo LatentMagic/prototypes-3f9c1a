@@ -966,6 +966,18 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-10-04',
+              title: 'Eight corrections from the 1 and 3 October ships',
+              items: [
+                'Dialog and sheet buttons share one rule (.circ-dlg-act): side by side and right-aligned, stacked full width with the primary on top at phone width. Applied to confirm, add, edit-circle, remove-member, re-verify, change-email and gate dialogs.',
+                'Take-over: Leave this circle and the take-over button share one width at desktop (container 520px or wider), row centred. Phone is unchanged. The QA walk now covers the four take-over states.',
+                'Notifications on the device preview: title "Circlists" with one body line ("New links in …" / "New replies in …"). The ask and the account setting say "someone replies in a conversation you\'re following".',
+                'Refusals: a refused title save keeps the dialog and shows "Couldn\'t save that title. Please try again."; a refused reaction shows a line under the comment and keeps the previous reaction. New "Refusals" state group (title-save-fails, comment-reaction-refused) with one-shot flags (window.circFail).',
+                'Search also matches the page\'s own title, even when a member\'s title shows.',
+                'Card menu label falls back to the URL (not the source name) when there is no headline; the home returns row announces "Reactions to you." when it carries glyphs.'
+              ]
+            },
+            {
               date: '2026-10-02',
               title: 'Per-person pricing merged into canon; price is £3 / £30',
               items: [

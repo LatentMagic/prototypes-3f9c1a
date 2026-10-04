@@ -187,7 +187,7 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
         <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>Remove {firstName}?</h2>
         <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>They lose access to this circle. Their links stay, with their name. You can re-invite them later.</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+        <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button variant="destructive" onClick={() => onConfirm()}>Remove {firstName}</Button>
         </div>
@@ -241,7 +241,7 @@ const EditCircleDialog = ({ currentName, currentDescription, onSave, onCancel })
           <CircleDescriptionField id="edit-circle-description" value={descDraft} onChange={setDescDraft}
             placeholder="What’s this circle for?" />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+        <div className="circ-dlg-act">
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button variant="primary" onClick={save} disabled={!draft.trim()}>Save</Button>
         </div>
@@ -745,7 +745,7 @@ const ReverifyDialog = ({ provider, onPass, onCancel }) => {
           <Field ref={pwRef} label="Password" name="reverify-password" type="password" autoComplete="current-password" placeholder="••••••••"
             value={pw} onChange={(e) => { setPw(e.target.value); if (err) setErr(null); }} error={err} />
         )}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: provider ? 0 : 'var(--space-2)' }}>
+        <div className="circ-dlg-act" style={{ marginTop: provider ? 0 : 'var(--space-2)' }}>
           <Button ref={cancelRef} type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
           <Button type="submit" variant="primary">{provider ? `Continue with ${provider}` : 'Continue'}</Button>
         </div>
@@ -810,7 +810,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
           <Field ref={codeRef} label="Verification code" name="email-code" mono type="text" inputMode="numeric" maxLength={6} placeholder="000000"
             value={code} onChange={(e) => { setCode(e.target.value.replace(/[^0-9]/g, '')); if (err.code) setErr({}); }}
             style={{ letterSpacing: '0.4em', fontSize: 20, fontWeight: 600 }} error={err.code} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginTop: 'var(--space-2)' }}>
+          <div className="circ-dlg-act" style={{ marginTop: 'var(--space-2)' }}>
             <Button type="button" variant="secondary" onClick={cancel}>Cancel</Button>
             <Button type="submit" variant="primary">Confirm</Button>
           </div>

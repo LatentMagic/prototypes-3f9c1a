@@ -98,6 +98,14 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-04T14:55:29Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Eight corrections from the 1 and 3 October ships. Handoff in `docs/specs/shipped-2026-10/`.
+
+## Previous sync
+
 date: 2026-10-02T14:55:18Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — pricing-model `CONTEXT.md`, `_resources/advice/2026-10-02_lapsing-create-brief.md`, the lapsing-takeover prompt folder. Nothing mirrored; no commit sha resolved.
 

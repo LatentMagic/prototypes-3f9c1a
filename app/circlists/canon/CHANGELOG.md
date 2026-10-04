@@ -35,8 +35,8 @@ exhaustively; entries capture the shape of each significant step, not every chan
   at most one per circle, alongside "New links in {circle}". One device switch covers both.
 - **One dot per circle.** New links or new replies light the Home row. Replies clear on visiting the circle.
   The app badge still counts circles, each once.
-- **The ask and the Account card read "Get notified when new links land in your circles, or
-  conversations you're following."**
+- **The ask and the Account card read "Get notified when new links land in your circles, or someone
+  replies in a conversation you're following."**
 
 ## Sort order works with pagination — 2026-09-25
 

@@ -89,7 +89,7 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
           fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 14, lineHeight: 1.55,
           color: 'var(--color-fg-2)', margin: '0 0 var(--space-4)',
         }}>This is a preview of Circlists. Everything past this point needs an account.</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+        <div className="circ-dlg-act">
           <Button variant="secondary" onClick={onClose}>Not now</Button>
           <Button variant="primary" onClick={onClose}>Sign up</Button>
         </div>

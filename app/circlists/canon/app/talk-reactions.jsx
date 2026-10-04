@@ -245,6 +245,7 @@ const CandReactions = ({ item, t, api }) => {
   const pill = React.useRef(null);
   const mounted = React.useRef(false);
   const hadPill = React.useRef(list.length > 0);
+  const [refused, setRefused] = React.useState(false);
   React.useEffect(() => { mounted.current = true; }, []);
   const arriving = list.length > 0 && !hadPill.current && mounted.current;
   React.useEffect(() => { hadPill.current = list.length > 0; });
@@ -291,7 +292,10 @@ const CandReactions = ({ item, t, api }) => {
           <CrFace />
         </button>
         {bar && <CandReactBar mine={mine && mine.glyph} place={bar}
-          onPick={(g) => { candReactTurn(api, item, t.id, g); closeBar(true); }} onClose={closeBar} />}
+          onPick={(g) => {
+            // A refused write changes nothing: the comment keeps the reaction it had.
+            if (window.circFailNext && window.circFailNext('reaction')) { setRefused(true); closeBar(true); return; }
+            setRefused(false); candReactTurn(api, item, t.id, g); closeBar(true); }} onClose={closeBar} />}
       </span>
       {list.length > 0 && (
         <span ref={pillWrap} style={{ position: 'relative', display: 'inline-flex' }}>
@@ -300,6 +304,9 @@ const CandReactions = ({ item, t, api }) => {
           {who && who !== 'sheet' && <CandReactPopover list={list} place={who} wrapRef={pillWrap} onRemove={removeMine} onClose={closeWho} />}
         </span>
       )}
+      <span role="status" aria-live="polite" style={refused ? { flexBasis: '100%', display: 'inline-flex', alignItems: 'flex-start', gap: 6, font: '500 13px/1.4 var(--font-sans)', color: 'var(--color-destructive)' } : { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
+        {refused && <><span aria-hidden="true" style={{ marginTop: 1, flexShrink: 0 }}><Icon name="x" size={14} /></span><span>Couldn&#8217;t save that. Please try again.</span></>}
+      </span>
       {who === 'sheet' && list.length > 0 && <CandReactSheet list={list} onRemove={removeMine} onClose={() => closeWho(true)} />}
     </span>
   );

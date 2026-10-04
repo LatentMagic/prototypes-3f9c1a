@@ -12,7 +12,7 @@
 // column when the canvas is narrow — the preview obeys the same
 // responsive-by-default rule as everything else here.
 //
-// ONE notification per circle, title only, no number in it. The badge is the
+// ONE notification per circle, title and one body line, no number in it. The badge is the
 // only number, and it counts CIRCLES.
 //
 // NOT BUILT: nothing. The Android frame renders the brand's own notification
@@ -54,9 +54,12 @@ const PushClock = () => (
   </div>
 );
 
-// One notification. Title alone — there is no body, no count and no action, and
-// the smallest platform (Safari) would discard everything else anyway.
-const pushTitle = (n) => (n.kind === 'replies' ? 'New replies in ' : 'New links in ') + n.name;
+// One notification, the shape the app sends: title "Circlists", one body line
+// naming the kind and the circle. No count and no action. (Chosen 2026-10: the
+// old Safari-discards-the-body reasoning is dropped; both the link and reply
+// notices already ship this way.)
+const pushTitle = () => 'Circlists';
+const pushBody = (n) => (n.kind === 'replies' ? 'New replies in ' : 'New links in ') + n.name;
 // One notification per circle per kind. The busiest circle carries both, the
 // next a link push only, the third a reply push only, so every case is seen.
 const pushStage = (circles) => {
@@ -80,6 +83,7 @@ const PushBanner = ({ n, onOpen }) => (
         <span style={{ font: '400 11.5px/1 var(--font-sans)', color: 'rgba(0,0,0,0.45)' }}>now</span>
       </span>
       <span style={{ display: 'block', font: '600 14px/1.35 var(--font-sans)', color: '#000', marginTop: 3 }}>{pushTitle(n)}</span>
+      <span style={{ display: 'block', font: '400 14px/1.35 var(--font-sans)', color: '#000' }}>{pushBody(n)}</span>
     </span>
   </button>
 );
@@ -132,6 +136,7 @@ const PushAndroidShade = ({ notes, onOpen }) => (
             <span style={{ font: '400 12px/1 var(--font-sans)', color: 'rgba(0,0,0,0.4)' }}>· now</span>
           </span>
           <span style={{ display: 'block', font: '500 14px/1.35 var(--font-sans)', color: '#000' }}>{pushTitle(s)}</span>
+          <span style={{ display: 'block', font: '400 14px/1.35 var(--font-sans)', color: 'rgba(0,0,0,0.75)' }}>{pushBody(s)}</span>
         </button>
       ))}
     </div>
