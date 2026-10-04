@@ -151,6 +151,7 @@ const CaSheets = ({ space }) => {
           <p>Their subscription covers the circle.</p>
           <p>You stay a member.</p>
           <p>You can withdraw the offer until they accept.</p>
+          <p>If this is your last circle, your subscription carries on until you cancel it on your Account card.</p>
         </div>
         <CaActions items={[
           { label: 'Create hand-on link', variant: 'primary', onClick: () => CA.set({ sheet: 'handon-link', offers: { ...st.offers, [caKey(space, st.target)]: true } }) },
@@ -205,6 +206,7 @@ const CaAccept = () => {
     window.CircPPP.set({ ctx: { from: 'takeover', spaceId: space.id, name: space.name } });
     api.setRoute('subscribe');
   };
+  const decline = () => { window.CircAgency.set({ offers: {} }); api.enterSpace(space.id); };
   const SupportLine = window.SupportLine;
   return (
     <main className="circ-dormant ca-accept">
@@ -212,11 +214,11 @@ const CaAccept = () => {
         <div className="circ-dormant-col">
           <h1 className="circ-dormant-title">{from} is handing {space.name}{' '}to{' '}you.</h1>
           <p className="circ-dormant-body">
-            <span className="ca-line-block"><PppS>You champion it, and can invite, remove and{' '}rename.</PppS></span>
+            <span className="ca-line-block"><PppS>You'll champion it, and can invite, remove and{' '}rename.</PppS></span>
             <span className="ca-line-block"><PppS>{subscribed ? 'Your subscription covers it, so it costs nothing more.' : 'A subscription of your own covers it.'}</PppS></span>
           </p>
           <div className="circ-dormant-actions">
-            <Button variant="secondary" size="lg" full onClick={() => api.enterSpace(space.id)}>Not now</Button>
+            <Button variant="secondary" size="lg" full onClick={decline}>Decline</Button>
             <Button variant="primary" size="lg" full onClick={take}>{subscribed ? 'Take on ' + space.name : 'Start your free month and take it on'}</Button>
           </div>
           {!subscribed && <p className="circ-dormant-cap"><PppS>Your first month is free, then {'£'}3 a month or {'£'}30 a{' '}year.</PppS> <PppS>One subscription covers every circle you{' '}champion.</PppS></p>}
