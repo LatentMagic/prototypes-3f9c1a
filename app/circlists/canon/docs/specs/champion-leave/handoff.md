@@ -33,3 +33,10 @@ Status: built into canon, proposed (not deployed). Every choice under "Yours to 
 
 ## Next
 Owner judges the five items above. Then CHANGELOG entry (ask first).
+
+## Corrections, 5 Oct (three, from the owner's delta)
+1. **Leave confirm is a centred modal at every width.** The sheet was wrong: the UI spec makes confirmation dialogs one pattern at every breakpoint. Removed `ConfirmDialog`'s `sheet` prop and `asSheet` branch (`app/feed.jsx`), the `sheet={isSheetPosture}` pass (`app/main.jsx`), and `.circ-sheet-up` with its keyframes (`circlists.html`; nothing else used it). All five confirms are the same modal again. The "Sheet at phone width" bullet above is superseded.
+2. **A lapsed champion can leave their sleeping circle.** `ppp-lapsed-circle` (`app/pricing-circle.jsx`) now shows "Leave this circle" for the champion too, same place and treatment as every member. `circLeaveCopy` already picks the right body: the circle is not funded, so never the "puts this circle to sleep" copy; the member confirm, or the sole-member body if they are alone. Leaving drops the circle from the leaver's list, as every Leave does; for the members who remain it has no champion, so it reads "Its champion has left."
+3. **"Its champion has left." is derived, not stored.** It shows when a sleeping circle has no champion (`!space.champion`, in `pricing-circle.jsx` and the shipped fallback in `subscriptions.jsx`). The `dormantReason` flag is gone (`stageDormant` in `app/states.jsx`). Taking the circle over sets a champion, so the line ends; if that champion's subscription later ends, the circle reads "Its champion's subscription has ended."
+- New staged state `dormant-champion-left-retaken`: the circle after Priya took it over and her subscription ended. It is the same data as `dormant-circle` on purpose, since no residue of the earlier leave remains.
+- QA entry `champion-leave` gains `ppp-lapsed-circle` and `dormant-champion-left-retaken`, and its note now asks for a modal at both widths.

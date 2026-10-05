@@ -49,7 +49,7 @@ const PppDormantSpace = (props) => {
   const SupportLine = window.SupportLine;
   const body = mine
     ? <><PppS>Your subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in this circle is still{'\u00a0'}here.</PppS></>
-    : space && space.dormantReason === 'champion-left' ? <><PppS>Its champion has{'\u00a0'}left.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>
+    : space && !space.champion ? <><PppS>Its champion has{'\u00a0'}left.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>
     : <><PppS>Its champion{'\u2019'}s subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>;
   const cap = mine ? 'Subscribing again wakes every circle you champion.'
     : lapsing && failed ? <><PppS>Your last payment didn{'\u2019'}t go through.</PppS> <PppS>Update the card, then take this circle{'\u00a0'}over.</PppS></>
@@ -64,7 +64,7 @@ const PppDormantSpace = (props) => {
           <h1 className="circ-dormant-title">This circle is asleep.</h1>
           <p className="circ-dormant-body">{body}</p>
           <div className="circ-dormant-actions">
-            {!mine && onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
+            {onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
             <Button variant="primary" size="lg" full icon={lapsing && failed ? <Icon name="card" size={18} /> : null} onClick={act}>{label}</Button>
           </div>
           <p className="circ-dormant-cap">{cap}</p>

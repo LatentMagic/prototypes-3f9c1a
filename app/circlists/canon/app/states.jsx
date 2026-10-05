@@ -170,6 +170,7 @@ function circStateContext(api) {
     setSpaces(fresh); setUser(DEFAULT_USER);
     setLoadingFeed(false); setHoldLoading(false);
     window.CIRC_INVITE_MINT_FAIL = false;
+    window.circAuthReview = { apple: 'found', cancel: false };
     window.CIRC_ACCEPT_FAIL = false;
     clearFeedError();
     setSortOrder({}); if (setOrderLoad) setOrderLoad({}); setSortMenuOpen(false); setLensWho({}); setDensity('comfortable');
@@ -205,7 +206,7 @@ function circStateContext(api) {
   // says who funded it last — the screen names nobody either way.
   const stageDormant = (cfg) => {
     setSpaces(prev => withSpace(prev, 'sp-test-weekend').map(s => s.id === 'sp-test-weekend'
-      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy, dormantReason: cfg.reason } : s));
+      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
     setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
   };
 
@@ -779,10 +780,10 @@ function circStateContext(api) {
   // The arming flag is a transient window flag, NOT app state: app state is
   // persisted, so a flag on the circle would leave a normal circle refusing the
   // first press forever. Re-staging re-arms it; the card clears it on the press.
-  const stageInviteRefusal = () => {
+  const stageInviteRefusal = (fail = true) => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
-    window.CIRC_INVITE_MINT_FAIL = true;
+    window.CIRC_INVITE_MINT_FAIL = fail;
     setSpaces(prev => withSpace(prev, 'sp-test-backend').map(s => s.id === 'sp-test-backend'
       ? { ...s, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email } : s));
     setCurrentId('sp-test-backend'); setTab('active'); setRoute('members');
@@ -880,6 +881,7 @@ function circStateContext(api) {
 const CIRC_STATE_REGISTER = [
   { group: 'Onboarding', id: 'signup-first-circle', label: 'Sign up → first circle', stage: (c) => { c.setSpaces([]); c.setRoute('signup'); } },
   { group: 'Onboarding', id: 'signin-new-device', label: 'Sign in (new device)', stage: (c) => c.setRoute('signin') },
+  { group: 'Onboarding', id: 'signin-apple-no-account', label: 'Sign in — Apple finds no account (tap Continue with Apple)', stage: (c) => { window.circAuthReview = { ...window.circAuthReview, apple: 'none', cancel: false }; c.setRoute('signin'); } },
   { group: 'Onboarding', id: 'forgot-password', label: 'Forgot password', stage: (c) => c.setRoute('recovery') },
   { group: 'Onboarding', id: 'otc-error', label: 'One-time code — errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
 
@@ -1012,13 +1014,15 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'create-and-fund', label: 'Create + fund a circle', stage: (c) => c.openCreateSpace() },
 
   { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-  { group: 'Dormant circle', id: 'dormant-champion-left', label: 'Dormant circle — its champion left (remaining member)', stage: (c) => c.stageDormant({ champion: null, championEmail: null, dormancy: 'terminal', reason: 'champion-left' }) },
+  { group: 'Dormant circle', id: 'dormant-champion-left', label: 'Dormant circle — its champion left (remaining member)', stage: (c) => c.stageDormant({ champion: null, championEmail: null, dormancy: 'terminal' }) },
+  { group: 'Dormant circle', id: 'dormant-champion-left-retaken', label: 'Dormant circle — taken over after its champion left, then that subscription ended', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
   { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'suspended' }) },
 
   { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },
   { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — invalid', stage: (c) => c.setRoute('invalid-invite') },
+  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — a spent, expired or broken link', stage: (c) => c.setRoute('invalid-invite') },
   { group: 'Invitations', id: 'invite-link-refused', label: 'Get a link — creation refused', stage: (c) => c.stageInviteRefusal() },
+  { group: 'Invitations', id: 'invite-link-card', label: 'Get a link — the card, no address; press again for another', stage: (c) => c.stageInviteRefusal(false) },
   { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite — circle full', stage: (c) => c.setRoute('space-full') },
 
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },
@@ -1039,6 +1043,10 @@ const CIRC_STATE_REGISTER = [
   // Shipped 2026-10. One-shot refusals: the next save is refused, the one after succeeds.
   { group: 'Refusals', id: 'title-save-fails', label: 'Edit title — the next save fails (Backend Pod, Active)', stage: (c) => { window.circFail.title = true; c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }); } },
   { group: 'Refusals', id: 'comment-reaction-refused', label: 'Conversation — the next reaction is refused', stage: (c) => { window.circFail.reaction = true; c.stageCommentReactions({ url: 'https://go.dev/blog/pipelines' }); } },
+  // invite-links-and-sign-in-stops (5 Oct): built, not ratified.
+  { group: 'Refusals', id: 'signin-provider-fails', label: 'Sign in — the next Google or Apple sign-in fails', stage: (c) => { window.circFail.provider = true; window.circAuthReview = { ...window.circAuthReview, cancel: false }; c.setRoute('signin'); } },
+  { group: 'Refusals', id: 'signup-provider-fails', label: 'Sign up — the next Google or Apple sign-in fails', stage: (c) => { window.circFail.provider = true; window.circAuthReview = { ...window.circAuthReview, cancel: false }; c.setSpaces([]); c.setRoute('signup'); } },
+  { group: 'Refusals', id: 'report-fails', label: 'Report — the next report fails to send (Backend Pod, Active)', stage: (c) => { window.circFail.report = true; c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }); } },
 
   // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
   // 8): the home screen (app/home.jsx + app/home-returns.jsx).
@@ -1090,6 +1098,15 @@ const CIRC_STATE_GROUP_NOTES = {
   'Refusals': [
     'Edit title: open a card you added, the menu, Edit title, change the text, Save. The first save is refused: the dialog stays and the line shows. Save again to succeed.',
     'Comment reaction: open the conversation, press React, pick a glyph. The first pick is refused: the line shows under the comment and the previous reaction stays.',
+    'Google or Apple sign-in fails: on Sign in or Sign up, press Continue with Google or Continue with Apple. The first press fails: one line under the buttons. Press again: the line clears and sign-in goes on.',
+    'Cancel at the provider: Config, Provider sheet, Cancelled. Every Google or Apple press returns to the first step with nothing shown.',
+    'Report fails: in Backend Pod, open the menu on a card someone else added, Report link, pick a reason, Report. The dialog stays with its reason, the line shows, the menu still offers Report. Report again: Reported, the dialog closes, the menu reads Reported.',
+  ],
+  'Invitations': [
+    'Get a link: press it, then Get another link. Each press puts a new, different link in the box.',
+  ],
+  'Onboarding': [
+    'Apple with no account: tap Continue with Apple at signin-apple-no-account. Config, Apple account switches it either way.',
   ],
   'Feed: filters and search': [
     'History search — also matches cards in Active: in Backend Pod, open History and search “pipelines”. The done Go pipelines card shows, and the line offers the Continuous Delivery card waiting in Active.',

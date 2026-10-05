@@ -3,6 +3,11 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## An invite is a link, not an address — 2026-10-05
+
+- **An invite is a link, not an address.** Get a link makes any number of single-use links, each valid for 7 days; no address is typed or checked.
+- Sign in with Apple stops in place when no account exists; Google and Apple failures, and a report that fails to send, each show one line in place.
+
 ## A champion can leave a circle — 2026-10-05
 
 - **A champion leaves through the same "Leave this circle" every member has**, in the menu on their own row. No hand-on, no Delete, and the old "you can't leave it" line is gone.

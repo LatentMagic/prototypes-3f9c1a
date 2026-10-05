@@ -98,6 +98,22 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-05T12:48:07Z
+monorepo: read live — `specs/governance/standards/ui-design.md`; searched `specs/projects/circlists/` (hld.md, glossary.md, CIRC-009) for address-bound invite lines. wiki: read live — `circlists-copy-voice.md`. Nothing mirrored; commit 29b0661a7e5d (from search).
+
+### Updated in this project
+- Invites by link (no address, single use, 7 days), the dead-link page's body, Apple's no-account stop on Sign in, the Google/Apple failure line, and the report failure line. Handoff in `docs/specs/invite-links-and-sign-in-stops/`.
+
+## Previous sync
+
+date: 2026-10-05T12:39:13Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Champion-leave corrections: the Leave confirm is a modal at every width, a lapsed champion can leave their sleeping circle, and "Its champion has left." is derived from the circle having no champion. Handoff in `docs/specs/champion-leave/`.
+
+## Previous sync
+
 date: 2026-10-05T11:42:57Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — `store-launch/_subtasks/mobile-readiness/_outputs/prompts/2026-10-05_mobile-design-delta/prompt.md`. Nothing mirrored; no commit sha resolved.
 

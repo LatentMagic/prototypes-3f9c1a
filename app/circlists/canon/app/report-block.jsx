@@ -80,7 +80,7 @@ window.CircRB = {
   block(name) { this.api.setUser((u) => ({ ...u, blocked: [...((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(name)), name] })); },
   unblock(name) { this.api.setUser((u) => ({ ...u, blocked: ((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(name)) })); },
   openReport(d) { rbSetDlg({ ...d, key: Date.now() }); },
-  // No failure state is drawn: a report that fails to send changes nothing on screen.
+  // Called only once the report has gone; a report that fails marks nothing.
   markReported({ itemId, turnId }) {
     const set = this.api.setSpaces;
     if (turnId) rbMapItem(set, itemId, (i) => ({ ...i, talk: (i.talk || []).map((t) => (t.id === turnId ? { ...t, reported: true } : t)) }));
@@ -162,6 +162,7 @@ const RbReportDialog = ({ kind, onReport, onClose }) => {
   const [reason, setReason] = React.useState(null);
   const [note, setNote] = React.useState('');
   const [sent, setSent] = React.useState(false);
+  const [failed, setFailed] = React.useState(false);
   const firstRef = React.useRef(null);
   const noteRef = React.useRef(null);
   const invokerRef = React.useRef(null);
@@ -184,8 +185,11 @@ const RbReportDialog = ({ kind, onReport, onClose }) => {
   React.useEffect(() => { if (reason === 'Something else' && noteRef.current) noteRef.current.focus({ preventScroll: true }); }, [reason]);
   const report = () => {
     if (sent) return;
-    setSent(true);
-    onReport({ reason, note: reason === 'Something else' ? note.trim() : '' });
+    // onReport returns false when the report did not go: the dialog stays open
+    // with its reason and note, the line shows, and nothing is marked reported.
+    // No sending indicator: the wait is under the flicker threshold.
+    if (onReport({ reason, note: reason === 'Something else' ? note.trim() : '' }) === false) { setFailed(true); return; }
+    setFailed(false); setSent(true);
     timer.current = setTimeout(onClose, RB_BEAT);
   };
   const title = kind === 'comment' ? 'Report this comment?' : 'Report this link?';
@@ -206,7 +210,14 @@ const RbReportDialog = ({ kind, onReport, onClose }) => {
             placeholder="Say what it is, or leave it blank." onChange={(e) => setNote(e.target.value)}
             className="circ-rb-note" />
         )}
-        <div className="circ-dlg-act" style={{ marginTop: 'var(--space-6)' }}>
+        {failed && (
+          <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 'var(--space-4)',
+            fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>
+            <span style={{ marginTop: 1, color: 'var(--color-destructive)', flexShrink: 0 }}><Icon name="x" size={14} /></span>
+            <span>Couldn{'\u2019'}t send the report. Try again.</span>
+          </div>
+        )}
+        <div className="circ-dlg-act" style={{ marginTop: failed ? 'var(--space-5)' : 'var(--space-6)' }}>
           <Button variant="secondary" onClick={() => { if (!sent) onClose(); }}>Cancel</Button>
           <Button variant="primary" onClick={report} icon={sent ? <Icon name="check" size={16} /> : null}>{sent ? 'Reported' : 'Report'}</Button>
         </div>
@@ -222,7 +233,7 @@ const CircRBHost = () => {
   const d = rbDlg.open;
   if (!d) return null;
   return <RbReportDialog key={d.key} kind={d.kind}
-    onReport={() => window.CircRB.markReported({ itemId: d.itemId, turnId: d.turnId })}
+    onReport={() => { if (window.circFailNext && window.circFailNext('report')) return false; window.CircRB.markReported({ itemId: d.itemId, turnId: d.turnId }); }}
     onClose={() => rbSetDlg(null)} />;
 };
 

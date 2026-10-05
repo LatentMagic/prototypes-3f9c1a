@@ -152,6 +152,34 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   );
 };
 
+// ---- Sign-in review settings (invite-links-and-sign-in-stops) -------------
+// Two facts the prototype cannot learn from a provider: whether Apple finds an
+// account on Sign in, and whether the person cancels at the provider's sheet.
+// Held on window (never localStorage), read by app/auth.jsx at the press.
+window.circAuthReview = window.circAuthReview || { apple: 'found', cancel: false };
+const ConfigSignInRows = () => {
+  const [v, setV] = React.useState(() => ({ ...window.circAuthReview }));
+  const set = (patch) => { window.circAuthReview = { ...window.circAuthReview, ...patch }; setV({ ...window.circAuthReview }); };
+  return (
+    <React.Fragment>
+      <div className="circ-config-row">
+        <div className="circ-config-row-label">Apple account</div>
+        <ConfigSeg value={v.apple} onChange={(x) => set({ apple: x })} options={[
+          { value: 'found', label: 'Found' }, { value: 'none', label: 'None' },
+        ]} />
+      </div>
+      <div className="circ-config-hint">Sign in only. None: Continue with Apple stops in place and offers Create a new account or Sign in another way. Sign up is unaffected.</div>
+      <div className="circ-config-row">
+        <div className="circ-config-row-label">Provider sheet</div>
+        <ConfigSeg value={v.cancel ? 'cancel' : 'complete'} onChange={(x) => set({ cancel: x === 'cancel' })} options={[
+          { value: 'complete', label: 'Completes' }, { value: 'cancel', label: 'Cancelled' },
+        ]} />
+      </div>
+      <div className="circ-config-hint">Cancelled: every Google or Apple press returns to the first step with nothing shown, as when a person cancels or declines at the provider. A sign-in that fails is staged from the Refusals group.</div>
+    </React.Fragment>
+  );
+};
+
 // ---- Small self-contained segmented control (review-settings rows only) ----
 const ConfigSeg = ({ options, value, onChange }) => (
   <div className="circ-config-seg" role="radiogroup">
@@ -267,6 +295,8 @@ const ConfigModal = ({ onReset, gateOn, onGateChange, layout, onLayoutChange,
             ]} />
           </div>
           <div className="circ-config-hint">When on, New circle and Account dead-end in the sign-up gate.</div>
+
+          <ConfigSignInRows />
 
           <div className="circ-config-row">
             <div className="circ-config-row-label">TEST circles</div>

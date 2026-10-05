@@ -764,14 +764,13 @@ const circLeaveCopy = (space) => {
   if (space.champion === 'You' && space.funded) return { title: 'Leave this circle?', body: 'Leaving puts this circle to sleep for ' + (others === 1 ? 'the one other member' : 'the ' + others + ' others') + ' in it. Nothing in it is lost, and ' + (others === 1 ? 'they' : 'any of them') + ' can take it over. Nobody is told, so tell them first.', primary: 'Leave', variant: 'destructive', role: 'alertdialog' };
   return null;
 };
-const ConfirmDialog = ({ kind, item, space, sheet, onDeleteForMe, onConfirm, onCancel }) => {
+const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }) => {
   if (kind === 'delete' && item) {
     return <DeleteDialog item={item} space={space} onDeleteForMe={onDeleteForMe}
       onDeleteForEveryone={onConfirm} onClose={onCancel} />;
   }
   // Candidate hook (droppable): window.CircPricing.confirmCopy may re-word a kind. Absent ⇒ shipped copy.
   const v = (kind === 'leave' && circLeaveCopy(space)) || (window.CircPricing && window.CircPricing.confirmCopy && window.CircPricing.confirmCopy[kind]) || CONFIRM[kind];
-  const asSheet = !!sheet && kind === 'leave';
   const cancelRef = React.useRef(null);
   const invokerRef = React.useRef(null);
   React.useEffect(() => {
@@ -791,11 +790,11 @@ const ConfirmDialog = ({ kind, item, space, sheet, onDeleteForMe, onConfirm, onC
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       style={{
         position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)',
-        display: 'flex', alignItems: asSheet ? 'flex-end' : 'center', justifyContent: 'center', padding: asSheet ? 0 : 16,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
       }} className="circ-anim-fade">
-      <div className={asSheet ? 'circ-sheet-up' : undefined} style={{
-        background: 'var(--color-surface)', borderRadius: asSheet ? 'var(--radius-lg) var(--radius-lg) 0 0' : 'var(--radius-lg)',
-        padding: asSheet ? 'var(--space-6) var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom, 0px))' : 'var(--space-6)', maxWidth: asSheet ? 'none' : 400, width: '100%',
+      <div style={{
+        background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-6)', maxWidth: 400, width: '100%',
         boxShadow: 'var(--shadow-overlay)',
       }}>
         <h2 style={{

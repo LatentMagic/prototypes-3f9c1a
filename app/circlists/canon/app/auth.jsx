@@ -43,16 +43,39 @@ const AuthPage = ({ title, subtitle, onBack, lead, children, consent, footer }) 
 // Every other auth surface (OTC, Recovery) takes the same frame (owner, 5 Oct).
 const AuthFrame = (p) => <AuthPage {...p} />;
 
-// Step 1 of both pages: the two one-tap ways in, then email.
-const AuthProviders = ({ onGoogle, onApple, onEmail }) => (
+// Step 1 of both pages: the two one-tap ways in, then email. `failed` names the
+// provider whose sign-in failed on the way round: one plain line under the
+// buttons (the one-time-code page's pattern: red x, ink text, role=alert), so
+// nothing above it moves. It clears on the next attempt.
+const AUTH_PROVIDER_FAIL = (p) => 'Couldn\u2019t continue with ' + p + '. Try again.';
+const AuthFailLine = ({ children }) => (
+  <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 6, marginTop: 'var(--space-4)',
+    fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-fg-1)' }}>
+    <span style={{ marginTop: 1, color: 'var(--color-destructive)', flexShrink: 0 }}><Icon name="x" size={14} /></span>
+    <span>{children}</span>
+  </div>
+);
+const AuthProviders = ({ onGoogle, onApple, onEmail, failed, appleRef }) => (
   <>
     <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
-    <AppleButton onClick={onApple || onGoogle} />
+    <AppleButton btnRef={appleRef} onClick={onApple || onGoogle} />
     <div style={{ marginTop: 'var(--space-3)' }}>
       <Button variant="secondary" full size="lg" icon={<Icon name="mail" size={18} />} onClick={onEmail}>Continue with email</Button>
     </div>
+    {failed && <AuthFailLine>{AUTH_PROVIDER_FAIL(failed)}</AuthFailLine>}
   </>
 );
+// The provider round trip, as the prototype stands it in. A sign-in that fails
+// is a one-shot refusal (circFail.provider, the Refusals group); a cancel at the
+// provider's sheet is a Config setting and returns silently. Returns 'fail',
+// 'cancel' or 'ok'.
+const authProviderTrip = () => {
+  if (window.circFailNext && window.circFailNext('provider')) return 'fail';
+  if ((window.circAuthReview || {}).cancel) return 'cancel';
+  return 'ok';
+};
+// Whether Apple finds an account on Sign in (Config: Apple account).
+const authAppleHasAccount = () => (window.circAuthReview || {}).apple !== 'none';
 // The password rule beside its label, so step 2 fits a small phone's browser.
 const LabelHint = ({ label, hint }) => (
   <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
@@ -104,8 +127,8 @@ const AppleMark = () => (
     <path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
   </svg>
 );
-const AppleButton = ({ onClick, size = 'lg' }) => (
-  <button type="button" className="circ-btn-apple" onClick={onClick} style={{
+const AppleButton = ({ onClick, size = 'lg', btnRef }) => (
+  <button ref={btnRef} type="button" className="circ-btn-apple" onClick={onClick} style={{
     marginTop: 'var(--space-3)', width: '100%', minHeight: size === 'md' ? 44 : 52, padding: size === 'md' ? '11px 18px' : '14px 22px',
     borderRadius: 'var(--radius-md)', border: 0, background: '#000', color: '#fff',
     fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1,
@@ -127,8 +150,26 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [err, setErr] = React.useState({});
+  const [failed, setFailed] = React.useState(null);
+  const [noAccount, setNoAccount] = React.useState(false);
   const emailBtn = React.useRef(null);
-  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:last-child > button').focus(), 0); };
+  const appleRef = React.useRef(null);
+  const stopRef = React.useRef(null);
+  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
+  const trip = (provider, go) => {
+    setFailed(null);
+    const r = authProviderTrip();
+    if (r === 'fail') { setFailed(provider); return; }
+    if (r === 'cancel') return;
+    go();
+  };
+  // Apple with no account for that login: stop in place, make nothing.
+  const apple = () => trip('Apple', () => {
+    if (authAppleHasAccount()) { (onApple || onGoogle)(); return; }
+    setNoAccount(true);
+  });
+  React.useEffect(() => { if (noAccount && stopRef.current) stopRef.current.focus({ preventScroll: true }); }, [noAccount]);
+  const otherWay = () => { setNoAccount(false); setTimeout(() => appleRef.current && appleRef.current.focus({ preventScroll: true }), 0); };
   const submit = (e) => {
     e.preventDefault();
     const next = {};
@@ -138,10 +179,22 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
     if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
   };
   const consent = <ConsentLine lead="Your use of Circlists is covered by our" />;
+  // The stop takes the three buttons' place in the same frame, so the page is
+  // no longer than it opens. The switch line goes while it shows: Create a new
+  // account already says it.
+  if (step === 1 && noAccount) return (
+    <AuthPage lead={lead} title="Sign in" subtitle={subtitle} consent={consent}>
+      <p ref={stopRef} tabIndex={-1} role="status" style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 15, lineHeight: 1.5, color: 'var(--color-fg-1)', textAlign: 'center', textWrap: 'balance', margin: '0 0 var(--space-5)', outline: 'none' }}>We couldn{'\u2019'}t find an account for this Apple sign-in.</p>
+      <Button variant="primary" full size="lg" onClick={onGoSignup}>Create a new account</Button>
+      <div style={{ marginTop: 'var(--space-3)' }}>
+        <Button variant="secondary" full size="lg" onClick={otherWay}>Sign in another way</Button>
+      </div>
+    </AuthPage>
+  );
   if (step === 1) return (
     <AuthPage lead={lead} title="Sign in" subtitle={subtitle} consent={consent}
       footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
-      <div ref={emailBtn}><AuthProviders onGoogle={onGoogle} onApple={onApple} onEmail={() => setStep(2)} /></div>
+      <div ref={emailBtn}><AuthProviders failed={failed} appleRef={appleRef} onGoogle={() => trip('Google', onGoogle)} onApple={apple} onEmail={() => { setFailed(null); setStep(2); }} /></div>
     </AuthPage>
   );
   return (
@@ -168,8 +221,16 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [err, setErr] = React.useState({});
+  const [failed, setFailed] = React.useState(null);
   const emailBtn = React.useRef(null);
-  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:last-child > button').focus(), 0); };
+  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
+  const trip = (provider, go) => {
+    setFailed(null);
+    const r = authProviderTrip();
+    if (r === 'fail') { setFailed(provider); return; }
+    if (r === 'cancel') return;
+    go();
+  };
   const submit = (e) => {
     e.preventDefault();
     const next = {};
@@ -183,7 +244,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
   if (step === 1) return (
     <AuthPage title="Create your account" subtitle="One account, every circle you’re part of." consent={<ConsentLine />}
       footer={<span>Already have an account? <TextLink onClick={onGoSignin}>Sign in</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
-      <div ref={emailBtn}><AuthProviders onGoogle={onGoogle} onApple={onApple} onEmail={() => setStep(2)} /></div>
+      <div ref={emailBtn}><AuthProviders failed={failed} onGoogle={() => trip('Google', onGoogle)} onApple={() => trip('Apple', onApple || onGoogle)} onEmail={() => { setFailed(null); setStep(2); }} /></div>
     </AuthPage>
   );
   return (

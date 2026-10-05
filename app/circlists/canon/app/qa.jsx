@@ -19,9 +19,14 @@
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
   {
+    key: 'invite-links-and-sign-in-stops', title: 'Invites by link, Apple with no account, sign-in and report failures',
+    note: 'Built 5 Oct, not ratified. 1. The invite card: no address; Get a link, then Get another link makes a different one in the same box. Built, not ratified: the card\u2019s copy ("Get a link and send it to them yourself. They join free." / "Each link works once, for the first person who opens it\u2026"), one box replaced on each press, the button staying pressable as Get another link. 2. The refusal, unchanged. 3. The dead-link page: one page for spent, expired and broken links; body "An invite link works once and lasts 7 days. Ask whoever invited you for a new one." (built, not ratified). 4. Sign in, tap Continue with Apple: the draft line and its two actions replace the three buttons in place (form built, not ratified); Create a new account opens Sign up, Sign in another way returns. 5 and 6. Press Google or Apple: the first press fails with one line under the buttons, "Couldn\u2019t continue with Google. Try again." (wording and placement built, not ratified; R4); press again and it clears. Config, Provider sheet, Cancelled: nothing shows. 7. Report a card someone else added: the first report fails, "Couldn\u2019t send the report. Try again." (built, not ratified; R5); the dialog keeps its reason; the menu still offers Report until one goes.',
+    steps: ['invite-link-card', 'invite-link-refused', 'invite-invalid', 'signin-apple-no-account', 'signin-provider-fails', 'signup-provider-fails', 'report-fails'],
+  },
+  {
     key: 'champion-leave', title: 'A champion can leave a circle',
-    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. Check each as a sheet on a phone and a modal on desktop.',
-    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left'],
+    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. 5. Your subscription ended: Leave this circle beside Start your subscription; the member confirm. 6. Taken over after its champion left, then that subscription ended: the subscription line, not the champion-left one. Every Leave confirm is a centred modal at phone and desktop width.',
+    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left', 'ppp-lapsed-circle', 'dormant-champion-left-retaken'],
   },
   {
     key: 'mobile-app', title: 'Mobile app: where it differs',
