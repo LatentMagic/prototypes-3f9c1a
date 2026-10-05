@@ -40,3 +40,11 @@ Owner judges the five items above. Then CHANGELOG entry (ask first).
 3. **"Its champion has left." is derived, not stored.** It shows when a sleeping circle has no champion (`!space.champion`, in `pricing-circle.jsx` and the shipped fallback in `subscriptions.jsx`). The `dormantReason` flag is gone (`stageDormant` in `app/states.jsx`). Taking the circle over sets a champion, so the line ends; if that champion's subscription later ends, the circle reads "Its champion's subscription has ended."
 - New staged state `dormant-champion-left-retaken`: the circle after Priya took it over and her subscription ended. It is the same data as `dormant-circle` on purpose, since no residue of the earlier leave remains.
 - QA entry `champion-leave` gains `ppp-lapsed-circle` and `dormant-champion-left-retaken`, and its note now asks for a modal at both widths.
+
+## Correction, 5 Oct: a subscriber with no circles reads nothing about circles
+- **Account card** (`app/pricing-account.jsx`, `PppSubscribed`): when the subscriber champions no circle (`spaces.some(champion === 'You')` is false):
+  - Ending keeps only "You can resume any time before that date."; the two circle sentences go.
+  - Payment failed reads "Update the card within 30 days to keep your subscription." The circles sentence was the whole line, so it needed new wording. The owner said "fix" to this proposed wording; it is built, not ratified as copy.
+- **Cancel sheet** (`PppCancelSheet`): the "Your circles go to sleep…" line is dropped. The before-and-after panel's after cell read "Asleep", which describes circles, not the subscription. Owner, 5 Oct: it reads "Ends" on every cancel (monthly, yearly, free month; with or without circles).
+- Staged: `ppp-no-circles-ending` and `ppp-no-circles-failed`, beside `ppp-no-circles` (`app/pricing-states.jsx`). The cancel sheet with no circles is reached from `ppp-no-circles` via Cancel subscription.
+- The `champion-leave` QA entry gains `ppp-no-circles`, `ppp-no-circles-ending` and `ppp-no-circles-failed`.

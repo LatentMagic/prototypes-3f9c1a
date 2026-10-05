@@ -47,6 +47,8 @@ const PPP_STATE_DEFS = [
   ['ppp-create-failed', 'Create a circle while a payment has failed (tap New circle)', { store: { status: 'failed' }, route: 'home' }],
   ['ppp-step-back', 'Circle settings, champion: the step-back line', { store: {}, current: 'sp-backend', route: 'members' }],
   ['ppp-no-circles', 'Subscribed with no circles: Account', { store: {}, spaces: () => [], route: 'account' }],
+  ['ppp-no-circles-ending', 'Ending, with no circles: Account', { store: { status: 'ending' }, spaces: () => [], route: 'account' }],
+  ['ppp-no-circles-failed', 'Payment failed, with no circles: Account', { store: { status: 'failed' }, spaces: () => [], route: 'account' }],
 ];
 const pppStage = (api, def) => {
   const { seedSpaces, DEFAULT_USER } = window.CircSeed;

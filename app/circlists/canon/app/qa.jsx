@@ -25,8 +25,8 @@ const CIRC_QA = [
   },
   {
     key: 'champion-leave', title: 'A champion can leave a circle',
-    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. 5. Your subscription ended: Leave this circle beside Start your subscription; the member confirm. 6. Taken over after its champion left, then that subscription ended: the subscription line, not the champion-left one. Every Leave confirm is a centred modal at phone and desktop width.',
-    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left', 'ppp-lapsed-circle', 'dormant-champion-left-retaken'],
+    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. 5. Your subscription ended: Leave this circle beside Start your subscription; the member confirm. 6. Taken over after its champion left, then that subscription ended: the subscription line, not the champion-left one. 7. Subscribed with no circles: the Account card says nothing about circles; Ending keeps only "You can resume any time before that date.", Payment failed reads "Update the card within 30 days to keep your subscription.", and Cancel subscription (from ppp-no-circles) drops its circles line. Every Leave confirm is a centred modal at phone and desktop width.',
+    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left', 'ppp-lapsed-circle', 'dormant-champion-left-retaken', 'ppp-no-circles', 'ppp-no-circles-ending', 'ppp-no-circles-failed'],
   },
   {
     key: 'mobile-app', title: 'Mobile app: where it differs',

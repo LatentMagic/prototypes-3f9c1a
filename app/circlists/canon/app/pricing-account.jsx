@@ -75,8 +75,10 @@ const PppSubscribed = ({ st, user }) => {
       <p className="ppp-card-line"><PppManageLine /></p>
     </div>
   );
+  // A subscriber who champions no circle reads nothing about circles.
+  const mine = ((api && api.spaces) || []).some((s) => s.champion === 'You');
   let line = null;
-  if (st.status === 'ending') line = 'Your circles then go to sleep. A member can take one over by starting their own subscription, or free if they already have one. You can resume any time before that date.';
+  if (st.status === 'ending') line = (mine ? 'Your circles then go to sleep. A member can take one over by starting their own subscription, or free if they already have one. ' : '') + 'You can resume any time before that date.';
   return (
     <div className="ppp-card ppp-card-cq">
       <PppHead marker={marker} tick={st.status === 'active' || st.status === 'trial'} />
@@ -91,7 +93,7 @@ const PppSubscribed = ({ st, user }) => {
           row of the card's table, under Plan's hairline. Stacks on a phone. */}
       {st.status === 'failed' && (
         <div className="ppp-fail-row">
-          <span className="ppp-fail-line">Update the card within 30 days to keep your circles{'\u00a0'}awake.</span>
+          <span className="ppp-fail-line">{mine ? <>Update the card within 30 days to keep your circles{'\u00a0'}awake.</> : <>Update the card within 30 days to keep your{'\u00a0'}subscription.</>}</span>
           <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => api.setRoute('ppp-card')}>Update payment card</Button>
         </div>
       )}
@@ -155,9 +157,9 @@ const PppCancelSheet = ({ st }) => {
       <div className="ppp-ba">
         {cxCell('Now', trial ? 'Free month' : PPP_PLANS[st.plan].label, trial ? '\u00a30' : pppNb(PPP_PLANS[st.plan].a))}
         <span className="ppp-ba-arrow" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
-        {cxCell(pppNb('From ' + pppDay(n, true)), 'Asleep', pppNb('Nothing charged'), true)}
+        {cxCell(pppNb('From ' + pppDay(n, true)), 'Ends', pppNb('Nothing charged'), true)}
       </div>
-      <p className="ppp-overlay-body ppp-cx-line">Your circles go to sleep. Everything in them stays, and any member can take one{'\u00a0'}over.</p>
+      {((pppApi() || {}).spaces || []).some((s) => s.champion === 'You') && <p className="ppp-overlay-body ppp-cx-line">Your circles go to sleep. Everything in them stays, and any member can take one{'\u00a0'}over.</p>}
     </PppOverlay>
   );
 };
