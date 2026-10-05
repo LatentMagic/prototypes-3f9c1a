@@ -967,6 +967,17 @@
           changelog: [
             {
               date: '2026-10-05',
+              title: 'A champion can leave a circle',
+              items: [
+                'The champion\'s own row on Members now carries the "…" menu with Leave this circle, like every other member. The "You champion this circle, so you can\'t leave it" foot line and its get-in-touch link are removed.',
+                'Leave confirm has two new variants, read off the circle (circLeaveCopy) so every road to Leave agrees: the only member (leaving ends the circle, everything deleted after 30 days) and a champion leaving a circle that has others (it sleeps at once for them). At phone width the Leave confirm is a bottom sheet.',
+                'A circle whose champion left reads "Its champion has left. Everything in it is still here." on the dormant page.',
+                'New states members-champion-sole and dormant-champion-left; new QA list "A champion can leave a circle". New spec folder docs/specs/champion-leave. Small: the champion crown nudged up 1.5px; dialog focus no longer scrolls the page.',
+                'Sync check: 95 checks, 0 FAIL, same 1 warn (otc-error) as before.'
+              ]
+            },
+            {
+              date: '2026-10-05',
               title: 'Mobile-readiness: one-screen sign-in, Apple sign-in, report and block, start-up, the app posture',
               items: [
                 'Sign-in and sign-up are one page with no card (AuthPage; AuthFrame now delegates to it, so the one-time-code and recovery pages take the same frame). Two steps: Continue with Google, Continue with Apple, Continue with email; then the email form alone with a back arrow. The mark sits in the heading line; consent and the switch line sit at the screen foot.',

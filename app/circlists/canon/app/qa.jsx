@@ -19,6 +19,11 @@
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
   {
+    key: 'champion-leave', title: 'A champion can leave a circle',
+    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. Check each as a sheet on a phone and a modal on desktop.',
+    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left'],
+  },
+  {
     key: 'mobile-app', title: 'Mobile app: where it differs',
     note: 'The app posture, 5 Oct. Each step opens in Platform: Mobile with Mobile payments Off. At Create a circle, tap New circle.',
     steps: ['app-splash', 'app-start-up', 'startup-cant-connect', 'app-home', 'app-circle', 'app-circle-settings',

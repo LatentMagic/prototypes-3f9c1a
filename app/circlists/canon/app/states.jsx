@@ -205,7 +205,7 @@ function circStateContext(api) {
   // says who funded it last — the screen names nobody either way.
   const stageDormant = (cfg) => {
     setSpaces(prev => withSpace(prev, 'sp-test-weekend').map(s => s.id === 'sp-test-weekend'
-      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
+      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy, dormantReason: cfg.reason } : s));
     setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
   };
 
@@ -357,6 +357,15 @@ function circStateContext(api) {
     };
     setSpaces(prev => [emptySpace, ...prev.filter(s => s.id !== 'sp-empty')]);
     setCurrentId('sp-empty'); setTab('active'); setRoute('space'); setLoadingFeed(false);
+  };
+
+  // A champion who is the circle's only member: the Members surface where Leave ends the circle.
+  const stageSoleChampion = () => {
+    setUser(DEFAULT_USER);
+    const solo = { id: 'sp-solo', name: 'Reading Room', funded: true, dormancy: null,
+      champion: 'You', championEmail: DEFAULT_USER.email, members: [M('You', DEFAULT_USER.email)], items: [] };
+    setSpaces(prev => [solo, ...prev.filter(s => s.id !== 'sp-solo')]);
+    setCurrentId('sp-solo'); setTab('active'); setRoute('members'); setLoadingFeed(false);
   };
 
   // Space at the 10-member cap (champion view → "Space is full" on invite).
@@ -855,7 +864,7 @@ function circStateContext(api) {
 
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
-    openCreateSpace, reset, reseed, goSpace, stageDormant, stageFunding, stageNonChampion,
+    openCreateSpace, reset, reseed, goSpace, stageDormant, stageSoleChampion, stageFunding, stageNonChampion,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions, stageReturnsBarReactions,
     stageCircleDescription, stageCircleMicro,
@@ -989,6 +998,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Start-up', id: 'startup-cant-connect', label: 'Start-up — the servers could not be reached (Try again)', stage: (c) => c.setRoute('cant-connect') },
 
   { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
+  { group: 'Members & funding', id: 'members-champion-sole', label: 'Members — champion, the only member', stage: (c) => c.stageSoleChampion() },
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
@@ -1002,6 +1012,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'create-and-fund', label: 'Create + fund a circle', stage: (c) => c.openCreateSpace() },
 
   { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Dormant circle', id: 'dormant-champion-left', label: 'Dormant circle — its champion left (remaining member)', stage: (c) => c.stageDormant({ champion: null, championEmail: null, dormancy: 'terminal', reason: 'champion-left' }) },
   { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'suspended' }) },
 
   { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },

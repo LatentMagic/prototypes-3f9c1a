@@ -3,6 +3,12 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## A champion can leave a circle — 2026-10-05
+
+- **A champion leaves through the same "Leave this circle" every member has**, in the menu on their own row. No hand-on, no Delete, and the old "you can't leave it" line is gone.
+- **The circle sleeps at once and any remaining member can take it over.** The dormant screen says its champion has left. Nobody is told. Proposed, not deployed.
+- **A sole member's Leave ends the circle**, and its confirm says everything is deleted after 30 days.
+
 ## The app gets ready for the stores — 2026-10-05
 
 - **The app can't sell the subscription; everything else works.** Someone not subscribed meets one line at Create a circle and on Account. The Subscription card in the app shows status only.

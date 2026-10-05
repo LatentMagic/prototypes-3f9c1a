@@ -1966,7 +1966,7 @@ const CircApp = () => {
   // and has to know which link, in which circle, it is about (LM-666).
   const retitleItem = retitling && window.CardTitleDialog
     ? spaces.reduce((f, s) => f || s.items.find((i) => i.id === retitling), null) : null;
-  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
+  const overlay = (confirm && <ConfirmDialog kind={confirm.kind} item={confirm.item} space={space} sheet={isSheetPosture} onDeleteForMe={deleteItemForMe} onConfirm={onConfirm} onCancel={() => setConfirm(null)} />)
     || (retitleItem && <window.CardTitleDialog item={retitleItem}
       onAnnounce={announceOnce}
       onSave={(text) => { if (window.circFailNext && window.circFailNext('title')) return false; window.circRetitle(setSpaces, retitleItem.id, text); setRetitling(null); }}

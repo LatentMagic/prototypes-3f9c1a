@@ -66,7 +66,6 @@ window.CircPricing = {
   createLede: (cap) => 'A shared list for up to ' + cap + ' people. You champion it; everyone joins free.',
   copy: window.PPP_COPY,
   hideFunding: true,
-  ChampionFoot: window.PppChampionFoot,
   AccountCard: window.PppAccountCard,
   confirmCopy: window.PPP_CONFIRM,
 };

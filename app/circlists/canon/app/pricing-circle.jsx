@@ -49,6 +49,7 @@ const PppDormantSpace = (props) => {
   const SupportLine = window.SupportLine;
   const body = mine
     ? <><PppS>Your subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in this circle is still{'\u00a0'}here.</PppS></>
+    : space && space.dormantReason === 'champion-left' ? <><PppS>Its champion has{'\u00a0'}left.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>
     : <><PppS>Its champion{'\u2019'}s subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>;
   const cap = mine ? 'Subscribing again wakes every circle you champion.'
     : lapsing && failed ? <><PppS>Your last payment didn{'\u2019'}t go through.</PppS> <PppS>Update the card, then take this circle{'\u00a0'}over.</PppS></>
@@ -94,12 +95,6 @@ const PppCreateFoot = () => {
 };
 window.DormantSpace = PppDormantSpace;
 
-// Stepping back, option A: a plain line; "get in touch" is real link text.
-const PppChampionFoot = ({ space }) => (
-  <>You champion this circle, so you can{'\u2019'}t leave it. To hand it to another member,{' '}
-    <a className="circ-doorlink" href={'mailto:' + window.OPERATOR_EMAIL + '?subject=' + encodeURIComponent('Hand over ' + (space ? space.name : 'a circle'))}>get in touch</a>.</>
-);
-
 const PPP_COPY = {
   championManages: 'The Champion manages this circle\u2019s membership.',
   unchampionedTail: 'after that any member can take it over.',
@@ -111,4 +106,4 @@ const PPP_CONFIRM = {
     primary: 'Delete account', variant: 'destructive', role: 'alertdialog',
   },
 };
-Object.assign(window, { PppChampionFoot, PPP_COPY, PPP_CONFIRM, PppCreateFoot, pppLapsing });
+Object.assign(window, { PPP_COPY, PPP_CONFIRM, PppCreateFoot, pppLapsing });

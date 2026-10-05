@@ -267,6 +267,7 @@ const DormantSpace = ({ space, dormancy = 'terminal', onFund, onLeave }) => {
   // upsell rather than a repair. Nothing is lost, and nobody is named.
   const body = suspended
     ? 'Its subscription is paused rather than gone. Get in touch and we\u2019ll sort it out.'
+    : space && space.dormantReason === 'champion-left' ? 'Its champion has left. Everything in it is still here.'
     : 'Its funding ran out. Everything in it is still here.';
   return (
     <main className="circ-dormant">

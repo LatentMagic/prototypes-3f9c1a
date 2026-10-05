@@ -305,8 +305,8 @@ const fundingStateLine = (f) => {
 // Champion also gets: inline space rename, and per-member removal (kebab menu).
 // The roster's trailing slot means "this row's membership": the crown states the
 // role, a kebab carries what can be done to it. The champion's kebab acts on other
-// people (Remove); your own kebab acts on you (Leave), and is the only one a
-// non-champion sees — which is what marks it as yours without a label. Scope it
+// people (Remove); your own kebab acts on you (Leave) — one control for every
+// member, the champion included, which is what marks it as yours. Scope it
 // strictly to YOUR MEMBERSHIP OF THIS CIRCLE; it is not a settings drawer.
 const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFunding, onCancelFunding, onResumeFunding, onEdit, onRemoveMember, onStartCircle, onLeave }) => {
   // onInvite is no longer consumed: getting a link does not add a member. A row
@@ -411,7 +411,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           const rb = window.CircRB && window.CircBlockDialog ? window.CircRB : null;
           const blockedRow = !isYou && !!rb && rb.isBlocked(m.name);
           const first = window.rbFirst ? window.rbFirst(m.name) : m.name;
-          const hasMenu = isYou ? !memberIsChampion : (isChampion || !!rb);
+          const hasMenu = isYou || isChampion || !!rb;
           const menuRow = { display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
             background: 'transparent', border: 0, cursor: 'pointer', padding: '9px 10px', minHeight: 40,
             borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
@@ -428,7 +428,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
                   <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
                   {memberIsChampion && (
-                    <span role="img" aria-label="Champion" title="Champion" style={{ flexShrink: 0, display: 'inline-flex', color: 'var(--color-fg-3)' }}>
+                    <span role="img" aria-label="Champion" title="Champion" style={{ flexShrink: 0, display: 'inline-flex', color: 'var(--color-fg-3)', transform: 'translateY(-1.5px)' }}>
                       <Icon name="crown" size={16} />
                     </span>
                   )}
@@ -551,20 +551,6 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0' }}>
             Billed to {space.championEmail || 'your account'} · card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span>.
           </p>
-        </div>
-      )}
-
-      {/* The champion's exit, stated last: same crown icon, tier and construction as the
-          non-champion's crown line, at the end of the page after the funding card it
-          refers to. Why their own roster row carries no "…" — the role binds them to the
-          funding, so releasing the funding is the exit. */}
-      {isChampion && !unchampioned && (
-        <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 8, padding: '0 2px', marginTop: 'var(--space-5)',
-          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)',
-        }}>
-          <span style={{ marginTop: 1, flexShrink: 0 }}><Icon name="crown" size={15} /></span>
-          <span>{(window.CircPricing && window.CircPricing.ChampionFoot) ? <window.CircPricing.ChampionFoot space={space} /> : 'You champion this circle, so you can’t leave it. Cancel funding to step back.'}</span>
         </div>
       )}
 
