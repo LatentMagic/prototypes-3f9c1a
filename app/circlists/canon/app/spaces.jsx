@@ -72,7 +72,7 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction, children }) => 
 const InvalidInvite = ({ onHome }) => (
   <CalmPage eyebrow="Invitation"
     title="This invite isn’t valid anymore."
-    body="An invite link works once and lasts 7 days. Ask whoever invited you for a new one."
+    body="It may have expired or been revoked."
     actionLabel="Go home" onAction={onHome} />
 );
 

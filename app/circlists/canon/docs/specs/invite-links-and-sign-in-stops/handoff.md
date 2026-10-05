@@ -1,5 +1,7 @@
 # Handoff: invites by link, Apple with no account, sign-in and report failures
 
+**Reverted 5 Oct (owner): the invite part (items 1 and 2, `invite-link-card`).** The card is back to the address-bound one (`app/invite-link.jsx` restored whole), the dead-link body is back to "It may have expired or been revoked.", and `invite-invalid` is labelled "Accept invite — invalid" again. Everything else below stands.
+
 Status: built into `app/`, 5 Oct. Every choice here is **built, not ratified** unless marked as ruled by the owner (R1, R2, R3, R6, R7). Publishing canon is how the owner ratifies it.
 
 ## What was built, and where

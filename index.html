@@ -967,14 +967,14 @@
           changelog: [
             {
               date: '2026-10-05',
-              title: 'Invites by link, Apple with no account, sign-in and report failures',
+              title: 'Apple with no account, sign-in and report failures',
               items: [
-                'Invite card: no address is typed. Get a link makes a link, Get another link makes a different one; each works once for the first person who opens it and lasts 7 days. A failed mint reads "Couldn\'t make a link. Try again." The accept-invite error page reads "An invite link works once and lasts 7 days. Ask whoever invited you for a new one."',
                 'Sign in: Continue with Apple with no account stops in place and offers Create a new account or Sign in another way (sign up is unaffected). New Config rows: Apple account (Found / None) and Provider sheet (Completes / Cancelled; cancelled returns silently to step 1).',
                 'A failed Google or Apple sign-in on Sign in or Sign up shows one line under the buttons, "Couldn\'t continue with {provider}. Try again.", cleared on the next press.',
                 'A report that fails to send keeps the dialog and shows "Couldn\'t send the report. Try again."; nothing is marked Reported.',
-                'New states: invite-link-card, invite-link-refused, invite-invalid, signin-apple-no-account, signin-provider-fails, signup-provider-fails, report-fails, dormant-champion-left-retaken. New QA list. New spec folder docs/specs/invite-links-and-sign-in-stops.',
+                'New states: signin-apple-no-account, signin-provider-fails, signup-provider-fails, report-fails, dormant-champion-left-retaken. New QA list. New spec folder docs/specs/invite-links-and-sign-in-stops.',
                 'Reverted by this export, not mentioned in its own notes: the Leave confirm no longer renders as a bottom sheet at phone width (the champion-leave entry above); it is the centred dialog again.',
+                'Invites by link was built in this round and then reverted: the invite card is the address-bound card again, so it is not part of canon.',
                 'Sync check: 101 checks, 0 FAIL, same 1 warn (otc-error).'
               ]
             },

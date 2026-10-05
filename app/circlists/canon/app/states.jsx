@@ -780,10 +780,10 @@ function circStateContext(api) {
   // The arming flag is a transient window flag, NOT app state: app state is
   // persisted, so a flag on the circle would leave a normal circle refusing the
   // first press forever. Re-staging re-arms it; the card clears it on the press.
-  const stageInviteRefusal = (fail = true) => {
+  const stageInviteRefusal = () => {
     setUser(DEFAULT_USER);
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
-    window.CIRC_INVITE_MINT_FAIL = fail;
+    window.CIRC_INVITE_MINT_FAIL = true;
     setSpaces(prev => withSpace(prev, 'sp-test-backend').map(s => s.id === 'sp-test-backend'
       ? { ...s, funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email } : s));
     setCurrentId('sp-test-backend'); setTab('active'); setRoute('members');
@@ -1020,9 +1020,8 @@ const CIRC_STATE_REGISTER = [
 
   { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },
   { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — a spent, expired or broken link', stage: (c) => c.setRoute('invalid-invite') },
+  { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — invalid', stage: (c) => c.setRoute('invalid-invite') },
   { group: 'Invitations', id: 'invite-link-refused', label: 'Get a link — creation refused', stage: (c) => c.stageInviteRefusal() },
-  { group: 'Invitations', id: 'invite-link-card', label: 'Get a link — the card, no address; press again for another', stage: (c) => c.stageInviteRefusal(false) },
   { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite — circle full', stage: (c) => c.setRoute('space-full') },
 
   { group: 'Account', id: 'account-email-password', label: 'Change email & password', stage: (c) => c.goSpace('sp-backend', 'account') },

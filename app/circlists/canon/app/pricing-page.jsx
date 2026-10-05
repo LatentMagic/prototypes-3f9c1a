@@ -152,7 +152,7 @@ const PppCardPage = () => {
 const PppWebHandoff = () => {
   const api = pppApi();
   return (
-    <div style={{ containerType: 'inline-size' }}>
+    <div style={{ containerType: 'inline-size', display: 'grid', minHeight: 'var(--circ-vh)' }}>
       <CalmPage title={<span style={{ display: 'block', fontSize: 'clamp(24px, 8cqi, 32px)', textWrap: 'balance' }}>{PPP_APP_TITLE}</span>}
         body={PPP_APP_BODY} actionLabel="Back to your circles" onAction={() => { window.CircPPP.set({ ctx: null }); api.goHome(); }} />
     </div>
