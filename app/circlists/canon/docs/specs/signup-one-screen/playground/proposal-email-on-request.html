@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="../../../../" />
+<title>Email on request · proposal</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#E9E8E2;color:var(--color-fg-1);-webkit-font-smoothing:antialiased}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.circ-btn-primary:hover:not(:disabled){background:var(--color-accent-hover)!important}
+.circ-btn-secondary:hover:not(:disabled){background:var(--color-surface-sunken)!important}
+.circ-btn-apple:hover{background:#1f1f1f!important}
+.circ-textlink:hover{text-decoration:underline;text-underline-offset:2px}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:var(--ring-offset)}
+input:focus-visible{outline-offset:0;border-color:var(--color-accent)!important}
+.pr-page{max-width:1100px;margin:0 auto;padding:clamp(20px,4vw,40px) 32px 64px}
+.pr-eyebrow{font:500 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--color-fg-3)}
+.pr-title{font:600 clamp(24px,4vw,32px)/1.15 var(--font-sans);letter-spacing:-.02em;margin:8px 0 0}
+.pr-lede{font:400 15px/1.55 var(--font-sans);color:var(--color-fg-2);margin:10px 0 0;max-width:72ch;text-wrap:pretty}
+.pr-seg{display:flex;flex-wrap:wrap;gap:6px;margin:20px 0 8px}
+.pr-seg button{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:44px;padding:7px 12px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);font:600 13px/1.2 var(--font-sans);color:var(--color-fg-1);cursor:pointer}
+.pr-seg button span{font:400 11px var(--font-mono);color:var(--color-fg-3)}
+.pr-seg button[data-on]{border:2px solid var(--color-accent);padding:6px 11px}
+.pr-flow{margin-top:36px}
+.pr-flow-title{font:600 20px/1.3 var(--font-sans);margin:0 0 14px}
+.pr-steps{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-start}
+.pr-step{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pr-step-head{display:flex;gap:8px;align-items:baseline;font:500 13.5px/1.4 var(--font-sans);color:var(--color-fg-1);max-width:375px;min-height:38px}
+.pr-n{font:600 13px var(--font-mono);color:var(--color-accent)}
+.pr-phone{position:relative;overflow:hidden;border:1px solid var(--color-border-strong);border-radius:22px;background:var(--color-canvas)}
+.pr-screen{position:absolute;top:0;left:0;transform-origin:top left;overflow-y:auto;overflow-x:hidden;background:var(--color-canvas)}
+.pr-screen>div{position:relative}
+.pr-arrow{align-self:center;font:500 12px var(--font-mono);color:var(--color-fg-3);max-width:96px;text-align:center;text-wrap:balance}
+.pr-arrow::after{content:"\2192";display:block;font-size:20px;margin-top:4px}
+.pr-read{font:500 12px var(--font-mono);color:var(--color-fg-2)}
+.pr-read[data-v="fits"]{color:var(--color-accent)}
+.pr-read[data-v="hair"]{color:#92400E}
+.pr-read[data-v="runs"]{color:var(--color-destructive)}
+@media (max-width:719px){.pr-page{padding-left:16px;padding-right:16px}.pr-arrow{max-width:none;width:100%}.pr-arrow::after{content:"\2193"}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/auth.jsx"></script>
+<script type="text/babel" src="docs/specs/signup-one-screen/playground/proposal-email-on-request.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<base href="../../../../" />
+<title>Not subscribed, in the app · option board</title>
+<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+*{box-sizing:border-box}
+:root{--circ-vh:100dvh}
+html,body{margin:0;background:#1c1c1a;color:#f2f1ec;-webkit-font-smoothing:antialiased}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-hover)}
+.circ-btn-primary:hover:not(:disabled){background:var(--color-accent-hover)!important}
+.circ-btn-secondary:hover:not(:disabled){background:var(--color-surface-sunken)!important}
+.circ-iconbtn:hover{background:var(--color-surface-sunken)!important}
+.circ-menuitem:hover{background:var(--color-surface-sunken)}
+button:focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:var(--ring-offset)}
+/* circlists.html, verbatim */
+.circ-wizard-body{justify-content:flex-start;padding:clamp(16px,4vh,44px) 22px 32px}
+[data-circ-posture="mobile"] .circ-wizard-body{padding:clamp(16px,4vh,44px) 22px 32px}
+.circ-auth-col{width:100%;max-width:400px}
+.ppp-card{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:var(--space-6)}
+.ppp-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:var(--space-2)}
+.ppp-card-title{font:600 16px var(--font-sans);color:var(--color-fg-1)}
+.ppp-card-marker{display:inline-flex;align-items:center;gap:6px;font:500 13px var(--font-sans);color:var(--color-fg-2);text-align:right}
+.ppp-card-body{font:400 15px/1.5 var(--font-sans);color:var(--color-fg-1);margin:0;text-wrap:pretty}
+.ppp-rows{margin-top:var(--space-2)}
+.ppp-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 16px;padding:10px 0;border-top:1px solid var(--color-border-2)}
+.ppp-row-k{font:400 14px/1.4 var(--font-sans);color:var(--color-fg-2)}
+.ppp-row-v{font:600 14px/1.4 var(--font-sans);color:var(--color-fg-1);text-align:right}
+.ppp-card-line{font:400 13.5px/1.5 var(--font-sans);color:var(--color-fg-2);margin:var(--space-2) 0 0;text-wrap:pretty}
+.ppp-card-line-bal{text-wrap:balance}
+.ppp-card-cq{container-type:inline-size}
+.ppp-row-k,.ppp-row-v{white-space:nowrap}
+.ppp-s{display:inline-block;text-wrap:balance}
+/* board chrome: tooling, not product */
+.ns-board{padding:20px clamp(12px,3vw,32px) 64px;font:500 13px var(--font-sans)}
+.ns-top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+.ns-top h1{font:600 20px var(--font-sans);margin:0 0 4px;color:#f2f1ec}
+.ns-top p{margin:0;color:#b9b8b0;font-weight:400;max-width:70ch}
+.ns-seg{display:flex}
+.ns-seg button{min-height:36px;padding:0 14px;border:1px solid #44443f;background:transparent;color:#f2f1ec;font:500 13px var(--font-mono);cursor:pointer;margin-left:-1px}
+.ns-seg button:first-child{border-radius:var(--radius-md) 0 0 var(--radius-md);margin-left:0}
+.ns-seg button:last-child{border-radius:0 var(--radius-md) var(--radius-md) 0}
+.ns-seg button[data-on]{background:#f2f1ec;color:#1c1c1a;border-color:#f2f1ec}
+.ns-row{margin-bottom:40px}
+.ns-row h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font:600 16px var(--font-sans);margin:0 0 12px;color:#f2f1ec}
+.ns-row h2 b{font:600 13px var(--font-mono);color:#8BBFAD}
+.ns-row h2 span{font:400 13px var(--font-sans);color:#9a9992}
+.ns-grid{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+.ns-cell{flex:none;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px}
+.ns-cell-head{display:flex;align-items:center;gap:8px}
+.ns-cell-head b{font:600 12px var(--font-mono);color:#8BBFAD}
+.ns-cell-head span{flex:1}
+.ns-cell-head button{min-height:32px;padding:0 10px;border:1px solid #44443f;border-radius:var(--radius-md);background:transparent;color:#f2f1ec;font:500 12px var(--font-sans);cursor:pointer}
+.ns-cell-head button:hover{background:#2c2c29}
+.ns-why{font:400 13px/1.5 var(--font-sans);color:#dcdbd4}
+.ns-why p{margin:0 0 4px;text-wrap:pretty}
+.ns-why span{font:500 10.5px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:#9a9992;margin-right:6px}
+.ns-screen{container-type:inline-size;background:var(--color-canvas);color:var(--color-fg-1);border-radius:20px;overflow:auto;box-shadow:0 0 0 1px #33332f}
+.ns-screen::-webkit-scrollbar{width:0;height:0}
+.ns-greys{margin-top:16px;border-collapse:collapse;font:400 12.5px var(--font-mono);color:#dcdbd4}
+.ns-greys td{padding:4px 12px 4px 0;white-space:nowrap}
+.ns-greys td:last-child{font-family:var(--font-sans);white-space:normal}
+.ns-greys i{display:inline-block;width:14px;height:14px;border-radius:3px;box-shadow:0 0 0 1px #44443f;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="app/seed-data.jsx"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/brand-motion.jsx"></script>
+<script type="text/babel" src="app/wizard.jsx"></script>
+<script type="text/babel" src="app/spaces.jsx"></script>
+<script type="text/babel" src="app/report-block.jsx"></script>
+<script type="text/babel" src="app/pricing-store.jsx"></script>
+<script type="text/babel" src="app/pricing-account.jsx"></script>
+<script type="text/babel" src="app/pricing-page.jsx"></script>
+<script type="text/babel" src="docs/specs/mobile-readiness/playground/pg-not-subscribed.jsx"></script>
+</body>
+</html>

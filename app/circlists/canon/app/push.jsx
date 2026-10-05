@@ -164,9 +164,11 @@ const PUSH_BODY = { fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 1
 
 const pushCardShown = (push) => !push || push.channel !== 'unsupported';
 
-const CircPushSetting = ({ push = {}, onChange }) => {
+const CircPushSetting = ({ push = {}, onChange, isApp = false }) => {
   if (!pushCardShown(push)) return null;
-  const statement = push.channel === 'ios-tab'
+  // The Home Screen route is a browser's (an iOS tab). The app posture never
+  // shows it: inside the app the card takes its basic form (mobile-readiness, 5 Oct).
+  const statement = push.channel === 'ios-tab' && !isApp
     ? 'To get notifications, add Circlists to your Home Screen: tap Share, then Add to Home Screen.'
     : push.perm === 'denied'
       ? 'Allow notifications for Circlists in your device settings.'

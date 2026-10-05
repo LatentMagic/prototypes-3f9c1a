@@ -1,7 +1,18 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
-  "generated": "2026-10-02",
+  "generated": "2026-10-05",
   "tickets": [
+    { "id": "—", "slug": "mobile-readiness", "name": "The app gets ready for the stores", "state": "active", "touched": "2026-10-05",
+      "entries": [
+        { "kind": "playground", "name": "Not subscribed, in the app", "path": "docs/specs/mobile-readiness/playground/pg-not-subscribed.html", "note": "Option board: Create a circle not subscribed, the Account card never subscribed and in the free month, and the Reported row. The ratified lines word for word; only form changes." }
+      ] },
+    { "id": "—", "slug": "signup-one-screen", "name": "Sign-up on one screen", "state": "active", "touched": "2026-10-05",
+      "entries": [
+        { "kind": "playground", "name": "02 explored: brand, buttons, small print", "path": "docs/specs/signup-one-screen/playground/pg-auth-02.html", "note": "The no-card frame taken forward. Where the brand lives (above the title, on it, in the header, at the foot), with 44px buttons in a 360 column and the small print at the screen's foot; both levers overridable." },
+        { "kind": "playground", "name": "The auth frame: card, page and brand", "path": "docs/specs/signup-one-screen/playground/pg-auth-frame.html", "note": "Sign-up and sign-in in two steps (Google, Apple, Continue with email; then the email form with a back arrow) under three frames: the card on desktop only, no card at any width as Create circle, and the brand on step 1 only. Posture from canon's Config (Platform, Viewport); each page reads whether it fits." },
+        { "kind": "playground", "name": "Proposal: email on request, on today's pages", "path": "docs/specs/signup-one-screen/playground/proposal-email-on-request.html", "note": "The shipped card and rhythm in two steps: Google, Apple and Continue with email, then the email form alone with a back arrow. Sign-up and sign-in on a phone screen." },
+        { "kind": "playground", "name": "Fitting sign-up on one phone screen", "path": "docs/specs/signup-one-screen/playground/pg-signup-fit.html", "note": "Seven versions of the auth pages, sign-up and sign-in side by side, measured at five screens' visible heights: today, less air, fewer lines, Google and Apple first, email on request (and its form taking the buttons' place), everything at its floor. One page each, no wizard." }
+      ] },
     { "id": "—", "slug": "per-person-pricing", "name": "Per-person pricing", "state": "archive", "touched": "2026-10-02",
       "entries": [
         { "kind": "playground", "name": "The Subscription card's three acts", "path": "docs/archive/per-person-pricing/playground/pg-account-card.html", "note": "Three arrangements of Update, Switch and Cancel on the Account card, in every state at 320, 390 and desktop: one shape, pair and a foot, each act beside its fact. Plus Subscribe as a button or in the line." },

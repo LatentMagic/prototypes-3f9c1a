@@ -98,6 +98,22 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-05T11:42:57Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — `store-launch/_subtasks/mobile-readiness/_outputs/prompts/2026-10-05_mobile-design-delta/prompt.md`. Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Not-subscribed surfaces in the app reworked from board `docs/specs/mobile-readiness/playground/pg-not-subscribed.html` (A.08, B.01, C.01, D.02): Create a circle page, Account card lines, the Reported row.
+
+## Previous sync
+
+date: 2026-10-05T07:48:06Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. business-ops: read live — `store-launch/CONTEXT.md`, `store-launch/_subtasks/mobile-readiness/CONTEXT.md`. Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Mobile-readiness delta: not-subscribed line, status-only Subscription card, Continue with Apple, Report and Block, champion row, splash and can't-connect, the mobile list. Handoff in `docs/specs/mobile-readiness/`.
+
+## Previous sync
+
 date: 2026-10-04T14:55:29Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
 

@@ -966,6 +966,19 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-10-05',
+              title: 'Mobile-readiness: one-screen sign-in, Apple sign-in, report and block, start-up, the app posture',
+              items: [
+                'Sign-in and sign-up are one page with no card (AuthPage; AuthFrame now delegates to it, so the one-time-code and recovery pages take the same frame). Two steps: Continue with Google, Continue with Apple, Continue with email; then the email form alone with a back arrow. The mark sits in the heading line; consent and the switch line sit at the screen foot.',
+                'Sign in with Apple, web and app alike: a black Continue with Apple button directly below Google, same width and size (AppleButton; the mark is a stand-in path).',
+                'New app/report-block.jsx (droppable): Report on another member\'s link menu (Reasons in a form dialog; Reported once sent), and Block / Unblock on every other member\'s row with a confirm dialog and a Blocked marker. New "Report and block" state group; QA entry marks the unratified parts.',
+                'New app/startup.jsx (droppable): the app\'s splash (still mark on cream), then the loading state, then home; and a Can\'t-connect full-screen state (This didn\'t load. / Try again) for every posture. New Start-up state group.',
+                'App posture (Mobile payments off): Create a circle when not subscribed becomes a calm page whose title is "You can\'t manage your subscription in this app."; the Account Subscription card is status only (marker, Plan, next payment, one line, no buttons or billing foot). The Home Screen notifications line is never shown inside the app.',
+                'New states: app-splash, app-start-up, startup-cant-connect, app-home, app-circle, app-circle-settings, push-setting-safari-tab, push-setting-in-app, report-link-reported, block-priya-second-circle. New QA list "Mobile app: where it differs". Two new spec folders (mobile-readiness, signup-one-screen) with playgrounds.',
+                'Sync check: 93 checks, 0 FAIL, 1 warn (otc-error: React non-boolean attribute warning) for Claude Design.'
+              ]
+            },
+            {
               date: '2026-10-04',
               title: 'Eight corrections from the 1 and 3 October ships',
               items: [

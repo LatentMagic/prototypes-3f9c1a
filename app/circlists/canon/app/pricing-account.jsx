@@ -26,6 +26,15 @@ const PppNotSubscribed = ({ st }) => {
   // Lapsed copy only while it's true: you champion at least one sleeping circle
   // (some taken over, some asleep still counts). Otherwise the never-subscribed line.
   const lapsed = !!st.usedFreeMonth && ((api && api.spaces) || []).some((s) => s.champion === 'You' && !s.funded);
+  // The app (pppAppNoPay): the ratified line in place of today's, and no button.
+  if (pppAppNoPay()) return (
+    <div className="ppp-card ppp-ns">
+      <PppHead />
+      {lapsed
+        ? <><p className="ppp-card-body">Your subscription ended on {pppNb(pppDay(-14))}, so your circles are asleep. Nothing in them has been{'\u00a0'}lost.</p><p className="ppp-card-line"><PppManageLine /></p></>
+        : <p className="ppp-card-body"><PppAppLine /></p>}
+    </div>
+  );
   return (
     <div className="ppp-card ppp-ns">
       <PppHead />
@@ -54,6 +63,18 @@ const PppSubscribed = ({ st, user }) => {
   const resume = () => A.set(pppResumed(st));
   const pending = st.pending && st.status !== 'ending';
   const canSwitch = (st.status === 'active' || st.status === 'trial') && !st.pending;
+  // The app, Active or free month (pppAppNoPay): status only. The marker, Plan,
+  // the next-payment row, then the line. No buttons and no billing foot.
+  if (pppAppNoPay() && (st.status === 'active' || st.status === 'trial')) return (
+    <div className="ppp-card ppp-card-cq">
+      <PppHead marker={marker} tick />
+      <div className="ppp-rows">
+        <PppRow k="Plan" v={plan.label + ' \u00b7 ' + pppNb(plan.a)} />
+        <PppRow k={st.status === 'trial' ? 'First payment' : 'Next renewal'} v={renew} />
+      </div>
+      <p className="ppp-card-line"><PppManageLine /></p>
+    </div>
+  );
   let line = null;
   if (st.status === 'ending') line = 'Your circles then go to sleep. A member can take one over by starting their own subscription, or free if they already have one. You can resume any time before that date.';
   return (
@@ -143,11 +164,13 @@ const PppCancelSheet = ({ st }) => {
 
 const PppAccountCard = ({ user }) => {
   const st = usePPP();
+  // Switch and Cancel cannot be reached from the app's status-only card.
+  const sheets = pppSubscribed(st) && !(pppAppNoPay() && (st.status === 'active' || st.status === 'trial'));
   return (
     <>
       {pppSubscribed(st) ? <PppSubscribed st={st} user={user} /> : <PppNotSubscribed st={st} />}
-      {st.sheet === 'switch' && pppSubscribed(st) && <PppSwitchSheet st={st} />}
-      {st.sheet === 'cancel' && pppSubscribed(st) && <PppCancelSheet st={st} />}
+      {st.sheet === 'switch' && sheets && <PppSwitchSheet st={st} />}
+      {st.sheet === 'cancel' && sheets && <PppCancelSheet st={st} />}
     </>
   );
 };

@@ -32,7 +32,11 @@ const inShell = (content, opts = {}) => <Shell {...props}>{content}</Shell>;
 - `isApp` comes from one switch: **Config → Platform (Web / Mobile)**. Session-only, not persisted.
   App posture always implies the phone viewport.
 
-The only other posture-aware branch in the app is payments (below). Everything else is chrome.
+The other posture-aware branches are payments (below) and a short, named list of content
+differences the owner asked for on 5 Oct: the not-subscribed line and the status-only Subscription
+card (`pppAppNoPay()`), the notifications card without
+the Home Screen line, and the splash. Each is one check inside the shared component, never a second
+copy; the table is in `MOBILE.md` → Named content differences. Everything else is chrome.
 
 ## Deletable aids and droppable modules
 
@@ -46,6 +50,8 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/config.jsx` | deletable aid | launcher + review settings gone |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the launcher gone; the states it points at stay |
+| `app/report-block.jsx` | droppable module | Report and Block gone; cards, comments and Members rows read as before |
+| `app/startup.jsx` | droppable module | no splash and no can't-connect page; the app opens as before |
 | `app/circ-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
 
 ## Addressable states
@@ -89,6 +95,12 @@ An id names the situation, not the app's internals — `members-non-champion`, n
 
 An `id` is **public** once a ticket links to it: renaming or removing one breaks those links, and the
 index is the only thing that catches it.
+
+An entry may carry **`platform: 'app' | 'web'`**. An app-only state sets Config → Platform to Mobile
+(and Mobile payments Off) so its address opens it correctly; its web twin sets Web. An entry without
+one leaves the Platform as it is. App-only states are a named exception to “a state is never a
+twin”: the app differs in content, not width, so each sits beside its web twin. The pinned group
+**Mobile app: where it differs** indexes them by address; it holds no staging of its own.
 
 > **The resolver looks inert in preview, and is not.** Nothing in the design tool can hand this page
 > a URL, so `?state=` does nothing there, in every posture. It is exercised by driving the register

@@ -89,16 +89,46 @@ The no-membership case is the **empty state of the same screen**, not a separate
 
 ## Payments
 
-App + **Mobile payments: Off** (the default) sends every path that would reach a price — creating a
-circle, funding, checkout, managing funding — to the finish-on-web handoff. Creating lands there on
-the tap, before a name is asked for: a circle exists only once it is funded, so nothing typed on the
-phone would have anything to attach to. Guarded once in `main.jsx`, not in the shell. See
+The app cannot sell the subscription; it can do everything else, creating a circle included.
+App + **Mobile payments: Off** (the default) is the one money check, `pppAppNoPay()`
+(`app/pricing-store.jsx`):
+
+- **A subscriber** taps New circle and reaches the create form with no payment step, as on the web.
+- **Someone not subscribed** taps New circle and meets one line, word for word: “Joining circles is
+  free. Starting your own needs a Circlists subscription. You can’t subscribe in this app.” No
+  heading, link, price, website or button that buys; “Back to your circles” is its one action
+  (`PppWebHandoff`, every path that reaches it). The Subscription card on Account says the same line
+  in place of its own, with no Subscribe.
+- **The Subscription card on Account**, Active or free month, is status only: the marker, Plan, the
+  next-payment row, then “You can’t manage your subscription in this app.” The lapsed card keeps its
+  state and gains that line; Subscribe again goes. Ending and Payment failed are unruled and render
+  as on the web.
+
+The older per-circle handoff (`WebHandoff`, guarded in `main.jsx` over `PAYMENT_ROUTES`) still stands
+behind the per-person pricing hook; only the register's `manage-funding` state reaches it now. See
 `ARCHITECTURE.md`.
+
+## Named content differences
+
+Beyond chrome and payments, the app differs in content in a short, named list (owner, 5 Oct). Each
+is one check inside the shared component, never a second copy:
+
+| Difference | Check | Where |
+|---|---|---|
+| Not-subscribed line at Create a circle and on Account | `pppAppNoPay()` | `pricing-page.jsx` `PppWebHandoff`, `pricing-account.jsx` `PppNotSubscribed` |
+| Subscription card as status only (Active, free month, lapsed) | `pppAppNoPay()` | `pricing-account.jsx` `PppSubscribed`, `PppNotSubscribed`, `PppAccountCard` |
+| Notifications card never shows the Home Screen line | `isApp` prop | `push.jsx` `CircPushSetting` (via `spaces.jsx` `AccountSettings`) |
+| The splash: the still mark on cream, then the loading state | the route | `startup.jsx` `CircSplash`, route `splash` |
+
+The register opens each in the app posture; the launcher's States palette holds them as one pinned
+group, **Mobile app: where it differs**. Keep that list current when a difference lands.
 
 ## Maintaining both at once — the checklist
 
 - **Changing a surface?** Change the one component. Check it in Web *and* App via Config. If you
-  find yourself writing `isApp` inside a surface, stop — that is a chrome question.
+  find yourself writing `isApp` inside a surface, stop — that is a chrome question, unless it is one
+  of the named content differences above. A new one needs the owner's word, then a row in that
+  table and a line in the mobile list (`app/states.jsx`, `CIRC_MOBILE_LIST`).
 - **Adding a destination?** Decide its level first (account or circle). Account-level
   destinations may reach the bar; circle-level ones live above it. Then pick the container by the
   rule above.

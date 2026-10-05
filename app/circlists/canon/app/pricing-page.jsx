@@ -143,10 +143,20 @@ const PppCardPage = () => {
   );
 };
 
-// App posture, mobile payments off: subscribing happens on the web.
+// App posture, mobile payments off: the app cannot sell the subscription. Every
+// path that reaches this page (New circle not subscribed, #/subscribe, take-over)
+// reads the ratified line (mobile-readiness, 5 Oct) in the calm-page family's
+// shape (board pg-not-subscribed A.08, owner 5 Oct): the fact as the title, the
+// rest as the body. The title scales with the page (container units, as the
+// sleeping-circle title does) so it sits on two even lines at every phone width.
 const PppWebHandoff = () => {
   const api = pppApi();
-  return <CalmPage title="Subscriptions start on the web." body="Open Circlists in a browser to subscribe." actionLabel="Back to your circles" onAction={() => { window.CircPPP.set({ ctx: null }); api.goHome(); }} />;
+  return (
+    <div style={{ containerType: 'inline-size' }}>
+      <CalmPage title={<span style={{ display: 'block', fontSize: 'clamp(24px, 8cqi, 32px)', textWrap: 'balance' }}>{PPP_APP_TITLE}</span>}
+        body={PPP_APP_BODY} actionLabel="Back to your circles" onAction={() => { window.CircPPP.set({ ctx: null }); api.goHome(); }} />
+    </div>
+  );
 };
 
 Object.assign(window, { PPP_LEDE, PPP_BULLETS, PricingScreen, PppCheckout, PppCardPage, PppWebHandoff, PppPlanCard, PppPill });

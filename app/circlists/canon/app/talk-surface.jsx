@@ -191,7 +191,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
       {tab(false)}
       <span aria-hidden="true" style={{ width: av, flexShrink: 0 }} />
       <span style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--color-fg-3)' }}>
-        {me ? 'You removed what you said.' : t.by + ' removed what they said.'}
+        {t.blockedForMe ? t.by + ' is blocked.' : me ? 'You removed what you said.' : t.by + ' removed what they said.'}
       </span>
     </div>
   );
@@ -206,6 +206,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
           <span style={{ font: '400 ' + (depth ? 11 : 11.5) + 'px/1.3 var(--font-sans)', color: 'var(--color-fg-3)' }}>{candWhen(t.at)}{t.edited ? ' \u00b7 edited' : ''}</span>
           {me && !editing && <CandTurnMenu item={item} t={t} api={api} onEdit={() => { setDraft(t.text); setEditing(true); }} />}
           {me && editing && <CandEditOut onClick={() => setEditing(false)} />}
+          {!me && window.CircReportTurnMenu && <window.CircReportTurnMenu item={item} t={t} />}
         </div>
         {editing ? (
           <CandWrite value={draft} onChange={setDraft} max={500} minLines={1} autoFocus ariaLabel="Edit what you said" size={16}

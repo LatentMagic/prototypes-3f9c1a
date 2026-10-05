@@ -232,6 +232,15 @@
   @media (min-width: 760px) { .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; } }
   [data-circ-posture="mobile"] .circ-wizard-body { padding: clamp(16px, 4vh, 44px) 22px 32px; }
   [data-circ-posture="desktop"] .circ-wizard-body { padding: clamp(40px, 9vh, 92px) 24px 48px; }
+  /* Sign-in / sign-up (AuthPage): a 400 column on a phone, 360 on desktop; step 2 sits higher. */
+  .circ-auth-col { width: 100%; max-width: 400px; }
+  @media (min-width: 760px) { .circ-auth-col { max-width: 360px; } }
+  [data-circ-posture="mobile"] .circ-auth-col { max-width: 400px; }
+  [data-circ-posture="desktop"] .circ-auth-col { max-width: 360px; }
+  .circ-wizard-body.circ-auth-tight { padding-top: 8px; }
+  @media (min-width: 760px) { .circ-wizard-body.circ-auth-tight { padding-top: clamp(24px, 6vh, 72px); } }
+  [data-circ-posture="mobile"] .circ-wizard-body.circ-auth-tight { padding-top: 8px; }
+  [data-circ-posture="desktop"] .circ-wizard-body.circ-auth-tight { padding-top: clamp(24px, 6vh, 72px); }
 
   /* ---- card actions: quiet, recessive ---- */
   .circ-cardaction {
@@ -747,6 +756,7 @@ div.ppp-plan{cursor:default}
 .ppp-row-k{font:400 14px/1.4 var(--font-sans);color:var(--color-fg-2)}
 .ppp-row-v{font:600 14px/1.4 var(--font-sans);color:var(--color-fg-1);text-align:right}
 .ppp-card-line{font:400 13.5px/1.5 var(--font-sans);color:var(--color-fg-2);margin:var(--space-2) 0 0;text-wrap:pretty}
+.ppp-card-line-bal{text-wrap:balance}
 .ppp-btns{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
 .ppp-card-foot{font:400 12.5px/1.5 var(--font-sans);color:var(--color-fg-3);margin:var(--space-4) 0 0}
 .ppp-card-cq{container-type:inline-size}
@@ -785,6 +795,15 @@ div.ppp-plan{cursor:default}
 .ppp-s{display:inline-block;text-wrap:balance}
 :is(.circ-dormant-body,.circ-dormant-cap):has(.ppp-s){text-wrap:wrap}
 .ppp-create-foot{font:400 13.5px/1.5 var(--font-sans);color:var(--color-fg-2);margin:12px 0 0;text-align:center;text-wrap:pretty}
+/* ==== Mobile readiness (app/report-block.jsx, app/auth.jsx; 5 Oct) ==== */
+.circ-rb-reasons{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.circ-rb-chip{min-height:44px;padding:0 16px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);font:500 15px/1.2 var(--font-sans);color:var(--color-fg-1);cursor:pointer;transition:background var(--duration-base) var(--ease-quiet)}
+.circ-rb-chip:hover{background:var(--color-surface-sunken)}
+.circ-rb-chip[aria-checked="true"]{border:2px solid var(--color-accent);padding:0 15px}
+.circ-rb-note{display:block;width:100%;box-sizing:border-box;margin-top:var(--space-3);font:400 16px/1.5 var(--font-sans);color:var(--color-fg-1);background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);padding:12px 14px;min-height:44px;resize:vertical}
+.circ-rb-note:focus-visible{outline:none;border-color:var(--color-accent)}
+.circ-btn-apple:hover{background:#1f1f1f!important}
+.circ-btn-apple:active{background:#333!important}
 </style>
 </head>
 <body>
@@ -841,6 +860,8 @@ div.ppp-plan{cursor:default}
 <script type="text/babel" src="app/share-intake.jsx"></script>
 <script type="text/babel" src="app/subscriptions.jsx"></script>
 <script type="text/babel" src="app/not-found.jsx"></script>
+<!-- Start-up (mobile-readiness): the app's splash and the can't-connect state. Droppable. -->
+<script type="text/babel" src="app/startup.jsx"></script>
 <!-- Push notifications (LM-769). Droppable modules: main.jsx reads them off
      window per render, so removing either file removes its surface. -->
 <script type="text/babel" src="app/push.jsx"></script>
@@ -874,6 +895,9 @@ div.ppp-plan{cursor:default}
      app/spaces.jsx reads per render — so it loads after that file and before
      main.jsx, which mounts on load. -->
 <script type="text/babel" src="app/invite-link.jsx"></script>
+<!-- Report and Block (mobile-readiness). Droppable: wraps circViewerSpaces and
+     circContributors, so it loads after feed.jsx and feed-lens.jsx. -->
+<script type="text/babel" src="app/report-block.jsx"></script>
 <!-- Per-person pricing (merged 2026-10-02). Loads after the app files it extends, before main.jsx. -->
 <script type="text/babel" src="app/pricing-store.jsx"></script>
 <script type="text/babel" src="app/pricing-sheet.jsx"></script>

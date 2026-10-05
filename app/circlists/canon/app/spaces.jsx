@@ -45,19 +45,21 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction, children }) => 
   }}>
     <div style={{ position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)' }}><Wordmark size={21} /></div>
     <div style={{ maxWidth: 460 }}>
+      {/* `title` is optional: the app's not-subscribed page carries one ratified
+          line and no heading (mobile-readiness, 5 Oct), so the line stands alone. */}
       {eyebrow && (
         <div style={{
           fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em',
           textTransform: 'uppercase', color: 'var(--color-fg-3)', marginBottom: 'var(--space-8)',
         }}>{eyebrow}</div>
       )}
-      <h1 style={{
+      {title && <h1 style={{
         fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-3xl)', lineHeight: 1.2,
-        letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: 0,
-      }}>{title}</h1>
+        letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: '0 0 var(--space-8)',
+      }}>{title}</h1>}
       <p style={{
-        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 16, lineHeight: 1.55,
-        color: 'var(--color-fg-2)', margin: 'var(--space-8) auto 0', maxWidth: 400,
+        fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: title ? 16 : 18, lineHeight: 1.55,
+        color: title ? 'var(--color-fg-2)' : 'var(--color-fg-1)', margin: '0 auto', maxWidth: title ? 400 : 420,
       }}>{body}</p>
       {children && <div style={{ marginTop: 'var(--space-8)' }}>{children}</div>}
       <div style={{ marginTop: 'var(--space-8)' }}>
@@ -333,6 +335,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   // Per-member kebab + removal (champion only)
   const [menuFor, setMenuFor] = React.useState(null);
   const [removing, setRemoving] = React.useState(null);
+  const [blocking, setBlocking] = React.useState(null);
   React.useEffect(() => {
     if (!menuFor) return;
     const onDoc = (e) => { if (!e.target.closest('[data-kebab-root]')) setMenuFor(null); };
@@ -403,6 +406,16 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
         {space.members.map((m, i) => {
           const isYou = m.name === 'You';
           const memberIsChampion = (isChampion && isYou) || (!isChampion && m.name === championName);
+          // Block (app/report-block.jsx, droppable): every other member's row
+          // carries the menu, whatever your role, the champion's included.
+          const rb = window.CircRB && window.CircBlockDialog ? window.CircRB : null;
+          const blockedRow = !isYou && !!rb && rb.isBlocked(m.name);
+          const first = window.rbFirst ? window.rbFirst(m.name) : m.name;
+          const hasMenu = isYou ? !memberIsChampion : (isChampion || !!rb);
+          const menuRow = { display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+            background: 'transparent', border: 0, cursor: 'pointer', padding: '9px 10px', minHeight: 40,
+            borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
+            color: 'var(--color-fg-1)', whiteSpace: 'nowrap' };
           return (
             <div key={m.name + i} style={{
               display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
@@ -410,14 +423,23 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
             }}>
               <Avatar name={m.name} size={32} accent={isYou} />
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)' }}>{m.name}</div>
-                {m.email && (isYou || memberIsChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
+                {/* The Champion badge rides the name (mobile-readiness, 5 Oct): the
+                    trailing slot is the row's menu for everyone now. */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+                  {memberIsChampion && (
+                    <span role="img" aria-label="Champion" title="Champion" style={{ flexShrink: 0, display: 'inline-flex', color: 'var(--color-fg-3)' }}>
+                      <Icon name="crown" size={16} />
+                    </span>
+                  )}
+                </div>
+                {blockedRow
+                  ? <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12, color: 'var(--color-fg-2)' }}>Blocked</div>
+                  : m.email && (isYou || memberIsChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
               </div>
-              {memberIsChampion ? (
-                <span aria-label="Champion" title="Champion" style={{ minWidth: 44, minHeight: 44, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-fg-3)' }}>
-                  <Icon name="crown" size={16} />
-                </span>
-              ) : (isChampion || isYou) ? (
+              {!hasMenu ? (
+                <span aria-hidden="true" style={{ width: 44, height: 44, flexShrink: 0 }} />
+              ) : (
                 <div data-kebab-root style={{ position: 'relative', flexShrink: 0 }}>
                   <button onClick={() => setMenuFor(menuFor === m.name ? null : m.name)}
                     aria-haspopup="menu" aria-expanded={menuFor === m.name} aria-label={isYou ? 'Your membership' : `Manage ${m.name}`}
@@ -430,18 +452,29 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                       background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
                       borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)', padding: 6,
                     }}>
-                      <button role="menuitem" className="circ-menuitem"
+                      {!isYou && rb && (
+                        <button role="menuitem" className="circ-menuitem" style={menuRow}
+                          onClick={(e) => {
+                            const trig = e.currentTarget.closest('[data-kebab-root]').querySelector('button');
+                            setMenuFor(null);
+                            if (blockedRow) { rb.unblock(m.name); trig && trig.focus({ preventScroll: true }); }
+                            else setBlocking({ member: m, trig });
+                          }}>
+                          <Icon name="block" size={16} /> {(blockedRow ? 'Unblock ' : 'Block ') + first}
+                        </button>
+                      )}
+                      {(isYou || isChampion) && <button role="menuitem" className="circ-menuitem"
                         onClick={() => { setMenuFor(null); if (isYou) { onLeave && onLeave(); } else { setRemoving(m); } }}
                         style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
                           background: 'transparent', border: 0, cursor: 'pointer', padding: '9px 10px', minHeight: 40,
                           borderRadius: 'var(--radius-sm)', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 14,
                           color: 'var(--color-destructive)', whiteSpace: 'nowrap' }}>
                         <Icon name={isYou ? 'logout' : 'trash'} size={16} /> {isYou ? 'Leave this circle' : 'Remove'}
-                      </button>
+                      </button>}
                     </div>
                   )}
                 </div>
-              ) : null}
+              )}
             </div>
           );
         })}
@@ -537,6 +570,11 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 
       <SupportLine />
 
+      {blocking && window.CircBlockDialog && (
+        <window.CircBlockDialog member={blocking.member} returnTo={blocking.trig}
+          onConfirm={() => { window.CircRB.block(blocking.member.name); setBlocking(null); }}
+          onCancel={() => setBlocking(null)} />
+      )}
       {removing && (
         <RemoveMemberDialog member={removing}
           onConfirm={() => { onRemoveMember && onRemoveMember(removing.name); setRemoving(null); }}
@@ -554,7 +592,7 @@ const SupportLine = () => (
   </p>
 );
 
-const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushChange }) => {
+const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushChange, isApp = false }) => {
   const [cur, setCur] = React.useState('');
   const [np, setNp] = React.useState('');
   const [np2, setNp2] = React.useState('');
@@ -580,9 +618,9 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
       {window.CircPricing && window.CircPricing.AccountCard && <><window.CircPricing.AccountCard user={user} /><div style={{ height: 'var(--space-5)' }} /></>}
 
       {user.ssoProvider ? (
-        <><PushRow push={push} onChange={onPushChange} /><SsoManaged /><div style={{ height: 'var(--space-5)' }} /><DeleteAccount onDelete={onDeleteAccount} /><SupportLine /></>
+        <><PushRow push={push} onChange={onPushChange} isApp={isApp} /><SsoManaged /><div style={{ height: 'var(--space-5)' }} /><DeleteAccount onDelete={onDeleteAccount} /><SupportLine /></>
       ) : (<>
-      <PushRow push={push} onChange={onPushChange} />
+      <PushRow push={push} onChange={onPushChange} isApp={isApp} />
       <ChangeEmail user={user} onChangeEmail={onChangeEmail} />
 
       <div style={{ height: 'var(--space-5)' }} />
@@ -627,8 +665,8 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
 // also withdraws the card entirely on a browser that cannot deliver at all
 // (`pushCardShown`), and the row's own spacer goes with it — otherwise the page
 // would carry a gap where the card used to be.
-const PushRow = ({ push, onChange }) => ((window.CircPushSetting && (!window.pushCardShown || window.pushCardShown(push)))
-  ? <><window.CircPushSetting push={push} onChange={onChange} /><div style={{ height: 'var(--space-5)' }} /></>
+const PushRow = ({ push, onChange, isApp }) => ((window.CircPushSetting && (!window.pushCardShown || window.pushCardShown(push)))
+  ? <><window.CircPushSetting push={push} onChange={onChange} isApp={isApp} /><div style={{ height: 'var(--space-5)' }} /></>
   : null);
 
 // ---- Delete your account ---------------------------------------------------

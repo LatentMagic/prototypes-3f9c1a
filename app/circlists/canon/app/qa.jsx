@@ -18,9 +18,18 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
-  { key: 'takeover-same-width', only: 'CircPricing', title: 'Take-over buttons, same width',
-    note: 'Check at desktop width (container 520px or wider): Leave this circle and the take-over button are the same width in each state, row centred. Phone width is unchanged: stacked, full width, take-over on top.',
-    steps: ['ppp-takeover', 'ppp-takeover-subscribed', 'ppp-takeover-ending', 'ppp-takeover-failed'] },
+  {
+    key: 'mobile-app', title: 'Mobile app: where it differs',
+    note: 'The app posture, 5 Oct. Each step opens in Platform: Mobile with Mobile payments Off. At Create a circle, tap New circle.',
+    steps: ['app-splash', 'app-start-up', 'startup-cant-connect', 'app-home', 'app-circle', 'app-circle-settings',
+      'ppp-app-create-not-subscribed', 'ppp-create-subscribed', 'ppp-app-not-subscribed', 'ppp-app-free-month', 'ppp-app-active', 'ppp-app-lapsed',
+      'push-setting-in-app'],
+  },
+  {
+    key: 'report-block', title: 'Report and block: built, not ratified',
+    note: 'Cleared on ratification. Proposed, not put to the owner one by one: the reasons inside the Form dialog, Blocked and Unblock on the row, and the reach of a block beyond its account-wide scope. Report: open a card someone else added, menu, Report link. Comment: open the conversation on Go pipelines, the menu by Priya N., Report comment. Block: Settings, the menu on a row, Block.',
+    steps: ['reading-loop', 'report-link-reported', 'comment-reactions-counted', 'members-champion', 'members-non-champion', 'block-priya-second-circle'],
+  },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);
 

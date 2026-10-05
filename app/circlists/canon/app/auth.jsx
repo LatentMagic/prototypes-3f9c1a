@@ -1,55 +1,63 @@
 // ============================================================================
-// Circlists — Auth surfaces. No app shell. Centred card on neutral page.
+// Circlists — Auth surfaces. No app shell, no card: every surface is AuthPage.
 // Sign-in, Sign-up, One-time-code, Google return, Password recovery.
 // ============================================================================
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// ---- Shared frame ----------------------------------------------------------
-// `lead` is an optional block ABOVE the card (LM-771's share intake uses it to
-// name the link the member arrived holding). Absent everywhere else, so no
-// existing auth surface changes shape.
-const AuthFrame = ({ title, subtitle, children, footer, onBack, lead }) => (
-  <div style={{
-    minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
-    display: 'flex', flexDirection: 'column', alignItems: 'center',
-    padding: '32px 20px 48px',
-  }}>
-    <div style={{ width: '100%', maxWidth: 400, display: 'flex', justifyContent: onBack ? 'space-between' : 'center', alignItems: 'center', marginTop: 'min(4vh, 28px)', marginBottom: 32 }}>
-      {onBack && (
-        <button onClick={onBack} aria-label="Back" style={{
-          background: 'transparent', border: 0, padding: 8, margin: -8, cursor: 'pointer',
-          color: 'var(--color-fg-2)', display: 'inline-flex',
-        }}><Icon name="arrow-left" size={20} /></button>
-      )}
-      <Wordmark size={22} />
-      {onBack && <span style={{ width: 20 }} />}
-    </div>
-    {lead}
-    <div style={{
-      width: '100%', maxWidth: 400, background: 'var(--color-surface)',
-      border: '1px solid var(--color-border-1)', borderRadius: 'var(--radius-lg)',
-      padding: 'var(--space-8)', boxShadow: 'var(--shadow-raised)',
-    }}>
-      <h1 style={{
-        fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)',
-        lineHeight: 1.25, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: 0,
-      }}>{title}</h1>
-      {subtitle && (
-        <p style={{
-          fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5,
-          color: 'var(--color-fg-2)', margin: '8px 0 0',
-        }}>{subtitle}</p>
-      )}
-      <div style={{ marginTop: 'var(--space-6)' }}>{children}</div>
-    </div>
-    {footer && (
-      <div style={{
-        marginTop: 'var(--space-5)', fontFamily: 'var(--font-sans)', fontSize: 14,
-        color: 'var(--color-fg-2)', textAlign: 'center',
-      }}>{footer}</div>
-    )}
+// ---- The sign-in / sign-up page (signup-one-screen, 02.2, ratified 5 Oct) --
+// No card at any width: the Create circle page's header row and body spacing.
+// Two steps: Google, Apple, Continue with email; then the email form alone,
+// with the back arrow. The mark sits in the heading's line. The small print
+// (consent, switch line) sits at the screen's foot. Step 2 drops the subtitle
+// and the switch line; step 1 holds both. `lead` (LM-771's share intake) sits
+// above the heading.
+const AuthPage = ({ title, subtitle, onBack, lead, children, consent, footer }) => (
+  <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'clamp(10px, 1.2vw, 16px) clamp(12px, 1.4vw, 20px)', flex: 'none' }}>
+      {onBack ? <WizardIconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40, height: 40 }} />}
+      <span style={{ width: 40 }} />
+    </header>
+    <main className={'circ-wizard-body' + (onBack ? ' circ-auth-tight' : '')} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingBottom: 16 }}>
+      <div className="circ-auth-col">
+        {lead}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <LogoMark size={28} />
+            <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.25, letterSpacing: '-0.02em', color: 'var(--color-fg-1)', margin: 0 }}>{title}</h1>
+          </div>
+          {subtitle && <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.5, color: 'var(--color-fg-2)', margin: '8px 0 0' }}>{subtitle}</p>}
+        </div>
+        <div style={{ marginTop: 'var(--space-6)' }}>{children}</div>
+      </div>
+    </main>
+    <footer style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 22px 24px' }}>
+      <div className="circ-auth-col">
+        {consent}
+        {footer && <div style={{ marginTop: 'var(--space-4)', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', textAlign: 'center' }}>{footer}</div>}
+      </div>
+    </footer>
   </div>
+);
+
+// Every other auth surface (OTC, Recovery) takes the same frame (owner, 5 Oct).
+const AuthFrame = (p) => <AuthPage {...p} />;
+
+// Step 1 of both pages: the two one-tap ways in, then email.
+const AuthProviders = ({ onGoogle, onApple, onEmail }) => (
+  <>
+    <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
+    <AppleButton onClick={onApple || onGoogle} />
+    <div style={{ marginTop: 'var(--space-3)' }}>
+      <Button variant="secondary" full size="lg" icon={<Icon name="mail" size={18} />} onClick={onEmail}>Continue with email</Button>
+    </div>
+  </>
+);
+// The password rule beside its label, so step 2 fits a small phone's browser.
+const LabelHint = ({ label, hint }) => (
+  <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+    <span>{label}</span><span style={{ fontWeight: 400, fontSize: 12.5, color: 'var(--color-fg-3)' }}>{hint}</span>
+  </span>
 );
 
 // Tertiary inline text link
@@ -76,13 +84,33 @@ const LegalLink = ({ href, children }) => (
 const ConsentLine = ({ lead = 'By creating an account you accept our' }) => (
   <p style={{
     fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5,
-    color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0', textAlign: 'center',
+    color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0', textAlign: 'center', textWrap: 'balance',
   }}>
     {lead}{' '}
     <LegalLink href="https://circlists.com/terms">Terms</LegalLink>,{' '}
     <LegalLink href="https://circlists.com/privacy">Privacy</LegalLink>{' '}and{' '}
     <LegalLink href="https://circlists.com/refunds">Refund Policy</LegalLink>.
   </p>
+);
+
+// ---- Sign in with Apple — web and app alike (owner, 5 Oct) -------------------
+// Directly below Continue with Google, the same width and size, nothing else on
+// the page moved. Drawn to Apple's rules: black fill, white mark and label on a
+// light page, no smaller than the other sign-in button. The label pairs with
+// Google's ("Continue with"), one of Apple's three permitted titles. The mark is
+// a stand-in path; the build takes Apple's own asset.
+const AppleMark = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style={{ display: 'block', marginTop: -2 }}>
+    <path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
+  </svg>
+);
+const AppleButton = ({ onClick, size = 'lg' }) => (
+  <button type="button" className="circ-btn-apple" onClick={onClick} style={{
+    marginTop: 'var(--space-3)', width: '100%', minHeight: size === 'md' ? 44 : 52, padding: size === 'md' ? '11px 18px' : '14px 22px',
+    borderRadius: 'var(--radius-md)', border: 0, background: '#000', color: '#fff',
+    fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, lineHeight: 1,
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer', whiteSpace: 'nowrap',
+  }}><AppleMark />Continue with Apple</button>
 );
 
 const OrDivider = () => (
@@ -94,10 +122,13 @@ const OrDivider = () => (
 );
 
 // ---- Sign in ---------------------------------------------------------------
-const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup, lead, subtitle = 'Pick up your list where you left off.' }) => {
+const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subtitle = 'Pick up your list where you left off.' }) => {
+  const [step, setStep] = React.useState(1);
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [err, setErr] = React.useState({});
+  const emailBtn = React.useRef(null);
+  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:last-child > button').focus(), 0); };
   const submit = (e) => {
     e.preventDefault();
     const next = {};
@@ -106,9 +137,15 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup, lead, subtitle = 'Pi
     setErr(next);
     if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
   };
-  return (
-    <AuthFrame lead={lead} title="Sign in" subtitle={subtitle}
+  const consent = <ConsentLine lead="Your use of Circlists is covered by our" />;
+  if (step === 1) return (
+    <AuthPage lead={lead} title="Sign in" subtitle={subtitle} consent={consent}
       footer={<span>New here? <TextLink onClick={onGoSignup}>Create an account</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
+      <div ref={emailBtn}><AuthProviders onGoogle={onGoogle} onApple={onApple} onEmail={() => setStep(2)} /></div>
+    </AuthPage>
+  );
+  return (
+    <AuthPage lead={lead} title="Sign in" onBack={back} consent={consent}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
           value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} autoFocus />
@@ -119,20 +156,20 @@ const SignIn = ({ onSubmit, onGoogle, onForgot, onGoSignup, lead, subtitle = 'Pi
         </div>
         <Button type="submit" variant="primary" full size="lg">Sign in</Button>
       </form>
-      <OrDivider />
-      <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
-      <ConsentLine lead="Your use of Circlists is covered by our" />
-    </AuthFrame>
+    </AuthPage>
   );
 };
 
 // ---- Sign up ---------------------------------------------------------------
-const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
+const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
+  const [step, setStep] = React.useState(1);
   const [first, setFirst] = React.useState('');
   const [last, setLast] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [pw, setPw] = React.useState('');
   const [err, setErr] = React.useState({});
+  const emailBtn = React.useRef(null);
+  const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:last-child > button').focus(), 0); };
   const submit = (e) => {
     e.preventDefault();
     const next = {};
@@ -143,9 +180,14 @@ const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
     setErr(next);
     if (Object.keys(next).length === 0) onSubmit({ firstName: first.trim(), lastName: last.trim(), email: email.trim() });
   };
-  return (
-    <AuthFrame title="Create your account" subtitle="One account, every circle you’re part of."
+  if (step === 1) return (
+    <AuthPage title="Create your account" subtitle="One account, every circle you’re part of." consent={<ConsentLine />}
       footer={<span>Already have an account? <TextLink onClick={onGoSignin}>Sign in</TextLink> or <OutLink href="https://circlists.com">learn more</OutLink></span>}>
+      <div ref={emailBtn}><AuthProviders onGoogle={onGoogle} onApple={onApple} onEmail={() => setStep(2)} /></div>
+    </AuthPage>
+  );
+  return (
+    <AuthPage title="Create your account" onBack={back} consent={<ConsentLine />}>
       <form onSubmit={submit} noValidate>
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -159,15 +201,11 @@ const SignUp = ({ onSubmit, onGoogle, onGoSignin }) => {
         </div>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
           value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} />
-        <Field label="Password" name="new-password" type="password" autoComplete="new-password" placeholder="At least 8 characters"
-          value={pw} onChange={(e) => { setPw(e.target.value); setErr(s => ({ ...s, pw: null })); }} error={err.pw}
-          hint="At least 8 characters." />
+        <Field label={<LabelHint label="Password" hint="At least 8 characters" />} name="new-password" type="password" autoComplete="new-password"
+          value={pw} onChange={(e) => { setPw(e.target.value); setErr(s => ({ ...s, pw: null })); }} error={err.pw} />
         <Button type="submit" variant="primary" full size="lg" style={{ marginTop: 'var(--space-2)' }}>Create account</Button>
       </form>
-      <OrDivider />
-      <Button variant="secondary" full size="lg" icon={<Icon name="google" size={18} />} onClick={onGoogle}>Continue with Google</Button>
-      <ConsentLine />
-    </AuthFrame>
+    </AuthPage>
   );
 };
 
@@ -312,4 +350,4 @@ const Recovery = ({ onDone, onBackToSignin }) => {
   );
 };
 
-Object.assign(window, { EMAIL_RE, AuthFrame, TextLink, OutLink, LegalLink, ConsentLine, SignIn, SignUp, OtcEntry, GoogleReturn, Recovery });
+Object.assign(window, { EMAIL_RE, AuthFrame, AuthPage, TextLink, OutLink, LegalLink, ConsentLine, SignIn, SignUp, OtcEntry, GoogleReturn, Recovery });

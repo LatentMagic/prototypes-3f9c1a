@@ -50,5 +50,25 @@ const pppSleepMine = (spaces) => spaces.map((s) => (s.champion === 'You' && s.fu
   ? { ...s, funded: false, dormancy: 'terminal', funding: null } : s));
 const pppResumed = (st) => ({ status: st.wasTrial ? 'trial' : 'active', wasTrial: false });
 const pppApi = () => window.__pppApi || null;
+// The app's money check (mobile-readiness, 5 Oct): the app posture with Mobile
+// payments Off cannot sell the subscription. The one key for every money
+// difference — the not-subscribed line, and the Subscription card as status only.
+const pppAppNoPay = () => { const a = pppApi(); return !!(a && a.isApp && !a.mobilePayments); };
+// The ratified line, word for word, as one paragraph that wraps with its
+// container (board pg-not-subscribed B.01, 5 Oct). The last two words of each
+// closing phrase are glued so no line ends on one word.
+const PppAppLine = () => (
+  <>Joining circles is free. Starting your own needs a Circlists{'\u00a0'}subscription. You can{'\u2019'}t subscribe in this{'\u00a0'}app.</>
+);
+// The Create a circle page (board A.08, 5 Oct): the calm-page family's shape.
+// The fact is the title, the other two sentences its body. Same words, reordered.
+const PPP_APP_TITLE = 'You can\u2019t subscribe in this\u00a0app.';
+const PPP_APP_BODY = 'Joining circles is free. Starting your own needs a Circlists\u00a0subscription.';
+const PPP_APP_MANAGE = 'You can\u2019t manage your subscription in this app.';
+// The status line breaks only at its phrase edge (board C.01, 5 Oct): whole
+// where it fits, else before "in this app."
+const PppManageLine = () => (
+  <><span style={{ display: 'inline-block' }}>You can{'\u2019'}t manage your subscription</span> in this{'\u00a0'}app.</>
+);
 
-Object.assign(window, { PPP_PLANS, PPP_DEFAULT, PPP_RENEW_DAYS, PPP_TRIAL_DAYS, usePPP, pppSubscribed, pppDay, pppYearOn, pppMonthOn, pppOther, pppWakeMine, pppSleepMine, pppResumed, pppApi });
+Object.assign(window, { PPP_PLANS, PPP_DEFAULT, PPP_RENEW_DAYS, PPP_TRIAL_DAYS, usePPP, pppSubscribed, pppDay, pppYearOn, pppMonthOn, pppOther, pppWakeMine, pppSleepMine, pppResumed, pppApi, pppAppNoPay, PppAppLine, PPP_APP_TITLE, PPP_APP_BODY, PPP_APP_MANAGE, PppManageLine });

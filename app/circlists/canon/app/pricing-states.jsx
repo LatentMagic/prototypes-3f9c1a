@@ -15,15 +15,20 @@ const LAPSED = { status: 'none', usedFreeMonth: true };
 const PPP_STATE_DEFS = [
   ['ppp-price-free', 'Subscription page, free month available', { store: { ...NOT_SUB, ctx: { from: 'account' } }, spaces: pppHand, route: 'subscribe' }],
   ['ppp-price-used', 'Subscription page, free month used', { store: { ...LAPSED, ctx: { from: 'account' } }, spaces: pppHand, route: 'subscribe' }],
-  ['ppp-create-not-subscribed', 'Create a circle, not subscribed (tap New circle)', { store: NOT_SUB, spaces: pppHand, route: 'home' }],
+  ['ppp-create-not-subscribed', 'Create a circle, not subscribed (tap New circle)', { store: NOT_SUB, spaces: pppHand, route: 'home', platform: 'web' }],
+  ['ppp-app-create-not-subscribed', 'App: Create a circle, not subscribed (tap New circle)', { store: NOT_SUB, spaces: pppHand, route: 'home', platform: 'app' }],
   ['ppp-create-subscribed', 'Create a circle, subscribed (tap New circle)', { store: {}, route: 'home' }],
-  ['ppp-not-subscribed', 'Account, not subscribed, never paid', { store: NOT_SUB, spaces: pppHand, route: 'account' }],
+  ['ppp-not-subscribed', 'Account, not subscribed, never paid', { store: NOT_SUB, spaces: pppHand, route: 'account', platform: 'web' }],
+  ['ppp-app-not-subscribed', 'App: Account, never subscribed', { store: NOT_SUB, spaces: pppHand, route: 'account', platform: 'app' }],
   ['ppp-lapsed', 'Lapsed: home, your circles asleep', { store: LAPSED, spaces: pppSleepMine, route: 'home' }],
   ['ppp-lapsed-circle', 'Lapsed: one of your sleeping circles', { store: LAPSED, spaces: pppSleepMine, current: 'sp-backend' }],
-  ['ppp-lapsed-account', 'Lapsed: Account card', { store: LAPSED, spaces: pppSleepMine, route: 'account' }],
+  ['ppp-lapsed-account', 'Lapsed: Account card', { store: LAPSED, spaces: pppSleepMine, route: 'account', platform: 'web' }],
+  ['ppp-app-lapsed', 'App: Account, lapsed', { store: LAPSED, spaces: pppSleepMine, route: 'account', platform: 'app' }],
   ['ppp-lapsed-none-asleep', 'Lapsed, nothing asleep: Account card', { store: LAPSED, spaces: pppHand, route: 'account' }],
-  ['ppp-active', 'Account, subscribed, active (monthly)', { store: {}, route: 'account' }],
-  ['ppp-free-month', 'Account, free month', { store: { status: 'trial', plan: 'monthly' }, route: 'account' }],
+  ['ppp-active', 'Account, subscribed, active (monthly)', { store: {}, route: 'account', platform: 'web' }],
+  ['ppp-app-active', 'App: Account, subscribed, active', { store: {}, route: 'account', platform: 'app' }],
+  ['ppp-free-month', 'Account, free month', { store: { status: 'trial', plan: 'monthly' }, route: 'account', platform: 'web' }],
+  ['ppp-app-free-month', 'App: Account, free month', { store: { status: 'trial', plan: 'monthly' }, route: 'account', platform: 'app' }],
   ['ppp-payment-failed', 'Account, payment failed', { store: { status: 'failed' }, route: 'account' }],
   ['ppp-ending', 'Account, ending', { store: { status: 'ending' }, route: 'account' }],
   ['ppp-switch-yearly', 'Account, switch to yearly (sheet A)', { store: {}, route: 'account', sheet: 'switch' }],
@@ -45,6 +50,8 @@ const PPP_STATE_DEFS = [
 ];
 const pppStage = (api, def) => {
   const { seedSpaces, DEFAULT_USER } = window.CircSeed;
+  // The register's Platform setting (see app/states.jsx buildStates).
+  if (def.platform && api.setPlatform) { api.setPlatform(def.platform); if (api.setMobilePayments) api.setMobilePayments(false); }
   try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
   let list = seedSpaces(DEFAULT_USER.email).filter((s) => !/^TEST\b/i.test(s.name || ''));
   if (def.spaces) list = def.spaces(list);
@@ -68,7 +75,8 @@ window.buildStates = (api) => {
   const r = pppBuild(api);
   const mine = PPP_STATES.map((s) => ({ id: s.id, label: s.label, group: PPP_GROUP, go: () => pppStage(api, s.def) }));
   mine.forEach((m) => { r.byId[m.id] = m; });
-  r.groups = [{ title: PPP_GROUP, notes: ['Unratified. The subscription belongs to the person; Config \u2192 Per-person pricing switches it.'], items: mine }, ...r.groups];
+  const pinned = r.groups.filter((g) => g.pin);
+  r.groups = [...pinned, { title: PPP_GROUP, notes: ['Unratified. The subscription belongs to the person; Config \u2192 Per-person pricing switches it.'], items: mine }, ...r.groups.filter((g) => !g.pin)];
   return r;
 };
 const pppResolve = window.circResolveState;

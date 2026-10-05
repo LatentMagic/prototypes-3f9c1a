@@ -982,6 +982,12 @@ const CIRC_STATE_REGISTER = [
   { group: 'Loading states', id: 'feed-loading', label: 'Feed — in a circle (in-shell)', stage: (c) => c.goFeedLoading() },
   { group: 'Loading states', id: 'app-loading', label: 'App — full screen', stage: (c) => c.holdInterstitial('google-return') },
 
+  // Start-up (mobile-readiness, 5 Oct; app/startup.jsx). The splash is the app's
+  // own; can't-connect is every posture's, so it leaves the Platform as it is.
+  { group: 'Start-up', id: 'app-splash', label: 'App: splash — the still mark on cream, held', platform: 'app', stage: (c) => c.holdInterstitial('splash') },
+  { group: 'Start-up', id: 'app-start-up', label: 'App: start-up — the splash, then the loading mark, then home', platform: 'app', stage: (c) => c.setRoute('splash') },
+  { group: 'Start-up', id: 'startup-cant-connect', label: 'Start-up — the servers could not be reached (Try again)', stage: (c) => c.setRoute('cant-connect') },
+
   { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
@@ -1014,7 +1020,8 @@ const CIRC_STATE_REGISTER = [
   { group: 'Notifications', id: 'push-setting-on', label: 'Account — notifications on', stage: (c) => c.stagePushSetting({ on: true }) },
   { group: 'Notifications', id: 'push-setting-off', label: 'Account — notifications off', stage: (c) => c.stagePushSetting({ on: false }) },
   { group: 'Notifications', id: 'push-setting-refused', label: 'Account — refused at the device', stage: (c) => c.stagePushSetting({ perm: 'denied', on: false }) },
-  { group: 'Notifications', id: 'push-setting-safari-tab', label: 'Account — an iOS browser tab', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
+  { group: 'Notifications', id: 'push-setting-safari-tab', label: 'Account — an iOS browser tab', platform: 'web', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
+  { group: 'Notifications', id: 'push-setting-in-app', label: 'App: Account — notifications, never the Home Screen line', platform: 'app', stage: (c) => c.stagePushSetting({ channel: 'ios-tab', on: false }) },
   { group: 'Notifications', id: 'push-no-channel', label: 'Account — a browser that cannot deliver (no card)', stage: (c) => c.stagePushSetting({ channel: 'unsupported', perm: 'default', on: false, ask: 'pending' }) },
   { group: 'Notifications', id: 'push-device-preview', label: 'On the device — three circles with news, links and replies', stage: (c) => c.stageDevicePreview() },
 
@@ -1028,6 +1035,21 @@ const CIRC_STATE_REGISTER = [
   { group: 'Home', id: 'home-crowded', label: 'Home — five circles talking, the strip at its ceiling', stage: (c) => c.stageHome({ crowd: true }) },
   { group: 'Home', id: 'home-asleep', label: 'Home — a dormant circle among the others', stage: (c) => c.stageHome({ sleep: 'sp-book' }) },
   { group: 'Home', id: 'circle-micro-new-card', label: 'Home — the micro on a circle that has a new card', stage: (c) => c.stageCircleMicro() },
+  // The app posture's chrome, staged so the mobile list can open it.
+  { group: 'Home', id: 'app-home', label: 'App: home — Home and Account in the bottom bar', platform: 'app', stage: (c) => c.stageHome() },
+  { group: 'Home', id: 'app-circle', label: 'App: inside a circle — name and gear above, the floating Add', platform: 'app', stage: (c) => c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }) },
+  { group: 'Home', id: 'app-circle-settings', label: 'App: circle settings — a full page, no bar', platform: 'app', stage: (c) => c.stageFunding(null) },
+
+  // Report and block (mobile-readiness, 5 Oct; app/report-block.jsx). Parts are
+  // proposed, not ratified: see the QA entry.
+  { group: 'Report and block', id: 'report-link-reported', label: 'A link already reported — its menu reads Reported (Backend Pod, Priya’s Rust card)', stage: (c) => {
+    c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    c.setSpaces((prev) => prev.map((s) => (s.id !== 'sp-backend' ? s : { ...s, items: s.items.map((i) => (i.url === 'https://blog.rust-lang.org/2026/01/async-internals' ? { ...i, reported: true } : i)) })));
+  } },
+  { group: 'Report and block', id: 'block-priya-second-circle', label: 'Priya N. blocked — seen from a second circle you share (Tuesday Book Club)', stage: (c) => {
+    c.stageSort({ space: 'sp-book', tab: 'active', order: 'newest' });
+    c.setUser({ ...window.CircSeed.DEFAULT_USER, blocked: ['Priya N.'] });
+  } },
 
   // Share intake (LM-771): the screen a member lands on after sharing a link
   // into Circlists from another app. The picker is the one new surface; the
@@ -1050,6 +1072,10 @@ const CIRC_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.CIRC_STATE_NOTES.
 const CIRC_STATE_GROUP_NOTES = {
+  'Report and block': [
+    'Report: in Backend Pod, open the menu on a card someone else added, Report link, pick a reason (or none), Report. The button reads Reported, the dialog closes, the card stays and its menu now reads Reported.',
+    'Block: in Backend Pod, Settings, the menu on Priya N.\u2019s row, Block Priya, Block. Her row reads Blocked; her cards and words are gone from Backend Pod and from Tuesday Book Club. The same menu holds Unblock Priya.',
+  ],
   'Refusals': [
     'Edit title: open a card you added, the menu, Edit title, change the text, Save. The first save is refused: the dialog stays and the line shows. Save again to succeed.',
     'Comment reaction: open the conversation, press React, pick a glyph. The first pick is refused: the line shows under the comment and the previous reaction stays.',
@@ -1066,6 +1092,25 @@ window.circFailNext = (k) => { if (window.circFail[k]) { window.circFail[k] = fa
 
 // The catalogue's own address. Not a state, so it is not in the register.
 const CIRC_STATE_INDEX_NAMES = ['index', 'states'];
+
+// ---- The mobile list: everywhere the app posture differs from the web --------
+// Keep current: a new app-only difference gets a line here, with its address.
+const CIRC_MOBILE_GROUP = 'Mobile app: where it differs';
+const CIRC_MOBILE_LIST = [
+  ['app-splash', 'Splash — the still mark on cream, then the loading mark'],
+  ['app-home', 'Home — Home and Account in a bottom bar; no rail, no drawer'],
+  ['app-circle', 'Inside a circle — name and gear in the top bar, the floating Add; Add opens as a bottom sheet'],
+  ['app-circle-settings', 'Circle settings — a full page that slides in, no bar'],
+  ['ppp-app-create-not-subscribed', 'Create a circle, not subscribed — tap New circle: one line, nothing to buy'],
+  ['ppp-app-not-subscribed', 'Account, never subscribed — the same line, no Subscribe'],
+  ['ppp-app-free-month', 'Account, free month — status only, no buttons'],
+  ['ppp-app-active', 'Account, active — status only, no buttons'],
+  ['ppp-app-lapsed', 'Account, lapsed — its state, no Subscribe again'],
+  ['push-setting-in-app', 'Notifications on Account — never the Home Screen line'],
+];
+const CIRC_MOBILE_NOTES = [
+  'Each entry opens in the app posture (Platform: Mobile, Mobile payments: Off). Its web twin sits in its own group, and opening the twin returns the Platform to Web.',
+];
 
 // ---- derived: what an agent or a script can read off the page --------------
 // Names and labels only. Nothing runnable, so reading it can't stage anything.
@@ -1084,6 +1129,10 @@ function buildStates(api) {
   const states = CIRC_STATE_REGISTER.map((s) => ({
     id: s.id, label: s.label, group: s.group,
     go: () => {
+      // The register's Platform setting (mobile-readiness, 5 Oct). An app-only
+      // state opens in the app posture with Mobile payments Off; its web twin
+      // returns the Platform to Web. An entry with no platform leaves it alone.
+      if (s.platform && api.setPlatform) { api.setPlatform(s.platform); if (api.setMobilePayments) api.setMobilePayments(false); }
       const fresh = seedSpaces(DEFAULT_USER.email);
       const c = circStateContext({ ...api, spaces: fresh });
       c.reseed(fresh);
@@ -1097,6 +1146,15 @@ function buildStates(api) {
     let g = groups.find((x) => x.title === s.group);
     if (!g) { g = { title: s.group, notes: CIRC_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
     g.items.push(s);
+  });
+  // The mobile list: an index of everywhere the app differs, each opening its
+  // state. An exception the owner asked for to "the register is not a
+  // sitemap" (5 Oct): it holds no staging of its own, only addresses, so it is
+  // pinned above the other groups. Looked up at press time, so it also reaches
+  // the ids app/pricing-states.jsx adds to `byId` after this returns.
+  groups.unshift({
+    title: CIRC_MOBILE_GROUP, pin: true, notes: CIRC_MOBILE_NOTES,
+    items: CIRC_MOBILE_LIST.map(([id, label]) => ({ id, label, group: CIRC_MOBILE_GROUP, go: () => { const t = byId[id]; if (t) t.go(); } })),
   });
   return { states, byId, groups, reset: ctx.reset };
 }

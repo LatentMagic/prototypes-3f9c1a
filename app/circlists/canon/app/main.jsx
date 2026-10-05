@@ -170,7 +170,7 @@ const CircApp = () => {
   // direction: the held link is ephemeral by design, so a RESTORED picker is a
   // share screen with nothing being shared — the member's next ordinary visit
   // would open on a question nobody asked, dressed as a bare arrival.
-  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full', 'share-intake'];
+  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full', 'share-intake', 'splash', 'cant-connect'];
   // A fresh session (nothing stored) lands on home — home is a shared surface
   // now, not an app-only chrome state (per
   // MOBILE.md's promotion test). A RESTORED session goes back exactly where it
@@ -675,7 +675,7 @@ const CircApp = () => {
   const isChampion = (s) => !!s && s.champion === 'You';
 
   // Release a review-only loading hold as soon as we're off an interstitial.
-  const LOADING_ROUTES = ['google-return', 'manage-interstitial', 'setting-up'];
+  const LOADING_ROUTES = ['google-return', 'manage-interstitial', 'setting-up', 'splash'];
   useEffect(() => {
     if (holdLoading && !LOADING_ROUTES.includes(route)) setHoldLoading(false);
   }, [route, holdLoading]);
@@ -1187,6 +1187,7 @@ const CircApp = () => {
         setSortOrder, setSortMenuOpen, setDividerAt, setLensWho, setDensity, setSavedOn, setWatchingOn,
         setSearchQuery, setSearchOpen, setHomeStripOpen,
         setIncludeActive, setFeedPages, setPageStatus, setOrderLoad,
+        setPlatform, setMobilePayments,
       })
     : { byId: {}, groups: [], reset: null });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) s.go(); };
@@ -1247,6 +1248,10 @@ const CircApp = () => {
     setRoute, setSpaces, setCurrentId, setTab, setFundFlow, enterSpace, goHome, openAccount,
     setLayout: (v) => setTweak('layout', v), isChampion });
 
+  // Report and Block (app/report-block.jsx, droppable): bound before the screen
+  // renders, so the Members rows read this render's blocked list.
+  if (window.CircRB) window.CircRB.bind({ user, setUser, setSpaces });
+
   // ---- render route ----
   // App posture + mobile payments OFF: every path that would reach the funding /
   // checkout / provider surfaces lands on the finish-on-web handoff instead. One
@@ -1274,6 +1279,12 @@ const CircApp = () => {
     screen = window.WebHandoff
       ? <WebHandoff context={ctx} spaceName={nm} onExit={ctx === 'new' ? goHome : exitToApp} />
       : null;
+  } else if (route === 'splash' && window.CircSplash) {
+    // Start-up (app/startup.jsx): the app's splash, then the loading state, then home.
+    screen = <window.CircSplash hold={holdLoading} onDone={goHome} />;
+  } else if (route === 'cant-connect' && window.CircCantConnect) {
+    // Start-up could not reach the servers: every posture.
+    screen = <window.CircCantConnect onDone={goHome} />;
   } else if (route === 'signin') {
     // LM-771: arriving signed out with a shared link adds exactly ONE thing to
     // the canon card — the lead above it — and points the return at the picker.
@@ -1341,7 +1352,7 @@ const CircApp = () => {
       onStartCircle={gateActive ? onGate : openCreateSpace} />,
       { subView: { title: 'Settings', onBack: returnToSpace } });
   } else if (route === 'account') {
-    screen = inShell(<AccountSettings user={user} onChangeEmail={changeEmail} onDeleteAccount={() => setConfirm({ kind: 'delete-account' })}
+    screen = inShell(<AccountSettings user={user} isApp={isApp} onChangeEmail={changeEmail} onDeleteAccount={() => setConfirm({ kind: 'delete-account' })}
       push={push} onPushChange={pushSetOn} />,
       { subView: { title: 'Account', onBack: () => (accountFrom === 'home' ? goHome() : returnToSpace()) } });
   } else if (route === 'share-intake' && window.CircShareIntake) {
@@ -2004,7 +2015,8 @@ const CircApp = () => {
   // its own overlays — it is the operating system, not a layer of ours.
   const permOverlay = (permAsk && window.CircPermissionAsk)
     ? <window.CircPermissionAsk onAnswer={pushAnswer} /> : null;
-  const appTree = <>{screen}{overlay}{reactOverlay}{gateOverlayEl}{permOverlay}{liveRegion}</>;
+  const rbHost = window.CircRBHost ? <window.CircRBHost /> : null;
+  const appTree = <>{screen}{overlay}{reactOverlay}{rbHost}{gateOverlayEl}{permOverlay}{liveRegion}</>;
 
   return (
     <>

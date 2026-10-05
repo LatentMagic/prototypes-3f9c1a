@@ -224,6 +224,10 @@ const FeedCardActions = ({ item, tab, density = 'comfortable', onMarkRead = () =
               <window.CardTitleMenuItem item={item} onEdit={() => { closeMenu(); onEditTitle(item); }} />
             )}
             <div aria-hidden="true" style={{ height: 1, background: 'var(--color-border-2)', margin: '5px 4px' }} />
+            {/* Report (app/report-block.jsx): someone else's link only, below the rule, above Delete. */}
+            {window.CircReportMenuItem && !circIsContributor(item) && (
+              <window.CircReportMenuItem item={item} onOpen={() => { closeMenu(); window.CircRB.openReport({ kind: 'link', itemId: item.id }); }} />
+            )}
             <button role="menuitem" className="circ-menuitem"
               onClick={() => { onDelete(item); closeMenu(); }}
               style={{ ...menuItemBase, color: 'var(--color-destructive)' }}>

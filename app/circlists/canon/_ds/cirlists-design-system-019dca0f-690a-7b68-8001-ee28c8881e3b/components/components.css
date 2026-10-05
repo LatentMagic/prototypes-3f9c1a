@@ -1,0 +1,12 @@
+/* Pseudo-states for the compiled components. Lifted from the Circlists prototype (circlists.html). */
+.circ-btn-primary:hover:not(:disabled){background:var(--color-accent-hover)!important}
+.circ-btn-primary:active:not(:disabled){background:var(--color-accent-press)!important}
+.circ-btn-secondary:hover:not(:disabled),.circ-btn-destructive-secondary:hover:not(:disabled){background:var(--color-surface-sunken)!important}
+.circ-btn-secondary:active:not(:disabled),.circ-btn-destructive-secondary:active:not(:disabled){background:var(--color-surface-press)!important}
+.circ-btn-destructive:hover:not(:disabled){background:var(--color-destructive-hover)!important}
+.circ-btn-destructive:active:not(:disabled){background:var(--color-destructive-press)!important}
+.circ-btn-tertiary:hover{text-decoration:underline}
+.circ-spin{display:inline-block;border-style:solid;border-width:2px;border-radius:50%;animation:circ-spin 700ms linear infinite;flex-shrink:0}
+@keyframes circ-spin{to{transform:rotate(360deg)}}
+input:focus-visible{outline-offset:0;border-color:var(--color-accent)!important}
+@media (prefers-reduced-motion:reduce){.circ-spin{animation-duration:2000ms}}

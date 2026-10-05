@@ -3,6 +3,14 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## The app gets ready for the stores — 2026-10-05
+
+- **The app can't sell the subscription; everything else works.** Someone not subscribed meets one line at Create a circle and on Account. The Subscription card in the app shows status only.
+- **Report and Block.** Report someone else's link or comment. Block a member across every circle you share; what they add leaves your view. Parts are built but not ratified.
+- **Continue with Apple below Google**, on sign-in and sign-up, web and app.
+- **Start-up has a splash in the app, and a can't-connect state** on web and app.
+- **The register gains a Platform setting**, and the launcher lists everywhere the app differs.
+
 ## Per-person pricing — 2026-10-02
 
 - **One subscription per person covers every circle they fund.**
