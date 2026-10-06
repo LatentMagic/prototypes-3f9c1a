@@ -180,8 +180,9 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
     return () => { clearTimeout(id); window.removeEventListener('keydown', onKey); if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus(); };
   }, []);
   if (!member) return null;
-  const name = member.name;
-  const firstName = name.includes(' ') ? name.split(' ')[0] : name;
+  const name = member.name || '';
+  // A member with no name reads "this member" (nameless-member case, 6 Oct).
+  const firstName = !name.trim() ? 'this member' : (name.includes(' ') ? name.split(' ')[0] : name);
   return (
     <div role="alertdialog" aria-modal="true" aria-label={`Remove ${firstName}?`}
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
@@ -347,7 +348,10 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   React.useEffect(() => {
     const open = (e) => { const m = space.members.find((x) => x.email === e.detail); if (m) setBlocking({ member: m, trig: null }); };
     window.addEventListener('circ-stage-block', open);
-    return () => window.removeEventListener('circ-stage-block', open);
+    // And Remove, on the member with this address.
+    const openRemove = (e) => { const m = space.members.find((x) => x.email === e.detail); if (m) setRemoving(m); };
+    window.addEventListener('circ-stage-remove', openRemove);
+    return () => { window.removeEventListener('circ-stage-block', open); window.removeEventListener('circ-stage-remove', openRemove); };
   }, [space]);
   React.useEffect(() => {
     if (!menuFor) return;
@@ -590,7 +594,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
       )}
       {removing && (
         <RemoveMemberDialog member={removing}
-          onConfirm={() => { onRemoveMember && onRemoveMember(removing.name); setRemoving(null); }}
+          onConfirm={() => { onRemoveMember && onRemoveMember(removing); setRemoving(null); }}
           onCancel={() => setRemoving(null)} />
       )}
     </ContentPage>

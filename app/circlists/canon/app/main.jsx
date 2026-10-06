@@ -1004,11 +1004,17 @@ const CircApp = () => {
   // stores as never-set, exactly like an empty one.
   const editSpace = (name, description) => setSpaces(prev => prev.map(s => s.id === currentId
     ? { ...s, name, description: (description && description.trim()) ? description.trim() : undefined } : s));
-  const removeMember = (memberName) => setSpaces(prev => prev.map(s => {
+  // Takes a name or a member. A member with no name is matched by address, so
+  // removing one never removes another nameless member (prototype only; the
+  // real app removes by member ID).
+  const removeMember = (who) => setSpaces(prev => prev.map(s => {
     if (s.id !== currentId) return s;
+    const hit = (typeof who === 'object' && who && !who.name)
+      ? (m) => !m.name && m.email === who.email
+      : (m) => m.name === (typeof who === 'object' && who ? who.name : who);
     // Removed member KEEPS their name on links they added; "former member" is
     // reserved for account deletion. Links always stay.
-    return { ...s, members: s.members.filter(m => m.name !== memberName) };
+    return { ...s, members: s.members.filter(m => !hit(m)) };
   }));
   const changeEmail = (email) => setUser(u => ({ ...u, email }));
 

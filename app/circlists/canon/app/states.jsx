@@ -1023,6 +1023,11 @@ const CIRC_STATE_REGISTER = [
     c.stageHiddenEmail({ hideChampion: true, namelessChampion: true });
     setTimeout(() => window.dispatchEvent(new CustomEvent('circ-stage-block', { detail: 'x7k2p9qm4d@privaterelay.appleid.com' })), 300);
   } },
+  { group: 'Members & funding', id: 'members-remove-nameless', label: 'Members — Remove open on a member with no name (you champion)', stage: (c) => {
+    c.goSpace('sp-backend', 'members');
+    c.setSpaces((prev) => prev.map((s) => (s.id === 'sp-backend' ? { ...s, members: s.members.map((m) => (m.email === 'priya.n@example.com' ? { ...m, name: '' } : m)) } : s)));
+    setTimeout(() => window.dispatchEvent(new CustomEvent('circ-stage-remove', { detail: 'priya.n@example.com' })), 300);
+  } },
   { group: 'Members & funding', id: 'members-own-email-hidden', label: 'Members — your own email hidden', stage: (c) => c.stageHiddenEmail({ hideYou: true }) },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
