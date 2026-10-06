@@ -1371,6 +1371,19 @@
         }
       ]
     },
+    'mcp-game-store': {
+      label: 'MCP Game Store',
+      // Working title, no brand yet — no `logo`, so the rail falls back to text.
+      prototypes: [
+        {
+          slug: 'canon',
+          version: 'v0',
+          ticket: '—',
+          html: 'index.html',
+          desc: 'MCP Game Store (working title). Scaffold only: a placeholder screen proving the starter kit is wired. No product design yet.'
+        }
+      ]
+    },
     commentape: {
       label: 'Commentape',
       // No brand lockup exists yet — interpret the app's own type for the rail:
@@ -1392,7 +1405,7 @@
   };
 
   // Active app + its prototypes are owned by renderApp() — re-runnable so the
-  // app switcher can repoint to another app (data-driven; Circlists + Commentape).
+  // app switcher can repoint to another app (data-driven; one entry per app in APPS).
   var ACTIVE_APP, APP, PROTOTYPES;
 
   // A prototype may address a state of its own (canon reads `?state=<id>` against

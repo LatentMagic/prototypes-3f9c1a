@@ -10,7 +10,7 @@ LatentMagic **prototypes** — home for high-fidelity interactive prototypes, bu
 
 ## How it fills
 
-Added by hand — copy a Claude Design export in, register its console entry, commit (see `AGENTS.md`, "Add a prototype"). The working line accretes into the `canon` prototype rather than minting a new slug per change.
+Added by hand — copy a Claude Design export in, register its console entry, commit (see `AGENTS.md`, "Add a prototype"). The working line accretes into the `canon` prototype rather than minting a new slug per change. Two apps carry one: `app/circlists/canon/` and `app/mcp-game-store/canon/` (a scaffold; working title).
 
 Three kinds of rail node, each with its own accent: the **working line**, on the version spine; **reference nodes** (amber, off the spine) for things that are not versions at all, like the brand pack and its motion set; and **candidates** (periwinkle, hollow dot, on the spine) for an unratified proposal answering a ticket, which is deleted once its design folds into `canon`. Rules in `AGENTS.md`.
 
