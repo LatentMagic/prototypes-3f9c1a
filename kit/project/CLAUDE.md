@@ -104,7 +104,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 
 ## Code
 
-<important if="you are touching module load order, the config button, the states register, QA, or the Tweaks panel">
+<important if="you are touching module load order, the config button, the states register, or QA">
 - **The pill at the bottom right is the prototype's own aid, not the product:** Config (review settings you hold while looking), States (an address you open: `?state=<id>`, and a link to hand someone), and QA (the states a piece of work in flight needs checking against). `app/README.md` says how to add a state (`KIT_STATE_REGISTER` in `app/states.jsx`), a QA entry (`KIT_QA` in `app/qa.jsx`) and a Config row (`window.ConfigExtra`); `ARCHITECTURE.md` § Addressable states says what earns a state an entry.
 - **Keep them current (a rule added by this kit).** Work that adds a hard-to-reach situation adds its state to the register in the same change; a QA entry is deleted once the work is signed off.
 - **JSX over `window`, load order fixed in `index.html`**, and the aids are deletable: see `ARCHITECTURE.md` § Deletable aids and § Conventions.

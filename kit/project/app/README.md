@@ -8,16 +8,14 @@ A no-build page: `index.html` loads React and Babel from the CDN, then each file
 |---|---|---|
 | `../tokens.css` | The custom properties the aids and placeholder read | replaces it with its own tokens, same property names |
 | `primitives.jsx` | `Icon`, the six glyphs the aids draw, and the dialogs' shared scroll lock (`kitLockScroll`) | adds its own primitives; keeps those |
-| `tweaks-panel.jsx` | The Tweaks shell and controls, as the design host supplies it | leaves alone |
-| `app-tweaks.jsx` | Tweak defaults (the `EDITMODE-BEGIN/END` block, keep the markers exactly) and the panel's controls | replaces the controls; keeps `layout` and `configBtn`. `accent` is optional: empty or absent, `tokens.css` decides the accent |
 | `states.jsx` | The states register, the `?state=` resolver, the link builder, `window.KIT_STATES` | replaces the stager library and the register |
 | `states-ui.jsx` | The States palette and the states index | leaves alone |
 | `config.jsx` | The launcher pill and the Config modal shell | leaves alone |
 | `qa.jsx` | The QA list | replaces the entries |
 | `config-extra.example.jsx` | Example of adding a Config section | deletes, or replaces with its own |
-| `main.jsx` | Root: state, placeholder screen, mounts the aids | replaces the seed and the screen; keeps the wiring |
+| `main.jsx` | Root: state, the Viewport setting, placeholder screen, mounts the aids | replaces the seed and the screen; keeps the wiring |
 
-Every file from `tweaks-panel.jsx` to `config-extra.example.jsx` is a deletable aid: remove the file and its script tag in `../index.html`, nothing else, and the page still works. Each can go on its own. `main.jsx` loads last.
+Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: remove the file and its script tag in `../index.html`, nothing else, and the page still works. Each can go on its own. `main.jsx` loads last.
 
 ## Adding things
 
@@ -32,7 +30,7 @@ Every file from `tweaks-panel.jsx` to `config-extra.example.jsx` is a deletable 
 
 ## Known limits
 
-- The Viewport setting is stored by the Tweaks hook, so with `tweaks-panel.jsx` removed the Config row still shows but does not switch. The design host always supplies that file.
+- The Viewport setting is held in `main.jsx` for the page's life only: a reload returns it to auto.
 - With `config.jsx` removed, the launcher goes, and the States palette and QA with it; only `?state=` and the index remain.
 - QA depends on the States palette: with `states-ui.jsx` (or `states.jsx`) removed, the QA half of the launcher goes too.
 - The dialogs do not contain focus: Tab can leave an open dialog for the launcher behind it.

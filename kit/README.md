@@ -12,7 +12,7 @@ Nothing in `project/` names a product (this README names Circlists, where the ki
 
 ## Starting a new prototype from it
 
-1. Ask the Claude Design agent, in chat in the new project, to copy `kit/project/` from this repo into the project root with paths preserved. The Circlists project's own log shows it pulling named files from this repo into an existing project on 2026-09-14 (not a whole tree into an empty project). Nothing in Claude Code can push files into a prototype project.
+1. Drag the `kit/project/` folder into the new Claude Design project yourself. The Circlists project's files show dropped files landing in an `uploads/` folder, so check where they landed: if they sit under `uploads/` instead of the project root, the first instruction to the agent is to move them to the root with paths preserved. Connect GitHub to the project: the agent reads the product's specs from there.
 2. Fill the product block at the top of `CLAUDE.md` (between `<!-- product:start -->` and `<!-- product:end -->`): the product's name, the GitHub paths its truth lives at, platform, where it is published, product skills, extra root files. `CLAUDE.md` differs between projects only inside that block; everything else in it is shared and never edited per product. There is no `PRODUCT.md`: GitHub describes the product, and nothing is kept locally to maintain.
 3. Replace `tokens.css` with the product's tokens, keeping the property names.
 4. Publish it: a prototype reaches the hosted console through the `APPS` table in this repo's `index.html` (entry file defaults to `latentpulse.html`; set `html` to `index.html`). State links only work at a published address.
@@ -20,10 +20,8 @@ Nothing in `project/` names a product (this README names Circlists, where the ki
 
 Not yet verified. Each takes about a minute:
 
-- Whether a brand-new project can pull from GitHub before any setup. Check: open a new project and ask the agent to list `kit/project/` from this repo.
-- Whether `CLAUDE.md` at the project root is read automatically. Check: after the copy, ask the agent in a fresh chat what the first rule in `CLAUDE.md` is.
+- Whether `CLAUDE.md` at the project root is read automatically. Check: after the files are in, ask the agent in a fresh chat what the first rule in `CLAUDE.md` is.
 - Whether `AskUserQuestion` is gone from the picture and the built-in Frontend design skill exists: the rules assume the second.
-- Whether the Tweaks panel works in the kit. It only opens inside the design host. Check: open the copied project in the host and toggle Tweaks.
 
 ## Before using it again
 
@@ -38,7 +36,7 @@ Then update "Last cut" above.
 
 ## Carrying a change between prototypes
 
-Make the change to the shared machinery or rules here. Then ask each project's agent to copy the changed path from this repo into the project (a re-read alone does not change the project's own copy), keeping that project's own product block. Projects send improvements back through the handoff, which is where `CLAUDE.md`, `GOTCHA.md` and `skills/build-playground/` changes proposed in a project are recorded.
+Make the change to the shared machinery or rules here. Then, in each project, drag the changed file in again, or ask the agent to re-read it from this repo and write it over the project's copy, keeping that project's own product block. Projects send improvements back through the handoff, which is where `CLAUDE.md`, `GOTCHA.md` and `skills/build-playground/` changes proposed in a project are recorded.
 
 The Circlists project's own `CLAUDE.md` has not been split into shared and product parts, so today it does not match the kit's. Until it is, changes flow by hand, both ways.
 
@@ -66,14 +64,14 @@ There is no `PRODUCT.md`, by the owner's ruling: "GitHub should describe the pro
 
 ### App machinery (`app/`, `index.html`, `tokens.css`)
 
-Prefix `kit` / `KIT`. Every file from `tweaks-panel.jsx` to `config-extra.example.jsx` is a deletable aid. The Circlists screens and states stayed behind; a placeholder screen and a neutral state register replace them.
+Prefix `kit` / `KIT`. Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid. The Circlists screens and states stayed behind; a placeholder screen and a neutral state register replace them.
 
 Differences from canon:
 
 - State ids are validated: lowercase letters, digits, single hyphens, unique, not `index` or `states`. Others are refused at load with a console error.
 - The dialogs' scroll lock is counted (`kitLockScroll`), so stacked dialogs release it only when the last closes.
 - A `kit-config-btn-secondary` button in the Config modal runs its handler, then closes the modal.
-- `accent` in the tweaks is optional; empty, `tokens.css` decides.
+- Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
 - The playground `<base href>` is four `../`, not canon's three (below).
 
 Known limits are listed in `project/app/README.md`.

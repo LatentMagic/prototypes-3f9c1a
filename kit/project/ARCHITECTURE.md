@@ -12,7 +12,6 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the launcher gone; the states it points at stay |
 | `app/config-extra.example.jsx` | deletable example | no product rows in Config |
-| `app/app-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
 

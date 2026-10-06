@@ -2,8 +2,8 @@
 // Kit — the root. Owns the app's state, decides which screen you are on, and
 // mounts the prototype aids around it.
 //
-// The aids (config.jsx, states.jsx + states-ui.jsx, qa.jsx, app-tweaks.jsx +
-// tweaks-panel.jsx) are read off `window` and each may be ABSENT: leave a file
+// The aids (config.jsx, states.jsx + states-ui.jsx, qa.jsx) are read off
+// `window` and each may be ABSENT: leave a file
 // and its script tag out and the app carries on without it, no edit here.
 //
 // PlaceholderScreen and KIT_SEED_ITEMS stand in for the product. Replace them;
@@ -15,13 +15,6 @@ const { useState, useEffect, useRef } = React;
 // What the app opens on, and what every state restages before it stages.
 // TODO(product): the product's own seed data, in its own file loaded before this one.
 const KIT_SEED_ITEMS = ['First item', 'Second item'];
-
-// ---- Tweak defaults, baked in ----------------------------------------------
-// So the app renders at its intended look even when the Tweaks files
-// (app-tweaks.jsx / tweaks-panel.jsx) are absent — a build that omits the aids
-// drops them. When those files are present they take over.
-const KIT_TWEAK_FALLBACK = { layout: 'auto' };
-const useTweaksSafe = (typeof useTweaks === 'function') ? useTweaks : (d) => [d, () => {}];
 
 // ---- The placeholder screen --------------------------------------------------
 const PlaceholderScreen = ({ items, isMobile }) => (
@@ -42,25 +35,19 @@ const PlaceholderScreen = ({ items, isMobile }) => (
 
 // ---- App -------------------------------------------------------------------
 const KitApp = () => {
-  const [tw, setTweak] = useTweaksSafe(window.KIT_TWEAK_DEFAULTS || KIT_TWEAK_FALLBACK);
-  // The accent is the product's token (tokens.css) unless a tweak has picked one.
-  useEffect(() => {
-    const root = document.documentElement.style;
-    if (tw.accent) root.setProperty('--color-accent', tw.accent); else root.removeProperty('--color-accent');
-  }, [tw.accent]);
-
-  // viewport / layout posture
+  // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
+  // Held for the page's life only; a reload returns to 'auto'.
+  const [layout, setLayout] = useState('auto');
   const [winW, setWinW] = useState(() => window.innerWidth);
   useEffect(() => {
     const onResize = () => setWinW(window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-  const forcedMobile = tw.layout === 'mobile';
-  const isMobile = tw.layout === 'mobile' ? true : tw.layout === 'desktop' ? false : winW < 1024;
+  const forcedMobile = layout === 'mobile';
+  const isMobile = layout === 'mobile' ? true : layout === 'desktop' ? false : winW < 1024;
 
   const ConfigLauncher = window.ConfigLauncher;
-  const KitTweaks = window.KitTweaks;
 
   const [items, setItems] = useState(() => KIT_SEED_ITEMS.slice());
 
@@ -121,14 +108,11 @@ const KitApp = () => {
       {/* Launcher — prototype aid; leaving app/config.jsx out removes it, no edit here.
           Mounted outside the phone frame: the frame's transform would capture its
           position: fixed. */}
-      {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher
+      {ConfigLauncher && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
         onReset={resetAndShow}
-        layout={tw.layout} onLayoutChange={(v) => setTweak('layout', v)} />}
-
-      {/* Tweaks panel — deleting app/app-tweaks.jsx removes it, no edit here */}
-      {KitTweaks && <KitTweaks tw={tw} setTweak={setTweak} />}
+        layout={layout} onLayoutChange={setLayout} />}
     </>
   );
 };
