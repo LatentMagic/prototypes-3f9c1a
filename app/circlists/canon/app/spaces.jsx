@@ -340,6 +340,15 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   const [menuFor, setMenuFor] = React.useState(null);
   const [removing, setRemoving] = React.useState(null);
   const [blocking, setBlocking] = React.useState(null);
+  // A failed Unblock has no dialog: its line sits in the member's row, under
+  // Blocked, until the next press of that row's menu (built, not ratified, 6 Oct).
+  const [unblockFail, setUnblockFail] = React.useState(null);
+  // Register aid: a staged state opens Block on the member with this address.
+  React.useEffect(() => {
+    const open = (e) => { const m = space.members.find((x) => x.email === e.detail); if (m) setBlocking({ member: m, trig: null }); };
+    window.addEventListener('circ-stage-block', open);
+    return () => window.removeEventListener('circ-stage-block', open);
+  }, [space]);
   React.useEffect(() => {
     if (!menuFor) return;
     const onDoc = (e) => { if (!e.target.closest('[data-kebab-root]')) setMenuFor(null); };
@@ -417,7 +426,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
           // Block (app/report-block.jsx, droppable): every other member's row
           // carries the menu, whatever your role, the champion's included.
           const rb = window.CircRB && window.CircBlockDialog ? window.CircRB : null;
-          const blockedRow = !isYou && !!rb && rb.isBlocked(m.name);
+          const blockedRow = !isYou && !!rb && rb.isBlocked(m);
           const first = window.rbFirst ? window.rbFirst(m.name) : m.name;
           const hasMenu = isYou || isChampion || !!rb;
           const menuRow = { display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
@@ -442,7 +451,10 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                   )}
                 </div>
                 {blockedRow
-                  ? <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12, color: 'var(--color-fg-2)' }}>Blocked</div>
+                  ? <>
+                      <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12, color: 'var(--color-fg-2)' }}>Blocked</div>
+                      {unblockFail === (m.email || m.name) && window.RbFailLine && <window.RbFailLine style={{ marginTop: 4 }}>Couldn{'\u2019'}t unblock {first || 'this member'}. Try{'\u00a0'}again.</window.RbFailLine>}
+                    </>
                   : m.email && (isYou || memberIsChampion) && (isHiddenEmail(m.email)
                     // A relay address never reaches its owner from another member, so it is not shown as a contact.
                     ? <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontStyle: 'italic', fontSize: 12, color: 'var(--color-fg-3)' }}>Email hidden</div>
@@ -452,7 +464,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                 <span aria-hidden="true" style={{ width: 44, height: 44, flexShrink: 0 }} />
               ) : (
                 <div data-kebab-root style={{ position: 'relative', flexShrink: 0 }}>
-                  <button onClick={() => setMenuFor(menuFor === m.name ? null : m.name)}
+                  <button onClick={() => { setUnblockFail(null); setMenuFor(menuFor === m.name ? null : m.name); }}
                     aria-haspopup="menu" aria-expanded={menuFor === m.name} aria-label={isYou ? 'Your membership' : `Manage ${rowName}`}
                     className="circ-cardaction circ-cardaction-icon" style={{ minWidth: 44, minHeight: 44, color: 'var(--color-fg-2)' }}>
                     <Icon name="more-vertical" size={18} />
@@ -468,10 +480,14 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                           onClick={(e) => {
                             const trig = e.currentTarget.closest('[data-kebab-root]').querySelector('button');
                             setMenuFor(null);
-                            if (blockedRow) { rb.unblock(m.name); trig && trig.focus({ preventScroll: true }); }
+                            if (blockedRow) {
+                              if (window.circFailNext && window.circFailNext('unblock')) setUnblockFail(m.email || m.name);
+                              else rb.unblock(m);
+                              trig && trig.focus({ preventScroll: true });
+                            }
                             else setBlocking({ member: m, trig });
                           }}>
-                          <Icon name="block" size={16} /> {(blockedRow ? 'Unblock ' : 'Block ') + first}
+                          <Icon name="block" size={16} /> {(blockedRow ? 'Unblock ' : 'Block ') + (first || 'this member')}
                         </button>
                       )}
                       {(isYou || isChampion) && <button role="menuitem" className="circ-menuitem"
@@ -569,7 +585,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
 
       {blocking && window.CircBlockDialog && (
         <window.CircBlockDialog member={blocking.member} returnTo={blocking.trig}
-          onConfirm={() => { window.CircRB.block(blocking.member.name); setBlocking(null); }}
+          onConfirm={() => { if (window.circFailNext && window.circFailNext('block')) return false; window.CircRB.block(blocking.member); setBlocking(null); }}
           onCancel={() => setBlocking(null)} />
       )}
       {removing && (

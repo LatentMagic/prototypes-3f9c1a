@@ -19,9 +19,19 @@
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
   {
-    key: 'app-subscription-status', title: 'App: Subscription card and sleeping circles',
-    note: 'Built 6 Oct. Each step opens in Platform: App with Mobile payments Off. 1. Ending: Ending, Plan, Ends on, "Your circles then go to sleep.", the manage line; no buttons. 2. Payment failed: Payment failed, Plan, "Your circles go to sleep in 30 days.", the manage line; no buttons. 3 to 6. A sleeping circle: no button that starts, resumes or pays; Leave this circle stays. The small line (built, not ratified): 3. "You can\u2019t manage your subscription in this app." 4. "Taking it over needs a subscription." 5. "Your subscription ends on <date>. You can\u2019t manage it in this app." 6. "Your last payment didn\u2019t go through. You can\u2019t manage your subscription in this app." 7 and 8. Tap New circle: under Create circle, "It goes to sleep on <date>. You can\u2019t manage your subscription in this app." No resume or update-the-card link (built, not ratified).',
-    steps: ['ppp-app-ending', 'ppp-app-payment-failed', 'ppp-app-lapsed-circle', 'ppp-app-takeover', 'ppp-app-takeover-ending', 'ppp-app-takeover-failed', 'ppp-app-create-ending', 'ppp-app-create-failed'],
+    key: 'auth-step-back', title: 'Sign in and Sign up: Back from the email form',
+    note: 'Built 6 Oct. 1 and 2. Tap Continue with email, then the browser\u2019s Back: step one shows, focus on Continue with email. The page\u2019s back arrow does the same, and a further Back leaves the page.',
+    steps: ['signin-new-device', 'signup-first-circle'],
+  },
+  {
+    key: 'block-failure', title: 'Block and Unblock: when it fails',
+    note: 'Built 6 Oct. 1. Priya\u2019s row \u2192 Block Priya \u2192 Block: the dialog stays open, "Couldn\u2019t block Priya. Try again." above the buttons; Cancel and Block still press, and the second Block goes. 2. Priya\u2019s row \u2192 Unblock Priya: under Blocked, "Couldn\u2019t unblock Priya. Try again."; the row stays Blocked, focus on its menu. The line goes on the next press of that menu (place built, not ratified).',
+    steps: ['block-fails', 'unblock-fails'],
+  },
+  {
+    key: 'add-link-refused', title: 'Add a link: an invalid address, and a refused link',
+    note: 'Built 6 Oct. 1. Opens with Add showing and "not a link" in the slot: "That doesn\u2019t look like a valid URL. Check it and try again." under it (canon\u2019s line, staged for comparison). 2. Press Add (the + button), enter any valid link, Add: "This link can\u2019t be added." in the same place, no reason given; the link stays as typed. Change it or Cancel; Add again succeeds (wording built, not ratified).',
+    steps: ['add-link-invalid', 'add-link-refused'],
   },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);

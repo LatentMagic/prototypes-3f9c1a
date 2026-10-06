@@ -967,6 +967,16 @@
           changelog: [
             {
               date: '2026-10-06',
+              title: 'A refused link, Block failures, Back from the email form',
+              items: [
+                'Add a link: the server can refuse a link outright. The Add sheet shows "This link can\'t be added." in the invalid-URL line\'s place, no reason given; the link and thought stay as typed. Built, not ratified. Staged by the add-link-refused and add-link-invalid states.',
+                'Block and Unblock can fail: the Block dialog stays open with "Couldn\'t block <name>. Try again."; a failed Unblock shows "Couldn\'t unblock <name>. Try again." under Blocked until the row menu is pressed again. Blocks are now keyed by member (address) rather than name; a nameless member reads "this member". States block-fails and unblock-fails.',
+                'Sign in and Sign up: the browser\'s Back from the email form returns to step one, as the page\'s back arrow does.',
+                'Account card: the billing foot now shows on the app\'s status-only card, and a pending switch shows its "From <date>" row; new App: pending-switch state. QA list now holds three walks (auth Back, block failures, add-link refused).',
+              ],
+            },
+            {
+              date: '2026-10-06',
               title: 'App: subscription status only, no way to pay',
               items: [
                 'In the app, the Account card for Ending and Payment failed shows status only (Plan, Ends on, the circles line, the manage line); Resume, Update the card, Switch and Cancel are gone.',

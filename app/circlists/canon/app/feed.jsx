@@ -513,6 +513,12 @@ const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
       setError('That doesn\u2019t look like a valid URL. Check it and try again.');
       return;
     }
+    // A link the server refuses (built, not ratified, 6 Oct): same line, no reason.
+    if (window.circFailNext && window.circFailNext('addLink')) {
+      setError('This link can\u2019t be added.');
+      if (inputRef.current) inputRef.current.focus();
+      return;
+    }
     setError(null);
     const normalized = /^https?:\/\//i.test(v) ? v : 'https://' + v;
     // Extraction is slow + unreliable, so add never blocks on it: the sheet

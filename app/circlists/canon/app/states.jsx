@@ -1019,6 +1019,10 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
   { group: 'Members & funding', id: 'members-champion-email-hidden', label: 'Members — champion’s email hidden, seen by a member', stage: (c) => c.stageHiddenEmail({ hideChampion: true }) },
   { group: 'Members & funding', id: 'members-champion-nameless-email-hidden', label: 'Members — champion with no name and a hidden email, seen by a member', stage: (c) => c.stageHiddenEmail({ hideChampion: true, namelessChampion: true }) },
+  { group: 'Members & funding', id: 'members-block-nameless', label: 'Members — Block open on a champion with no name', stage: (c) => {
+    c.stageHiddenEmail({ hideChampion: true, namelessChampion: true });
+    setTimeout(() => window.dispatchEvent(new CustomEvent('circ-stage-block', { detail: 'x7k2p9qm4d@privaterelay.appleid.com' })), 300);
+  } },
   { group: 'Members & funding', id: 'members-own-email-hidden', label: 'Members — your own email hidden', stage: (c) => c.stageHiddenEmail({ hideYou: true }) },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
@@ -1064,6 +1068,25 @@ const CIRC_STATE_REGISTER = [
   { group: 'Refusals', id: 'signin-provider-fails', label: 'Sign in — the next Google or Apple sign-in fails', stage: (c) => { window.circFail.provider = true; window.circAuthReview = { ...window.circAuthReview, cancel: false }; c.setRoute('signin'); } },
   { group: 'Refusals', id: 'signup-provider-fails', label: 'Sign up — the next Google or Apple sign-in fails', stage: (c) => { window.circFail.provider = true; window.circAuthReview = { ...window.circAuthReview, cancel: false }; c.setSpaces([]); c.setRoute('signup'); } },
   { group: 'Refusals', id: 'report-fails', label: 'Report — the next report fails to send (Backend Pod, Active)', stage: (c) => { window.circFail.report = true; c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }); } },
+  // add-link-refused (6 Oct): wording built, not ratified.
+  // add-link-invalid: the Add form open, an invalid address in the slot, its line showing.
+  { group: 'Refusals', id: 'add-link-invalid', label: 'Add a link — an invalid address (Backend Pod, Active)', stage: (c) => {
+    c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' });
+    // The feed loads first, so wait for each element rather than a fixed beat.
+    const when = (sel, fn, n = 30) => { const el = document.querySelector(sel); if (el) fn(el); else if (n > 0) setTimeout(() => when(sel, fn, n - 1), 100); };
+    when('button[aria-label="Add a link"]', (fab) => {
+      fab.click();
+      when('input[name="add-url"]', (input) => {
+        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, 'not a link');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        setTimeout(() => { const f = input.closest('form'); if (f && f.requestSubmit) f.requestSubmit(); }, 60);
+      });
+    });
+  } },
+  { group: 'Refusals', id: 'add-link-refused', label: 'Add a link — the next link is refused (Backend Pod, Active)', stage: (c) => { window.circFail.addLink = true; c.stageSort({ space: 'sp-backend', tab: 'active', order: 'newest' }); } },
+  // block-failure (6 Oct): Block is asked for; the Unblock line's place is built, not ratified.
+  { group: 'Refusals', id: 'block-fails', label: 'Block — the next block fails (Tuesday Book Club, Members)', stage: (c) => { window.circFail.block = true; c.goSpace('sp-book', 'members'); c.setUser((u) => ({ ...(u && u.email ? u : window.CircSeed.DEFAULT_USER), blocked: [] })); } },
+  { group: 'Refusals', id: 'unblock-fails', label: 'Unblock — the next unblock fails (Tuesday Book Club, Members, Priya blocked)', stage: (c) => { window.circFail.unblock = true; c.goSpace('sp-book', 'members'); c.setUser((u) => ({ ...(u && u.email ? u : window.CircSeed.DEFAULT_USER), blocked: ['Priya N.'] })); } },
 
   // Home as a shared surface, and the cross-circle returns strip (BIZ-136 run
   // 8): the home screen (app/home.jsx + app/home-returns.jsx).
@@ -1113,6 +1136,7 @@ const CIRC_STATE_GROUP_NOTES = {
     'Block: in Backend Pod, Settings, the menu on Priya N.\u2019s row, Block Priya, Block. Her row reads Blocked; her cards and words are gone from Backend Pod and from Tuesday Book Club. The same menu holds Unblock Priya.',
   ],
   'Refusals': [
+    'Add a link refused: in Backend Pod, press Add, paste any valid link, Add. The first add is refused: "This link can\u2019t be added." under the link, which stays as typed. Change it or Cancel; Add again succeeds.',
     'Edit title: open a card you added, the menu, Edit title, change the text, Save. The first save is refused: the dialog stays and the line shows. Save again to succeed.',
     'Comment reaction: open the conversation, press React, pick a glyph. The first pick is refused: the line shows under the comment and the previous reaction stays.',
     'Google or Apple sign-in fails: on Sign in or Sign up, press Continue with Google or Continue with Apple. The first press fails: one line under the buttons. Press again: the line clears and sign-in goes on.',
@@ -1150,6 +1174,7 @@ const CIRC_MOBILE_LIST = [
   ['ppp-app-not-subscribed', 'Account, never subscribed — the same line, no Subscribe'],
   ['ppp-app-free-month', 'Account, free month — status only, no buttons'],
   ['ppp-app-active', 'Account, active — status only, no buttons'],
+  ['ppp-app-pending-switch', 'Account, switch to yearly pending — the From row, no Keep monthly'],
   ['ppp-app-lapsed', 'Account, lapsed — its state, no Subscribe again'],
   ['ppp-app-ending', 'Account, ending — status only, no Resume'],
   ['ppp-app-payment-failed', 'Account, payment failed — status only, no Update the card'],

@@ -43,6 +43,24 @@ const AuthPage = ({ title, subtitle, onBack, lead, children, consent, footer }) 
 // Every other auth surface (OTC, Recovery) takes the same frame (owner, 5 Oct).
 const AuthFrame = (p) => <AuthPage {...p} />;
 
+// Step 2 takes a history entry, so the browser's Back returns to step 1 as the
+// back arrow does. The arrow pops that entry, so the two never drift apart.
+const useAuthStepBack = (step, toStepOne) => {
+  const pushed = React.useRef(false);
+  const go = React.useRef(toStepOne); go.current = toStepOne;
+  React.useEffect(() => {
+    if (step !== 2) return undefined;
+    try { window.history.pushState({ circAuthStep: 2 }, ''); pushed.current = true; } catch (e) {}
+    const onPop = () => { pushed.current = false; go.current(); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [step]);
+  return () => {
+    if (pushed.current) { try { window.history.back(); return; } catch (e) {} }
+    go.current();
+  };
+};
+
 // Step 1 of both pages: the two one-tap ways in, then email. `failed` names the
 // provider whose sign-in failed on the way round: one plain line under the
 // buttons (the one-time-code page's pattern: red x, ink text, role=alert), so
@@ -156,6 +174,7 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
   const appleRef = React.useRef(null);
   const stopRef = React.useRef(null);
   const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
+  const goBack = useAuthStepBack(step, back);
   const trip = (provider, go) => {
     setFailed(null);
     const r = authProviderTrip();
@@ -198,7 +217,7 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
     </AuthPage>
   );
   return (
-    <AuthPage lead={lead} title="Sign in" onBack={back} consent={consent}>
+    <AuthPage lead={lead} title="Sign in" onBack={goBack} consent={consent}>
       <form onSubmit={submit} noValidate>
         <Field label="Email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
           value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} autoFocus />
@@ -224,6 +243,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
   const [failed, setFailed] = React.useState(null);
   const emailBtn = React.useRef(null);
   const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
+  const goBack = useAuthStepBack(step, back);
   const trip = (provider, go) => {
     setFailed(null);
     const r = authProviderTrip();
@@ -248,7 +268,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
     </AuthPage>
   );
   return (
-    <AuthPage title="Create your account" onBack={back} consent={<ConsentLine />}>
+    <AuthPage title="Create your account" onBack={goBack} consent={<ConsentLine />}>
       <form onSubmit={submit} noValidate>
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>

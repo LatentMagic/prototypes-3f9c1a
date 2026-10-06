@@ -28,6 +28,9 @@ if (typeof LP_ICONS !== 'undefined') Object.assign(LP_ICONS, {
 
 const rbNorm = (s) => String(s || '').trim().replace(/\.+$/, '').toLowerCase();
 const rbFirst = (name) => String(name || '').trim().split(/\s+/)[0];
+// A block is held by name; a member with no name is held by address instead,
+// so blocking one nameless member never matches another (nameless-member case, 6 Oct).
+const rbKey = (x) => (typeof x === 'string' ? x : (x && x.name) ? x.name : 'email:' + rbNorm(x && x.email));
 const rbWho = (item) => String((item && item.attribution) || '').replace(/^added by\s+/i, '');
 
 // ---- the view: what a block takes out of THIS viewer's circles -------------
@@ -52,7 +55,7 @@ window.circViewerSpaces = (spaces, user) => {
   const bl = (user && user.blocked) || [];
   window.__rbBlocked = bl;
   if (!bl.length) return base;
-  const hit = (name) => bl.some((b) => rbNorm(b) === rbNorm(name));
+  const hit = (name) => !!rbNorm(name) && bl.some((b) => rbNorm(b) === rbNorm(name));
   return base.map((s) => {
     const items = s.items.filter((i) => !hit(rbWho(i))).map((i) => rbScrubTalk(i, hit));
     const pending = (s.pending || []).filter((i) => !hit(rbWho(i)));
@@ -76,9 +79,10 @@ window.CircRB = {
   api: null,
   bind(api) { this.api = api; },
   blocked() { const u = this.api && this.api.user; return (u && u.blocked) || []; },
-  isBlocked(name) { return this.blocked().some((b) => rbNorm(b) === rbNorm(name)); },
-  block(name) { this.api.setUser((u) => ({ ...u, blocked: [...((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(name)), name] })); },
-  unblock(name) { this.api.setUser((u) => ({ ...u, blocked: ((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(name)) })); },
+  // Each takes a name or a member; a member with no name is keyed by address.
+  isBlocked(x) { const k = rbKey(x); return this.blocked().some((b) => rbNorm(b) === rbNorm(k)); },
+  block(x) { const k = rbKey(x); this.api.setUser((u) => ({ ...u, blocked: [...((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(k)), k] })); },
+  unblock(x) { const k = rbKey(x); this.api.setUser((u) => ({ ...u, blocked: ((u.blocked) || []).filter((b) => rbNorm(b) !== rbNorm(k)) })); },
   openReport(d) { rbSetDlg({ ...d, key: Date.now() }); },
   // Called only once the report has gone; a report that fails marks nothing.
   markReported({ itemId, turnId }) {
@@ -237,12 +241,25 @@ const CircRBHost = () => {
     onClose={() => rbSetDlg(null)} />;
 };
 
+// The failure line: red x, ink text, role=alert (the Report dialog's line).
+const RbFailLine = ({ style, children }) => (
+  <div role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 6,
+    fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, lineHeight: 1.4, color: 'var(--color-fg-1)', ...style }}>
+    <span style={{ marginTop: 1, color: 'var(--color-destructive)', flexShrink: 0 }}><Icon name="x" size={14} /></span>
+    <span style={{ textWrap: 'balance' }}>{children}</span>
+  </div>
+);
+
 // ---- the Block confirmation: Remove member's shell -------------------------
 // Two named exceptions to rationed confirmation (owner, 5 Oct): Report and Block
 // each confirm, and neither offers undo. Block takes the house primary, not red:
 // it removes nothing and is undone in one press from the same row.
 const CircBlockDialog = ({ member, returnTo, onConfirm, onCancel }) => {
   const cancelRef = React.useRef(null);
+  // onConfirm returns false when the block did not go: the dialog stays open with
+  // one line above its buttons, both still pressable (Report's failed send).
+  const [failed, setFailed] = React.useState(false);
+  const confirm = () => { if (onConfirm() === false) setFailed(true); };
   React.useEffect(() => {
     const id = setTimeout(() => cancelRef.current && cancelRef.current.focus(), 40);
     const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
@@ -250,22 +267,26 @@ const CircBlockDialog = ({ member, returnTo, onConfirm, onCancel }) => {
     return () => { clearTimeout(id); window.removeEventListener('keydown', onKey); if (returnTo && returnTo.isConnected) returnTo.focus({ preventScroll: true }); };
   }, []);
   const n = rbFirst(member.name);
+  const title = n ? 'Block ' + n + '?' : 'Block this member?';
   return (
-    <div role="alertdialog" aria-modal="true" aria-label={'Block ' + n + '?'}
+    <div role="alertdialog" aria-modal="true" aria-label={title}
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       style={{ position: 'fixed', inset: 0, zIndex: 130, background: 'var(--color-scrim)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} className="circ-anim-fade">
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)', maxWidth: 400, width: '100%', boxShadow: 'var(--shadow-overlay)' }}>
-        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>Block {n}?</h2>
-        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)', textWrap: 'pretty' }}>
-          You won’t see {n}’s links or comments in any circle you share. {n} won’t be told, and can still see yours.
+        <h2 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 'var(--text-2xl)', lineHeight: 1.3, letterSpacing: '-0.01em', color: 'var(--color-fg-1)', margin: '0 0 8px' }}>{title}</h2>
+        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: failed ? '0 0 var(--space-4)' : '0 0 var(--space-6)', textWrap: 'pretty' }}>
+          {n
+            ? <>You won’t see {n}’s links or comments in any circle you share. {n} won’t be told, and can still see yours.</>
+            : <>You won’t see this member’s links or comments in any circle you share. This member won’t be told, and can still see yours.</>}
         </p>
+        {failed && <RbFailLine style={{ marginBottom: 'var(--space-5)' }}>Couldn{'\u2019'}t block {n || 'this member'}. Try{'\u00a0'}again.</RbFailLine>}
         <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" onClick={onConfirm}>Block</Button>
+          <Button variant="primary" onClick={confirm}>Block</Button>
         </div>
       </div>
     </div>
   );
 };
 
-Object.assign(window, { CircReportMenuItem, CircReportTurnMenu, CircRBHost, CircBlockDialog, rbFirst });
+Object.assign(window, { CircReportMenuItem, CircReportTurnMenu, CircRBHost, CircBlockDialog, RbFailLine, rbFirst });

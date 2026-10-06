@@ -98,6 +98,14 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-06T06:56:36Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- App Subscription card shows the pending-switch row; Back from the auth email form returns to step one; Block and Unblock failure lines (Unblock's place built, not ratified).
+
+## Previous sync
+
 date: 2026-10-05T18:00:59Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. Nothing mirrored; no commit sha resolved.
 

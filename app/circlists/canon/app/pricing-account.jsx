@@ -62,16 +62,20 @@ const PppSubscribed = ({ st, user }) => {
   const marker = { trial: 'Active', active: 'Active', failed: 'Payment failed', ending: 'Ending' }[st.status];
   const resume = () => A.set(pppResumed(st));
   const pending = st.pending && st.status !== 'ending';
+  // The billing foot: the same line on the web card and the app's status-only card.
+  const pppFoot = <div className="ppp-foot-wrap"><p className="ppp-card-foot ppp-foot"><span>Billed to {user ? user.email : 'your account'}</span><span>Card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span></span></p></div>;
   const canSwitch = (st.status === 'active' || st.status === 'trial') && !st.pending;
   // The app, Active or free month (pppAppNoPay): status only. The marker, Plan,
-  // the next-payment row, then the line. No buttons and no billing foot.
+  // the next-payment row, the billing foot, then the line. No buttons.
   if (pppAppNoPay() && (st.status === 'active' || st.status === 'trial')) return (
     <div className="ppp-card ppp-card-cq">
       <PppHead marker={marker} tick />
       <div className="ppp-rows">
         <PppRow k="Plan" v={plan.label + ' \u00b7 ' + pppNb(plan.a)} />
         <PppRow k={st.status === 'trial' ? 'First payment' : 'Next renewal'} v={renew} />
+        {pending && <PppRow k={'From ' + renew} v={PPP_PLANS[st.pending].label + ' \u00b7 ' + pppNb(PPP_PLANS[st.pending].a)} />}
       </div>
+      {pppFoot}
       <p className="ppp-card-line"><PppManageLine /></p>
     </div>
   );
@@ -88,6 +92,7 @@ const PppSubscribed = ({ st, user }) => {
       </div>
       {st.status === 'ending' && mine && <p className="ppp-card-line">Your circles then go to{'\u00a0'}sleep.</p>}
       {st.status === 'failed' && <p className="ppp-card-line">{mine ? <>Your circles go to sleep in 30{'\u00a0'}days.</> : <>Your subscription ends in 30{'\u00a0'}days.</>}</p>}
+      {pppFoot}
       <p className="ppp-card-line"><PppManageLine /></p>
     </div>
   );
@@ -117,7 +122,7 @@ const PppSubscribed = ({ st, user }) => {
         {pending && <Button variant="secondary" full onClick={() => A.set({ pending: null })}>{'Keep ' + st.plan}</Button>}
         {st.status === 'ending' && <Button variant="secondary" full onClick={resume}>Resume subscription</Button>}
       </div>}
-      <div className="ppp-foot-wrap"><p className="ppp-card-foot ppp-foot"><span>Billed to {user ? user.email : 'your account'}</span><span>Card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span></span></p></div>
+      {pppFoot}
       {st.status !== 'ending' && <div className="ppp-end"><Button variant="tertiary" style={{ color: 'var(--color-destructive)', paddingLeft: 0, paddingRight: 0 }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel subscription</Button></div>}
     </div>
   );

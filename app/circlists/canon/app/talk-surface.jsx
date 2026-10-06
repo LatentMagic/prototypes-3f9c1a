@@ -191,7 +191,7 @@ const CandTurn = ({ item, t, api, depth, onReply, showReply, fresh }) => {
       {tab(false)}
       <span aria-hidden="true" style={{ width: av, flexShrink: 0 }} />
       <span style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--color-fg-3)' }}>
-        {t.blockedForMe ? t.by + ' is blocked.' : me ? 'You removed what you said.' : t.by + ' removed what they said.'}
+        {t.blockedForMe ? (t.by ? t.by + ' is blocked.' : 'This member is blocked.') : me ? 'You removed what you said.' : t.by + ' removed what they said.'}
       </span>
     </div>
   );
