@@ -43,7 +43,7 @@ const CIRC_QA = [
   {
     key: 'hidden-email', title: 'Hidden email on Members: built, not ratified',
     note: 'Cleared on ratification. "Email hidden" is proposed wording, not ratified; its italic treatment is ratified. Check a normal address is unchanged after each.',
-    steps: ['members-champion-email-hidden', 'members-own-email-hidden', 'members-non-champion'],
+    steps: ['members-champion-email-hidden', 'members-champion-nameless-email-hidden', 'members-own-email-hidden', 'members-non-champion'],
   },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);

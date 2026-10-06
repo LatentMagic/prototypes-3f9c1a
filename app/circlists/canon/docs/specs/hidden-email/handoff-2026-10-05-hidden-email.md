@@ -9,6 +9,13 @@ A member who hides their email at sign-in leaves the app holding an address endi
   - `members-own-email-hidden` — your own account holds a relay address; Joe M. normal.
 - `stageNonChampion` now routes through the same staging with nothing hidden, so a hidden state run first does not leak into "Members — non-champion".
 
+## Nameless member (2026-10-06)
+A person can now join without a name. Canon had never had one.
+- `app/spaces.jsx`: a Members row with no name reads **"A member"** in the name slot (and in its menu's accessible label). Avatar unchanged (two dots, from `initialsOf`).
+- A nameless champion is matched to their row by `championEmail`, since the champion is otherwise identified by name. `unchampioned` now also checks `championEmail`, so a nameless champion still counts as a champion. Every "champion left" state already clears both fields, so none of them change.
+- `app/states.jsx`: `members-champion-nameless-email-hidden` shows Joe M. as the nameless champion with a relay address, seen by you, reading "A member" over "Email hidden". Joe's row is rebuilt on every staging, so the nameless row never leaks into other states.
+- Not touched or checked, and these may show a blank name for a nameless member: the Block dialog and Blocked label, reaction and comment attribution, the feed lens, "Added by" lines, and the Remove-member confirm.
+
 ## Ratified
 - Treatment: italic (owner, 2026-10-06). "Quieter weight" could not be met with weight or colour: the address already sits at the lowest loaded weight (400) and the lowest AA text colour (`fg-3`).
 

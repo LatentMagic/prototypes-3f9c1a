@@ -309,16 +309,21 @@ function circStateContext(api) {
   // Hidden email (5 Oct delta): the relay address the app holds when a member hides theirs.
   const RELAY_EMAIL = 'x7k2p9qm4d@privaterelay.appleid.com';
   // hideChampion: Joe M. (champion) holds a relay address. hideYou: your own account does.
-  const stageHiddenEmail = ({ hideChampion = false, hideYou = false } = {}) => {
+  // namelessChampion: Joe M. joined without a name (the nameless-member case, 6 Oct).
+  const stageHiddenEmail = ({ hideChampion = false, hideYou = false, namelessChampion = false } = {}) => {
     const youEmail = hideYou ? RELAY_EMAIL : DEFAULT_USER.email;
     const joeEmail = hideChampion ? RELAY_EMAIL : 'joe.m@example.com';
     setUser({ ...DEFAULT_USER, email: youEmail });
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setSpaces(prev => withSpace(prev, 'sp-book').map(s => {
       if (s.id !== 'sp-book') return s;
-      const members = s.members.some(m => m.name === 'Joe M.') ? s.members : [...s.members, M('Joe M.', joeEmail)];
-      return { ...s, funded: true, dormancy: null, champion: 'Joe M.', championEmail: joeEmail, openUntil: null, funding: null,
-        members: members.map(m => m.name === 'Joe M.' ? { ...m, email: joeEmail } : m.name === 'You' ? { ...m, email: youEmail } : m) };
+      // Joe's row is rebuilt every time, so a nameless Joe never outlives its state.
+      const at = s.members.findIndex(m => m.name === 'Joe M.' || !m.name);
+      const rest = s.members.filter(m => m.name !== 'Joe M.' && m.name);
+      const joe = M(namelessChampion ? '' : 'Joe M.', joeEmail);
+      const members = at < 0 ? [...rest, joe] : [...rest.slice(0, at), joe, ...rest.slice(at)];
+      return { ...s, funded: true, dormancy: null, champion: namelessChampion ? '' : 'Joe M.', championEmail: joeEmail, openUntil: null, funding: null,
+        members: members.map(m => m.name === 'You' ? { ...m, email: youEmail } : m) };
     }));
     setCurrentId('sp-book'); setTab('active'); setRoute('members');
   };
@@ -1013,6 +1018,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'members-champion-sole', label: 'Members — champion, the only member', stage: (c) => c.stageSoleChampion() },
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
   { group: 'Members & funding', id: 'members-champion-email-hidden', label: 'Members — champion’s email hidden, seen by a member', stage: (c) => c.stageHiddenEmail({ hideChampion: true }) },
+  { group: 'Members & funding', id: 'members-champion-nameless-email-hidden', label: 'Members — champion with no name and a hidden email, seen by a member', stage: (c) => c.stageHiddenEmail({ hideChampion: true, namelessChampion: true }) },
   { group: 'Members & funding', id: 'members-own-email-hidden', label: 'Members — your own email hidden', stage: (c) => c.stageHiddenEmail({ hideYou: true }) },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a

@@ -322,7 +322,8 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
   // No one holds the role: the champion's account was deleted, so their roster row
   // and crown are gone and NO management is offered to anybody until the paid
   // period runs out. Reading, adding and reacting are untouched.
-  const unchampioned = !space.champion;
+  // A champion with no name is still a champion: their address keeps the circle championed.
+  const unchampioned = !space.champion && !space.championEmail;
   const funding = space.funding || { state: 'active' };
   const fundingLine = fundingStateLine(funding);
   // The optional description, read in full here — the one place it's shown
@@ -408,7 +409,11 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
       }}>
         {space.members.map((m, i) => {
           const isYou = m.name === 'You';
-          const memberIsChampion = (isChampion && isYou) || (!isChampion && m.name === championName);
+          // A member with no name is matched to the champion by address (nameless-member case, 6 Oct).
+          const memberIsChampion = (isChampion && isYou) || (!isChampion && (m.name
+            ? m.name === championName
+            : !!m.email && m.email === space.championEmail));
+          const rowName = m.name || 'A member';
           // Block (app/report-block.jsx, droppable): every other member's row
           // carries the menu, whatever your role, the champion's included.
           const rb = window.CircRB && window.CircBlockDialog ? window.CircRB : null;
@@ -429,7 +434,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                 {/* The Champion badge rides the name (mobile-readiness, 5 Oct): the
                     trailing slot is the row's menu for everyone now. */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 14, color: 'var(--color-fg-1)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rowName}</span>
                   {memberIsChampion && (
                     <span role="img" aria-label="Champion" title="Champion" style={{ flexShrink: 0, display: 'inline-flex', color: 'var(--color-fg-3)', transform: 'translateY(-1.5px)' }}>
                       <Icon name="crown" size={16} />
@@ -448,7 +453,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
               ) : (
                 <div data-kebab-root style={{ position: 'relative', flexShrink: 0 }}>
                   <button onClick={() => setMenuFor(menuFor === m.name ? null : m.name)}
-                    aria-haspopup="menu" aria-expanded={menuFor === m.name} aria-label={isYou ? 'Your membership' : `Manage ${m.name}`}
+                    aria-haspopup="menu" aria-expanded={menuFor === m.name} aria-label={isYou ? 'Your membership' : `Manage ${rowName}`}
                     className="circ-cardaction circ-cardaction-icon" style={{ minWidth: 44, minHeight: 44, color: 'var(--color-fg-2)' }}>
                     <Icon name="more-vertical" size={18} />
                   </button>
