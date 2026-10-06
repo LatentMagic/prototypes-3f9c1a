@@ -298,6 +298,9 @@ const fundingStateLine = (f) => {
 // there.
 // The circle-full panel stays in MembersSurface: it is not part of the card.
 
+// A hidden-email sign-in leaves the app holding a relay address (hidden-email delta, 5 Oct).
+const isHiddenEmail = (e) => /@privaterelay\.appleid\.com$/i.test(e || '');
+
 // ---- Members surface (in shell) --------------------------------------------
 // Reached via "N members" in the space header. Lists members + "Championed by X".
 // Role-conditioned: champion sees Invite + Manage funding; a non-champion sees
@@ -435,7 +438,10 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
                 </div>
                 {blockedRow
                   ? <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12, color: 'var(--color-fg-2)' }}>Blocked</div>
-                  : m.email && (isYou || memberIsChampion) && <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>}
+                  : m.email && (isYou || memberIsChampion) && (isHiddenEmail(m.email)
+                    // A relay address never reaches its owner from another member, so it is not shown as a contact.
+                    ? <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontStyle: 'italic', fontSize: 12, color: 'var(--color-fg-3)' }}>Email hidden</div>
+                    : <div style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12, color: 'var(--color-fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.email}</div>)}
               </div>
               {!hasMenu ? (
                 <span aria-hidden="true" style={{ width: 44, height: 44, flexShrink: 0 }} />

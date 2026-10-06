@@ -40,6 +40,11 @@ const CIRC_QA = [
     note: 'Cleared on ratification. Proposed, not put to the owner one by one: the reasons inside the Form dialog, Blocked and Unblock on the row, and the reach of a block beyond its account-wide scope. Report: open a card someone else added, menu, Report link. Comment: open the conversation on Go pipelines, the menu by Priya N., Report comment. Block: Settings, the menu on a row, Block.',
     steps: ['reading-loop', 'report-link-reported', 'comment-reactions-counted', 'members-champion', 'members-non-champion', 'block-priya-second-circle'],
   },
+  {
+    key: 'hidden-email', title: 'Hidden email on Members: built, not ratified',
+    note: 'Cleared on ratification. "Email hidden" is proposed wording, not ratified; its italic treatment is ratified. Check a normal address is unchanged after each.',
+    steps: ['members-champion-email-hidden', 'members-own-email-hidden', 'members-non-champion'],
+  },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);
 

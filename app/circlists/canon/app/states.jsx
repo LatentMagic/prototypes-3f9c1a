@@ -303,13 +303,23 @@ function circStateContext(api) {
 
   // A plain member of a funded, championed circle (Leave lives beneath the roster).
   // Restores the champion in case the no-champion staging below ran first.
-  const stageNonChampion = () => {
-    setUser(DEFAULT_USER);
+  // Shares the hidden-email staging below with nothing hidden, so a hidden state run first never leaks in.
+  const stageNonChampion = () => stageHiddenEmail();
+
+  // Hidden email (5 Oct delta): the relay address the app holds when a member hides theirs.
+  const RELAY_EMAIL = 'x7k2p9qm4d@privaterelay.appleid.com';
+  // hideChampion: Joe M. (champion) holds a relay address. hideYou: your own account does.
+  const stageHiddenEmail = ({ hideChampion = false, hideYou = false } = {}) => {
+    const youEmail = hideYou ? RELAY_EMAIL : DEFAULT_USER.email;
+    const joeEmail = hideChampion ? RELAY_EMAIL : 'joe.m@example.com';
+    setUser({ ...DEFAULT_USER, email: youEmail });
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
-    setSpaces(prev => withSpace(prev, 'sp-book').map(s => s.id === 'sp-book'
-      ? { ...s, funded: true, dormancy: null, champion: 'Joe M.', championEmail: 'joe.m@example.com',
-          openUntil: null, funding: null,
-          members: s.members.some(m => m.name === 'Joe M.') ? s.members : [...s.members, M('Joe M.', 'joe.m@example.com')] } : s));
+    setSpaces(prev => withSpace(prev, 'sp-book').map(s => {
+      if (s.id !== 'sp-book') return s;
+      const members = s.members.some(m => m.name === 'Joe M.') ? s.members : [...s.members, M('Joe M.', joeEmail)];
+      return { ...s, funded: true, dormancy: null, champion: 'Joe M.', championEmail: joeEmail, openUntil: null, funding: null,
+        members: members.map(m => m.name === 'Joe M.' ? { ...m, email: joeEmail } : m.name === 'You' ? { ...m, email: youEmail } : m) };
+    }));
     setCurrentId('sp-book'); setTab('active'); setRoute('members');
   };
 
@@ -865,7 +875,7 @@ function circStateContext(api) {
 
   return {
     setSpaces, setUser, setCurrentId, setRoute, setOtc, setPostAuthTo, setManageIntent,
-    openCreateSpace, reset, reseed, goSpace, stageDormant, stageSoleChampion, stageFunding, stageNonChampion,
+    openCreateSpace, reset, reseed, goSpace, stageDormant, stageSoleChampion, stageFunding, stageNonChampion, stageHiddenEmail,
     stageNoChampion, goFeedLoading, holdInterstitial, goEmptyFeed, goFullSpaceManage,
     stageSort, stageSingleItem, stageLateJoiner, stagePile, stageNotFound, stageHome, stageSharedCard, stageCommentReactions, stageReturnsBarReactions,
     stageCircleDescription, stageCircleMicro,
@@ -1002,6 +1012,8 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
   { group: 'Members & funding', id: 'members-champion-sole', label: 'Members — champion, the only member', stage: (c) => c.stageSoleChampion() },
   { group: 'Members & funding', id: 'members-non-champion', label: 'Members — non-champion', stage: (c) => c.stageNonChampion() },
+  { group: 'Members & funding', id: 'members-champion-email-hidden', label: 'Members — champion’s email hidden, seen by a member', stage: (c) => c.stageHiddenEmail({ hideChampion: true }) },
+  { group: 'Members & funding', id: 'members-own-email-hidden', label: 'Members — your own email hidden', stage: (c) => c.stageHiddenEmail({ hideYou: true }) },
   { group: 'Members & funding', id: 'members-circle-full', label: 'Members — circle full', stage: (c) => c.goFullSpaceManage() },
   // A circle can say what it is for (BIZ-136 run 10). The seed carries a
   // description on two circles and none on the rest, so the home already

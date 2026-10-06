@@ -98,6 +98,14 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-05T18:00:59Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: read live — `circlists-copy-voice.md`. Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Hidden email on Members: "Email hidden" in place of a relay address on your row and the champion's row; two register states. Handoff in `docs/specs/hidden-email/`.
+
+## Previous sync
+
 date: 2026-10-05T12:48:07Z
 monorepo: read live — `specs/governance/standards/ui-design.md`; searched `specs/projects/circlists/` (hld.md, glossary.md, CIRC-009) for address-bound invite lines. wiki: read live — `circlists-copy-voice.md`. Nothing mirrored; commit 29b0661a7e5d (from search).
 
