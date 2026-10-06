@@ -1,7 +1,7 @@
 # Project
 
 <!-- product:start -->
-**Product:** `<PRODUCT NAME>` — `<one line on what it is>`
+**Product:** `[Platform]` — a home for games you play with an AI agent such as Claude or ChatGPT: one growing library where the game holds the rules, your agent tells it, and what happens next depends on what you say.
 
 **Read live from GitHub, never copied in** (a kind with no source yet is asked about, not guessed):
 - Behaviour specs and glossary: `<owner/repo>/<path>`

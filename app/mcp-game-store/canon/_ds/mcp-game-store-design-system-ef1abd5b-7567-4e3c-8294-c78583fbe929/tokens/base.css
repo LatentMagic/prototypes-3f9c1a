@@ -1,0 +1,7 @@
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--text);font:400 var(--size-body)/1.5 var(--font-text);-webkit-text-size-adjust:100%}
+:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+::selection{background:var(--off-white);color:var(--page)}
+a{color:var(--off-white);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+a:hover{color:var(--text)}

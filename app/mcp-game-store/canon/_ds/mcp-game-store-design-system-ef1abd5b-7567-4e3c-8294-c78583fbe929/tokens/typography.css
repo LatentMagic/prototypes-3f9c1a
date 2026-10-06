@@ -1,0 +1,18 @@
+:root{
+--font-heading:"Bricolage Grotesque",system-ui,sans-serif;
+--font-text:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--size-page-title:34px;--size-section-title:24px;--size-card-title:20px;--size-body:16px;--size-small:13px;
+--size-input-min:16px;
+--weight-heading:700;--weight-text:400;--weight-label:600;
+--tracking-heading:-.01em;
+--leading-page-title:1.08;--leading-section-title:1.15;--leading-card-title:1.2;--leading-body:1.5;--leading-small:1.3;
+/* Semantic */
+--type-page-title:700 var(--size-page-title)/1.08 var(--font-heading);
+--type-section-title:700 var(--size-section-title)/1.15 var(--font-heading);
+--type-card-title:700 var(--size-card-title)/1.2 var(--font-heading);
+--type-body:400 var(--size-body)/1.5 var(--font-text);
+--type-label:600 14px/1.2 var(--font-text);
+--type-button:600 16px/1.2 var(--font-text);
+--type-small:600 var(--size-small)/1.3 var(--font-text);
+--type-caption:400 var(--size-small)/1.3 var(--font-text);
+}

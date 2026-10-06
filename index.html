@@ -1390,7 +1390,20 @@
           version: 'v0',
           ticket: '—',
           html: 'index.html',
-          desc: 'MCP Game Store (working title). Scaffold only: a placeholder screen proving the starter kit is wired. No product design yet.'
+          desc: 'MCP Game Store (working title). Scaffold only: a placeholder screen proving the starter kit is wired. No product design yet.',
+          changelog: [
+            {
+              date: '2026-10-06',
+              title: 'First build: a demo, proof of concept only',
+              items: [
+                'This is a demo and a proof of concept, not a product design. It is in canon as the agreed starting point, and nothing in it is ratified.',
+                'The placeholder screen is replaced by a working demo: Home (signed out), Sign up / Sign in / verify email / reset password, Connect your AI, Delve, Daily Puzzles, Games, Session page, History, and Pass.',
+                'A demo-view switch (signed out / free / Pass) shows the free and paid versions of each screen. Plans, sign-in failures (Google or Apple) and billing (checkout, card declined) are staged as their own states.',
+                'Copy and look are placeholders: the brand reads "[Platform]".',
+                'Export now also carries _ds/, assets/, uploads/ and docs/specs/demo/. The scaffold\'s deletable example, app/config-extra.example.jsx, is gone: the export dropped it, and it was not hand-added, so it is not carried.',
+              ],
+            },
+          ],
         }
       ]
     },

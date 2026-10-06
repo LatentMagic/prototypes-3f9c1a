@@ -19,9 +19,9 @@
 // candidate build's walk-through stays out of the main build.
 const KIT_QA = [
   {
-    key: 'placeholder-walk-through', title: 'Placeholder walk-through',
-    note: 'An example entry. 1. The screen with nothing on it. 2. The screen with items. Replace it with the states a piece of work in flight needs checking against.',
-    steps: ['empty', 'with-items'],
+    key: 'nine-screens', title: 'Nine-screen prototype, first build',
+    note: 'The happy path is clickable from Home: Start free, Continue with email, any code of six digits, Connect, Browse games. These are the states off that path.',
+    steps: ['free-plan', 'pass-holder', 'not-connected', 'free-puzzle-result', 'free-history', 'provider-sign-in-fails', 'apple-no-account', 'checkout', 'card-declined'],
   },
 ];
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);

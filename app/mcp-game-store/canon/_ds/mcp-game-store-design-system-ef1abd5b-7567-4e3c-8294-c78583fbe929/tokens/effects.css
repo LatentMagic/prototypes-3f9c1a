@@ -1,0 +1,5 @@
+:root{
+--shadow-card:0 1px 2px var(--shadow-color),0 6px 12px -6px var(--shadow-color);
+--shadow-sheet:0 -2px 6px var(--shadow-color),0 -14px 32px -10px var(--shadow-color);
+--shadow-popup-window:var(--shadow-card);
+}

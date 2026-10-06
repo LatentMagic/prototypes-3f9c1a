@@ -36,10 +36,9 @@
 // What a `stage` function is handed: main.jsx's setters, plus the moves several
 // states share. This is the product's half of the file and grows with it.
 // TODO(product): replace with the product's own stagers, built on its seed.
+// [Platform]: api = { reset, setView, setConnected, setReview, go } from main.jsx.
 function kitStateContext(api) {
-  const reseed = () => api.setItems(api.seedItems.slice());
-  // Config's "Reset to seeded data".
-  // TODO(product): if the app persists state, clear it here too.
+  const reseed = () => api.reset();
   const reset = () => reseed();
   return { ...api, reseed, reset };
 }
@@ -48,8 +47,31 @@ function kitStateContext(api) {
 // Order here is the order the palette and the index read in. Group titles are
 // plain strings; a new group is simply a new title.
 const KIT_STATE_REGISTER = [
-  { group: 'Placeholder', id: 'empty', label: 'Nothing on the screen', stage: (c) => c.setItems([]) },
-  { group: 'Placeholder', id: 'with-items', label: 'The screen with items', stage: (c) => c.setItems(['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo']) },
+  { group: 'Screens', id: 'home', label: '1. Home, signed out', stage: (c) => c.go('home') },
+  { group: 'Screens', id: 'sign-up', label: '2. Sign up', stage: (c) => c.go('signup') },
+  { group: 'Screens', id: 'sign-in', label: '2. Sign in', stage: (c) => c.go('signin') },
+  { group: 'Screens', id: 'verify-email', label: '2. Sign up: verify your email', stage: (c) => c.go('verify', { email: 'you@example.com' }) },
+  { group: 'Screens', id: 'reset-password', label: '2. Sign in: reset your password', stage: (c) => c.go('recover') },
+  { group: 'Screens', id: 'connect', label: '3. Connect your AI', stage: (c) => { c.setView('free'); c.go('connect'); } },
+  { group: 'Screens', id: 'delve-free', label: '4. Delve, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('delve'); } },
+  { group: 'Screens', id: 'delve-pass', label: '4. Delve, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('delve'); } },
+  { group: 'Screens', id: 'puzzles-free', label: '5. Daily Puzzles, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('puzzles'); } },
+  { group: 'Screens', id: 'puzzles-pass', label: '5. Daily Puzzles, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('puzzles'); } },
+  { group: 'Screens', id: 'games', label: '6. Games, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
+  { group: 'Screens', id: 'session-delve', label: '7. Session page: Delve', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve' }); } },
+  { group: 'Screens', id: 'session-puzzle', label: '7. Session page: a puzzle', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'word-today' }); } },
+  { group: 'Screens', id: 'history', label: '8. History, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history'); } },
+  { group: 'Screens', id: 'pass-free', label: '9. Pass, on the free plan', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
+  { group: 'Screens', id: 'pass-holder-page', label: '9. Pass, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('pass'); } },
+  { group: 'Plans', id: 'free-plan', label: 'Signed in, free plan, AI connected', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
+  { group: 'Plans', id: 'pass-holder', label: 'Signed in with the Pass, AI connected', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
+  { group: 'Plans', id: 'not-connected', label: 'Signed in, AI not connected (Play goes to Connect)', stage: (c) => { c.setView('free'); c.go('puzzles'); } },
+  { group: 'Plans', id: 'free-puzzle-result', label: 'Free plan: a puzzle result that is not kept', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('session', { id: 'word-today' }); } },
+  { group: 'Plans', id: 'free-history', label: 'Free plan: History with nothing kept', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('history'); } },
+  { group: 'Sign in', id: 'provider-sign-in-fails', label: 'Google or Apple sign-in fails', stage: (c) => { c.setReview({ providerFail: true }); c.go('signin'); } },
+  { group: 'Sign in', id: 'apple-no-account', label: 'Apple sign-in finds no account', stage: (c) => { c.setReview({ appleNone: true }); c.go('signin'); } },
+  { group: 'Billing', id: 'checkout', label: 'Payment provider checkout', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('checkout'); } },
+  { group: 'Billing', id: 'card-declined', label: 'Payment provider: card declined', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ payFail: true }); c.go('checkout'); } },
 ];
 
 // Notes, per group: how to exercise what a staged state
@@ -57,8 +79,12 @@ const KIT_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
-  'Placeholder': [
-    'An example note. Both states restage the seed first, so each opens the same way whatever came before.',
+  'Sign in': [
+    'Provider sign-in fails: tap Continue with Google or Continue with Apple. The line under the buttons clears on the next try.',
+    'Apple finds no account: tap Continue with Apple on Sign in.',
+  ],
+  'Billing': [
+    'Card declined: enter 4242 4242 4242 4242, 12/30 and 123, then Pay. Every state starts from signed out first.',
   ],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
