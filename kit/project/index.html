@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Prototype</title>
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
+  body { min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  #root { min-height: 100vh; }
+
+  /* ---- focus rings: first-class ---- */
+  button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: var(--ring-width) solid var(--color-accent);
+    outline-offset: var(--ring-offset);
+  }
+  input:focus-visible {
+    outline-offset: 0; border-color: var(--color-accent) !important;
+  }
+
+  /* ---- placeholder screen (app/main.jsx) — the product's screens replace it ---- */
+  .kit-placeholder { max-width: 720px; margin: 0 auto; padding: var(--space-6) var(--space-5) 96px; }
+  .kit-placeholder-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
+  .kit-placeholder-title { font: 600 28px/1.15 var(--font-sans); letter-spacing: -0.02em; margin: 10px 0 0; }
+  .kit-placeholder-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 var(--space-5); }
+  .kit-placeholder-empty { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-3); border: 1px dashed var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; }
+  .kit-placeholder-items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .kit-placeholder-items[data-mobile] { grid-template-columns: 1fr; }
+  .kit-placeholder-items li { font: 500 15px/1.4 var(--font-sans); background: var(--color-surface); border: 1px solid var(--color-border-1); border-left: 3px solid var(--color-accent); border-radius: var(--radius-md); padding: var(--space-4); }
+  :root[data-kit-density="compact"] .kit-placeholder-items { gap: 4px; }
+  :root[data-kit-density="compact"] .kit-placeholder-items li { padding: var(--space-2) var(--space-3); }
+
+  /* ---- config launcher (prototype aid) ---- */
+  .kit-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
+  /* One pill, two halves: settings you HOLD (Config) and states you GO to
+     (States, app/states-ui.jsx). Icon-only keeps it out of the way; each half
+     keeps its own 44px hit target, and the whole pill still drags. */
+  .kit-launcher { display: inline-flex; align-items: stretch; background: var(--color-fg-1); border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); overflow: hidden; }
+  .kit-launcher-half { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 44px; padding: 0; background: transparent; border: 0; color: #fff; cursor: inherit; }
+  .kit-launcher-half + .kit-launcher-half { box-shadow: inset 1px 0 0 rgba(255,255,255,0.2); }
+  .kit-launcher-half:hover { background: rgba(255,255,255,0.1); }
+  .kit-launcher-half[data-open] { color: var(--color-accent); background: rgba(255,255,255,0.08); }
+  .kit-launcher-half:focus-visible { outline-offset: -3px; }
+  .kit-qa-work + .kit-qa-work { margin-top: 20px; }
+  .kit-qa-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .kit-qa-stale { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-md); }
+
+  /* ---- config modal (prototype aid) ---- */
+  .kit-config-scrim {
+    position: fixed; inset: 0; z-index: 400;
+    background: color-mix(in srgb, var(--color-scrim) 52%, transparent);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    transition: opacity var(--duration-slow) ease-in-out;
+    overscroll-behavior: contain;
+  }
+  .kit-config-modal {
+    width: min(760px, 100%); max-height: min(84vh, 720px);
+    display: flex; flex-direction: column;
+    background: color-mix(in srgb, var(--color-surface) 74%, transparent);
+    backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    border: 1px solid var(--color-border-1);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
+    transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
+  }
+  .kit-config-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    border-bottom: 1px solid var(--color-border-2); flex-shrink: 0;
+  }
+  .kit-config-title {
+    font-family: var(--font-sans); font-weight: 600; font-size: var(--text-xl);
+    letter-spacing: -0.01em; color: var(--color-fg-1);
+  }
+  .kit-config-subtitle {
+    font-family: var(--font-sans); font-weight: 400; font-size: var(--text-sm);
+    color: var(--color-fg-3); margin-top: 2px;
+  }
+  .kit-config-close {
+    background: transparent; border: 0; padding: 8px; margin: -8px; cursor: pointer;
+    color: var(--color-fg-2); border-radius: var(--radius-sm); display: inline-flex; flex-shrink: 0;
+  }
+  .kit-config-close:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .kit-config-body { padding: var(--space-5); overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-height: 0; overscroll-behavior: contain; }
+  .kit-config-eyebrow {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    margin-bottom: var(--space-3);
+  }
+  .kit-config-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    min-height: 44px; padding: 6px 0;
+  }
+  .kit-config-row-label {
+    font-family: var(--font-sans); font-weight: 500; font-size: var(--text-sm); color: var(--color-fg-1);
+  }
+  .kit-config-hint {
+    font-family: var(--font-sans); font-weight: 400; font-size: 12.5px; line-height: 1.5;
+    color: var(--color-fg-3); margin: -2px 0 var(--space-3); overflow-wrap: anywhere;
+  }
+  .kit-config-sep { height: 1px; background: var(--color-border-2); margin: var(--space-2) 0 var(--space-5); }
+  .kit-config-btn-secondary {
+    background: var(--color-surface); color: var(--color-fg-1); border: 1px solid var(--color-border-1);
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; cursor: pointer;
+    padding: 8px 14px; border-radius: var(--radius-md); min-height: 36px;
+  }
+  .kit-config-btn-secondary:hover { background: var(--color-surface-sunken); }
+  .kit-config-seg {
+    display: inline-flex; padding: 3px; gap: 2px;
+    background: var(--color-surface-sunken); border-radius: var(--radius-md); flex-shrink: 0;
+  }
+  .kit-config-seg-btn {
+    background: transparent; border: 0; cursor: pointer; border-radius: var(--radius-sm);
+    padding: 7px 12px; min-height: 30px;
+    font-family: var(--font-sans); font-weight: 500; font-size: 13px; color: var(--color-fg-2);
+    transition: background var(--duration-base), color var(--duration-base);
+  }
+  .kit-config-seg-btn[data-active] { background: var(--color-accent); color: #fff; }
+  .kit-config-seg-btn:not([data-active]):hover { background: var(--color-border-2); }
+  .kit-config-group-title {
+    font-family: var(--font-mono); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3);
+    padding: 4px 0 6px;
+  }
+
+  /* ---- states palette + index (prototype aid; register in app/states.jsx) ----
+     Both are derived views of the register and share their row: the label, the
+     address under it, and the copy-a-link control. The palette borrows the config
+     modal's shell so the two aids read as siblings. */
+  .kit-states-search { width: 100%; background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 10px 12px; min-height: 40px; font: 400 13.5px var(--font-sans); color: var(--color-fg-1); margin-bottom: var(--space-4); }
+  .kit-states-groups { display: flex; flex-direction: column; gap: 4px; }
+  .kit-states-group { border-bottom: 1px solid var(--color-border-2); }
+  .kit-states-group-head { width: 100%; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; text-align: left; color: var(--color-fg-3); }
+  .kit-states-group-head:hover { background: var(--color-surface-sunken); }
+  .kit-states-group-head .kit-config-group-title { margin: 0; flex: 1; }
+  .kit-states-group-count { font: 400 11px var(--font-mono); color: var(--color-fg-3); }
+  .kit-states-group-chev { display: inline-flex; transition: transform var(--duration-base) var(--ease-quiet); }
+  .kit-states-group-body { columns: 260px 2; column-gap: 28px; padding-bottom: var(--space-3); }
+  .kit-states-notes { margin: var(--space-2) 10px var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--color-border-2); }
+  .kit-states-notes-title { font: 500 11px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-fg-3); margin-bottom: 6px; }
+  .kit-states-notes ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+  .kit-states-notes li { font: 400 13px/1.45 var(--font-sans); color: var(--color-fg-2); }
+  @media (prefers-reduced-motion: reduce) { .kit-states-group-chev { transition: none; } }
+  .kit-states-item { break-inside: avoid; }
+  .kit-states-row { display: flex; align-items: center; gap: 4px; }
+  .kit-states-jump { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: transparent; border: 0; cursor: pointer; padding: 7px 10px; border-radius: var(--radius-sm); }
+  .kit-states-jump:hover { background: var(--color-surface-sunken); }
+  .kit-states-label { font: 500 13.5px/1.3 var(--font-sans); color: var(--color-fg-1); }
+  .kit-states-id { font: 400 11px/1.3 var(--font-mono); color: var(--color-fg-3); }
+  .kit-states-copy { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; background: transparent; border: 0; border-radius: var(--radius-sm); color: var(--color-fg-3); cursor: pointer; }
+  .kit-states-copy:hover { background: var(--color-surface-sunken); color: var(--color-fg-1); }
+  .kit-states-copied { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; }
+  .kit-states-copied > span { font: 500 11px var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-fg-3); flex-shrink: 0; }
+  .kit-states-copied > input { flex: 1; min-width: 0; background: var(--color-surface-sunken); border: 1px solid var(--color-border-2); border-radius: var(--radius-sm); padding: 5px 7px; font: 400 11px var(--font-mono); color: var(--color-fg-2); }
+  .kit-states-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--color-border-2); margin-top: var(--space-4); padding-top: var(--space-4); }
+  .kit-index { min-height: 100vh; background: var(--color-canvas); padding: clamp(32px, 7vh, 72px) 20px 96px; }
+  .kit-index-inner { max-width: 860px; margin: 0 auto; }
+  .kit-index-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
+  .kit-index-title { font: 600 clamp(28px, 5vw, 38px)/1.1 var(--font-sans); letter-spacing: -0.02em; color: var(--color-fg-1); margin: 10px 0 0; }
+  .kit-index-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 0; max-width: 62ch; text-wrap: pretty; }
+  .kit-index-note { font: 400 14px/1.6 var(--font-sans); color: var(--color-fg-2); background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); padding: 12px 14px; margin: var(--space-4) 0 0; max-width: 62ch; overflow-wrap: anywhere; }
+  .kit-index code { font: 400 0.92em var(--font-mono); color: var(--color-fg-1); background: var(--color-surface-sunken); border-radius: 3px; padding: 1px 5px; }
+  .kit-index-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: var(--space-5) 0 var(--space-4); }
+  .kit-index-bar > .kit-states-search { flex: 1; min-width: 200px; margin: 0; }
+
+  /* ---- mobile phone frame (forced-mobile posture) ---- */
+  .kit-stage {
+    min-height: 100vh; width: 100%;
+    background: #1c1c1a;
+    background-image: radial-gradient(circle at 50% 0%, #2a2a27 0%, #161614 70%);
+    display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  }
+  .kit-phone {
+    width: 402px; max-width: 100%;
+    height: min(872px, calc(100vh - 48px));
+    background: #050505; border-radius: 52px; padding: 11px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 2px #2c2c2c, inset 0 0 0 2px #000;
+    overflow: hidden;
+  }
+  .kit-phone-clip {
+    position: relative; width: 100%; height: 100%;
+    border-radius: 42px; overflow: hidden; background: var(--color-canvas);
+    transform: translateZ(0); /* containing block for position:fixed overlays — a
+       NON-scrolling wrapper with exactly the screen's bounds + corner radius, so
+       sheets/scrims pin to the phone screen (and get clipped by its corners)
+       instead of bleeding onto the bezel or riding the scrolled page */
+  }
+  .kit-phone-screen {
+    width: 100%; height: 100%;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .kit-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+<!-- ============================================================================
+     Load order is tag order: files share state through `window`, nothing is
+     imported. primitives first; the aids before main.jsx, which finds them on
+     `window` at render and carries on if any is absent. Each aid is DELETABLE:
+     remove its file and its tag here, nothing else.
+
+     Addresses:
+         ?state=<id>     that state (the register is app/states.jsx)
+         ?state=index    the states index
+         an unknown id   the states index, so a stale link shows itself
+         nothing         the app as it opens
+     ============================================================================ -->
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/tweaks-panel.jsx"></script>
+<script type="text/babel" src="app/app-tweaks.jsx"></script>
+<script type="text/babel" src="app/states.jsx"></script>
+<script type="text/babel" src="app/states-ui.jsx"></script>
+<script type="text/babel" src="app/config.jsx"></script>
+<script type="text/babel" src="app/qa.jsx"></script>
+<script type="text/babel" src="app/config-extra.example.jsx"></script>
+<script type="text/babel" src="app/main.jsx"></script>
+</body>
+</html>

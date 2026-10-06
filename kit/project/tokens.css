@@ -1,0 +1,50 @@
+/* ============================================================================
+   Kit — tokens. THE SLOT THE PRODUCT'S OWN TOKENS REPLACE.
+
+   Only the custom properties the dev machinery (launcher, Config, States, QA)
+   and the placeholder screen read. Neutral values, system fonts, no brand.
+   A product drops its own tokens.css over this file: keep these property
+   names defined, or the aids' styles in index.html lose their values.
+   ============================================================================ */
+:root {
+  /* ---- colour ---- */
+  --color-accent:           #2563EB;
+  --color-page:             #FAFAFA;
+  --color-canvas:           var(--color-page);
+  --color-surface:          #FFFFFF;
+  --color-surface-sunken:   #F3F4F6;
+  --color-fg-1:             #111827;
+  --color-fg-2:             #4B5563;
+  --color-fg-3:             #6B7280;
+  --color-border-1:         #D1D5DB;
+  --color-border-2:         #E5E7EB;
+  --color-border-strong:    #111827;
+  --color-scrim:            rgba(17, 24, 39, 0.40);
+
+  /* ---- type ---- */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Menlo, Consolas, monospace;
+  --text-sm:    13px;
+  --text-xl:    20px;
+
+  /* ---- space ---- */
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+
+  /* ---- shape ---- */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-pill: 9999px;
+  --shadow-overlay: 0 16px 32px rgba(17, 24, 39, 0.08), 0 4px 8px rgba(17, 24, 39, 0.06);
+  --ring-width: 2px;
+  --ring-offset: 2px;
+
+  /* ---- motion ---- */
+  --duration-base:    150ms;
+  --duration-slow:    200ms;
+  --ease-quiet:       cubic-bezier(0.16, 1, 0.3, 1);
+}
