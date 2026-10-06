@@ -19,31 +19,9 @@
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
   {
-    key: 'invite-links-and-sign-in-stops', title: 'Invites by link, Apple with no account, sign-in and report failures',
-    note: 'Built 5 Oct, not ratified. 1. The invite card is back to the address-bound card (reverted 5 Oct): type their address, Get a link, and copy the link bound to it. 2. The refusal, unchanged. 3. The dead-link page: body "It may have expired or been revoked." (restored 5 Oct). 4. Sign in, tap Continue with Apple: the draft line and its two actions replace the three buttons in place (form built, not ratified); Create a new account opens Sign up, Sign in another way returns. 5 and 6. Press Google or Apple: the first press fails with one line under the buttons, "Couldn\u2019t continue with Google. Try again." (wording and placement built, not ratified; R4); press again and it clears. Config, Provider sheet, Cancelled: nothing shows. 7. Report a card someone else added: the first report fails, "Couldn\u2019t send the report. Try again." (built, not ratified; R5); the dialog keeps its reason; the menu still offers Report until one goes.',
-    steps: ['invite-link-refused', 'invite-invalid', 'signin-apple-no-account', 'signin-provider-fails', 'signup-provider-fails', 'report-fails'],
-  },
-  {
-    key: 'champion-leave', title: 'A champion can leave a circle',
-    note: 'Proposed, not deployed. 1. Members as champion: the menu on your own row holds Leave this circle; no line at the foot. 2. Tap it: the champion confirm, circle with others. 3. The only member: the ratified body. 4. Dormant, its champion left: the line, Take over, Leave. 5. Your subscription ended: Leave this circle beside Start your subscription; the member confirm. 6. Taken over after its champion left, then that subscription ended: the subscription line, not the champion-left one. 7. Subscribed with no circles: the Account card says nothing about circles; Ending keeps only "You can resume any time before that date.", Payment failed reads "Update the card within 30 days to keep your subscription.", and Cancel subscription (from ppp-no-circles) drops its circles line. Every Leave confirm is a centred modal at phone and desktop width.',
-    steps: ['members-champion', 'members-champion-sole', 'dormant-champion-left', 'ppp-lapsed-circle', 'dormant-champion-left-retaken', 'ppp-no-circles', 'ppp-no-circles-ending', 'ppp-no-circles-failed'],
-  },
-  {
-    key: 'mobile-app', title: 'Mobile app: where it differs',
-    note: 'The app posture, 5 Oct. Each step opens in Platform: Mobile with Mobile payments Off. At Create a circle, tap New circle.',
-    steps: ['app-splash', 'app-start-up', 'startup-cant-connect', 'app-home', 'app-circle', 'app-circle-settings',
-      'ppp-app-create-not-subscribed', 'ppp-create-subscribed', 'ppp-app-not-subscribed', 'ppp-app-free-month', 'ppp-app-active', 'ppp-app-lapsed',
-      'push-setting-in-app'],
-  },
-  {
-    key: 'report-block', title: 'Report and block: built, not ratified',
-    note: 'Cleared on ratification. Proposed, not put to the owner one by one: the reasons inside the Form dialog, Blocked and Unblock on the row, and the reach of a block beyond its account-wide scope. Report: open a card someone else added, menu, Report link. Comment: open the conversation on Go pipelines, the menu by Priya N., Report comment. Block: Settings, the menu on a row, Block.',
-    steps: ['reading-loop', 'report-link-reported', 'comment-reactions-counted', 'members-champion', 'members-non-champion', 'block-priya-second-circle'],
-  },
-  {
-    key: 'hidden-email', title: 'Hidden email on Members: built, not ratified',
-    note: 'Cleared on ratification. "Email hidden" is proposed wording, not ratified; its italic treatment is ratified. Check a normal address is unchanged after each.',
-    steps: ['members-champion-email-hidden', 'members-champion-nameless-email-hidden', 'members-own-email-hidden', 'members-non-champion'],
+    key: 'app-subscription-status', title: 'App: Subscription card and sleeping circles',
+    note: 'Built 6 Oct. Each step opens in Platform: App with Mobile payments Off. 1. Ending: Ending, Plan, Ends on, "Your circles then go to sleep.", the manage line; no buttons. 2. Payment failed: Payment failed, Plan, "Your circles go to sleep in 30 days.", the manage line; no buttons. 3 to 6. A sleeping circle: no button that starts, resumes or pays; Leave this circle stays. The small line (built, not ratified): 3. "You can\u2019t manage your subscription in this app." 4. "Taking it over needs a subscription." 5. "Your subscription ends on <date>. You can\u2019t manage it in this app." 6. "Your last payment didn\u2019t go through. You can\u2019t manage your subscription in this app." 7 and 8. Tap New circle: under Create circle, "It goes to sleep on <date>. You can\u2019t manage your subscription in this app." No resume or update-the-card link (built, not ratified).',
+    steps: ['ppp-app-ending', 'ppp-app-payment-failed', 'ppp-app-lapsed-circle', 'ppp-app-takeover', 'ppp-app-takeover-ending', 'ppp-app-takeover-failed', 'ppp-app-create-ending', 'ppp-app-create-failed'],
   },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);

@@ -46,6 +46,19 @@ const PppDormantSpace = (props) => {
   const label = mine ? 'Start your subscription'
     : !lapsing ? 'Take over this circle'
     : failed ? 'Update payment card' : 'Resume subscription';
+  // The app (pppAppNoPay, 6 Oct): no button that starts or resumes a subscription.
+  // Only a subscribed member's free take-over survives.
+  const showAct = !pppAppNoPay() || (!mine && subscribed && !lapsing);
+  // Built 6 Oct, not ratified: in the app no line mentions starting, resuming or paying.
+  // Your own circle and a lapsing member get one status line instead, ending on the manage line.
+  const appNoPay = pppAppNoPay();
+  const appCap = !appNoPay ? null
+    : mine ? <PppManageLine />
+    : lapsing && failed ? <><PppS>Your last payment didn{'\u2019'}t go through.</PppS> <PppManageLine /></>
+    : lapsing ? <><PppS>Your subscription ends on {pppDM(PPP_RENEW_DAYS)}.</PppS> <PppS>You can{'\u2019'}t manage it in this{'\u00a0'}app.</PppS></>
+    : !subscribed ? <>Taking it over needs a{'\u00a0'}subscription.</>
+    : null;
+  const showCap = !appNoPay || !!appCap || (!mine && subscribed && !lapsing);
   const SupportLine = window.SupportLine;
   const body = mine
     ? <><PppS>Your subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in this circle is still{'\u00a0'}here.</PppS></>
@@ -65,9 +78,9 @@ const PppDormantSpace = (props) => {
           <p className="circ-dormant-body">{body}</p>
           <div className="circ-dormant-actions">
             {onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
-            <Button variant="primary" size="lg" full icon={lapsing && failed ? <Icon name="card" size={18} /> : null} onClick={act}>{label}</Button>
+            {showAct && <Button variant="primary" size="lg" full icon={lapsing && failed ? <Icon name="card" size={18} /> : null} onClick={act}>{label}</Button>}
           </div>
-          <p className="circ-dormant-cap">{cap}</p>
+          {showCap && <p className="circ-dormant-cap">{appCap || cap}</p>}
         </div>
       </div>
       {SupportLine && <div className="circ-dormant-foot"><SupportLine /></div>}
@@ -82,6 +95,10 @@ const PppCreateFoot = () => {
   const st = usePPP();
   if (!pppLapsing(st)) return st.fixed ? <p className="ppp-create-foot">{st.fixed === 'card' ? 'Card updated.' : 'Subscription resumed.'}</p> : null;
   const failed = st.status === 'failed';
+  // The app (pppAppNoPay, 6 Oct, built, not ratified): the fact, then the manage line; no offer, no link.
+  if (pppAppNoPay()) return (
+    <p className="ppp-create-foot"><PppS>It goes to sleep on {pppDM(failed ? PPP_FIX_DAYS : PPP_RENEW_DAYS)}.</PppS> <PppManageLine /></p>
+  );
   const toCard = () => {
     const name = (document.querySelector('input[name="space-name"]') || {}).value || '';
     const description = (document.getElementById('space-description') || {}).value || '';

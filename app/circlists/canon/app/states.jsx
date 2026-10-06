@@ -1151,6 +1151,14 @@ const CIRC_MOBILE_LIST = [
   ['ppp-app-free-month', 'Account, free month — status only, no buttons'],
   ['ppp-app-active', 'Account, active — status only, no buttons'],
   ['ppp-app-lapsed', 'Account, lapsed — its state, no Subscribe again'],
+  ['ppp-app-ending', 'Account, ending — status only, no Resume'],
+  ['ppp-app-payment-failed', 'Account, payment failed — status only, no Update the card'],
+  ['ppp-app-lapsed-circle', 'Your sleeping circle — no Start your subscription'],
+  ['ppp-app-takeover', 'A sleeping circle, as a member — no Take over'],
+  ['ppp-app-takeover-ending', 'A sleeping circle while your subscription is ending — no Resume'],
+  ['ppp-app-takeover-failed', 'A sleeping circle while a payment has failed — no Update the card'],
+  ['ppp-app-create-ending', 'Create a circle while your subscription is ending — tap New circle: the date, no Resume'],
+  ['ppp-app-create-failed', 'Create a circle while a payment has failed — tap New circle: the date, no Update the card'],
   ['push-setting-in-app', 'Notifications on Account — never the Home Screen line'],
 ];
 const CIRC_MOBILE_NOTES = [

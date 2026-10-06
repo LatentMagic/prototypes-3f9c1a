@@ -77,6 +77,20 @@ const PppSubscribed = ({ st, user }) => {
   );
   // A subscriber who champions no circle reads nothing about circles.
   const mine = ((api && api.spaces) || []).some((s) => s.champion === 'You');
+  // The app, Ending or Payment failed (pppAppNoPay, 6 Oct): status only, as Active.
+  // The marker, Plan, Ends on (Ending), the circles line, then the manage line.
+  if (pppAppNoPay() && (st.status === 'ending' || st.status === 'failed')) return (
+    <div className="ppp-card ppp-card-cq">
+      <PppHead marker={marker} />
+      <div className="ppp-rows">
+        <PppRow k="Plan" v={plan.label + ' \u00b7 ' + pppNb(plan.a)} />
+        {st.status === 'ending' && <PppRow k="Ends on" v={renew} />}
+      </div>
+      {st.status === 'ending' && mine && <p className="ppp-card-line">Your circles then go to{'\u00a0'}sleep.</p>}
+      {st.status === 'failed' && <p className="ppp-card-line">{mine ? <>Your circles go to sleep in 30{'\u00a0'}days.</> : <>Your subscription ends in 30{'\u00a0'}days.</>}</p>}
+      <p className="ppp-card-line"><PppManageLine /></p>
+    </div>
+  );
   let line = null;
   if (st.status === 'ending') line = (mine ? 'Your circles then go to sleep. A member can take one over by starting their own subscription, or free if they already have one. ' : '') + 'You can resume any time before that date.';
   return (
@@ -167,7 +181,7 @@ const PppCancelSheet = ({ st }) => {
 const PppAccountCard = ({ user }) => {
   const st = usePPP();
   // Switch and Cancel cannot be reached from the app's status-only card.
-  const sheets = pppSubscribed(st) && !(pppAppNoPay() && (st.status === 'active' || st.status === 'trial'));
+  const sheets = pppSubscribed(st) && !pppAppNoPay();
   return (
     <>
       {pppSubscribed(st) ? <PppSubscribed st={st} user={user} /> : <PppNotSubscribed st={st} />}

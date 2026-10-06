@@ -138,6 +138,8 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 
 ## Wrapping up
 
+- **Open files by their plain path.** When surfacing a page to the user (`ready_for_verification`, `show_to_user`), pass the file path only — `circlists.html`, never `circlists.html?state=…` or any `?`/`#` suffix. The user's tab bar treats the whole string as a file name and lands on a 404. To point at a state, name it in chat with its route (States → group → label).
+
 <important if="a change has landed">
 - Decide whether it earns a `CHANGELOG.md` entry, and ask before writing one.
 - **Editing rule (strict):** one entry per *significant landed step* — a feature introduced, a rebrand, a model change, or a **fundamental change to how the app works or is structured** (an information-architecture rework, consolidating an overloaded concept, a flow being reshaped) even when it originates as a bug fix. What matters is whether the *shape* of the product changed, not the label on the task. NOT for iterative work: refinements, cosmetic bug fixes, size/spacing/timing tweaks, seed-data changes, enabling an option, renaming a key, motion detail, etc. never get their own entry or bullet.
