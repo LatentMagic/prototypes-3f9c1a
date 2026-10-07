@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — Home (screen 1), Games (screen 6), Pass (screen 9).
 // ============================================================================
-// The hero shows a game being played inside an AI app window, over the real game covers.
+// The hero shows a real screenshot of a game being played in an AI app, over the game covers.
 const GsFeature = ({ id, children }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route);
   return (
@@ -60,7 +60,7 @@ const GsHome = () => {
           <div className="gs-hero-covers" aria-hidden="true">
             {['daily', 'delve', 'murder', 'escape'].map((k) => <span key={k} dangerouslySetInnerHTML={{ __html: GS_ART[k] }} />)}
           </div>
-          <GsWordChat framed />
+          <GsShot id="dailyWord" className="is-hero" />
         </div>
       </section>
 

@@ -87,7 +87,7 @@ const GsPuzzles = () => {
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
           <span className="gs-label">PUZZLES · NEW EVERY DAY</span>
           <h1 className="gs-h1">Daily Puzzles</h1>
-          <GsTagList tags={['FREE', 'about 10 min each', 'Solo']} />
+          <GsTagList tags={['FREE', '10 min each', 'Solo']} />
         </div>
       </section>
 
@@ -97,7 +97,7 @@ const GsPuzzles = () => {
       </section>
 
       <section className="gs-grid2 gs-top-align">
-        <GsWordChat />
+        <GsShot id="dailyWord" caption="Each guess goes to the server, which checks it and keeps count." />
         <GsEarlier paying={paying} />
       </section>
 

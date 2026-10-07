@@ -118,18 +118,20 @@ const GsPanel = ({ label, children }) => (
   <div className="gs-panel"><span className="gs-panel-label"><img src="assets/logo.svg" alt="" width="16" height="16" />[PLATFORM] · {label}</span>{children}</div>
 );
 const GsUp = () => <DS.Icon name="back" size={14} style={{ transform: 'rotate(90deg)' }} />;
-const GsWordChat = ({ framed }) => (
-  <GsChat framed={framed} caption={framed ? null : 'Each guess goes to the server, which checks it and keeps count.'}>
-    <GsMe>Third guess: TORUS.</GsMe>
-    <GsPanel label="WORD PUZZLE">
-      <span className="gs-strong">Guess 3 of 6</span>
-      <div className="gs-tiles" role="img" aria-label="Letters found: T, O, R, then two unknown">
-        {['T', 'O', 'R', '', ''].map((l, i) => <span key={i} className={l ? 'is-on' : ''}>{l}</span>)}
-      </div>
-    </GsPanel>
-    <GsAi>Three letters in place. Two to find, and three guesses left to find them.</GsAi>
-  </GsChat>
-);
+// ---- Product in use: a real screenshot from assets/in-use/, never a drawn chat
+const GS_SHOTS = {
+  dailyWord: { src: 'assets/in-use/daily-word-claude-code-2026-10-05.png', w: 1840, h: 1498, cropH: 790,
+    alt: 'Daily Word being played in Claude Code: each guess and the board after it.' },
+};
+const GsShot = ({ id, crop, caption, className }) => {
+  const s = GS_SHOTS[id];
+  return (
+    <figure className={'gs-shot' + (className ? ' ' + className : '')}>
+      <img src={s.src} alt={s.alt} width={s.w} height={s.h} style={crop ? { aspectRatio: s.w + ' / ' + s.cropH } : null} className={crop ? 'is-crop' : ''} />
+      {caption && <figcaption className="gs-chat-cap">{caption}</figcaption>}
+    </figure>
+  );
+};
 
 // ---- Account popover (desktop). On a phone the same items sit in the menu sheet.
 const GsAccountMenu = ({ items }) => {
@@ -231,5 +233,5 @@ const GsPlayPopup = () => {
 
 Object.assign(window, {
   GsCover, GsCoverButton, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
-  GsChat, GsMe, GsAi, GsPanel, GsUp, GsWordChat, GsAccountMenu, GsTopBar, GsDemoBar, GsPlayPopup,
+  GsChat, GsMe, GsAi, GsPanel, GsUp, GsShot, GsAccountMenu, GsTopBar, GsDemoBar, GsPlayPopup,
 });

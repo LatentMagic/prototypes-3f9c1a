@@ -66,37 +66,12 @@ const GsDelve = () => {
 
       {/* E. How it looks in your chat */}
       <section className="gs-stack-md">
-        <div className="gs-sec-head">
-          <h2 className="mcp-t-sec">How it looks in your chat</h2>
-          <p className="gs-small">Real play, shown in a generic chat window</p>
-        </div>
+        <h2 className="mcp-t-sec">How it looks in your chat</h2>
+        {/* Stand-ins: the Daily Word screenshot in each slot until real Delve ones exist in assets/in-use/ */}
         <div className="gs-chats">
-          <GsChat caption="The scene opens. The server sets up both tracks.">
-            <GsMe>Let’s play Delve.</GsMe>
-            <GsAi>You crouch at the lip of a sinkhole on Gallows Hill. Far below, drums. Somewhere under them, Wren is waiting. You are <b>Tamsin</b>, a ranger, 12 HP.</GsAi>
-            <GsPanel label="DELVE"><div className="gs-pair"><span>Progress 0/6</span><span>Threat 0/6</span></div></GsPanel>
-            <GsAi>How do you go down: the rope the goblins left, or the root-choked crack beside it?</GsAi>
-          </GsChat>
-          <GsChat caption="A weak hit: progress, with a cost the server applies.">
-            <GsMe>I squeeze through the crack, quietly.</GsMe>
-            <GsPanel label="STEALTH CHECK">
-              <div className="gs-roll">
-                <span className="gs-badge"><b>11</b><small>WEAK</small></span>
-                <div className="gs-stack-xs"><span>d20 11 + 3 = 14 vs 15</span><span className="gs-strong">Weak hit: through, but heard</span></div>
-              </div>
-              <div className="gs-pair"><span>Progress 1/6</span><span className="gs-threat"><GsUp />Threat 1/6</span></div>
-            </GsPanel>
-            <GsAi>You slither free into the fungus gallery, but a loose stone clatters behind you. A goblin voice: “Who’s there?”</GsAi>
-          </GsChat>
-          <GsChat caption="The ending, with a link back to your full session.">
-            <GsAi>The drums falter, then stop. But Wren is already on your back, and the escape tunnel smells of rain. You’re out.</GsAi>
-            <GsPanel label="SCENE COMPLETE">
-              <span className="gs-strong">Rescued · threat 5/6</span>
-              <span>11 rolls · 1 natural 20 · HP 5/12</span>
-              <div><DS.TextLink onClick={() => gs.go('session', { id: 'delve' })}>See your session page</DS.TextLink></div>
-            </GsPanel>
-            <GsMe>That was so close.</GsMe>
-          </GsChat>
+          <GsShot id="dailyWord" caption="The scene opens. The server sets up both tracks." />
+          <GsShot id="dailyWord" caption="A weak hit: progress, with a cost the server applies." />
+          <GsShot id="dailyWord" caption="The ending, with a link back to your full session." />
         </div>
       </section>
 
