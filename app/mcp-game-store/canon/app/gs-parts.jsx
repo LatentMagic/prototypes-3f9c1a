@@ -39,20 +39,36 @@ const GsWhoCols = ({ ai, server }) => (
     <div className="gs-stack-sm"><h3 className="mcp-t-card">Our server</h3><p className="gs-muted">{server}</p></div>
   </div>
 );
-const GS_FREE_LIST = ['Today’s puzzles', 'Nothing is kept'];
-const GS_PASS_LIST = ['Everything free', 'Plus the weekly games', 'Plus past puzzles', 'Plus your streak and your record'];
-const GsCompare = ({ passFoot }) => (
-  <div className="gs-grid2">
-    <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-      <h3 className="mcp-t-card">Not paying</h3>
-      <ul className="gs-plain">{GS_FREE_LIST.map((x) => <li key={x}>{x}</li>)}</ul>
-    </DS.Card>
-    <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-      <h3 className="mcp-t-card">Paying</h3>
-      <ul className="gs-plain">{GS_PASS_LIST.map((x) => <li key={x}>{x}</li>)}</ul>
-      {passFoot}
-    </DS.Card>
-  </div>
+// The Pass page's comparison. One row per thing you get; a tick in each column that has it.
+const GS_COMPARE = [
+  { name: 'Daily Puzzles', sub: 'Short puzzles that change every day.', free: true },
+  { name: 'The first scene of Delve', sub: 'Start the adventure. The rest of it comes with the Pass.', free: true },
+  { name: 'Full game library', sub: 'Including every new game the day it lands.', free: false },
+  { name: 'Everything you missed', sub: 'Every earlier edition of the daily and weekly games, ready to play.', free: false },
+  { name: 'Your record', sub: 'Your results, streak and history stay with you. See where you stand.', free: false },
+];
+const GsCmpMark = ({ on }) => on
+  ? <span className="gs-cmp-cell"><DS.Icon name="check" /><span className="gs-vh">Included</span></span>
+  : <span className="gs-cmp-cell gs-muted"><span aria-hidden="true">–</span><span className="gs-vh">Not included</span></span>;
+const GsCompare = () => (
+  <section className="gs-cmp" aria-labelledby="gs-cmp-h">
+    <h2 id="gs-cmp-h" className="mcp-t-sec gs-cmp-h">What you get</h2>
+    <div role="table" aria-labelledby="gs-cmp-h" className="gs-cmp-t">
+      <div role="row" className="gs-cmp-tr is-head">
+        <span role="columnheader"><span className="gs-vh">What you get</span></span>
+        <span role="columnheader" className="gs-cmp-cell mcp-t-card">Free</span>
+        <span role="columnheader" className="gs-cmp-cell gs-cmp-band mcp-t-card">Pass</span>
+      </div>
+      {GS_COMPARE.map((r) => (
+        <div role="row" key={r.name} className="gs-cmp-tr">
+          <span role="rowheader" className="gs-cmp-label"><b>{r.name}</b><span className="gs-muted">{r.sub}</span></span>
+          <span role="cell"><GsCmpMark on={r.free} /></span>
+          <span role="cell" className="gs-cmp-band"><GsCmpMark on /></span>
+        </div>
+      ))}
+      <div className="gs-cmp-tr is-foot" aria-hidden="true"><span /><span /><span className="gs-cmp-band" /></div>
+    </div>
+  </section>
 );
 const GsStat = ({ label, figure, line }) => (
   <DS.Card style={{ gap: 8, alignContent: 'start' }}>
@@ -133,25 +149,59 @@ const GsShot = ({ id, crop, caption, className }) => {
   );
 };
 
-// ---- Account popover (desktop). On a phone the same items sit in the menu sheet.
-const GsAccountMenu = ({ items }) => {
+// ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
+// Manage account, Your AI, divider, Sign out. On a phone the same panel opens as
+// the menu sheet, with Games and History above.
+const GsAvatar = ({ big }) => {
+  const gs = useGs();
+  return <span className={'gs-avatar' + (big ? ' is-big' : '')} aria-hidden="true">{gsName(gs.user)[0].toUpperCase()}</span>;
+};
+const gsName = (u) => u.username || u.email || '?';
+const GsIdentityHead = () => {
+  const gs = useGs();
+  return (
+    <div className="gs-idhead">
+      <GsAvatar big />
+      <span className="gs-stack-xs gs-id-text"><span className="gs-strong">{gsName(gs.user)}</span><span className="gs-small">{gs.user.email}</span></span>
+    </div>
+  );
+};
+const GsUserItems = ({ pick, role }) => {
+  const gs = useGs();
+  const item = (key, icon, label, fn) => (
+    <button key={key} type="button" role={role} className="gs-menu-item gs-menu-ico" onClick={() => pick(fn)}>
+      {icon ? (icon === 'logout' ? <GsGlyph name="logout" /> : <DS.Icon name={icon} />) : <span className="gs-ico-space" />}{label}
+    </button>
+  );
+  return <>
+    {item('acct', 'settings', 'Manage account', () => gs.go('account', { from: gs.route }))}
+    {item('ai', null, 'Your AI', () => gs.go('connect'))}
+    <div className="gs-menu-div" role="separator" />
+    {item('out', 'logout', 'Sign out', gs.signOut)}
+  </>;
+};
+const GsUserMenu = () => {
+  const gs = useGs();
   const [open, setOpen] = React.useState(false);
   const wrap = React.useRef(null); const btn = React.useRef(null);
   React.useEffect(() => {
     if (!open) return undefined;
-    const onDoc = (e) => { if (wrap.current && !wrap.current.contains(e.target)) setOpen(false); };
+    const onDoc = (e) => { if (wrap.current && !wrap.current.contains(e.target)) { setOpen(false); btn.current && btn.current.focus(); } };
     const onKey = (e) => { if (e.key === 'Escape') { setOpen(false); btn.current && btn.current.focus(); } };
     document.addEventListener('pointerdown', onDoc); document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('pointerdown', onDoc); document.removeEventListener('keydown', onKey); };
   }, [open]);
   return (
     <div className="gs-acct" ref={wrap}>
-      <button ref={btn} type="button" className="gs-navlink gs-acct-btn" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
-        Account <DS.Icon name="down" />
+      <button ref={btn} type="button" className="gs-acct-btn" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
+        <GsAvatar />
+        <span className="gs-acct-who"><span className="gs-strong">{gsName(gs.user)}</span><span className="gs-small">{gs.user.email}</span></span>
+        <DS.Icon name="down" />
       </button>
       {open && (
-        <div className="gs-pop" role="menu">
-          {items.map(([l, fn]) => <button key={l} type="button" role="menuitem" className="gs-menu-item" onClick={() => { setOpen(false); btn.current && btn.current.focus(); fn(); }}>{l}</button>)}
+        <div className="gs-pop" role="menu" aria-label="Your account">
+          <GsIdentityHead />
+          <GsUserItems role="menuitem" pick={(fn) => { setOpen(false); fn(); }} />
         </div>
       )}
     </div>
@@ -167,13 +217,11 @@ const GsTopBar = () => {
   const links = out
     ? [['games', 'Games', () => gs.go('games')], ['how', 'How it works', gs.goHow], ['pass', 'Pricing', () => gs.go('pass')]]
     : [['games', 'Games', () => gs.go('games')], ['history', 'History', () => gs.go('history')]];
-  const acct = [['Your AI', () => gs.go('connect')], ['Pass', () => gs.go('pass')], ['Sign out', gs.signOut]];
-  const sheetItems = [...links.map(([, l, fn]) => [l, fn]), ...(out ? [['Sign in', () => gs.go('signin')]] : acct)];
   const pick = (fn) => { setMenu(false); fn(); };
   return (
     <header className="gs-top">
       <div className="gs-wrap gs-top-in">
-        <button type="button" className="gs-brand" aria-label="[Platform], home" onClick={() => gs.go(out ? 'home' : 'games')}><img className="gs-brand-mark" src="assets/logo.svg" alt="" width="32" height="32" /><span>[Platform]</span></button>
+        <button type="button" className="gs-brand" aria-label="[Platform], home" onClick={() => gs.go(out ? 'home' : 'games')}><GsMark /><span>[Platform]</span></button>
         <nav className="gs-nav" aria-label="Main">
           {links.map(([id, l, fn]) => <button key={id} type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>)}
         </nav>
@@ -183,15 +231,17 @@ const GsTopBar = () => {
               <button type="button" className="gs-navlink" onClick={() => gs.go('signin')}>Sign in</button>
               <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             </div>
-          ) : <div className="gs-wide-only"><GsAccountMenu items={acct} /></div>}
+          ) : <div className="gs-wide-only"><GsUserMenu /></div>}
           <div className="gs-narrow-only"><DS.Button variant="secondary" onClick={() => setMenu(true)}>Menu</DS.Button></div>
         </div>
       </div>
       <DS.Popup open={menu} onClose={() => setMenu(false)} title="Menu" posture={gs.narrow ? 'sheet' : 'window'}>
         <div className="gs-menu-list">
-          {sheetItems.map(([l, fn]) => <button key={l} type="button" className="gs-menu-item" onClick={() => pick(fn)}>{l}</button>)}
+          {links.map(([id, l, fn]) => <button key={id} type="button" className="gs-menu-item" onClick={() => pick(fn)}>{l}</button>)}
+          {out && <button type="button" className="gs-menu-item" onClick={() => pick(() => gs.go('signin'))}>Sign in</button>}
         </div>
-        {out && <DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button>}
+        {out ? <DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button>
+          : <div className="gs-menu-list gs-menu-user"><GsIdentityHead /><GsUserItems pick={pick} /></div>}
       </DS.Popup>
     </header>
   );
@@ -233,5 +283,5 @@ const GsPlayPopup = () => {
 
 Object.assign(window, {
   GsCover, GsCoverButton, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
-  GsChat, GsMe, GsAi, GsPanel, GsUp, GsShot, GsAccountMenu, GsTopBar, GsDemoBar, GsPlayPopup,
+  GsChat, GsMe, GsAi, GsPanel, GsUp, GsShot, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup,
 });

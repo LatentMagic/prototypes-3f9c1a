@@ -2,15 +2,19 @@
 // [Platform] — Session page (screen 7) with its share pop-up, and History
 // (screen 8).
 // ============================================================================
-const GsShareCard = ({ s }) => (
-  <div className="gs-share-card">
-    <GsCover art={s.art} />
-    <div className="gs-stack-xs">
-      <span className="mcp-t-card">{s.game}</span>
-      <span className="gs-num-text">{s.share}</span>
+const GsShareCard = ({ s }) => {
+  const gs = useGs();
+  return (
+    <div className="gs-share-card">
+      <GsCover art={s.art} />
+      <div className="gs-stack-xs">
+        <span className="mcp-t-card">{s.game}</span>
+        <span className="gs-num-text gs-share-line">{gsOr(s.share)}</span>
+        <span className="gs-small">{gs.user.username}</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const GsSession = () => {
   const gs = useGs();
@@ -23,10 +27,10 @@ const GsSession = () => {
   const delve = s.kind === 'delve';
   const list = (
     <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">{s.listTitle}</h2>
-      <ol className="gs-lines">
+      <h2 className="mcp-t-sec">{gsOr(s.listTitle)}</h2>
+      {s.lines.length > 0 && <ol className="gs-lines">
         {s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l[1]} · {l[2]}</li>)}
-      </ol>
+      </ol>}
     </section>
   );
   return (
@@ -37,9 +41,9 @@ const GsSession = () => {
         <GsCover art={s.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
           <span className="mcp-t-card">{s.game}</span>
-          <h1 className="gs-h1">{s.result}</h1>
+          <h1 className="gs-h1">{gsOr(s.result)}</h1>
           <div className="gs-figs">
-            {(s.figures || []).map((f) => <span key={f} className="gs-fig">{f}</span>)}
+            {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
             <span className="gs-fig gs-fig-quiet">{s.date}</span>
           </div>
           <div className="gs-pairwrap">
@@ -109,7 +113,7 @@ const GsHistory = () => {
                 <GsCover art={s.art} />
                 <span className="gs-stack-xs">
                   <span className="gs-strong">{s.game}</span>
-                  <span className={s.loss ? 'gs-loss' : 'gs-muted'}>{s.result}</span>
+                  <span className={s.loss ? 'gs-loss' : 'gs-muted'}>{gsOr(s.result)}</span>
                 </span>
                 <span className="gs-small gs-hdate">{s.date}</span>
               </button>

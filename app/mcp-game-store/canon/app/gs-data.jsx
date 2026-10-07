@@ -18,19 +18,30 @@ const GS = {
 const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + '</svg>';
 const GS_ART = {
   daily: '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
-  delve: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="58" y="0" width="10" height="58" fill="#328A88"/><circle cx="118" cy="38" r="20" fill="#E5A63B"/><path d="M84 120L124 54L164 120Z" fill="#A390B2"/><rect x="100" y="100" width="12" height="12" fill="#F2EBE0"/>'),
+  delve: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>'),
   escape: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>'),
   murder: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>'),
   word: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>'),
   derelict: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>'),
   barrow: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>'),
+  casebook: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#F2EBE0"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#D66847"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>'),
+  hunter: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>'),
 };
+
+// Working names: one constant each, so a name changes in one place.
+const GS_NAME = { casebook: 'Casebook', hunter: 'Hunter-gatherer game' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 const GS_GAMES = {
   daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', '10 min', 'Solo'] },
-  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', '25–40 min', 'Solo', '12+'] },
+  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', 'First scene free', '25–40 min', 'Solo', '12+'] },
+  casebook: { name: GS_NAME.casebook, art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly'] },
+  hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Explore a hunter-gatherer world, from dawn to dusk.', tags: ['PASS'] },
 };
+const GS_GAME_ORDER = ['daily', 'casebook', 'delve', 'hunter'];
+// The small mark on a card. Pass: today's and this week's; free, signed in: today's only.
+const gsMarks = (view) => (view === 'pass' ? { daily: 'Played today', casebook: 'Played this week', delve: 'Played this week' }
+  : view === 'free' ? { daily: 'Played today' } : {});
 const GS_SOON = [
   { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction · 15+' },
   { name: 'The Barrow of Hollowmere', art: 'barrow', line: 'A short campaign with levels and loot · 12+' },
@@ -100,6 +111,22 @@ const GS_SESSIONS = {
     listTitle: 'Every guess', share: 'Solved in 4 of 6',
     lines: [['Guess 1', 'CRANE', 'R and E are in the word'], ['Guess 2', 'STORE', 'S, T and E in place'], ['Guess 3', 'SPREE', 'S, R and E in place'], ['Guess 4', 'SHIRE', 'Solved']],
   },
+  casebook: {
+    kind: 'case', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October',
+    figures: ['11 of 16 turns', '4 lies exposed'], listTitle: 'The record', share: 'Solved · 11 of 16 turns · 4 lies exposed',
+    lines: [
+      ['Confront', 'Maeve Doyle, the bar ledger', 'She admits drinking in the bar after being sacked'],
+      ['Confront', 'Tobias Pike, the ferry notice', 'He admits hiding from a debt collector, and hearing a woman arguing at a quarter to eleven'],
+      ['Confront', 'Dr. Celia Rourke, the green scarf', 'She admits going up for five minutes'],
+      ['Confront', 'Dr. Celia Rourke, what Tobias heard', 'She admits going back up; they argued on the landing'],
+      ['Accusation', 'Dr. Celia Rourke', 'Right'],
+    ],
+  },
+  // Every blank is null and shows as a muted "—": nobody has decided it.
+  hunter: {
+    kind: 'day', game: GS_NAME.hunter, art: 'hunter', result: null, date: 'Monday 5 October',
+    figures: [null], listTitle: null, share: null, lines: [],
+  },
   'murder-1004': {
     kind: 'puzzle', game: 'Murder Mystery', art: 'murder', result: 'Solved', date: 'Sunday 4 October',
     listTitle: 'Every question', share: 'Solved',
@@ -108,7 +135,7 @@ const GS_SESSIONS = {
   },
 };
 // Newest first: today's three puzzles, then 5 and 4 October. One loss.
-const GS_HISTORY = ['word-today', 'escape-today', 'murder-today', 'delve', 'word-1005', 'murder-1004'];
+const GS_HISTORY = ['word-today', 'escape-today', 'murder-today', 'delve', 'casebook', 'hunter', 'word-1005', 'murder-1004'];
 
 // The scroller: the phone frame's screen when forced-mobile, else the document.
 const gsScroller = () => document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;
@@ -121,6 +148,6 @@ const gsScrollToId = (id) => {
 };
 
 Object.assign(window, {
-  DS, GsCtx, useGs, GS, GS_ART, GS_GAMES, GS_SOON, GS_PUZZLE_ORDER, GS_PUZZLES, GS_TODAY_PLAYED, GS_EARLIER,
+  DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsMarks, GS_SOON, GS_PUZZLE_ORDER, GS_PUZZLES, GS_TODAY_PLAYED, GS_EARLIER,
   GS_ROLLS, GS_SESSIONS, GS_HISTORY, gsScroller, gsScrollTop, gsScrollToId,
 });

@@ -13,11 +13,28 @@
 **Platform:** web (change only if the product is native or adaptive).
 **Published at:** `<url where the prototype is served; state links only work there>`
 
-**Product skills** (name, and when it fires): none yet.
+**Product skills** (name, and when it fires): `noise` — only on `$noise` (declared only, never fires on its own): re-ask the question the user missed, on its own, after subagent returns or tool output buried it.
 **Extra root files** (name, and what it is for): none yet.
+
+### How the product works (working picture, 2026-10-07; not all ratified)
+- A growing library of games played by talking to your own AI (Claude, ChatGPT, Goose, any MCP assistant), connected once with a link. Your AI tells the story and voices the characters; the server holds the rules, dice, turns, outcomes and record, so nobody can fudge it. Purchases only happen on the site.
+- A game has a kind (puzzle, mystery, adventure, learning activity), a unit of play (puzzle, case, scene, day) and facts (what your AI does, age, length, how often, players). The library changes: copy never depends on today's list of games.
+- Some games release on a schedule; each release is an **edition** (Daily Puzzles daily; Casebook and Delve weekly). Others don't, and are replayable. A game system can return in new settings or longer formats.
+- Every play is a **session**: a result and a full record (rolls, guesses, statements), shareable as a card or link. Across plays: history, and for daily games a streak and record.
+- **Free:** today's Daily Puzzles and Delve's first scene; results last today only. **The Pass:** the full game library, new games included; every earlier edition; history, streak and record kept. No price yet (`£—`).
+- Not ratified: game names (Casebook, the hunter-gatherer game are working titles), Delve's first scene being free, seeing where you stand against others (intended, not built).
+
+### Screen map (route → file in `app/`)
+- Signed-out views: `home` (`gs-home.jsx`), `games` (`gs-home.jsx`), `pass` (`gs-billing.jsx`), `legal` (`gs-site.jsx`).
+- Game pages, one template in `gs-game.jsx`: `puzzles` (Daily Puzzles; parts in `gs-puzzles.jsx`), `delve`, `casebook`, `hunter`.
+- Account and auth: `signup`, `signin`, `verify`, `recover`, `returning` (`gs-auth.jsx`); `username` (`gs-username.jsx`); `connect` (`gs-connect.jsx`); `account` (`gs-account.jsx`).
+- Play record: `session`, `history` (`gs-session.jsx`).
+- Billing: `checkout`, `update-card` (`gs-billing.jsx`).
+- System: `loading`, `offline`, not-found (`gs-site.jsx`).
+- Shared parts (top bar, footer, covers, tags, Pass comparison, play pop-up, demo bar): `gs-parts.jsx`, `gs-site.jsx`. Seed data and names: `gs-data.jsx`. Routing, views (signed out / free / Pass) and which screens get the bar and footer: `main.jsx`.
 <!-- product:end -->
 
-Everything outside the block above is shared: identical in every project built from this kit, and never edited per product. The product's name and sources are all the block holds. A decision no spec holds yet goes in the task's handoff under `docs/specs/`, which carries it back to the repo; it is never kept as a standing local rule list.
+Everything outside the block above is shared: identical in every project built from this kit, and never edited per product. The product's name, sources, working picture and screen map are all the block holds. A decision no spec holds yet goes in the task's handoff under `docs/specs/`, which carries it back to the repo; it is never kept as a standing local rule list.
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 

@@ -36,7 +36,8 @@
 // What a `stage` function is handed: main.jsx's setters, plus the moves several
 // states share. This is the product's half of the file and grows with it.
 // TODO(product): replace with the product's own stagers, built on its seed.
-// [Platform]: api = { reset, setView, setConnected, setReview, go } from main.jsx.
+// [Platform]: api = { reset, setView, setConnected, setReview, go, setSub, setProvider, setChoice } from main.jsx.
+// api also carries setUser.
 function kitStateContext(api) {
   const reseed = () => api.reset();
   const reset = () => reseed();
@@ -50,16 +51,24 @@ const KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'home', label: '1. Home, signed out', stage: (c) => c.go('home') },
   { group: 'Screens', id: 'sign-up', label: '2. Sign up', stage: (c) => c.go('signup') },
   { group: 'Screens', id: 'sign-in', label: '2. Sign in', stage: (c) => c.go('signin') },
-  { group: 'Screens', id: 'verify-email', label: '2. Sign up: verify your email', stage: (c) => c.go('verify', { email: 'you@example.com' }) },
+  { group: 'Screens', id: 'verify-email', label: '2. Sign up: verify your email', stage: (c) => c.go('verify', { ctx: 'signup', email: 'you@example.com' }) },
   { group: 'Screens', id: 'reset-password', label: '2. Sign in: reset your password', stage: (c) => c.go('recover') },
   { group: 'Screens', id: 'connect', label: '3. Connect your AI', stage: (c) => { c.setView('free'); c.go('connect'); } },
   { group: 'Screens', id: 'delve-free', label: '4. Delve, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('delve'); } },
   { group: 'Screens', id: 'delve-pass', label: '4. Delve, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('delve'); } },
   { group: 'Screens', id: 'puzzles-free', label: '5. Daily Puzzles, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('puzzles'); } },
   { group: 'Screens', id: 'puzzles-pass', label: '5. Daily Puzzles, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('puzzles'); } },
+  { group: 'Screens', id: 'casebook-free', label: '5. Casebook, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook'); } },
+  { group: 'Screens', id: 'casebook-pass', label: '5. Casebook, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook'); } },
+  { group: 'Screens', id: 'hunter-free', label: '5. Hunter-gatherer game, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('hunter'); } },
+  { group: 'Screens', id: 'hunter-pass', label: '5. Hunter-gatherer game, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('hunter'); } },
   { group: 'Screens', id: 'games', label: '6. Games, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
+  { group: 'Screens', id: 'games-free', label: '6. Games, free plan (played today)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
+  { group: 'Screens', id: 'games-signed-out', label: '6. Games, signed out', stage: (c) => c.go('games') },
   { group: 'Screens', id: 'session-delve', label: '7. Session page: Delve', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve' }); } },
   { group: 'Screens', id: 'session-puzzle', label: '7. Session page: a puzzle', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'word-today' }); } },
+  { group: 'Screens', id: 'session-casebook', label: '7. Session page: Casebook', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'casebook' }); } },
+  { group: 'Screens', id: 'session-hunter', label: '7. Session page: hunter-gatherer game', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'hunter' }); } },
   { group: 'Screens', id: 'history', label: '8. History, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history'); } },
   { group: 'Screens', id: 'pass-free', label: '9. Pass, on the free plan', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
   { group: 'Screens', id: 'pass-holder-page', label: '9. Pass, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('pass'); } },
@@ -70,8 +79,38 @@ const KIT_STATE_REGISTER = [
   { group: 'Plans', id: 'free-history', label: 'Free plan: History with nothing kept', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('history'); } },
   { group: 'Sign in', id: 'provider-sign-in-fails', label: 'Google or Apple sign-in fails', stage: (c) => { c.setReview({ providerFail: true }); c.go('signin'); } },
   { group: 'Sign in', id: 'apple-no-account', label: 'Apple sign-in finds no account', stage: (c) => { c.setReview({ appleNone: true }); c.go('signin'); } },
+  { group: 'Sign in', id: 'sign-in-new-device', label: 'Sign in: verify this device', stage: (c) => c.go('verify', { ctx: 'device', email: 'you@example.com' }) },
+  { group: 'Sign in', id: 'code-expired', label: 'One-time code: expired', stage: (c) => c.go('verify', { ctx: 'device', email: 'you@example.com', preset: 'expired' }) },
+  { group: 'Sign in', id: 'code-wrong', label: 'One-time code: wrong', stage: (c) => c.go('verify', { ctx: 'device', email: 'you@example.com', preset: 'wrong' }) },
+  { group: 'Account', id: 'account-email', label: 'Account, email account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
+  { group: 'Account', id: 'account-provider', label: 'Account, provider account (Google)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setProvider('google'); c.go('account'); } },
+  { group: 'Account', id: 'delete-account-confirm', label: 'Delete account: confirm', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account', { stage: 'delete' }); } },
+  { group: 'Account', id: 'change-email-code', label: 'Change email: code step', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account', { stage: 'email-code' }); } },
+  { group: 'Username', id: 'username-new-account', label: 'Your username screen (new account)', stage: (c) => { c.setView('free'); c.go('username', { next: 'connect' }); } },
+  { group: 'Username', id: 'username-taken', label: 'Your username, taken', stage: (c) => { c.setView('free'); c.go('username', { next: 'connect', preset: 'taken' }); } },
+  { group: 'Username', id: 'account-username-wait', label: 'Account, username in the 30-day wait', stage: (c) => { c.setView('free'); c.setConnected(true); c.setUser({ locked: true }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-none', label: 'Not subscribed', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-monthly', label: 'Active, monthly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-yearly', label: 'Active, yearly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ plan: 'yearly' }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-free-month', label: 'Free month', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'free' }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-pending-switch', label: 'Pending switch to yearly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ pending: 'yearly' }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-payment-failed', label: 'Payment failed', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'failed' }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-ending', label: 'Ending', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'ending' }); c.go('account'); } },
+  { group: 'Pass card', id: 'pass-card-lapsed', label: 'Lapsed (free month used)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ freeUsed: true }); c.go('account'); } },
+  { group: 'Billing', id: 'pass-page-free-month', label: 'Pass page, free month available', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
+  { group: 'Billing', id: 'pass-page-free-used', label: 'Pass page, free month used', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ freeUsed: true }); c.go('pass'); } },
   { group: 'Billing', id: 'checkout', label: 'Payment provider checkout', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('checkout'); } },
-  { group: 'Billing', id: 'card-declined', label: 'Payment provider: card declined', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ payFail: true }); c.go('checkout'); } },
+  { group: 'Billing', id: 'update-card', label: 'Update-card page', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'failed' }); c.go('update-card'); } },
+  { group: 'Billing', id: 'switch-sheet-yearly', label: 'Switch sheet: to yearly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('account', { sheet: 'switch' }); } },
+  { group: 'Billing', id: 'switch-sheet-monthly', label: 'Switch sheet: to monthly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ plan: 'yearly' }); c.go('account', { sheet: 'switch' }); } },
+  { group: 'Billing', id: 'switch-sheet-free-month', label: 'Switch sheet: in the free month', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'free' }); c.go('account', { sheet: 'switch' }); } },
+  { group: 'Billing', id: 'cancel-sheet', label: 'Cancel sheet', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('account', { sheet: 'cancel' }); } },
+  { group: 'Billing', id: 'cancel-sheet-free-month', label: 'Cancel sheet: in the free month', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'free' }); c.go('account', { sheet: 'cancel' }); } },
+  { group: 'Site', id: 'not-found', label: 'Not found', stage: (c) => c.go('nowhere') },
+  { group: 'Site', id: 'loading-full', label: 'Loading, full screen (held)', stage: (c) => c.go('loading') },
+  { group: 'Site', id: 'loading-in-place', label: 'Loading, in place on Games (held)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games', { load: 'hold' }); } },
+  { group: 'Site', id: 'load-failed', label: 'Load failed, in place on Games', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games', { load: 'failed' }); } },
+  { group: 'Site', id: 'cant-connect', label: 'Can’t connect, full screen', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('offline'); } },
 ];
 
 // Notes, per group: how to exercise what a staged state
@@ -79,12 +118,21 @@ const KIT_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
+  'Username': [
+    'Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.',
+    'Taken: in the demo only "taken", in any capitals, is taken. Your own current name never is.',
+  ],
   'Sign in': [
     'Provider sign-in fails: tap Continue with Google or Continue with Apple. The line under the buttons clears on the next try.',
     'Apple finds no account: tap Continue with Apple on Sign in.',
+    'One-time code: 000000 is expired; 111111, or fewer than six digits, is wrong; any other six digits pass.',
+    'Provider sheet cancelled (Config): tapping Google or Apple leaves you on step 1 with nothing shown.',
+  ],
+  'Pass card': [
+    'Every card state is on the Account page. The same card shows on the Pass page for a Pass holder.',
   ],
   'Billing': [
-    'Card declined: enter 4242 4242 4242 4242, 12/30 and 123, then Pay. Every state starts from signed out first.',
+    'Checkout: the card inputs only format; any input pays. The plan comes from the Pass page (Yearly by default).',
   ],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;

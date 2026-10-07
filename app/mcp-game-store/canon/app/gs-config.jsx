@@ -5,6 +5,7 @@
 const GsConfigExtra = () => {
   const api = window.gsApi || {};
   const r = api.review || {};
+  const sub = api.sub || {};
   const [, bump] = React.useState(0);
   const set = (fn) => { fn(); setTimeout(() => bump((n) => n + 1), 0); };
   const row = (label, value, onChange, options) => (
@@ -13,18 +14,26 @@ const GsConfigExtra = () => {
       <window.ConfigSeg value={value} onChange={onChange} options={options} />
     </div>
   );
+  const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
+  // Changing the subscription signs in, so the demo bar moves with it.
+  const setSub = (patch) => set(() => { if (api.view === 'out') api.setView('free'); api.setSub(patch); });
   return (
     <React.Fragment>
       <div className="kit-config-eyebrow">[Platform]</div>
-      {row('Your AI', api.connected ? 'yes' : 'no', (v) => set(() => api.setConnected(v === 'yes')),
-        [{ value: 'yes', label: 'Connected' }, { value: 'no', label: 'Not connected' }])}
-      {row('Google and Apple sign-in', r.providerFail ? 'fail' : 'ok', (v) => set(() => api.setReview({ providerFail: v === 'fail' })),
-        [{ value: 'ok', label: 'Works' }, { value: 'fail', label: 'Fails' }])}
-      {row('Apple account on sign-in', r.appleNone ? 'none' : 'found', (v) => set(() => api.setReview({ appleNone: v === 'none' })),
-        [{ value: 'found', label: 'Found' }, { value: 'none', label: 'None' }])}
-      {row('Card at checkout', r.payFail ? 'declined' : 'ok', (v) => set(() => api.setReview({ payFail: v === 'declined' })),
-        [{ value: 'ok', label: 'Accepted' }, { value: 'declined', label: 'Declined' }])}
-      <div className="kit-config-hint">The plan (signed out, free, Pass) is switched from the demo bar at the foot of every screen.</div>
+      {row('Your AI', api.connected ? 'yes' : 'no', (v) => set(() => api.setConnected(v === 'yes')), o([['yes', 'Connected'], ['no', 'Not connected']]))}
+      <div className="kit-config-group-title">Sign in</div>
+      {row('Signed in with', api.provider || 'email', (v) => set(() => api.setProvider(v)), o([['email', 'Email'], ['google', 'Google'], ['apple', 'Apple']]))}
+      {row('Provider sheet', r.sheet || 'completes', (v) => set(() => api.setReview({ sheet: v })), o([['completes', 'Completes'], ['cancelled', 'Cancelled']]))}
+      {row('Google and Apple sign-in', r.providerFail ? 'fail' : 'ok', (v) => set(() => api.setReview({ providerFail: v === 'fail' })), o([['ok', 'Works'], ['fail', 'Fails']]))}
+      {row('Apple account', r.appleNone ? 'none' : 'found', (v) => set(() => api.setReview({ appleNone: v === 'none' })), o([['found', 'Found'], ['none', 'None']]))}
+      <div className="kit-config-group-title">Username</div>
+      {row('Username', (api.user && api.user.locked) ? 'recent' : 'free', (v) => set(() => api.setUser({ locked: v === 'recent' })), o([['free', 'Free to change'], ['recent', 'Changed recently']]))}
+      <div className="kit-config-group-title">Pass</div>
+      {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { freeUsed: true }) }),
+        o([['none', 'None'], ['free', 'Free month'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}
+      {row('Free month', sub.freeUsed ? 'used' : 'available', (v) => setSub({ freeUsed: v === 'used' }), o([['available', 'Available'], ['used', 'Used']]))}
+      {row('Plan', sub.plan || 'monthly', (v) => setSub({ plan: v, pending: null }), o([['monthly', 'Monthly'], ['yearly', 'Yearly']]))}
+      <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the free month used is the lapsed card.</div>
     </React.Fragment>
   );
 };

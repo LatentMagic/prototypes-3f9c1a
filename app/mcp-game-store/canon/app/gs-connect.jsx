@@ -1,6 +1,5 @@
 // ============================================================================
-// [Platform] — Connect your AI (screen 3), and the payment provider's checkout
-// (a stand-in for the third party, reached from "Get the Pass").
+// [Platform] — Connect your AI (screen 3). Checkout lives in gs-billing.jsx.
 // ============================================================================
 const GS_AIS = [['claude', 'Claude'], ['chatgpt', 'ChatGPT'], ['goose', 'Goose'], ['other', 'Other']];
 const GS_AI_PASTE = {
@@ -69,70 +68,4 @@ const GsConnect = () => {
   );
 };
 
-// ---- Payment provider (stand-in) -------------------------------------------------
-// The third party's own page: you have left [Platform] while you are on it. It
-// carries the provider's frame, not the shop's top bar, and returns to the Pass
-// screen either way.
-const GsCheckout = () => {
-  const gs = useGs();
-  const [phase, setPhase] = React.useState('leaving'); // leaving | form | paying
-  const [declined, setDeclined] = React.useState(false);
-  const [f, setF] = React.useState({ card: '', exp: '', cvc: '' });
-  const [tried, setTried] = React.useState(false);
-  const refs = React.useRef({});
-  React.useEffect(() => { const t = setTimeout(() => setPhase('form'), 1100); return () => clearTimeout(t); }, []);
-  const rules = [
-    ['card', (v) => v.replace(/\D/g, '').length === 16, 'Enter the 16-digit card number.'],
-    ['exp', (v) => /^\d{2}\/\d{2}$/.test(v), 'Enter the expiry as MM/YY.'],
-    ['cvc', (v) => /^\d{3,4}$/.test(v), 'Enter the 3 or 4 digits on the back.'],
-  ];
-  const errs = tried ? gsCheck(rules, f) : {};
-  const fmt = {
-    card: (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim(),
-    exp: (v) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; },
-    cvc: (v) => v.replace(/\D/g, '').slice(0, 4),
-  };
-  const bind = (k) => ({ value: f[k], error: errs[k], inputRef: (el) => { refs.current[k] = el; }, onChange: (e) => setF((s) => ({ ...s, [k]: fmt[k](e.target.value) })) });
-  const pay = (e) => {
-    e.preventDefault(); setTried(true);
-    const bad = rules.map((r) => r[0]).find((k) => gsCheck(rules, f)[k]);
-    if (bad) { setTimeout(() => refs.current[bad] && refs.current[bad].focus(), 0); return; }
-    setDeclined(false); setPhase('paying');
-    setTimeout(() => { if (gs.review.payFail) { setDeclined(true); setPhase('form'); } else gs.paid(); }, 1400);
-  };
-  if (phase === 'leaving') return (
-    <div className="gs-wait" role="status">
-      <DS.Loader size={64} label="Opening secure payment" />
-      <p className="gs-muted">Opening secure payment</p>
-    </div>
-  );
-  return (
-    <div className="gs-auth">
-      <header className="gs-top"><div className="gs-wrap gs-top-in">
-        <span className="gs-ico-row gs-strong"><DS.Icon name="lock" />Secure payment · [Platform]</span>
-        <span className="gs-small">Payment provider (stand-in)</span>
-      </div></header>
-      <main className="gs-auth-col">
-        <DS.Card style={{ gap: 24, justifyItems: 'stretch', padding: 24 }}>
-          <div className="gs-stack-xs">
-            <span className="gs-muted">[Platform] Pass</span>
-            <span className="gs-figure gs-num-text">£—</span>
-          </div>
-          <form noValidate onSubmit={pay} className="gs-stack-md">
-            <DS.TextField label="Email" value={GS.email} readOnly />
-            <DS.TextField label="Card number" inputMode="numeric" placeholder="1234 1234 1234 1234" autoComplete="cc-number" className="gs-num-text" {...bind('card')} />
-            <div className="gs-name-pair">
-              <DS.TextField label="Expiry" inputMode="numeric" placeholder="MM/YY" autoComplete="cc-exp" {...bind('exp')} />
-              <DS.TextField label="CVC" inputMode="numeric" placeholder="123" autoComplete="cc-csc" {...bind('cvc')} />
-            </div>
-            {declined && <DS.StatusMessage kind="error">Your card was declined and nothing has been charged.</DS.StatusMessage>}
-            <DS.Button type="submit" block loading={phase === 'paying'} loadingLabel="Processing">{declined ? 'Try again' : 'Pay and get the Pass'}</DS.Button>
-          </form>
-          <div className="gs-center"><DS.TextLink onClick={() => gs.go('pass')}>Cancel and return to [Platform]</DS.TextLink></div>
-        </DS.Card>
-      </main>
-    </div>
-  );
-};
-
-Object.assign(window, { GsConnect, GsCheckout });
+Object.assign(window, { GsConnect });

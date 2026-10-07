@@ -8,3 +8,4 @@ The nine-screen [Platform] prototype (`index.html`, `app/gs-*.jsx`). No ticket y
 - `handoff-2026-10-06-first-build.md`: the first build
 - `handoff-2026-10-06-home-rebuild.md`: the home page rebuild
 - `handoff-2026-10-06-home-proposal.md`: the home proposal ratified and the logo added (latest)
+- `handoff-2026-10-07-snag-fixes.md`: streak row, phone overflow, screenshot rule

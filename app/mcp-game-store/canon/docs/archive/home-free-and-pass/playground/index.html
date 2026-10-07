@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Playground · free and Pass</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -603,20 +604,6 @@
   .gs-ba-side { display: grid; gap: 2px; padding: 8px; border: 1.5px solid transparent; }
   .gs-ba-side.is-hi { border-color: var(--off-white); }
 
-  /* pass page comparison */
-  .gs-cmp { width: 100%; max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
-  .gs-cmp-h { text-align: center; }
-  .gs-cmp-t { display: grid; }
-  .gs-cmp-tr { display: grid; grid-template-columns: minmax(0, 1fr) 64px 64px; align-items: stretch; }
-  .gs-cmp-tr + .gs-cmp-tr:not(.is-foot) > * { border-top: 1px solid var(--line); }
-  .gs-cmp-tr.is-head .gs-cmp-band { border-top: 1px solid var(--line); }
-  .gs-cmp-tr.is-foot > * { height: 8px; }
-  .gs-cmp-cell { display: grid; place-items: center; min-height: 48px; height: 100%; text-align: center; }
-  .gs-cmp-label { display: grid; gap: 2px; align-content: center; padding: 12px 16px 12px 0; }
-  .gs-cmp-label .gs-muted { font-size: 14px; line-height: 1.4; }
-  .gs-cmp-band { background: var(--card); }
-  @container gs (min-width: 640px) { .gs-cmp-tr { grid-template-columns: minmax(0, 1fr) 120px 120px; } }
-
   /* pass page buying block */
   .gs-buy-block { width: 100%; max-width: 440px; margin: 0 auto; display: grid; gap: 16px; }
   .gs-buy-head { text-align: center; }
@@ -657,6 +644,37 @@
     .gs-acct-btn .mcp-ico, .gs-inlink, .gs-pz-item { transition: none; }
     .gs-pz-item:active { transform: none; }
   }
+
+  /* ---- playground: free and Pass tables ---- */
+  .pg-t { display: grid; max-width: 640px; }
+  .pg-tr { display: grid; grid-template-columns: minmax(0, 1fr) 72px 72px; align-items: stretch; }
+  .pg-tr + .pg-tr:not(.is-foot) > * { border-top: 1px solid var(--line); }
+  .pg-tr.is-foot > * { height: 8px; }
+  .pg-cell { display: grid; place-items: center; min-height: 48px; text-align: center; }
+  .pg-label { display: flex; align-items: center; padding: 12px 16px 12px 0; }
+  .pg-band { background: var(--card); }
+  .pg-tr.is-head .pg-band { border-top: 1px solid var(--line); }
+  .pg-t.is-card .pg-tr { grid-template-columns: minmax(0, 1fr) 88px 88px; }
+  .pg-t.is-card .pg-label { padding-left: 16px; }
+  .pg-t.is-card .pg-tr > :last-child { border-left: 1px solid var(--line); }
+  .pg-headcell { gap: 2px; padding: 12px 4px; align-content: center; }
+  .pg-adds { display: grid; gap: 24px; max-width: 640px; align-items: start; }
+  .pg-adds .gs-plain { align-content: start; }
+  .pg-w { display: grid; max-width: 760px; }
+  .pg-wr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .pg-wr.is-head { display: none; }
+  .pg-wl { grid-column: 1 / -1; font-weight: 600; }
+  .pg-wr > span:not(.pg-wl) { display: grid; gap: 2px; align-content: start; }
+  @container gs (min-width: 640px) {
+    .pg-tr { grid-template-columns: minmax(0, 1fr) 120px 120px; }
+    .pg-t.is-card .pg-tr { grid-template-columns: minmax(0, 1fr) 140px 140px; }
+    .pg-t.is-card .pg-label { padding-left: 24px; }
+    .pg-adds { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 36px; }
+    .pg-wr { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .pg-wr.is-head { display: grid; border-top: 0; padding-bottom: 8px; }
+    .pg-wl { grid-column: auto; }
+    .pg-wtag { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -685,6 +703,7 @@
 <script type="text/babel" src="app/gs-site.jsx"></script>
 <script type="text/babel" src="app/gs-parts.jsx"></script>
 <script type="text/babel" src="app/gs-home.jsx"></script>
+<script type="text/babel" src="docs/specs/home-free-and-pass/playground/pg-free-pass.jsx"></script>
 <script type="text/babel" src="app/gs-puzzles.jsx"></script>
 <script type="text/babel" src="app/gs-session.jsx"></script>
 <script type="text/babel" src="app/gs-game.jsx"></script>

@@ -1,5 +1,6 @@
 // ============================================================================
-// [Platform] — Game page: Daily Puzzles (screen 5).
+// [Platform] — Daily Puzzles parts: puzzle cards, earlier puzzles, streak.
+// The page itself is the shared template (gs-game.jsx).
 // ============================================================================
 const GsResultTag = ({ s }) => <DS.Tag kind={s.loss ? 'error' : 'success'}>{s.result}</DS.Tag>;
 
@@ -58,12 +59,12 @@ const GsStreakPanel = ({ paying }) => (
   <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
     {paying ? (
       <div className="gs-streak">
-        <div className="gs-stack-sm"><span className="gs-label">YOUR STREAK</span><span className="gs-figure gs-num-text">Streak: 12 days</span></div>
+        <div className="gs-stack-sm"><span className="gs-label">YOUR STREAK</span><span className="gs-figure gs-num-text">Streak: 3 days</span></div>
         <div className="gs-stack-sm"><span className="gs-label">YOUR RECORD</span><span className="gs-figure gs-num-text">Record: 41 solved, 6 missed</span></div>
         <div className="gs-stack-sm">
           <span className="gs-label">LAST SEVEN DAYS</span>
-          <div className="gs-days" role="img" aria-label="Played on each of the last seven days">
-            {Array.from({ length: 7 }, (_, i) => <i key={i} className="is-on" />)}
+          <div className="gs-days" role="img" aria-label="Played on six of the last seven days, missed four days ago">
+            {Array.from({ length: 7 }, (_, i) => <i key={i} className={i === 2 ? undefined : 'is-on'} />)}
           </div>
         </div>
       </div>
@@ -76,34 +77,4 @@ const GsStreakPanel = ({ paying }) => (
   </DS.Card>
 );
 
-const GsPuzzles = () => {
-  const gs = useGs();
-  const paying = gs.view === 'pass';
-  const played = GS_TODAY_PLAYED[gs.view] || {};
-  return (
-    <main className="gs-wrap gs-main">
-      <section className="gs-pz-head">
-        <GsCover art="daily" />
-        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="gs-label">PUZZLES · NEW EVERY DAY</span>
-          <h1 className="gs-h1">Daily Puzzles</h1>
-          <GsTagList tags={['FREE', '10 min each', 'Solo']} />
-        </div>
-      </section>
-
-      <section className="gs-stack-md">
-        <div className="gs-sec-head"><h2 className="mcp-t-sec">Today</h2><p className="gs-muted">{GS.today}</p></div>
-        <div className="gs-grid3">{GS_PUZZLE_ORDER.map((k) => <GsPuzzleCard key={k} id={k} session={played[k]} />)}</div>
-      </section>
-
-      <section className="gs-grid2 gs-top-align">
-        <GsShot id="dailyWord" caption="Each guess goes to the server, which checks it and keeps count." />
-        <GsEarlier paying={paying} />
-      </section>
-
-      <GsStreakPanel paying={paying} />
-    </main>
-  );
-};
-
-Object.assign(window, { GsPuzzles, GsStreakPanel, GsResultTag });
+Object.assign(window, { GsPuzzleCard, GsEarlier, GsStreakPanel, GsResultTag });

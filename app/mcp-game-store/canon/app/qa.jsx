@@ -18,11 +18,20 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const KIT_QA = [
-  {
-    key: 'nine-screens', title: 'Nine-screen prototype, first build',
-    note: 'The happy path is clickable from Home: Start free, Continue with email, any code of six digits, Connect, Browse games. These are the states off that path.',
-    steps: ['free-plan', 'pass-holder', 'not-connected', 'free-puzzle-result', 'free-history', 'provider-sign-in-fails', 'apple-no-account', 'checkout', 'card-declined'],
-  },
+  { key: 'username-1', title: 'Usernames',
+    note: 'By hand: sign up by email (no name fields), then Your username, then Connect your AI; from Get the Pass the screen comes after checkout, or on cancelling it. On Account, rename and watch the menu, avatar and a share card. Config has the Username row.',
+    steps: ['sign-up', 'username-new-account', 'username-taken', 'account-email', 'account-provider', 'account-username-wait', 'session-delve'] },
+  { key: 'circlists-match-1', title: 'Circlists match 1: sign-in, menu, Account',
+    note: 'Also check by hand: Google, black Apple, email order; email sign-in lands on Verify this device; the user menu (signed in, wide).',
+    steps: ['sign-in', 'sign-up', 'sign-in-new-device', 'code-expired', 'code-wrong', 'reset-password', 'provider-sign-in-fails', 'apple-no-account', 'account-email', 'account-provider', 'change-email-code', 'delete-account-confirm'] },
+  { key: 'circlists-match-2', title: 'Circlists match 2: the Pass',
+    steps: ['pass-page-free-month', 'pass-page-free-used', 'checkout', 'update-card', 'pass-card-none', 'pass-card-monthly', 'pass-card-yearly', 'pass-card-free-month', 'pass-card-pending-switch', 'pass-card-payment-failed', 'pass-card-ending', 'pass-card-lapsed', 'switch-sheet-yearly', 'switch-sheet-monthly', 'switch-sheet-free-month', 'cancel-sheet', 'cancel-sheet-free-month'] },
+  { key: 'circlists-match-3', title: 'Circlists match 3: footer, legal, not-found, loading',
+    note: 'Footer and legal pages: open Home, then Terms, Privacy and Refunds from the footer. Check the footer at 720, 420 and 300px.',
+    steps: ['home', 'not-found', 'loading-full', 'loading-in-place', 'load-failed', 'cant-connect'] },
+  { key: 'first-release-games', title: 'First-release games',
+    note: 'Each page: facts row, finished play, this week’s one, More games. Every "—" is a gap in the record.',
+    steps: ['puzzles-pass', 'puzzles-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
