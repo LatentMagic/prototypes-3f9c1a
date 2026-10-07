@@ -29,7 +29,7 @@ It will be stale. First, run `git log` and `git diff dddbb6c..HEAD` on `app/circ
 
 - `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`
 - `app/` (the machinery files, not the Circlists screens)
-- `skills/`: `bro`, `build-playground`, `create-handoff`, `frontend-ui-engineering`, `future-fragility`, `idea-refine`, `must-read`, `show-me`
+- `skills/`: `bro`, `build-playground`, `create-handoff`, `frontend-ui-engineering`, `future-fragility`, `idea-refine`, `must-read`, `noise`, `show-me`
 - `skills/impeccable-local/` and `skills/impeccable/` (see Refreshing Impeccable)
 
 Then update "Last cut" above.
@@ -78,7 +78,7 @@ Known limits are listed in `project/app/README.md`.
 
 ### Skills
 
-Byte-identical to canon: `bro`, `must-read`, `frontend-ui-engineering`'s reference. Edited from canon: `future-fragility` (the `$ARGUMENTS` token and `argument-hint` removed: nothing substitutes them here); `idea-refine` (`AskUserQuestion` replaced by asking in chat, the knowledge-store line pointed at the product block, `/ideate` in examples replaced by `$idea-refine`, `author: LatentMagic` replaced by a `source` line); `frontend-ui-engineering` (`source` line). `idea-refine` and `frontend-ui-engineering` come from `addyosmani/agent-skills` (MIT, Copyright (c) 2025 Addy Osmani; both paths exist upstream); the licence text sits beside each as `LICENSE-addyosmani-agent-skills-MIT`. `show-me` adds a `LICENSE` and one sentence about Mermaid. `show-me` is identical, plus a `LICENSE` (MIT, HumanLayer, fetched from its repo; canon had no licence text).
+Byte-identical to canon: `bro`, `must-read`, `noise` (copied from `biz-standards:noise`, v1.0.2), `frontend-ui-engineering`'s reference. Edited from canon: `future-fragility` (the `$ARGUMENTS` token and `argument-hint` removed: nothing substitutes them here); `idea-refine` (`AskUserQuestion` replaced by asking in chat, the knowledge-store line pointed at the product block, `/ideate` in examples replaced by `$idea-refine`, `author: LatentMagic` replaced by a `source` line); `frontend-ui-engineering` (`source` line). `idea-refine` and `frontend-ui-engineering` come from `addyosmani/agent-skills` (MIT, Copyright (c) 2025 Addy Osmani; both paths exist upstream); the licence text sits beside each as `LICENSE-addyosmani-agent-skills-MIT`. `show-me` adds a `LICENSE` and one sentence about Mermaid. `show-me` is identical, plus a `LICENSE` (MIT, HumanLayer, fetched from its repo; canon had no licence text).
 
 `create-handoff`: the "adapted for Circlists" author and version and the `BIZ-80` examples removed; the filename is now `handoff-{YYYY-MM-DD}-{topic}.md` (no underscore, as `CLAUDE.md` § Files requires), in the task's folder or `docs/specs/_handoffs/`. `build-playground`: Circlists specifics replaced with product-neutral nouns; rule 4 (the config rail replacing the app's rail) keeps canon's shape with a "Product slot" bullet for a separate native posture. `i-have-adhd` removed from the groupings and the `$name` examples, by decision. `candidate-build` not shipped, by decision.
 

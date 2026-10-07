@@ -57,6 +57,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### How I write and reply
 - `bro` — restate the last message plainly, no jargon.
+- `noise` — put the user's missed question back in front of them, on its own, after subagent returns or tool output buried it. **Declared only:** fires on `$noise` or `/noise`, never on its own.
 - `show-me` — when prose would force the reader to reconstruct something in their head: a structure, a flow, a comparison, a before/after, a set of options. Fires whether or not a visual was asked for. Use it *with* `must-read` when the thing landed is inside the prototype — the route to it is a flow, so draw the flow.
 - `must-read` — at the end of any finished body of work (a change landed, a doc written, a review run): name the one thing the user cannot skip, precisely, with the stake. Complements the last-line rule. **When the thing landed is in the prototype, always carry the route to it** — the numbered clicks from the app's entry to the exact surface, so it is never gone looking for.
 
