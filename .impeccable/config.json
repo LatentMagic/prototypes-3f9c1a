@@ -14,6 +14,15 @@
         "value": "space grotesk",
         "createdAt": "2026-09-24T10:46:58.721Z",
         "reason": "user 2026-09-24: console chrome font only, not product; the console's look is not a design concern"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-07T06:20:05.575Z",
+        "reason": "Claude: body overflow:hidden is the fixed-height console shell; its positioned children (sticky topbar, fixed rail drawer) are not clipped by it. User said fix at will."
       }
     ]
   }
