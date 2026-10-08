@@ -117,7 +117,12 @@ const KitApp = () => {
     goHow: () => { go('home'); setTimeout(() => gsScrollToId('gs-how'), 40); },
     startFree: () => (view === 'out' ? go('signup') : go('games')),
     signOut: () => { setSignedIn(false); go('home'); },
-    setDemoView: (v) => { setView(v); if (v === 'out' && GS_SIGNED_IN_ONLY.includes(route.name)) go('home'); },
+    // Each view has its own home: signed out is `home`, signed in is `games`. Switching views swaps one for the other.
+    setDemoView: (v) => {
+      setView(v);
+      if (v === 'out' && (GS_SIGNED_IN_ONLY.includes(route.name) || (route.name === 'games' && view !== 'out'))) go('home');
+      else if (v !== 'out' && route.name === 'home') go('games');
+    },
     // Signed out -> sign up; not connected -> connect your AI; else the pop-up.
     play: (name, session) => {
       if (view === 'out') go('signup');

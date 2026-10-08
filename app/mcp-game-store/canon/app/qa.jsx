@@ -36,7 +36,7 @@ const KIT_QA = [
     note: 'Footer and legal pages: open Home, then Terms, Privacy and Refunds from the footer. Check the footer at 720, 420 and 300px.',
     steps: ['home', 'not-found', 'loading-full', 'loading-in-place', 'load-failed', 'cant-connect'] },
   { key: 'first-release-games', title: 'First-release games',
-    note: 'Each page: facts row, finished play, this week’s one, More games. Every "—" is a gap in the record.',
+    note: 'Each page: facts band, this week’s one, More games. Every "—" is a gap in the record.',
     steps: ['puzzles-pass', 'puzzles-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);

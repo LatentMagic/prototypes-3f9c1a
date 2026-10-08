@@ -353,8 +353,6 @@
   .gs-tiles > span.is-on { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 
   /* delve */
-  .gs-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font: 600 14px/1.2 var(--font-text); min-height: 44px; }
-  .gs-crumb [aria-current] { color: var(--text); }
   .gs-hero-cover { position: relative; }
   .gs-cover-over { position: absolute; left: 0; bottom: 0; padding: 16px; display: grid; gap: 4px; }
   .gs-cover-title { margin: 0; font: 700 34px/1.08 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
@@ -659,8 +657,11 @@
 
   /* game page: facts, finished play, gaps */
   .gs-gap { color: var(--muted); font-weight: 400; }
-  .gs-facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .gs-fact { display: grid; gap: 4px; align-content: start; padding: 12px 16px 12px 0; }
+  .gs-factband { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .gs-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 0 36px; }
+  .gs-fact { display: grid; gap: 4px; align-content: start; padding: 12px 0; }
+  .gs-fact-tags { padding: 12px 0; }
+  .gs-week { display: grid; gap: 16px; }
   .gs-fact dd { margin: 0; font-weight: 600; }
   .gs-mini { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; }
   .gs-share-line { font-weight: 600; }
@@ -670,9 +671,9 @@
     .gs-pair-even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .gs-line-act { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
     .gs-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gs-week { grid-template-columns: minmax(160px, 280px) minmax(0, 1fr); gap: 24px; align-items: center; }
   }
   @container gs (min-width: 1000px) {
-    .gs-facts { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   }
   @media (prefers-reduced-motion: reduce) {
     .gs-acct-btn .mcp-ico, .gs-inlink, .gs-pz-item { transition: none; }
@@ -688,10 +689,6 @@
   .pg-kv { justify-content: space-between; }
   .pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
   .pg-ach-bar { display: block; max-width: 280px; }
-  .pg-board { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
-  .pg-board > li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 48px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
-  .pg-board > li.is-me { background: var(--card); }
-  .pg-add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
   .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
   @container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band-link { grid-column: auto; } }
   @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }

@@ -33,8 +33,8 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 const GS_GAMES = {
-  daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', '10 min', 'Solo'] },
-  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', '25–40 min', 'Solo', '12+'] },
+  daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', '10 min'] },
+  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', '25–40 min'] },
   casebook: { name: GS_NAME.casebook, art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly'] },
   hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS'] },
 };
@@ -43,8 +43,8 @@ const GS_GAME_ORDER = ['daily', 'casebook', 'delve', 'hunter'];
 const gsMarks = (view) => (view === 'pass' ? { daily: 'Played today', casebook: 'Played this week', delve: 'Played this week' }
   : view === 'free' ? { daily: 'Played today' } : {});
 const GS_SOON = [
-  { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction · 15+' },
-  { name: 'The Barrow of Hollowmere', art: 'barrow', line: 'A short campaign with levels and loot · 12+' },
+  { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction' },
+  { name: 'The Barrow of Hollowmere', art: 'barrow', line: 'A short campaign with levels and loot' },
 ];
 
 const GS_PUZZLE_ORDER = ['escape', 'murder', 'word'];

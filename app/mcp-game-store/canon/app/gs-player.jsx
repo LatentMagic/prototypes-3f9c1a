@@ -1,10 +1,11 @@
 // ============================================================================
-// [Platform] — a game's player page (Delve only for now), its way in from the game
-// page, and the top-bar dropdown of games you've played. From delve-two-pages,
+// [Platform] — each game's player page, its way in from the game
+// page, and the Library dropdown in the top bar. From delve-two-pages,
 // option 2 refined as A (docs/specs/delve-two-pages/handoff-2026-10-08-route-pick.md).
-// Names ("Played", "Delve record", "RECORD") are placeholders until the wording is settled.
+// Ratified 2026-10-08: the top-bar item is "Library"; the player page is titled with the game's name alone.
+// The card reads "IN YOUR LIBRARY" and links "Go to your <game>"; its line is not decided yet.
 // ============================================================================
-// ---- Seed: one player's Delve, and their friends ------------------------------
+// ---- Seed: one player's Delve ------------------------------
 const GP_RECENT = [
   { date: '5 October', ending: 'Close call' },
   { date: '28 September', ending: 'Alone' },
@@ -27,7 +28,6 @@ const GP_ACH = [
     { n: 'Four weeks running', of: 4, have: 3 },
     { n: 'Ten scenes', of: 10, have: 4 }] },
 ];
-const GP_FRIENDS = ['quietfox', 'Tamsin_R', 'bramble'];
 
 
 const GpMini = ({ art, sm }) => <span className={'pg-mini' + (sm ? ' is-sm' : '')} aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[art] }} />;
@@ -47,41 +47,56 @@ const GpThisWeek = ({ who }) => {
     </DS.Card>
   );
 };
-const GpRecord = ({ who }) => {
-  if (who !== 'played') return (
-    <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">Your scenes</h2>
-      <p className="gs-muted">Every scene you play lands here: how it ended, every roll, and your run of weeks.</p>
-    </section>
-  );
-  const count = (e) => GP_RECENT.filter((r) => r.ending === e).length;
+// Per game: the unit you play, how a run is counted, how plays can end, and recent plays.
+// Hunter has nothing decided yet: blanks show as a muted "—".
+const GP_CFG = {
+  delve: { units: 'scenes', run: 'WEEKS RUNNING', strip: ['LAST SIX WEEKS', 'weeks', GP_WEEKS], ends: GP_ENDINGS,
+    recent: GP_RECENT.map((r) => ({ ...r, when: 'Week of ' + r.date, sid: 'delve' })) },
+  daily: { units: 'puzzles', run: 'DAYS RUNNING', strip: ['LAST SEVEN DAYS', 'days', [['2 Oct', true], ['3 Oct', false], ['4 Oct', true], ['5 Oct', true], ['6 Oct', true], ['7 Oct', true], ['8 Oct', true]]], ends: ['Solved', 'Missed'],
+    recent: [{ ending: 'Solved in 3 of 6', when: 'Word Puzzle · Today', sid: 'word-today', art: 'word', k: 'Solved' }, { ending: 'Escaped in 7 moves', when: 'Escape Room · Today', sid: 'escape-today', art: 'escape', k: 'Solved' },
+      { ending: 'Missed', when: 'Murder Mystery · Today', sid: 'murder-today', art: 'murder', k: 'Missed' }, { ending: 'Solved in 4 of 6', when: 'Word Puzzle · 5 October', sid: 'word-1005', art: 'word', k: 'Solved' },
+      { ending: 'Solved', when: 'Murder Mystery · 4 October', sid: 'murder-1004', art: 'murder', k: 'Solved' }] },
+  casebook: { units: 'cases', run: 'WEEKS RUNNING', strip: ['LAST SIX WEEKS', 'weeks', [['31 Aug', true], ['7 Sep', true], ['14 Sep', false], ['21 Sep', true], ['28 Sep', false], ['5 Oct', true]]], ends: ['Solved', 'Unsolved'],
+    recent: [{ ending: 'Solved', when: 'Week of 5 October', sid: 'casebook' }, { ending: 'Unsolved', when: 'Week of 21 September', sid: 'casebook' }, { ending: 'Solved', when: 'Week of 7 September', sid: 'casebook' }, { ending: 'Solved', when: 'Week of 31 August', sid: 'casebook' }] },
+  hunter: { units: 'days', run: null, strip: null, ends: null, recent: [{ ending: null, when: '5 October', sid: 'hunter' }] },
+};
+// Card lines. Delve and Daily Puzzles use the default line.
+const GP_LINE = { casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.' };
+const gpUp = (t) => t.toUpperCase();
+const GpRecord = ({ id }) => {
+  const c = GP_CFG[id];
+  const n = c.recent.length;
+  const count = (e) => c.recent.filter((r) => (r.k || r.ending) === e).length;
+  const on = c.strip ? c.strip[2].filter(([, v]) => v).length : 0;
   return (
     <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">Your scenes</h2>
+      <h2 className="mcp-t-sec">Your {c.units}</h2>
       <div className="gs-grid3">
-        <div className="gs-stack-xs"><span className="gs-label">SCENES PLAYED</span><span className="gs-figure">4</span></div>
-        <div className="gs-stack-xs"><span className="gs-label">WEEKS RUNNING</span><span className="gs-figure">3</span></div>
-        <div className="gs-stack-sm"><span className="gs-label">LAST SIX WEEKS</span>
-          <div className="gs-days" role="img" aria-label="Played 4 of the last 6 weeks">{GP_WEEKS.map(([d, on]) => <i key={d} title={d} className={on ? 'is-on' : ''} />)}</div>
-        </div>
+        <div className="gs-stack-xs"><span className="gs-label">{gpUp(c.units)} PLAYED</span><span className="gs-figure">{n}</span></div>
+        {c.run && <div className="gs-stack-xs"><span className="gs-label">{c.run}</span><span className="gs-figure">{id === 'daily' ? 5 : id === 'casebook' ? 1 : 3}</span></div>}
+        {c.strip && <div className="gs-stack-sm"><span className="gs-label">{c.strip[0]}</span>
+          <div className="gs-days" role="img" aria-label={'Played ' + on + ' of the last ' + c.strip[2].length + ' ' + c.strip[1]}>{c.strip[2].map(([d, v]) => <i key={d} title={d} className={v ? 'is-on' : ''} />)}</div>
+        </div>}
       </div>
       <div className="gs-stack-sm">
-        <span className="gs-label">HOW YOUR SCENES ENDED</span>
-        <ul className="gs-plain">{GP_ENDINGS.map((e) => { const n = count(e); return (
-          <li key={e} className="pg-kv"><span className={n ? 'gs-strong' : 'gs-muted'}>{e}</span><span className={'gs-num-text ' + (n ? 'gs-strong' : 'gs-muted')}>{n ? n + (n > 1 ? ' times' : ' time') : 'Not yet'}</span></li>); })}</ul>
+        <span className="gs-label">HOW YOUR {gpUp(c.units)} ENDED</span>
+        {c.ends ? <ul className="gs-plain">{c.ends.map((e) => { const k = count(e); return (
+          <li key={e} className="pg-kv"><span className={k ? 'gs-strong' : 'gs-muted'}>{e}</span><span className={'gs-num-text ' + (k ? 'gs-strong' : 'gs-muted')}>{k ? k + (k > 1 ? ' times' : ' time') : 'Not yet'}</span></li>); })}</ul>
+          : <span className="gs-muted">—</span>}
       </div>
     </section>
   );
 };
-const GpRecent = () => {
+const GpRecent = ({ id }) => {
   const gs = useGs();
+  const c = GP_CFG[id];
   return (
     <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">Recent scenes</h2>
-      <ul className="gs-hist">{GP_RECENT.map((r) => (
-        <li key={r.date}><button type="button" className="gs-hrow" onClick={() => gs.go('session', { id: 'delve' })}>
-          <GpMini art="delve" />
-          <span className="gs-stack-xs"><span className="gs-strong">{r.ending}</span><span className="gs-small">Week of {r.date}</span></span>
+      <h2 className="mcp-t-sec">Recent {c.units}</h2>
+      <ul className="gs-hist">{c.recent.map((r, i) => (
+        <li key={i}><button type="button" className="gs-hrow" onClick={() => gs.go('session', { id: r.sid })}>
+          <GpMini art={r.art || GS_GAMES[id].art} />
+          <span className="gs-stack-xs"><span className={r.ending ? 'gs-strong' : 'gs-muted'}>{r.ending || '—'}</span><span className="gs-small">{r.when}</span></span>
           <DS.Icon name="back" size={16} style={{ transform: 'rotate(180deg)' }} />
         </button></li>))}</ul>
     </section>
@@ -107,109 +122,91 @@ const GpAch = ({ who }) => {
     </section>
   );
 };
-const GpFriends = ({ who }) => {
+const GpYoursBody = ({ id }) => {
+  const a = <div className="gs-stack-md" style={{ gap: 36 }}>{id === 'delve' && <GpThisWeek who="played" />}<GpRecord id={id} /><GpRecent id={id} /></div>;
+  if (id !== 'delve') return a;
+  return <div className="gs-pitch">{a}<div className="gs-stack-md" style={{ gap: 36 }}><GpAch who="played" /></div></div>;
+};
+
+const gpToRecord = (gs, id) => gs.go(GS_GAMES[id].route, { page: 'record' });
+const GpCard = ({ id }) => {
   const gs = useGs();
-  const [friends, setFriends] = React.useState(GP_FRIENDS);
-  const [name, setName] = React.useState('');
-  const [err, setErr] = React.useState('');
-  const me = gs.user.username || 'You';
-  const rows = who === 'played' ? [friends[0], me, ...friends.slice(1)] : friends;
-  const add = (e) => {
-    e.preventDefault();
-    const n = name.trim();
-    if (!n) { setErr('Enter a username.'); return; }
-    if (friends.includes(n) || n === me) { setErr(n + ' is already on your list.'); return; }
-    setFriends((f) => [...f, n]); setName(''); setErr('');
-  };
+  const g = GS_GAMES[id];
   return (
-    <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">Among friends</h2>
-      <ol className="pg-board">
-        {rows.map((r, i) => (
-          <li key={r} className={r === me ? 'is-me' : ''}><span className="gs-num-text gs-muted">{i + 1}</span><span className={r === me ? 'gs-strong' : ''}>{r}{r === me ? ' (you)' : ''}</span><GsGap /></li>
-        ))}
-        {who !== 'played' && <li className="is-me"><span className="gs-muted">–</span><span className="gs-strong">{me} (you)</span><span className="gs-small">Not played yet</span></li>}
-      </ol>
-      <form className="pg-add" onSubmit={add} noValidate>
-        <DS.TextField label="Add a friend by username" value={name} error={err || undefined} onChange={(e) => { setName(e.target.value); if (err) setErr(''); }} autoComplete="off" />
-        <DS.Button type="submit" variant="secondary">Add</DS.Button>
-      </form>
+    <section className="pg-band" aria-label="In your library">
+      <GpMini art={g.art} />
+      <div className="gs-stack-xs"><span className="gs-label">IN YOUR LIBRARY</span>
+        <span className="gs-small">{GP_LINE[id] || 'See every ' + GP_CFG[id].units.replace(/s$/, '') + ' you’ve played and how each one ended.'}</span></div>
+      <div className="pg-band-link"><DS.TextLink onClick={() => gpToRecord(gs, id)}>{'Go to your ' + g.name}</DS.TextLink></div>
     </section>
   );
 };
-const GpYoursBody = ({ who, single }) => {
-  const a = <div className="gs-stack-md" style={{ gap: 36 }}><GpThisWeek who={who} /><GpRecord who={who} />{who === 'played' && <GpRecent />}</div>;
-  const b = <div className="gs-stack-md" style={{ gap: 36 }}><GpAch who={who} /><GpFriends who={who} /></div>;
-  return single ? <>{a}{b}</> : <div className="gs-pitch">{a}{b}</div>;
-};
-
-
-const gpToRecord = (gs) => gs.go('delve', { page: 'record' });
-const GpCard = () => {
+const GpPlayer = ({ id }) => {
   const gs = useGs();
-  return (
-    <section className="pg-band" aria-label="Delve record">
-      <GpMini art="delve" />
-      <div className="gs-stack-xs"><span className="gs-label">RECORD</span>
-        <span className="gs-small">Every scene you’ve played, the weeks you’ve kept up and what’s left to earn.</span></div>
-      <div className="pg-band-link"><DS.TextLink onClick={() => gpToRecord(gs)}>See the record</DS.TextLink></div>
-    </section>
-  );
-};
-const GpPlayer = () => {
-  const gs = useGs();
+  const g = GS_GAMES[id];
   return (
     <main className="gs-wrap gs-main">
       <section className="rf-head">
-        <span><GsCover art="delve" /></span>
+        <span><GsCover art={g.art} /></span>
         <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-          <h1 className="gs-h1">Delve record</h1>
-          <DS.TextLink onClick={() => gs.go('delve')}>About Delve</DS.TextLink>
+          <h1 className="gs-h1">{g.name}</h1>
+          <DS.TextLink onClick={() => gs.go(g.route)}>{'About ' + g.name}</DS.TextLink>
         </div>
       </section>
-      <GpYoursBody who="played" />
+      <GpYoursBody id={id} />
     </main>
   );
 };
-const GpDelve = () => {
+// Every game page: signed in, the card sits above the cover;
+// route.page === 'record' opens that game's player page.
+const gpGame = (id) => () => {
   const gs = useGs();
-  if (gs.view !== 'out' && gs.route.page === 'record') return <GpPlayer />;
-  return <GsGamePage id="delve" top={gs.view !== 'out' ? <GpCard /> : null} noCrumb />;
+  if (gs.view !== 'out' && gs.route.page === 'record') return <GpPlayer id={id} />;
+  return <GsGamePage id={id} top={gs.view !== 'out' ? <GpCard id={id} /> : null} />;
 };
 
-// Top-bar dropdown: the games you've played. Delve opens its player page; the rest
-// open their game page until they have one.
-const gpItems = (gs) => ['daily', 'delve', 'casebook'].map((k) => [k, GS_GAMES[k].name,
-  k === 'delve' ? () => gpToRecord(gs) : () => gs.go(GS_GAMES[k].route)]);
-const GpNav = () => {
-  const gs = useGs();
+// Top-bar dropdowns. Games: all games, then each game page. Played: each game's player page.
+const gpGameItems = (gs) => [['all', 'All games', () => gs.go('games'), null], ...GS_GAME_ORDER.map((k) => [k, GS_GAMES[k].name, () => gs.go(GS_GAMES[k].route), GS_GAMES[k].art])];
+const gpPlayedItems = (gs) => GS_GAME_ORDER.map((k) => [k, GS_GAMES[k].name, () => gpToRecord(gs, k), GS_GAMES[k].art]);
+const GpDrop = ({ label, items, here }) => {
   const [open, setOpen] = React.useState(false);
   const wrap = React.useRef(null);
   gsUseMenuDismiss(open, setOpen, wrap);
-  if (gs.view === 'out') return null;
-  const here = gs.route.name === 'delve' && gs.route.page === 'record';
   return (
     <div className="gs-acct" ref={wrap}>
       <button type="button" className="gs-navlink" aria-expanded={open} aria-haspopup="menu" aria-current={here ? 'page' : undefined} onClick={() => setOpen((v) => !v)}>
-        Played <DS.Icon name="down" size={16} />
+        {label} <DS.Icon name="down" size={16} />
       </button>
       {open && (
-        <div className="gs-pop pg-yours-pop" role="menu" aria-label="Played">
-          {gpItems(gs).map(([k, l, fn]) => <button key={k} type="button" role="menuitem" className="gs-menu-item gs-menu-ico" onClick={() => { setOpen(false); fn(); }}><GpMini art={GS_GAMES[k].art} sm />{l}</button>)}
+        <div className="gs-pop pg-yours-pop" role="menu" aria-label={label}>
+          {items.map(([k, l, fn, art]) => <button key={k} type="button" role="menuitem" className={'gs-menu-item' + (art ? ' gs-menu-ico' : '')} onClick={() => { setOpen(false); fn(); }}>{art && <GpMini art={art} sm />}{l}</button>)}
         </div>
       )}
     </div>
   );
 };
+const GpMenuGroup = ({ label, items, pick, first }) => <>
+  {!first && <div className="gs-menu-div" role="separator" />}
+  <span className="gs-label pg-menu-label">{gpUp(label)}</span>
+  {items.map(([k, l, fn, art]) => <button key={k} type="button" role="menuitem" className={'gs-menu-item' + (art ? ' gs-menu-ico' : '')} onClick={() => pick(fn)}>{art && <GpMini art={art} sm />}{l}</button>)}
+  <div className="gs-menu-div" role="separator" />
+</>;
+const gpGameRoutes = () => ['games', ...GS_GAME_ORDER.map((k) => GS_GAMES[k].route)];
+const GpGamesNav = () => {
+  const gs = useGs();
+  return <GpDrop label="Games" items={gpGameItems(gs)} here={gpGameRoutes().includes(gs.route.name) && gs.route.page !== 'record'} />;
+};
+const GpGamesNavMenu = ({ pick }) => <GpMenuGroup label="Games" items={gpGameItems(useGs())} pick={pick} first />;
+const GpNav = () => {
+  const gs = useGs();
+  if (gs.view === 'out') return null;
+  return <GpDrop label="Library" items={gpPlayedItems(gs)} here={gs.route.page === 'record'} />;
+};
 const GpNavMenu = ({ pick }) => {
   const gs = useGs();
   if (gs.view === 'out') return null;
-  return <>
-    <div className="gs-menu-div" role="separator" />
-    <span className="gs-label pg-menu-label">PLAYED</span>
-    {gpItems(gs).map(([k, l, fn]) => <button key={k} type="button" role="menuitem" className="gs-menu-item gs-menu-ico" onClick={() => pick(fn)}><GpMini art={GS_GAMES[k].art} sm />{l}</button>)}
-    <div className="gs-menu-div" role="separator" />
-  </>;
+  return <GpMenuGroup label="Library" items={gpPlayedItems(gs)} pick={pick} first />;
 };
 
-Object.assign(window, { GsDelve: GpDelve, GsNavExtra: GpNav, GsNavExtraMenu: GpNavMenu });
+Object.assign(window, { GsDelve: gpGame('delve'), GsPuzzles: gpGame('daily'), GsCasebook: gpGame('casebook'), GsHunter: gpGame('hunter'),
+  GsGamesNav: GpGamesNav, GsGamesNavMenu: GpGamesNavMenu, GsNavExtra: GpNav, GsNavExtraMenu: GpNavMenu });

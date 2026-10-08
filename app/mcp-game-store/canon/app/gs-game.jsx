@@ -1,9 +1,9 @@
 // ============================================================================
 // [Platform] — the game page: one template for all four games (first-release-
-// games). Delve's page is the model. Order: breadcrumb and cover; play box;
-// facts row; pitch beside who does what; how it looks in your chat; a finished
-// play; (Delve: stat tiles); today's or this week's one; (Daily Puzzles: streak
-// and record); more games. Every null is a gap in the record and shows as "—".
+// games). Delve's page is the model. Order: cover and play box; facts band
+// (how long, how often, kind tags); pitch beside who does what; how it looks
+// in your chat; (Delve: stat tiles); today's or this week's one; (Daily
+// Puzzles: streak and record); more games. Every null is a gap in the record and shows as "—".
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
 const gsOr = (v) => (v == null ? <GsGap /> : v);
@@ -11,23 +11,22 @@ const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, 
 
 const GS_PAGES = {
   daily: {
-    crumb: 'Puzzles', label: 'PUZZLES · NEW EVERY DAY',
+    label: 'PUZZLES · NEW EVERY DAY',
     box: { free: true, label: 'FREE', heading: 'New puzzles every day', button: 'Play today’s puzzles',
       steps: [GS_STEP_CONNECT, <><b>Play today’s puzzles.</b> All three, in any order.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { ai: null, age: null, long: '10 min each', often: 'New every day', players: 'Solo' }, tags: [],
+    facts: { long: '10 min each', often: 'New every day' }, tags: [],
     pitch: { h: 'Three small puzzles, new every day.', ps: [
       'There’s a locked door, a body and a word you can’t see yet. Three puzzles, all new today.',
       'Your AI reads you the puzzle, and our server checks every guess and keeps count.'] },
     who: { ai: 'Reads you the puzzle and takes your guesses, moves and questions.', server: 'Checks every guess, move and accusation, and keeps the count.' },
     shots: ['Each guess goes to the server, which checks it and keeps count.'],
-    finished: 'word-today',
   },
   casebook: {
-    crumb: 'Mysteries', label: 'MYSTERY · A NEW CASE EVERY WEEK',
+    label: 'MYSTERY · A NEW CASE EVERY WEEK',
     box: { label: 'PART OF THE PASS', heading: 'A new case every week', session: 'casebook',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: GS_NAME.casebook + ' is part of the [Platform] Pass.' },
-    facts: { ai: 'AI-essential: your AI plays every suspect', age: null, long: null, often: 'A new case every week', players: null },
+    facts: { long: null, often: 'A new case every week' },
     tags: ['Mystery', 'One case, sixteen turns, one accusation'],
     pitch: { h: 'Ask the question they haven’t prepared for.', ps: [
       'This week’s suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.',
@@ -35,41 +34,38 @@ const GS_PAGES = {
       'Our server holds every statement word for word, so any story can be checked.'] },
     who: { ai: 'Voices every suspect and narrates what you find.', server: 'Holds every statement and every piece of evidence, counts your turns and keeps the record.' },
     shots: [null],
-    finished: 'casebook',
     week: { title: 'This week’s case', line: 'Sixteen turns. One accusation.', session: 'casebook' },
   },
   delve: {
-    crumb: 'Adventures', label: 'ADVENTURE · ONE SCENE',
+    label: 'ADVENTURE · ONE SCENE',
     box: { label: 'PART OF THE PASS', heading: 'A new scene every week', session: 'delve',
       steps: [GS_STEP_CONNECT, <><b>Play one full scene</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'Delve is part of the [Platform] Pass.' },
-    facts: { ai: 'AI-essential: your AI is the Dungeon Master', age: '12+ · fantasy peril, no gore', long: '25–40 min', often: 'A new scene every week', players: 'Solo' },
+    facts: { long: '25–40 min', often: 'A new scene every week' },
     tags: ['Adventure', 'One scene · new warren layout each run'],
     pitch: { h: 'Get her out before the drums stop', ps: [
       'Goblins have dragged the miller’s daughter into the warren beneath Gallows Hill. When the drums stop, the ritual is complete. You have one scene: sneak, talk, fight or bluff your way through tunnels, fungus galleries and a bone bridge to the ritual chamber, then get back out.',
       <>Every risky move is a d20 roll, made by our server where nobody can fudge it. Two tracks decide the scene: your <b>progress</b> towards the captive, and the <b>threat clock</b> that fills as the warren wakes. Your AI tells the story around the dice.</>] },
     who: { ai: 'Narrates the warren, voices the goblins and the captive, and asks what you do next.', server: 'Rolls every die, keeps both tracks, decides each outcome and records your session.' },
     shots: ['The scene opens. The server sets up both tracks.', 'A weak hit: progress, with a cost the server applies.', 'The ending, with a link back to your full session.'],
-    finished: 'delve',
     week: { title: 'This week’s scene', line: 'Get her out before the drums stop.', session: 'delve' },
   },
   hunter: {
-    crumb: 'Learning activities', label: 'LEARNING ACTIVITY · ONE DAY',
+    label: 'LEARNING ACTIVITY · ONE DAY',
     box: { label: 'PART OF THE PASS', heading: 'A different day every time', session: 'hunter',
       steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
       small: '36,000 Summers Ago is part of the [Platform] Pass.' },
-    facts: { ai: 'AI-essential: your AI tells the day and speaks for everyone in it', age: null, long: null, often: 'Play it again, a different day each time', players: 'Solo' }, tags: [],
+    facts: { long: null, often: 'Play it again, a different day each time' }, tags: [],
     pitch: { h: 'The day goes on whether you join it or not.', ps: [
       'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
       'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
       'Your AI tells the day and speaks for everyone in it. Our server rolls the dice and keeps the record. Say what you do first.'] },
     who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
     shots: [null],
-    finished: 'hunter',
     week: { title: 'The day', line: 'One day, dawn to firelight. Play it again and it goes differently.', session: 'hunter', unmarked: true },
   },
 };
-const GS_FACT_LABELS = [['ai', 'What your AI does'], ['age', 'Age'], ['long', 'How long'], ['often', 'How often'], ['players', 'Players']];
+const GS_FACT_LABELS = [['long', 'How long'], ['often', 'How often']];
 
 const GsPlayBox = ({ id }) => {
   const gs = useGs();
@@ -99,40 +95,13 @@ const GsPlayBox = ({ id }) => {
 const GsFacts = ({ id }) => {
   const p = GS_PAGES[id];
   return (
-    <section className="gs-stack-md" aria-label="Facts">
+    <section className="gs-factband" aria-label="Facts">
       <dl className="gs-facts">
         {GS_FACT_LABELS.map(([k, l]) => (
           <div key={k} className="gs-fact"><dt className="gs-label">{l.toUpperCase()}</dt><dd>{gsOr(p.facts[k])}</dd></div>
         ))}
       </dl>
-      {p.tags.length > 0 && <div className="gs-tags">{p.tags.map((t) => <DS.Tag key={t} kind="daily">{t}</DS.Tag>)}</div>}
-    </section>
-  );
-};
-
-// A compact preview of the session page, beside its share card.
-const GsFinished = ({ sid }) => {
-  const gs = useGs(); const s = GS_SESSIONS[sid];
-  return (
-    <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">A finished play</h2>
-      <div className="gs-grid2 gs-top-align">
-        <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-          <div className="gs-mini">
-            <GsCover art={s.art} />
-            <div className="gs-stack-xs" style={{ justifyItems: 'start' }}>
-              <span className="gs-small">{s.game}</span>
-              <span className="gs-figure">{gsOr(s.result)}</span>
-            </div>
-          </div>
-          <div className="gs-figs">
-            {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
-            <span className="gs-fig gs-fig-quiet">{s.date}</span>
-          </div>
-          <div><DS.TextLink onClick={() => gs.go('session', { id: sid })}>See a finished session (demo)</DS.TextLink></div>
-        </DS.Card>
-        <GsShareCard s={s} />
-      </div>
+      {p.tags.length > 0 && <div className="gs-tags gs-fact-tags">{p.tags.map((t) => <DS.Tag key={t} kind="daily">{t}</DS.Tag>)}</div>}
     </section>
   );
 };
@@ -145,9 +114,10 @@ const GsWeekCard = ({ id }) => {
   return (
     <section className="gs-stack-md">
       <h2 className="mcp-t-sec">{w.title}</h2>
-      <div className="gs-grid3">
-        <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
+      <DS.Card style={{ justifyItems: 'stretch' }}>
+        <div className="gs-week">
           <GsCover art={g.art} />
+          <div className="gs-stack-md" style={{ justifyItems: 'start', alignContent: 'center' }}>
           <h3 className="mcp-t-card">{g.name}</h3>
           <p className="gs-muted">{w.line}</p>
           {!paying ? <div><GsPassTag /></div>
@@ -157,8 +127,9 @@ const GsWeekCard = ({ id }) => {
                 <DS.TextLink onClick={() => gs.go('session', { id: w.session })}>See your session page</DS.TextLink>
               </div>
             ) : <div className="gs-act"><DS.Button onClick={() => gs.play(g.name, w.session)}>Play in your AI</DS.Button></div>}
-        </DS.Card>
-      </div>
+          </div>
+        </div>
+      </DS.Card>
     </section>
   );
 };
@@ -177,7 +148,7 @@ const GsDailyToday = () => {
   );
 };
 
-const GsGamePage = ({ id, top, noCrumb }) => {
+const GsGamePage = ({ id, top }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
   const marks = gsMarks(gs.view);
@@ -185,11 +156,6 @@ const GsGamePage = ({ id, top, noCrumb }) => {
   return (
     <main className="gs-wrap gs-main">
       {top}
-      {!noCrumb && <nav aria-label="Breadcrumb" className="gs-crumb">
-        <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>Games</button>
-        <span aria-hidden="true">/</span><span>{p.crumb}</span><span aria-hidden="true">/</span>
-        <span aria-current="page">{g.name}</span>
-      </nav>}
 
       <section className="gs-head-split">
         <div className="gs-hero-cover">
@@ -209,8 +175,8 @@ const GsGamePage = ({ id, top, noCrumb }) => {
           <h2 className="mcp-t-sec">{p.pitch.h}</h2>
           {p.pitch.ps.map((t, i) => <p key={i}>{t}</p>)}
         </div>
-        <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
-          <span className="gs-label">WHO DOES WHAT</span>
+        <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start', alignSelf: 'center' }}>
+          <span className="gs-label">HOW IT PLAYS</span>
           <GsWhoCols ai={p.who.ai} server={p.who.server} />
         </DS.Card>
       </section>
@@ -222,8 +188,6 @@ const GsGamePage = ({ id, top, noCrumb }) => {
           {p.shots.map((c, i) => <GsShot key={i} id="dailyWord" caption={gsOr(c)} />)}
         </div>
       </section>
-
-      <GsFinished sid={p.finished} />
 
       {id === 'delve' && (
         <section className="gs-grid3">

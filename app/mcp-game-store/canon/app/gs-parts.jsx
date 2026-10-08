@@ -234,7 +234,7 @@ const GsTopBar = () => {
         <button type="button" className="gs-brand" aria-label="[Platform], home" onClick={() => gs.go(out ? 'home' : 'games')}><GsMark /><span>[Platform]</span></button>
         <nav className="gs-nav" aria-label="Main">
           {links.map(([id, l, fn], i) => <React.Fragment key={id}>
-            <button type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>
+            {id === 'games' && window.GsGamesNav ? <window.GsGamesNav /> : <button type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>}
             {i === 0 && window.GsNavExtra && <window.GsNavExtra />}
           </React.Fragment>)}
         </nav>
@@ -250,7 +250,7 @@ const GsTopBar = () => {
             {menu && (
               <div className="gs-pop" role="menu" aria-label="Menu">
                 {links.map(([id, l, fn], i) => <React.Fragment key={id}>
-                  <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(fn)}>{l}</button>
+                  {id === 'games' && window.GsGamesNavMenu ? <window.GsGamesNavMenu pick={pick} /> : <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(fn)}>{l}</button>}
                   {i === 0 && window.GsNavExtraMenu && <window.GsNavExtraMenu pick={pick} />}
                 </React.Fragment>)}
                 {out && <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(() => gs.go('signin'))}>Sign in</button>}
@@ -293,7 +293,6 @@ const GsPlayPopup = () => {
   return (
     <DS.Popup open={!!gs.playing} onClose={gs.closePlay} posture={gs.narrow ? 'sheet' : 'window'}
       title={p ? 'Tell your AI: let’s play ' + p.name + '.' : ''} label="Play in your AI">
-      <div><DS.TextLink onClick={() => gs.go('session', { id: p.session })}>See a finished session (demo)</DS.TextLink></div>
       <DS.Button variant="secondary" block onClick={gs.closePlay}>Close</DS.Button>
     </DS.Popup>
   );
