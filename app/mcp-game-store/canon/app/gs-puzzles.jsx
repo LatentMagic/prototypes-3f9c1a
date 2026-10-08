@@ -54,10 +54,9 @@ const GsEarlier = ({ paying }) => {
   );
 };
 
-// Shared with History (screen 8).
-const GsStreakPanel = ({ paying }) => (
+// Shared with History (screen 8). Free and Pass see the same panel.
+const GsStreakPanel = () => (
   <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
-    {paying ? (
       <div className="gs-streak">
         <div className="gs-stack-sm"><span className="gs-label">YOUR STREAK</span><span className="gs-figure gs-num-text">Streak: 3 days</span></div>
         <div className="gs-stack-sm"><span className="gs-label">YOUR RECORD</span><span className="gs-figure gs-num-text">Record: 41 solved, 6 missed</span></div>
@@ -68,12 +67,6 @@ const GsStreakPanel = ({ paying }) => (
           </div>
         </div>
       </div>
-    ) : (
-      <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-        <div className="gs-title-row"><span className="gs-label">YOUR STREAK · YOUR RECORD</span><GsPassTag /></div>
-        <p>Your streak and record are kept with the Pass.</p>
-      </div>
-    )}
   </DS.Card>
 );
 

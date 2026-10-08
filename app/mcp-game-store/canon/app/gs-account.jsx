@@ -23,23 +23,27 @@ const GsIdentity = ({ open, provider, onCancel, onOk }) => {
   const [pw, setPw] = React.useState('');
   const [tried, setTried] = React.useState(false);
   const ref = React.useRef(null);
+  const [busy, run, cancel] = useGsBusy();
   React.useEffect(() => { if (open) { setPw(''); setTried(false); } }, [open]);
   const err = tried && !pw ? 'Enter your password.' : null;
   const go = (e) => {
-    e && e.preventDefault(); setTried(true);
+    e && e.preventDefault();
+    if (busy) return;
+    setTried(true);
     if (!provider && !pw) { setTimeout(() => ref.current && ref.current.focus(), 0); return; }
-    onOk();
+    run(onOk);
   };
+  const close = () => { cancel(); onCancel(); };
   const P = provider ? provider[0].toUpperCase() + provider.slice(1) : null;
   return (
-    <DS.Popup open={open} onClose={onCancel} posture="window" label="Confirm it’s you">
+    <DS.Popup open={open} onClose={close} posture="window" label="Confirm it’s you">
       <GsPopTitle>Confirm it’s you</GsPopTitle>
       {provider ? (
         <>
           <p>Continue through {P} to confirm it’s you.</p>
           <GsActs>
-            <DS.Button variant="secondary" onClick={onCancel}>Cancel</DS.Button>
-            <DS.Button onClick={go}>Continue with {P}</DS.Button>
+            <DS.Button variant="secondary" onClick={close}>Cancel</DS.Button>
+            <DS.Button onClick={go} loading={busy}>Continue with {P}</DS.Button>
           </GsActs>
         </>
       ) : (
@@ -48,8 +52,8 @@ const GsIdentity = ({ open, provider, onCancel, onOk }) => {
           <DS.TextField label="Password" type="password" autoComplete="current-password" placeholder="••••••••" value={pw} error={err}
             inputRef={(el) => { ref.current = el; }} onChange={(e) => setPw(e.target.value)} />
           <GsActs>
-            <DS.Button variant="secondary" onClick={onCancel}>Cancel</DS.Button>
-            <DS.Button type="submit">Continue</DS.Button>
+            <DS.Button variant="secondary" onClick={close}>Cancel</DS.Button>
+            <DS.Button type="submit" loading={busy}>Continue</DS.Button>
           </GsActs>
         </form>
       )}
@@ -68,16 +72,19 @@ const GsChangeEmail = () => {
   const [code, setCode] = React.useState('');
   const [codeErr, setCodeErr] = React.useState(false);
   const codeRef = React.useRef(null);
+  const [busy, run, cancel] = useGsBusy();
   const [done, showDone] = useGsDone(3600);
   const form = useGsForm({ email: '' }, [
     ['email', (v) => GS_EMAIL_RE.test(v.trim()), 'Enter a valid email address.'],
     ['email', (v) => v.trim().toLowerCase() !== gs.user.email.toLowerCase(), 'That’s already your email. Enter a different one.'],
-  ], (f) => { setPending(f.email.trim()); setConfirm(true); });
-  const cancelCode = () => { setPhase('form'); setCode(''); setCodeErr(false); };
+  ], (f) => { setPending(f.email.trim()); setConfirm(true); }, { instant: true });
+  const cancelCode = () => { cancel(); setPhase('form'); setCode(''); setCodeErr(false); };
   const confirmCode = (e) => {
     e.preventDefault();
-    if (code.length < 6 || code === '111111') { setCodeErr(true); setTimeout(() => codeRef.current && codeRef.current.focus(), 0); return; }
-    gs.setUser({ email: pending }); form.clear(); cancelCode(); showDone();
+    if (busy) return;
+    const wrong = () => { setCodeErr(true); setTimeout(() => codeRef.current && codeRef.current.focus(), 0); };
+    if (code.length < 6) { wrong(); return; }
+    run(() => { if (code === '111111') { wrong(); return; } gs.setUser({ email: pending }); form.clear(); cancelCode(); showDone(); });
   };
   return (
     <DS.Card style={GS_ACCT_CARD}>
@@ -95,7 +102,7 @@ const GsChangeEmail = () => {
             onChange={(e) => { setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6)); setCodeErr(false); }} />
           <div className="gs-card-acts gs-card-acts-pair">
             <DS.Button variant="secondary" onClick={cancelCode}>Cancel</DS.Button>
-            <DS.Button type="submit">Confirm</DS.Button>
+            <DS.Button type="submit" loading={busy}>Confirm</DS.Button>
           </div>
         </form>
       )}
@@ -118,7 +125,7 @@ const GsChangePassword = () => {
         <DS.TextField label="Current password" type="password" autoComplete="current-password" placeholder="••••••••" {...form.bind('cur')} />
         <DS.TextField label="New password" type="password" autoComplete="new-password" placeholder="At least 8 characters" {...form.bind('pw')} />
         <DS.TextField label="Confirm new password" type="password" autoComplete="new-password" placeholder="Re-enter new password" {...form.bind('pw2')} />
-        <div className="gs-card-acts">{done && <GsDone>Password updated.</GsDone>}<DS.Button type="submit">Update password</DS.Button></div>
+        <div className="gs-card-acts">{done && <GsDone>Password updated.</GsDone>}<DS.Button type="submit" loading={form.busy}>Update password</DS.Button></div>
       </form>
     </DS.Card>
   );
@@ -133,7 +140,7 @@ const GsDeleteAccount = () => {
       <h2 className="mcp-t-card">Delete account</h2>
       <p>Your account goes, and so does your play history.</p>
       <div className="gs-card-acts"><DS.Button variant="secondary" className="gs-btn-danger-outline" onClick={() => setStep('alert')}>Delete your account</DS.Button></div>
-      <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture={gs.narrow ? 'sheet' : 'window'} label="Delete your account?">
+      <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture="window" label="Delete your account?">
         <GsPopTitle>Delete your account?</GsPopTitle>
         <p>It can’t be undone. Deleting also cancels your Pass.</p>
         <GsActs>

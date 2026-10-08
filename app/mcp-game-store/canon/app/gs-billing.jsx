@@ -41,6 +41,7 @@ const GsPassCard = () => {
   const gs = useGs();
   const { sub } = gs;
   const [sheet, setSheet] = React.useState(gs.route.sheet || null); // 'switch' | 'cancel'
+  const [busy, run] = useGsBusy();
   const date = gsLong(gsSubDate(sub));
   const plan = GS_PLAN[sub.plan];
   const other = gsOther(sub.plan);
@@ -50,8 +51,8 @@ const GsPassCard = () => {
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Pass</h2>
       {sub.freeUsed
-        ? <p>Your Pass ended on {gsLong(GS_LAPSED_ON)}. You’re back on today’s puzzles, and nothing is kept.</p>
-        : <p>You’re on the free plan, so you get today’s puzzles and nothing is kept. Get the Pass for the weekly games, past puzzles, your streak and your record.</p>}
+        ? <p>Your Pass ended on {gsLong(GS_LAPSED_ON)}. You’re back on today’s puzzles. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
+        : <p>You’re on the free plan. You get today’s puzzles, and your results and streak are kept. Get the Pass for the Pass games and past puzzles.</p>}
       <div className="gs-card-acts"><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{sub.freeUsed ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );
@@ -67,7 +68,7 @@ const GsPassCard = () => {
       <div className="gs-pair-even">
         {update}
         {sub.pending
-          ? <DS.Button variant="secondary" onClick={() => gs.setSub({ pending: null })}>Keep {plan.name.toLowerCase()}</DS.Button>
+          ? <DS.Button variant="secondary" loading={busy} onClick={() => run(() => gs.setSub({ pending: null }))}>Keep {plan.name.toLowerCase()}</DS.Button>
           : <DS.Button variant="secondary" onClick={() => setSheet('switch')}>Switch to {other}</DS.Button>}
       </div>
     );
@@ -80,7 +81,7 @@ const GsPassCard = () => {
         <p>Your Pass ends on that date, and you’re back on today’s puzzles. You can resume any time before then.</p>
         <div className="gs-pair-even">
           {update}
-          <DS.Button variant="secondary" onClick={() => gs.setSub({ status: sub.fromFree ? 'free' : 'active', fromFree: false })}>Resume subscription</DS.Button>
+          <DS.Button variant="secondary" loading={busy} onClick={() => run(() => gs.setSub({ status: sub.fromFree ? 'free' : 'active', fromFree: false }))}>Resume subscription</DS.Button>
         </div>
       </div>
     );
@@ -116,18 +117,20 @@ const GsSwitchSheet = ({ open, onClose }) => {
   const last = React.useRef(null);
   if (open) last.current = { from: sub.plan, to, date: gsShort(gsSubDate(sub)) };
   const p = last.current || { from: sub.plan, to, date: '' };
-  const go = () => {
+  const [busy, run, cancel] = useGsBusy();
+  const close = () => { cancel(); onClose(); };
+  const go = () => run(() => {
     if (sub.status === 'free') gs.setSub({ plan: p.to, pending: null });
     else gs.setSub({ pending: p.to });
     onClose();
-  };
+  });
   return (
-    <DS.Popup open={open} onClose={onClose} posture={gs.narrow ? 'sheet' : 'window'} label={'Switch to ' + p.to + '?'}>
+    <DS.Popup open={open} onClose={close} posture="window" label={'Switch to ' + p.to + '?'}>
       <GsPopTitle>Switch to {p.to}?</GsPopTitle>
       <GsBeforeAfter now={['Now', GS_PLAN[p.from].name, GS_PLAN[p.from].price]} then={['From ' + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price]} />
       <GsActs>
-        <DS.Button variant="secondary" onClick={onClose}>Cancel</DS.Button>
-        <DS.Button onClick={go}>Switch to {p.to}</DS.Button>
+        <DS.Button variant="secondary" onClick={close}>Cancel</DS.Button>
+        <DS.Button onClick={go} loading={busy}>Switch to {p.to}</DS.Button>
       </GsActs>
     </DS.Popup>
   );
@@ -139,15 +142,17 @@ const GsCancelSheet = ({ open, onClose }) => {
   if (open) last.current = { free: sub.status === 'free', plan: sub.plan, date: gsShort(gsSubDate(sub)) };
   const p = last.current || { free: false, plan: sub.plan, date: '' };
   const now = p.free ? ['Now', 'Free month', '£0'] : ['Now', GS_PLAN[p.plan].name, GS_PLAN[p.plan].price];
-  const go = () => { gs.setSub({ status: 'ending', pending: null, fromFree: p.free }); onClose(); };
+  const [busy, run, cancel] = useGsBusy();
+  const close = () => { cancel(); onClose(); };
+  const go = () => run(() => { gs.setSub({ status: 'ending', pending: null, fromFree: p.free }); onClose(); });
   return (
-    <DS.Popup open={open} onClose={onClose} posture={gs.narrow ? 'sheet' : 'window'} label="Cancel your subscription?">
+    <DS.Popup open={open} onClose={close} posture="window" label="Cancel your subscription?">
       <GsPopTitle>Cancel your subscription?</GsPopTitle>
       <GsBeforeAfter now={now} then={['From ' + p.date, 'Ends', 'Nothing charged']} />
-      <p>You keep the Pass until it ends. After that it’s today’s puzzles, nothing kept.</p>
+      <p>You keep the Pass until it ends. After that it’s today’s puzzles. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
       <GsActs>
-        <DS.Button variant="secondary" onClick={onClose}>Keep subscription</DS.Button>
-        <DS.Button variant="danger" onClick={go}>Cancel subscription</DS.Button>
+        <DS.Button variant="secondary" onClick={close}>Keep subscription</DS.Button>
+        <DS.Button variant="danger" onClick={go} loading={busy}>Cancel subscription</DS.Button>
       </GsActs>
     </DS.Popup>
   );
@@ -246,7 +251,7 @@ const GsCheckout = () => {
   const plan = GS_PLAN[gs.choice];
   const per = gs.choice === 'yearly' ? 'a year' : 'a month';
   const [paying, setPaying] = React.useState(false);
-  const pay = (e) => { e.preventDefault(); setPaying(true); setTimeout(() => gs.paid(free), 1400); };
+  const pay = (e) => { e.preventDefault(); if (paying) return; setPaying(true); setTimeout(() => gs.paid(free), 1400); };
   return (
     <GsProviderFrame merchant="[Platform]">
       <DS.Card style={{ gap: 24, justifyItems: 'stretch', padding: 24 }}>
@@ -269,14 +274,15 @@ const GsCheckout = () => {
 };
 const GsUpdateCard = () => {
   const gs = useGs();
-  const save = (e) => { e.preventDefault(); if (gs.sub.status === 'failed') gs.setSub({ status: 'active' }); gs.go('account'); };
+  const [busy, run] = useGsBusy();
+  const save = (e) => { e.preventDefault(); run(() => { if (gs.sub.status === 'failed') gs.setSub({ status: 'active' }); gs.go('account'); }); };
   return (
     <GsProviderFrame merchant="[Platform] · Billing">
       <DS.Card style={{ gap: 24, justifyItems: 'stretch', padding: 24 }}>
         <div className="gs-stack-xs"><h1 className="mcp-t-sec">Update your card</h1><p className="gs-muted">{gs.user.email}</p></div>
         <form noValidate onSubmit={save} className="gs-stack-md">
           <GsCardInputs />
-          <DS.Button type="submit" block>Save card</DS.Button>
+          <DS.Button type="submit" block loading={busy}>Save card</DS.Button>
         </form>
         <div className="gs-center"><DS.TextLink onClick={() => gs.go('account')}>Cancel and return</DS.TextLink></div>
       </DS.Card>

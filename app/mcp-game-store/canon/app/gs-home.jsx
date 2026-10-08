@@ -80,7 +80,7 @@ const GsHome = () => {
         <GsSteps row items={[
           <p key="1"><b>Connect your AI</b> in about two minutes.</p>,
           <p key="2"><b>Play today’s puzzles free.</b> No card needed.</p>,
-          <p key="3"><b>Get the Pass</b> for the full game library and a streak that’s kept. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>,
+          <p key="3"><b>Get the Pass</b> for {GS_NAME.casebook}, Delve and {GS_NAME.hunter}. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>,
         ]} />
       </section>
 

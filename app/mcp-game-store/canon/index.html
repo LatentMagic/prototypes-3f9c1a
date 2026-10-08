@@ -50,16 +50,16 @@
   :root[data-kit-density="compact"] .kit-placeholder-items { gap: 4px; }
   :root[data-kit-density="compact"] .kit-placeholder-items li { padding: var(--space-2) var(--space-3); }
 
-  /* ---- config launcher (prototype aid) ---- */
+  /* ---- Config pill (prototype aid) ---- */
   .kit-config-wrap { position: fixed; right: 16px; bottom: 60px; z-index: 300; }
   /* One pill, two halves: settings you HOLD (Config) and states you GO to
      (States, app/states-ui.jsx). Icon-only keeps it out of the way; each half
      keeps its own 44px hit target, and the whole pill still drags. */
-  .kit-launcher { display: inline-flex; align-items: stretch; background: var(--color-fg-1); border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); overflow: hidden; }
-  .kit-launcher-half { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 44px; padding: 0; background: transparent; border: 0; color: #fff; cursor: inherit; }
-  .kit-launcher-half + .kit-launcher-half { box-shadow: inset 1px 0 0 rgba(255,255,255,0.2); }
-  .kit-launcher-half:hover { background: rgba(255,255,255,0.1); }
-  .kit-launcher-half[data-open] { color: var(--color-accent); background: rgba(255,255,255,0.08); }
+  .kit-launcher { display: inline-flex; align-items: stretch; background: #FF2EC4; border-radius: var(--radius-pill); box-shadow: var(--shadow-overlay); overflow: hidden; }
+  .kit-launcher-half { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 44px; padding: 0; background: transparent; border: 0; color: #000; cursor: inherit; }
+  .kit-launcher-half + .kit-launcher-half { box-shadow: inset 1px 0 0 rgba(27,25,23,0.25); }
+  .kit-launcher-half:hover { background: rgba(27,25,23,0.1); }
+  .kit-launcher-half[data-open] { color: #000; background: rgba(27,25,23,0.18); }
   .kit-launcher-half:focus-visible { outline-offset: -3px; }
   .kit-qa-work + .kit-qa-work { margin-top: 20px; }
   .kit-qa-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -82,6 +82,18 @@
     border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
     transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
   }
+  /* Below 640px the aids are panels, so bottom sheets (CLAUDE.md, overlay kinds). */
+  @media (max-width: 639px) {
+    .kit-config-scrim { align-items: flex-end; padding: 0; }
+    .kit-config-modal {
+      width: 100%; max-height: 84vh;
+      border-width: 1px 0 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      transform: none !important; translate: 0 100%;
+      transition: opacity var(--duration-base) var(--ease-quiet), translate var(--duration-slow) var(--ease-quiet);
+    }
+    .kit-config-modal[data-shown] { translate: 0 0; }
+  }
+  @media (max-width: 639px) and (prefers-reduced-motion: reduce) { .kit-config-modal { translate: none; transition: none; } }
   .kit-config-head {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
     padding: var(--space-5) var(--space-5) var(--space-4);
@@ -383,9 +395,10 @@
   .gs-buy > .mcp-btn { width: 100%; }
 
   /* auth, connect, checkout */
-  .gs-auth { min-height: 100%; display: flex; flex-direction: column; }
-  .gs-auth-col { width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 16px 36px; display: grid; gap: 16px; align-content: start; }
-  .gs-auth-head { display: grid; gap: 8px; text-align: center; padding-bottom: 8px; }
+  .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; }
+  .gs-auth-col { width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 16px 36px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+  .gs-auth-foot { margin-top: auto; padding-top: 24px; }
+  .gs-auth-head { display: grid; gap: 8px; text-align: center; }
   .gs-auth-foot { display: grid; gap: 12px; text-align: center; color: var(--muted); }
   .gs-auth-foot .gs-small { text-wrap: balance; }
   .gs-sugg { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -416,7 +429,7 @@
   .gs-feat { display: grid; gap: 16px; align-content: start; }
   .gs-feat-body { display: grid; gap: 16px; align-content: start; justify-items: start; }
   .gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
-  .gs-today-list { list-style: none; padding: 0; display: grid; }
+  .gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
   .gs-card-eq .gs-plain { align-content: start; }
   .gs-feat .mcp-cover-art { aspect-ratio: 2 / 1; }
   @container gs (min-width: 1100px) { .gs-feats { grid-auto-flow: row; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: visible; } }
@@ -431,7 +444,8 @@
   @container gs (min-width: 1100px) {
     .gs-today-list.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .gs-today-list.is-row > li + li { border-top: 0; }
-    .gs-today-list.is-row .gs-today-item { align-items: start; }
+    .gs-today-list.is-row .gs-today-item { align-items: start; height: 100%; }
+    .gs-today-list.is-row .gs-today-cover { align-self: center; }
   }
   .gs-today-item { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 56px; padding: 12px 0; background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: opacity var(--time-press) var(--ease); }
   .gs-today-item:active { opacity: .55; }
@@ -570,11 +584,18 @@
   .gs-idhead { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
   .gs-id-text { min-width: 0; overflow-wrap: anywhere; gap: 0; line-height: 1.3; }
   .gs-menu-ico { display: flex; align-items: center; gap: 12px; }
+  .gs-spin-ink { display: inline-block; flex: none; border-color: color-mix(in srgb, var(--text) 30%, transparent); border-top-color: var(--text); }
+  .gs-ico-slot { width: 20px; flex: none; display: grid; place-items: center; }
+  .mcp-lnk .gs-spin-ink { margin-right: 8px; }
+  .gs-menu-item[aria-busy="true"], .mcp-lnk[aria-busy="true"] { cursor: progress; }
+  @media (prefers-reduced-motion: reduce) { .gs-menu-item[aria-busy="true"], .mcp-lnk[aria-busy="true"] { animation: mcp-busy 1.2s ease-in-out infinite alternate; } }
   .gs-ico-space { width: 20px; flex: none; }
   .gs-menu-div { height: 1px; background: var(--line); margin: 4px 0; }
   .gs-menu-user { border-top: 1px solid var(--line); }
   .gs-menu-user .gs-idhead { padding: 12px 0; }
   .gs-menu-user .gs-menu-div { margin: 0; }
+  .gs-menu-anchor { position: relative; }
+  .gs-pop-cta { padding: 8px 16px; }
 
   /* account */
   .gs-subbar { justify-content: flex-start; gap: 8px; }
@@ -657,6 +678,23 @@
     .gs-acct-btn .mcp-ico, .gs-inlink, .gs-pz-item { transition: none; }
     .gs-pz-item:active { transform: none; }
   }
+  /* player page (app/gs-player.jsx) */
+  .pg-mini svg { width: 64px; height: 48px; display: block; }
+  .pg-mini.is-sm svg { width: 32px; height: 24px; }
+  .pg-band { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
+  .pg-band-link { grid-column: 1 / -1; }
+  .pg-yours-pop { left: 0; right: auto; min-width: 220px; }
+  .pg-menu-label { display: block; padding: 12px 16px 4px; }
+  .pg-kv { justify-content: space-between; }
+  .pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
+  .pg-ach-bar { display: block; max-width: 280px; }
+  .pg-board { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .pg-board > li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 48px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .pg-board > li.is-me { background: var(--card); }
+  .pg-add { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+  .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+  @container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band-link { grid-column: auto; } }
+  @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
 </style>
 </head>
 <body>
@@ -688,6 +726,7 @@
 <script type="text/babel" src="app/gs-puzzles.jsx"></script>
 <script type="text/babel" src="app/gs-session.jsx"></script>
 <script type="text/babel" src="app/gs-game.jsx"></script>
+<script type="text/babel" src="app/gs-player.jsx"></script>
 <script type="text/babel" src="app/gs-auth.jsx"></script>
 <script type="text/babel" src="app/gs-username.jsx"></script>
 <script type="text/babel" src="app/gs-connect.jsx"></script>

@@ -38,6 +38,26 @@ const gsSettle = (start, fn) => {
   if (t < GS_LOADER.withhold) { fn(); return undefined; }
   return setTimeout(fn, Math.max(0, GS_LOADER.withhold + GS_LOADER.minHold - t));
 };
+// ---- Work on a pressed control. run(fn) holds the control busy for a staged
+// wait, then applies fn; a second press while busy is ignored. cancel() drops
+// the wait (the surface holding the control closed). Unmounting drops it too.
+const GS_WORK_MS = 900;
+const useGsBusy = (ms = GS_WORK_MS) => {
+  const [busy, setBusy] = React.useState(false);
+  const live = React.useRef(true);
+  const held = React.useRef(false);
+  const t = React.useRef(null);
+  React.useEffect(() => { live.current = true; return () => { live.current = false; clearTimeout(t.current); }; }, []);
+  const run = (fn) => {
+    if (held.current) return;
+    held.current = true; setBusy(true);
+    t.current = setTimeout(() => { held.current = false; if (!live.current) return; setBusy(false); fn(); }, ms);
+  };
+  const cancel = () => { clearTimeout(t.current); held.current = false; setBusy(false); };
+  return [busy, run, cancel];
+};
+// The system's button spinner, in ink, for a control that is not a Button.
+const GsInkSpin = () => <span className="mcp-spin gs-spin-ink" aria-hidden="true" />;
 const GsSpin = ({ label = 'Loading' }) => {
   const [shown, setShown] = React.useState(false);
   React.useEffect(() => { const t = setTimeout(() => setShown(true), GS_LOADER.withhold); return () => clearTimeout(t); }, []);
@@ -148,6 +168,6 @@ const GsNotFound = () => {
 };
 
 Object.assign(window, {
-  GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
+  GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
   GS_SUPPORT, GsFooter, GsLegal, GsNotFound,
 });

@@ -2,7 +2,7 @@
 // Kit — the QA list (PROTOTYPE AID, not part of the product). DRAFT:
 // the shape is still being iterated on.
 //
-// The launcher's third half. A short, ephemeral walk-through of the states a
+// The Config pill's third half. A short, ephemeral walk-through of the states a
 // piece of work in flight needs checking against. It holds NO staging of its
 // own: every step is a state id from the register (app/states.jsx), so a QA
 // entry can never drift from what the States palette opens.
@@ -18,12 +18,18 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const KIT_QA = [
+  { key: 'loading-on-action', title: 'Loading on action',
+    note: 'On each, press the action: its control shows the spinner for about a second and ignores a second press (and Enter). Sign out is in the account menu. Check at phone and desktop width.',
+    steps: ['sign-up', 'sign-in', 'verify-email', 'sign-in-new-device', 'reset-password', 'username-new-account', 'account-email', 'change-email-code', 'delete-account-confirm', 'pass-card-pending-switch', 'pass-card-ending', 'switch-sheet-yearly', 'cancel-sheet', 'checkout', 'update-card'] },
   { key: 'username-1', title: 'Usernames',
     note: 'By hand: sign up by email (no name fields), then Your username, then Connect your AI; from Get the Pass the screen comes after checkout, or on cancelling it. On Account, rename and watch the menu, avatar and a share card. Config has the Username row.',
     steps: ['sign-up', 'username-new-account', 'username-taken', 'account-email', 'account-provider', 'account-username-wait', 'session-delve'] },
   { key: 'circlists-match-1', title: 'Circlists match 1: sign-in, menu, Account',
     note: 'Also check by hand: Google, black Apple, email order; email sign-in lands on Verify this device; the user menu (signed in, wide).',
     steps: ['sign-in', 'sign-up', 'sign-in-new-device', 'code-expired', 'code-wrong', 'reset-password', 'provider-sign-in-fails', 'apple-no-account', 'account-email', 'account-provider', 'change-email-code', 'delete-account-confirm'] },
+  { key: 'free-tier-1', title: 'Free tier 1: everything you play is yours',
+    note: 'On each session page, press Share: the text as pasted, one Copy button. Check at 390 and 320px.',
+    steps: ['free-puzzle-result', 'free-history', 'lapsed-history', 'puzzles-free', 'pass-card-none', 'pass-card-lapsed', 'cancel-sheet', 'pass-free', 'delve-free', 'session-puzzle', 'session-delve', 'session-casebook'] },
   { key: 'circlists-match-2', title: 'Circlists match 2: the Pass',
     steps: ['pass-page-free-month', 'pass-page-free-used', 'checkout', 'update-card', 'pass-card-none', 'pass-card-monthly', 'pass-card-yearly', 'pass-card-free-month', 'pass-card-pending-switch', 'pass-card-payment-failed', 'pass-card-ending', 'pass-card-lapsed', 'switch-sheet-yearly', 'switch-sheet-monthly', 'switch-sheet-free-month', 'cancel-sheet', 'cancel-sheet-free-month'] },
   { key: 'circlists-match-3', title: 'Circlists match 3: footer, legal, not-found, loading',
@@ -56,7 +62,7 @@ const QaPalette = ({ statesGroups, onGo, onClose }) => {
   return (
     <div className="kit-config-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label="QA" className="kit-config-modal"
+      <div role="dialog" aria-modal="true" aria-label="QA" className="kit-config-modal" data-shown={shown ? '1' : undefined}
         style={{ opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.97)' }}>
         <div className="kit-config-head">
           <div>

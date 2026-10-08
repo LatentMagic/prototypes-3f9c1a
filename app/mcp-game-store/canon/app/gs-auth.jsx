@@ -41,11 +41,9 @@ const GsXLine = ({ children, center }) => (
 );
 
 const GsProviders = ({ onProvider, onEmail, failed }) => (
-  <div className="gs-stack-md">
-    <div className="gs-stack-sm">
-      <DS.Button variant="secondary" block onClick={() => onProvider('Google')}><GsGlyph name="google" />Continue with Google</DS.Button>
-      <DS.Button id="gs-apple-btn" variant="secondary" block className="gs-btn-apple" onClick={() => onProvider('Apple')}><GsGlyph name="apple" />Continue with Apple</DS.Button>
-    </div>
+  <div className="gs-stack-sm">
+    <DS.Button variant="secondary" block onClick={() => onProvider('Google')}><GsGlyph name="google" />Continue with Google</DS.Button>
+    <DS.Button id="gs-apple-btn" variant="secondary" block className="gs-btn-apple" onClick={() => onProvider('Apple')}><GsGlyph name="apple" />Continue with Apple</DS.Button>
     <DS.Button variant="secondary" block className="gs-btn-email" onClick={onEmail}><GsGlyph name="mail" />Continue with email</DS.Button>
     {failed && <GsXLine center>Couldn’t continue with {failed}. Try again.</GsXLine>}
   </div>
@@ -62,22 +60,26 @@ const useGsForm = (initial, rules, onValid, opts) => {
   const [f, setF] = React.useState(initial);
   const [tried, setTried] = React.useState(!!(opts && opts.tried));
   const refs = React.useRef({});
+  const [busy, run] = useGsBusy();
   const errs = tried ? gsCheck(rules, f) : {};
   const bind = (k) => ({
     value: f[k], error: errs[k], inputRef: (el) => { refs.current[k] = el; },
     onChange: (e) => setF((s) => ({ ...s, [k]: e.target.value })),
   });
   const submit = (e) => {
-    e && e.preventDefault(); setTried(true);
+    e && e.preventDefault();
+    if (busy) return;
+    setTried(true);
     const er = gsCheck(rules, f);
     const bad = rules.map((r) => r[0]).find((k) => er[k]);
     if (bad) { setTimeout(() => refs.current[bad] && refs.current[bad].focus(), 0); return; }
-    onValid(f);
+    // `instant`: the valid submit only opens a surface; nothing is saved yet.
+    if (opts && opts.instant) onValid(f); else run(() => onValid(f));
   };
   const clear = () => { setF(initial); setTried(false); };
   const set = (k, v) => setF((s) => ({ ...s, [k]: v }));
   const focus = (k) => setTimeout(() => refs.current[k] && refs.current[k].focus(), 0);
-  return { f, bind, submit, reset: () => setTried(false), clear, set, focus };
+  return { f, bind, submit, busy, reset: () => setTried(false), clear, set, focus };
 };
 
 // Step 2 pushes a history entry; the browser's Back returns to step 1.
@@ -139,7 +141,7 @@ const GsSignUp = () => {
         <GsLabelled label="Password" aside="At least 8 characters">
           <DS.TextField type="password" autoComplete="new-password" aria-label="Password" {...form.bind('pw')} />
         </GsLabelled>
-        <DS.Button type="submit" block>Create account</DS.Button>
+        <DS.Button type="submit" block loading={form.busy}>Create account</DS.Button>
       </form>
     </GsAuthFrame>
   );
@@ -168,15 +170,22 @@ const GsVerify = () => {
   const [err, setErr] = React.useState(preset || null); // null | 'wrong' | 'expired'
   const [resent, setResent] = React.useState(false);
   const ref = React.useRef(null);
+  const [busy, run] = useGsBusy();
+  const [sending, runSend] = useGsBusy();
   React.useEffect(() => { if (!resent) return undefined; const t = setTimeout(() => setResent(false), 2600); return () => clearTimeout(t); }, [resent]);
+  const refocus = () => setTimeout(() => ref.current && ref.current.focus(), 0);
   const submit = (e) => {
     e.preventDefault();
-    if (code === '000000') setErr('expired');
-    else if (code.length < 6 || code === '111111') setErr('wrong');
-    else { setErr(null); device ? gs.signedIn('email') : gs.signedUp(gs.route.next, 'email'); return; }
-    setTimeout(() => ref.current && ref.current.focus(), 0);
+    if (busy) return;
+    if (code.length < 6) { setErr('wrong'); refocus(); return; }
+    run(() => {
+      if (code === '000000') setErr('expired');
+      else if (code === '111111') setErr('wrong');
+      else { setErr(null); device ? gs.signedIn('email') : gs.signedUp(gs.route.next, 'email'); return; }
+      refocus();
+    });
   };
-  const resend = () => { setResent(true); setErr(null); setCode(''); setTimeout(() => ref.current && ref.current.focus(), 0); };
+  const resend = () => runSend(() => { setResent(true); setErr(null); setCode(''); refocus(); });
   return (
     <GsAuthFrame title={device ? 'Verify this device' : 'Verify your email'}
       subtitle={<>Enter the 6-digit code sent to <b>{email}</b>.</>}
@@ -185,11 +194,11 @@ const GsVerify = () => {
         <GsCodeField value={code} error={err === 'wrong' ? 'That code’s not right. Check and re-enter.' : null}
           inputRef={(el) => { ref.current = el; }} onChange={(v) => { setCode(v); setErr(null); }} />
         {err === 'expired' && <GsXLine>That code’s expired. Request a fresh one.</GsXLine>}
-        <DS.Button type="submit" block>Verify</DS.Button>
+        <DS.Button type="submit" block loading={busy}>Verify</DS.Button>
         <div className="gs-center gs-link-slot">
           {resent
             ? <span className="gs-ico-row" role="status"><DS.Icon name="check" />A fresh code is on its way.</span>
-            : <DS.TextLink onClick={resend}>Resend code</DS.TextLink>}
+            : <DS.TextLink onClick={resend} aria-busy={sending || undefined}>{sending && <GsInkSpin />}Resend code</DS.TextLink>}
         </div>
       </form>
     </GsAuthFrame>
@@ -248,7 +257,7 @@ const GsSignIn = () => {
           <DS.TextField label="Password" type="password" autoComplete="current-password" placeholder="••••••••" {...form.bind('pw')} />
           <div className="gs-act gs-act-end"><DS.TextLink onClick={() => gs.go('recover')}>Forgot password?</DS.TextLink></div>
         </div>
-        <DS.Button type="submit" block>Sign in</DS.Button>
+        <DS.Button type="submit" block loading={form.busy}>Sign in</DS.Button>
       </form>
     </GsAuthFrame>
   );
@@ -266,13 +275,14 @@ const GsRecover = () => {
   const [code, setCode] = React.useState('');
   const [codeErr, setCodeErr] = React.useState(false);
   const codeRef = React.useRef(null);
+  const [codeBusy, runCode] = useGsBusy();
   const emailForm = useGsForm({ email: '' }, [['email', (v) => GS_EMAIL_RE.test(v.trim()), 'Enter a valid email address.']], (f) => { setEmail(f.email.trim()); setStep('sent'); });
   const pwForm = useGsForm({ pw: '', pw2: '' }, GS_NEWPW_RULES, () => gs.signedIn('email'));
   if (step === 'email') return (
     <GsAuthFrame title="Reset your password" subtitle="Enter your email and we’ll send a code." onBack={() => gs.go('signin')}>
       <form noValidate className="gs-stack-md" onSubmit={emailForm.submit}>
         <DS.TextField label="Email" type="email" placeholder="you@example.com" autoFocus {...emailForm.bind('email')} />
-        <DS.Button type="submit" block>Send code</DS.Button>
+        <DS.Button type="submit" block loading={emailForm.busy}>Send code</DS.Button>
       </form>
     </GsAuthFrame>
   );
@@ -286,12 +296,14 @@ const GsRecover = () => {
     <GsAuthFrame title="Enter your code" subtitle={<>Enter the 6-digit code sent to <b>{email}</b>.</>} onBack={() => setStep('sent')}>
       <form noValidate className="gs-stack-md" onSubmit={(e) => {
         e.preventDefault();
-        if (code.length < 6 || code === '111111') { setCodeErr(true); setTimeout(() => codeRef.current && codeRef.current.focus(), 0); return; }
-        setStep('new');
+        if (codeBusy) return;
+        const wrong = () => { setCodeErr(true); setTimeout(() => codeRef.current && codeRef.current.focus(), 0); };
+        if (code.length < 6) { wrong(); return; }
+        runCode(() => (code === '111111' ? wrong() : setStep('new')));
       }}>
         <GsCodeField value={code} error={codeErr ? 'That code’s not right. Check and re-enter.' : null}
           inputRef={(el) => { codeRef.current = el; }} onChange={(v) => { setCode(v); setCodeErr(false); }} />
-        <DS.Button type="submit" block>Verify</DS.Button>
+        <DS.Button type="submit" block loading={codeBusy}>Verify</DS.Button>
       </form>
     </GsAuthFrame>
   );
@@ -300,7 +312,7 @@ const GsRecover = () => {
       <form noValidate className="gs-stack-md" onSubmit={pwForm.submit}>
         <DS.TextField label="New password" type="password" autoComplete="new-password" placeholder="At least 8 characters" autoFocus {...pwForm.bind('pw')} />
         <DS.TextField label="Confirm new password" type="password" autoComplete="new-password" placeholder="Re-enter password" {...pwForm.bind('pw2')} />
-        <DS.Button type="submit" block>Update password</DS.Button>
+        <DS.Button type="submit" block loading={pwForm.busy}>Update password</DS.Button>
       </form>
     </GsAuthFrame>
   );

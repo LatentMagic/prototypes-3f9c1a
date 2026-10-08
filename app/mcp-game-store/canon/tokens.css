@@ -1,7 +1,7 @@
 /* ============================================================================
    Kit — tokens. THE SLOT THE PRODUCT'S OWN TOKENS REPLACE.
 
-   Only the custom properties the dev machinery (launcher, Config, States, QA)
+   Only the custom properties the dev machinery (Config pill, Config, States, QA)
    and the placeholder screen read. Neutral values, system fonts, no brand.
    A product drops its own tokens.css over this file: keep these property
    names defined, or the aids' styles in index.html lose their values.

@@ -16,14 +16,43 @@ const GsShareCard = ({ s }) => {
   );
 };
 
+// Share text, as it will be pasted: emoji, no letters, nothing of the scene,
+// ending with the game's product page. Null where nothing is decided.
+const GS_KIND_GAME = { puzzle: 'daily', delve: 'delve', case: 'casebook', day: 'hunter' };
+const gsWordRow = (guess, answer) => {
+  const g = guess.split(''); const res = g.map(() => '⬛'); const left = {};
+  answer.split('').forEach((ch, i) => { if (g[i] === ch) res[i] = '🟩'; else left[ch] = (left[ch] || 0) + 1; });
+  g.forEach((ch, i) => { if (res[i] !== '🟩' && left[ch]) { res[i] = '🟨'; left[ch] -= 1; } });
+  return res.join('');
+};
+const gsShareText = (s) => {
+  if (s.share == null) return null;
+  const link = 'https://platform.example/' + GS_GAMES[GS_KIND_GAME[s.kind]].route;
+  if (s.number) {
+    const guesses = s.lines.map((l) => l[1]); const answer = guesses[guesses.length - 1];
+    return [s.game + ' #' + s.number + '  ' + guesses.length + '/6' + (s.hints ? '  💡' + s.hints : ''), ...guesses.map((g) => gsWordRow(g, answer)), link];
+  }
+  if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
+  if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
+  return [s.game + ' · ' + s.share, link];
+};
+const GsShareText = ({ lines }) => (
+  <DS.Card style={{ gap: 4, justifyItems: 'start' }}>
+    {lines ? lines.map((l, i) => <span key={i} className="gs-num-text" style={{ overflowWrap: 'anywhere' }}>{l}</span>) : <GsGap />}
+  </DS.Card>
+);
+
 const GsSession = () => {
   const gs = useGs();
   const s = GS_SESSIONS[gs.route.id] || GS_SESSIONS.delve;
   const [share, setShare] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
-  const [saved, setSaved] = React.useState(false);
-  const notKept = s.kind === 'puzzle' && gs.view !== 'pass';
-  const closeShare = () => { setShare(false); setCopied(false); setSaved(false); };
+  const text = gsShareText(s);
+  const closeShare = () => { setShare(false); setCopied(false); };
+  const copy = () => {
+    try { navigator.clipboard && navigator.clipboard.writeText(text.join('\n')); } catch (e) {}
+    setCopied(true);
+  };
   const delve = s.kind === 'delve';
   const list = (
     <section className="gs-stack-md">
@@ -35,8 +64,6 @@ const GsSession = () => {
   );
   return (
     <main className="gs-wrap gs-main">
-      {notKept && <p className="gs-note">This result isn’t kept. The Pass keeps your history.</p>}
-
       <section className="gs-sess-head">
         <GsCover art={s.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
@@ -44,7 +71,7 @@ const GsSession = () => {
           <h1 className="gs-h1">{gsOr(s.result)}</h1>
           <div className="gs-figs">
             {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
-            <span className="gs-fig gs-fig-quiet">{s.date}</span>
+            <span className="gs-fig gs-fig-quiet">{gsSessDate(s, gs)}</span>
           </div>
           <div className="gs-pairwrap">
             <DS.ButtonPair>
@@ -79,11 +106,8 @@ const GsSession = () => {
       ) : list}
 
       <DS.Popup open={share} onClose={closeShare} title="Share this result" posture={gs.narrow ? 'sheet' : 'window'}
-        actions={<>
-          <DS.Button variant="secondary" done={saved} doneLabel="Downloaded" onClick={() => setSaved(true)}>Download image</DS.Button>
-          <DS.Button done={copied} doneLabel="Link copied" onClick={() => setCopied(true)}>Copy link</DS.Button>
-        </>}>
-        <GsShareCard s={s} />
+        actions={text && <DS.Button done={copied} doneLabel="Copied" onClick={copy}>Copy</DS.Button>}>
+        <GsShareText lines={text} />
       </DS.Popup>
     </main>
   );
@@ -91,21 +115,20 @@ const GsSession = () => {
 
 const GsHistory = () => {
   const gs = useGs();
-  if (gs.view !== 'pass') return (
-    <main className="gs-wrap gs-main">
-      <h1 className="gs-h1">History</h1>
-      <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
-        <p className="gs-measure">Nothing is kept on the free plan. Play today’s puzzles as often as you like; the Pass keeps your results, your streak and your record.</p>
-        <div className="gs-act gs-act-end"><DS.Button onClick={() => gs.go('pass')}>See the Pass</DS.Button></div>
-      </DS.Card>
-    </main>
-  );
+  // Free: Daily Puzzles plays only. Pass ended: those plus every Pass-game play.
+  const lapsed = gsLapsed(gs);
+  const today = Object.values(GS_TODAY_PLAYED[gs.view] || {});
+  const rows = gs.view === 'pass' ? GS_HISTORY : GS_HISTORY.filter((id) => {
+    const s = GS_SESSIONS[id];
+    if (s.date === GS.today) return today.includes(id);
+    return lapsed || s.kind === 'puzzle';
+  }).sort((a, b) => (lapsed ? !!GS_SESSIONS[a].lapsedDate - !!GS_SESSIONS[b].lapsedDate : 0));
   return (
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">History</h1>
-      <GsStreakPanel paying />
+      <GsStreakPanel />
       <ul className="gs-hist">
-        {GS_HISTORY.map((id) => {
+        {rows.map((id) => {
           const s = GS_SESSIONS[id];
           return (
             <li key={id}>
@@ -115,7 +138,7 @@ const GsHistory = () => {
                   <span className="gs-strong">{s.game}</span>
                   <span className={s.loss ? 'gs-loss' : 'gs-muted'}>{gsOr(s.result)}</span>
                 </span>
-                <span className="gs-small gs-hdate">{s.date}</span>
+                <span className="gs-small gs-hdate">{gsSessDate(s, gs)}</span>
               </button>
             </li>
           );

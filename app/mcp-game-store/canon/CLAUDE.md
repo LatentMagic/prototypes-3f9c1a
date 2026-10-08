@@ -38,6 +38,8 @@ Everything outside the block above is shared: identical in every project built f
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product.
+
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
 - **Upstream first.** Whatever the product block names — product behaviour, design law, brand and voice, the reasoning behind any prompt that arrives here — lives outside this project. Read it live, at the start of a session and again before any decision it governs. The product's specs are canonical for behaviour: cite them by path and id; never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
@@ -76,6 +78,8 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 - `bro` — restate the last message plainly, no jargon.
 - `show-me` — when prose would force the reader to reconstruct something in their head: a structure, a flow, a comparison, a before/after, a set of options. Fires whether or not a visual was asked for. Use it *with* `must-read` when the thing landed is inside the prototype — the route to it is a flow, so draw the flow.
 - `must-read` — at the end of any finished body of work (a change landed, a doc written, a review run): name the one thing the user cannot skip, precisely, with the stake. Complements the last-line rule. **When the thing landed is in the prototype, always carry the route to it** — the numbered clicks from the app's entry to the exact surface, so it is never gone looking for.
+- `unslop` — **always applies** to any prose you write: product copy, docs, handoffs, specs, skills, chat replies. Cuts AI tells (rules are numbered and other skills cite them).
+- `edit-before-it-leaves` — before any document, handoff, proposal, report, spec, skill, rule or prompt file is handed over. Passes in order: cut, shape, clarify, debloat, unslop, proofread. Not for chat replies, commit messages or scratch notes. Never changes content or cuts a decision, number or ask; any cut still needs the user's ratification.
 
 ### Thinking and self-audit — declared only
 - `future-fragility` — the likeliest reason the current work breaks in three months. **Declared only.**
@@ -115,8 +119,21 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - Read the product's voice doc live, as the product block names it, **before** writing any UI string — not after it is challenged.
 </important>
 
+<important if="you are writing or editing a product page (a game's page, the Pass page, any page that sells something)">
+- **A product page tells a stranger what they'll do and why they'd want to, using only things that are true, so every line has to make the game more appealing and none should excuse or qualify it.** Cut anything that apologises, hedges or lowers expectations ("rare", "not everywhere", "not a game"). Never leave a blank step or slot; if there is nothing true to put there, remove it. (Ratified 2026-10-07; handoff `docs/specs/989-36000-summers-ago/`.)
+</important>
+
 <important if="you are building or changing any overlay: a sheet, modal, dialog or popover">
-- **Overlays adapt.** On a phone, an overlay is a bottom sheet. On desktop, it's a centred modal. A menu that belongs to one button can be a popover. Never use one shape at every width. Check every overlay at phone and desktop width before calling it done.
+- **Only a panel changes shape on a phone.** A surface that opens over the page and takes focus is one of three kinds, sorted by its job. Ask in this order; the first that fits is the kind.
+  - **Dialog.** Asks one question or takes one short edit, and nothing behind it can be used until it is answered or dismissed: a confirmation, a proof of identity, a rename. Its content is fixed and never scrolls. Centred at every width. A dialog that outgrows the space above the on-screen keyboard becomes a page or a panel, never a taller dialog.
+  - **Menu.** A short list of commands opened from a control; choosing one runs it and closes the menu. It opens at its control at every width. A list long enough to scroll is a panel.
+  - **Panel.** Anything else the user stays in and works with: a composer, a picker, a list that can grow or scroll. A bottom sheet on a phone. On desktop it is anchored to its control or centred, the project's call.
+  - What appears over the page without taking focus, such as a tooltip or a status message, is none of these and does not swap.
+- Check every overlay at phone and desktop width before calling it done.
+</important>
+
+<important if="you are building or changing any action that changes state: a submit, save, send, delete, confirm or pay">
+- **Every action that changes state shows it is working.** From the press until the result, the control that was pressed shows a loading indication and cannot be pressed again; usually that is the submit button. A prototype has no real wait, so stage one long enough to see.
 </important>
 
 ## Code
@@ -131,7 +148,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 
 <important if="you are creating, naming, moving or archiving any file or folder">
 - **File naming: kebab-case, always.** Lowercase kebab-case with no spaces — `checkout-playground-standalone.html`, `pg-checkout-app.jsx`, `handoff-2026-07-27-checkout-playground.md`. No spaces, no title case, no ` - ` separators, no underscores. This includes downloadable deliverables and bundled output. Spaces in paths break shell use, URLs and tooling on the user's end.
-- **Root** holds only what must be there: `index.html`, `app/`, `tokens.css`, `skills/`, the durable docs, and whatever the product block lists as extra root files.
+- **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, the durable docs, and whatever the product block lists as extra root files.
 - **`docs/`** holds durable docs only.
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the product's tracker, as the product block names it. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
@@ -143,6 +160,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
   - `<base href="../../../../" />` in `<head>`, one `../` per level of nesting — four for `docs/specs/<ticket>/playground/`. That is the whole mechanism.
   - **Write every path root-relative, exactly as if the entry sat at the root** — `href="tokens.css"`, `src="app/main.jsx"`, and `src="docs/specs/<ticket>/playground/pg-foo.jsx"` for the rig's own modules. Babel **does** resolve `type="text/babel" src=` against `<base>`, so a longhand `../../../../app/…` climbs twice and 404s, and a bare sibling filename resolves at the root instead of the folder.
   - The preview warns "referenced file not found" for base-relative paths. It is a false positive only when the `<base>` depth is right, and the warning reads the same either way, so it can never confirm the depth: count the `../` against the file's own depth, load the page, and confirm one token-driven thing rendered before handing it over. Never explain the warning away without having looked (`GOTCHA.md` 11 is how it went wrong).
+- **`playgrounds.html` at the root is the launcher, and `playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved or archived, or a ticket folder moves**, and add the rig to it in the same change that builds the rig. If it drifts, rebuild it from the tree rather than patching it. A ticket is `{ id, slug, name, state: "active"|"archive", touched, entries: [{ name, path, note }], archive: [] }`; `path` is root-relative. Hiding an entry is `"on": false`, never deletion. Set `product` in the manifest to the product's name. It is reached by URL (`/playgrounds.html`), not from inside the app.
 - **A state is a scenario, never a width.** QA and scenario lists (playgrounds, the Config / QA aid) carry one entry per scenario. Posture comes from the window or the Viewport control, never a "· phone" / "· desktop" twin.
 </important>
 

@@ -1,11 +1,11 @@
 // ============================================================================
 // [Platform] — Connect your AI (screen 3). Checkout lives in gs-billing.jsx.
 // ============================================================================
-const GS_AIS = [['claude', 'Claude'], ['chatgpt', 'ChatGPT'], ['goose', 'Goose'], ['other', 'Other']];
+const GS_AIS = [['claude', 'Claude'], ['chatgpt', 'ChatGPT'], ['openclaw', 'OpenClaw'], ['other', 'Other']];
 const GS_AI_PASTE = {
   claude: 'In Claude, open Settings, then Connectors, and add a custom connector. Paste the link there.',
   chatgpt: 'In ChatGPT, open Settings, then Connectors, and add a new one. Paste the link there.',
-  goose: 'In Goose, open Extensions and add a remote extension. Paste the link there.',
+  openclaw: 'In a terminal, run openclaw mcp add and give it the link as the URL.',
   other: 'In your assistant’s settings, find where MCP connectors are added. Paste the link there.',
 };
 

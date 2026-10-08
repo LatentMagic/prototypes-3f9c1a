@@ -66,7 +66,7 @@ const GsUsername = () => {
     <GsAuthFrame title="Your username">
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
         <GsUsernameField form={form} autoFocus aside={<DS.TextLink onClick={another}>Suggest another</DS.TextLink>} />
-        <DS.Button type="submit" block>Continue</DS.Button>
+        <DS.Button type="submit" block loading={form.busy}>Continue</DS.Button>
       </form>
     </GsAuthFrame>
   );
@@ -83,7 +83,7 @@ const GsUsernameForm = ({ current }) => {
   return (
     <form noValidate onSubmit={form.submit} className="gs-stack-md">
       <GsUsernameField form={form} label="New username" placeholder="Enter a new username" />
-      <div className="gs-card-acts"><DS.Button type="submit">Update username</DS.Button></div>
+      <div className="gs-card-acts"><DS.Button type="submit" loading={form.busy}>Update username</DS.Button></div>
     </form>
   );
 };

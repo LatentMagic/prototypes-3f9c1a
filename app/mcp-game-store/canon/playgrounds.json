@@ -1,0 +1,59 @@
+{
+  "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
+  "product": "[Platform]",
+  "generated": "2026-10-08",
+  "tickets": [
+    {
+      "id": "—",
+      "slug": "delve-two-pages",
+      "name": "A game's two pages (Delve)",
+      "state": "active",
+      "touched": "2026-10-08",
+      "entries": [
+        {
+          "name": "Refining option 2",
+          "path": "docs/specs/delve-two-pages/playground/refine.html",
+          "note": "Three takes on option 2, each with its own names for the player page and dropdown, and one signed-in game page."
+        },
+        {
+          "name": "Routes between a game’s two pages",
+          "path": "docs/specs/delve-two-pages/playground/index.html",
+          "note": "Options 1 to 4 for how a signed-in player gets between Delve’s public page and Your Delve, each for three viewers."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "home-free-and-pass",
+      "name": "Free and Pass home",
+      "state": "archive",
+      "touched": "2026-10-07",
+      "base": "docs/archive/",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Free and Pass playground",
+          "path": "docs/archive/home-free-and-pass/playground/index.html",
+          "note": "Finished rig for the free tier and the Pass on the home page. Root-relative assets may not resolve from the archive."
+        }
+      ]
+    },
+    {
+      "id": "—",
+      "slug": "delve-two-pages-options-0-3",
+      "name": "A game’s two pages, options 0 to 3",
+      "state": "archive",
+      "touched": "2026-10-08",
+      "base": "docs/archive/",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Two pages: public page and Your Delve",
+          "path": "docs/archive/delve-two-pages-options-0-3/playground/index.html",
+          "note": "Superseded by the routes rig. Reviewed 2026-10-08."
+        }
+      ]
+    }
+  ]
+}

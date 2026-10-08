@@ -196,7 +196,7 @@ const KitApp = () => {
         </div>
       ) : appTree}
 
-      {/* Launcher, mounted outside the phone frame: the frame's transform would capture its position: fixed. */}
+      {/* Config pill, mounted outside the phone frame: the frame's transform would capture its position: fixed. */}
       {ConfigLauncher && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}

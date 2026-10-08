@@ -11,7 +11,7 @@ const GS = {
   link: 'https://platform.example/mcp',
   email: 'you@example.com',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
-  works: 'Claude · ChatGPT · Goose · any assistant that supports MCP connectors',
+  works: 'ChatGPT · Claude · OpenClaw · Hermes · any assistant that supports MCP connectors',
 };
 
 // Covers: a few flat basic shapes in the cover colours on a cover background.
@@ -29,14 +29,14 @@ const GS_ART = {
 };
 
 // Working names: one constant each, so a name changes in one place.
-const GS_NAME = { casebook: 'Casebook', hunter: 'Hunter-gatherer game' };
+const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 const GS_GAMES = {
   daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', '10 min', 'Solo'] },
-  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', 'First scene free', '25–40 min', 'Solo', '12+'] },
+  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', '25–40 min', 'Solo', '12+'] },
   casebook: { name: GS_NAME.casebook, art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly'] },
-  hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Explore a hunter-gatherer world, from dawn to dusk.', tags: ['PASS'] },
+  hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS'] },
 };
 const GS_GAME_ORDER = ['daily', 'casebook', 'delve', 'hunter'];
 // The small mark on a card. Pass: today's and this week's; free, signed in: today's only.
@@ -53,7 +53,7 @@ const GS_PUZZLES = {
   murder: { name: 'Murder Mystery', art: 'murder', open: 'There’s a body, a locked door and a story that doesn’t add up. Your move.' },
   word: { name: 'Word Puzzle', art: 'word', open: 'You already know today’s answer. You can’t see it yet, so start guessing.' },
 };
-// Today's results by plan. Free keeps today's results for today only.
+// Today's results by plan.
 const GS_TODAY_PLAYED = {
   out: {},
   free: { word: 'word-today' },
@@ -81,7 +81,7 @@ const GS_ROLLS = [
 
 const GS_SESSIONS = {
   delve: {
-    kind: 'delve', game: 'Delve', art: 'delve', result: 'Rescued', date: 'Monday 5 October',
+    kind: 'delve', game: 'Delve', art: 'delve', result: 'Rescued', date: 'Monday 5 October', lapsedDate: 'Monday 14 September',
     figures: ['Threat 5/6', '11 rolls', '1 natural 20', 'HP 5/12'],
     tracks: { progress: 6, threat: 5 },
     listTitle: 'Every roll', lines: GS_ROLLS,
@@ -89,7 +89,7 @@ const GS_SESSIONS = {
     share: 'Rescued · threat 5/6 · 11 rolls · 1 natural 20',
   },
   'word-today': {
-    kind: 'puzzle', game: 'Word Puzzle', art: 'word', result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', game: 'Word Puzzle', art: 'word', number: 212, result: 'Solved in 3 of 6', date: GS.today,
     listTitle: 'Every guess', share: 'Solved in 3 of 6',
     lines: [['Guess 1', 'SLATE', 'T is in the word'], ['Guess 2', 'TONIC', 'T and O in place, C is in the word'], ['Guess 3', 'TORCH', 'Solved']],
   },
@@ -107,12 +107,12 @@ const GS_SESSIONS = {
       ['Question 3', 'Where was the gardener at nine?', 'His story changes'], ['Accusation', 'The gardener', 'Wrong: it was the cook']],
   },
   'word-1005': {
-    kind: 'puzzle', game: 'Word Puzzle', art: 'word', result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', game: 'Word Puzzle', art: 'word', number: 211, result: 'Solved in 4 of 6', date: 'Monday 5 October',
     listTitle: 'Every guess', share: 'Solved in 4 of 6',
     lines: [['Guess 1', 'CRANE', 'R and E are in the word'], ['Guess 2', 'STORE', 'S, T and E in place'], ['Guess 3', 'SPREE', 'S, R and E in place'], ['Guess 4', 'SHIRE', 'Solved']],
   },
   casebook: {
-    kind: 'case', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October',
+    kind: 'case', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October', lapsedDate: 'Sunday 13 September',
     figures: ['11 of 16 turns', '4 lies exposed'], listTitle: 'The record', share: 'Solved · 11 of 16 turns · 4 lies exposed',
     lines: [
       ['Confront', 'Maeve Doyle, the bar ledger', 'She admits drinking in the bar after being sacked'],
@@ -124,7 +124,7 @@ const GS_SESSIONS = {
   },
   // Every blank is null and shows as a muted "—": nobody has decided it.
   hunter: {
-    kind: 'day', game: GS_NAME.hunter, art: 'hunter', result: null, date: 'Monday 5 October',
+    kind: 'day', game: GS_NAME.hunter, art: 'hunter', result: null, date: 'Monday 5 October', lapsedDate: 'Saturday 12 September',
     figures: [null], listTitle: null, share: null, lines: [],
   },
   'murder-1004': {
@@ -136,6 +136,10 @@ const GS_SESSIONS = {
 };
 // Newest first: today's three puzzles, then 5 and 4 October. One loss.
 const GS_HISTORY = ['word-today', 'escape-today', 'murder-today', 'delve', 'casebook', 'hunter', 'word-1005', 'murder-1004'];
+
+// A lapsed player's Pass-game plays predate the day their Pass ended (18 September).
+const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.freeUsed;
+const gsSessDate = (s, gs) => (gsLapsed(gs) && s.lapsedDate) || s.date;
 
 // The scroller: the phone frame's screen when forced-mobile, else the document.
 const gsScroller = () => document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;
@@ -149,5 +153,5 @@ const gsScrollToId = (id) => {
 
 Object.assign(window, {
   DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsMarks, GS_SOON, GS_PUZZLE_ORDER, GS_PUZZLES, GS_TODAY_PLAYED, GS_EARLIER,
-  GS_ROLLS, GS_SESSIONS, GS_HISTORY, gsScroller, gsScrollTop, gsScrollToId,
+  GS_ROLLS, GS_SESSIONS, GS_HISTORY, gsLapsed, gsSessDate, gsScroller, gsScrollTop, gsScrollToId,
 });

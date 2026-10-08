@@ -7,7 +7,7 @@
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
 const gsOr = (v) => (v == null ? <GsGap /> : v);
-const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. Claude, ChatGPT, Goose and others.</>;
+const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, Claude, OpenClaw and others.</>;
 
 const GS_PAGES = {
   daily: {
@@ -42,7 +42,7 @@ const GS_PAGES = {
     crumb: 'Adventures', label: 'ADVENTURE · ONE SCENE',
     box: { label: 'PART OF THE PASS', heading: 'A new scene every week', session: 'delve',
       steps: [GS_STEP_CONNECT, <><b>Play one full scene</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
-      small: 'The first scene is free. Every scene after it is part of the [Platform] Pass.', firstFree: true },
+      small: 'Delve is part of the [Platform] Pass.' },
     facts: { ai: 'AI-essential: your AI is the Dungeon Master', age: '12+ · fantasy peril, no gore', long: '25–40 min', often: 'A new scene every week', players: 'Solo' },
     tags: ['Adventure', 'One scene · new warren layout each run'],
     pitch: { h: 'Get her out before the drums stop', ps: [
@@ -55,18 +55,18 @@ const GS_PAGES = {
   },
   hunter: {
     crumb: 'Learning activities', label: 'LEARNING ACTIVITY · ONE DAY',
-    box: { label: 'PART OF THE PASS', heading: 'A day to explore', session: 'hunter',
-      steps: [GS_STEP_CONNECT, <><b>Explore one day</b>, from dawn to dusk.</>, null],
-      small: 'The hunter-gatherer game is part of the [Platform] Pass.' },
-    facts: { ai: null, age: null, long: null, often: null, players: null }, tags: [],
-    pitch: { h: 'One day, dawn to dusk.', ps: [
-      'It’s dawn in late summer, and the day is yours. You’re in the world of hunter-gatherers near Chauvet cave in France. Go where you like.',
-      'Gathering carries the day, and a big hunt is rare. No single conflict drives it. Not everywhere can be reached before dusk.',
-      'It’s more a learning activity than a game. It’s one day, and you can play it again.'] },
-    who: { ai: 'Drives the world and answers what you try.', server: 'Keeps the time, what you have done and seen, and how the world changes in answer.' },
+    box: { label: 'PART OF THE PASS', heading: 'A different day every time', session: 'hunter',
+      steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
+      small: '36,000 Summers Ago is part of the [Platform] Pass.' },
+    facts: { ai: 'AI-essential: your AI tells the day and speaks for everyone in it', age: null, long: null, often: 'Play it again, a different day each time', players: 'Solo' }, tags: [],
+    pitch: { h: 'The day goes on whether you join it or not.', ps: [
+      'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
+      'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
+      'Your AI tells the day and speaks for everyone in it. Our server rolls the dice and keeps the record. Say what you do first.'] },
+    who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
     shots: [null],
     finished: 'hunter',
-    week: { title: 'The day', line: 'One day, dawn to dusk, and you can play it again.', session: 'hunter', unmarked: true },
+    week: { title: 'The day', line: 'One day, dawn to firelight. Play it again and it goes differently.', session: 'hunter', unmarked: true },
   },
 };
 const GS_FACT_LABELS = [['ai', 'What your AI does'], ['age', 'Age'], ['long', 'How long'], ['often', 'How often'], ['players', 'Players']];
@@ -84,13 +84,9 @@ const GsPlayBox = ({ id }) => {
         ? <DS.Button block onClick={() => gsScrollToId('gs-today')}>{b.button}</DS.Button>
         : paying
           ? <DS.Button block onClick={() => gs.play(g.name, b.session)}>Play in your AI</DS.Button>
-          : b.firstFree
-            ? <DS.Button block onClick={() => gs.play(g.name, b.session)}>Play the first scene</DS.Button>
-            : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
+          : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
       {!b.free && <p className="gs-small">{b.small} {GS.purchase}</p>}
-      {!b.free && !paying && <div>{b.firstFree
-        ? <DS.TextLink onClick={() => gs.go('pass')}>See the Pass</DS.TextLink>
-        : <DS.TextLink onClick={() => gs.go('puzzles')}>Play today’s puzzles free</DS.TextLink>}</div>}
+      {!b.free && !paying && <div><DS.TextLink onClick={() => gs.go('puzzles')}>Play today’s puzzles free</DS.TextLink></div>}
       <div className="gs-rule" />
       <div className="gs-stack-sm">
         <span className="gs-label">WORKS WITH</span>
@@ -181,18 +177,19 @@ const GsDailyToday = () => {
   );
 };
 
-const GsGamePage = ({ id }) => {
+const GsGamePage = ({ id, top, noCrumb }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
   const marks = gsMarks(gs.view);
   const others = GS_GAME_ORDER.filter((k) => k !== id);
   return (
     <main className="gs-wrap gs-main">
-      <nav aria-label="Breadcrumb" className="gs-crumb">
+      {top}
+      {!noCrumb && <nav aria-label="Breadcrumb" className="gs-crumb">
         <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>Games</button>
         <span aria-hidden="true">/</span><span>{p.crumb}</span><span aria-hidden="true">/</span>
         <span aria-current="page">{g.name}</span>
-      </nav>
+      </nav>}
 
       <section className="gs-head-split">
         <div className="gs-hero-cover">
@@ -238,7 +235,7 @@ const GsGamePage = ({ id }) => {
 
       {id === 'daily' ? <GsDailyToday /> : <GsWeekCard id={id} />}
 
-      {id === 'daily' && <GsStreakPanel paying={gs.view === 'pass'} />}
+      {id === 'daily' && gs.view !== 'out' && <GsStreakPanel />}
 
       <section className="gs-stack-md">
         <h2 className="mcp-t-sec">More games</h2>

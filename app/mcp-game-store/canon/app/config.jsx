@@ -1,5 +1,5 @@
 // ============================================================================
-// Kit — the launcher (PROTOTYPE AID, not part of the product).
+// Kit — the Config pill (PROTOTYPE AID, not part of the product).
 //
 // A floating, draggable pill of up to three halves, all prototype aids and none
 // part of the product:
@@ -31,7 +31,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   const [qaOpen, setQaOpen] = useCState(false);
-  // draggable launcher-button position. null = default bottom-right.
+  // draggable Config pill position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
     try { const v = JSON.parse(localStorage.getItem('kit_launcher_pos') || 'null'); return v && Number.isFinite(v.x) && Number.isFinite(v.y) ? v : null; } catch (e) { return null; }
   });
@@ -103,14 +103,14 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
           onClick={() => tapped(() => openAt(setOpen))}
           aria-haspopup="dialog" aria-expanded={open} data-open={open ? '1' : undefined}
           aria-label="Config" title="Config — drag to move">
-          <Icon name="settings" size={17} />
+          <Icon name="settings" size={20} />
         </button>
         {hasStates && (
           <button className="kit-launcher-half" onPointerDown={onPointerDown}
             onClick={() => tapped(() => openAt(setStatesOpen))}
             aria-haspopup="dialog" aria-expanded={statesOpen} data-open={statesOpen ? '1' : undefined}
             aria-label="States" title="States — drag to move">
-            <Icon name="list" size={17} />
+            <Icon name="list" size={20} />
           </button>
         )}
         {hasQa && (
@@ -118,7 +118,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             onClick={() => tapped(() => openAt(setQaOpen))}
             aria-haspopup="dialog" aria-expanded={qaOpen} data-open={qaOpen ? '1' : undefined}
             aria-label="QA" title="QA — drag to move">
-            <Icon name="check" size={17} />
+            <Icon name="check" size={20} />
           </button>
         )}
       </div>
@@ -189,7 +189,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, onClose }) => {
   return (
     <div className="kit-config-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label="Config" className="kit-config-modal"
+      <div role="dialog" aria-modal="true" aria-label="Config" className="kit-config-modal" data-shown={shown ? '1' : undefined}
         style={{ opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.97)' }}>
         <div className="kit-config-head">
           <div>
