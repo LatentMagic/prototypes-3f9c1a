@@ -1,0 +1,6 @@
+{
+  "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
+  "product": "Prototype",
+  "generated": "",
+  "tickets": []
+}

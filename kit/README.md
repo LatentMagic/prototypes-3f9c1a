@@ -1,6 +1,6 @@
 # Prototype kit
 
-A product-neutral starting pack for Claude Design prototypes. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `tokens.css`, `app/`, `docs/`, `skills/`.
+A product-neutral starting pack for Claude Design prototypes. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `playgrounds.html`, `playgrounds.json`, `tokens.css`, `app/`, `docs/`, `skills/`.
 
 Nothing in `project/` names a product (this README names Circlists, where the kit was cut from). This repo is public, so nothing private goes in.
 
@@ -93,7 +93,7 @@ Version 4.5.0. `SKILL.md` and `reference/` are byte-identical to upstream, under
 ### Rules dropped because their machinery did not ship
 
 - Candidate builds: the skill, its trigger, "a candidate build lives in its ticket folder", the rail-node and `tools/new-candidate.sh` mention.
-- Launcher and manifest: `playgrounds.html`, `playgrounds.json`, "regenerate it whenever a rig is added", "hiding, not deleting", "add the rig to the launcher".
+- Launcher candidate-build lines and "hiding, not deleting" for candidates. The launcher itself and its manifest shipped on 2026-10-08 (`playgrounds.html`, `playgrounds.json`, rule in `CLAUDE.md` § Files); the kit's page is product-neutral, with the product's name set in the manifest.
 - "No config surface": it was about the launcher page, and as worded it collides with the shipped Config aid.
 - `github.md` and the rules sending the agent to it; its job moved to the product block's sources.
 - Canon's motion-SVG rule, kept as a platform fact in `GOTCHA.md` 12.
