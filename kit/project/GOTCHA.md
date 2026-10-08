@@ -81,7 +81,7 @@ ancestor, not the viewport. Any non-`none` transform — including the identity
 - Structural: the phone frame is **three** layers — bezel (`.kit-phone`) → clip
   (`.kit-phone-clip`: carries the transform, non-scrolling, exactly the
   screen's bounds + radius) → screen (`.kit-phone-screen`: scrolls). The
-  launcher is mounted outside the frame for the same reason.
+  Config pill is mounted outside the frame for the same reason.
 - Transient: a page-push transition holds its two layers only for the length of
   the transition and returns the plain view once idle, so no transform survives
   at rest.

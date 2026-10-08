@@ -8,9 +8,9 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 
 | File | Kind | Absent ⇒ |
 |---|---|---|
-| `app/config.jsx` | deletable aid | launcher gone: review settings, the states palette and QA with it. `?state=` and the index survive |
+| `app/config.jsx` | deletable aid | Config pill gone: review settings, the states palette and QA with it. `?state=` and the index survive |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
-| `app/qa.jsx` | deletable aid (draft) | QA half of the launcher gone; the states it points at stay |
+| `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
 | `app/config-extra.example.jsx` | deletable example | no product rows in Config |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
@@ -23,7 +23,7 @@ A ticket in the real build links to this prototype, so a reviewer has to be able
 
 - **`?state=<id>`** on the entry. `main.jsx` reads it once at mount (`kitResolveState`) and stages the named state in an effect, so a named state **overrides any restored route**. Nothing in the address ⇒ the app opens where the real app does.
 - **`?state=index`, or a name the register does not hold** ⇒ the states index (`StatesIndex`, `app/states-ui.jsx`) renders instead of the app. That is how a stale ticket link shows itself: the reader sees a catalogue that does not contain the name they came for, rather than the wrong screen.
-- **The palette** — the launcher's second half. Jump to a state, or copy its link.
+- **The palette** — the Config pill's second half. Jump to a state, or copy its link.
 - **`window.KIT_STATES`** — ids, labels and groups, published on the page for anything inspecting it. No staging functions, nothing runnable. A sibling JSON file would not survive the single-file export, which is why it is a global.
 
 A state earns an entry by being hard to reach — a situation the app has to be staged into (an account you do not own, a dormant account, a retrying payment). A screen you can click to from a state already in the register does not get one; the register is not a sitemap, and doubling the app as a second index leaves two things to keep in step.

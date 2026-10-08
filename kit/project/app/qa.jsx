@@ -2,7 +2,7 @@
 // Kit — the QA list (PROTOTYPE AID, not part of the product). DRAFT:
 // the shape is still being iterated on.
 //
-// The launcher's third half. A short, ephemeral walk-through of the states a
+// The Config pill's third half. A short, ephemeral walk-through of the states a
 // piece of work in flight needs checking against. It holds NO staging of its
 // own: every step is a state id from the register (app/states.jsx), so a QA
 // entry can never drift from what the States palette opens.

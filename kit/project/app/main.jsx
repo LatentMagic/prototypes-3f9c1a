@@ -62,9 +62,9 @@ const KitApp = () => {
 
   // ---- the states register (app/states.jsx, a deletable aid) --------------
   // Every staged state of the app, with its address. The register feeds all
-  // three of its surfaces from one list: the palette in the launcher, the index,
+  // three of its surfaces from one list: the palette in the Config pill, the index,
   // and `?state=` above. Drop app/states.jsx + app/states-ui.jsx and the states
-  // half of the launcher, the index and the address reading all vanish together,
+  // half of the Config pill, the index and the address reading all vanish together,
   // leaving the product core clean.
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
     ? window.buildStates({ seedItems: KIT_SEED_ITEMS, setItems })
@@ -105,7 +105,7 @@ const KitApp = () => {
         </div>
       ) : appTree}
 
-      {/* Launcher — prototype aid; leaving app/config.jsx out removes it, no edit here.
+      {/* Config pill — prototype aid; leaving app/config.jsx out removes it, no edit here.
           Mounted outside the phone frame: the frame's transform would capture its
           position: fixed. */}
       {ConfigLauncher && <ConfigLauncher

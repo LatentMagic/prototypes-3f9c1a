@@ -1,5 +1,5 @@
 // ============================================================================
-// Kit — the launcher (PROTOTYPE AID, not part of the product).
+// Kit — the Config pill (PROTOTYPE AID, not part of the product).
 //
 // A floating, draggable pill of up to three halves, all prototype aids and none
 // part of the product:
