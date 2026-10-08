@@ -25,7 +25,7 @@ Not yet verified. Each takes about a minute:
 
 ## Before using it again
 
-It will be stale. First, run `git log` and `git diff dddbb6c..HEAD` on `app/circlists/canon/`. Look at what changed in the shared files and carry over what improved:
+This is the refresh from Circlists canon into the kit, a separate job from carrying a kit change out to projects (below). It will be stale. First, run `git log` and `git diff dddbb6c..HEAD` on `app/circlists/canon/`. Look at what changed in the shared files and carry over what improved:
 
 - `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`
 - `app/` (the machinery files, not the Circlists screens)
@@ -36,9 +36,12 @@ Then update "Last cut" above.
 
 ## Carrying a change between prototypes
 
-Make the change to the shared machinery or rules here. Then, in each project, drag the changed file in again, or ask the agent to re-read it from this repo and write it over the project's copy, keeping that project's own product block. Projects send improvements back through the handoff, which is where `CLAUDE.md`, `GOTCHA.md` and `skills/build-playground/` changes proposed in a project are recorded.
+The kit is the source for every rule, aid and skill the prototypes share.
 
-The Circlists project's own `CLAUDE.md` has not been split into shared and product parts, so today it does not match the kit's. Until it is, changes flow by hand, both ways.
+1. Make the change in `kit/project/`, check it in a browser where it renders, and push.
+2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief states the changed rule word for word. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
+
+A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and "What was taken, what was left" records where it came from.
 
 ## What was taken, what was left
 

@@ -20,6 +20,10 @@ Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natur
 **`app/<app>/canon/CLAUDE.md`** (`app/circlists/` or `app/mcp-game-store/`) is the Claude Design project's own file, and every export replaces it wholesale. Editing under `canon/` loads it automatically. Take from it: brand law, the states register, module load order, playground mechanics. Candidates: canon's candidate-build skill is written for the Claude Design agent only. Any other agent editing this repo's files — a session opened in this repo, or one driving it from another repo — builds a candidate as a copy of canon in its own rail node (`tools/new-candidate.sh`, Circlists only; by hand for any other app), never inside `canon/`: the next Claude Design export replaces `canon/` and would wipe it. Its ratification rule holds here too: a design or copy decision is the user's, never the session's. Its skills live in `canon/skills/`, read by path. Ignore its chat-reply rules, which are written for the Claude Design agent. Never edit it from here: a change goes into the Claude Design project, and arrives with the next export.
 </important>
 
+<important if="you are adding or changing a rule, aid or skill that every prototype shares, or anything under kit/">
+**The kit** — `kit/project/` holds the rules (`CLAUDE.md`), aids (Config, States, QA) and skills every prototype shares; `kit/README.md` is its runbook. A shared change is made there and pushed, then carried into each Claude Design project by one Kit carry brief composed in the business-ops workspace (`biz-authoring:build-design-prompt`). Never make it by editing a `canon/` copy.
+</important>
+
 ## How the console works
 
 - One JS meta-map in `index.html` (keyed by slug) is the single source of truth for tabs, the meta header, and iframe sources.
