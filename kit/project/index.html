@@ -64,6 +64,18 @@
     border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
     transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
   }
+  /* Below 640px the aids are panels, so bottom sheets (CLAUDE.md, overlay kinds). */
+  @media (max-width: 639px) {
+    .kit-config-scrim { align-items: flex-end; padding: 0; }
+    .kit-config-modal {
+      width: 100%; max-height: 84vh;
+      border-width: 1px 0 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      transform: none !important; translate: 0 100%;
+      transition: opacity var(--duration-base) var(--ease-quiet), translate var(--duration-slow) var(--ease-quiet);
+    }
+    .kit-config-modal[data-shown] { translate: 0 0; }
+  }
+  @media (max-width: 639px) and (prefers-reduced-motion: reduce) { .kit-config-modal { translate: none; transition: none; } }
   .kit-config-head {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
     padding: var(--space-5) var(--space-5) var(--space-4);

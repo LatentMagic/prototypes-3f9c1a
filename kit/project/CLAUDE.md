@@ -102,7 +102,12 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 </important>
 
 <important if="you are building or changing any overlay: a sheet, modal, dialog or popover">
-- **Overlays adapt.** On a phone, an overlay is a bottom sheet. On desktop, it's a centred modal. A menu that belongs to one button can be a popover. Never use one shape at every width. Check every overlay at phone and desktop width before calling it done.
+- **Only a panel changes shape on a phone.** A surface that opens over the page and takes focus is one of three kinds, sorted by its job. Ask in this order; the first that fits is the kind.
+  - **Dialog.** Asks one question or takes one short edit, and nothing behind it can be used until it is answered or dismissed: a confirmation, a proof of identity, a rename. Its content is fixed and never scrolls. Centred at every width. A dialog that outgrows the space above the on-screen keyboard becomes a page or a panel, never a taller dialog.
+  - **Menu.** A short list of commands opened from a control; choosing one runs it and closes the menu. It opens at its control at every width. A list long enough to scroll is a panel.
+  - **Panel.** Anything else the user stays in and works with: a composer, a picker, a list that can grow or scroll. A bottom sheet on a phone. On desktop it is anchored to its control or centred, the project's call.
+  - What appears over the page without taking focus, such as a tooltip or a status message, is none of these and does not swap.
+- Check every overlay at phone and desktop width before calling it done.
 </important>
 
 ## Code

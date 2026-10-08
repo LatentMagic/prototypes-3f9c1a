@@ -47,7 +47,7 @@ const QaPalette = ({ statesGroups, onGo, onClose }) => {
   return (
     <div className="kit-config-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label="QA" className="kit-config-modal"
+      <div role="dialog" aria-modal="true" aria-label="QA" className="kit-config-modal" data-shown={shown ? '1' : undefined}
         style={{ opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.97)' }}>
         <div className="kit-config-head">
           <div>

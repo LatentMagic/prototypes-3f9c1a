@@ -71,6 +71,7 @@ Differences from canon:
 - State ids are validated: lowercase letters, digits, single hyphens, unique, not `index` or `states`. Others are refused at load with a console error.
 - The dialogs' scroll lock is counted (`kitLockScroll`), so stacked dialogs release it only when the last closes.
 - A `kit-config-btn-secondary` button in the Config modal runs its handler, then closes the modal.
+- Below 640px the Config, States and QA aids are bottom sheets, because they are panels under the three kinds of overlay in `CLAUDE.md`. Carried back from the MCP Game Store project on 2026-10-08 (its `docs/specs/overlay-kinds/handoff.md`).
 - Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
 - The playground `<base href>` is four `../`, not canon's three (below).
 
