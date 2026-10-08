@@ -110,6 +110,10 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - Check every overlay at phone and desktop width before calling it done.
 </important>
 
+<important if="you are building or changing any action that changes state: a submit, save, send, delete, confirm or pay">
+- **Every action that changes state shows it is working.** From the press until the result, the control that was pressed shows a loading indication and cannot be pressed again; usually that is the submit button. A prototype has no real wait, so stage one long enough to see.
+</important>
+
 ## Code
 
 <important if="you are touching module load order, the config button, the states register, or QA">
