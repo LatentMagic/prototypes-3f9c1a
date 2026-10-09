@@ -96,20 +96,18 @@ const GsHome = () => {
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
       </section>
 
+      {/* Option 4, line c, ratified 2026-10-09 (docs/specs/home-how/). */}
       <section id="gs-how" className="gs-band">
-        <h2 className="mcp-t-sec">Get started</h2>
-        <GsSteps row items={[
-          <p key="1"><b>Connect your AI</b> in about two minutes.</p>,
-          <p key="2"><b>Play the free games.</b> No card needed.</p>,
-          <p key="3"><b>Get the Pass</b> for every edition of every game, and every new game. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>,
-        ]} />
-      </section>
-
-      <section className="gs-band">
-        <h2 className="mcp-t-sec">Who does what</h2>
-        <div className="gs-who2">
-          <div><h3 className="mcp-t-card">Your AI</h3><p className="gs-lead">Narrates, voices the characters, and asks what you do next.</p></div>
-          <div><h3 className="mcp-t-card">The game engine</h3><p className="gs-lead">Rolls every die, keeps the score, decides each outcome and records your session.</p></div>
+        <div className="hm-how">
+          <div className="hm-say">
+            <h2 className="mcp-t-sec">Your AI does the talking. The game keeps the score.</h2>
+            <DS.TextLink onClick={gs.goHow}>See how it works</DS.TextLink>
+          </div>
+          <div className="hm-pass">
+            <span className="gs-label">THE PASS</span>
+            <p>Play every game and every edition. Try it free for seven days.</p>
+            <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
+          </div>
         </div>
       </section>
 

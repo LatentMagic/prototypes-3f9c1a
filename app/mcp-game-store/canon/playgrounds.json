@@ -5,6 +5,21 @@
   "tickets": [
     {
       "id": "—",
+      "slug": "home-how",
+      "name": "The home page: how it works and getting started",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Home, how it works, options 1 to 5",
+          "path": "docs/specs/home-how/playground/index.html",
+          "note": "Option 3’s line beside the Pass (4) or over three columns (5), three wordings of the line; 1 to 3 kept to compare, 0 is today."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
       "slug": "connect-and-prompts",
       "name": "Connecting, and the prompts a player copies",
       "state": "active",
