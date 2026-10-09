@@ -7,7 +7,7 @@ const HG_ENDS = ['Home by the fire', 'Slept at the springs', 'Slept in the cave 
 const HG_DAYS = Array.from({ length: 18 }, (_, i) => {
   const d = new Date(2026, 9, 5 - 3 * i - (i % 2));
   const restarted = i % 5 === 3;
-  return { id: 'hg' + i, date: lbDate(d), month: lbMonth(d), played: true, restarted, title: restarted ? 'Restarted at midday' : HG_ENDS[i % 5] };
+  return { id: 'hg' + i, date: lbDate(d), month: lbMonth(d), played: true, restarted, title: 'Day ' + (18 - i) };
 });
 const HG_LATEST = {
   title: 'Home by the fire', date: '5 October',
@@ -25,17 +25,21 @@ const HG_ACH = [
 ]);
 const HG_BADGES = lbAutoBadges(HG_ACH);
 const hgGo = (gs, sid) => gs.go('hunter', sid ? { page: 'record', sid } : { page: 'record' });
-const hgRow = (gs, x) => ({ key: x.id, title: x.title, date: lbShort(x.date), status: x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'live', label: 'Day finished' },
+const hgRow = (gs, x) => ({ key: x.id, title: x.title, date: lbShort(x.date), status: x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' },
   onOpen: () => gs.go('session', { id: 'hunter' }) });
 
+// Your latest day: where you left off, then three facts from the day. The whole day is one tap away.
 const HgLatest = () => {
   const gs = useGs();
+  const facts = HG_LATEST.facts.filter(([k]) => ['Slept', 'With', 'Made'].includes(k));
   return (
     <section className="lb-card">
-      <div className="gs-stack-xs"><span className="gs-label">YOUR LATEST DAY</span><h2 className="mcp-t-sec">{HG_LATEST.title}</h2></div>
-      <dl className="gs-rows-dl">{HG_LATEST.facts.map(([k, v]) => <div key={k} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd>{v}</dd></div>)}</dl>
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">{'YOUR LATEST DAY · ' + HG_LATEST.date.toUpperCase()}</span><h2 className="mcp-t-sec">{HG_LATEST.title}</h2></div>
+        <DS.TextLink onClick={() => gs.go('session', { id: 'hunter' })}>See the whole day</DS.TextLink>
+      </div>
       <p>{'You left off at ' + HG_LEFT.when.toLowerCase() + ', ' + HG_LEFT.where + '. Carry on in any chat.'}</p>
-      <div className="lb-foot"><DS.TextLink onClick={() => gs.go('session', { id: 'hunter' })}>See the whole day</DS.TextLink><span className="gs-muted">{HG_LATEST.date}</span></div>
+      <dl className="lb-facts">{facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
     </section>
   );
 };
@@ -52,7 +56,7 @@ const HG_FILTERS = [['all', 'All', () => true], ['done', 'Finished', (x) => !x.r
 const HgLibrary = () => {
   const gs = useGs(); const mode = lbMode(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '');
   if (gs.route.sid === 'all') return (
-    <LbAll key={k} back={GS_GAMES.hunter.name} onBack={() => hgGo(gs)} title="Your days" find="Find a day" hint="How it ended, or a date"
+    <LbAll key={k} back={GS_GAMES.hunter.name} onBack={() => hgGo(gs)} title="Your days" find="Find a day" hint="A day number or a date"
       filters={HG_FILTERS} items={HG_DAYS} text={(x) => x.title + ' ' + x.date + ' ' + x.month} row={(x) => hgRow(gs, x)} empty="No day matches that. Try another word or date." />
   );
   return (
@@ -62,7 +66,7 @@ const HgLibrary = () => {
         <HgLatest />
         <HgLeft />
         <LbAch items={HG_ACH} badges={HG_BADGES} mode={mode} ended={CB_ENDED} />
-        <LbRecent title="Your days" allLabel="All days" onAll={() => hgGo(gs, 'all')} rows={HG_DAYS.slice(0, 4).map((x) => hgRow(gs, x))} />
+        <LbRecent title="Your days" allLabel="All days" onAll={() => hgGo(gs, 'all')} rows={HG_DAYS.slice(0, 8).map((x) => hgRow(gs, x))} />
       </div>
     </main>
   );

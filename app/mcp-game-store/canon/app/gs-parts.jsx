@@ -11,6 +11,36 @@ const GsCover = ({ art }) => (
 const GsCoverButton = ({ art, label, onClick }) => (
   <button type="button" className="gs-coverbtn" aria-label={label} onClick={onClick}><GsCover art={art} /></button>
 );
+// Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
+// have a motion design yet; every other game keeps its static cover.
+const GS_ART_MOTION = ['groups', 'casebook', 'hunter'];
+const I = (c) => <i className={c} />;
+const GS_ART_LOCAL = {
+  word: { bg: 'is-forest', body: <>{I('ga-w ga-w1')}{I('ga-w ga-w2')}{I('ga-w3')}</> },
+  murder: { bg: 'is-wine', body: <>{I('ga-m-ring')}{I('ga-m-bar')}{I('ga-m-cap')}</> },
+  escape: { bg: '', body: <>{I('ga-e-door')}{I('ga-e-knob')}{I('ga-e-win')}</> },
+  delve: { bg: 'is-wine', body: <>{I('ga-d-out')}{I('ga-d-in')}{I('ga-d-st')}{I('ga-d-st2')}{I('ga-d-st3')}{I('ga-d-post l')}{I('ga-d-post r')}{I('ga-d-fl l')}{I('ga-d-fl r')}</> },
+};
+const GS_RATIO = { square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
+const GsArt = ({ art, shape }) => {
+  if (GS_ART_MOTION.includes(art)) return <DS.GameArt art={art} shape={shape} />;
+  const p = GS_ART_LOCAL[art]; if (!p) return <GsCover art={art} />;
+  return <div className={'mcp-art ' + GS_RATIO[shape] + ' ' + p.bg} aria-hidden="true"><div className="gs-st">{p.body}</div></div>;
+};
+// Touch: the pose plays while a finger is down on the card and stops on release or when a scroll takes over.
+// Put the ref on any element inside the card; the card itself carries .gs-host.
+const useGsArtHost = () => {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const host = ref.current && ref.current.closest('.gs-host'); if (!host) return undefined;
+    const on = (e) => { if (e.pointerType !== 'mouse') host.classList.add('is-on'); };
+    const off = () => host.classList.remove('is-on');
+    host.addEventListener('pointerdown', on);
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => host.addEventListener(t, off));
+    return () => { host.removeEventListener('pointerdown', on); ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => host.removeEventListener(t, off)); };
+  }, []);
+  return ref;
+};
 const GsPassTag = () => {
   const gs = useGs();
   return (
@@ -41,7 +71,7 @@ const GsWhoCols = ({ ai, server }) => (
 );
 // The Pass page's comparison. One row per thing you get; a tick in each column that has it.
 const GS_COMPARE = [
-  { name: 'Daily Puzzles', sub: 'Short puzzles that change every day.', free: true },
+  { name: 'The free games', sub: 'Short puzzles, new every day or every week.', free: true },
   { name: 'Your results, past plays and streak', free: true },
   { name: 'Sharing a result', free: true },
   { name: GS_NAME.casebook + ', Delve and ' + GS_NAME.hunter, free: false },
@@ -139,12 +169,22 @@ const GS_SHOTS = {
   dailyWord: { src: 'assets/in-use/daily-word-claude-code-2026-10-05.png', w: 1840, h: 1498, cropH: 790,
     alt: 'Daily Word being played in Claude Code: each guess and the board after it.' },
 };
-const GsShot = ({ id, crop, caption, className }) => {
+// zoom: the image opens whole in a panel, sized to fit the screen (a sheet on a phone, a window on desktop).
+const GsShot = ({ id, crop, caption, className, zoom }) => {
   const s = GS_SHOTS[id];
+  const [open, setOpen] = React.useState(false);
+  const img = <img src={s.src} alt={s.alt} width={s.w} height={s.h} style={crop ? { aspectRatio: s.w + ' / ' + s.cropH } : null} className={crop ? 'is-crop' : ''} />;
   return (
-    <figure className={'gs-shot' + (className ? ' ' + className : '')}>
-      <img src={s.src} alt={s.alt} width={s.w} height={s.h} style={crop ? { aspectRatio: s.w + ' / ' + s.cropH } : null} className={crop ? 'is-crop' : ''} />
+    <figure className={'gs-shot' + (zoom ? ' is-zoom' : '') + (className ? ' ' + className : '')}>
+      {zoom ? <button type="button" className="gs-shot-btn" aria-label="View the screenshot full size" onClick={() => setOpen(true)}>
+        {img}<span className="gs-shot-hint" aria-hidden="true">View full size</span>
+      </button> : img}
       {caption && <figcaption className="gs-chat-cap">{caption}</figcaption>}
+      {zoom && <div className="gs-zoom">
+        <DS.Popup open={open} onClose={() => setOpen(false)} kind="panel" label="Screenshot, full size">
+          <img className="gs-zoom-img" src={s.src} alt={s.alt} width={s.w} height={s.h} />
+        </DS.Popup>
+      </div>}
     </figure>
   );
 };
@@ -223,20 +263,20 @@ const GsTopBar = () => {
   const mwrap = React.useRef(null);
   gsUseMenuDismiss(menu, setMenu, mwrap);
   const out = gs.view === 'out';
-  const cur = gs.route.name;
+  // Discover holds the store and every product page; Library holds the Library and every library game page.
+  const r = gs.route;
+  const cur = !out && (r.name === 'library' || r.page === 'record') ? 'library'
+    : (r.name === 'games' || GS_GAME_ORDER.some((k) => GS_GAMES[k].route === r.name)) ? 'games' : r.name;
   const links = out
-    ? [['games', 'Games', () => gs.go('games')], ['how', 'How it works', gs.goHow], ['pass', 'Pricing', () => gs.go('pass')]]
-    : [['games', 'Games', () => gs.go('games')], ['history', 'History', () => gs.go('history')]];
+    ? [['games', 'Discover', () => gs.go('games')], ['how', 'How it works', gs.goHow], ['pass', 'Pricing', () => gs.go('pass')]]
+    : [['games', 'Discover', () => gs.go('games')], ['library', 'Library', () => gs.go('library')], ['history', 'History', () => gs.go('history')]];
   const pick = (fn) => { setMenu(false); fn(); };
   return (
     <header className="gs-top">
       <div className="gs-wrap gs-top-in">
         <button type="button" className="gs-brand" aria-label="[Platform], home" onClick={() => gs.go(out ? 'home' : 'games')}><GsMark /><span>[Platform]</span></button>
         <nav className="gs-nav" aria-label="Main">
-          {links.map(([id, l, fn], i) => <React.Fragment key={id}>
-            {id === 'games' && window.GsGamesNav ? <window.GsGamesNav /> : <button type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>}
-            {i === 0 && window.GsNavExtra && <window.GsNavExtra />}
-          </React.Fragment>)}
+          {links.map(([id, l, fn]) => <button key={id} type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>)}
         </nav>
         <div className="gs-top-end">
           {out ? (
@@ -249,10 +289,7 @@ const GsTopBar = () => {
             <DS.Button variant="secondary" aria-expanded={menu} aria-haspopup="menu" onClick={() => setMenu((m) => !m)}>Menu</DS.Button>
             {menu && (
               <div className="gs-pop" role="menu" aria-label="Menu">
-                {links.map(([id, l, fn], i) => <React.Fragment key={id}>
-                  {id === 'games' && window.GsGamesNavMenu ? <window.GsGamesNavMenu pick={pick} /> : <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(fn)}>{l}</button>}
-                  {i === 0 && window.GsNavExtraMenu && <window.GsNavExtraMenu pick={pick} />}
-                </React.Fragment>)}
+                {links.map(([id, l, fn]) => <button key={id} type="button" role="menuitem" className="gs-menu-item" aria-current={cur === id ? 'page' : undefined} onClick={() => pick(fn)}>{l}</button>)}
                 {out && <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(() => gs.go('signin'))}>Sign in</button>}
                 {out ? <div className="gs-pop-cta"><DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button></div>
                   : <><div className="gs-menu-div" role="separator" /><GsIdentityHead /><GsUserItems role="menuitem" pick={pick} /></>}
@@ -266,6 +303,7 @@ const GsTopBar = () => {
 };
 
 // ---- Demo bar: a prototype control, not part of the product ---------------------
+const gsDailyRoute = (gs) => { const k = gsGameOfRoute(gs.route.name); return !!(k && GS_GAMES[k].daily); };
 const GsDemoBar = () => {
   const gs = useGs();
   const opts = [['out', 'signed out'], ['free', 'free'], ['pass', 'Pass']];
@@ -279,6 +317,16 @@ const GsDemoBar = () => {
             <button type="button" className="gs-demo-opt" aria-pressed={gs.view === v} onClick={() => gs.setDemoView(v)}>{l}</button>
           </React.Fragment>
         ))}
+        {gs.route.page === 'record' && !gs.route.sid && <>
+          <span aria-hidden="true" className="gs-demo-sep" />
+          <span>{gsDailyRoute(gs) ? 'Today:' : 'This week:'}</span>
+          {[['live', 'in progress'], ['done', gsDailyRoute(gs) ? 'day complete' : 'finished']].map(([v, l], i) => (
+            <React.Fragment key={v}>
+              {i > 0 && <span aria-hidden="true">/</span>}
+              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'done' ? 'done' : 'live') === v} onClick={() => gs.setReview({ week: v })}>{l}</button>
+            </React.Fragment>
+          ))}
+        </>}
       </div>
     </div>
   );
@@ -299,6 +347,6 @@ const GsPlayPopup = () => {
 };
 
 Object.assign(window, {
-  GsCover, GsCoverButton, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
+  GsCover, GsCoverButton, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
   GsChat, GsMe, GsAi, GsPanel, GsUp, GsShot, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
 });

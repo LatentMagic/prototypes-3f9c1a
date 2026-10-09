@@ -70,6 +70,28 @@ Decided by Claude on the user's "decide for me" (2026-10-08). Not ratified in wo
 5. Update this folder's `README.md`, which still lists only the first two rigs and handoffs, and regenerate `playgrounds.json` if any rig moves.
 6. Hover beyond the library page: the app's other clickable rows and tiles (`gs-hrow`, `gs-pz-item`, `gs-today-item`) have no hover yet.
 
+## Polish pass, 2026-10-09 (not yet reviewed)
+
+- Rows: date and result on one baseline; result in regular weight, colour on the icon only. Today's puzzles are one-line rows, result on the right, no "Today" date; the card's TODAY label is gone.
+- Achievements: cells at least 220px, top aligned (two columns beside the side column).
+- The run card spreads to its pair's height: figure at the top, run and legend at the bottom.
+- 36,000 Summers Ago: the latest day's facts are a grid, label over value.
+- About ten achievements per game (review-2-notes.md). Delve: the spec's four plus six invented. Daily Puzzles: three invented added. Not ratified.
+
+## Second polish pass, 2026-10-09 (user: no empty space in cards, results formatted, achievements without gaps)
+
+- Rows: title on the first line; date left and result right on the second. The result is regular weight, with colour only on the icon.
+- Achievements: each one is a button showing its name and one line (earned date, progress, or "Not earned yet"). Clicking opens a dialog explaining how to earn it, with Close. No chevron, to keep the grid quiet.
+- Top pair: the run card centres its content, and its bars grow from 32px up to 48px to take up most of the extra height. Now cards were made smaller to match: "Next scene: …" / "Next case: …" sits on one row with the link. Today's puzzles is three tiles along the card's bottom edge, and "New puzzles arrive tomorrow." moved into the sentence. 36,000 Summers Ago shows three facts along the bottom edge (Slept, With, Made), with "See the whole day" beside the title. The other facts are on the session page.
+- Bottom pair: from 900px, "Your …" takes achievements' height and shows as many rows as fit (`LbRecent`, which measures them on a hidden copy of the rows). On a phone it shows four.
+
+## Third pass, 2026-10-09
+
+- The free plan keeps its empty space for now. The user will sort that view out separately.
+- Rows: the result is centred on the right across both lines. In the narrow column, rows show a short result (`status.short`): Solved, Escaped, Closed; Rescued, Ritual done, Hero fell. The All page and the now card keep the full wording. Ratified by the user, 2026-10-09.
+- Demo bar: on a library game page, a second switch, "This week: in progress / finished" ("Today: … / day complete" for Daily Puzzles). It sets `review.week`, the same value as the Config row.
+- Library header: "About …" now sits 4px under the name, not 8px plus the link's 44px target.
+
 ## Other Notes
 
 - The user wants chat replies short, with the ask on the last line.

@@ -2,27 +2,63 @@
 // [Platform] — the game page: one template for all four games (first-release-
 // games). Delve's page is the model. Order: cover and play box; facts band
 // (how long, how often, kind tags); pitch beside who does what; how it looks
-// in your chat; (Delve: stat tiles); today's or this week's one; (Daily
-// Puzzles: streak and record); more games. Every null is a gap in the record and shows as "—".
+// in your chat; (Delve: stat tiles); today's or this week's one; more games. Every null is a gap in the record and shows as "—".
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
 const gsOr = (v) => (v == null ? <GsGap /> : v);
 const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, Claude, OpenClaw and others.</>;
 
 const GS_PAGES = {
-  daily: {
-    label: 'PUZZLES · NEW EVERY DAY',
-    box: { free: true, label: 'FREE', heading: 'New puzzles every day', button: 'Play today’s puzzles',
-      steps: [GS_STEP_CONNECT, <><b>Play today’s puzzles.</b> All three, in any order.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { long: '10 min each', often: 'New every day' }, tags: [],
-    pitch: { h: 'Three small puzzles, new every day.', ps: [
-      'There’s a locked door, a body and a word you can’t see yet. Three puzzles, all new today.',
-      'Your AI reads you the puzzle, and the game engine checks every guess and keeps count.'] },
-    who: { ai: 'Reads you the puzzle and takes your guesses, moves and questions.', server: 'Checks every guess, move and accusation, and keeps the count.' },
-    shots: ['Each guess goes to the engine, which checks it and keeps count.'],
+  word: {
+    rhythm: 'NEW EVERY DAY',
+    box: { free: true, label: 'FREE', heading: 'A new word every day', button: 'Play today’s word',
+      steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
+    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    pitch: { h: 'You already know today’s answer.', ps: [
+      'You can’t see it yet, so start guessing. Each guess at the five-letter word comes back marked letter by letter.',
+      'Your AI passes on your guesses, and the game engine marks every one and keeps count. Make your first guess.'] },
+    who: { ai: 'Takes your guesses and shows you how each one scored.', server: 'Holds the word, marks every guess and keeps the count.' },
+    shots: ['Each guess goes to the engine, which marks it and keeps count.'],
+    week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
+  },
+  groups: {
+    rhythm: 'NEW EVERY DAY',
+    box: { free: true, label: 'FREE', heading: 'New groups every day', button: 'Play today’s groups',
+      steps: [GS_STEP_CONNECT, <><b>Find today’s four groups.</b> You can make four mistakes.</>, <><b>See your result</b> on your session page.</>] },
+    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    pitch: { h: 'Sixteen words hide four groups of four.', ps: [
+      'Pick four words you think belong together. You can make four mistakes, and the game tells you when you’re one word away.',
+      'Your AI passes on your picks and explains the groups afterwards. The game engine checks every one. Find the first group.'] },
+    who: { ai: 'Passes on your picks and explains the groups once you finish.', server: 'Holds the groups, checks every pick and counts your mistakes.' },
+    shots: ['Each set of four goes to the engine, which checks it and counts your mistakes.'],
+    week: { title: 'Today’s groups', line: 'Four groups. Four mistakes to spare.', session: 'groups-today' },
+  },
+  mystery: {
+    rhythm: 'NEW EVERY DAY',
+    box: { free: true, label: 'FREE', heading: 'A new case every day', button: 'Play today’s case',
+      steps: [GS_STEP_CONNECT, <><b>Question the inspector</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
+    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    pitch: { h: 'There’s a body, a locked door and a story that doesn’t add up.', ps: [
+      'The clues point to one suspect, one weapon and one room. Ask the inspector yes-or-no questions, then make one accusation.',
+      'Your AI voices the suspects. The game engine holds the answer and keeps it back until you accuse. Make your move.'] },
+    who: { ai: 'Voices the suspects and the inspector, and takes your questions.', server: 'Holds the answer, counts your questions and checks your accusation.' },
+    shots: ['Each question goes to the engine, which answers it and keeps count.'],
+    week: { title: 'Today’s case', line: 'One case. One accusation.', session: 'mystery-today' },
+  },
+  escape: {
+    rhythm: 'A NEW ROOM EVERY WEEK',
+    box: { free: true, label: 'FREE', heading: 'A new room every week', button: 'Play this week’s room',
+      steps: [GS_STEP_CONNECT, <><b>Play this week’s room</b>, from the locked door to the way out.</>, <><b>See your result</b> on your session page.</>] },
+    facts: { long: '10 min', often: 'A new room every week' }, tags: [],
+    pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
+      'Search the room, try what you find and work out the way out. A new room arrives every Monday.',
+      'Your AI describes the room and what you find. The game engine decides what each move does and counts them. Say what you search first.'] },
+    who: { ai: 'Describes the room and everything you find in it.', server: 'Decides what each move does, counts your moves and keeps the record.' },
+    shots: ['Each move goes to the engine, which decides what happens and keeps count.'],
+    week: { title: 'This week’s room', line: 'Find the way out.', session: 'escape-week' },
   },
   casebook: {
-    label: 'MYSTERY · A NEW CASE EVERY WEEK',
+    rhythm: 'A NEW CASE EVERY WEEK',
     box: { label: 'PART OF THE PASS', heading: 'A new case every week', session: 'casebook',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: GS_NAME.casebook + ' is part of the [Platform] Pass.' },
@@ -37,7 +73,7 @@ const GS_PAGES = {
     week: { title: 'This week’s case', line: 'Sixteen turns. One accusation.', session: 'casebook' },
   },
   delve: {
-    label: 'ADVENTURE · ONE SCENE',
+    rhythm: 'ONE SCENE',
     box: { label: 'PART OF THE PASS', heading: 'A new scene every week', session: 'delve',
       steps: [GS_STEP_CONNECT, <><b>Play one full scene</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'Delve is part of the [Platform] Pass.' },
@@ -51,7 +87,7 @@ const GS_PAGES = {
     week: { title: 'This week’s scene', line: 'Get her out before the drums stop.', session: 'delve' },
   },
   hunter: {
-    label: 'LEARNING ACTIVITY · ONE DAY',
+    rhythm: 'ONE DAY',
     box: { label: 'PART OF THE PASS', heading: 'A different day every time', session: 'hunter',
       steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
       small: '36,000 Summers Ago is part of the [Platform] Pass.' },
@@ -82,7 +118,7 @@ const GsPlayBox = ({ id }) => {
           ? <DS.Button block onClick={() => gs.play(g.name, b.session)}>Play in your AI</DS.Button>
           : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
       {!b.free && <p className="gs-small">{b.small} {GS.purchase}</p>}
-      {!b.free && !paying && <div><DS.TextLink onClick={() => gs.go('puzzles')}>Play today’s puzzles free</DS.TextLink></div>}
+      {!b.free && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
       <div className="gs-rule" />
       <div className="gs-stack-sm">
         <span className="gs-label">WORKS WITH</span>
@@ -106,13 +142,14 @@ const GsFacts = ({ id }) => {
   );
 };
 
-// One card for this week's (or the day's) game.
+// One card for this edition: today's, this week's or the day's. A free game plays for everyone; a Pass game needs the Pass.
 const GsWeekCard = ({ id }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const w = GS_PAGES[id].week;
-  const paying = gs.view === 'pass';
-  const s = paying && !w.unmarked ? GS_SESSIONS[w.session] : null;
+  const paying = gs.view === 'pass'; const can = g.free || paying;
+  const sid = g.free ? (GS_TODAY_PLAYED[gs.view] || {})[id] : paying && !w.unmarked ? w.session : null;
+  const s = sid ? GS_SESSIONS[sid] : null;
   return (
-    <section className="gs-stack-md">
+    <section id="gs-today" className="gs-stack-md">
       <h2 className="mcp-t-sec">{w.title}</h2>
       <DS.Card style={{ justifyItems: 'stretch' }}>
         <div className="gs-week">
@@ -120,31 +157,17 @@ const GsWeekCard = ({ id }) => {
           <div className="gs-stack-md" style={{ justifyItems: 'start', alignContent: 'center' }}>
           <h3 className="mcp-t-card">{g.name}</h3>
           <p className="gs-muted">{w.line}</p>
-          {!paying ? <div><GsPassTag /></div>
+          {!can ? <div><GsPassTag /></div>
             : s ? (
               <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
                 <GsResultTag s={s} />
-                <DS.TextLink onClick={() => gs.go('session', { id: w.session })}>See your session page</DS.TextLink>
+                <DS.TextLink onClick={() => gs.go('session', { id: sid })}>See your session page</DS.TextLink>
               </div>
             ) : <div className="gs-act"><DS.Button onClick={() => gs.play(g.name, w.session)}>Play in your AI</DS.Button></div>}
           </div>
         </div>
       </DS.Card>
     </section>
-  );
-};
-
-const GsDailyToday = () => {
-  const gs = useGs();
-  const played = GS_TODAY_PLAYED[gs.view] || {};
-  return (
-    <>
-      <section id="gs-today" className="gs-stack-md">
-        <div className="gs-sec-head"><h2 className="mcp-t-sec">Today</h2><p className="gs-muted">{GS.today}</p></div>
-        <div className="gs-grid3">{GS_PUZZLE_ORDER.map((k) => <GsPuzzleCard key={k} id={k} session={played[k]} />)}</div>
-      </section>
-      <GsEarlier paying={gs.view === 'pass'} />
-    </>
   );
 };
 
@@ -161,7 +184,7 @@ const GsGamePage = ({ id, top }) => {
         <div className="gs-hero-cover">
           <GsCover art={g.art} />
           <div className="gs-cover-over">
-            <span className="gs-label">{p.label}</span>
+            <span className="gs-label">{g.category + ' · ' + p.rhythm}</span>
             <h1 className="gs-cover-title">{g.name}</h1>
           </div>
         </div>
@@ -197,9 +220,7 @@ const GsGamePage = ({ id, top }) => {
         </section>
       )}
 
-      {id === 'daily' ? <GsDailyToday /> : <GsWeekCard id={id} />}
-
-      {id === 'daily' && gs.view !== 'out' && <GsStreakPanel />}
+      <GsWeekCard id={id} />
 
       <section className="gs-stack-md">
         <h2 className="mcp-t-sec">More games</h2>
@@ -210,9 +231,4 @@ const GsGamePage = ({ id, top }) => {
   );
 };
 
-const GsDelve = () => <GsGamePage id="delve" />;
-const GsPuzzles = () => <GsGamePage id="daily" />;
-const GsCasebook = () => <GsGamePage id="casebook" />;
-const GsHunter = () => <GsGamePage id="hunter" />;
-
-Object.assign(window, { GsGap, gsOr, GS_PAGES, GsGamePage, GsDelve, GsPuzzles, GsCasebook, GsHunter });
+Object.assign(window, { GsGap, gsOr, GS_PAGES, GsGamePage });

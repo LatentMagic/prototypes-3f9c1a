@@ -29,7 +29,7 @@ const KIT_QA = [
     steps: ['sign-in', 'sign-up', 'sign-in-new-device', 'code-expired', 'code-wrong', 'reset-password', 'provider-sign-in-fails', 'apple-no-account', 'account-email', 'account-provider', 'change-email-code', 'delete-account-confirm'] },
   { key: 'free-tier-1', title: 'Free tier 1: everything you play is yours',
     note: 'On each session page, press Share: the text as pasted, one Copy button. Check at 390 and 320px.',
-    steps: ['free-puzzle-result', 'free-history', 'lapsed-history', 'puzzles-free', 'pass-card-none', 'pass-card-lapsed', 'cancel-sheet', 'pass-free', 'delve-free', 'session-puzzle', 'session-delve', 'session-casebook'] },
+    steps: ['free-puzzle-result', 'free-history', 'lapsed-history', 'word-free', 'pass-card-none', 'pass-card-lapsed', 'cancel-sheet', 'pass-free', 'delve-free', 'session-puzzle', 'session-delve', 'session-casebook'] },
   { key: 'circlists-match-2', title: 'Circlists match 2: the Pass',
     steps: ['pass-page-free-month', 'pass-page-free-used', 'checkout', 'update-card', 'pass-card-none', 'pass-card-monthly', 'pass-card-yearly', 'pass-card-free-month', 'pass-card-pending-switch', 'pass-card-payment-failed', 'pass-card-ending', 'pass-card-lapsed', 'switch-sheet-yearly', 'switch-sheet-monthly', 'switch-sheet-free-month', 'cancel-sheet', 'cancel-sheet-free-month'] },
   { key: 'circlists-match-3', title: 'Circlists match 3: footer, legal, not-found, loading',
@@ -37,8 +37,16 @@ const KIT_QA = [
     steps: ['home', 'not-found', 'loading-full', 'loading-in-place', 'load-failed', 'cant-connect'] },
   { key: 'first-release-games', title: 'First-release games',
     note: 'Each page: facts band, this week’s one, More games. Every "—" is a gap in the record.',
-    steps: ['puzzles-pass', 'puzzles-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
+    steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'discover-and-library', title: 'Discover and Library',
+  note: 'Discover: picks, Free to play, Pass band (gone with the Pass), All games with search and chips, Free last, no Free tag on tiles. Library: rows with covers, Kind and Order. Top bar: Discover, Library, History. Check hover and 320px.',
+  steps: ['games-signed-out', 'games-free', 'games', 'library-free', 'library', 'loading-in-place'] });
+KIT_QA.unshift({ key: 'split-daily-puzzles', title: 'Daily Puzzles split into separate games',
+  note: 'No "Daily Puzzles" anywhere a player sees. Each daily and Escape: product page, library game page, a session, Share. Home, Games, Library menu and History at 320px.',
+  steps: ['home', 'games-signed-out', 'games-free', 'games', 'word-free', 'word-signed-out', 'groups-pass', 'mystery-pass', 'escape-free', 'escape-pass',
+    'library-word', 'library-groups-finished', 'library-mystery-finished', 'library-escape', 'library-escape-finished', 'library-groups-free', 'library-groups-all',
+    'session-puzzle', 'session-groups', 'session-escape', 'history', 'free-history', 'pass-free', 'not-connected'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

@@ -10,7 +10,7 @@ const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
 const cbHist = (mode) => CB_ALL.filter((c) => c.id !== CB_LIVE.id && (c.played || mode === 'pass'));
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : c.verdict === 'right' ? { kind: 'ok', label: 'Solved' } : { kind: 'bad', label: 'Unsolved' });
-const cbRow = (gs, c, figs) => ({ key: c.id, title: c.title, date: lbShort(c.week), status: cbStatus(c),
+const cbRow = (gs, c, figs) => ({ key: c.id, title: '#' + (CB_ALL.length - CB_ALL.indexOf(c)), date: lbShort(c.week), status: cbStatus(c),
   figs: figs ? [c.played ? [c.turns, 'of 16 turns'] : [null], c.played ? [c.lies, 'of ' + c.total + ' lies'] : [null]] : null,
   onOpen: c.played ? () => cbGo(gs, c.id) : null });
 // The last ten weeks, oldest first.
@@ -37,7 +37,7 @@ const CbNow = ({ c }) => {
           {!c.live && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />}
           <DS.TextLink onClick={() => cbGo(gs, c.id)}>{c.live ? 'See your turns so far' : 'See every turn'}</DS.TextLink>
         </div>
-        <span className="gs-muted">{'The next case arrives on ' + CB_NEXT + '.'}</span>
+        <span className="gs-muted">{'Next case: ' + CB_NEXT}</span>
       </div>
     </section>
   );
@@ -105,7 +105,7 @@ const CbLibrary = () => {
         <CbNow c={cbWeek(gs)} />
         <LbRun n={CB_STREAK_N} unit="weeks" weeks={cbWeeks()} />
         <LbAch items={CB_ACH} badges={CB_BADGES} mode={mode} ended={CB_ENDED} />
-        <LbRecent title="Your cases" allLabel="All cases" onAll={() => cbGo(gs, 'all')} rows={cbHist(mode).slice(0, 4).map((x) => cbRow(gs, x))} />
+        <LbRecent title="Your cases" allLabel="All cases" onAll={() => cbGo(gs, 'all')} rows={cbHist(mode).slice(0, 8).map((x) => cbRow(gs, x))} />
       </div>
     </main>
   );

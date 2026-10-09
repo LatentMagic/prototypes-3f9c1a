@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"cbb4e0e379c0","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/Cover.jsx":"a4fb1618559f","components/media/Icon.jsx":"f4b3f674bbcf","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/ListRow.jsx":"72a0643082bb","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"cbb4e0e379c0","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/Cover.jsx":"a4fb1618559f","components/media/GameArt.jsx":"f093a4c9f665","components/media/Icon.jsx":"f4b3f674bbcf","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/ListRow.jsx":"72a0643082bb","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -159,6 +159,69 @@ function Cover({
 }
 Object.assign(__ds_scope, { Cover });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/media/Cover.jsx", error: String((e && e.message) || e) }); }
+
+// components/media/GameArt.jsx
+try { (() => {
+// Game art that answers a hover. Place inside an element with class mcp-art-host (the whole card or link). Descriptions live in guidelines/game-art-motion.md.
+const dg = () => /*#__PURE__*/React.createElement("div", {
+  className: "mcp-art-dg"
+}, [0, 1, 2, 3].map(r => /*#__PURE__*/React.createElement("div", {
+  key: r
+}, [0, 1, 2, 3].map(c => /*#__PURE__*/React.createElement("b", {
+  key: c,
+  style: {
+    '--s': (r + 3 - c) * 20
+  }
+})))));
+const cb = () => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-cb-bar mcp-art-cb-1"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-cb-bar mcp-art-cb-2"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-cb-bar mcp-art-cb-3"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-cb-sun"
+}));
+const hu = () => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-hu-sun"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-hu-peak"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-hu-teal"
+}), /*#__PURE__*/React.createElement("i", {
+  className: "mcp-art-hu-cream"
+}));
+const PIECES = {
+  groups: {
+    body: dg
+  },
+  casebook: {
+    body: cb
+  },
+  hunter: {
+    body: hu,
+    forest: true
+  }
+};
+const RATIO = {
+  square: 'mcp-art-1',
+  landscape: 'mcp-art-43',
+  wide: 'mcp-art-3'
+};
+function GameArt({
+  art,
+  shape = 'landscape',
+  className = ''
+}) {
+  const p = PIECES[art];
+  if (!p) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-art ' + RATIO[shape] + (p.forest ? ' is-forest ' : ' ') + className).trim(),
+    "aria-hidden": "true"
+  }, p.body());
+}
+Object.assign(__ds_scope, { GameArt });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/media/GameArt.jsx", error: String((e && e.message) || e) }); }
 
 // components/media/Icon.jsx
 try { (() => {
@@ -1235,6 +1298,8 @@ __ds_ns.TextField = __ds_scope.TextField;
 __ds_ns.SearchField = __ds_scope.SearchField;
 
 __ds_ns.Cover = __ds_scope.Cover;
+
+__ds_ns.GameArt = __ds_scope.GameArt;
 
 __ds_ns.ICON_NAMES = __ds_scope.ICON_NAMES;
 

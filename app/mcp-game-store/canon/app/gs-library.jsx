@@ -13,9 +13,9 @@ const LbHead = ({ id }) => {
   return (
     <section className="rf-head">
       <span><GsCover art={g.art} /></span>
-      <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
+      <div className="gs-stack-xs" style={{ justifyItems: 'start' }}>
         <h1 className="gs-h1">{g.name}</h1>
-        <DS.TextLink onClick={() => gs.go(g.route)}>{'About ' + g.name}</DS.TextLink>
+        <DS.TextLink style={{ marginTop: -8 }} onClick={() => gs.go(g.route)}>{'About ' + g.name}</DS.TextLink>
       </div>
     </section>
   );
@@ -24,7 +24,7 @@ const LbHead = ({ id }) => {
 // A result: { kind: 'ok' | 'bad' | 'live' | 'none', label }.
 const lbIcon = (k) => (k === 'ok' ? 'check' : k === 'bad' ? 'error' : null);
 const LbStatus = ({ s }) => (
-  <span className={'lb-st is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={16} />}{s.label}</span>
+  <span className={'lb-st is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={14} />}{s.label}</span>
 );
 const LbResult = ({ s }) => (
   <span className={'lb-v is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={20} />}{s.label}</span>
@@ -42,8 +42,9 @@ const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
     </section>
   );
   return (
-    <section className="lb-card">
+    <section className="lb-card lb-runcard">
       <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || unit + ' in a row'}</span></div>
+      <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
         aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + (w.played ? ' played' : ' missed')).join(', ')}>
         {weeks.map((w, i) => {
@@ -57,6 +58,7 @@ const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
         })}
       </div>
       <ul className="lb-legend"><li><i className="is-on" />Played</li><li><i />{legend || 'Missed'}</li></ul>
+      </div>
     </section>
   );
 };
@@ -77,13 +79,13 @@ const LB_SHAPES = [
 ];
 const LB_INKS = ['#E5A63B', '#328A88', '#D66847', '#A390B2', '#4CC38A'];
 const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
-const lbAchLine = (a, mode) => (a.got ? 'Earned ' + a.got : a.of ? (mode === 'ended' ? a.endedHave : a.have) + ' of ' + a.of : a.how);
+const lbAchLine = (a, mode) => (a.got ? 'Earned ' + a.got : a.of ? (mode === 'ended' ? a.endedHave : a.have) + ' of ' + a.of : 'Not earned yet');
 // items: [{ k, n, how, got?, of?, have?, endedHave? }]; badges: { k: art }
 const LbAch = ({ items, badges, mode, ended }) => {
-  const gs = useGs();
+  const gs = useGs(); const [open, setOpen] = React.useState(null);
   const got = items.filter((a) => a.got);
   return (
-    <section className="lb-card">
+    <section className={'lb-card' + ''}>
       <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{mode === 'pass' && <span className="gs-muted">{got.length + ' of ' + items.length + ' earned'}</span>}</div>
       {mode === 'free'
         ? <p className="gs-muted">Achievements come with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>
@@ -91,10 +93,13 @@ const LbAch = ({ items, badges, mode, ended }) => {
           {mode === 'ended' && <p className="gs-muted">{'Your Pass ended on ' + ended + '. What you earned stays.'}</p>}
           <ul className="lb-ach">
             {(mode === 'ended' ? got : items).map((a) => (
-              <li key={a.k}><LbBadge art={badges[a.k]} got={!!a.got} />
-                <span className="gs-stack-xs"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{lbAchLine(a, mode)}</span></span></li>
+              <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} />
+                <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{lbAchLine(a, mode)}</span></span></button></li>
             ))}
           </ul>
+          <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
+            {open && <div className="lb-achpop"><LbBadge art={badges[open.k]} got={!!open.got} /><div className="gs-stack-xs"><p>{open.how}</p><p className="gs-muted">{lbAchLine(open, mode)}</p></div></div>}
+          </DS.Popup>
         </>}
     </section>
   );
@@ -105,22 +110,48 @@ const LbAch = ({ items, badges, mode, ended }) => {
 const LbRow = ({ r }) => {
   const cells = <>
     <span className="lb-title">{r.title}</span>
+    <span className="lb-res"><LbStatus s={r.status.short && !r.figs ? { ...r.status, label: r.status.short } : r.status} /></span>
     <span className="lb-meta">
-      <span className="lb-date">{r.date}</span>
-      <span className="lb-res"><LbStatus s={r.status} /></span>
+      {r.date && <span className="lb-date">{r.date}</span>}
       {r.figs && r.figs.map(([b, t], i) => <span key={i} className={'lb-n lb-n' + i}>{b != null && <><b>{b}</b><span>{t}</span></>}</span>)}
     </span>
   </>;
   return r.onOpen
-    ? <button type="button" className="lb-row" onClick={r.onOpen}>{cells}<LbChev /></button>
-    : <div className="lb-row is-off">{cells}<span className="lb-chev-space" /></div>;
+    ? <button type="button" className={'lb-row' + (r.inline ? ' is-inline' : '')} onClick={r.onOpen}>{cells}<LbChev /></button>
+    : <div className={'lb-row' + (r.probe ? '' : ' is-off') + (r.inline ? ' is-inline' : '')}>{cells}<span className="lb-chev-space" /></div>;
 };
-const LbRecent = ({ title, allLabel, onAll, rows, empty }) => (
-  <section className="lb-card">
-    <div className="lb-sechead"><h2 className="mcp-t-card">{title}</h2>{rows.length > 0 && <DS.TextLink onClick={onAll}>{allLabel}</DS.TextLink>}</div>
-    {rows.length ? <ul className="lb-list lb-recent">{rows.map((r) => <li key={r.key}><LbRow r={r} /></li>)}</ul> : <p className="gs-muted">{empty}</p>}
-  </section>
-);
+// On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height, rows sharing what's left.
+const LbRecent = ({ title, allLabel, onAll, rows, empty }) => {
+  const card = React.useRef(null); const list = React.useRef(null); const probe = React.useRef(null);
+  const [fit, setFit] = React.useState(null);
+  React.useLayoutEffect(() => {
+    const el = card.current; if (!el || !rows.length) return undefined;
+    const pair = el.previousElementSibling; const lay = el.parentElement;
+    const measure = () => {
+      const two = getComputedStyle(lay).gridTemplateColumns.split(' ').length > 1;
+      if (!two || !pair) { el.style.height = ''; if (pair) pair.style.alignSelf = ''; setFit(null); return; }
+      pair.style.alignSelf = 'start';
+      el.style.height = pair.offsetHeight + 'px';
+      const room = list.current ? el.clientHeight - list.current.offsetTop : 0;
+      const hs = Array.from(probe.current.children).map((x) => x.offsetHeight);
+      let k = 0; let sum = 0; while (k < hs.length && sum + hs[k] <= room + 1) { sum += hs[k]; k += 1; }
+      // Never fewer than the phone's four: a short neighbour (few achievements) grows to match instead.
+      if (k < Math.min(4, hs.length)) { el.style.height = ''; pair.style.alignSelf = ''; setFit(null); return; }
+      setFit(k);
+    };
+    measure();
+    const ro = new ResizeObserver(measure); ro.observe(pair); ro.observe(lay);
+    return () => ro.disconnect();
+  }, [rows.length]);
+  const shown = fit ? rows.slice(0, fit) : rows.slice(0, 4);
+  return (
+    <section ref={card} className={'lb-card lb-recentcard' + (fit ? ' is-fill' : '')}>
+      <div className="lb-sechead"><h2 className="mcp-t-card">{title}</h2>{rows.length > 0 && <DS.TextLink onClick={onAll}>{allLabel}</DS.TextLink>}</div>
+      {rows.length ? <ul ref={list} className="lb-list lb-recent" style={fit ? { gridTemplateRows: 'repeat(' + fit + ', minmax(0, 1fr))' } : null}>{shown.map((r) => <li key={r.key}><LbRow r={r} /></li>)}</ul> : <p className="gs-muted">{empty}</p>}
+      {rows.length > 0 && <ul ref={probe} className="lb-list lb-probe" aria-hidden="true">{rows.map((r) => <li key={r.key}><LbRow r={{ ...r, onOpen: null, probe: true }} /></li>)}</ul>}
+    </section>
+  );
+};
 // Dates for seeds: "5 October", with the year only when it isn't this one.
 const lbDate = (d) => d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
 const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');

@@ -18,7 +18,6 @@ const GsShareCard = ({ s }) => {
 
 // Share text, as it will be pasted: emoji, no letters, nothing of the scene,
 // ending with the game's product page. Null where nothing is decided.
-const GS_KIND_GAME = { puzzle: 'daily', delve: 'delve', case: 'casebook', day: 'hunter' };
 const gsWordRow = (guess, answer) => {
   const g = guess.split(''); const res = g.map(() => '⬛'); const left = {};
   answer.split('').forEach((ch, i) => { if (g[i] === ch) res[i] = '🟩'; else left[ch] = (left[ch] || 0) + 1; });
@@ -27,11 +26,12 @@ const gsWordRow = (guess, answer) => {
 };
 const gsShareText = (s) => {
   if (s.share == null) return null;
-  const link = 'https://platform.example/' + GS_GAMES[GS_KIND_GAME[s.kind]].route;
+  const link = 'https://platform.example/' + GS_GAMES[s.gid].route;
   if (s.number) {
-    const guesses = s.lines.map((l) => l[1]); const answer = guesses[guesses.length - 1];
-    return [s.game + ' #' + s.number + '  ' + guesses.length + '/6' + (s.hints ? '  💡' + s.hints : ''), ...guesses.map((g) => gsWordRow(g, answer)), link];
+    const guesses = s.lines.map((l) => l[1]); const answer = s.answer || guesses[guesses.length - 1];
+    return [s.game + ' #' + s.number + '  ' + (s.loss ? 'X' : guesses.length) + '/6' + (s.hints ? '  💡' + s.hints : ''), ...guesses.map((g) => gsWordRow(g, answer)), link];
   }
+  if (s.shareHead) return [s.shareHead, ...(s.rows || []), link];
   if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
@@ -115,18 +115,17 @@ const GsSession = () => {
 
 const GsHistory = () => {
   const gs = useGs();
-  // Free: Daily Puzzles plays only. Pass ended: those plus every Pass-game play.
+  // Free: plays of the free games only. Pass ended: those plus every Pass-game play.
   const lapsed = gsLapsed(gs);
   const today = Object.values(GS_TODAY_PLAYED[gs.view] || {});
   const rows = gs.view === 'pass' ? GS_HISTORY : GS_HISTORY.filter((id) => {
     const s = GS_SESSIONS[id];
     if (s.date === GS.today) return today.includes(id);
-    return lapsed || s.kind === 'puzzle';
+    return lapsed || !!GS_GAMES[s.gid].free;
   }).sort((a, b) => (lapsed ? !!GS_SESSIONS[a].lapsedDate - !!GS_SESSIONS[b].lapsedDate : 0));
   return (
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">History</h1>
-      <GsStreakPanel />
       <ul className="gs-hist">
         {rows.map((id) => {
           const s = GS_SESSIONS[id];
@@ -148,4 +147,4 @@ const GsHistory = () => {
   );
 };
 
-Object.assign(window, { GsSession, GsHistory, GsShareCard });
+Object.assign(window, { GsSession, GsHistory, GsShareCard, gsShareText });

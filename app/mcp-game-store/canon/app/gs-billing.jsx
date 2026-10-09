@@ -51,8 +51,8 @@ const GsPassCard = () => {
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Pass</h2>
       {sub.freeUsed
-        ? <p>Your Pass ended on {gsLong(GS_LAPSED_ON)}. You’re back on today’s puzzles. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
-        : <p>You’re on the free plan. You get today’s puzzles, and your results and streak are kept. Get the Pass for the Pass games and past puzzles.</p>}
+        ? <p>Your Pass ended on {gsLong(GS_LAPSED_ON)}. You’re back on the free games. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
+        : <p>You’re on the free plan. You get the free games, and your results and streaks are kept. Get the Pass for the Pass games and every earlier edition.</p>}
       <div className="gs-card-acts"><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{sub.freeUsed ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );
@@ -78,7 +78,7 @@ const GsPassCard = () => {
     rows.push(['Ends on', date]);
     body = (
       <div className="gs-stack-md">
-        <p>Your Pass ends on that date, and you’re back on today’s puzzles. You can resume any time before then.</p>
+        <p>Your Pass ends on that date, and you’re back on the free games. You can resume any time before then.</p>
         <div className="gs-pair-even">
           {update}
           <DS.Button variant="secondary" loading={busy} onClick={() => run(() => gs.setSub({ status: sub.fromFree ? 'free' : 'active', fromFree: false }))}>Resume subscription</DS.Button>
@@ -149,7 +149,7 @@ const GsCancelSheet = ({ open, onClose }) => {
     <DS.Popup open={open} onClose={close} posture="window" label="Cancel your subscription?">
       <GsPopTitle>Cancel your subscription?</GsPopTitle>
       <GsBeforeAfter now={now} then={['From ' + p.date, 'Ends', 'Nothing charged']} />
-      <p>You keep the Pass until it ends. After that it’s today’s puzzles. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
+      <p>You keep the Pass until it ends. After that it’s the free games. Everything you’ve played, Pass games included, stays yours to see and share. You just can’t play those games.</p>
       <GsActs>
         <DS.Button variant="secondary" onClick={close}>Keep subscription</DS.Button>
         <DS.Button variant="danger" onClick={go} loading={busy}>Cancel subscription</DS.Button>

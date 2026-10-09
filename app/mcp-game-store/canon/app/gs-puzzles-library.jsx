@@ -1,84 +1,159 @@
 // ============================================================================
-// [Platform] — Daily Puzzles' library page, option 16 fitted to a daily game (picked by Claude on "decide for me", 2026-10-08).
-// Today in place of This week, one row per puzzle. Days in a row. Achievements after game-specs/daily-puzzles.md
-// (Solved and Seven days in a row for each puzzle, plus the hard Mystery one). Your puzzles.
-// On the free plan, results last today only, so the streak and earlier days point to the Pass.
-// Puzzle names follow the app's seed (gs-data.jsx); a play opens the existing session page.
+// [Platform] — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape
+// (Daily Puzzles split into separate games, 2026-10-09; docs/specs/split-daily-puzzles/).
+// Each is the standard option 16 page, built like Delve's: the now card (today's, or this
+// week's for Escape), the run, achievements, your plays, and the all page.
+// Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
+// On the free plan, results last today only, so the streak, achievements and earlier editions point to the Pass.
+// Records are invented; a play opens the existing session page.
 // ============================================================================
-const DP_KINDS = [
-  { k: 'word', n: 'Word Puzzle', art: 'word', past: 'word-1005', today: 'word-today', ok: (i) => 'Solved in ' + (3 + (i % 4)) + ' of 6' },
-  { k: 'escape', n: 'Escape Room', art: 'escape', past: 'escape-today', today: 'escape-today', ok: (i) => 'Escaped in ' + (6 + (i % 5)) + ' moves' },
-  { k: 'murder', n: 'Murder Mystery', art: 'murder', past: 'murder-1004', today: 'murder-today', ok: () => 'Case closed' },
-];
-// Forty days, newest first; today is index 0. A day counts as played if any puzzle was.
-const DP_DAYS = Array.from({ length: 40 }, (_, i) => {
-  const d = new Date(2026, 9, 8 - i);
-  const plays = DP_KINDS.map((p, j) => {
-    const played = i === 0 ? j === 0 : (i + j) % 6 !== 5 && i % 9 !== 6;
-    const ok = played && (i + 2 * j) % 5 !== 4;
-    return { id: 'dp' + i + p.k, kind: p, played, ok, line: ok ? p.ok(i + j) : 'Missed' };
+const pzMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
+const PZ = {
+  word: {
+    no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, past: 'word-1005', today: 'word-today',
+    ok: (i) => 'Solved in ' + (3 + (i % 4)) + ' of 6', bad: 'Missed', short: 'Solved', okF: 'Solved', badF: 'Missed',
+    title: 'Today’s word', next: 'Next word: tomorrow', links: ['See every guess', 'See your guesses so far'],
+    live: { line: 'You’ve used 2 of your 6 guesses, and two letters are in place.', bar: ['Guess 2 of 6', 2, 6] },
+    done: { st: { kind: 'ok', label: 'Solved in 3 of 6' }, line: 'You found the word on your third guess, with no hints.', bar: ['Guess 3 of 6', 3, 6] },
+    note: 'It hides every letter.', plays: ['Your words', 'All words', 'Find a word', 'A number or a date', 'No word matches that. Try another number or date.'],
+    ach: [{ k: 'w1', n: 'Solved', how: 'Solve a Daily Word.', got: '2 October' },
+      { k: 'w2', n: 'Solved in two', how: 'Solve a Daily Word in two guesses.' },
+      { k: 'w7', n: 'Seven days in a row', how: 'Play Daily Word seven days running.', of: 7, endedHave: 2 }],
+  },
+  groups: {
+    no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today',
+    ok: (i) => (i === 1 ? 'All 4 groups, no mistakes' : 'All 4 groups, ' + pzMis(i % 4)), bad: '2 of 4 groups', short: 'Solved', okF: 'Solved', badF: 'Missed',
+    title: 'Today’s groups', next: 'Next groups: tomorrow', links: ['See every try', 'See your tries so far'],
+    live: { line: 'You’ve found 2 of the 4 groups, with 1 mistake so far.', bar: ['2 of 4 groups', 2, 4] },
+    done: { st: { kind: 'ok', label: 'All 4 groups, 1 mistake' }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] },
+    note: 'It hides every word and group, and shows colours only.', plays: ['Your groups', 'All groups', 'Find a day', 'A number or a date', 'No day matches that. Try another number or date.'],
+    ach: [{ k: 'g1', n: 'Solved', how: 'Find all four groups in a Daily Groups.', got: '1 October' },
+      { k: 'g0', n: 'Solved with no mistakes', how: 'Find all four groups without a mistake.', got: '5 October' },
+      { k: 'g7', n: 'Seven days in a row', how: 'Play Daily Groups seven days running.', of: 7, endedHave: 1 }],
+  },
+  mystery: {
+    no: (i) => 'Daily Mystery #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today',
+    ok: () => 'Case closed', bad: 'Missed', short: 'Closed', okF: 'Closed', badF: 'Missed',
+    title: 'Today’s case', next: 'Next case: tomorrow', links: ['See every question', 'See your questions so far'],
+    live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
+    done: { st: { kind: 'bad', label: 'Missed' }, line: 'You accused after three questions, and it was the wrong suspect.' },
+    note: 'It hides the suspects, weapons and rooms.', plays: ['Your cases', 'All cases', 'Find a case', 'A number or a date', 'No case matches that. Try another number or date.'],
+    ach: [{ k: 'm1', n: 'Case closed', how: 'Name the culprit in a Daily Mystery.', got: '4 October' },
+      { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.' },
+      { k: 'm7', n: 'Seven days in a row', how: 'Play Daily Mystery seven days running.', of: 7, endedHave: 0 }],
+  },
+  escape: {
+    weekly: true, rooms: ['The Locked Study', 'The Flooded Cellar', 'The Clock Tower', 'The Night Train', 'The Lighthouse', 'The Vault', 'The Greenhouse', 'The Lift Shaft'],
+    no: (i) => PZ.escape.rooms[i % 8], salt: 3, keep: { 1: true }, past: 'escape-0928', today: 'escape-week',
+    ok: (i) => 'Escaped in ' + (i === 1 ? 9 : 6 + (i % 5)) + ' moves', bad: 'Still locked in', short: 'Escaped', okF: 'Escaped', badF: 'Locked in',
+    title: 'The Locked Study', next: 'Next room: Monday 12 October', links: ['See every move', 'See your moves so far'],
+    live: { line: 'You’ve made four moves. The hatch is still bolted.' },
+    done: { st: { kind: 'ok', label: 'Escaped in 7 moves' }, line: 'You got out in seven moves, with no hints.' },
+    note: 'It hides the room and what you found.', plays: ['Your rooms', 'All rooms', 'Find a room', 'A room name or a month', 'No room matches that. Try another name or month.'],
+    ach: [{ k: 'e1', n: 'Escaped', how: 'Get out of an Escape room.', got: '21 September' },
+      { k: 'e6', n: 'Out in six', how: 'Escape a room in six moves or fewer.' },
+      { k: 'e4', n: 'Four weeks running', how: 'Play Escape four weeks in a row.', of: 4, endedHave: 2 }],
+  },
+};
+// ---- Generated session pages for earlier editions (seed only) ----
+const PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
+const PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
+const PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
+const PZ_SUSPECTS = ['the gardener', 'the cook', 'the vicar', 'the niece'];
+const PZ_MOVES = [['Search the desk', 'Note'], ['Try door', 'Locked'], ['Move painting', 'Safe'], ['Read note', 'Three numbers'],
+  ['Enter numbers on safe', 'Wrong order'], ['Check clock', '4:12'], ['Enter 4, 1, 2', 'Opens'], ['Take key', 'Key'], ['Unlock door', 'Out'], ['Pull rug', 'Nothing']];
+const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
+const pzSession = (id, c, x) => {
+  const i = x.i; const sid = id + '-e' + i; const base = { kind: 'puzzle', gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
+  let s;
+  if (id === 'word') {
+    const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
+    const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
+    const mark = (g) => { if (g === answer) return 'Solved'; const r = gsWordRow(g, answer); const a = (r.match(/🟩/gu) || []).length; const b = (r.match(/🟨/gu) || []).length;
+      return a + b === 0 ? 'No letters in the word' : [a && a + ' in place', b && b + ' in the word'].filter(Boolean).join(', '); };
+    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, mark(g)]) };
+  } else if (id === 'groups') {
+    const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
+    for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
+      if (m < mis && (k % 2 === 1 || f >= found)) { const g = PZ_GROUPS[f % 4][0]; const o = PZ_GROUPS[(f + 1) % 4][0]; rows.push(g + g + g + o); lines.push(['Try ' + (k + 1), 'Mixed four', m === 0 ? 'One away' : 'Not a group']); m++; }
+      else { const [g, w] = PZ_GROUPS[f]; rows.push(g + g + g + g); lines.push(['Try ' + (k + 1), w.split(': ')[1], 'Found: ' + w.split(': ')[0]]); f++; }
+    }
+    s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], listTitle: 'Every try', share: x.line,
+      shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
+  } else if (id === 'mystery') {
+    const who = PZ_SUSPECTS[i % 4]; const wrong = PZ_SUSPECTS[(i + 1) % 4]; const q = 1 + (i % 3);
+    const qs = [['Was the window open?', 'Yes'], ['Did anyone leave before ten?', 'One'], ['Was the knife moved?', 'No']].slice(0, q);
+    s = { ...base, result: x.ok ? 'Solved' : 'Missed', listTitle: 'Every question', share: x.ok ? 'Solved' : 'Missed',
+      shareHead: 'Daily Mystery #' + (64 - i) + ' · ' + (x.ok ? '✅ Solved' : '❌ Missed') + ' · ' + '🔎'.repeat(q),
+      lines: [...qs.map(([a, b], k) => ['Question ' + (k + 1), a, b]), ['Accusation', x.ok ? who : wrong, x.ok ? 'Right' : 'Wrong']] };
+  } else {
+    const n = x.ok ? (i === 1 ? 9 : 6 + (i % 5)) : 10; const mv = PZ_MOVES.slice(0, n);
+    s = { ...base, listTitle: 'Every move', share: x.line, shareHead: 'Escape 🚪 ' + x.title + ' · ' + (x.ok ? 'out in ' + n + ' moves' : 'still locked in'),
+      lines: mv.map(([a, b], k) => ['Move ' + (k + 1), a, x.ok && k === n - 1 ? 'Out' : b]) };
+  }
+  GS_SESSIONS[sid] = s; return sid;
+};
+// Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
+Object.entries(PZ).forEach(([id, c]) => {
+  c.all = Array.from({ length: c.weekly ? 30 : 40 }, (_, i) => {
+    const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
+    const played = i === 0 || !!c.keep[i] || ((i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6);
+    const ok = played && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
+    return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, line: ok ? c.ok(i) : c.bad };
   });
-  return { id: 'dpd' + i, date: lbDate(d), month: lbMonth(d), played: plays.some((x) => x.played), plays };
+  // Every earlier edition played gets its own session page, so each row opens a real record.
+  c.all.slice(1).forEach((x) => { if (x.played) x.sid = c.keep[x.i] ? c.past : pzSession(id, c, x); });
+  const run = lbStreak(c.all);
+  c.ach = c.ach.map((a) => (a.of ? { ...a, have: Math.min(run, a.of) } : a));
+  c.badges = lbAutoBadges(c.ach);
 });
-const DP_TODAY_LIVE = [
-  { kind: DP_KINDS[0], status: { kind: 'ok', label: 'Solved in 3 of 6' } },
-  { kind: DP_KINDS[1], status: { kind: 'live', label: 'In progress' } },
-  { kind: DP_KINDS[2], status: { kind: 'none', label: 'Not started' } },
-];
-const DP_TODAY_DONE = [
-  { kind: DP_KINDS[0], status: { kind: 'ok', label: 'Solved in 3 of 6' } },
-  { kind: DP_KINDS[1], status: { kind: 'ok', label: 'Escaped in 7 moves' } },
-  { kind: DP_KINDS[2], status: { kind: 'bad', label: 'Missed' } },
-];
-const DP_ACH = [
-  { k: 'w1', n: 'Word Puzzle solved', how: 'Solve a Word Puzzle.', got: '2 October' },
-  { k: 'w7', n: 'Word Puzzle, seven days in a row', how: 'Play Word Puzzle seven days running.', of: 7, have: 5, endedHave: 2 },
-  { k: 'e1', n: 'Escape Room solved', how: 'Escape a room.', got: '3 October' },
-  { k: 'e7', n: 'Escape Room, seven days in a row', how: 'Play Escape Room seven days running.', of: 7, have: 3, endedHave: 1 },
-  { k: 'm1', n: 'Case closed', how: 'Name the culprit in a Murder Mystery.', got: '4 October' },
-  { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Murder Mystery without a hint or a question.' },
-  { k: 'm7', n: 'Murder Mystery, seven days in a row', how: 'Play Murder Mystery seven days running.', of: 7, have: 2, endedHave: 0 },
-];
-const DP_BADGES = lbAutoBadges(DP_ACH);
-const dpGo = (gs, sid) => gs.go('puzzles', sid ? { page: 'record', sid } : { page: 'record' });
-const dpStatus = (x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: 'Missed' });
-const dpHist = (mode) => (mode === 'free' ? [] : DP_DAYS.slice(1).flatMap((d) => d.plays.map((x) => ({ ...x, date: d.date, month: d.month }))).filter((x) => x.played || mode === 'pass'));
-const dpRow = (gs, x) => ({ key: x.id, title: x.kind.n, date: lbShort(x.date), status: dpStatus(x), onOpen: x.played ? () => gs.go('session', { id: x.kind.past }) : null });
+const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
+const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line, short: c.short } : { kind: 'bad', label: x.line, short: c.badF });
+const pzHist = (c, mode) => (mode === 'free' ? [] : c.all.slice(1).filter((x) => x.played || mode === 'pass'));
+const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : null });
 
-const DpToday = ({ rows }) => {
-  const gs = useGs();
-  const done = rows.filter((r) => r.status.kind === 'ok' || r.status.kind === 'bad').length;
+const PzNow = ({ c, done }) => {
+  const gs = useGs(); const st = done ? c.done : c.live;
+  const lines = done && window.gsShareText ? window.gsShareText(GS_SESSIONS[c.today]) : null;
   return (
     <section className="lb-card">
-      <div className="gs-stack-xs"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">Today’s puzzles</h2></div>
-      <p>{done === rows.length ? 'You’ve finished every puzzle today.' : done ? 'You’ve finished ' + (done === 1 ? 'one puzzle' : done + ' puzzles') + ' today. The rest are still open.' : 'You haven’t started today’s puzzles yet.'}</p>
-      <DS.ProgressBar label={done + ' finished today'} value={done} max={rows.length} showValue={false} />
-      <ul className="lb-list lb-today">{rows.map((r) => (
-        <li key={r.kind.k}><LbRow r={{ key: r.kind.k, title: r.kind.n, date: 'Today', status: r.status,
-          onOpen: r.status.kind !== 'none' ? () => gs.go('session', { id: r.kind.today }) : null }} /></li>))}</ul>
-      <span className="gs-muted">New puzzles arrive tomorrow.</span>
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div>
+        {done && <span className="lb-big"><LbResult s={c.done.st} /></span>}
+      </div>
+      <p>{st.line}</p>
+      {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
+      <div className="lb-foot">
+        <div className="lb-acts">
+          {lines && <LbShare lines={lines} note={c.note} />}
+          <DS.TextLink onClick={() => gs.go('session', { id: c.today })}>{done ? c.links[0] : c.links[1]}</DS.TextLink>
+        </div>
+        <span className="gs-muted">{c.next}</span>
+      </div>
     </section>
   );
 };
-const DP_FILTERS = [['all', 'All', () => true], ['ok', 'Solved', (x) => x.ok], ['bad', 'Missed', (x) => x.played && !x.ok], ['none', 'Not played', (x) => !x.played]];
-const DpLibrary = () => {
-  const gs = useGs(); const mode = lbMode(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+const pzLibrary = (id) => () => {
+  const gs = useGs(); const c = PZ[id]; const mode = lbMode(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+  const [recent, allLabel, find, hint, empty] = c.plays;
+  const filters = [['all', 'All', () => true], ['ok', c.okF, (x) => x.ok], ['bad', c.badF, (x) => x.played && !x.ok], ['none', 'Not played', (x) => !x.played]];
   if (gs.route.sid === 'all' && mode !== 'free') return (
-    <LbAll key={k} back="Daily Puzzles" onBack={() => dpGo(gs)} title="Your puzzles" find="Find a puzzle" hint="A puzzle name or a date"
-      filters={DP_FILTERS.filter(([v]) => v !== 'none' || mode === 'pass')} items={dpHist(mode)}
-      text={(x) => x.kind.n + ' ' + x.date + ' ' + x.month} row={(x) => dpRow(gs, x)} empty="No puzzle matches that. Try another name or date." />
+    <LbAll key={k} back={GS_GAMES[id].name} onBack={() => pzGo(gs, id)} title={recent} find={find} hint={hint}
+      filters={filters.filter(([v]) => v !== 'none' || mode === 'pass')} items={pzHist(c, mode)}
+      text={(x) => x.title + ' ' + x.date + ' ' + x.month} row={(x) => pzRow(gs, c, x)} empty={empty} />
   );
   return (
     <main key={k} className="gs-wrap gs-main">
-      <LbHead id="daily" />
+      <LbHead id={id} />
       <div className="lb-lay">
-        <DpToday rows={lbWeekDone(gs) ? DP_TODAY_DONE : DP_TODAY_LIVE} />
-        <LbRun n={lbStreak(DP_DAYS)} unit="days" weeks={lbRunOf(DP_DAYS)} locked={mode === 'free'} />
-        <LbAch items={DP_ACH} badges={DP_BADGES} mode={mode} ended={CB_ENDED} />
-        <LbRecent title="Your puzzles" allLabel="All puzzles" onAll={() => dpGo(gs, 'all')} rows={dpHist(mode).slice(0, 4).map((x) => dpRow(gs, x))}
-          empty="On the free plan, results last until the end of the day. Earlier days stay with the Pass." />
+        <PzNow c={c} done={lbWeekDone(gs)} />
+        <LbRun n={lbStreak(c.all)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(c.all)} locked={mode === 'free'} />
+        <LbAch items={c.ach} badges={c.badges} mode={mode} ended={CB_ENDED} />
+        <LbRecent title={recent} allLabel={allLabel} onAll={() => pzGo(gs, id, 'all')} rows={pzHist(c, mode).slice(0, 8).map((x) => pzRow(gs, c, x))}
+          empty={c.weekly ? 'On the free plan, results last until the end of the day. Earlier rooms stay with the Pass.'
+            : 'On the free plan, results last until the end of the day. Earlier days stay with the Pass.'} />
       </div>
     </main>
   );
 };
-window.GS_LIBRARY.daily = DpLibrary;
+['word', 'groups', 'mystery', 'escape'].forEach((id) => { window.GS_LIBRARY[id] = pzLibrary(id); });

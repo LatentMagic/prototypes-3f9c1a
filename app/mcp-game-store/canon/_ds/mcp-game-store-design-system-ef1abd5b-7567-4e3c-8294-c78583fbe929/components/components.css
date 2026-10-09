@@ -26,7 +26,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
 
-.mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;transition:opacity var(--time-press) var(--ease)}
+.mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
+@media (hover:hover){.mcp-lnk:hover{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):hover{color:#fff}}
 .mcp-lnk:active,.mcp-lnk.is-pressed{opacity:.55}
 .mcp-lnk.is-danger{color:var(--error)}
 
@@ -175,3 +176,31 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn.is-busy{animation:mcp-busy 1.2s ease-in-out infinite alternate}
 .mcp-msg{animation:none}
 }
+
+/* Game art: flat-shape pieces that answer a hover. Put .mcp-art-host on the whole card or link; --on is 1 while it is hovered, focused or pressed. */
+.mcp-art-host{--on:0; /* @kind other */}
+.mcp-art-host:active,.mcp-art-host.is-on,.mcp-art-host:hover,.mcp-art-host:focus-visible{--on:1; /* @kind other */}
+.mcp-art{position:relative;overflow:hidden;container-type:size;width:100%;background:var(--cover-bg-indigo)}
+.mcp-art-1{aspect-ratio:1}.mcp-art-43{aspect-ratio:4/3}.mcp-art-3{aspect-ratio:3/1}
+.mcp-art.is-forest{background:var(--cover-bg-forest)}
+.mcp-art i,.mcp-art b{position:absolute;display:block;background:var(--fill);transition:transform var(--time-art) var(--ease-art) 0ms,border-radius var(--time-art) var(--ease-art) 0ms}
+.mcp-art-host:is(:active,.is-on) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}
+@media (hover:hover){.mcp-art-host:is(:hover,:focus-visible) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}}
+.mcp-art-dg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:80cqmin;aspect-ratio:1;display:grid;grid-template-rows:repeat(4,1fr);gap:5.6cqmin}
+.mcp-art-dg>div{display:grid;grid-template-columns:repeat(4,1fr);gap:5.6cqmin}
+.mcp-art-dg b{position:static;border-radius:calc(var(--on)*50%)}
+.mcp-art-dg>div:nth-child(1) b{background:var(--cover-amber)}.mcp-art-dg>div:nth-child(2) b{background:var(--cover-teal)}.mcp-art-dg>div:nth-child(3) b{background:var(--cover-orange)}.mcp-art-dg>div:nth-child(4) b{background:var(--cover-lilac)}
+.mcp-art-cb-bar{bottom:-20cqh;left:var(--x);width:var(--w);height:calc(var(--h) + 20cqh);--s:0; /* @kind other */border-radius:calc(var(--on)*var(--w)/2) calc(var(--on)*var(--w)/2) 0 0}
+.mcp-art-cb-1{--fill:var(--cover-orange);--x:16cqw; /* @kind other */--w:15cqw; /* @kind other */--h:48cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-7cqh),-12px))}
+.mcp-art-cb-2{--fill:var(--cover-lilac);--x:38cqw; /* @kind other */--w:15cqw; /* @kind other */--h:70cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-3cqh),-6px))}
+.mcp-art-cb-3{--fill:var(--cover-cream);--x:60cqw; /* @kind other */--w:15cqw; /* @kind other */--h:36cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-10cqh),-18px))}
+.mcp-art-cb-sun{--fill:var(--cover-amber);--s:50; /* @kind other */border-radius:calc((1 - var(--on))*50%);left:64cqw;top:9cqh;width:24cqw;height:24cqw;transform:translate(max(calc(var(--on)*-12%),-10px),min(calc(var(--on)*18%),14px))}
+@container (min-aspect-ratio:6/5){.mcp-art-cb-1{--x:18.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:66.7cqh; /* @kind other */}.mcp-art-cb-2{--x:38.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:76.7cqh; /* @kind other */}.mcp-art-cb-3{--x:58.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:61.7cqh; /* @kind other */}.mcp-art-cb-sun{left:72.5cqw;top:11.7cqh;width:20cqh;height:20cqh}}
+@container (min-aspect-ratio:2/1){.mcp-art-cb-1{--x:30cqw; /* @kind other */--w:6cqw; /* @kind other */--h:56cqh; /* @kind other */}.mcp-art-cb-2{--x:41cqw; /* @kind other */--w:6cqw; /* @kind other */--h:80cqh; /* @kind other */}.mcp-art-cb-3{--x:52cqw; /* @kind other */--w:6cqw; /* @kind other */--h:40cqh; /* @kind other */}.mcp-art-cb-sun{left:68cqw;top:12cqh;width:36cqh;height:36cqh}}
+.mcp-art-hu-sun{--fill:var(--cover-amber);--s:40; /* @kind other */border-radius:calc((1 - var(--on))*50%);left:8cqw;top:40cqh;width:43cqh;height:43cqh;transform:translateY(max(calc(var(--on)*-8cqh),-14px))}
+.mcp-art-hu-peak{--fill:var(--cover-lilac);--s:80; /* @kind other */clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scale(calc(1 + var(--on)*.07));left:22cqw;width:78cqw;top:42cqh;bottom:0}
+.mcp-art-hu-teal{--fill:var(--cover-teal);--s:0; /* @kind other */border-radius:calc(var(--on)*50%);left:6cqw;top:86cqh;width:11cqh;height:11cqh}
+.mcp-art-hu-cream{--fill:var(--cover-cream);--s:120; /* @kind other */border-radius:calc(var(--on)*50%);left:78cqw;top:16cqh;width:8cqh;height:8cqh;transform:translate(calc(var(--on)*30%),calc(var(--on)*-30%))}
+@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:75cqw;top:41.7cqh}.mcp-art-hu-teal{left:11.25cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:80cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
+@container (min-aspect-ratio:2/1){.mcp-art-hu-sun{left:30cqw;top:36cqh;width:48cqh;height:48cqh}.mcp-art-hu-peak{left:38cqw;width:36cqw;top:30cqh}.mcp-art-hu-teal{left:24cqw;top:80cqh;width:12cqh;height:12cqh}.mcp-art-hu-cream{left:78cqw;top:14cqh;width:9cqh;height:9cqh}}
+@media (prefers-reduced-motion:reduce){.mcp-art i,.mcp-art b{transition-duration:0ms!important;transition-delay:0ms!important}.mcp-art-host,.mcp-art-host:is(:hover,:active,:focus-visible,.is-on){--on:0; /* @kind other */}}

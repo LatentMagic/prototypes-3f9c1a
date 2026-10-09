@@ -8,6 +8,9 @@
 --time-popup:260ms; /* @kind other */
 --time-close:200ms; /* @kind other */
 --time-loader:1.2s; /* @kind other */
+--time-link:360ms; /* @kind other */
+--time-art:400ms; /* @kind other */
+--ease-art:cubic-bezier(.45,0,.2,1); /* @kind other */
 
 --press-scale:.97; /* @kind other */
 }
@@ -15,3 +18,4 @@
 @keyframes mcp-msg-in{from{opacity:0;transform:translateY(4px)}}
 @keyframes mcp-loader{0%{background:#4CC38A;border-radius:0;transform:none;opacity:1}10%,20%{background:#D66847;border-radius:50%;transform:translate(10px,-10px);opacity:1}45%{background:#4CC38A;border-radius:0;transform:none;opacity:.35}75%,100%{background:#4CC38A;border-radius:0;transform:none;opacity:1}}
 @keyframes mcp-busy{from{opacity:1}to{opacity:.55}}
+@keyframes mcp-link-draw{from{background-size:0 1.5px}to{background-size:100% 1.5px}}

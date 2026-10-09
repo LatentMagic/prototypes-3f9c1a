@@ -1,8 +1,93 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-08",
+  "generated": "2026-10-09",
   "tickets": [
+    {
+      "id": "—",
+      "slug": "history",
+      "name": "History, and how a library game page connects to it",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Play rows and replays",
+          "path": "docs/specs/history/playground/replays.html",
+          "note": "Row, replay chip, time of completion, Replays filter. Options 1 to 3."
+        },
+        {
+          "name": "History, options 1 to 3",
+          "path": "docs/specs/history/playground/index.html",
+          "note": "Three ways to list every play, replays included, each with its own rule for how a library game page and History connect."
+        },
+        {
+          "name": "Replay chip and replay filter, options 1 to 3",
+          "path": "docs/specs/history/playground/rows.html",
+          "note": "History with a Replay chip and a replay filter; the library plays card and All pages list every play as its own row. Three chip placements."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "games-and-library",
+      "name": "The Games page and the Library page",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Round 4: Discover, options 16 to 22",
+          "path": "docs/specs/games-and-library/playground/round-4.html",
+          "note": "Seven ways to arrange Discover, each with search, Free first, the Pass band and hover on everything clickable."
+        },
+        {
+          "name": "Round 3: Discover, options A and B",
+          "path": "docs/specs/games-and-library/playground/round-3.html",
+          "note": "Option 5 with search beside the chips, All games and Free tags; B adds a Free to play row."
+        },
+        {
+          "name": "Round 2: storefront, names, signed in, Library covers (options 4 to 15)",
+          "path": "docs/specs/games-and-library/playground/round-2.html",
+          "note": "Four studies with three options each. Every study’s pick applies at once, so they combine."
+        },
+        {
+          "name": "Games page, options 1 to 3, and the Library",
+          "path": "docs/specs/games-and-library/playground/index.html",
+          "note": "Three ways to show about 12 games on the Games page, signed in and out, and one Library list of every game with search and a filter by kind."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "home-hero",
+      "name": "The home page hero",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Home hero, option 9",
+          "path": "docs/specs/home-hero/playground/round-4.html",
+          "note": "Option 8 refined: the screenshot set into one Casebook cover field, beside 8 as it was. Subline a."
+        },
+        {
+          "name": "Home hero, options 7 and 8",
+          "path": "docs/specs/home-hero/playground/round-3.html",
+          "note": "Option 1 with Casebook’s cover and the screenshot both whole, two ways, and three sublines from the Casebook spec."
+        },
+        {
+          "name": "Home hero, options 4 to 6",
+          "path": "docs/specs/home-hero/playground/round-2.html",
+          "note": "From the review of 1 to 3: every screenshot whole. Casebook two ways, with a slot for its screenshot, and Daily Word all the way."
+        },
+        {
+          "name": "Home hero, options 1 to 3",
+          "path": "docs/specs/home-hero/playground/index.html",
+          "note": "Three signed-out heroes where the headline, the art and the screenshot all point at the same thing."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": "—",
       "slug": "library-game-page",

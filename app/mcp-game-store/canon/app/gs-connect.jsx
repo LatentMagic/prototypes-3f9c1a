@@ -58,7 +58,7 @@ const GsConnect = () => {
           )}
           {phase === 'done' && (
             <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-              <DS.StatusMessage kind="success">Connected. Tell your AI you want to play today’s puzzles.</DS.StatusMessage>
+              <DS.StatusMessage kind="success">Connected. Tell your AI which game you want to play.</DS.StatusMessage>
               <DS.Button onClick={() => gs.go('games')}>Browse games</DS.Button>
             </div>
           )}

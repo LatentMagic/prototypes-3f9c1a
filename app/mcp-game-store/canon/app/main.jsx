@@ -19,12 +19,12 @@ const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pendi
 // Screens with their own frame (no shared top bar).
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'account', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline, not-found).
-const GS_FOOTER = ['home', 'games', 'delve', 'puzzles', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
+const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
-const GS_SIGNED_IN_ONLY = ['connect', 'history', 'verify', 'username', 'account', 'update-card'];
+const GS_SIGNED_IN_ONLY = ['connect', 'library', 'history', 'verify', 'username', 'account', 'update-card'];
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
-const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'delve', 'puzzles', 'casebook', 'hunter',
+const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter',
   'session', 'history', 'pass', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline'];
 
 const GsScreen = ({ name }) => {
@@ -38,8 +38,12 @@ const GsScreen = ({ name }) => {
     case 'returning': return <GsReturning />;
     case 'connect': return <GsConnect />;
     case 'games': return <GsGames />;
+    case 'library': return <GsLibrary />;
     case 'delve': return <GsDelve />;
-    case 'puzzles': return <GsPuzzles />;
+    case 'word': return <GsWord />;
+    case 'groups': return <GsGroups />;
+    case 'mystery': return <GsMystery />;
+    case 'escape': return <GsEscape />;
     case 'casebook': return <GsCasebook />;
     case 'hunter': return <GsHunter />;
     case 'session': return <GsSession />;

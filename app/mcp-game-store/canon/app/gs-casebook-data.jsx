@@ -31,10 +31,10 @@ const cbRecord = (seq, cast, verdict, k) => {
   const P = CB_POOL; let ev = k % P.evidence.length; let last = P.evidence[ev];
   const rows = Array.from(seq).map((c, i) => {
     const who = cast[(i + k) % 3]; const place = P.places[(i + k) % P.places.length];
-    if (c === 'F') { last = P.evidence[ev++ % P.evidence.length]; return { c, act: 'Search', what: place, out: 'Found ' + last }; }
-    if (c === 'N') return { c, act: 'Search', what: place, out: 'Nothing new' };
+    if (c === 'F') { last = P.evidence[ev++ % P.evidence.length]; return { c, act: 'Search', what: place, out: 'Found: ' + last }; }
+    if (c === 'N') return { c, act: 'Search', what: place, out: 'Nothing' };
     if (c === 'Q') return { c, act: 'Question', what: who + ', about ' + P.topics[(i + k) % P.topics.length], out: 'Answered' };
-    return { c, act: 'Show evidence', what: last + ' to ' + who, out: c === 'B' ? 'Exposed a lie' : 'The story held' };
+    return { c, act: 'Show evidence', what: last + ' to ' + who, out: c === 'B' ? 'Lie exposed' : 'Held' };
   });
   if (verdict) rows.push({ c: 'A', act: 'Accusation', what: cast[k % 3], out: verdict === 'right' ? 'Right' : 'Wrong' });
   return rows;

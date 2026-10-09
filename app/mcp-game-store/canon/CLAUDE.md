@@ -26,7 +26,7 @@
 
 ### Screen map (route → file in `app/`)
 - Signed-out views: `home` (`gs-home.jsx`), `games` (`gs-home.jsx`), `pass` (`gs-billing.jsx`), `legal` (`gs-site.jsx`).
-- Game pages, one template in `gs-game.jsx`: `puzzles` (Daily Puzzles; parts in `gs-puzzles.jsx`), `delve`, `casebook`, `hunter`.
+- Product pages, one template in `gs-game.jsx`: `word`, `groups`, `mystery`, `escape`, `delve`, `casebook`, `hunter`. Library game pages (`page: 'record'`): `gs-puzzles-library.jsx` (the four puzzle games), `gs-delve-library.jsx`, `gs-casebook.jsx`, `gs-hunter-library.jsx`, parts in `gs-library.jsx`.
 - Account and auth: `signup`, `signin`, `verify`, `recover`, `returning` (`gs-auth.jsx`); `username` (`gs-username.jsx`); `connect` (`gs-connect.jsx`); `account` (`gs-account.jsx`).
 - Play record: `session`, `history` (`gs-session.jsx`).
 - Billing: `checkout`, `update-card` (`gs-billing.jsx`).
@@ -44,7 +44,7 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
 - **Upstream first.** Whatever the product block names — product behaviour, design law, brand and voice, the reasoning behind any prompt that arrives here — lives outside this project. Read it live, at the start of a session and again before any decision it governs. The product's specs are canonical for behaviour: cite them by path and id; never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
 
-- **Hand back on `index.html`, never a `?state=` address.** State addresses don't load in the user's Claude Design preview. When surfacing work, open plain `index.html` and give the clicks to the change.
+- **Leave the user where they are.** Don't reopen or reload `index.html` (or any file) to hand back work; give the clicks to the change instead. Never hand back a `?state=` address: state addresses don't load in the user's Claude Design preview.
 
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a restore, not a "small" wording change, not a choice between two options you have already argued through, not recording a decision as settled in a handoff or `CHANGELOG.md`. **Present the options, state your recommendation, then stop and wait.**
@@ -134,8 +134,8 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - Check every overlay at phone and desktop width before calling it done.
 </important>
 
-<important if="you are building or changing any action that changes state: a submit, save, send, delete, confirm or pay">
-- **Every action that changes state shows it is working.** From the press until the result, the control that was pressed shows a loading indication and cannot be pressed again; usually that is the submit button. A prototype has no real wait, so stage one long enough to see.
+<important if="you are building or changing any action that changes state, or any content that loads: a submit, save, send, delete, confirm, pay, a list, a panel, a page">
+- **Every wait shows it is working, where the wait is.** A press that changes state shows a loading indication on the control that was pressed, which cannot be pressed again until the result. A page whose content is arriving shows it loading as a page. A part of a page that loads on its own, such as a panel, a list or the top bar, shows it there and leaves the rest usable. A prototype has no real wait, so stage one long enough to see.
 </important>
 
 ## Code

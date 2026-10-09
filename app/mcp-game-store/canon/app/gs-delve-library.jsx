@@ -6,7 +6,7 @@
 // ============================================================================
 const DV_TITLES = ['Beneath Gallows Hill', 'The Drum Room', 'The Fungus Path', 'The Escape Tunnel', 'The Drifting Freighter', 'The Cold Hold', 'The Shrine Cavern', 'The Miller’s Cellar'];
 const DV_HEROES = ['Vex the Rogue', 'Bryn the Fighter', 'Oda the Wizard'];
-const DV_END = { won: { kind: 'ok', label: 'Elsie rescued' }, ritual: { kind: 'bad', label: 'The ritual finished' }, fell: { kind: 'bad', label: 'Your hero fell' } };
+const DV_END = { won: { kind: 'ok', label: 'Rescued', short: 'Rescued' }, ritual: { kind: 'bad', label: 'Ritual done', short: 'Ritual done' }, fell: { kind: 'bad', label: 'Hero fell', short: 'Hero fell' } };
 const DV_ALL = Array.from({ length: 30 }, (_, i) => {
   const d = new Date(2026, 9, 5 - 7 * i);
   const played = i < 3 || i % 4 !== 3;
@@ -21,12 +21,19 @@ const DV_ACH = [
   { k: 'rescued', n: 'Elsie rescued', how: 'Get Elsie out of the warren.', got: '28 September' },
   { k: 'clean', n: 'Rescued without a miss', how: 'Rescue Elsie without failing a roll.' },
   { k: 'heroes', n: 'Won with all three heroes', how: 'Rescue Elsie as the fighter, the rogue and the wizard.', of: 3, have: 1, endedHave: 1 },
+  // Invented beyond the spec's four, so the card carries about ten (review-2-notes.md).
+  { k: 'tunnel', n: 'Found the escape tunnel', how: 'Find the tunnel out of the warren.', got: '14 September' },
+  { k: 'hold', n: 'Reached the freighter’s hold', how: 'Find your way into the drifting freighter’s hold.' },
+  { k: 'potion', n: 'Rescued without the potion', how: 'Rescue Elsie and leave the potion full.', got: '28 September' },
+  { k: 'spare', n: 'Rescued with time to spare', how: 'Rescue Elsie before the ritual passes 2 of 6.' },
+  { k: 'double', n: 'Saved by the double roll', how: 'Win a scene on your double roll.' },
+  { k: 'weeks', n: 'Four weeks in the warren', how: 'Play a scene four weeks in a row.', of: 4, have: 3, endedHave: 3 },
 ];
 const DV_BADGES = lbAutoBadges(DV_ACH);
 const dvStatus = (s) => (!s.played ? { kind: 'none', label: 'Not played' } : !s.end ? { kind: 'live', label: 'In progress' } : DV_END[s.end]);
 const dvGo = (gs, sid) => gs.go('delve', sid ? { page: 'record', sid } : { page: 'record' });
 const dvHist = (mode) => DV_ALL.slice(1).filter((s) => s.played || mode === 'pass');
-const dvRow = (gs, s, figs) => ({ key: s.id, title: s.title, date: lbShort(s.date), status: dvStatus(s),
+const dvRow = (gs, s, figs) => ({ key: s.id, title: '#' + (DV_ALL.length - DV_ALL.indexOf(s)), date: lbShort(s.date), status: dvStatus(s),
   figs: figs ? [s.played ? [s.rolls, 'rolls'] : [null], [null]] : null, onOpen: s.played ? () => gs.go('session', { id: 'delve' }) : null });
 
 const DvNow = ({ s }) => {
@@ -47,7 +54,7 @@ const DvNow = ({ s }) => {
           {lines && <LbShare lines={lines} note="It hides the story and the places." />}
           <DS.TextLink onClick={() => gs.go('session', { id: 'delve' })}>{s.end ? 'See every roll' : 'See your rolls so far'}</DS.TextLink>
         </div>
-        <span className="gs-muted">{'The next scene arrives on ' + DV_NEXT + '.'}</span>
+        <span className="gs-muted">{'Next scene: ' + DV_NEXT}</span>
       </div>
     </section>
   );
@@ -67,7 +74,7 @@ const DvLibrary = () => {
         <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />
         <LbRun n={lbStreak(DV_ALL)} unit="weeks" weeks={lbRunOf(DV_ALL)} />
         <LbAch items={DV_ACH} badges={DV_BADGES} mode={mode} ended={CB_ENDED} />
-        <LbRecent title="Your scenes" allLabel="All scenes" onAll={() => dvGo(gs, 'all')} rows={dvHist(mode).slice(0, 4).map((s) => dvRow(gs, s))} />
+        <LbRecent title="Your scenes" allLabel="All scenes" onAll={() => dvGo(gs, 'all')} rows={dvHist(mode).slice(0, 8).map((s) => dvRow(gs, s))} />
       </div>
     </main>
   );
