@@ -164,7 +164,7 @@ const GsGames = () => {
     const t = setTimeout(() => setLoad(null), 1200);
     return () => clearTimeout(t);
   }, [load]);
-  const marks = gsMarks(gs.view);
+  const marks = gsMarks(gs.view, gs);
   return (
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Games</h1>

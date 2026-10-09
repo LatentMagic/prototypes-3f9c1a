@@ -11,22 +11,23 @@ const edGo = (gs, gid, pick) => gs.go(GS_GAMES[gid].route, { page: 'editions', p
 const edName = (e) => '#' + e.n + (e.title ? ' · ' + e.title : '');
 
 // Every edition of a game, newest first: { key, gid, n, title, date, month, free, now, status, open }
+// Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
+const ED_NONE = { kind: 'none', label: 'Not played' };
 const edList = (gs, gid) => {
-  const pass = gs.view === 'pass'; const signed = gs.view !== 'out';
+  const pass = gs.view === 'pass'; const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null;
   if (PZ[gid]) {
     const c = PZ[gid];
-    return c.all.map((x) => {
-      const sid = x.i === 0 ? (GS_TODAY_PLAYED[gs.view] || {})[gid] : x.sid;
-      return { key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
-        status: !signed ? null : x.i === 0 ? (sid ? { kind: 'ok', label: c.short } : { kind: 'none', label: 'Not played' }) : pzStatus(c, x), open: signed && sid ? () => gs.go('session', { id: sid }) : null };
-    });
+    return c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
+      status: !signed ? null : x.i === 0 ? (now ? now.status : ED_NONE) : pzStatus(c, x),
+      open: !signed ? null : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
   }
-  const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1];
+  const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1]; const lapsed = gsLapsed(gs);
+  const mine = (x) => x.played && (pass || x === first || (lapsed && lbOld(x.week || x.date)));
   return all.map((x, i) => {
-    const mine = signed && (pass || x === first);
-    const st = !mine ? null : gid === 'casebook' ? cbStatus(i === 0 ? cbWeek(gs) : x) : dvStatus(x);
+    const played = i === 0 ? !!now : signed && mine(x);
+    const st = !signed ? null : i === 0 ? (now ? now.status : ED_NONE) : played ? (gid === 'casebook' ? cbStatus(x) : dvStatus(x)) : ED_NONE;
     return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first, now: i === 0, status: st,
-      open: mine && x.played ? () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: x === first ? 'delve-first' : 'delve' })) : null };
+      open: !played ? null : i === 0 ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
   });
 };
 
@@ -67,7 +68,7 @@ const EdRow = ({ e, onOpen }) => {
     <li><button type="button" className="ed-row" onClick={() => onOpen(e)}>
       <span className="ed-t">{edName(e)}</span>
       <span className="ed-m"><span className="lb-date">{e.date}</span></span>
-      <span className="ed-slots"><span className="ed-slot">{!e.free && gs.view !== 'pass' && <GsPassTag />}</span><span className="ed-slot">{e.now && <DS.Tag kind="daily">Latest</DS.Tag>}</span></span>
+      <span className="ed-slots"><span className="ed-slot">{!e.free && gs.view !== 'pass' && <DS.Tag kind="locked">Pass</DS.Tag>}</span><span className="ed-slot">{e.now && <DS.Tag kind="daily">Latest</DS.Tag>}</span></span>
       <span className="ed-r">{e.status && <EdSt s={e.status} />}</span>
       <LbChev />
     </button></li>

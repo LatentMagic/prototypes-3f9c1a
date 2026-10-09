@@ -29,8 +29,9 @@ const GsConfigExtra = () => {
       <div className="kit-config-group-title">Username</div>
       {row('Username', (api.user && api.user.locked) ? 'recent' : 'free', (v) => set(() => api.setUser({ locked: v === 'recent' })), o([['free', 'Free to change'], ['recent', 'Changed recently']]))}
       <div className="kit-config-group-title">Library</div>
-      {row('This week, or today', r.week === 'done' ? 'done' : 'live', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
-      <div className="kit-config-hint">The top card of each library game page: the week for Casebook, Delve and Escape, the day for each daily game.</div>
+      {row('This week, or today', r.week === 'live' ? 'live' : 'done', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
+      {row('Free plan, today', r.today === 'none' ? 'none' : 'played', (v) => set(() => api.setReview({ today: v })), o([['played', 'Played'], ['none', 'Not played']]))}
+      <div className="kit-config-hint">This edition's play, on every screen that shows it: the week for Casebook, Delve and Escape, the day for each daily game. Finished unless set here or in the demo bar.</div>
       <div className="kit-config-group-title">Pass</div>
       {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { freeUsed: true }) }),
         o([['none', 'None'], ['free', 'In the trial'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}

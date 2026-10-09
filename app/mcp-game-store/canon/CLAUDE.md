@@ -5,7 +5,7 @@
 
 **Read live from GitHub, never copied in** (a kind with no source yet is asked about, not guessed):
 - Behaviour specs and glossary: `<owner/repo>/<path>`
-- Design law: `<owner/repo>/<path>`
+- Design law: **CRITICAL — the MCP Game Store Design System is binding and must be read before any visual work.** Source: `/projects/ef1abd5b-7567-4e3c-8294-c78583fbe929/` (start with `guidelines/visual-foundations.md`, `guidelines/voice.md`, `guidelines/layout-and-patterns.md`); bundled copy in `_ds/`. Use its components and tokens; never recreate them.
 - Brand and visual values beyond `tokens.css`: `<owner/repo>/<path>`
 - Copy voice: `<owner/repo>/<path>`
 - Tracker, where ticket ids come from: `<owner/repo or link>`; where a task's context record lives: `<owner/repo>/<path>`

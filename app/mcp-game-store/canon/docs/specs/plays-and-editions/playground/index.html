@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Plays and editions, options 1 to 3</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -1249,6 +1250,32 @@
     .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
     .hw-ai-act { grid-column: auto; }
   }
+
+/* ---- Playground: plays and editions (docs/specs/plays-and-editions/playground/pg-plays.jsx) ---- */
+  .gs-root { padding-bottom: 196px; }
+  .kit-config-wrap { bottom: 196px; }
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 820px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 56px; flex: none; }
+  .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; }
+  .pg-why { display: grid; gap: 12px; }
+  .md-what { color: var(--text); }
+  .ed-row.md-cov { grid-template-columns: 48px minmax(0, 1fr) auto 128px 16px; grid-template-areas: "cov t s r c" "cov m s r c"; }
+  .ed-row.md-cov > .ph-cov { grid-area: cov; }
+  .ed-row.md-cov:not(:has(.md-what)) { grid-template-areas: "cov t s r c" "cov t s r c"; }
+  .lb-card > .md-card { margin: 0 calc(-1 * var(--lb-pad)); }
+  .md-reps { margin-top: -4px; padding-bottom: 8px; }
+  .md-reps > li > .rp { min-height: 44px; padding-left: calc(var(--lb-pad, 16px) + 64px); }
+  .md-reps .rp-a { font-weight: 400; color: var(--muted); }
+  .lb-list > li + li.md-rep-wrap { border-top: 0; }
+  .md-flush { --lb-pad: 0px; }
+  @container gs (max-width: 559px) {
+    .ed-row.md-cov { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "m c" "s c" "r c"; }
+    .ed-row.md-cov > .ph-cov { display: none; }
+    .md-reps > li > .rp { padding-left: calc(var(--lb-pad, 16px) + 16px); }
+  }
 </style>
 </head>
 <body>
@@ -1300,6 +1327,7 @@
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
 <script type="text/babel" src="app/gs-editions.jsx"></script>
+<script type="text/babel" src="docs/specs/plays-and-editions/playground/pg-plays.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

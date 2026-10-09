@@ -3,12 +3,6 @@
 // email, change password, delete account, and the support line. A provider
 // account (Google, Apple) gets one card in place of the two change cards.
 // ============================================================================
-const GsSubBar = ({ title, onBack }) => (
-  <header className="gs-top"><div className="gs-wrap gs-top-in gs-subbar">
-    <button type="button" className="gs-iconbtn" aria-label="Back" onClick={onBack}><DS.Icon name="back" /></button>
-    <span className="gs-subbar-title">{title}</span>
-  </div></header>
-);
 
 // A tick and a short line beside the button for a few seconds after a change.
 const useGsDone = (ms) => {
@@ -155,12 +149,9 @@ const GsDeleteAccount = () => {
 
 const GsAccount = () => {
   const gs = useGs();
-  const from = gs.route.from;
-  const back = () => (from ? gs.go(from.name, from) : gs.go('games'));
   const providerAcct = gs.provider !== 'email';
   return (
     <>
-      <GsSubBar title="Account" onBack={back} />
       <main className="gs-wrap gs-main gs-acct-page">
         <div className="gs-stack-xs">
           <h1 className="gs-h1">Account</h1>
@@ -183,4 +174,4 @@ const GsAccount = () => {
   );
 };
 
-Object.assign(window, { GsSubBar, GsIdentity, GsAccount });
+Object.assign(window, { GsIdentity, GsAccount });

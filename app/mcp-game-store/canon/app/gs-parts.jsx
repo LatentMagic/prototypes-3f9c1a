@@ -309,12 +309,21 @@ const GsTopBar = () => {
 
 // ---- Demo bar: a prototype control, not part of the product ---------------------
 const gsDailyRoute = (gs) => { const k = gsGameOfRoute(gs.route.name); return !!(k && GS_GAMES[k].daily); };
+// The "This week" switch shows only where it changes something: a page that shows this edition's play
+// (its product page, library game page or Editions page), and History when signed in.
+const gsWeekSwitch = (gs) => {
+  const r = gs.route; if (r.name === 'history') return gs.view !== 'out';
+  const k = gsGameOfRoute(r.name); if (!k || !window.lbNow || (r.page === 'record' && r.sid)) return false;
+  return !!lbNow(gs, k);
+};
 const GsDemoBar = () => {
   const gs = useGs();
   const opts = [['out', 'signed out'], ['free', 'free'], ['pass', 'Pass']];
-  return (
+  const sw = gsWeekSwitch(gs); const daily = gsDailyRoute(gs);
+  return (<>
+    <div className={'gs-demo-space' + (sw ? ' is-two' : '')} aria-hidden="true" />
     <div className="gs-demo" role="group" aria-label="Demo view, not part of the product">
-      <div className="gs-demo-in">
+      <div className={'gs-demo-in' + (sw ? ' is-two' : '')}>
         <span>Demo view:</span>
         {opts.map(([v, l], i) => (
           <React.Fragment key={v}>
@@ -322,19 +331,19 @@ const GsDemoBar = () => {
             <button type="button" className="gs-demo-opt" aria-pressed={gs.view === v} onClick={() => gs.setDemoView(v)}>{l}</button>
           </React.Fragment>
         ))}
-        {gs.route.page === 'record' && !gs.route.sid && <>
+        {sw && <>
           <span aria-hidden="true" className="gs-demo-sep" />
-          <span>{gsDailyRoute(gs) ? 'Today:' : 'This week:'}</span>
-          {[['live', 'in progress'], ['done', gsDailyRoute(gs) ? 'day complete' : 'finished']].map(([v, l], i) => (
+          <span>{gs.route.name === 'history' ? 'Today and this week:' : daily ? 'Today:' : 'This week:'}</span>
+          {[['live', 'in progress'], ['done', daily ? 'day complete' : 'finished']].map(([v, l], i) => (
             <React.Fragment key={v}>
               {i > 0 && <span aria-hidden="true">/</span>}
-              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'done' ? 'done' : 'live') === v} onClick={() => gs.setReview({ week: v })}>{l}</button>
+              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'live' ? 'live' : 'done') === v} onClick={() => gs.setReview({ week: v })}>{l}</button>
             </React.Fragment>
           ))}
         </>}
       </div>
     </div>
-  );
+  </>);
 };
 
 // ---- The play dialog lives in gs-connect.jsx with the prompts ----

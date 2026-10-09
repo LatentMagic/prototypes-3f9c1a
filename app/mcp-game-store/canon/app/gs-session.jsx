@@ -1,6 +1,6 @@
 // ============================================================================
-// [Platform] — Session page (screen 7) with its share pop-up, and History
-// (screen 8).
+// [Platform] — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
+// A session in progress (s.live) has no Share and no Play again: one button carries it on in your AI.
 // ============================================================================
 const GsShareCard = ({ s }) => {
   const gs = useGs();
@@ -54,15 +54,17 @@ const GsSession = () => {
     setCopied(true);
   };
   const delve = s.kind === 'delve';
+  const back = s.gid && <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBack label={GS_GAMES[s.gid].name} onClick={() => gs.go(GS_GAMES[s.gid].route, { page: 'record' })} /></div>;
   const list = (
     <section className="gs-stack-md">
       <h2 className="mcp-t-sec">{gsOr(s.listTitle)}</h2>
       {s.lines.length > 0 && <ol className="gs-lines">
-        {s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l[1]} · {l[2]}</li>)}
+        {s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l.slice(1).join(' · ')}</li>)}
       </ol>}
     </section>
   );
-  return (
+  return (<>
+    {back}
     <main className="gs-wrap gs-main">
       <section className="gs-sess-head">
         <GsCover art={s.art} />
@@ -74,10 +76,12 @@ const GsSession = () => {
             <span className="gs-fig gs-fig-quiet">{gsSessDate(s, gs)}</span>
           </div>
           <div className="gs-pairwrap">
-            <DS.ButtonPair>
-              <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button>
-              <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
-            </DS.ButtonPair>
+            {s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play in your AI</DS.Button>
+              : text ? <DS.ButtonPair>
+                <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button>
+                <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
+              </DS.ButtonPair>
+              : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button>}
           </div>
         </div>
       </section>
@@ -87,7 +91,7 @@ const GsSession = () => {
           {list}
           <div className="gs-stack-md">
             <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
-              <span className="gs-label">THE TRACKS AS THEY ENDED</span>
+              <span className="gs-label">{s.live ? 'THE TRACKS SO FAR' : 'THE TRACKS AS THEY ENDED'}</span>
               <GsTrack label="Progress" value={s.tracks.progress} />
               <GsTrack label="Threat" value={s.tracks.threat} threat />
             </DS.Card>
@@ -110,41 +114,7 @@ const GsSession = () => {
         <GsShareText lines={text} />
       </DS.Popup>
     </main>
-  );
+  </>);
 };
 
-const GsHistory = () => {
-  const gs = useGs();
-  // Free: plays of the free games only. Pass ended: those plus every Pass-game play.
-  const lapsed = gsLapsed(gs);
-  const today = Object.values(GS_TODAY_PLAYED[gs.view] || {});
-  const rows = gs.view === 'pass' ? GS_HISTORY : GS_HISTORY.filter((id) => {
-    const s = GS_SESSIONS[id];
-    if (s.date === GS.today) return today.includes(id);
-    return lapsed || !!GS_GAMES[s.gid].free;
-  }).sort((a, b) => (lapsed ? !!GS_SESSIONS[a].lapsedDate - !!GS_SESSIONS[b].lapsedDate : 0));
-  return (
-    <main className="gs-wrap gs-main">
-      <h1 className="gs-h1">History</h1>
-      <ul className="gs-hist">
-        {rows.map((id) => {
-          const s = GS_SESSIONS[id];
-          return (
-            <li key={id}>
-              <button type="button" className="gs-hrow" onClick={() => gs.go('session', { id })}>
-                <GsCover art={s.art} />
-                <span className="gs-stack-xs">
-                  <span className="gs-strong">{s.game}</span>
-                  <span className={s.loss ? 'gs-loss' : 'gs-muted'}>{gsOr(s.result)}</span>
-                </span>
-                <span className="gs-small gs-hdate">{gsSessDate(s, gs)}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </main>
-  );
-};
-
-Object.assign(window, { GsSession, GsHistory, GsShareCard, gsShareText });
+Object.assign(window, { GsSession, GsShareCard, gsShareText });

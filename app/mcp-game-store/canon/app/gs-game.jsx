@@ -145,8 +145,7 @@ const GsFacts = ({ id }) => {
 const GsWeekCard = ({ id }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const w = GS_PAGES[id].week;
   const paying = gs.view === 'pass'; const can = g.free || paying;
-  const sid = g.free ? (GS_TODAY_PLAYED[gs.view] || {})[id] : paying && !w.unmarked ? w.session : null;
-  const s = sid ? GS_SESSIONS[sid] : null;
+  const now = window.lbNow ? lbNow(gs, id) : null;
   return (
     <section id="gs-today" className="gs-stack-md">
       <div className="gs-sec-head"><h2 className="mcp-t-sec">{w.title}</h2>{window.ED_GAMES && ED_GAMES.includes(id) && <DS.TextLink onClick={() => edGo(gs, id)}>All editions</DS.TextLink>}</div>
@@ -157,10 +156,10 @@ const GsWeekCard = ({ id }) => {
           <h3 className="mcp-t-card">{g.name}</h3>
           <p className="gs-muted">{w.line}</p>
           {!can ? <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>{g.first && <p className="gs-small">{w.title + ' comes with the Pass. The first edition is free.'}</p>}<GsPassTag /></div>
-            : s ? (
+            : now ? (
               <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-                <LbResult s={{ kind: s.loss ? 'bad' : 'ok', label: s.result }} />
-                <DS.TextLink onClick={() => gs.go('session', { id: sid })}>See your session page</DS.TextLink>
+                <LbResult s={now.status} />
+                <DS.TextLink onClick={now.open}>See your session page</DS.TextLink>
               </div>
             ) : <div className="gs-act"><DS.Button onClick={() => gs.playReq(window.ED_GAMES && ED_GAMES.includes(id) ? { kind: 'edition', e: edList(gs, id)[0] } : { kind: 'game', gid: id })}>Play in your AI</DS.Button></div>}
           </div>
@@ -173,7 +172,7 @@ const GsWeekCard = ({ id }) => {
 const GsGamePage = ({ id, top }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
-  const marks = gsMarks(gs.view);
+  const marks = gsMarks(gs.view, gs);
   const others = GS_GAME_ORDER.filter((k) => k !== id);
   return (
     <main className="gs-wrap gs-main">

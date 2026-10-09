@@ -1,8 +1,8 @@
 // ============================================================================
 // [Platform] — Casebook's library page, option 16 as ratified 2026-10-08
 // (docs/specs/library-game-page/handoff-2026-10-08-option-16-direction.md).
-// This week beside the streak, then achievements beside your cases. "All cases" opens every case
-// in numbered pages of twelve; a case opens its page, turns grouped by kind.
+// This week beside the streak, then achievements beside your cases. "All cases" opens History filtered to Casebook;
+// a case opens its page, turns grouped by kind. Without the Pass: the first case and your cases on the left, achievements on the right.
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.
 // ============================================================================
 const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
@@ -12,9 +12,7 @@ const CB_FIRST = CB_ALL[CB_ALL.length - 1];
 const cbHist = (gs) => CB_ALL.filter((c) => c.id !== CB_LIVE.id && (gs.view === 'pass' ? true : gsLapsed(gs) ? c.played && lbOld(c.week) : c === CB_FIRST));
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : c.verdict === 'right' ? { kind: 'ok', label: 'Solved' } : { kind: 'bad', label: 'Unsolved' });
-const cbRow = (gs, c, figs) => ({ key: c.id, title: '#' + (CB_ALL.length - CB_ALL.indexOf(c)), date: lbShort(c.week), status: cbStatus(c),
-  figs: figs ? [c.played ? [c.turns, 'of 16 turns'] : [null], c.played ? [c.lies, 'of ' + c.total + ' lies'] : [null]] : null,
-  onOpen: c.played ? () => cbGo(gs, c.id) : null });
+const cbRow = (gs, c) => ({ key: c.id, title: '#' + (CB_ALL.length - CB_ALL.indexOf(c)), date: lbShort(c.week), status: cbStatus(c), onOpen: c.played ? () => cbGo(gs, c.id) : null });
 // The last ten weeks, oldest first.
 const cbWeeks = () => CB_ALL.slice(0, 10).reverse().map((c) => {
   const p = c.week.split(' ');
@@ -61,7 +59,7 @@ const CbCase = ({ c }) => {
     <main className="gs-wrap gs-main">
       <LbBack label={GS_GAMES.casebook.name} onClick={() => cbGo(gs)} />
       <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{c.id === CB_LIVE.id ? 'THIS WEEK' : 'WEEK OF ' + c.week.toUpperCase()}</span><h1 className="gs-h1">{c.title}</h1></div>
+        <div className="gs-stack-xs"><span className="gs-label">{(c.id === CB_LIVE.id ? 'THIS WEEK' : 'WEEK OF ' + c.week.toUpperCase()) + (c.replayed ? ' · REPLAYED ' + c.replayed.toUpperCase() : '')}</span><h1 className="gs-h1">{c.title}</h1></div>
         {!c.live && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />}
       </div>
       <section className="lb-card">
@@ -111,29 +109,24 @@ const CbFirst = () => {
   );
 };
 const cbPassRow = (gs) => ({ key: 'with-pass', title: 'Every other case', date: '', status: { kind: 'none', label: 'With the Pass' }, onOpen: () => gs.go('pass') });
-const CB_FILTERS = [['all', 'All', () => true], ['right', 'Solved', (c) => c.verdict === 'right'], ['wrong', 'Unsolved', (c) => c.played && c.verdict === 'wrong'], ['none', 'Not played', (c) => !c.played]];
 const CbLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'casebook'); const pass = access === 'all'; const sid = gs.route.sid;
   const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
   const rows = cbHist(gs).slice(0, pass ? 8 : 7).map((x) => cbRow(gs, x)).concat(pass ? [] : [cbPassRow(gs)]);
-  if (sid === 'all') return (
-    <LbAll key={k} back={GS_GAMES.casebook.name} onBack={() => cbGo(gs)} title="Your cases" find="Find a case" hint="A case name or a month"
-      filters={CB_FILTERS.filter(([v]) => v !== 'none' || pass)} items={cbHist(gs)}
-      text={(c) => c.title + ' ' + c.week + ' ' + c.month} row={(c) => cbRow(gs, c, true)} empty="No case matches that. Try another name or month." />
-  );
-  const c = sid && (sid === CB_LIVE.id ? (pass ? cbWeek(gs) : null) : CB_ALL.find((x) => x.id === sid && x.played));
+  const c = sid && (sid === CB_LIVE.id ? (pass ? cbWeek(gs) : null) : (window.CB_REPLAYS || {})[sid] || CB_ALL.find((x) => x.id === sid && x.played));
   if (c) return <CbCase key={k + sid} c={c} />;
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="casebook" />
-      <div className="lb-lay">
+      <div className={'lb-lay' + (pass ? '' : ' is-three')}>
         {pass ? <CbNow c={cbWeek(gs)} /> : <CbFirst />}
         {pass && <LbRun n={CB_STREAK_N} unit="weeks" weeks={cbWeeks()} />}
         <LbAch items={CB_ACH} badges={CB_BADGES} access={access} ended={CB_ENDED} />
-        <LbRecent title="Your cases" allLabel="All cases" onAll={() => cbGo(gs, 'all')} rows={rows} />
+        <LbRecent title="Your cases" allLabel="All cases" rows={rows} />
       </div>
     </main>
   );
 };
 
 window.GS_LIBRARY.casebook = CbLibrary;
+Object.assign(window, { cbGo, cbWeek, cbStatus });

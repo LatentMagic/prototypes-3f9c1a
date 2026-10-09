@@ -5,6 +5,21 @@
   "tickets": [
     {
       "id": "—",
+      "slug": "plays-and-editions",
+      "name": "What a game has put out, and what you played",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Plays and editions, options 1 to 3",
+          "path": "docs/specs/plays-and-editions/playground/index.html",
+          "note": "A panel for each edition, History holding everything, or a page for every edition; each entry says what the edition was."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
       "slug": "home-how",
       "name": "The home page: how it works and getting started",
       "state": "active",

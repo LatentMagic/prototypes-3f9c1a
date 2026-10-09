@@ -44,7 +44,7 @@ const cbMake = (id, week, month, title, played, verdict, total, seq, rec) => {
   return { id, week, month, title, played, live: played && !verdict, verdict, total: Math.max(total, lies), turns: seq.length, lies, seq, rec };
 };
 const CB_RECENT = CB_RAW.map(([id, week, month, title, cast, seq, verdict, total], k) =>
-  cbMake(id, week, month, title, !!seq, verdict, total, seq || '', seq ? cbRecord(seq, cast, verdict, k) : []));
+  ({ ...cbMake(id, week, month, title, !!seq, verdict, total, seq || '', seq ? cbRecord(seq, cast, verdict, k) : []), cast }));
 // 28 older weeks behind those 17.
 const CB_A = ['The Silent', 'The Broken', 'The Last', 'A Cold', 'The Second', 'The Hollow', 'The Drowned', 'The Borrowed'];
 const CB_B = ['Bell', 'Lantern', 'Orchard', 'Letter', 'Mill', 'Chapel', 'Ferry', 'Clock', 'Garden', 'Key', 'Pier', 'Ledger', 'Window', 'Harbour'];
@@ -55,8 +55,8 @@ const CB_OLD = Array.from({ length: 28 }, (_, i) => {
   const played = i % 5 !== 2 || i === 27; const r = (i * 3) % 16;
   const seq = played ? (CB_SEQ.slice(r) + CB_SEQ.slice(0, r)).slice(0, 9 + ((i * 5) % 8)) : '';
   const verdict = played ? (i % 3 === 0 ? 'right' : 'wrong') : null;
-  return cbMake('o' + i, d.getDate() + ' ' + mName + yr, mName + yr, CB_A[i % 8] + ' ' + CB_B[(i * 3) % 14], played, verdict, 3 + (i % 3), seq,
-    played ? cbRecord(seq, ['Ivy Marsh', 'Col. Brand', 'Ottoline Fay'], verdict, i) : []);
+  return { ...cbMake('o' + i, d.getDate() + ' ' + mName + yr, mName + yr, CB_A[i % 8] + ' ' + CB_B[(i * 3) % 14], played, verdict, 3 + (i % 3), seq,
+    played ? cbRecord(seq, ['Ivy Marsh', 'Col. Brand', 'Ottoline Fay'], verdict, i) : []), cast: ['Ivy Marsh', 'Col. Brand', 'Ottoline Fay'] };
 });
 const CB_ALL = [...CB_RECENT, ...CB_OLD];
 const CB_LIVE = CB_ALL[0];
@@ -96,4 +96,4 @@ const CB_BADGES = {
 // Share text, per the spec: it hides the killer, the suspects and what they admitted.
 const cbShareLines = (c) => ['Casebook · ' + c.title, (c.verdict === 'right' ? '✅ Solved' : '❌ Unsolved') + ' · ' + c.turns + ' of 16 turns · ' + c.lies + ' of ' + c.total + ' lies exposed', 'https://platform.example/casebook'];
 
-Object.assign(window, { CB_ALL, CB_LIVE, CB_DONE, CB_NEXT, CB_STREAK_N, CB_ENDED, CB_ACH, CB_BADGES, cbShareLines });
+Object.assign(window, { CB_ALL, CB_LIVE, CB_DONE, CB_NEXT, CB_STREAK_N, CB_ENDED, CB_ACH, CB_BADGES, cbShareLines, cbRecord });

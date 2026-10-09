@@ -71,9 +71,11 @@ const DcPassBand = () => {
 
 const DcBody = () => {
   const gs = useGs();
-  const [q, setQ] = React.useState(''); const [on, setOn] = React.useState([]);
+  const [q, setQ] = React.useState(''); const [on, setOn] = React.useState(gs.route.on || []);
+  React.useEffect(() => { setOn(gs.route.on || []); }, [gs.route]);
   const kinds = GS_KINDS.filter((c) => on.includes(c)); const free = on.includes('free');
-  const ids = GS_GAME_ORDER.filter((k) => (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!free || GS_GAMES[k].free) && gsFind(q, k));
+  const rhy = GS_RHYTHMS.map(([v]) => v).filter((v) => on.includes(v));
+  const ids = GS_GAME_ORDER.filter((k) => (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!rhy.length || rhy.includes(gsRhythm(k))) && (!free || GS_GAMES[k].free) && gsFind(q, k));
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
   const clear = () => { setOn([]); setQ(''); };
   const freeIds = GS_GAME_ORDER.filter((k) => GS_GAMES[k].free);
@@ -94,7 +96,7 @@ const DcBody = () => {
       <div className="dc-tools">
         <DS.SearchField label="Search" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="dc-chips" role="group" aria-label="Show only">
-          {[...GS_KINDS.map((c) => [c, gsKind(c)]), ['free', 'Free']].map(([v, l]) => <button key={v} type="button" aria-pressed={on.includes(v)} onClick={() => flip(v)}>{l}</button>)}
+          {[...GS_KINDS.map((c) => [c, gsKind(c)]), ...GS_RHYTHMS, ['free', 'Free']].map(([v, l]) => <button key={v} type="button" aria-pressed={on.includes(v)} onClick={() => flip(v)}>{l}</button>)}
         </div>
       </div>
       {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="dc-wall">{ids.map((k) => <DcTile key={k} id={k} />)}</div>
@@ -134,11 +136,13 @@ const GS_LIB_ME = {
 const gsLibMe = (view, k, lapsed) => (GS_LIB_ME[lapsed ? 'lapsed' : view] && GS_LIB_ME[lapsed ? 'lapsed' : view][k]) || [null, 'Free first edition'];
 const GsLibrary = () => {
   const gs = useGs();
-  const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState('all'); const [sort, setSort] = React.useState('last');
-  const wait = useGsPart([q, cat, sort]);
+  const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
+  const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
+  React.useEffect(() => { setCat(gs.route.kind || 'all'); setRhy(gs.route.rhythm || 'all'); }, [gs.route]);
+  const wait = useGsPart([q, cat, rhy, sort]);
   const rank = (k) => { const r = gsLibMe(gs.view, k, gsLapsed(gs))[0]; return r == null ? 99 : r; };
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
-  const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && gsFind(q, k))
+  const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rank(a) - rank(b) || az(a, b)));
   return (
     <main className="gs-wrap gs-main">
@@ -147,6 +151,7 @@ const GsLibrary = () => {
         <aside className="lb-tools">
           <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
           <LbChoice label="Kind" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
+          <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
           <LbChoice label="Order" value={sort} opts={[['last', 'Last played'], ['az', 'A to Z']]} onPick={setSort} />
         </aside>
         <div className="lb-box">
@@ -160,7 +165,7 @@ const GsLibrary = () => {
                 </button>
               </li>
             ); })}</ul>
-          ) : <div className="dc-empty"><p>{'No game matches “' + q + '”.'}</p><DS.TextLink onClick={() => { setQ(''); setCat('all'); }}>Show every game</DS.TextLink></div>}
+          ) : <div className="dc-empty"><p>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={() => { setQ(''); setCat('all'); setRhy('all'); }}>Show every game</DS.TextLink></div>}
         </div>
       </div>
     </main>

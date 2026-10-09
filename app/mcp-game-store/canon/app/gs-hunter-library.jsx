@@ -4,15 +4,30 @@
 // rather than a streak. The now card is your latest day, with where you left off. Records are invented.
 // ============================================================================
 const HG_ENDS = ['Home by the fire', 'Slept at the springs', 'Slept in the cave mouth', 'Home with full hands', 'Slept out on the plain'];
+// Each day keeps how it ended and what happened in it. Day 18 (5 October) is the latest.
+const HG_POOL = {
+  Slept: ['At the fire, by Aunt', 'At the springs', 'In the cave mouth', 'At the fire, with the band', 'Out on the plain'],
+  Joined: ['The ibex hunt, and the meeting of the bands', 'The walk to the springs', 'Digging roots with Aunt', 'The reindeer watch', 'Painting at the wall'],
+  With: ['Aunt and the two hunters', 'The gatherers', 'Aunt', 'The whole band', 'The old storyteller'],
+  Made: ['A bone needle', 'A flint scraper', 'A carrying bag', 'Nothing', 'A shell bead'],
+  Saw: ['Ibex and a cave lion', 'Horses at the river', 'A herd of reindeer', 'A woolly rhino, far off', 'Cave bears asleep'],
+  Weather: ['Hot, then thunder at dusk', 'Cold wind all day', 'Clear and dry', 'Rain until midday', 'Mist over the river'],
+};
 const HG_DAYS = Array.from({ length: 18 }, (_, i) => {
   const d = new Date(2026, 9, 5 - 3 * i - (i % 2));
   const restarted = i % 5 === 3;
-  return { id: 'hg' + i, date: lbDate(d), month: lbMonth(d), played: true, restarted, title: 'Day ' + (18 - i) };
+  return { id: 'hg' + i, d, date: lbDate(d), month: lbMonth(d), played: true, restarted, title: 'Day ' + (18 - i), end: restarted ? null : HG_ENDS[i % 5],
+    facts: Object.entries(HG_POOL).map(([k, v], n) => [k, v[(i * (n + 2)) % v.length]]) };
 });
-const HG_LATEST = {
-  title: 'Home by the fire', date: '5 October',
-  facts: [['Slept', 'At the fire, by Aunt'], ['Joined', 'The ibex hunt, and the meeting of the bands'], ['With', 'Aunt and the two hunters'], ['Made', 'A bone needle'], ['Saw', 'Ibex and a cave lion'], ['Weather', 'Hot, then thunder at dusk']],
-};
+const HG_LATEST = HG_DAYS[0];
+const hgSid = (x) => 'hunter-' + x.id;
+const hgStatus = (x) => (x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' });
+// A session page for every day: the result matches its row; the record is what happened in the day. No sharing (game spec).
+HG_DAYS.forEach((x) => {
+  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
+    figures: x.end ? [x.title, x.end] : [x.title], listTitle: 'The day', share: null, lines: x.facts };
+});
+GS_SESSIONS.hunter = GS_SESSIONS[hgSid(HG_LATEST)];
 const HG_LEFT = { when: 'Midday', where: 'by the springs' };
 const HG_ACH = [
   ['fire', 'Fed the Fire', '14 September'], ['aunt', 'Dug with Aunt', '7 September'], ['dusk', 'One of Us at Dusk', '12 September'], ['hunters', 'Walked with the Hunters', '12 September'],
@@ -25,18 +40,18 @@ const HG_ACH = [
 ]);
 const HG_BADGES = lbAutoBadges(HG_ACH);
 const hgGo = (gs, sid) => gs.go('hunter', sid ? { page: 'record', sid } : { page: 'record' });
-const hgRow = (gs, x) => ({ key: x.id, title: x.title, date: lbShort(x.date), status: x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' },
-  onOpen: () => gs.go('session', { id: 'hunter' }) });
+const hgRow = (gs, x) => ({ key: x.id, title: x.title, date: lbShort(x.date), status: hgStatus(x),
+  onOpen: () => gs.go('session', { id: hgSid(x) }) });
 
 // Your latest day: where you left off, then three facts from the day. The whole day is one tap away.
 const HgLatest = ({ last }) => {
-  const gs = useGs();
-  const facts = HG_LATEST.facts.filter(([k]) => ['Slept', 'With', 'Made'].includes(k));
+  const gs = useGs(); const day = last || HG_LATEST;
+  const facts = day.facts.filter(([k]) => ['Slept', 'With', 'Made'].includes(k));
   return (
     <section className="lb-card">
       <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{(last ? 'YOUR LAST DAY · ' + last.date.toUpperCase() : 'YOUR LATEST DAY · ' + HG_LATEST.date.toUpperCase())}</span><h2 className="mcp-t-sec">{HG_LATEST.title}</h2></div>
-        <DS.TextLink onClick={() => gs.go('session', { id: 'hunter' })}>See the whole day</DS.TextLink>
+        <div className="gs-stack-xs"><span className="gs-label">{(last ? 'YOUR LAST DAY · ' : 'YOUR LATEST DAY · ') + day.date.toUpperCase()}</span><h2 className="mcp-t-sec">{day.end || day.title}</h2></div>
+        <DS.TextLink onClick={() => gs.go('session', { id: hgSid(day) })}>See the whole day</DS.TextLink>
       </div>
       <p>{last ? 'That was the last day you played before your Pass ended.' : 'You left off at ' + HG_LEFT.when.toLowerCase() + ', ' + HG_LEFT.where + '. Carry on in any chat.'}</p>
       <dl className="lb-facts">{facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
@@ -52,7 +67,6 @@ const hgWeeks = () => Array.from({ length: 10 }, (_, i) => {
 const HgLeft = () => (
   <LbRun n={HG_DAYS.filter((x) => !x.restarted).length} unit="weeks" figure="days played" legend="Not played" weeks={lbRunOf(hgWeeks())} />
 );
-const HG_FILTERS = [['all', 'All', () => true], ['done', 'Finished', (x) => !x.restarted], ['restarted', 'Restarted', (x) => x.restarted]];
 const HG_OLD = HG_DAYS.filter((x) => lbOld(x.date));
 // Without the Pass: the game is closed. A player whose Pass ended keeps their last day, their days and what they earned, locked.
 const HgClosed = ({ again }) => {
@@ -72,10 +86,6 @@ const HgLibrary = () => {
     <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><HgClosed /></div></main>
   );
   const days = pass ? HG_DAYS : HG_OLD;
-  if (gs.route.sid === 'all') return (
-    <LbAll key={k} back={GS_GAMES.hunter.name} onBack={() => hgGo(gs)} title="Your days" find="Find a day" hint="A day number or a date"
-      filters={HG_FILTERS} items={days} text={(x) => x.title + ' ' + x.date + ' ' + x.month} row={(x) => hgRow(gs, x)} empty="No day matches that. Try another word or date." />
-  );
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="hunter" />
@@ -84,9 +94,10 @@ const HgLibrary = () => {
         <HgLatest last={pass ? null : HG_OLD[0]} />
         {pass && <HgLeft />}
         <LbAch items={HG_ACH} badges={HG_BADGES} access={access} ended={CB_ENDED} />
-        <LbRecent title="Your days" allLabel="All days" onAll={() => hgGo(gs, 'all')} rows={days.slice(0, 8).map((x) => hgRow(gs, x))} />
+        <LbRecent title="Your days" allLabel="All days" rows={days.slice(0, 8).map((x) => hgRow(gs, x))} />
       </div>
     </main>
   );
 };
 window.GS_LIBRARY.hunter = HgLibrary;
+Object.assign(window, { HG_DAYS, hgSid, hgStatus });

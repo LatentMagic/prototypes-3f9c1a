@@ -212,7 +212,7 @@ const GsPass = () => {
     <main className="gs-wrap gs-main">
       <div className="gs-stack-md">
         <h1 className="gs-h1">[Platform] Pass</h1>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0 24px', minHeight: 48 }}>{status && <p className="gs-status">{status}{holds && <DS.Icon name="check" />}</p>}{holds && <DS.TextLink onClick={() => gs.go('account')}>Manage in account</DS.TextLink>}</div>
+        {status && <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0 24px', minHeight: 48 }}>{status && <p className="gs-status">{status}{holds && <DS.Icon name="check" />}</p>}{holds && <DS.TextLink onClick={() => gs.go('account')}>Manage in account</DS.TextLink>}</div>}
       </div>
       <GsCompare />
       {!holds && <GsBuyBlock />}

@@ -52,8 +52,11 @@ KIT_QA.unshift({ key: 'discover-and-library', title: 'Discover and Library',
 KIT_QA.unshift({ key: 'split-daily-puzzles', title: 'Daily Puzzles split into separate games',
   note: 'No "Daily Puzzles" anywhere a player sees. Each daily and Escape: product page, library game page, a session, Share. Home, Games, Library menu and History at 320px.',
   steps: ['home', 'games-signed-out', 'games-free', 'games', 'word-free', 'word-signed-out', 'groups-pass', 'mystery-pass', 'escape-free', 'escape-pass',
-    'library-word', 'library-groups-finished', 'library-mystery-finished', 'library-escape', 'library-escape-finished', 'library-groups-free', 'library-groups-all',
+    'library-word', 'library-groups-in-progress', 'library-mystery-in-progress', 'library-escape', 'library-escape-in-progress', 'library-groups-free',
     'session-puzzle', 'session-groups', 'session-escape', 'history', 'free-history', 'pass-free', 'not-connected'] });
+KIT_QA.unshift({ key: 'rhythm-filters', title: 'Daily and weekly filters (not ratified)',
+  note: 'Each held state shows its surface’s empty list. By hand: Daily shows only Daily Word, Groups and Mystery (or their plays); Weekly only Escape, Casebook and Delve; 36,000 Summers Ago only under All games. Combine with search, kind, Free, Order, Plays, Show; only the list part loads. Check at 320px.',
+  steps: ['games', 'filter-empty-discover', 'library', 'filter-empty-library', 'history', 'filter-empty-history'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

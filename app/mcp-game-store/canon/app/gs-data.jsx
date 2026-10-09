@@ -45,17 +45,23 @@ const GS_GAMES = {
   hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
 const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'hunter'];
+// How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
+const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
+const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
 const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
 // This edition's play of each free game, by plan: today's for a daily, this week's for Escape.
+// Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).
 const GS_TODAY_PLAYED = {
   out: {},
-  free: { word: 'word-today' },
+  free: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
   pass: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
 };
+// This player's plays of this edition. Config "Free plan, today: Not played" empties the free plan's (state free-not-played-today).
+const gsTodayPlayed = (gs) => (gs.view === 'free' && gs.review && gs.review.today === 'none' ? {} : GS_TODAY_PLAYED[gs.view] || {});
 // The small mark on a card, per game. Pass: this edition of each game played; free, signed in: the free plays only.
-const gsMarks = (view) => {
+const gsMarks = (view, gs) => {
   const m = {};
-  Object.keys(GS_TODAY_PLAYED[view] || {}).forEach((k) => { m[k] = GS_GAMES[k].daily ? 'Played today' : 'Played this week'; });
+  Object.keys(gs ? gsTodayPlayed(gs) : GS_TODAY_PLAYED[view] || {}).forEach((k) => { m[k] = GS_GAMES[k].daily ? 'Played today' : 'Played this week'; });
   if (view === 'pass') { m.casebook = 'Played this week'; m.delve = 'Played this week'; }
   return m;
 };
@@ -144,11 +150,6 @@ const GS_SESSIONS = {
       ['Accusation', 'Dr. Celia Rourke', 'Right'],
     ],
   },
-  // Every blank is null and shows as a muted "—": nobody has decided it.
-  hunter: {
-    kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', result: null, date: 'Monday 5 October', lapsedDate: 'Saturday 12 September',
-    figures: [null], listTitle: null, share: null, lines: [],
-  },
   'mystery-1004': {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', result: 'Solved', date: 'Sunday 4 October',
     listTitle: 'Every question', share: 'Solved', shareHead: 'Daily Mystery #62 · ✅ Solved · 🔎🔎🔎',
@@ -156,8 +157,18 @@ const GS_SESSIONS = {
       ['Question 3', 'Whose dog was it?', 'Not the neighbour'], ['Accusation', 'The neighbour', 'Right']],
   },
 };
-// Newest first: today's plays, then 5, 4 October and 28 September. One loss.
-const GS_HISTORY = ['word-today', 'groups-today', 'mystery-today', 'escape-week', 'delve', 'casebook', 'hunter', 'word-1005', 'groups-1005', 'mystery-1004', 'escape-0928'];
+// This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
+Object.assign(GS_SESSIONS, {
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
+    lines: [['Guess 1', 'SLATE', '1 in the word'], ['Guess 2', 'TONIC', '2 in place, 1 in the word']] },
+  'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], listTitle: 'Every try', share: null,
+    lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
+  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', live: true, result: 'In progress', date: GS.today, listTitle: 'Every question', share: null,
+    lines: [['Question 1', 'Who found the body?', 'The cook'], ['Question 2', 'Who had the key?', 'Nobody']] },
+  'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, listTitle: 'Every move', share: null,
+    lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', lapsedDate: undefined, figures: ['Threat 3/6', '9 rolls'], tracks: { progress: 4, threat: 3 }, lines: GS_ROLLS.slice(0, 9), reached: null, share: null },
+});
 
 // A lapsed player's Pass-game plays predate the day their Pass ended (18 September).
 const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.freeUsed;
@@ -174,6 +185,6 @@ const gsScrollToId = (id) => {
 };
 
 Object.assign(window, {
-  DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED,
-  GS_ROLLS, GS_SESSIONS, GS_HISTORY, gsLapsed, gsSessDate, gsScroller, gsScrollTop, gsScrollToId,
+  DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
+  GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsScroller, gsScrollTop, gsScrollToId,
 });

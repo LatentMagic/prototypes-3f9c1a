@@ -12,12 +12,12 @@
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-const GS_REVIEW_DEFAULT = { providerFail: false, appleNone: false, sheet: 'completes', week: 'live' };
+const GS_REVIEW_DEFAULT = { providerFail: false, appleNone: false, sheet: 'completes', week: 'done', today: 'played' };
 const GS_USER_DEFAULT = { username: 'MonaLaser', locked: false, email: 'you@example.com' };
 // status: none | free (seven-day trial) | active | failed | ending
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };
 // Screens with their own frame (no shared top bar).
-const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'account', 'loading', 'offline'];
+const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline, not-found).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.

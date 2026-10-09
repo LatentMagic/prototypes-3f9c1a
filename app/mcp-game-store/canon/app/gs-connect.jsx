@@ -84,7 +84,7 @@ const GsConnect = () => {
   const t = gsPromptText({ kind: 'games' });
   return (
     <main className="gs-wrap gs-main">
-      <header className="gs-stack-md gs-measure">
+      <header className="gs-stack-md hw-head">
         <h1 className="gs-h1">How it works</h1>
         <p className="gs-lead">You play every game inside your own AI. Connect it to [Platform] once and sign in, and nothing plays until you have.</p>
       </header>

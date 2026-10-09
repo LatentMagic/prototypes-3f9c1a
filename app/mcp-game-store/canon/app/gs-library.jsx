@@ -121,53 +121,6 @@ const LbAch = ({ items, badges, access, ended }) => {
   );
 };
 
-// ---- Your plays: a title over its date and result. On the all page, figures join the row from 600px.
-// r: { key, title, date, status, figs?: [[strong, rest], ...], onOpen? }
-const LbRow = ({ r }) => {
-  const cells = <>
-    <span className="lb-title">{r.title}</span>
-    <span className="lb-res"><LbStatus s={r.status.short && !r.figs ? { ...r.status, label: r.status.short } : r.status} /></span>
-    <span className="lb-meta">
-      {r.date && <span className="lb-date">{r.date}</span>}
-      {r.figs && r.figs.map(([b, t], i) => <span key={i} className={'lb-n lb-n' + i}>{b != null && <><b>{b}</b><span>{t}</span></>}</span>)}
-    </span>
-  </>;
-  return r.onOpen
-    ? <button type="button" className={'lb-row' + (r.inline ? ' is-inline' : '')} onClick={r.onOpen}>{cells}<LbChev /></button>
-    : <div className={'lb-row' + (r.probe ? '' : ' is-off') + (r.inline ? ' is-inline' : '')}>{cells}<span className="lb-chev-space" /></div>;
-};
-// On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height, rows sharing what's left.
-const LbRecent = ({ title, allLabel, onAll, rows, empty }) => {
-  const card = React.useRef(null); const list = React.useRef(null); const probe = React.useRef(null);
-  const [fit, setFit] = React.useState(null);
-  React.useLayoutEffect(() => {
-    const el = card.current; if (!el || !rows.length) return undefined;
-    const pair = el.previousElementSibling; const lay = el.parentElement;
-    const measure = () => {
-      const two = getComputedStyle(lay).gridTemplateColumns.split(' ').length > 1;
-      if (!two || !pair) { el.style.height = ''; if (pair) pair.style.alignSelf = ''; setFit(null); return; }
-      pair.style.alignSelf = 'start';
-      el.style.height = pair.offsetHeight + 'px';
-      const room = list.current ? el.clientHeight - list.current.offsetTop : 0;
-      const hs = Array.from(probe.current.children).map((x) => x.offsetHeight);
-      let k = 0; let sum = 0; while (k < hs.length && sum + hs[k] <= room + 1) { sum += hs[k]; k += 1; }
-      // Never fewer than the phone's four: a short neighbour (few achievements) grows to match instead.
-      if (k < Math.min(4, hs.length)) { el.style.height = ''; pair.style.alignSelf = ''; setFit(null); return; }
-      setFit(k);
-    };
-    measure();
-    const ro = new ResizeObserver(measure); ro.observe(pair); ro.observe(lay);
-    return () => ro.disconnect();
-  }, [rows.length]);
-  const shown = fit ? rows.slice(0, fit) : rows.slice(0, 4);
-  return (
-    <section ref={card} className={'lb-card lb-recentcard' + (fit ? ' is-fill' : '')}>
-      <div className="lb-sechead"><h2 className="mcp-t-card">{title}</h2>{rows.length > 0 && <DS.TextLink onClick={onAll}>{allLabel}</DS.TextLink>}</div>
-      {rows.length ? <ul ref={list} className="lb-list lb-recent" style={fit ? { gridTemplateRows: 'repeat(' + fit + ', minmax(0, 1fr))' } : null}>{shown.map((r) => <li key={r.key}><LbRow r={r} /></li>)}</ul> : <p className="gs-muted">{empty}</p>}
-      {rows.length > 0 && <ul ref={probe} className="lb-list lb-probe" aria-hidden="true">{rows.map((r) => <li key={r.key}><LbRow r={{ ...r, onOpen: null, probe: true }} /></li>)}</ul>}
-    </section>
-  );
-};
 // Dates for seeds: "5 October", with the year only when it isn't this one.
 const lbDate = (d) => d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
 const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
@@ -175,51 +128,13 @@ const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFull
 const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.played, now: i === a.length - 1 }; });
 const lbStreak = (list) => { let n = 0; for (const x of list) { if (!x.played) break; n += 1; } return n; };
 
-// ---- Every play: search, order and filter in a side column; numbered pages of twelve ----
+// ---- A row of choices (History and the Editions page side column) ----
 const LbChoice = ({ label, value, opts, onPick }) => (
   <div className="lb-choicegrp" role="group" aria-label={label}>
     <span className="gs-field-label">{label}</span>
     <div className="lb-choice">{opts.map(([v, l]) => <button key={v} type="button" aria-pressed={value === v} onClick={() => onPick(v)}>{l}</button>)}</div>
   </div>
 );
-// filters: [[value, label, test]]; text(item) is what search reads; row(item) builds an LbRow.
-const LbAll = ({ back, onBack, title, find, hint, filters, items, text, row, empty }) => {
-  const [q, setQ] = React.useState(''); const [sort, setSort] = React.useState('new'); const [filt, setFilt] = React.useState(filters[0][0]);
-  const [p, setP] = React.useState(0);
-  const s = q.trim().toLowerCase();
-  React.useEffect(() => setP(0), [s, sort, filt]);
-  const test = (filters.find(([v]) => v === filt) || filters[0])[2];
-  let list = items.filter(test);
-  if (s) list = list.filter((x) => text(x).toLowerCase().includes(s));
-  if (sort === 'old') list = [...list].reverse();
-  const size = 12; const pages = Math.max(1, Math.ceil(list.length / size)); const pg = Math.min(p, pages - 1);
-  const go = (x) => { setP(x); window.scrollTo(0, 0); };
-  return (
-    <main className="gs-wrap gs-main">
-      <LbBack label={back} onClick={onBack} />
-      <h1 className="gs-h1">{title}</h1>
-      <div className="lb-alllay">
-        <aside className="lb-tools">
-          <DS.SearchField label={find} placeholder={hint} value={q} onChange={(e) => setQ(e.target.value)} />
-          <LbChoice label="Order" value={sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={setSort} />
-          <LbChoice label="Show" value={filt} opts={filters.map(([v, l]) => [v, l])} onPick={setFilt} />
-        </aside>
-        <div className="lb-box lb-results">
-          {list.length ? <div className="lb-rows"><ul className="lb-list">{list.slice(pg * size, pg * size + size).map((x) => { const r = row(x); return <li key={r.key}><LbRow r={r} /></li>; })}</ul></div>
-            : <p className="lb-empty gs-muted">{empty}</p>}
-          {pages > 1 && (
-            <nav className="lb-pages" aria-label="Pages">
-              {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="back" /></button> : <span className="gs-iconbtn-space" />}
-              <div className="lb-pagenums">{Array.from({ length: pages }, (_, x) => <button key={x} type="button" aria-current={x === pg ? 'page' : undefined} onClick={() => go(x)}>{x + 1}</button>)}</div>
-              {pg < pages - 1 ? <button type="button" className="gs-iconbtn" aria-label="Next page" onClick={() => go(pg + 1)}><DS.Icon name="back" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}
-            </nav>
-          )}
-        </div>
-      </div>
-    </main>
-  );
-};
-
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // The preview iframe can refuse the Clipboard API silently, so the textarea copy runs first, inside the click.
 const lbCopy = (lines) => {
@@ -248,5 +163,16 @@ const LbShare = ({ lines, note }) => {
 };
 
 window.GS_LIBRARY = window.GS_LIBRARY || {};
-const lbWeekDone = (gs) => (gs.review && gs.review.week) === 'done';
-Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, LbBack, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbRow, LbRecent, LbAll, LbShare });
+// This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
+const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
+// This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).
+const lbNow = (gs, id) => {
+  const done = lbWeekDone(gs);
+  if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
+  if (id === 'delve') return gs.view === 'pass' ? { status: dvStatus(done ? DV_DONE : DV_LIVE), open: () => gs.go('session', { id: done ? 'delve' : 'delve-live' }) } : null;
+  const c = window.PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
+  if (!done) return { status: { kind: 'live', label: 'In progress' }, open: () => gs.go('session', { id: c.liveSid }) };
+  const s = GS_SESSIONS[c.today];
+  return { status: s.loss ? { kind: 'bad', label: s.result, short: c.badF } : { kind: 'ok', label: s.result, short: c.short }, open: () => gs.go('session', { id: c.today }) };
+};
+Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
