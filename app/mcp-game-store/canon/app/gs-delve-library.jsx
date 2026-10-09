@@ -17,24 +17,28 @@ const DV_LIVE = { ...DV_ALL[0], rolls: 9, rescue: 4, ritual: 3 };
 const DV_DONE = { ...DV_LIVE, end: 'won', rolls: 11, rescue: 6, ritual: 4, dice: '🟩🟨🟥🟩🟩🟨🟩✨🟩🟥🟩' };
 const DV_NEXT = 'Monday 12 October';
 const DV_ACH = [
-  { k: 'shrine', n: 'Reached the shrine cavern', how: 'Find your way to the shrine cavern.', got: '21 September' },
-  { k: 'rescued', n: 'Elsie rescued', how: 'Get Elsie out of the warren.', got: '28 September' },
-  { k: 'clean', n: 'Rescued without a miss', how: 'Rescue Elsie without failing a roll.' },
+  { k: 'shrine', n: 'Reached the shrine cavern', how: 'Find your way to the shrine cavern.', got: '14 September', gotFree: '18 March', first: true },
+  { k: 'rescued', n: 'Elsie rescued', how: 'Get Elsie out of the warren.', got: '7 September', first: true },
+  { k: 'clean', n: 'Rescued without a miss', how: 'Rescue Elsie without failing a roll.', first: true },
   { k: 'heroes', n: 'Won with all three heroes', how: 'Rescue Elsie as the fighter, the rogue and the wizard.', of: 3, have: 1, endedHave: 1 },
   // Invented beyond the spec's four, so the card carries about ten (review-2-notes.md).
-  { k: 'tunnel', n: 'Found the escape tunnel', how: 'Find the tunnel out of the warren.', got: '14 September' },
+  { k: 'tunnel', n: 'Found the escape tunnel', how: 'Find the tunnel out of the warren.', got: '31 August' },
   { k: 'hold', n: 'Reached the freighter’s hold', how: 'Find your way into the drifting freighter’s hold.' },
-  { k: 'potion', n: 'Rescued without the potion', how: 'Rescue Elsie and leave the potion full.', got: '28 September' },
-  { k: 'spare', n: 'Rescued with time to spare', how: 'Rescue Elsie before the ritual passes 2 of 6.' },
-  { k: 'double', n: 'Saved by the double roll', how: 'Win a scene on your double roll.' },
+  { k: 'potion', n: 'Rescued without the potion', how: 'Rescue Elsie and leave the potion full.', got: '7 September', first: true },
+  { k: 'spare', n: 'Rescued with time to spare', how: 'Rescue Elsie before the ritual passes 2 of 6.', first: true },
+  { k: 'double', n: 'Saved by the double roll', how: 'Win a scene on your double roll.', first: true },
   { k: 'weeks', n: 'Four weeks in the warren', how: 'Play a scene four weeks in a row.', of: 4, have: 3, endedHave: 3 },
 ];
 const DV_BADGES = lbAutoBadges(DV_ACH);
 const dvStatus = (s) => (!s.played ? { kind: 'none', label: 'Not played' } : !s.end ? { kind: 'live', label: 'In progress' } : DV_END[s.end]);
 const dvGo = (gs, sid) => gs.go('delve', sid ? { page: 'record', sid } : { page: 'record' });
-const dvHist = (mode) => DV_ALL.slice(1).filter((s) => s.played || mode === 'pass');
+const DV_FIRST = DV_ALL[DV_ALL.length - 1];
+// A free player has the first scene; a player whose Pass ended has everything they played before it ended; the Pass has all.
+const dvHist = (gs) => DV_ALL.slice(1).filter((s) => (gs.view === 'pass' ? true : gsLapsed(gs) ? s.played && lbOld(s.date) : s === DV_FIRST));
+GS_SESSIONS['delve-first'] = { ...GS_SESSIONS.delve, result: 'Ritual done', loss: true, date: 'Wednesday 18 March', lapsedDate: undefined, figures: ['Threat 6/6', '12 rolls', 'HP 3/12'],
+  tracks: { progress: 4, threat: 6 }, reached: 'Caught', share: 'Ritual done · threat 6/6 · 12 rolls' };
 const dvRow = (gs, s, figs) => ({ key: s.id, title: '#' + (DV_ALL.length - DV_ALL.indexOf(s)), date: lbShort(s.date), status: dvStatus(s),
-  figs: figs ? [s.played ? [s.rolls, 'rolls'] : [null], [null]] : null, onOpen: s.played ? () => gs.go('session', { id: 'delve' }) : null });
+  figs: figs ? [s.played ? [s.rolls, 'rolls'] : [null], [null]] : null, onOpen: s.played ? () => gs.go('session', { id: s === DV_FIRST ? 'delve-first' : 'delve' }) : null });
 
 const DvNow = ({ s }) => {
   const gs = useGs();
@@ -59,22 +63,43 @@ const DvNow = ({ s }) => {
     </section>
   );
 };
+const DvFirst = () => {
+  const gs = useGs(); const s = DV_FIRST; const again = gsLapsed(gs);
+  return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THE FIRST SCENE · FREE</span><h2 className="mcp-t-sec">{s.title}</h2></div>
+        {s.played && <span className="lb-big"><LbResult s={dvStatus(s)} /></span>}
+      </div>
+      <p>{s.played ? 'You played ' + s.hero + ' and the ritual finished before Elsie was out, in ' + s.rolls + ' rolls.' : 'The game’s very first scene, the same for everyone. Play it free.'}</p>
+      <div className="lb-foot">
+        <div className="lb-acts">
+          {s.played ? <DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play in your AI</DS.Button>}
+        </div>
+        <span className="gs-muted">Every other scene comes with the Pass.</span>
+      </div>
+      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{again ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
+    </section>
+  );
+};
+const dvPassRow = (gs) => ({ key: 'with-pass', title: 'Every other scene', date: '', status: { kind: 'none', label: 'With the Pass' }, onOpen: () => gs.go('pass') });
 const DV_FILTERS = [['all', 'All', () => true], ['won', 'Rescued', (s) => s.end === 'won'], ['lost', 'Lost', (s) => s.played && s.end && s.end !== 'won'], ['none', 'Not played', (s) => !s.played]];
 const DvLibrary = () => {
-  const gs = useGs(); const mode = lbMode(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+  const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
   if (gs.route.sid === 'all') return (
     <LbAll key={k} back="Delve" onBack={() => dvGo(gs)} title="Your scenes" find="Find a scene" hint="A scene name or a month"
-      filters={DV_FILTERS.filter(([v]) => v !== 'none' || mode === 'pass')} items={dvHist(mode)}
+      filters={DV_FILTERS.filter(([v]) => v !== 'none' || pass)} items={dvHist(gs)}
       text={(s) => s.title + ' ' + s.date + ' ' + s.month + ' ' + s.hero} row={(s) => dvRow(gs, s, true)} empty="No scene matches that. Try another name or month." />
   );
+  const rows = dvHist(gs).slice(0, pass ? 8 : 7).map((s) => dvRow(gs, s)).concat(pass ? [] : [dvPassRow(gs)]);
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />
-        <LbRun n={lbStreak(DV_ALL)} unit="weeks" weeks={lbRunOf(DV_ALL)} />
-        <LbAch items={DV_ACH} badges={DV_BADGES} mode={mode} ended={CB_ENDED} />
-        <LbRecent title="Your scenes" allLabel="All scenes" onAll={() => dvGo(gs, 'all')} rows={dvHist(mode).slice(0, 8).map((s) => dvRow(gs, s))} />
+        {pass ? <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} /> : <DvFirst />}
+        {pass && <LbRun n={lbStreak(DV_ALL)} unit="weeks" weeks={lbRunOf(DV_ALL)} />}
+        <LbAch items={DV_ACH} badges={DV_BADGES} access={access} ended={CB_ENDED} />
+        <LbRecent title="Your scenes" allLabel="All scenes" onAll={() => dvGo(gs, 'all')} rows={rows} />
       </div>
     </main>
   );

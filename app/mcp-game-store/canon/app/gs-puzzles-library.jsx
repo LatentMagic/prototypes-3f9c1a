@@ -4,7 +4,7 @@
 // Each is the standard option 16 page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements, your plays, and the all page.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
-// On the free plan, results last today only, so the streak, achievements and earlier editions point to the Pass.
+// Free (free-and-pass, 2026-10-09): a free player plays the current edition, with a streak and the achievements; earlier editions stay in results and replaying them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
 const pzMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
@@ -109,7 +109,7 @@ Object.entries(PZ).forEach(([id, c]) => {
 });
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line, short: c.short } : { kind: 'bad', label: x.line, short: c.badF });
-const pzHist = (c, mode) => (mode === 'free' ? [] : c.all.slice(1).filter((x) => x.played || mode === 'pass'));
+const pzHist = (c) => c.all.slice(1);
 const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : null });
 
 const PzNow = ({ c, done }) => {
@@ -134,12 +134,12 @@ const PzNow = ({ c, done }) => {
   );
 };
 const pzLibrary = (id) => () => {
-  const gs = useGs(); const c = PZ[id]; const mode = lbMode(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+  const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
   const [recent, allLabel, find, hint, empty] = c.plays;
   const filters = [['all', 'All', () => true], ['ok', c.okF, (x) => x.ok], ['bad', c.badF, (x) => x.played && !x.ok], ['none', 'Not played', (x) => !x.played]];
-  if (gs.route.sid === 'all' && mode !== 'free') return (
+  if (gs.route.sid === 'all') return (
     <LbAll key={k} back={GS_GAMES[id].name} onBack={() => pzGo(gs, id)} title={recent} find={find} hint={hint}
-      filters={filters.filter(([v]) => v !== 'none' || mode === 'pass')} items={pzHist(c, mode)}
+      filters={filters} items={pzHist(c)}
       text={(x) => x.title + ' ' + x.date + ' ' + x.month} row={(x) => pzRow(gs, c, x)} empty={empty} />
   );
   return (
@@ -147,12 +147,12 @@ const pzLibrary = (id) => () => {
       <LbHead id={id} />
       <div className="lb-lay">
         <PzNow c={c} done={lbWeekDone(gs)} />
-        <LbRun n={lbStreak(c.all)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(c.all)} locked={mode === 'free'} />
-        <LbAch items={c.ach} badges={c.badges} mode={mode} ended={CB_ENDED} />
-        <LbRecent title={recent} allLabel={allLabel} onAll={() => pzGo(gs, id, 'all')} rows={pzHist(c, mode).slice(0, 8).map((x) => pzRow(gs, c, x))}
-          empty={c.weekly ? 'On the free plan, results last until the end of the day. Earlier rooms stay with the Pass.'
-            : 'On the free plan, results last until the end of the day. Earlier days stay with the Pass.'} />
+        <LbRun n={lbStreak(c.all)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(c.all)} />
+        <LbAch items={c.ach} badges={c.badges} access="all" ended={CB_ENDED} />
+        <LbRecent title={recent} allLabel={allLabel} onAll={() => pzGo(gs, id, 'all')} rows={pzHist(c).slice(0, 8).map((x) => pzRow(gs, c, x))}
+          empty={c.weekly ? 'Your rooms appear here once you have played one.' : 'Your days appear here once you have played one.'} />
       </div>
+      {gs.view !== 'pass' && <p className="gs-muted">Replaying earlier editions comes with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
     </main>
   );
 };

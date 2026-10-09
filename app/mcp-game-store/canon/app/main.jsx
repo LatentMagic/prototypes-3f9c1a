@@ -14,14 +14,14 @@ const { useState, useEffect, useRef } = React;
 
 const GS_REVIEW_DEFAULT = { providerFail: false, appleNone: false, sheet: 'completes', week: 'live' };
 const GS_USER_DEFAULT = { username: 'MonaLaser', locked: false, email: 'you@example.com' };
-// status: none | free (free month) | active | failed | ending
+// status: none | free (seven-day trial) | active | failed | ending
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };
 // Screens with their own frame (no shared top bar).
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'account', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline, not-found).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
-const GS_SIGNED_IN_ONLY = ['connect', 'library', 'history', 'verify', 'username', 'account', 'update-card'];
+const GS_SIGNED_IN_ONLY = ['library', 'history', 'verify', 'username', 'account', 'update-card'];
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
 const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter',
@@ -59,6 +59,23 @@ const GsScreen = ({ name }) => {
   }
 };
 
+// A page loads as a page on arrival: the top bar and footer stand, the content waits.
+// Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
+const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter'];
+const GsArrival = ({ name, quick }) => {
+  const gs = useGs(); const r = gs.route;
+  const held = r.hold === 'page';
+  const skip = quick || !GS_ARRIVES.includes(name) || (name === 'games' && !!r.load);
+  const [ready, setReady] = useState(skip && !held);
+  useEffect(() => {
+    if (ready || held) return undefined;
+    const t = setTimeout(() => setReady(true), GS_LOAD_MS);
+    return () => clearTimeout(t);
+  }, []);
+  if (ready) return <GsScreen name={name} />;
+  return <main className="gs-wrap gs-main" aria-busy="true"><div className="gs-inplace" style={{ minHeight: '60vh' }}><GsSpin /></div></main>;
+};
+
 const KitApp = () => {
   // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
   const [layout, setLayout] = useState('auto');
@@ -84,18 +101,19 @@ const KitApp = () => {
   // Routes are history entries, so the browser's Back returns where you came from.
   const stack = useRef([{ name: 'home' }]);
   const idx = useRef(0);
+  const backNav = useRef(false);
   useEffect(() => {
     try { window.history.replaceState({ ...(window.history.state || {}), gsIdx: 0 }, ''); } catch (e) {}
     const onPop = (e) => {
       const i = e.state && e.state.gsIdx;
-      if (typeof i === 'number' && stack.current[i]) { idx.current = i; setPlaying(null); setRoute(stack.current[i]); }
+      if (typeof i === 'number' && stack.current[i]) { idx.current = i; backNav.current = true; setPlaying(null); setRoute(stack.current[i]); }
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
   const go = (name, extra) => {
     const r = { name, ...(extra || {}) };
-    idx.current += 1;
+    idx.current += 1; backNav.current = false;
     stack.current = stack.current.slice(0, idx.current).concat([r]);
     try { window.history.pushState({ gsIdx: idx.current }, ''); } catch (e) {}
     setPlaying(null); setRoute(r); setTimeout(gsScrollTop, 0);
@@ -118,7 +136,7 @@ const KitApp = () => {
   const gs = {
     route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640,
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
-    goHow: () => { go('home'); setTimeout(() => gsScrollToId('gs-how'), 40); },
+    goHow: () => go('connect'),
     startFree: () => (view === 'out' ? go('signup') : go('games')),
     signOut: () => { setSignedIn(false); go('home'); },
     // Each view has its own home: signed out is `home`, signed in is `games`. Switching views swaps one for the other.
@@ -127,12 +145,9 @@ const KitApp = () => {
       if (v === 'out' && (GS_SIGNED_IN_ONLY.includes(route.name) || (route.name === 'games' && view !== 'out'))) go('home');
       else if (v !== 'out' && route.name === 'home') go('games');
     },
-    // Signed out -> sign up; not connected -> connect your AI; else the pop-up.
-    play: (name, session) => {
-      if (view === 'out') go('signup');
-      else if (!connected) go('connect');
-      else setPlaying({ name, session });
-    },
+    // Every play control opens the play dialog with its prompt (gs-connect.jsx). The store can't know whether the AI is connected.
+    play: (name) => setPlaying(gsPlayReq(gs, name)),
+    playReq: (req) => setPlaying(req),
     closePlay: () => setPlaying(null),
     // Billing needs an account: signed out signs up first, then goes to checkout.
     getPass: () => (view === 'out' ? go('signup', { next: 'checkout' }) : go('checkout')),
@@ -147,7 +162,7 @@ const KitApp = () => {
     paid: (free) => {
       const months = GS_PLAN[choice].months;
       setSubState({ ...GS_SUB_DEFAULT, status: free ? 'free' : 'active', plan: choice, freeUsed: true,
-        renew: (free ? gsAddDays(GS_DAY0, 30) : gsAddMonths(GS_DAY0, months)).getTime() });
+        renew: (free ? gsAddDays(GS_DAY0, GS_TRIAL_DAYS) : gsAddMonths(GS_DAY0, months)).getTime() });
       gs.afterCheckout();
     },
     deleteAccount: () => { setSignedIn(false); setSubState(GS_SUB_DEFAULT); setConnected(false); go('signin'); },
@@ -187,7 +202,7 @@ const KitApp = () => {
     <GsCtx.Provider value={gs}>
       <div className="gs-root" ref={rootRef}>
         {GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && <GsTopBar />}
-        <GsScreen key={idx.current} name={route.name} />
+        <GsArrival key={idx.current} name={route.name} quick={backNav.current} />
         {GS_FOOTER.includes(route.name) && <GsFooter />}
         <GsPlayPopup />
         <GsDemoBar />

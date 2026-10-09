@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Connecting and prompts, options 1 to 3</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -1185,22 +1186,53 @@
   .ed-row:focus-visible { outline-offset: -2px; }
   @container gs (max-width: 559px) { .ed-row { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "m c" "s c" "r c"; } .ed-r { justify-self: start; } .ed-slots:not(:has(.mcp-tag)) { display: none; } }
   @media (prefers-reduced-motion: reduce) { .ed-row { transition: none; } }
-  /* How it works and the play dialog (app/gs-connect.jsx) */
-  .hw-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
-  .hw-need { margin: 0; text-wrap: pretty; }
-  .hw-seg { display: flex; flex-wrap: wrap; gap: 8px; }
-  .hw-ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
-  .hw-ai-logo { display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid var(--control-edge); color: var(--text); flex: none; }
-  .hw-ai-tx { display: grid; gap: 4px; min-width: 0; }
-  .hw-ai-act { grid-column: 2; }
-  .hw-other { display: grid; gap: 20px; }
-  .hw-band { display: grid; gap: 16px; padding: 20px; border: 1.5px solid var(--control-edge); }
-  .hw-promptrow { display: grid; gap: 12px; justify-items: start; }
-  .hw-promptrow > .hw-prompt { justify-self: stretch; }
+
+/* ---- playground: connecting and prompts (docs/specs/connect-and-prompts/playground/) ---- */
+  .gs-root { padding-bottom: 196px; }
+  .kit-config-wrap { bottom: 196px; }
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 820px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 56px; flex: none; }
+  .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; }
+  .pg-why { display: grid; gap: 12px; }
+  .pc-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
+  .pc-prompt.is-quiet { font-size: 14px; color: var(--muted); background: none; }
+  .pc-need { margin: 0; text-wrap: pretty; }
+  .pc-said { margin: 0; }
+  .pc-fill { width: 100%; }
+  .pc-plugins { display: flex; flex-wrap: wrap; gap: 12px; }
+  .pc-plugins.is-stack { display: grid; }
+  .pc-plugins.is-stack > .mcp-btn { width: 100%; }
+  .pc-btn-in { display: inline-flex; align-items: center; gap: 10px; }
+  .pc-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pc-two { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+  .pc-two > li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .pc-two > li + li { padding-top: 24px; border-top: 1px solid var(--line); }
+  .pc-steps3 { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .pc-discs { display: grid; border-top: 1px solid var(--line); }
+  .pc-tile-logo { display: grid; place-items: center; width: 64px; height: 64px; border: 1.5px solid var(--control-edge); color: var(--text); }
+  .pc-band { display: grid; gap: 16px; padding: 24px; border: 1.5px solid var(--control-edge); }
   @container gs (min-width: 720px) {
-    .hw-other { grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 32px; align-items: start; }
-    .hw-band { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 32px; padding: 24px; }
-    .hw-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+    .pc-steps3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+    .pc-band { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); align-items: start; gap: 36px; padding: 32px; }
+  }
+  .pc-ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
+  .pc-ai-logo { display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid var(--control-edge); color: var(--text); flex: none; }
+  .pc-ai-tx { display: grid; gap: 4px; min-width: 0; }
+  .pc-ai-act { grid-column: 2; }
+  .pc-ai-name { display: flex; align-items: center; gap: 12px; }
+  .pc-ai-name .pc-ai-logo { width: 40px; height: 40px; }
+  .pc-tile3 { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; height: 100%; }
+  .pc-other { display: grid; gap: 20px; }
+  .pc-promptrow { display: grid; gap: 12px; justify-items: start; }
+  .pc-promptrow > .pc-prompt { justify-self: stretch; }
+  .pc-band4 { padding: 20px; }
+  @container gs (min-width: 720px) {
+    .pc-other { grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 32px; align-items: start; }
+    .pc-band4 { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 32px; padding: 24px; }
+    .pc-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
   }
   /* product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
   @container gs (min-width: 900px) {
@@ -1210,8 +1242,8 @@
     .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; min-height: 320px; }
   }
   @container gs (min-width: 1000px) {
-    .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
-    .hw-ai-act { grid-column: auto; }
+    .pc-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+    .pc-ai-act { grid-column: auto; }
   }
 </style>
 </head>
@@ -1264,6 +1296,7 @@
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
 <script type="text/babel" src="app/gs-editions.jsx"></script>
+<script type="text/babel" src="docs/specs/connect-and-prompts/playground/pg-connect.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

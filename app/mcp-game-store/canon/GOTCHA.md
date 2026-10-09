@@ -7,7 +7,7 @@ Entries 1–3 are code traps. **Entries 4–9 are judgement traps** — the mist
 that cost the most time were not wrong code, they were wrong intent. Read those
 before starting design work, not while debugging it.
 
-Entries 10–12 are code or platform traps; they sit after the judgement traps
+Entries 10–13 are code or platform traps; they sit after the judgement traps
 because they were found later, not because they matter less.
 
 ---
@@ -268,3 +268,24 @@ upload. The shipped file is static; that is not a defect in the SVG.
 **Rule.** Do not treat a static uploaded SVG as broken, and do not edit it to
 "restore" the motion. The curves, timings and keyframes live in the doc that
 specifies the motion, not in the file.
+
+---
+
+## 13. A class name moved from a rig into the app can already exist there
+
+**Symptom.** After a rig's styles were moved into `index.html`, the home page
+broke: its sections turned into bordered two-column grids and the game row
+overlapped. How it works, the page being changed, looked right.
+
+**Cause.** The rig's `pc-*` classes were renamed to `gs-band` and `gs-ai` on the
+way in. The app already used both (every home section, the chat mockups'
+AI lines), so the new rules restyled them everywhere. Only the changed page was
+checked.
+
+**Fix.** Give moved styles a prefix of their own (`hw-*` here) and grep `app/`
+and `index.html` for every class name before using it.
+
+**Rule.** Before a class lands in the app, grep for it. After any change to the
+app's shared styles, check the home page and one other page you didn't touch,
+not just the page you changed.
+

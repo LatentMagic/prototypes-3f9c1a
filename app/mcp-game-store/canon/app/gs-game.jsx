@@ -11,7 +11,7 @@ const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, 
 const GS_PAGES = {
   word: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE', heading: 'A new word every day', button: 'Play today’s word',
+    box: { free: true, label: 'FREE IN FULL', small: 'Every edition, your streak and its achievements are free with an account.', heading: 'A new word every day', button: 'Play today’s word',
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'You already know today’s answer.', ps: [
@@ -23,7 +23,7 @@ const GS_PAGES = {
   },
   groups: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE', heading: 'New groups every day', button: 'Play today’s groups',
+    box: { free: true, label: 'FREE IN FULL', small: 'Every edition, your streak and its achievements are free with an account.', heading: 'New groups every day', button: 'Play today’s groups',
       steps: [GS_STEP_CONNECT, <><b>Find today’s four groups.</b> You can make four mistakes.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'Sixteen words hide four groups of four.', ps: [
@@ -35,7 +35,7 @@ const GS_PAGES = {
   },
   mystery: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE', heading: 'A new case every day', button: 'Play today’s case',
+    box: { free: true, label: 'FREE IN FULL', small: 'Every edition, your streak and its achievements are free with an account.', heading: 'A new case every day', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Question the inspector</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'There’s a body, a locked door and a story that doesn’t add up.', ps: [
@@ -47,7 +47,7 @@ const GS_PAGES = {
   },
   escape: {
     rhythm: 'A NEW ROOM EVERY WEEK',
-    box: { free: true, label: 'FREE', heading: 'A new room every week', button: 'Play this week’s room',
+    box: { free: true, label: 'FREE IN FULL', small: 'Every edition, your streak and its achievements are free with an account.', heading: 'A new room every week', button: 'Play this week’s room',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s room</b>, from the locked door to the way out.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'A new room every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
@@ -59,9 +59,9 @@ const GS_PAGES = {
   },
   casebook: {
     rhythm: 'A NEW CASE EVERY WEEK',
-    box: { label: 'PART OF THE PASS', heading: 'A new case every week', session: 'casebook',
+    box: { first: true, label: 'FIRST CASE FREE', heading: 'A new case every week', session: 'casebook', button: 'Play the first case',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
-      small: GS_NAME.casebook + ' is part of the [Platform] Pass.' },
+      small: 'The first case is free with an account. Every other case comes with the [Platform] Pass.' },
     facts: { long: '25–40 min', often: 'A new case every week' },
     tags: ['Mystery', 'One case, sixteen turns, one accusation'],
     pitch: { h: 'Ask the question they haven’t prepared for.', ps: [
@@ -74,9 +74,9 @@ const GS_PAGES = {
   },
   delve: {
     rhythm: 'ONE SCENE',
-    box: { label: 'PART OF THE PASS', heading: 'A new scene every week', session: 'delve',
+    box: { first: true, label: 'FIRST SCENE FREE', heading: 'A new scene every week', session: 'delve', button: 'Play the first scene',
       steps: [GS_STEP_CONNECT, <><b>Play one full scene</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
-      small: 'Delve is part of the [Platform] Pass.' },
+      small: 'The first scene is free with an account. Every other scene comes with the [Platform] Pass.' },
     facts: { long: '25–40 min', often: 'A new scene every week' },
     tags: ['Adventure', 'One scene · new warren layout each run'],
     pitch: { h: 'Get her out before the drums stop', ps: [
@@ -88,9 +88,9 @@ const GS_PAGES = {
   },
   hunter: {
     rhythm: 'ONE DAY',
-    box: { label: 'PART OF THE PASS', heading: 'A different day every time', session: 'hunter',
+    box: { label: 'ONLY WITH THE PASS', heading: 'A different day every time', session: 'hunter',
       steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
-      small: '36,000 Summers Ago is part of the [Platform] Pass.' },
+      small: '36,000 Summers Ago comes only with the [Platform] Pass.' },
     facts: { long: '2 hours', often: 'Play it again, a different day each time' }, tags: [],
     pitch: { h: 'The day goes on whether you join it or not.', ps: [
       'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
@@ -111,14 +111,13 @@ const GsPlayBox = ({ id }) => {
     <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <span className="gs-label">{b.label}</span>
       <h2 className="mcp-t-card">{b.heading}</h2>
-      <GsSteps items={b.steps.map((s) => gsOr(s))} />
-      {b.free
-        ? <DS.Button block onClick={() => gsScrollToId('gs-today')}>{b.button}</DS.Button>
-        : paying
-          ? <DS.Button block onClick={() => gs.play(g.name, b.session)}>Play in your AI</DS.Button>
-          : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
-      {!b.free && <p className="gs-small">{b.small} {GS.purchase}</p>}
-      {!b.free && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
+      <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
+      {b.free || b.first || paying
+        ? <DS.Button block onClick={() => gs.play(g.name)}>Play in your AI</DS.Button>
+        : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
+      {b.small && <p className="gs-small">{b.small}{!b.free && ' ' + GS.purchase}</p>}
+      {b.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
+      {!b.free && !b.first && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
       <div className="gs-rule" />
       <div className="gs-stack-sm">
         <span className="gs-label">WORKS WITH</span>
@@ -150,20 +149,20 @@ const GsWeekCard = ({ id }) => {
   const s = sid ? GS_SESSIONS[sid] : null;
   return (
     <section id="gs-today" className="gs-stack-md">
-      <h2 className="mcp-t-sec">{w.title}</h2>
+      <div className="gs-sec-head"><h2 className="mcp-t-sec">{w.title}</h2>{window.ED_GAMES && ED_GAMES.includes(id) && <DS.TextLink onClick={() => edGo(gs, id)}>All editions</DS.TextLink>}</div>
       <DS.Card style={{ justifyItems: 'stretch' }}>
         <div className="gs-week">
           <GsCover art={g.art} />
           <div className="gs-stack-md" style={{ justifyItems: 'start', alignContent: 'center' }}>
           <h3 className="mcp-t-card">{g.name}</h3>
           <p className="gs-muted">{w.line}</p>
-          {!can ? <div><GsPassTag /></div>
+          {!can ? <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>{g.first && <p className="gs-small">{w.title + ' comes with the Pass. The first edition is free.'}</p>}<GsPassTag /></div>
             : s ? (
               <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-                <GsResultTag s={s} />
+                <LbResult s={{ kind: s.loss ? 'bad' : 'ok', label: s.result }} />
                 <DS.TextLink onClick={() => gs.go('session', { id: sid })}>See your session page</DS.TextLink>
               </div>
-            ) : <div className="gs-act"><DS.Button onClick={() => gs.play(g.name, w.session)}>Play in your AI</DS.Button></div>}
+            ) : <div className="gs-act"><DS.Button onClick={() => gs.playReq(window.ED_GAMES && ED_GAMES.includes(id) ? { kind: 'edition', e: edList(gs, id)[0] } : { kind: 'game', gid: id })}>Play in your AI</DS.Button></div>}
           </div>
         </div>
       </DS.Card>

@@ -57,8 +57,9 @@ CB_ALL.forEach((cb, k) => {
 DV_ALL.forEach((s, i) => {
   if (!s.played) return;
   const ed = phParse(s.date); const live = !s.end;
-  const first = { at: phAt(ed, 18, 30, live ? 0 : i % 3), status: live ? { kind: 'live', label: 'In progress' } : DV_END[s.end], open: live ? (gs) => dvGo(gs) : phSess('delve') };
-  phEd('delve', s.id, s.title, ed, [first].concat((PH_HAND[s.id] || []).map(([plus, h, m, label, kind]) => ({ at: phAt(ed, h, m, plus), status: { kind: kind || 'ok', label }, open: phSess('delve') }))));
+  const sess = s === DV_FIRST ? 'delve-first' : 'delve';
+  const first = { at: phAt(ed, 18, 30, live ? 0 : i % 3), status: live ? { kind: 'live', label: 'In progress' } : DV_END[s.end], open: live ? (gs) => dvGo(gs) : phSess(sess) };
+  phEd('delve', s.id, s.title, ed, [first].concat((PH_HAND[s.id] || []).map(([plus, h, m, label, kind]) => ({ at: phAt(ed, h, m, plus), status: { kind: kind || 'ok', label }, open: phSess(sess) }))));
 });
 // No editions: each day is its own entry, and never a replay.
 HG_DAYS.forEach((x, i) => {
@@ -66,11 +67,14 @@ HG_DAYS.forEach((x, i) => {
   phEd('hunter', x.id, x.title, d, [{ at: phAt(d, 9 + (i % 4), 15), status: x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' }, open: phSess('hunter') }]);
 });
 const PH_ALL = PH_PLAYS.slice().sort((a, b) => b.at - a.at);
-// Who sees what: what History does today (free: the free games; Pass ended: plus Pass-game plays from before it ended).
+// Who sees what (free-and-pass, 2026-10-09). A player keeps History for everything they played.
+// Free: the dailies and Escape in full, and the first edition of Casebook and Delve. Pass ended: those plus every play from before it ended.
+const PH_FIRST = { casebook: CB_ALL[CB_ALL.length - 1].id, delve: DV_ALL[DV_ALL.length - 1].id };
 const phVisible = (gs) => {
   if (gs.view === 'pass') return PH_ALL;
   const today = Object.keys(GS_TODAY_PLAYED[gs.view] || {}); const lapsed = gsLapsed(gs);
-  return PH_ALL.filter((p) => { const g = GS_GAMES[p.gid]; if (p.at >= PH_TODAY) return g.free && today.includes(p.gid); return g.free || (lapsed && p.at < PH_ENDED); });
+  return PH_ALL.filter((p) => { const g = GS_GAMES[p.gid]; if (p.at >= PH_TODAY) return g.free && today.includes(p.gid);
+    return g.free || (lapsed ? p.at < PH_ENDED : PH_FIRST[p.gid] === p.ed); });
 };
 const phLib = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const PH_ALL_LABEL = { word: 'All words', groups: 'All groups', mystery: 'All cases', escape: 'All rooms', casebook: 'All cases', delve: 'All scenes', hunter: 'All days' };
@@ -243,6 +247,7 @@ const RpPages = ({ pg, pages, go }) => (pages > 1 ? (
 const RpHistory = () => {
   const gs = useGs(); const s = useRp(); const r = gs.route; const f = usePhList(r.game);
   const [rep, setRep] = React.useState('all');
+  const wait = useGsPart([f.sort, rep, f.g, f.pg]);
   const list = f.list.filter((x) => rep === 'all' || (rep === 'again') === x.again);
   const size = 24; const pages = Math.max(1, Math.ceil(list.length / size)); const pg = Math.min(f.pg, pages - 1);
   const groups = [];
@@ -261,13 +266,13 @@ const RpHistory = () => {
             <PhShow f={f} />
           </aside>
           <div className="lb-box lb-results">
-            {groups.length ? groups.map(([k, label, ps]) => (
+            {wait ? <GsPart label="Loading plays" /> : <>{groups.length ? groups.map(([k, label, ps]) => (
               <React.Fragment key={k + pg}>
                 <h2 className="ph-day">{label}</h2>
                 <ul className="ph-list">{ps.map((p) => <li key={p.pid}><RpRow v={view(p)} o="2" /></li>)}</ul>
               </React.Fragment>
             )) : <p className="lb-empty gs-muted">No plays match that.</p>}
-            <RpPages pg={pg} pages={pages} go={f.go} />
+            <RpPages pg={pg} pages={pages} go={f.go} /></>}
           </div>
         </div>
       )}

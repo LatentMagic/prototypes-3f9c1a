@@ -11,7 +11,7 @@ const GS = {
   link: 'https://platform.example/mcp',
   email: 'you@example.com',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
-  works: 'ChatGPT · Claude · OpenClaw · Hermes · any assistant that supports MCP connectors',
+  works: 'ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors',
 };
 
 // Covers: a few flat basic shapes in the cover colours on a cover background.
@@ -34,14 +34,14 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 // category: one per game, printed before the rhythm in the product page's label (proposed values, split-daily-puzzles).
-// free: carries the FREE mark Daily Puzzles carried (placeholder; who plays what free is not decided).
+// free: free in full (every edition, a streak, its achievements). first: a free player gets the game's one first edition. Neither: only with the Pass.
 const GS_GAMES = {
   word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', free: true, daily: true, blurb: 'You already know today’s answer. Start guessing.', tags: ['FREE', 'Daily', '10 min'] },
   groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', free: true, daily: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['FREE', 'Daily', '10 min'] },
   mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', free: true, daily: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
   escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', free: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FREE', 'Weekly', '10 min'] },
-  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly', '25–40 min'] },
-  delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', 'Weekly', '25–40 min'] },
+  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', 'Weekly', '25–40 min'] },
+  delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', first: true, blurb: 'Get her out before the drums stop.', tags: ['FIRST', 'Weekly', '25–40 min'] },
   hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
 const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'hunter'];

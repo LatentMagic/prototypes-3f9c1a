@@ -4,7 +4,24 @@
 // Order at every width: the now card, the run of editions, achievements, your plays. Two columns from 900px.
 // A game's own file holds its seed and its now card, and registers its page on window.GS_LIBRARY.
 // ============================================================================
-const lbMode = (gs) => (gs.view === 'pass' ? 'pass' : gsLapsed(gs) ? 'ended' : 'free');
+// What this player can play of a game (free-and-pass, 2026-10-09): 'all' every edition; 'first' the game's one first edition; 'none' nothing.
+// The three dailies and Escape are free in full; Casebook and Delve give a free player their first edition; 36,000 Summers Ago is only with the Pass.
+const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : id === 'hunter' ? 'none' : 'first');
+// Has the player ever held the Pass (now, or until 18 September)?
+const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
+// An edition dated before the Pass ended.
+const lbOld = (s) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < new Date(2026, 8, 18);
+// Achievements by what the player can do now: earned or still to earn when they can earn it; earned and locked when they can't play the game any more.
+const lbAchView = (items, access, gs) => {
+  const past = lbPast(gs); const out = [];
+  items.forEach((a) => {
+    const earn = access === 'all' || (access === 'first' && a.first);
+    const got = access === 'first' && !past ? a.gotFree : a.got;
+    if (earn) out.push({ ...a, got, state: got ? 'earned' : 'todo' });
+    else if (got && past) out.push({ ...a, got, state: 'locked' });
+  });
+  return out;
+};
 const lbShort = (d) => { const p = d.split(' '); return p[0] + ' ' + p[1].slice(0, 3) + (p[2] ? ' ' + p[2] : ''); };
 const LbChev = () => <DS.Icon name="back" size={16} className="lb-chev" style={{ transform: 'rotate(180deg)' }} />;
 const LbBack = ({ label, onClick }) => <div><button type="button" className="lb-back" onClick={onClick}><DS.Icon name="back" size={20} />{label}</button></div>;
@@ -35,12 +52,6 @@ const LbResult = ({ s }) => (
 const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
   const gs = useGs();
   const cut = weeks.length - 6;
-  if (locked) return (
-    <section className="lb-card">
-      <h2 className="mcp-t-card">{c13CapLb(unit) + ' in a row'}</h2>
-      <p className="gs-muted">Your streak comes with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>
-    </section>
-  );
   return (
     <section className="lb-card lb-runcard">
       <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || unit + ' in a row'}</span></div>
@@ -67,7 +78,13 @@ const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
 // A badge is [ground, [[tag, attrs, fill], ...]] drawn on a 48 grid.
 const lbBadgeSvg = ([bg, shapes], got) => '<svg viewBox="0 0 48 48" aria-hidden="true">' + (got ? '<rect width="48" height="48" fill="' + bg + '"/>' : '')
   + shapes.map(([t, a, c]) => '<' + t + ' ' + a + (got ? ' fill="' + c + '"' : ' fill="none" stroke="#918B80" stroke-width="1.5"') + '/>').join('') + '</svg>';
-const LbBadge = ({ art, got }) => <span className={'lb-badge' + (got ? '' : ' is-todo')} dangerouslySetInnerHTML={{ __html: lbBadgeSvg(art, got) }} />;
+// Locked: still the earned badge, dimmed, with a lock at its corner.
+const LbBadge = ({ art, got, locked }) => (
+  <span className={'lb-badge' + (got ? '' : ' is-todo') + (locked ? ' is-locked' : '')}>
+    <span className="lb-badge-art" dangerouslySetInnerHTML={{ __html: lbBadgeSvg(art, got) }} />
+    {locked && <span className="lb-lock"><DS.Icon name="lock" size={12} /></span>}
+  </span>
+);
 const c13CapLb = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 // Badges for games with no drawn set yet: the system's shapes, cycled over the three cover grounds.
 const LB_GROUNDS = ['#1D1B3A', '#421A28', '#163328'];
@@ -79,28 +96,27 @@ const LB_SHAPES = [
 ];
 const LB_INKS = ['#E5A63B', '#328A88', '#D66847', '#A390B2', '#4CC38A'];
 const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
-const lbAchLine = (a, mode) => (a.got ? 'Earned ' + a.got : a.of ? (mode === 'ended' ? a.endedHave : a.have) + ' of ' + a.of : 'Not earned yet');
-// items: [{ k, n, how, got?, of?, have?, endedHave? }]; badges: { k: art }
-const LbAch = ({ items, badges, mode, ended }) => {
+const lbAchLine = (a) => (a.state === 'locked' ? 'Earned ' + a.got + ' · Locked' : a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
+// items: [{ k, n, how, got?, gotFree?, first?, of?, have? }]; badges: { k: art }; access: 'all' | 'first' | 'none'
+const LbAch = ({ items, badges, access, ended }) => {
   const gs = useGs(); const [open, setOpen] = React.useState(null);
-  const got = items.filter((a) => a.got);
+  const list = lbAchView(items, access, gs);
+  const live = list.filter((a) => a.state !== 'locked'); const earned = live.filter((a) => a.got).length;
+  const locked = list.some((a) => a.state === 'locked');
   return (
-    <section className={'lb-card' + ''}>
-      <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{mode === 'pass' && <span className="gs-muted">{got.length + ' of ' + items.length + ' earned'}</span>}</div>
-      {mode === 'free'
-        ? <p className="gs-muted">Achievements come with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>
-        : <>
-          {mode === 'ended' && <p className="gs-muted">{'Your Pass ended on ' + ended + '. What you earned stays.'}</p>}
-          <ul className="lb-ach">
-            {(mode === 'ended' ? got : items).map((a) => (
-              <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} />
-                <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{lbAchLine(a, mode)}</span></span></button></li>
-            ))}
-          </ul>
-          <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
-            {open && <div className="lb-achpop"><LbBadge art={badges[open.k]} got={!!open.got} /><div className="gs-stack-xs"><p>{open.how}</p><p className="gs-muted">{lbAchLine(open, mode)}</p></div></div>}
-          </DS.Popup>
-        </>}
+    <section className="lb-card">
+      <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{live.length > 0 && <span className="gs-muted">{earned + ' of ' + live.length + ' earned'}</span>}</div>
+      {access === 'first' && <p className="gs-muted">These are the achievements the first edition can earn. Every other edition comes with the Pass.</p>}
+      {locked && <p className="gs-muted">{'Your Pass ended on ' + ended + '. Achievements earned in games you can no longer play stay here, locked. They carry on if the Pass returns.'}</p>}
+      <ul className="lb-ach">
+        {list.map((a) => (
+          <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} locked={a.state === 'locked'} />
+            <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{lbAchLine(a)}</span></span></button></li>
+        ))}
+      </ul>
+      <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
+        {open && <div className="lb-achpop"><LbBadge art={badges[open.k]} got={!!open.got} locked={open.state === 'locked'} /><div className="gs-stack-xs"><p>{open.how}</p><p className="gs-muted">{lbAchLine(open)}</p>{open.state === 'locked' && <p className="gs-muted">It carries on if the Pass returns.</p>}</div></div>}
+      </DS.Popup>
     </section>
   );
 };
@@ -233,4 +249,4 @@ const LbShare = ({ lines, note }) => {
 
 window.GS_LIBRARY = window.GS_LIBRARY || {};
 const lbWeekDone = (gs) => (gs.review && gs.review.week) === 'done';
-Object.assign(window, { lbMode, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, LbBack, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbRow, LbRecent, LbAll, LbShare });
+Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, LbBack, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbRow, LbRecent, LbAll, LbShare });

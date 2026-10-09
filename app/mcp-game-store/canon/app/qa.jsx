@@ -31,7 +31,7 @@ const KIT_QA = [
     note: 'On each session page, press Share: the text as pasted, one Copy button. Check at 390 and 320px.',
     steps: ['free-puzzle-result', 'free-history', 'lapsed-history', 'word-free', 'pass-card-none', 'pass-card-lapsed', 'cancel-sheet', 'pass-free', 'delve-free', 'session-puzzle', 'session-delve', 'session-casebook'] },
   { key: 'circlists-match-2', title: 'Circlists match 2: the Pass',
-    steps: ['pass-page-free-month', 'pass-page-free-used', 'checkout', 'update-card', 'pass-card-none', 'pass-card-monthly', 'pass-card-yearly', 'pass-card-free-month', 'pass-card-pending-switch', 'pass-card-payment-failed', 'pass-card-ending', 'pass-card-lapsed', 'switch-sheet-yearly', 'switch-sheet-monthly', 'switch-sheet-free-month', 'cancel-sheet', 'cancel-sheet-free-month'] },
+    steps: ['pass-page-trial-available', 'pass-page-trial-used', 'checkout', 'update-card', 'pass-card-none', 'pass-card-monthly', 'pass-card-yearly', 'pass-card-trial', 'pass-card-pending-switch', 'pass-card-payment-failed', 'pass-card-ending', 'pass-card-lapsed', 'switch-sheet-yearly', 'switch-sheet-monthly', 'switch-sheet-trial', 'cancel-sheet', 'cancel-sheet-trial'] },
   { key: 'circlists-match-3', title: 'Circlists match 3: footer, legal, not-found, loading',
     note: 'Footer and legal pages: open Home, then Terms, Privacy and Refunds from the footer. Check the footer at 720, 420 and 300px.',
     steps: ['home', 'not-found', 'loading-full', 'loading-in-place', 'load-failed', 'cant-connect'] },
@@ -39,6 +39,13 @@ const KIT_QA = [
     note: 'Each page: facts band, this week’s one, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'free-and-pass', title: 'Free and the Pass (proposed, not ratified)',
+  note: 'Walk each step. Free player: the dailies and Escape in full; Casebook and Delve one first edition, no streak; 36,000 Summers Ago closed. Pass ended: locked achievements. Trial reads seven days everywhere. Pass page has no list or table.',
+  steps: ['fp-word-library-free', 'fp-escape-library-free', 'fp-casebook-library-free', 'fp-delve-library-free', 'fp-hunter-library-free', 'fp-casebook-library-lapsed', 'fp-delve-library-lapsed', 'fp-hunter-library-lapsed',
+    'fp-product-casebook-free', 'fp-product-hunter-free', 'games-free', 'free-history', 'lapsed-history', 'pass-card-none', 'pass-card-lapsed', 'pass-page-trial-available', 'pass-page-trial-used', 'fp-pass-page-signed-out', 'checkout', 'cancel-sheet', 'cancel-sheet-trial', 'switch-sheet-trial', 'pass-card-trial', 'pass-card-ending'] });
+KIT_QA.unshift({ key: 'loading-pages-and-parts', title: 'Loading on pages and parts',
+  note: 'Held states show the wait while it holds; the top bar and footer stay. By hand: click between Discover, Library, History, a game, a session, the Pass, Account (each loads about 1.2 s, Back does not repeat it). Change search, a chip, Kind, Order, Plays, Show or a page number: only that part loads. On Load failed, Try again shows the spinner on the button and ignores a second press. On a library game page, All… opens History loading, then filtered.',
+  steps: ['loading-page-discover', 'loading-page-library', 'loading-page-history', 'loading-page-history-game', 'loading-page-product', 'loading-page-product-signed-out', 'loading-page-library-game', 'loading-page-library-case', 'loading-page-session', 'loading-page-pass', 'loading-page-account', 'loading-part-discover-games', 'loading-part-library-list', 'loading-part-history-results', 'loading-in-place', 'load-failed'] });
 KIT_QA.unshift({ key: 'discover-and-library', title: 'Discover and Library',
   note: 'Discover: picks, Free to play, Pass band (gone with the Pass), All games with search and chips, Free last, no Free tag on tiles. Library: rows with covers, Kind and Order. Top bar: Discover, Library, History. Check hover and 320px.',
   steps: ['games-signed-out', 'games-free', 'games', 'library-free', 'library', 'loading-in-place'] });

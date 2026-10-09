@@ -21,6 +21,43 @@ const GsFeature = ({ id, children }) => {
     </DS.Card>
   );
 };
+
+const GS_WHATSNEW = [
+  { v: '1.9', d: '8 October 2026', t: 'Share cards for every result', x: 'Any finished session can be shared as a card or a link, with the full record of rolls, guesses and statements behind it.' },
+  { v: '1.8', d: '24 September 2026', t: 'Streaks carry across devices', x: 'Your daily streak and record now follow your account, so they stay intact wherever you connect your AI.' },
+  { v: '1.7', d: '10 September 2026', t: 'Connect in under two minutes', x: 'A single link now connects Claude, ChatGPT and other MCP assistants. No settings to copy between apps.' },
+  { v: '1.6', d: '27 August 2026', t: 'Every earlier edition in one place', x: 'Open any past edition of a weekly or daily game from its page.' },
+  { v: '1.5', d: '13 August 2026', t: 'Faster results after each play', x: 'The result and record appear as soon as the last turn is made.' },
+  { v: '1.4', d: '30 July 2026', t: 'Account page', x: 'Manage your plan, card and connected assistants from one place.' },
+  { v: '1.3', d: '16 July 2026', t: 'History view', x: 'Look back over every play, grouped by day and by game.' },
+  { v: '1.2', d: '2 July 2026', t: 'Search and filters in the library', x: 'Find a game by kind, length or how often it releases.' },
+  { v: '1.1', d: '18 June 2026', t: 'Free daily puzzles', x: 'Today’s Daily Puzzles are free with an account.' },
+];
+const GsWhatsNew = () => {
+  const row = (e, i) => (
+    <li key={e.v} className={'wn-e' + (i === 0 ? ' is-latest' : '')}>
+      <div className="wn-body"><h3 className="wn-t">{e.t}</h3><p className="wn-d">{e.x}</p></div>
+      <div className="wn-meta"><time>{e.d}</time></div>
+    </li>
+  );
+  const now = GS_WHATSNEW.slice(0, 3), earlier = GS_WHATSNEW.slice(3);
+  return (
+    <section className="gs-band" aria-labelledby="gs-wn-h">
+      <h2 className="mcp-t-sec" id="gs-wn-h">What’s new</h2>
+      <div className="wn-panel">
+        <ul className="wn-list has-fold">
+          {now.map(row)}
+          <li className="wn-e wn-foldrow">
+            <details>
+              <summary className="wn-sum"><span className="wn-caret"><DS.Icon name="down" size={16} style={{ transform: 'rotate(-90deg)' }} /></span>earlier updates</summary>
+              <div className="wn-wrap" tabIndex={0} role="region" aria-label="Earlier updates"><ul className="wn-nest">{earlier.map((e) => row(e, -1))}</ul></div>
+            </details>
+          </li>
+        </ul>
+      </div>
+    </section>
+  );
+};
 const GsHome = () => {
   const gs = useGs();
   return (
@@ -31,7 +68,7 @@ const GsHome = () => {
           <p className="gs-hero-sub">Your AI plays every suspect, and some of them are lying. Find the proof that breaks their story.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>
-            <DS.Button variant="secondary" onClick={() => gsScrollToId('gs-how')}>See how it works</DS.Button>
+            <DS.Button variant="secondary" onClick={gs.goHow}>See how it works</DS.Button>
           </div>
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
@@ -64,7 +101,7 @@ const GsHome = () => {
         <GsSteps row items={[
           <p key="1"><b>Connect your AI</b> in about two minutes.</p>,
           <p key="2"><b>Play the free games.</b> No card needed.</p>,
-          <p key="3"><b>Get the Pass</b> for {GS_NAME.casebook}, Delve and {GS_NAME.hunter}. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>What’s included</button></p>,
+          <p key="3"><b>Get the Pass</b> for every edition of every game, and every new game. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>,
         ]} />
       </section>
 
@@ -75,6 +112,8 @@ const GsHome = () => {
           <div><h3 className="mcp-t-card">The game engine</h3><p className="gs-lead">Rolls every die, keeps the score, decides each outcome and records your session.</p></div>
         </div>
       </section>
+
+      <GsWhatsNew />
 
       <p className="gs-small gs-foot">{GS.purchase}</p>
     </main>
@@ -108,7 +147,7 @@ const GsGameMore = ({ id, mark }) => {
       <GsGameHead g={g} mark={mark} open={open} />
       <GsTagList tags={g.tags} />
       <div className="gs-today">
-        <span className="gs-label">{g.free ? 'FREE WITH AN ACCOUNT' : 'PART OF THE PASS'}</span>
+        <span className="gs-label">{g.free ? 'FREE IN FULL' : g.first ? 'FIRST EDITION FREE' : 'ONLY WITH THE PASS'}</span>
         {m.head ? <p><b>{m.head}</b></p> : null}
         <p className="gs-muted">{m.line || <GsGap />}</p>
       </div>

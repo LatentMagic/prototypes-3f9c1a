@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="../../../../" />
+<title>Pass table, three versions</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/styles.css" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); padding: 32px 24px 64px; }
+  .wrap { max-width: 1200px; margin: 0 auto; display: grid; gap: 40px; }
+  h1 { font: 700 28px/1.2 var(--font-heading); margin: 0; }
+  .note { color: var(--muted); margin: 8px 0 0; max-width: 60ch; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px 32px; align-items: start; }
+  .opt { display: grid; gap: 16px; align-content: start; }
+  .tag { font: 600 12px/1 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .opt h2 { font: 700 22px/1.2 var(--font-heading); margin: 0; text-align: center; }
+  .t { display: grid; }
+  .tr { display: grid; grid-template-columns: minmax(0, 1fr) 84px 84px; align-items: stretch; }
+  .t.words .tr { grid-template-columns: minmax(0, 1fr) 112px 112px; }
+  .tr + .tr:not(.foot) > * { border-top: 1px solid var(--line); }
+  .tr.head .band { border-top: 1px solid var(--line); }
+  .tr.foot > * { height: 8px; }
+  .c { display: grid; place-items: center; min-height: 48px; text-align: center; padding: 8px 6px; font-size: 14px; line-height: 1.3; }
+  .c.h { font: 700 18px/1.2 var(--font-heading); }
+  .l { display: grid; gap: 2px; align-content: center; padding: 12px 16px 12px 0; }
+  .l small { font-size: 14px; line-height: 1.4; color: var(--muted); }
+  .band { background: var(--card); }
+  .m { color: var(--muted); }
+  svg { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h1>Pass page table, three versions</h1>
+    <p class="note">E, F and G differ only in the row for playing earlier editions (Pass only). The rest is your version D with the corrected rule. The older drafts are removed.</p>
+  </div>
+  <div class="opts">
+
+    <section class="opt" aria-label="Version E">
+      <span class="tag">E · “Replay earlier editions”</span>
+      <h2>What you get</h2>
+      <div class="t">
+        <div class="tr head"><span></span><span class="c h">Free</span><span class="c h band">Pass</span></div>
+        <div class="tr"><span class="l"><b>Free games</b><small>The current edition, your streak and your achievements.</small></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Your results and history</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Sharing a result</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The first edition of select games</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Replay earlier editions</b><small>Their results stay in your history either way.</small></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The full game catalog</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>New releases</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr foot"><span></span><span></span><span class="band"></span></div>
+      </div>
+    </section>
+
+    <section class="opt" aria-label="Version F">
+      <span class="tag">F · “Go back and play what you missed”</span>
+      <h2>What you get</h2>
+      <div class="t">
+        <div class="tr head"><span></span><span class="c h">Free</span><span class="c h band">Pass</span></div>
+        <div class="tr"><span class="l"><b>Free games</b><small>The current edition, your streak and your achievements.</small></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Your results and history</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Sharing a result</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The first edition of select games</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Play what you missed</b><small>Earlier editions, any time. Their results stay in your history either way.</small></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The full game catalog</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>New releases</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr foot"><span></span><span></span><span class="band"></span></div>
+      </div>
+    </section>
+
+    <section class="opt" aria-label="Version G">
+      <span class="tag">G · “Earlier editions” (no verb)</span>
+      <h2>What you get</h2>
+      <div class="t">
+        <div class="tr head"><span></span><span class="c h">Free</span><span class="c h band">Pass</span></div>
+        <div class="tr"><span class="l"><b>Free games</b><small>The current edition, your streak and your achievements.</small></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Your results and history</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Sharing a result</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The first edition of select games</b></span><span class="c"><i class="ck"></i></span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>Earlier editions</b><small>Open and play any you missed. Their results stay in your history either way.</small></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>The full game catalog</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr"><span class="l"><b>New releases</b></span><span class="c m">–</span><span class="c band"><i class="ck"></i></span></div>
+        <div class="tr foot"><span></span><span></span><span class="band"></span></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<script>
+  document.querySelectorAll('.ck').forEach(function (e) {
+    e.outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-label="Included"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  });
+</script>
+</body>
+</html>

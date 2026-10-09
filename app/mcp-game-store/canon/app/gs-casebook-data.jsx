@@ -52,7 +52,7 @@ const CB_SEQ = 'FQBNQFHBQNFQBHQN';
 const CB_OLD = Array.from({ length: 28 }, (_, i) => {
   const d = new Date(2026, 5, 15 - 7 * (i + 1));
   const mName = d.toLocaleString('en-GB', { month: 'long' }); const yr = d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '';
-  const played = i % 5 !== 2; const r = (i * 3) % 16;
+  const played = i % 5 !== 2 || i === 27; const r = (i * 3) % 16;
   const seq = played ? (CB_SEQ.slice(r) + CB_SEQ.slice(0, r)).slice(0, 9 + ((i * 5) % 8)) : '';
   const verdict = played ? (i % 3 === 0 ? 'right' : 'wrong') : null;
   return cbMake('o' + i, d.getDate() + ' ' + mName + yr, mName + yr, CB_A[i % 8] + ' ' + CB_B[(i * 3) % 14], played, verdict, 3 + (i % 3), seq,
@@ -69,13 +69,13 @@ const CB_STREAK_N = 3;
 const CB_ENDED = '18 September';
 
 const CB_ACH = [
-  { k: 'first', n: 'First lie exposed', how: 'Expose a suspect’s lie with proof.', got: '15 June' },
-  { k: 'solved', n: 'Case solved', how: 'Name the killer.', got: '15 June' },
-  { k: 'eleven', n: 'Solved in eleven turns', how: 'Name the killer using eleven turns or fewer.', got: '31 August' },
-  { k: 'every', n: 'Every lie exposed', how: 'Expose every lie in one case.' },
-  { k: 'rooms', n: 'Every room searched', how: 'Search every place in one case.', got: '7 September' },
+  { k: 'first', n: 'First lie exposed', how: 'Expose a suspect’s lie with proof.', got: '15 June', gotFree: '3 December 2025', first: true },
+  { k: 'solved', n: 'Case solved', how: 'Name the killer.', got: '15 June', gotFree: '3 December 2025', first: true },
+  { k: 'eleven', n: 'Solved in eleven turns', how: 'Name the killer using eleven turns or fewer.', got: '31 August', first: true },
+  { k: 'every', n: 'Every lie exposed', how: 'Expose every lie in one case.', first: true },
+  { k: 'rooms', n: 'Every room searched', how: 'Search every place in one case.', got: '7 September', first: true },
   { k: 'clean', n: 'Three solved in a row', how: 'Solve three cases running.', got: '14 September' },
-  { k: 'quick', n: 'Solved in eight turns', how: 'Name the killer using eight turns or fewer.' },
+  { k: 'quick', n: 'Solved in eight turns', how: 'Name the killer using eight turns or fewer.', first: true },
   { k: 'five', n: 'Five cases solved', how: 'Solve five cases.', of: 5, have: 4, endedHave: 3 },
   { k: 'row4', n: 'Four weeks in a row', how: 'Play four weeks running.', of: 4, have: 3, endedHave: 2 },
   { k: 'ten', n: 'Ten cases solved', how: 'Solve ten cases.', of: 10, have: 4, endedHave: 3 },

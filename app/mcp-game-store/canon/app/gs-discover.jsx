@@ -7,12 +7,12 @@
 // ============================================================================
 const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
 const GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
-const gsFind = (q, k) => { const g = GS_GAMES[k]; const s = q.trim().toLowerCase(); return !s || g.name.toLowerCase().includes(s) || g.category.toLowerCase().includes(s); };
+const gsFind = (q, k) => { const g = GS_GAMES[k]; const s = q.trim().toLowerCase(); return !s || g.name.toLowerCase().includes(s); };
 // The two picks: chosen by us, not by rule. Seed.
 const GS_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
 const GS_ADDED = ['hunter', 'casebook', 'delve', 'escape'];
-const GS_PASS_BAND = 'The Pass gets you every game here, and every new one on its release day.';
+const GS_PASS_BAND = 'The Pass opens every edition of every game here, and every new game on its release day.';
 const dcChev = <DS.Icon name="down" size={16} className="lb-chev" style={{ transform: 'rotate(-90deg)' }} />;
 
 const DcHead = ({ g, mark, open, label }) => (
@@ -63,40 +63,41 @@ const DcPassBand = () => {
     <DS.Card>
       <div className="dc-band">
         <p className="gs-lead"><b>{GS_PASS_BAND}</b></p>
-        <DS.Button variant="secondary" onClick={() => gs.go('pass')}>What’s included</DS.Button>
+        <DS.Button variant="secondary" onClick={() => gs.go('pass')}>About the Pass</DS.Button>
       </div>
     </DS.Card>
   );
 };
 
 const DcBody = () => {
-  const gs = useGs(); const marks = gsMarks(gs.view);
+  const gs = useGs();
   const [q, setQ] = React.useState(''); const [on, setOn] = React.useState([]);
   const kinds = GS_KINDS.filter((c) => on.includes(c)); const free = on.includes('free');
   const ids = GS_GAME_ORDER.filter((k) => (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!free || GS_GAMES[k].free) && gsFind(q, k));
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
   const clear = () => { setOn([]); setQ(''); };
   const freeIds = GS_GAME_ORDER.filter((k) => GS_GAMES[k].free);
+  const wait = useGsPart([q, on.join()]);
   return <>
     <div className="gs-grid2">{GS_PICKS.map(([k, l]) => <DcPick key={k} id={k} label={l} />)}</div>
     <section className="dc-sec">
       <h2 className="mcp-t-sec">Just added</h2>
-      <div className="gs-feats" role="region" aria-label="Just added" tabIndex={0}>{GS_ADDED.map((k) => <DcRowCard key={k} id={k} mark={marks[k]} />)}</div>
+      <div className="gs-feats" role="region" aria-label="Just added" tabIndex={0}>{GS_ADDED.map((k) => <DcRowCard key={k} id={k} />)}</div>
     </section>
     <section className="dc-sec">
-      <h2 className="mcp-t-sec">Free to play</h2>
-      <div className="gs-feats" role="region" aria-label="Free to play" tabIndex={0}>{freeIds.map((k) => <DcRowCard key={k} id={k} mark={marks[k]} />)}</div>
+      <div className="gs-stack-sm"><h2 className="mcp-t-sec">Free to play</h2><p className="gs-muted">{GS_NAME.casebook + ' and Delve are free for their first edition.'}</p></div>
+      <div className="gs-feats" role="region" aria-label="Free to play" tabIndex={0}>{freeIds.map((k) => <DcRowCard key={k} id={k} />)}</div>
     </section>
     <DcPassBand />
     <section className="dc-sec">
       <div className="gs-sec-head"><h2 className="mcp-t-sec">All games</h2>{on.length || q.trim() ? <DS.TextLink onClick={clear}>Clear</DS.TextLink> : null}</div>
       <div className="dc-tools">
-        <DS.SearchField label="Search" placeholder="Name or kind" value={q} onChange={(e) => setQ(e.target.value)} />
+        <DS.SearchField label="Search" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="dc-chips" role="group" aria-label="Show only">
           {[...GS_KINDS.map((c) => [c, gsKind(c)]), ['free', 'Free']].map(([v, l]) => <button key={v} type="button" aria-pressed={on.includes(v)} onClick={() => flip(v)}>{l}</button>)}
         </div>
       </div>
-      {ids.length ? <div className="dc-wall">{ids.map((k) => <DcTile key={k} id={k} mark={marks[k]} />)}</div>
+      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="dc-wall">{ids.map((k) => <DcTile key={k} id={k} />)}</div>
         : <div className="dc-empty"><p>No game matches that.</p><DS.TextLink onClick={clear}>Show every game</DS.TextLink></div>}
     </section>
   </>;
@@ -115,7 +116,7 @@ const GsDiscover = () => {
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Discover</h1>
       {load === 'hold' || load === 'loading' ? <div className="gs-inplace"><GsSpin /></div>
-        : load === 'failed' ? <GsLoadFailed onRetry={() => setLoad('loading')} />
+        : load === 'failed' ? <GsLoadFailed onRetry={() => setLoad(null)} />
         : <DcBody />}
     </main>
   );
@@ -123,15 +124,19 @@ const GsDiscover = () => {
 
 // ---- Library: every game, with where this player stands in it. [sort rank, line]. Seed only. ----
 const GS_LIB_ME = {
+  lapsed: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'],
+    casebook: [5, 'Last played 13 September'], delve: [6, 'Last played 14 September'], hunter: [7, 'Last played 17 September'] },
   pass: { word: [1, 'Played today'], groups: [2, 'Played today'], mystery: [3, 'Played today'], escape: [4, 'Played this week'], casebook: [5, 'Played this week'],
     delve: [6, 'Played this week'], hunter: [7, 'Last played 5 October'] },
-  free: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'] },
+  free: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'],
+    casebook: [5, 'First edition played'], delve: [6, 'First edition played'], hunter: [null, 'Only with the Pass'] },
 };
-const gsLibMe = (view, k) => (GS_LIB_ME[view] && GS_LIB_ME[view][k]) || [null, 'Part of the Pass'];
+const gsLibMe = (view, k, lapsed) => (GS_LIB_ME[lapsed ? 'lapsed' : view] && GS_LIB_ME[lapsed ? 'lapsed' : view][k]) || [null, 'Free first edition'];
 const GsLibrary = () => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState('all'); const [sort, setSort] = React.useState('last');
-  const rank = (k) => { const r = gsLibMe(gs.view, k)[0]; return r == null ? 99 : r; };
+  const wait = useGsPart([q, cat, sort]);
+  const rank = (k) => { const r = gsLibMe(gs.view, k, gsLapsed(gs))[0]; return r == null ? 99 : r; };
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
   const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rank(a) - rank(b) || az(a, b)));
@@ -145,12 +150,12 @@ const GsLibrary = () => {
           <LbChoice label="Order" value={sort} opts={[['last', 'Last played'], ['az', 'A to Z']]} onPick={setSort} />
         </aside>
         <div className="lb-box">
-          {ids.length ? (
+          {wait ? <GsPart label="Loading games" /> : ids.length ? (
             <ul className="lb-list">{ids.map((k) => { const g = GS_GAMES[k]; return (
               <li key={k}>
                 <button type="button" className="dc-lrow" onClick={() => gs.go(g.route, { page: 'record' })}>
                   <GpMini art={g.art} />
-                  <span className="dc-lrow-tx"><span className="dc-lrow-t">{g.name}</span><span className="gs-small">{gsKind(g.category) + ' · ' + gsLibMe(gs.view, k)[1]}</span></span>
+                  <span className="dc-lrow-tx"><span className="dc-lrow-t">{g.name}</span><span className="gs-small">{gsKind(g.category) + ' · ' + gsLibMe(gs.view, k, gsLapsed(gs))[1]}</span></span>
                   {dcChev}
                 </button>
               </li>

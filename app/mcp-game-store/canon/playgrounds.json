@@ -5,6 +5,36 @@
   "tickets": [
     {
       "id": "—",
+      "slug": "connect-and-prompts",
+      "name": "Connecting, and the prompts a player copies",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Connect and prompts, options 1 to 3",
+          "path": "docs/specs/connect-and-prompts/playground/index.html",
+          "note": "How it works, the product page, Editions and Play again: the prompt in plain sight, connect-then-paste every time, or a prompt that tells an unconnected AI to say so."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "editions",
+      "name": "A game's Editions page",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Editions page, options 1 to 3",
+          "path": "docs/specs/editions/playground/index.html",
+          "note": "Ledger, a line on every row, or a calendar with one edition in full; each with its own take on the free first edition."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
       "slug": "history",
       "name": "History, and how a library game page connects to it",
       "state": "active",

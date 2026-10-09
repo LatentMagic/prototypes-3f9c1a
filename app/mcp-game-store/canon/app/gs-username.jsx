@@ -61,11 +61,10 @@ const GsUsername = () => {
   const { next, preset } = gs.route; // preset 'taken' is staged
   const [first] = React.useState(() => (preset === 'taken' ? 'taken' : gsGenName()));
   const form = useGsForm({ name: first }, gsUsernameRules(null), (f) => gs.nameChosen(f.name.trim(), next), { tried: preset === 'taken' });
-  const another = () => { form.set('name', gsGenName(form.f.name.trim())); form.focus('name'); };
   return (
     <GsAuthFrame title="Your username">
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
-        <GsUsernameField form={form} autoFocus aside={<DS.TextLink onClick={another}>Suggest another</DS.TextLink>} />
+        <GsUsernameField form={form} autoFocus />
         <DS.Button type="submit" block loading={form.busy}>Continue</DS.Button>
       </form>
     </GsAuthFrame>

@@ -11,6 +11,7 @@ const GS_GLYPHS = {
   mail: '<g ' + GS_GLYPH_A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
   logout: '<g ' + GS_GLYPH_A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
   card: '<g ' + GS_GLYPH_A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+  pass: '<g ' + GS_GLYPH_A + '><path d="M3 6.5H21V10H19V14H21V17.5H3V14H5V10H3Z"/><path d="M9.5 6.5V8M9.5 11V13M9.5 16V17.5"/></g>',
   x: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square"><path d="M6 6L18 18M18 6L6 18"/></g>',
   arrow: '<g ' + GS_GLYPH_A + '><path d="M4 12H19"/><path d="M13 6L19 12L13 18"/></g>',
   apple: '<path fill="currentColor" d="M16.37 12.62c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.54 2.66-.39 6.6 1.1 8.76.73 1.06 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.23 1.18-2.42 1.2-2.48-.03-.01-2.29-.88-2.31-3.5zM14.2 6.16c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.64-1.05 1.67-.92 2.66.97.07 1.96-.49 2.56-1.21z"/>',
@@ -20,7 +21,14 @@ const GsGlyph = ({ name, size = 20, style }) => (
   <svg className="mcp-ico" viewBox="0 0 24 24" width={size} height={size} style={{ width: size, height: size, ...style }} aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: GS_GLYPHS[name] }} />
 );
 
-const GsMark = ({ size = 32 }) => <img className="gs-brand-mark" src="assets/logo.svg" alt="" width={size} height={size} style={{ width: size, height: size }} />;
+const GsMark = ({ size = 32 }) => (
+  <span className="gs-brand-mark" aria-hidden="true" style={{ width: size, height: size }}>
+    <span className="mcp-loader-m" style={{ transform: `scale(${size / 120})`, transformOrigin: '0 0' }}><i className="tl"></i><i className="tr"></i><i className="br"></i><i className="bl"></i></span>
+  </span>
+);
+const GsStaticBrand = () => (
+  <span className="gs-brand" style={{ cursor: 'default', pointerEvents: 'none' }}><GsMark /><span>[Platform]</span></span>
+);
 const GsWordmark = () => {
   const gs = useGs();
   return (
@@ -73,21 +81,41 @@ const GsFullLoader = ({ label, ms, onDone }) => {
   return <main className="gs-full"><GsSpin label={label} /></main>;
 };
 
+// ---- Pages and parts. One staged duration for every page and part load.
+// A page loads as a page on arrival (GsArrival, main.jsx); a part loads on its own
+// when its controls change (useGsPart). A state can hold either: route.hold = 'page' | 'part'.
+const GS_LOAD_MS = 1200;
+const useGsPart = (deps) => {
+  const gs = useGs();
+  const [on, setOn] = React.useState(false);
+  const first = React.useRef(true);
+  React.useEffect(() => {
+    if (first.current) { first.current = false; return undefined; }
+    setOn(true);
+    const t = setTimeout(() => setOn(false), GS_LOAD_MS);
+    return () => clearTimeout(t);
+  }, deps);
+  return on || gs.route.hold === 'part';
+};
+const GsPart = ({ label }) => <div className="gs-inplace" aria-busy="true"><GsSpin label={label} /></div>;
+
 // ---- Load failed: two lines (in place) or one (full screen), then Try again.
-const GsLoadFailed = ({ full, onRetry }) => (
-  <div className={full ? 'gs-full' : 'gs-inplace'}>
-    <div className="gs-failed">
-      <p className="gs-strong">This didn’t load.</p>
-      {!full && <p className="gs-muted">Something went wrong fetching your games.</p>}
-      <DS.Button variant="secondary" onClick={onRetry}>Try again</DS.Button>
+// The button shows the wait and cannot be pressed twice; onRetry runs with the result.
+const GsLoadFailed = ({ full, onRetry }) => {
+  const [busy, run] = useGsBusy(GS_LOAD_MS);
+  return (
+    <div className={full ? 'gs-full' : 'gs-inplace'}>
+      <div className="gs-failed">
+        <p className="gs-strong">This didn’t load.</p>
+        {!full && <p className="gs-muted">Something went wrong fetching your games.</p>}
+        <DS.Button variant="secondary" loading={busy} onClick={() => run(onRetry)}>Try again</DS.Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 const GsOffline = () => {
   const gs = useGs();
-  const [retry, setRetry] = React.useState(false);
-  if (retry) return <GsFullLoader ms={1500} onDone={() => gs.go('games')} />;
-  return <GsLoadFailed full onRetry={() => setRetry(true)} />;
+  return <GsLoadFailed full onRetry={() => gs.go('games')} />;
 };
 
 // ---- Footer: a directory. Wide: brand, contact, legal. Narrow: see CSS.
@@ -101,14 +129,14 @@ const GsFooter = () => {
     <footer className="gs-ft">
       <div className="gs-wrap">
         <div className="gs-ft-wide">
-          <div className="gs-ft-brand"><GsWordmark /><p className="gs-ft-copy">© 2026 Harness Intent Ltd</p></div>
+          <div className="gs-ft-brand"><GsStaticBrand /><p className="gs-ft-copy">© 2026 Harness Intent Ltd</p></div>
           <div className="gs-ft-col"><h2 className="gs-ft-h">contact</h2>{mail}</div>
           <div className="gs-ft-col"><h2 className="gs-ft-h">legal</h2>
             {GS_LEGAL_LINKS.map(([d, l]) => <button key={d} type="button" className="gs-ft-link" onClick={() => legal(d)}>{l}</button>)}
           </div>
         </div>
         <div className="gs-ft-narrow">
-          <div className="gs-ft-top"><span className="gs-ft-mark"><GsWordmark /></span>{mail}</div>
+          <div className="gs-ft-top"><span className="gs-ft-mark"><GsStaticBrand /></span>{mail}</div>
           <div className="gs-ft-bottom">
             <div className="gs-ft-run">
               {GS_LEGAL_LINKS.map(([d, l], i) => <React.Fragment key={d}>{i > 0 && <span className="gs-ft-dot" aria-hidden="true">·</span>}<button type="button" className="gs-ft-link" onClick={() => legal(d)}>{l}</button></React.Fragment>)}
@@ -168,6 +196,6 @@ const GsNotFound = () => {
 };
 
 Object.assign(window, {
-  GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
+  GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, GS_LOAD_MS, useGsPart, GsPart, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
   GS_SUPPORT, GsFooter, GsLegal, GsNotFound,
 });

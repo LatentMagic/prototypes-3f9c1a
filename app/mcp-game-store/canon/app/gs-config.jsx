@@ -33,10 +33,10 @@ const GsConfigExtra = () => {
       <div className="kit-config-hint">The top card of each library game page: the week for Casebook, Delve and Escape, the day for each daily game.</div>
       <div className="kit-config-group-title">Pass</div>
       {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { freeUsed: true }) }),
-        o([['none', 'None'], ['free', 'Free month'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}
-      {row('Free month', sub.freeUsed ? 'used' : 'available', (v) => setSub({ freeUsed: v === 'used' }), o([['available', 'Available'], ['used', 'Used']]))}
+        o([['none', 'None'], ['free', 'In the trial'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}
+      {row('Seven-day trial', sub.freeUsed ? 'used' : 'available', (v) => setSub({ freeUsed: v === 'used' }), o([['available', 'Available'], ['used', 'Used']]))}
       {row('Plan', sub.plan || 'monthly', (v) => setSub({ plan: v, pending: null }), o([['monthly', 'Monthly'], ['yearly', 'Yearly']]))}
-      <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the free month used is the lapsed card.</div>
+      <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the trial used is the lapsed card.</div>
     </React.Fragment>
   );
 };

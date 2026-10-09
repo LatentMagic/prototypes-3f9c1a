@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Editions page, options 1 to 3</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -282,8 +283,7 @@
   .gs-root > .gs-top { position: sticky; top: 0; z-index: 50; }
   .gs-top-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; }
   .gs-brand { font: 700 20px/1.2 var(--font-heading); letter-spacing: -.01em; color: var(--text); background: none; border: 0; padding: 0; cursor: pointer; min-height: 44px; white-space: nowrap; display: inline-flex; align-items: center; gap: 12px; }
-  .gs-brand-mark { width: 32px; height: 32px; display: block; flex: none; overflow: visible; }
-  .gs-brand-mark i { animation: none; } .gs-brand-mark .tr { background: #D66847; border-radius: 50%; transform: translate(10px,-10px); }
+  .gs-brand-mark { width: 32px; height: 32px; display: block; flex: none; }
   .gs-brand:active { opacity: .55; }
   .gs-nav { display: none; flex: 1; align-items: center; gap: 24px; }
   .gs-top-end { display: flex; align-items: center; gap: 16px; margin-left: auto; }
@@ -293,8 +293,8 @@
   .gs-navlink { position: relative; }
   .gs-navlink::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--off-white); opacity: .45; transform: scaleX(0); transform-origin: 50% 50%; transition: transform var(--time-swap) var(--ease); pointer-events: none; }
   .gs-navlink:active { opacity: .55; }
-  @media (hover: hover) { .gs-navlink:not([aria-current="page"]):hover::after { transform: scaleX(1); } .gs-acct-btn .gs-avatar { transition: border-color var(--time-swap) var(--ease); } .gs-brand-mark, .gs-brand-mark .tr { transition: transform 460ms cubic-bezier(.2,.8,.2,1); } .gs-brand:hover .gs-brand-mark { transform: rotate(-18deg) scale(1.3); } .gs-brand:hover .gs-brand-mark .tr { transform: translate(-3px,3px); } .gs-acct-btn:hover .gs-avatar { border-color: var(--off-white); } .gs-menu-item { transition: background-color var(--time-press) var(--ease); } .gs-menu-item:hover { background: color-mix(in srgb, var(--text) 8%, var(--popup)); } }
-  @media (prefers-reduced-motion: reduce) { .gs-navlink::after, .gs-brand-mark, .gs-brand-mark .tr, .gs-acct-btn .gs-avatar, .gs-menu-item { transition: none; } }
+  @media (hover: hover) { .gs-navlink:not([aria-current="page"]):hover::after { transform: scaleX(1); } .gs-brand, .gs-acct-btn .gs-avatar { transition: opacity var(--time-swap) var(--ease), border-color var(--time-swap) var(--ease); } .gs-brand:hover { opacity: .75; } .gs-acct-btn:hover .gs-avatar { border-color: var(--off-white); } .gs-menu-item { transition: background-color var(--time-press) var(--ease); } .gs-menu-item:hover { background: color-mix(in srgb, var(--text) 8%, var(--popup)); } }
+  @media (prefers-reduced-motion: reduce) { .gs-navlink::after, .gs-brand, .gs-acct-btn .gs-avatar, .gs-menu-item { transition: none; } }
   .gs-acct { position: relative; }
   .gs-acct-btn .mcp-ico { transition: transform var(--time-dropdown) var(--ease); }
   .gs-acct-btn[aria-expanded="true"] .mcp-ico { transform: rotate(180deg); }
@@ -959,7 +959,6 @@
   .dc-tile .mcp-cover-art { aspect-ratio: 1 / 1; }
   .dc-tile > .gs-coverbtn { margin-bottom: 4px; }
   .dc-tile-name { background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.3 var(--font-text); text-align: left; cursor: pointer; min-height: 24px; }
-  .dc-tile-name { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 4px; text-decoration-thickness: 1.5px; transition: opacity var(--time-press) var(--ease), color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
   .dc-tile-name:active { opacity: .55; }
   .dc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   .dc-lrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 16px; gap: 12px; align-items: center; width: 100%; min-height: 72px; padding: 12px var(--lb-pad, 16px); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
@@ -978,7 +977,6 @@
   @media (hover: hover) {
     .gs-coverbtn:hover .mcp-cover-art, .dc-tile:has(.dc-tile-name:hover) .mcp-cover-art { outline-color: var(--control-edge); }
     .gs-coverbtn:hover .mcp-cover-art svg, .dc-tile:has(.dc-tile-name:hover) .mcp-cover-art svg { transform: scale(1.04); }
-    .dc-tile-name:hover { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; }
     .dc-chips > button:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
     .gs-tagbtn:hover .mcp-tag { border-color: var(--text); color: var(--text); }
     .dc-lrow:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
@@ -1000,8 +998,8 @@
   .ga-w { --y: 44; --w: 32; --h: 32; border-radius: calc(var(--on) * 50%); }
   .ga-w1 { --x: 24; --fill: var(--cover-amber); --s: 0; }
   .ga-w2 { --x: 64; --fill: var(--cover-cream); --s: 40; }
-  .mcp-art i.ga-w3 { --x: 106; --y: 46; --w: 28; --h: 28; --fill: transparent; --s: 20; box-sizing: border-box; border: solid var(--cover-teal); border-width: calc(var(--u) * (4 + var(--on) * 10)); border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * var(--u) * -2), calc(var(--on) * var(--u) * -2)) scale(calc(1 + var(--on) * .142857)); transform-origin: 0 0; transition: transform calc(var(--time-art) * .6) var(--ease-art), border-radius calc(var(--time-art) * .6) var(--ease-art), border-width calc(var(--time-art) * .6) var(--ease-art); }
-  .ga-m-ring { --x: 36; --y: 24; --w: 72; --h: 72; --fill: transparent; --s: 0; box-sizing: border-box; border: calc(var(--u) * 12) solid var(--cover-orange); border-radius: 50%; transform: scale(calc(1 - var(--on) * .55)); }
+  .ga-w3 { --x: 106; --y: 46; --w: 28; --h: 28; --fill: transparent; --s: 80; box-sizing: border-box; border: calc(var(--u) * 4) solid var(--cover-teal); border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * min(var(--u) * 5, 8px)), calc(var(--on) * max(var(--u) * -5, -8px))); }
+  .ga-m-ring { --x: 36; --y: 24; --w: 72; --h: 72; --fill: transparent; --s: 0; box-sizing: border-box; border: calc(var(--u) * 12) solid var(--cover-orange); border-radius: calc((1 - var(--on)) * 50%); }
   .ga-m-bar { --x: 114; --y: 24; --w: 10; --h: 72; --fill: var(--cover-cream); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
   .ga-m-cap { --x: 114; --y: 24; --w: 10; --h: 20; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
   .ga-e-door { --x: 60; --y: 26; --w: 44; --h: 134; --fill: var(--cover-teal); --s: 0; border-radius: calc(var(--on) * var(--u) * 22) calc(var(--on) * var(--u) * 22) 0 0; }
@@ -1173,46 +1171,43 @@
   .wn-nest::after { content: ""; display: block; position: sticky; bottom: -8px; height: 56px; margin-top: -56px; pointer-events: none; background: linear-gradient(to top, var(--card), rgb(0 0 0 / 0)); }
   @supports (animation-timeline: scroll()) { .wn-nest::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
   @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
-  .ed-row { display: grid; grid-template-columns: minmax(0, 1fr) auto 128px 16px; grid-template-areas: "t s r c" "m s r c"; gap: 2px 16px; align-items: center; width: 100%; min-height: 64px; padding: 10px var(--lb-pad, 16px); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
+
+/* ---- playground: Editions page, options 1 to 3 (docs/specs/editions/playground/) ---- */
+  .gs-root { padding-bottom: 196px; }
+  .kit-config-wrap { bottom: 196px; }
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 820px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 56px; flex: none; }
+  .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; }
+  .pg-why { display: grid; gap: 12px; }
+  .ed-links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+  .ed-row { display: grid; grid-template-columns: minmax(0, 1fr) auto 16px; grid-template-areas: "t r c" "m r c"; gap: 2px 16px; align-items: center; width: 100%; min-height: 64px; padding: 10px var(--lb-pad, 16px); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
   .ed-row > .lb-chev { grid-area: c; }
   .ed-t { grid-area: t; font-weight: 600; min-width: 0; text-wrap: pretty; }
   .ed-m { grid-area: m; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font: 400 14px/1.5 var(--font-text); color: var(--muted); }
   .ed-r { grid-area: r; justify-self: end; }
+  .ed-row { grid-template-columns: minmax(0, 1fr) auto auto 16px; grid-template-areas: "t s r c" "m s r c"; }
   .ed-slots { grid-area: s; display: grid; grid-template-columns: 76px 72px; gap: 8px; align-items: center; }
   .ed-slot { display: flex; min-width: 0; }
+  .ed-row.is-cols { grid-template-columns: minmax(0, 1fr) 112px auto 120px 16px; grid-template-areas: "t d s r c"; }
+  .ed-d { grid-area: d; }
+  .ed-row:not(.is-orig) { grid-template-columns: minmax(0, 1fr) auto 128px 16px; }
+  .ed-row.is-cols { grid-template-columns: minmax(0, 1fr) 112px auto 128px 16px; }
+  .ed-row:not(.is-orig) .ed-r { justify-self: end; }
+  .ed-row.is-orig { grid-template-columns: minmax(0, 1fr) auto 16px; grid-template-areas: "t r c" "m r c"; }
+  .ed-m .ed-slots { grid-area: auto; }
+  .ed-row.is-orig .lb-date { min-width: 104px; }
+  .ed-pin { gap: 8px; margin-bottom: 24px; }
+  .ed-pin .ed-row { padding-inline: 0; }
   @media (hover: hover) { .ed-row:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } .ed-row:hover .lb-chev { color: var(--text); transform: translateX(3px); } }
   .ed-row:active { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
   .ed-row:focus-visible { outline-offset: -2px; }
-  @container gs (max-width: 559px) { .ed-row { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "m c" "s c" "r c"; } .ed-r { justify-self: start; } .ed-slots:not(:has(.mcp-tag)) { display: none; } }
-  @media (prefers-reduced-motion: reduce) { .ed-row { transition: none; } }
-  /* How it works and the play dialog (app/gs-connect.jsx) */
-  .hw-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
-  .hw-need { margin: 0; text-wrap: pretty; }
-  .hw-seg { display: flex; flex-wrap: wrap; gap: 8px; }
-  .hw-ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
-  .hw-ai-logo { display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid var(--control-edge); color: var(--text); flex: none; }
-  .hw-ai-tx { display: grid; gap: 4px; min-width: 0; }
-  .hw-ai-act { grid-column: 2; }
-  .hw-other { display: grid; gap: 20px; }
-  .hw-band { display: grid; gap: 16px; padding: 20px; border: 1.5px solid var(--control-edge); }
-  .hw-promptrow { display: grid; gap: 12px; justify-items: start; }
-  .hw-promptrow > .hw-prompt { justify-self: stretch; }
-  @container gs (min-width: 720px) {
-    .hw-other { grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 32px; align-items: start; }
-    .hw-band { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 32px; padding: 24px; }
-    .hw-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-  }
-  /* product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
-  @container gs (min-width: 900px) {
-    .gs-head-split { align-items: stretch; }
-    .gs-hero-cover, .gs-hero-cover > .mcp-cover { height: 100%; }
-    .gs-hero-cover > .mcp-cover { grid-template-rows: minmax(0, 1fr); }
-    .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; min-height: 320px; }
-  }
-  @container gs (min-width: 1000px) {
-    .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
-    .hw-ai-act { grid-column: auto; }
-  }
+  @container gs (max-width: 559px) { .ed-row, .ed-row.is-cols { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "d c" "m c" "s c" "r c"; } .ed-row.is-orig { grid-template-areas: "t c" "m c" "r c"; } .ed-r { justify-self: start; } .ed-slots:not(:has(.mcp-tag)) { display: none; } }
+  @media (hover: hover) { .ed3-cell:not(.is-done):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+  @container gs (min-width: 900px) { .ed3 { grid-template-columns: minmax(320px, 1fr) minmax(0, 1.4fr); align-items: start; } .ed3-detail { position: sticky; top: 24px; } }
+  @media (prefers-reduced-motion: reduce) { .ed-row, .ed3-cell { transition: none; } .ed3-cell:active { transform: none; } }
 </style>
 </head>
 <body>
@@ -1263,7 +1258,7 @@
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
-<script type="text/babel" src="app/gs-editions.jsx"></script>
+<script type="text/babel" src="docs/specs/editions/playground/pg-editions.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

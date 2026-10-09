@@ -52,6 +52,7 @@ const GsPassTag = () => {
 const GsTagList = ({ tags }) => (
   <div className="gs-tags">
     {tags.map((t, i) => t === 'FREE' ? <DS.Tag key={i} kind="free">Free</DS.Tag>
+      : t === 'FIRST' ? <DS.Tag key={i} kind="free">First edition free</DS.Tag>
       : t === 'PASS' ? <GsPassTag key={i} />
       : <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}
   </div>
@@ -69,13 +70,16 @@ const GsWhoCols = ({ ai, server }) => (
     <div className="gs-stack-sm"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
   </div>
 );
-// The Pass page's comparison. One row per thing you get; a tick in each column that has it.
+// The Pass page's comparison, back (free-and-pass, 2026-10-09). One row per thing; a tick in each column that has it. Rows agree with the free and Pass rules.
 const GS_COMPARE = [
-  { name: 'The free games', sub: 'Short puzzles, new every day or every week.', free: true },
-  { name: 'Your results, past plays and streak', free: true },
+  { name: 'Free games', free: true },
+  { name: 'The first edition of select games', free: true },
+  { name: 'Streaks and achievements in every game you can play', free: true },
+  { name: 'Your results and history', free: true },
   { name: 'Sharing a result', free: true },
-  { name: GS_NAME.casebook + ', Delve and ' + GS_NAME.hunter, free: false },
-  { name: 'Everything you missed', sub: 'Every earlier edition of the daily and weekly games, ready to play.', free: false },
+  { name: 'Replay earlier editions', free: false },
+  { name: 'The full game catalog', free: false },
+  { name: 'New releases', free: false },
 ];
 const GsCmpMark = ({ on }) => on
   ? <span className="gs-cmp-cell"><DS.Icon name="check" /><span className="gs-vh">Included</span></span>
@@ -214,12 +218,13 @@ const GsUserItems = ({ pick, role }) => {
     <button key={key} type="button" role={role} className="gs-menu-item gs-menu-ico" aria-busy={(work && busy) || undefined}
       onClick={() => (work ? run(() => pick(fn)) : pick(fn))}>
       {work && busy ? <span className="gs-ico-slot"><GsInkSpin /></span>
-        : icon ? (icon === 'logout' ? <GsGlyph name="logout" /> : <DS.Icon name={icon} />) : <span className="gs-ico-space" />}{label}
+        : icon ? (icon === 'logout' || icon === 'pass' ? <GsGlyph name={icon} /> : <DS.Icon name={icon} />) : <span className="gs-ico-space" />}{label}
     </button>
   );
   return <>
     {item('acct', 'settings', 'Manage account', () => gs.go('account', { from: gs.route }))}
-    {item('ai', null, 'Your AI', () => gs.go('connect'))}
+    {item('pass', 'pass', 'Pass', () => gs.go('pass'))}
+    {item('ai', 'play', 'How it works', () => gs.go('connect'))}
     <div className="gs-menu-div" role="separator" />
     {item('out', 'logout', 'Sign out', gs.signOut, true)}
   </>;
@@ -281,7 +286,7 @@ const GsTopBar = () => {
         <div className="gs-top-end">
           {out ? (
             <div className="gs-wide-only">
-              <button type="button" className="gs-navlink" onClick={() => gs.go('signin')}>Sign in</button>
+              <DS.Button variant="secondary" onClick={() => gs.go('signin')}>Sign in</DS.Button>
               <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             </div>
           ) : <div className="gs-wide-only"><GsUserMenu /></div>}
@@ -332,19 +337,8 @@ const GsDemoBar = () => {
   );
 };
 
-// ---- "Play in your AI" pop-up (shown once connected) -----------------------------
-const GsPlayPopup = () => {
-  const gs = useGs();
-  const last = React.useRef(null);
-  if (gs.playing) last.current = gs.playing;
-  const p = last.current;
-  return (
-    <DS.Popup open={!!gs.playing} onClose={gs.closePlay} posture={gs.narrow ? 'sheet' : 'window'}
-      title={p ? 'Tell your AI: let’s play ' + p.name + '.' : ''} label="Play in your AI">
-      <DS.Button variant="secondary" block onClick={gs.closePlay}>Close</DS.Button>
-    </DS.Popup>
-  );
-};
+// ---- The play dialog lives in gs-connect.jsx with the prompts ----
+const GsPlayPopup = () => <GsPlayDialog />;
 
 Object.assign(window, {
   GsCover, GsCoverButton, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
