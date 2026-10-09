@@ -112,8 +112,8 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - Check every overlay at phone and desktop width before calling it done.
 </important>
 
-<important if="you are building or changing anything the user waits for: an action that changes state (a submit, save, send, delete, confirm or pay), a page whose content arrives, or a part of a page that loads on its own">
-- **Every wait shows it is working, where the wait is.** A press that changes state shows a loading indication on the control that was pressed, which cannot be pressed again until the result; usually that is the submit button. A page whose content is arriving shows it loading as a page. A part of a page that loads on its own, such as a panel, a list or the top bar, shows it there and leaves the rest usable. A prototype has no real wait, so stage one long enough to see.
+<important if="you are building or changing any action that changes state, or any content that loads: a submit, save, send, delete, confirm, pay, a list, a panel, a page">
+- **Every wait shows it is working, where the wait is.** A press that changes state shows a loading indication on the control that was pressed, which cannot be pressed again until the result. A page whose content is arriving shows it loading as a page. A part of a page that loads on its own, such as a panel, a list or the top bar, shows it there and leaves the rest usable. A prototype has no real wait, so stage one long enough to see.
 </important>
 
 ## Code
