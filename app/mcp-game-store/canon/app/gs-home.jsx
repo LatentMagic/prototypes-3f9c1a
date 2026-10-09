@@ -76,7 +76,7 @@ const GsHome = () => {
       </section>
 
       <section id="gs-how" className="gs-band">
-        <h2 className="mcp-t-sec">How it works</h2>
+        <h2 className="mcp-t-sec">Get started</h2>
         <GsSteps row items={[
           <p key="1"><b>Connect your AI</b> in about two minutes.</p>,
           <p key="2"><b>Play today’s puzzles free.</b> No card needed.</p>,
@@ -88,7 +88,7 @@ const GsHome = () => {
         <h2 className="mcp-t-sec">Who does what</h2>
         <div className="gs-who2">
           <div><h3 className="mcp-t-card">Your AI</h3><p className="gs-lead">Narrates, voices the characters, and asks what you do next.</p></div>
-          <div><h3 className="mcp-t-card">Our server</h3><p className="gs-lead">Rolls every die, keeps the score, decides each outcome and records your session.</p></div>
+          <div><h3 className="mcp-t-card">The game engine</h3><p className="gs-lead">Rolls every die, keeps the score, decides each outcome and records your session.</p></div>
         </div>
       </section>
 

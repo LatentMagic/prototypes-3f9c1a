@@ -28,6 +28,9 @@ const GsConfigExtra = () => {
       {row('Apple account', r.appleNone ? 'none' : 'found', (v) => set(() => api.setReview({ appleNone: v === 'none' })), o([['found', 'Found'], ['none', 'None']]))}
       <div className="kit-config-group-title">Username</div>
       {row('Username', (api.user && api.user.locked) ? 'recent' : 'free', (v) => set(() => api.setUser({ locked: v === 'recent' })), o([['free', 'Free to change'], ['recent', 'Changed recently']]))}
+      <div className="kit-config-group-title">Library</div>
+      {row('This week, or today', r.week === 'done' ? 'done' : 'live', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
+      <div className="kit-config-hint">The top card of each library page: Casebook’s and Delve’s week, Daily Puzzles’ day.</div>
       <div className="kit-config-group-title">Pass</div>
       {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { freeUsed: true }) }),
         o([['none', 'None'], ['free', 'Free month'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}

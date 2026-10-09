@@ -36,7 +36,7 @@ const GsSteps = ({ items, row }) => (
 const GsWhoCols = ({ ai, server }) => (
   <div className="gs-cols2">
     <div className="gs-stack-sm"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">{ai}</p></div>
-    <div className="gs-stack-sm"><h3 className="mcp-t-card">Our server</h3><p className="gs-muted">{server}</p></div>
+    <div className="gs-stack-sm"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
   </div>
 );
 // The Pass page's comparison. One row per thing you get; a tick in each column that has it.

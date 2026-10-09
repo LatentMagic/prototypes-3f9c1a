@@ -24,7 +24,7 @@ const GS_ART = {
   word: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>'),
   derelict: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>'),
   barrow: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>'),
-  casebook: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#F2EBE0"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#D66847"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>'),
+  casebook: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>'),
   hunter: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>'),
 };
 
@@ -33,10 +33,10 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 const GS_GAMES = {
-  daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', '10 min'] },
-  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', '25–40 min'] },
-  casebook: { name: GS_NAME.casebook, art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly'] },
-  hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS'] },
+  daily: { name: 'Daily Puzzles', art: 'daily', route: 'puzzles', blurb: 'Three small puzzles, new every day.', tags: ['FREE', 'Daily', '10 min'] },
+  delve: { name: 'Delve', art: 'delve', route: 'delve', blurb: 'Get her out before the drums stop.', tags: ['PASS', 'Weekly', '25–40 min'] },
+  casebook: { name: GS_NAME.casebook, art: 'casebook', route: 'casebook', blurb: 'Ask the question they haven’t prepared for.', tags: ['PASS', 'Weekly', '25–40 min'] },
+  hunter: { name: GS_NAME.hunter, art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
 const GS_GAME_ORDER = ['daily', 'casebook', 'delve', 'hunter'];
 // The small mark on a card. Pass: today's and this week's; free, signed in: today's only.

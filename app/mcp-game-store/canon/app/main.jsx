@@ -12,7 +12,7 @@
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-const GS_REVIEW_DEFAULT = { providerFail: false, appleNone: false, sheet: 'completes' };
+const GS_REVIEW_DEFAULT = { providerFail: false, appleNone: false, sheet: 'completes', week: 'live' };
 const GS_USER_DEFAULT = { username: 'MonaLaser', locked: false, email: 'you@example.com' };
 // status: none | free (free month) | active | failed | ending
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };

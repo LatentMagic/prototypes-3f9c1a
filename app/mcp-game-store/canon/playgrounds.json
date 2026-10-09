@@ -5,6 +5,46 @@
   "tickets": [
     {
       "id": "—",
+      "slug": "library-game-page",
+      "name": "The library game page",
+      "state": "active",
+      "touched": "2026-10-08",
+      "entries": [
+        {
+          "name": "Casebook, option 16",
+          "path": "docs/specs/library-game-page/playground/casebook-16.html",
+          "note": "13 revised from its review: 15’s This week, achievements before your cases, your cases last and lighter. Options 13 to 15 stay on the strip to compare."
+        },
+        {
+          "name": "Casebook, options 13 to 15",
+          "path": "docs/specs/library-game-page/playground/casebook-13-15.html",
+          "note": "The final round: parts side by side, a streak that reads as weeks passing, one-line case rows and a case page grouped by kind of turn."
+        },
+        {
+          "name": "Casebook, options 10 to 12",
+          "path": "docs/specs/library-game-page/playground/casebook-10-12.html",
+          "note": "This week in progress or finished, ten achievements three ways, and an all-cases page with search, order and filter for about 45 cases."
+        },
+        {
+          "name": "Casebook, options 7 to 9",
+          "path": "docs/specs/library-game-page/playground/casebook-7-9.html",
+          "note": "What’s happening now gets the most room; each option holds the growing list of cases to a fixed size its own way."
+        },
+        {
+          "name": "Casebook, options 4 to 6",
+          "path": "docs/specs/library-game-page/playground/casebook.html",
+          "note": "Three arrangements of Your Casebook for three viewers, each with its own share text, achievement badges and way of handling months of cases."
+        },
+        {
+          "name": "Library game page, options 1 to 3",
+          "path": "docs/specs/library-game-page/playground/index.html",
+          "note": "Three arrangements of a player’s own page for a game, for all four games and three viewers (Pass, no Pass, Pass ended)."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
       "slug": "delve-two-pages",
       "name": "A game's two pages (Delve)",
       "state": "active",

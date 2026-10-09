@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Playground · library game page</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -692,137 +693,54 @@
   .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
   @container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band-link { grid-column: auto; } }
   @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
-  /* a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
-  .mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }
-
-  /* library game page (app/gs-library.jsx, app/gs-casebook.jsx), option 16 */
-  .lb-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.2 var(--font-text); cursor: pointer; }
-  .lb-back:active { opacity: .55; }
-  .lb-lay { display: grid; gap: 24px; }
-  .lb-card { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; display: grid; gap: 16px; align-content: start; min-width: 0; --lb-pad: 16px; }
-  .lb-card .mcp-prog-top { display: none; }
-  .lb-box { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); display: grid; align-content: start; min-width: 0; --lb-pad: 16px; }
-  .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
-  .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
-  .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
-  .lb-v { display: inline-flex; align-items: center; gap: 6px; }
-  .lb-v.is-ok { color: var(--success); }
-  .lb-v.is-bad { color: var(--error); }
-  .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
-  .lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
-  .lb-acts { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
-  .lb-acts > .mcp-lnk { min-height: 44px; align-self: flex-start; }
-  .lb-streakhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-  .lb-legend { list-style: none; margin: 0; padding: 0; display: flex; gap: 16px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-  .lb-legend li { display: inline-flex; align-items: center; gap: 8px; }
-  .lb-legend i { width: 12px; height: 12px; display: block; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-  .lb-legend i.is-on { background: var(--off-white); box-shadow: none; }
-  .lb-run { display: grid; }
-  .lb-wk { display: grid; gap: 6px; min-width: 0; }
-  .lb-wk > em { font: 600 14px/1.2 var(--font-text); font-style: normal; color: var(--muted); white-space: nowrap; height: 17px; padding-left: 4px; }
-  .lb-wk > em > b { font: inherit; }
-  .lb-wk > i { display: block; height: 16px; margin-left: 4px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-  .lb-wk:first-child > i, .lb-wk.is-join > i { margin-left: 0; }
-  .lb-wk.is-on > i { background: var(--off-white); box-shadow: none; }
-  .lb-wk > span { font: 400 14px/1.2 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; padding-left: 4px; }
-  .lb-wk:first-child > span, .lb-wk:first-child > em { padding-left: 0; }
-  .lb-wk.is-now > span { color: var(--text); font-weight: 600; }
-  .lb-mn { display: none; }
-  .lb-list { list-style: none; margin: 0; padding: 0; display: grid; }
-  .lb-list > li + li { border-top: 1px solid var(--line); }
-  .lb-card > .lb-today { margin: 0 calc(-1 * var(--lb-pad)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .lb-card > .lb-recent { margin: 0 calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); }
-  .lb-rows { container: lbl / inline-size; }
-  .lb-row { display: grid; grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "title chev" "meta chev"; gap: 2px 16px; align-items: center; width: 100%; min-height: 56px; padding: 10px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
-  .lb-row.is-off { cursor: default; }
-  .lb-row > .lb-chev, .lb-chev-space { grid-area: chev; }
-  .lb-chev { color: var(--muted); transition: transform var(--time-press) var(--ease), color var(--time-press) var(--ease); }
-  @media (hover: hover) {
-    button.lb-row:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
-    button.lb-row:hover .lb-chev { color: var(--text); transform: translateX(3px); }
-  }
-  button.lb-row:active { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
-  button.lb-row:focus-visible { outline-offset: -2px; }
-  .lb-title { grid-area: title; font-weight: 600; min-width: 0; text-wrap: pretty; }
-  .lb-row.is-off .lb-title { font-weight: 400; color: var(--muted); }
-  .lb-meta { grid-area: meta; display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; font: 400 14px/1.5 var(--font-text); color: var(--muted); }
-  .lb-date, .lb-n { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .lb-n { display: inline-flex; align-items: baseline; gap: 4px; }
-  .lb-n b { color: var(--text); font-weight: 600; }
-  .lb-n:empty { display: none; }
-  .lb-st { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1.2 var(--font-text); white-space: nowrap; color: var(--text); }
-  .lb-st.is-ok { color: var(--success); }
-  .lb-st.is-bad { color: var(--error); }
-  .lb-st.is-none { color: var(--muted); font-weight: 400; }
-  @container lbl (min-width: 600px) {
-    .lb-row { grid-template-columns: 64px minmax(0, 1fr) 112px 108px 92px 16px; grid-template-areas: "date title res n0 n1 chev"; }
-    .lb-meta { display: contents; }
-    .lb-date { grid-area: date; } .lb-res { grid-area: res; } .lb-n0 { grid-area: n0; } .lb-n1 { grid-area: n1; }
-    .lb-n:empty { display: block; }
-  }
-  .lb-ach { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
-  .lb-ach > li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; }
-  .lb-ach-n { font-weight: 600; line-height: 1.3; text-wrap: pretty; }
-  .lb-ach-sub { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-  .lb-badge { width: 40px; height: 40px; flex: none; display: block; }
-  .lb-badge svg { width: 100%; height: 100%; display: block; }
-  .lb-badge.is-todo { box-shadow: inset 0 0 0 1px var(--line); }
-  .lb-alllay { display: grid; gap: 24px; }
-  .lb-tools { display: grid; gap: 24px; align-content: start; min-width: 0; }
-  .lb-choicegrp { display: grid; gap: 8px; min-width: 0; }
-  .lb-choice { display: flex; flex-wrap: wrap; gap: 8px; }
-  .lb-choice > button { min-height: 44px; padding: 0 16px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 14px/1.2 var(--font-text); cursor: pointer; transition: transform var(--time-press) var(--ease); }
-  .lb-choice > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
-  .lb-choice > button:active { transform: scale(.97); }
-  .lb-pages { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px var(--lb-pad); border-top: 1px solid var(--line); }
-  .lb-pagenums { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-  .lb-pagenums > button { min-width: 44px; min-height: 44px; background: none; border: 1px solid transparent; color: var(--text); font: 600 16px/1 var(--font-text); font-variant-numeric: tabular-nums; cursor: pointer; }
-  .lb-pagenums > button[aria-current="page"] { border-color: var(--off-white); }
-  .lb-pagenums > button:active { opacity: .55; }
-  .lb-empty { padding: 24px var(--lb-pad); }
-  .lb-share-text { display: grid; gap: 4px; padding: 12px 16px; background: var(--page); border: 1px solid var(--line); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; line-height: 1.45; }
-  .lb-share-link { color: var(--muted); }
-  .lb-figs { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 12px 24px; }
-  .lb-figs > div { display: grid; gap: 4px; align-content: start; min-width: 0; }
-  .lb-figs dt { font: 600 14px/1.3 var(--font-text); color: var(--muted); }
-  .lb-figs dd { margin: 0; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-  .lb-of { color: var(--muted); }
-  .lb-kinds { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); align-items: start; }
-  .lb-kindhead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 16px var(--lb-pad); border-bottom: 1px solid var(--line); }
-  .lb-turns { list-style: none; margin: 0; padding: 0; display: grid; }
-  .lb-turns > li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding: 12px var(--lb-pad); }
-  .lb-turns > li + li { border-top: 1px solid var(--line); }
-  .lb-tn { font: 400 14px/1.6 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
-  .lb-out { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-  .lb-out.is-found { color: var(--text); }
-  .lb-out.is-hit { color: var(--success); font-weight: 600; }
-  .lb-none { padding: 16px var(--lb-pad); }
-  @container gs (max-width: 479px) {
-    .lb-run { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
-    .lb-run > .is-early { display: none; }
-    .lb-run > .is-cut > i { margin-left: 0; }
-    .lb-run > .is-cut > span, .lb-run > .is-cut > em { padding-left: 0; }
-    .lb-mw { display: none; } .lb-mn { display: inline; }
-  }
-  @container gs (min-width: 640px) {
-    .lb-acts { flex-direction: row; align-items: center; gap: 24px; }
-    .lb-acts > .mcp-lnk { align-self: auto; }
-  }
-  @container gs (min-width: 720px) {
-    .lb-card { padding: 24px; --lb-pad: 24px; }
-    .lb-box { --lb-pad: 24px; }
-  }
+/* ---- playground: the library game page (docs/specs/library-game-page) ---- */
+  .gs-root { padding-bottom: 148px; }
+  .kit-config-wrap { bottom: 148px; }
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 760px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 56px; flex: none; }
+  .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; }
+  .pg-why { display: grid; gap: 12px; }
+  .lg-split { display: grid; gap: 36px; }
+  .lg-rows { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .lg-rows > li { border-bottom: 1px solid var(--line); }
+  .lg-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 56px; padding: 12px 0; background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: opacity var(--time-press) var(--ease); }
+  .lg-row:active { opacity: .55; }
+  .lg-row > .mcp-ico { transition: transform var(--time-dropdown) var(--ease); }
+  .lg-row[aria-expanded="true"] > .mcp-ico { transform: rotate(180deg); }
+  .lg-none { min-height: 56px; display: flex; align-items: center; padding: 8px 0; }
+  .lg-pad { padding: 8px 12px; min-height: 48px; }
+  .lg-open { display: grid; gap: 24px; padding: 0 0 24px; }
+  .gs-root .lg-loss { color: var(--error); }
+  .lg-share { display: grid; gap: 12px; justify-items: start; }
+  .lg-share-text { width: 100%; display: grid; gap: 4px; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .mcp-pop .lg-share-text { background: var(--page); }
+  .lg-dl { margin: 0; display: grid; }
+  .lg-dl > div { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .lg-dl > div:first-child { border-top: 0; }
+  .lg-dl dd { margin: 0; }
+  .gs-plain > li.lg-ach { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-items: start; padding: 12px 0; }
+  .lg-got { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .lg-bar { display: block; max-width: 280px; }
+  .lg-ach-cols { display: grid; gap: 24px; }
+  .lg-spot { display: grid; gap: 24px; }
+  .lg-picks { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .lg-pick { display: grid; width: 100%; min-height: 56px; padding: 8px 12px; background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: opacity var(--time-press) var(--ease); }
+  .lg-pick:active { opacity: .55; }
+  .lg-pick[aria-pressed="true"] { background: var(--card); box-shadow: inset 0 0 0 1px var(--off-white); }
+  .lg-tiles { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+  .lg-trow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+  .lg-copy { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; white-space: nowrap; font-weight: 600; }
+  .lg-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.2 var(--font-text); cursor: pointer; }
+  .lg-back:active { opacity: .55; }
+  @container gs (min-width: 720px) { .lg-ach-cols { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 36px; } }
   @container gs (min-width: 900px) {
-    .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
-    .lb-alllay { grid-template-columns: 280px minmax(0, 1fr); align-items: start; }
-    .lb-tools { position: sticky; top: 24px; }
-    .lb-choice { flex-direction: column; flex-wrap: nowrap; }
-    .lb-choice > button { text-align: left; }
+    .lg-split { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; }
+    .lg-spot { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); align-items: start; gap: 36px; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .lb-row, .lb-chev, .lb-choice > button { transition: none; }
-    .lb-choice > button:active, button.lb-row:hover .lb-chev { transform: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .lg-row, .lg-pick, .lg-row > .mcp-ico { transition: none; } }
 </style>
 </head>
 <body>
@@ -854,12 +772,6 @@
 <script type="text/babel" src="app/gs-puzzles.jsx"></script>
 <script type="text/babel" src="app/gs-session.jsx"></script>
 <script type="text/babel" src="app/gs-game.jsx"></script>
-<script type="text/babel" src="app/gs-library.jsx"></script>
-<script type="text/babel" src="app/gs-casebook-data.jsx"></script>
-<script type="text/babel" src="app/gs-casebook.jsx"></script>
-<script type="text/babel" src="app/gs-delve-library.jsx"></script>
-<script type="text/babel" src="app/gs-puzzles-library.jsx"></script>
-<script type="text/babel" src="app/gs-hunter-library.jsx"></script>
 <script type="text/babel" src="app/gs-player.jsx"></script>
 <script type="text/babel" src="app/gs-auth.jsx"></script>
 <script type="text/babel" src="app/gs-username.jsx"></script>
@@ -871,6 +783,7 @@
 <script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
+<script type="text/babel" src="docs/specs/library-game-page/playground/pg-library.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

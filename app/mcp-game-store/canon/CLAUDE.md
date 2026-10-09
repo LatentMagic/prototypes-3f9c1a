@@ -44,6 +44,8 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
 - **Upstream first.** Whatever the product block names — product behaviour, design law, brand and voice, the reasoning behind any prompt that arrives here — lives outside this project. Read it live, at the start of a session and again before any decision it governs. The product's specs are canonical for behaviour: cite them by path and id; never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
 
+- **Hand back on `index.html`, never a `?state=` address.** State addresses don't load in the user's Claude Design preview. When surfacing work, open plain `index.html` and give the clicks to the change.
+
 ## Ratification — the standing rule
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a restore, not a "small" wording change, not a choice between two options you have already argued through, not recording a decision as settled in a handoff or `CHANGELOG.md`. **Present the options, state your recommendation, then stop and wait.**
 - Agreement to one thing is agreement to **that thing only**. Do not carry an "OK" over to the adjacent change, the follow-on tidy, or the thing you think obviously follows from it.

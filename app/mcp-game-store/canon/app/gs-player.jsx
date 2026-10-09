@@ -161,7 +161,7 @@ const GpPlayer = ({ id }) => {
 // route.page === 'record' opens that game's player page.
 const gpGame = (id) => () => {
   const gs = useGs();
-  if (gs.view !== 'out' && gs.route.page === 'record') return <GpPlayer id={id} />;
+  if (gs.view !== 'out' && gs.route.page === 'record') { const L = window.GS_LIBRARY && window.GS_LIBRARY[id]; return L ? <L /> : <GpPlayer id={id} />; }
   return <GsGamePage id={id} top={gs.view !== 'out' ? <GpCard id={id} /> : null} />;
 };
 
