@@ -5,6 +5,36 @@
   "tickets": [
     {
       "id": "—",
+      "slug": "home-product-hero",
+      "name": "The home hero: the product or a game",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Home hero, options 0 to 3, with density",
+          "path": "docs/specs/home-product-hero/playground/index.html",
+          "note": "Today’s Casebook hero (0) beside three heroes that lead with what the product does better; Density sets Roomy, Today or Compact."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "authorize-landing",
+      "name": "Where you land when your AI asks you to connect",
+      "state": "active",
+      "touched": "2026-10-09",
+      "entries": [
+        {
+          "name": "Landing from Connect, options 1 to 3",
+          "path": "docs/specs/authorize-landing/playground/index.html",
+          "note": "The home page with the request on top, the request beside the product, or connect first with the games after. Arrive, Connect, Connected for Claude or ChatGPT."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
       "slug": "plays-and-editions",
       "name": "What a game has put out, and what you played",
       "state": "active",

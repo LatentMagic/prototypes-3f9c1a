@@ -1,4 +1,6 @@
 ---
+
+> Superseded in part on 2026-10-10 by `docs/specs/walk-sweep/handoff-2026-10-10-walk-sweep.md`: the Account card reads "[name] is your username"; no generated or suggested names.
 date: '2026-10-07'
 topic: 'usernames'
 status: 'in-progress'

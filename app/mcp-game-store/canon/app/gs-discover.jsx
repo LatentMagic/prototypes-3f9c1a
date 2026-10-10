@@ -31,7 +31,7 @@ const DcPick = ({ id, label }) => {
     <DS.Card className="mcp-art-host gs-host" style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <div className="gs-gcard" ref={host}><GsArt art={g.art} shape="wide" /></div>
       <DcHead g={g} open={open} label={label} />
-      <GsTagList tags={g.tags} />
+      <GsTagList tags={g.tags} ed={g.ed} />
     </DS.Card>
   );
 };
@@ -41,7 +41,7 @@ const DcRowCard = ({ id, mark }) => {
     <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'start' }}>
       <div className="gs-feat" ref={host}>
         <GsArt art={g.art} shape="wide" />
-        <div className="gs-feat-body"><DcHead g={g} mark={mark} open={open} /><GsTagList tags={g.tags} /></div>
+        <div className="gs-feat-body"><DcHead g={g} mark={mark} open={open} /><GsTagList tags={g.tags} ed={g.ed} /></div>
       </div>
     </DS.Card>
   );
@@ -87,7 +87,7 @@ const DcBody = () => {
       <div className="gs-feats" role="region" aria-label="Just added" tabIndex={0}>{GS_ADDED.map((k) => <DcRowCard key={k} id={k} />)}</div>
     </section>
     <section className="dc-sec">
-      <div className="gs-stack-sm"><h2 className="mcp-t-sec">Free to play</h2><p className="gs-muted">{GS_NAME.casebook + ' and Delve are free for their first edition.'}</p></div>
+      <div className="gs-stack-sm"><h2 className="mcp-t-sec">Free to play</h2><p className="gs-muted">{GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}</p></div>
       <div className="gs-feats" role="region" aria-label="Free to play" tabIndex={0}>{freeIds.map((k) => <DcRowCard key={k} id={k} />)}</div>
     </section>
     <DcPassBand />
@@ -131,16 +131,19 @@ const GS_LIB_ME = {
   pass: { word: [1, 'Played today'], groups: [2, 'Played today'], mystery: [3, 'Played today'], escape: [4, 'Played this week'], casebook: [5, 'Played this week'],
     delve: [6, 'Played this week'], hunter: [7, 'Last played 5 October'] },
   free: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'],
-    casebook: [5, 'First edition played'], delve: [6, 'First edition played'], hunter: [null, 'Only with the Pass'] },
+    casebook: [5, 'First case played'], delve: [6, 'First scene played'], hunter: [null, 'Only with the Pass'] },
 };
-const gsLibMe = (view, k, lapsed) => (GS_LIB_ME[lapsed ? 'lapsed' : view] && GS_LIB_ME[lapsed ? 'lapsed' : view][k]) || [null, 'Free first edition'];
+const gsLibMe0 = (view, k, lapsed) => (GS_LIB_ME[lapsed ? 'lapsed' : view] && GS_LIB_ME[lapsed ? 'lapsed' : view][k]) || [null, 'Free first ' + ((GS_GAMES[k] && GS_GAMES[k].ed) ? GS_GAMES[k].ed[0] : 'edition')];
+// An edition in progress says so wherever a mark would say it was played, for every player.
+const gsLibMe = (view, k, lapsed, live) => { const r = gsLibMe0(view, k, lapsed);
+  return live && (/^Played (today|this week)$/.test(r[1]) || (!lapsed && /^First \w+ played$/.test(r[1]))) ? [r[0], 'In progress'] : r; };
 const GsLibrary = () => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
   const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
   React.useEffect(() => { setCat(gs.route.kind || 'all'); setRhy(gs.route.rhythm || 'all'); }, [gs.route]);
   const wait = useGsPart([q, cat, rhy, sort]);
-  const rank = (k) => { const r = gsLibMe(gs.view, k, gsLapsed(gs))[0]; return r == null ? 99 : r; };
+  const rank = (k) => { const r = gsLibMe(gs.view, k, gsLapsed(gs), !lbWeekDone(gs))[0]; return r == null ? 99 : r; };
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
   const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rank(a) - rank(b) || az(a, b)));
@@ -160,7 +163,7 @@ const GsLibrary = () => {
               <li key={k}>
                 <button type="button" className="dc-lrow" onClick={() => gs.go(g.route, { page: 'record' })}>
                   <GpMini art={g.art} />
-                  <span className="dc-lrow-tx"><span className="dc-lrow-t">{g.name}</span><span className="gs-small">{gsKind(g.category) + ' · ' + gsLibMe(gs.view, k, gsLapsed(gs))[1]}</span></span>
+                  <span className="dc-lrow-tx"><span className="dc-lrow-t">{g.name}</span><span className="gs-small">{gsKind(g.category) + ' · ' + gsLibMe(gs.view, k, gsLapsed(gs), !lbWeekDone(gs))[1]}</span></span>
                   {dcChev}
                 </button>
               </li>

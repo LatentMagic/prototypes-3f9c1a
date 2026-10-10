@@ -12,34 +12,53 @@ const useGsDone = (ms) => {
 };
 const GsDone = ({ children }) => <span className="gs-ico-row gs-done" role="status"><DS.Icon name="check" />{children}</span>;
 
-// "Confirm it’s you": a password, or a provider round trip. A centred window at every width.
+// "Confirm it’s you": a password for an email account; for a Google or Apple account, a code sent to its email
+// (shaped like Change email's code step). A centred window at every width.
 const GsIdentity = ({ open, provider, onCancel, onOk }) => {
+  const gs = useGs();
   const [pw, setPw] = React.useState('');
   const [tried, setTried] = React.useState(false);
+  const [codeErr, setCodeErr] = React.useState(false);
+  const [resent, setResent] = React.useState(false);
   const ref = React.useRef(null);
   const [busy, run, cancel] = useGsBusy();
-  React.useEffect(() => { if (open) { setPw(''); setTried(false); } }, [open]);
+  const [sending, runSend] = useGsBusy();
+  React.useEffect(() => { if (open) { setPw(''); setTried(false); setCodeErr(false); setResent(false); } }, [open]);
+  React.useEffect(() => { if (!resent) return undefined; const t = setTimeout(() => setResent(false), 2600); return () => clearTimeout(t); }, [resent]);
   const err = tried && !pw ? 'Enter your password.' : null;
+  const refocus = () => setTimeout(() => ref.current && ref.current.focus(), 0);
   const go = (e) => {
     e && e.preventDefault();
     if (busy) return;
     setTried(true);
-    if (!provider && !pw) { setTimeout(() => ref.current && ref.current.focus(), 0); return; }
+    if (provider) {
+      if (pw.length < 6) { setCodeErr(true); refocus(); return; }
+      run(() => { if (pw === '111111') { setCodeErr(true); refocus(); return; } onOk(); });
+      return;
+    }
+    if (!pw) { refocus(); return; }
     run(onOk);
   };
   const close = () => { cancel(); onCancel(); };
-  const P = provider ? provider[0].toUpperCase() + provider.slice(1) : null;
   return (
     <DS.Popup open={open} onClose={close} posture="window" label="Confirm it’s you">
       <GsPopTitle>Confirm it’s you</GsPopTitle>
       {provider ? (
-        <>
-          <p>Continue through {P} to confirm it’s you.</p>
+        <form noValidate onSubmit={go} className="gs-stack-md">
+          <p>Enter the code sent to <b>{gs.user.email}</b>.</p>
+          <DS.TextField label="Verification code" inputMode="numeric" maxLength={6} placeholder="000000" autoComplete="one-time-code" className="gs-code gs-code-sm"
+            value={pw} error={codeErr ? 'That code’s not right. Check and re-enter.' : null} inputRef={(el) => { ref.current = el; }}
+            onChange={(e) => { setPw(e.target.value.replace(/[^0-9]/g, '').slice(0, 6)); setCodeErr(false); }} />
+          <div className="gs-link-slot">
+            {resent
+              ? <span className="gs-ico-row" role="status"><DS.Icon name="check" />A fresh code is on its way.</span>
+              : <DS.TextLink onClick={() => runSend(() => { setResent(true); setPw(''); setCodeErr(false); refocus(); })} aria-busy={sending || undefined}>{sending && <GsInkSpin />}Send a new code</DS.TextLink>}
+          </div>
           <GsActs>
             <DS.Button variant="secondary" onClick={close}>Cancel</DS.Button>
-            <DS.Button onClick={go} loading={busy}>Continue with {P}</DS.Button>
+            <DS.Button type="submit" loading={busy}>Confirm</DS.Button>
           </GsActs>
-        </>
+        </form>
       ) : (
         <form noValidate onSubmit={go} className="gs-stack-md">
           <p>Enter your password to continue.</p>
@@ -127,8 +146,9 @@ const GsChangePassword = () => {
 
 const GsDeleteAccount = () => {
   const gs = useGs();
-  const [step, setStep] = React.useState(gs.route.stage === 'delete' ? 'alert' : null); // alert | identity
+  const [step, setStep] = React.useState(gs.route.stage === 'delete' ? 'alert' : gs.route.stage === 'delete-code' ? 'identity' : null); // alert | identity
   const provider = gs.provider === 'email' ? null : gs.provider;
+  const holds = GS_SUB_HOLDS.includes(gs.sub.status);
   return (
     <DS.Card style={GS_ACCT_CARD}>
       <h2 className="mcp-t-card">Delete account</h2>
@@ -136,7 +156,7 @@ const GsDeleteAccount = () => {
       <div className="gs-card-acts"><DS.Button variant="secondary" className="gs-btn-danger-outline" onClick={() => setStep('alert')}>Delete your account</DS.Button></div>
       <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture="window" label="Delete your account?">
         <GsPopTitle>Delete your account?</GsPopTitle>
-        <p>It can’t be undone. Deleting also cancels your Pass.</p>
+        <p>It can’t be undone.{holds ? ' Deleting also cancels your Pass.' : ''}</p>
         <GsActs>
           <DS.Button variant="secondary" onClick={() => setStep(null)}>Cancel</DS.Button>
           <DS.Button variant="danger" onClick={() => setStep('identity')}>Delete account</DS.Button>

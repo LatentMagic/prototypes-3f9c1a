@@ -161,9 +161,8 @@ const GpPlayer = ({ id }) => {
 // route.page === 'record' opens that game's player page.
 const gpGame = (id) => () => {
   const gs = useGs();
-  if (gs.route.page === 'editions' && window.GsEditions && ED_GAMES.includes(id)) return <GsEditions id={id} />;
   if (gs.view !== 'out' && gs.route.page === 'record') { const L = window.GS_LIBRARY && window.GS_LIBRARY[id]; return L ? <L /> : <GpPlayer id={id} />; }
-  return <GsGamePage id={id} top={gs.view !== 'out' && (id !== 'hunter' || lbPast(gs)) ? <GpCard id={id} /> : null} />;
+  return <GsGamePage id={id} top={gs.view !== 'out' ? <GpCard id={id} /> : null} />;
 };
 
 Object.assign(window, { GsDelve: gpGame('delve'), GsWord: gpGame('word'), GsGroups: gpGame('groups'), GsMystery: gpGame('mystery'), GsEscape: gpGame('escape'),

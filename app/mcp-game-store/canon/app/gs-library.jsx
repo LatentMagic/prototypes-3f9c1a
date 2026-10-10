@@ -47,9 +47,10 @@ const LbResult = ({ s }) => (
   <span className={'lb-v is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={20} />}{s.label}</span>
 );
 
-// ---- The run: editions played in a row join into one bar. Under 480px the last six show. ----
-// weeks: oldest first, [{ id, day, mon, month, played, now }]
-const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
+// ---- The run: editions completed in a row join into one bar. Under 480px the last six show. ----
+// weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
+// on / legend: the two legend entries. A streak game says Completed / Not completed; 36,000 Summers Ago counts days played.
+const LbRun = ({ n, unit, weeks, locked, figure, on = 'Completed', legend = 'Not completed' }) => {
   const gs = useGs();
   const cut = weeks.length - 6;
   return (
@@ -57,7 +58,7 @@ const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
       <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || unit + ' in a row'}</span></div>
       <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
-        aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + (w.played ? ' played' : ' missed')).join(', ')}>
+        aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.played ? on : legend).toLowerCase()).join(', ')}>
         {weeks.map((w, i) => {
           const join = i > 0 && w.played && weeks[i - 1].played;
           const newMon = i === 0 || weeks[i - 1].mon !== w.mon;
@@ -68,7 +69,7 @@ const LbRun = ({ n, unit, weeks, locked, figure, legend }) => {
           );
         })}
       </div>
-      <ul className="lb-legend"><li><i className="is-on" />Played</li><li><i />{legend || 'Missed'}</li></ul>
+      <ul className="lb-legend"><li><i className="is-on" />{on}</li><li><i />{legend}</li></ul>
       </div>
     </section>
   );
@@ -96,9 +97,9 @@ const LB_SHAPES = [
 ];
 const LB_INKS = ['#E5A63B', '#328A88', '#D66847', '#A390B2', '#4CC38A'];
 const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
-const lbAchLine = (a) => (a.state === 'locked' ? 'Earned ' + a.got + ' · Locked' : a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
+const lbAchLine = (a) => (a.state === 'locked' ? 'Earned ' + a.got + ' · Frozen' : a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
 // items: [{ k, n, how, got?, gotFree?, first?, of?, have? }]; badges: { k: art }; access: 'all' | 'first' | 'none'
-const LbAch = ({ items, badges, access, ended }) => {
+const LbAch = ({ items, badges, access, ended, ed }) => {
   const gs = useGs(); const [open, setOpen] = React.useState(null);
   const list = lbAchView(items, access, gs);
   const live = list.filter((a) => a.state !== 'locked'); const earned = live.filter((a) => a.got).length;
@@ -106,12 +107,13 @@ const LbAch = ({ items, badges, access, ended }) => {
   return (
     <section className="lb-card">
       <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{live.length > 0 && <span className="gs-muted">{earned + ' of ' + live.length + ' earned'}</span>}</div>
-      {access === 'first' && <p className="gs-muted">These are the achievements the first edition can earn. Every other edition comes with the Pass.</p>}
-      {locked && <p className="gs-muted">{'Your Pass ended on ' + ended + '. Achievements earned in games you can no longer play stay here, locked. They carry on if the Pass returns.'}</p>}
+      {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every other ' + (ed || ['edition'])[0] + ' comes with the Pass.'}</p>}
+      {locked && <div className="gs-stack-xs"><p className="gs-muted">{'Your Pass ended on ' + ended + '. Achievements earned in games you can no longer play stay here, frozen. They carry on if the Pass returns.'}</p>
+        <p className="gs-muted">You can’t earn any more of the frozen ones until the Pass returns.</p></div>}
       <ul className="lb-ach">
         {list.map((a) => (
           <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} locked={a.state === 'locked'} />
-            <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{lbAchLine(a)}</span></span></button></li>
+            <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{a.how}</span><span className="lb-ach-sub">{lbAchLine(a)}</span></span></button></li>
         ))}
       </ul>
       <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
@@ -124,11 +126,14 @@ const LbAch = ({ items, badges, access, ended }) => {
 // Dates for seeds: "5 October", with the year only when it isn't this one.
 const lbDate = (d) => d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
 const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
-// A run from a list newest first: [{ id, date, played }] → oldest first, with the newest marked as now.
-const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.played, now: i === a.length - 1 }; });
-const lbStreak = (list) => { let n = 0; for (const x of list) { if (!x.played) break; n += 1; } return n; };
+// A run from a list newest first: [{ id, date, played, done }] → oldest first, with the newest marked as now.
+// A mark is filled only for an edition completed in its first finished play (done); a list without done marks plays.
+const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.done != null ? x.done : x.played, now: i === a.length - 1 }; });
+// The streak, newest first: editions completed in their first finished play, each in its own day or week.
+// This edition adds only once completed; until its day or week ends it breaks nothing. A replay never counts.
+const lbStreak = (list) => { let n = 0; const l = list[0] && !list[0].done ? list.slice(1) : list; for (const x of l) { if (!x.done) break; n += 1; } return n; };
 
-// ---- A row of choices (History and the Editions page side column) ----
+// ---- A row of choices (History's side column) ----
 const LbChoice = ({ label, value, opts, onPick }) => (
   <div className="lb-choicegrp" role="group" aria-label={label}>
     <span className="gs-field-label">{label}</span>

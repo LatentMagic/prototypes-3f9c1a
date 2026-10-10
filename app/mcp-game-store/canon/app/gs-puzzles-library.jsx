@@ -4,7 +4,7 @@
 // Each is the standard option 16 page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements and your plays. "All…" opens History filtered to the game.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
-// Free (free-and-pass, 2026-10-09): a free player plays the current edition, with a streak and the achievements; earlier editions stay in results and replaying them comes with the Pass.
+// Free (free-and-pass, 2026-10-09): a free player plays the current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
 const pzMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
@@ -99,7 +99,7 @@ Object.entries(PZ).forEach(([id, c]) => {
     const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
     const played = i === 0 || !!c.keep[i] || ((i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6);
     const ok = played && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
-    return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, line: ok ? c.ok(i) : c.bad };
+    return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, done: played && ok, line: ok ? c.ok(i) : c.bad };
   });
   // Every earlier edition played gets its own session page, so each row opens a real record.
   c.all.slice(1).forEach((x) => { if (x.played) x.sid = c.keep[x.i] ? c.past : pzSession(id, c, x); });
@@ -107,6 +107,13 @@ Object.entries(PZ).forEach(([id, c]) => {
   c.ach = c.ach.map((a) => (a.of ? { ...a, have: Math.min(run, a.of) } : a));
   c.badges = lbAutoBadges(c.ach);
 });
+// State library-word-streak-broken: yesterday's Daily Word finished in a first play that failed, then a completed replay.
+(() => {
+  const c = PZ.word; const y = c.all[1]; const keep = GS_SESSIONS['word-e1'];
+  pzSession('word', c, { ...y, ok: false, line: c.bad }); GS_SESSIONS['word-broken-first'] = GS_SESSIONS['word-e1'];
+  pzSession('word', c, { ...y, ok: true, line: c.ok(1) }); GS_SESSIONS['word-broken-replay'] = { ...GS_SESSIONS['word-e1'], again: true, figures: [<span className="rp-fig">Replay</span>] };
+  if (keep) GS_SESSIONS['word-e1'] = keep; else delete GS_SESSIONS['word-e1'];
+})();
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line, short: c.short } : { kind: 'bad', label: x.line, short: c.badF });
 const pzHist = (c) => c.all.slice(1);
@@ -119,7 +126,7 @@ const PzNow = ({ c, done, none, id }) => {
       <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div></div>
       <p>{GS_PAGES[id].week.line}</p>
       <div className="lb-foot">
-        <div className="lb-acts"><DS.Button onClick={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })}>Play in your AI</DS.Button></div>
+        <div className="lb-acts"><DS.Button onClick={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })}>Play</DS.Button></div>
         <span className="gs-muted">{c.next}</span>
       </div>
     </section>
@@ -146,18 +153,32 @@ const PzNow = ({ c, done, none, id }) => {
 const pzLibrary = (id) => () => {
   const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
   const [recent, allLabel] = c.plays;
-  const none = !lbNow(gs, id); const run = none ? [{ ...c.all[0], played: false }, ...c.all.slice(1)] : c.all;
+  // State library-mystery-never-played: a game this player can play and never has.
+  const never = gs.review.never === id;
+  const now = never ? null : lbNow(gs, id); const broken = id === 'word' && gs.review.broken; const none = !now || broken;
+  // This edition counts only once completed: in progress, or finished and failed, it adds nothing.
+  let run = [{ ...c.all[0], played: !none, done: !none && now.status.kind === 'ok' }, ...c.all.slice(1)];
+  if (never) run = run.map((x) => ({ ...x, played: false, ok: false, done: false }));
+  if (broken) run[1] = { ...run[1], played: true, ok: false, done: false, line: c.bad, sid: 'word-broken-first' };
+  // Streak achievements' progress follows the streak shown, so it agrees in every state.
+  const n = lbStreak(run);
+  const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));
+  const rows = never ? [] : pzHist({ all: run }).slice(0, 8).map((x) => pzRow(gs, c, x));
+  if (broken) {
+    rows[0] = { ...rows[0], own: true, status: { kind: 'bad', label: c.bad, short: c.badF }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
+    rows.unshift({ key: 'word-broken-replay', own: true, title: rows[0].title, date: rows[0].date, status: { kind: 'ok', label: c.ok(1), short: c.short }, chip: 'again', onOpen: () => gs.go('session', { id: 'word-broken-replay' }) });
+  }
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id={id} />
       <div className="lb-lay">
         <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
-        <LbRun n={lbStreak(none ? run.slice(1) : run)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
-        <LbAch items={c.ach} badges={c.badges} access="all" ended={CB_ENDED} />
-        <LbRecent title={recent} allLabel={allLabel} rows={pzHist(c).slice(0, 8).map((x) => pzRow(gs, c, x))}
+        <LbRun n={lbStreak(run)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
+        <LbAch items={ach} badges={c.badges} access="all" ended={CB_ENDED} />
+        <LbRecent title={recent} allLabel={allLabel} rows={rows.slice(0, 8)}
           empty={c.weekly ? 'Your rooms appear here once you have played one.' : 'Your days appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && <p className="gs-muted">Replaying earlier editions comes with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
+      {gs.view !== 'pass' && <p className="gs-muted">Playing earlier editions comes with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
     </main>
   );
 };

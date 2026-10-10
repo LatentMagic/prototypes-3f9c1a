@@ -25,19 +25,20 @@ const GsConfigExtra = () => {
       {row('Signed in with', api.provider || 'email', (v) => set(() => api.setProvider(v)), o([['email', 'Email'], ['google', 'Google'], ['apple', 'Apple']]))}
       {row('Provider sheet', r.sheet || 'completes', (v) => set(() => api.setReview({ sheet: v })), o([['completes', 'Completes'], ['cancelled', 'Cancelled']]))}
       {row('Google and Apple sign-in', r.providerFail ? 'fail' : 'ok', (v) => set(() => api.setReview({ providerFail: v === 'fail' })), o([['ok', 'Works'], ['fail', 'Fails']]))}
-      {row('Apple account', r.appleNone ? 'none' : 'found', (v) => set(() => api.setReview({ appleNone: v === 'none' })), o([['found', 'Found'], ['none', 'None']]))}
+      {row('Device, for Google and Apple sign-in', r.device === 'new' ? 'new' : 'known', (v) => set(() => api.setReview({ device: v })), o([['known', 'Known'], ['new', 'New']]))}
       <div className="kit-config-group-title">Username</div>
       {row('Username', (api.user && api.user.locked) ? 'recent' : 'free', (v) => set(() => api.setUser({ locked: v === 'recent' })), o([['free', 'Free to change'], ['recent', 'Changed recently']]))}
       <div className="kit-config-group-title">Library</div>
       {row('This week, or today', r.week === 'live' ? 'live' : 'done', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
-      {row('Free plan, today', r.today === 'none' ? 'none' : 'played', (v) => set(() => api.setReview({ today: v })), o([['played', 'Played'], ['none', 'Not played']]))}
+      {row('Free account, today', r.today === 'none' ? 'none' : 'played', (v) => set(() => api.setReview({ today: v })), o([['played', 'Played'], ['none', 'Not played']]))}
       <div className="kit-config-hint">This edition's play, on every screen that shows it: the week for Casebook, Delve and Escape, the day for each daily game. Finished unless set here or in the demo bar.</div>
       <div className="kit-config-group-title">Pass</div>
       {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { freeUsed: true }) }),
         o([['none', 'None'], ['free', 'In the trial'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}
-      {row('Seven-day trial', sub.freeUsed ? 'used' : 'available', (v) => setSub({ freeUsed: v === 'used' }), o([['available', 'Available'], ['used', 'Used']]))}
+      {row('14-day trial', sub.freeUsed ? 'used' : 'available', (v) => setSub({ freeUsed: v === 'used' }), o([['available', 'Available'], ['used', 'Used']]))}
       {row('Plan', sub.plan || 'monthly', (v) => setSub({ plan: v, pending: null }), o([['monthly', 'Monthly'], ['yearly', 'Yearly']]))}
-      <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the trial used is the lapsed card.</div>
+      {row('Pass changes', r.passFail ? 'fail' : 'work', (v) => set(() => api.setReview({ passFail: v === 'fail' })), o([['work', 'Work'], ['fail', 'Fail']]))}
+      <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the trial used is the lapsed card. Pass changes covers cancel, resume, switch and keeping the current plan.</div>
     </React.Fragment>
   );
 };

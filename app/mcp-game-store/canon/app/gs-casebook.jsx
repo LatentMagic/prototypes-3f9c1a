@@ -13,10 +13,12 @@ const cbHist = (gs) => CB_ALL.filter((c) => c.id !== CB_LIVE.id && (gs.view === 
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : c.verdict === 'right' ? { kind: 'ok', label: 'Solved' } : { kind: 'bad', label: 'Unsolved' });
 const cbRow = (gs, c) => ({ key: c.id, title: '#' + (CB_ALL.length - CB_ALL.indexOf(c)), date: lbShort(c.week), status: cbStatus(c), onOpen: c.played ? () => cbGo(gs, c.id) : null });
+// Every week newest first, done when the case was solved in its first finished play. This week counts once it is solved.
+const cbRunList = (gs) => CB_ALL.map((c, i) => ({ ...c, done: i === 0 ? cbWeek(gs).verdict === 'right' : c.played && c.verdict === 'right' }));
 // The last ten weeks, oldest first.
-const cbWeeks = () => CB_ALL.slice(0, 10).reverse().map((c) => {
+const cbWeeks = (gs) => cbRunList(gs).slice(0, 10).reverse().map((c) => {
   const p = c.week.split(' ');
-  return { id: c.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: c.played, now: c.id === CB_LIVE.id };
+  return { id: c.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: c.done, now: c.id === CB_LIVE.id };
 });
 
 // This week: the result sits beside the title once you've named someone; the turns bar stays either way.
@@ -60,7 +62,7 @@ const CbCase = ({ c }) => {
       <LbBack label={GS_GAMES.casebook.name} onClick={() => cbGo(gs)} />
       <div className="lb-top">
         <div className="gs-stack-xs"><span className="gs-label">{(c.id === CB_LIVE.id ? 'THIS WEEK' : 'WEEK OF ' + c.week.toUpperCase()) + (c.replayed ? ' · REPLAYED ' + c.replayed.toUpperCase() : '')}</span><h1 className="gs-h1">{c.title}</h1></div>
-        {!c.live && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />}
+        {!c.live && !c.replayed && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />}
       </div>
       <section className="lb-card">
         <dl className="lb-figs">
@@ -88,7 +90,24 @@ const CbCase = ({ c }) => {
 };
 
 const CbFirst = () => {
-  const gs = useGs(); const c = CB_FIRST; const again = gsLapsed(gs);
+  const gs = useGs(); const again = gsLapsed(gs);
+  // A free account's first case half-done (Config: This week, or today: In progress).
+  const c = !again && !lbWeekDone(gs) ? { ...CB_FIRST, live: true, verdict: null, turns: 6 } : CB_FIRST;
+  if (c.live) return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THE FIRST CASE · FREE</span><h2 className="mcp-t-sec">{c.title}</h2></div>
+        <span className="lb-big"><LbResult s={cbStatus(c)} /></span>
+      </div>
+      <p>{'You’ve used ' + c.turns + ' of 16 turns. Carry on in your AI.'}</p>
+      <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
+      <div className="lb-foot">
+        <div className="lb-acts"><DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play</DS.Button></div>
+        <span className="gs-muted">Every other case comes with the Pass.</span>
+      </div>
+      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
+    </section>
+  );
   return (
     <section className="lb-card">
       <div className="lb-top">
@@ -100,7 +119,7 @@ const CbFirst = () => {
       <div className="lb-foot">
         <div className="lb-acts">
           {c.played ? <><LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink></>
-            : <DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play in your AI</DS.Button>}
+            : <DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play</DS.Button>}
         </div>
         <span className="gs-muted">Every other case comes with the Pass.</span>
       </div>
@@ -112,7 +131,11 @@ const cbPassRow = (gs) => ({ key: 'with-pass', title: 'Every other case', date: 
 const CbLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'casebook'); const pass = access === 'all'; const sid = gs.route.sid;
   const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
-  const rows = cbHist(gs).slice(0, pass ? 8 : 7).map((x) => cbRow(gs, x)).concat(pass ? [] : [cbPassRow(gs)]);
+  // A free account's first case half-done: not solved yet, so its row and its achievements say so.
+  const firstLive = !pass && !gsLapsed(gs) && !lbWeekDone(gs);
+  const rows = cbHist(gs).slice(0, pass ? 8 : 7).map((x) => (firstLive && x === CB_FIRST
+    ? { ...cbRow(gs, x), own: true, status: { kind: 'live', label: 'In progress' }, onOpen: null } : cbRow(gs, x))).concat(pass ? [] : [cbPassRow(gs)]);
+  const ach = firstLive ? CB_ACH.map((a) => ({ ...a, gotFree: undefined })) : CB_ACH;
   const c = sid && (sid === CB_LIVE.id ? (pass ? cbWeek(gs) : null) : (window.CB_REPLAYS || {})[sid] || CB_ALL.find((x) => x.id === sid && x.played));
   if (c) return <CbCase key={k + sid} c={c} />;
   return (
@@ -120,8 +143,8 @@ const CbLibrary = () => {
       <LbHead id="casebook" />
       <div className={'lb-lay' + (pass ? '' : ' is-three')}>
         {pass ? <CbNow c={cbWeek(gs)} /> : <CbFirst />}
-        {pass && <LbRun n={CB_STREAK_N} unit="weeks" weeks={cbWeeks()} />}
-        <LbAch items={CB_ACH} badges={CB_BADGES} access={access} ended={CB_ENDED} />
+        {pass && <LbRun n={lbStreak(cbRunList(gs))} unit="weeks" weeks={cbWeeks(gs)} />}
+        <LbAch items={ach} badges={CB_BADGES} access={access} ended={CB_ENDED} ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="All cases" rows={rows} />
       </div>
     </main>

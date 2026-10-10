@@ -14,7 +14,7 @@ const GsFeature = ({ id, children }) => {
             <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
             <p className="gs-lead">{g.blurb}</p>
           </div>
-          <GsTagList tags={g.tags} />
+          <GsTagList tags={g.tags} ed={g.ed} />
           {children}
         </div>
       </div>
@@ -23,7 +23,7 @@ const GsFeature = ({ id, children }) => {
 };
 
 const GS_WHATSNEW = [
-  { v: '1.9', d: '8 October 2026', t: 'Share cards for every result', x: 'Any finished session can be shared as a card or a link, with the full record of rolls, guesses and statements behind it.' },
+  { v: '1.9', d: '8 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
   { v: '1.8', d: '24 September 2026', t: 'Streaks carry across devices', x: 'Your daily streak and record now follow your account, so they stay intact wherever you connect your AI.' },
   { v: '1.7', d: '10 September 2026', t: 'Connect in under two minutes', x: 'A single link now connects Claude, ChatGPT and other MCP assistants. No settings to copy between apps.' },
   { v: '1.6', d: '27 August 2026', t: 'Every earlier edition in one place', x: 'Open any past edition of a weekly or daily game from its page.' },
@@ -105,7 +105,7 @@ const GsHome = () => {
           </div>
           <div className="hm-pass">
             <span className="gs-label">THE PASS</span>
-            <p>Play every game and every edition. Try it free for seven days.</p>
+            <p>Play every game and every edition. Try it free for 14 days.</p>
             <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
           </div>
         </div>
@@ -118,64 +118,4 @@ const GsHome = () => {
   );
 };
 
-// Games page: a little more than the home card, short of the game page.
-const GS_MORE = {
-  word: { head: 'A new word every day', line: 'You already know today’s answer. You can’t see it yet, so start guessing.' },
-  groups: { head: 'New groups every day', line: 'Sixteen words hide four groups of four. You can make four mistakes, so pick your first four.' },
-  mystery: { head: 'A new case every day', line: 'There’s a body, a locked door and a story that doesn’t add up. Your move.' },
-  escape: { head: 'A new room every week', line: 'The door’s locked and you’re on the wrong side of it. Say what you search first.' },
-  casebook: { head: 'A new case every week', line: null },
-  delve: { head: 'A new scene every week', line: "Goblins have dragged the miller's daughter into the warren beneath Gallows Hill. When the drums stop, the ritual is complete." },
-  hunter: { head: null, line: null },
-};
-const GsGameHead = ({ g, mark, open }) => (
-  <div className="gs-stack-sm">
-    <div className="gs-title-row">
-      <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
-      {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
-    </div>
-    <p className="gs-muted">{g.blurb}</p>
-  </div>
-);
-const GsGameMore = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const m = GS_MORE[id] || {}; const open = () => gs.go(g.route);
-  return (
-    <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
-      <div className="gs-gcard"><GsCoverButton art={g.art} label={'Open ' + g.name} onClick={open} /></div>
-      <GsGameHead g={g} mark={mark} open={open} />
-      <GsTagList tags={g.tags} />
-      <div className="gs-today">
-        <span className="gs-label">{g.free ? 'FREE IN FULL' : g.first ? 'FIRST EDITION FREE' : 'ONLY WITH THE PASS'}</span>
-        {m.head ? <p><b>{m.head}</b></p> : null}
-        <p className="gs-muted">{m.line || <GsGap />}</p>
-      </div>
-    </DS.Card>
-  );
-};
-
-// Games. Its content region can stage loading in place and a failed load;
-// the top bar and footer stay and keep working either way.
-const GsGames = () => {
-  const gs = useGs();
-  const [load, setLoad] = React.useState(gs.route.load || null); // null | 'hold' | 'loading' | 'failed'
-  React.useEffect(() => { setLoad(gs.route.load || null); }, [gs.route]);
-  React.useEffect(() => {
-    if (load !== 'loading') return undefined;
-    const t = setTimeout(() => setLoad(null), 1200);
-    return () => clearTimeout(t);
-  }, [load]);
-  const marks = gsMarks(gs.view, gs);
-  return (
-    <main className="gs-wrap gs-main">
-      <h1 className="gs-h1">Games</h1>
-      {load === 'hold' || load === 'loading' ? <div className="gs-inplace"><GsSpin /></div>
-        : load === 'failed' ? <GsLoadFailed onRetry={() => setLoad('loading')} />
-        : <>
-          <div className="gs-grid3">{GS_GAME_ORDER.map((k) => <GsGameMore key={k} id={k} mark={marks[k]} />)}</div>
-          <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
-        </>}
-    </main>
-  );
-};
-
-Object.assign(window, { GsHome, GsGames, GsFeature });
+Object.assign(window, { GsHome, GsFeature });

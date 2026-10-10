@@ -51,7 +51,8 @@ const dvRow = (gs, s) => ({ key: s.id, title: '#' + (DV_ALL.length - DV_ALL.inde
 
 const DvNow = ({ s }) => {
   const gs = useGs();
-  const lines = s.end && ['Delve · ' + s.hero + ' · ✅ Elsie rescued · ' + s.rolls + ' rolls', s.dice, 'https://platform.example/delve'];
+  // The one share text for this result: the session page's (gsShareText).
+  const lines = s.end && gsShareText(GS_SESSIONS.delve);
   return (
     <section className="lb-card">
       <div className="lb-top">
@@ -74,6 +75,22 @@ const DvNow = ({ s }) => {
 };
 const DvFirst = () => {
   const gs = useGs(); const s = DV_FIRST; const again = gsLapsed(gs);
+  // A free account's first scene half-done (Config: This week, or today: In progress).
+  if (!again && !lbWeekDone(gs)) return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THE FIRST SCENE · FREE</span><h2 className="mcp-t-sec">{s.title}</h2></div>
+        <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
+      </div>
+      <p>{'You’re playing ' + s.hero + '. The rescue is 2 of 6 along and the ritual is 1 of 6.'}</p>
+      <DS.ProgressBar label="Rescue 2 of 6" value={2} max={6} showValue={false} />
+      <div className="lb-foot">
+        <div className="lb-acts"><DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button></div>
+        <span className="gs-muted">Every other scene comes with the Pass.</span>
+      </div>
+      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
+    </section>
+  );
   return (
     <section className="lb-card">
       <div className="lb-top">
@@ -83,7 +100,7 @@ const DvFirst = () => {
       <p>{s.played ? 'You played ' + s.hero + ' and the ritual finished before Elsie was out, in ' + s.rolls + ' rolls.' : 'The game’s very first scene, the same for everyone. Play it free.'}</p>
       <div className="lb-foot">
         <div className="lb-acts">
-          {s.played ? <DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play in your AI</DS.Button>}
+          {s.played ? <DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
         </div>
         <span className="gs-muted">Every other scene comes with the Pass.</span>
       </div>
@@ -94,14 +111,18 @@ const DvFirst = () => {
 const dvPassRow = (gs) => ({ key: 'with-pass', title: 'Every other scene', date: '', status: { kind: 'none', label: 'With the Pass' }, onOpen: () => gs.go('pass') });
 const DvLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
-  const rows = dvHist(gs).slice(0, pass ? 8 : 7).map((s) => dvRow(gs, s)).concat(pass ? [] : [dvPassRow(gs)]);
+  // A free account's first scene half-done: its row and its achievements say so.
+  const firstLive = !pass && !gsLapsed(gs) && !lbWeekDone(gs);
+  const rows = dvHist(gs).slice(0, pass ? 8 : 7).map((s) => (firstLive && s === DV_FIRST
+    ? { ...dvRow(gs, s), own: true, status: { kind: 'live', label: 'In progress' }, onOpen: null } : dvRow(gs, s))).concat(pass ? [] : [dvPassRow(gs)]);
+  const ach = firstLive ? DV_ACH.map((a) => ({ ...a, gotFree: undefined })) : DV_ACH;
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className={'lb-lay' + (pass ? '' : ' is-three')}>
         {pass ? <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} /> : <DvFirst />}
-        {pass && <LbRun n={lbStreak(DV_ALL)} unit="weeks" weeks={lbRunOf(DV_ALL)} />}
-        <LbAch items={DV_ACH} badges={DV_BADGES} access={access} ended={CB_ENDED} />
+        {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />; })()}
+        <LbAch items={ach} badges={DV_BADGES} access={access} ended={CB_ENDED} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your scenes" allLabel="All scenes" rows={rows} />
       </div>
     </main>

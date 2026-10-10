@@ -1,6 +1,8 @@
 // ============================================================================
 // [Platform] — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
 // A session in progress (s.live) has no Share and no Play again: one button carries it on in your AI.
+// A replay (s.again) has no Share: it never changes the streak and is never shared.
+// gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
 // ============================================================================
 const GsShareCard = ({ s }) => {
   const gs = useGs();
@@ -42,7 +44,7 @@ const GsShareText = ({ lines }) => (
   </DS.Card>
 );
 
-const GsSession = () => {
+const GsSessionRecord = () => {
   const gs = useGs();
   const s = GS_SESSIONS[gs.route.id] || GS_SESSIONS.delve;
   const [share, setShare] = React.useState(false);
@@ -54,6 +56,11 @@ const GsSession = () => {
     setCopied(true);
   };
   const delve = s.kind === 'delve';
+  // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
+  // An edition that can't be played at all (edClosed) has no Play again.
+  const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null; const g = s.gid && GS_GAMES[s.gid];
+  const needsPass = !!g && (ed ? edNeedsPass(gs, ed) : gs.view !== 'pass' && !g.free);
+  const again = ed && edClosed(ed) ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Replay{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
   const back = s.gid && <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBack label={GS_GAMES[s.gid].name} onClick={() => gs.go(GS_GAMES[s.gid].route, { page: 'record' })} /></div>;
   const list = (
     <section className="gs-stack-md">
@@ -76,12 +83,12 @@ const GsSession = () => {
             <span className="gs-fig gs-fig-quiet">{gsSessDate(s, gs)}</span>
           </div>
           <div className="gs-pairwrap">
-            {s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play in your AI</DS.Button>
-              : text ? <DS.ButtonPair>
-                <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button>
+            {s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
+              : text && !s.again ? (again ? <DS.ButtonPair>
+                {again}
                 <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
-              </DS.ButtonPair>
-              : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button>}
+              </DS.ButtonPair> : <DS.Button onClick={() => setShare(true)}>Share</DS.Button>)
+              : again}
           </div>
         </div>
       </section>
@@ -116,5 +123,38 @@ const GsSession = () => {
     </main>
   </>);
 };
+
+// ---- The session page's empty state: an edition this player never played (route session { gid, ed }, opened from History) ----
+// No result and no turns. Three forms, as the product page's edition card: playable (Play, the play pop-up), needs the Pass (the Pass tag only), can't be played (a line and a link).
+const GsSessionNew = () => {
+  const gs = useGs(); const r = gs.route; const gid = GS_GAMES[r.gid] ? r.gid : 'delve'; const g = GS_GAMES[gid];
+  const list = edList(gs, gid); const e = list.find((x) => x.key === r.ed) || list[0];
+  const closed = edClosed(e); const pass = edNeedsPass(gs, e);
+  const day = gsRhythm(gid) === 'weekly' ? 'Week of ' + e.date : pzLong(phParse(e.date));
+  return (<>
+    <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBack label={g.name} onClick={() => gs.go(g.route, { page: 'record' })} /></div>
+    <main className="gs-wrap gs-main">
+      <section className="gs-sess-head">
+        <GsCover art={g.art} />
+        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
+          <span className="mcp-t-card">{g.name}</span>
+          <h1 className="gs-h1">{edName(e)}</h1>
+          <div className="gs-figs">
+            <span className="gs-fig">Not played</span>
+            <span className="gs-fig gs-fig-quiet">{day}</span>
+          </div>
+          {closed ? (
+            <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
+              <p>{'Only the latest ' + g.name + ' can be played. This one stays in your History.'}</p>
+              <DS.TextLink onClick={() => gs.go(g.route, { page: 'record' })}>{'Go to your ' + g.name}</DS.TextLink>
+            </div>
+          ) : pass ? <GsPassTag />
+            : <div className="gs-act"><DS.Button onClick={() => gs.playReq({ kind: 'edition', e })}>Play</DS.Button></div>}
+        </div>
+      </section>
+    </main>
+  </>);
+};
+const GsSession = () => (useGs().route.ed ? <GsSessionNew /> : <GsSessionRecord />);
 
 Object.assign(window, { GsSession, GsShareCard, gsShareText });

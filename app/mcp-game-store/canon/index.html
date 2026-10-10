@@ -1219,6 +1219,22 @@
   .ed-row:focus-visible { outline-offset: -2px; }
   @container gs (max-width: 559px) { .ed-row { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "m c" "s c" "r c"; } .ed-r { justify-self: start; } .ed-slots:not(:has(.mcp-tag)) { display: none; } }
   @media (prefers-reduced-motion: reduce) { .ed-row { transition: none; } }
+  /* History, every edition (app/gs-history.jsx) and the session page's empty state (app/gs-session.jsx) */
+  .ph-eds .ed-row { grid-template-areas: "t s r c"; }
+  .ed-row.ph-edcov { grid-template-columns: 48px minmax(0, 1fr) auto 128px 16px; grid-template-areas: "cov t s r c"; }
+  .ed-row.ph-edcov > .ph-cov { grid-area: cov; }
+  .ed-slots.is-one { grid-template-columns: 72px; }
+  .lb-list > li + li.ph-rep-wrap { border-top: 0; }
+  .ph-reps { margin-top: -4px; padding-bottom: 8px; }
+  .ph-reps > li > .rp { min-height: 44px; padding-left: calc(var(--lb-pad, 16px) + 64px); }
+  .ph-eds.is-one .ph-reps > li > .rp { padding-left: calc(var(--lb-pad, 16px) + 16px); }
+  .ph-reps .rp-a { font-weight: 400; color: var(--muted); }
+  .ss-new { width: 100%; max-width: 560px; }
+  @container gs (max-width: 559px) {
+    .ph-eds .ed-row, .ed-row.ph-edcov { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "s c" "r c"; }
+    .ed-row.ph-edcov > .ph-cov { display: none; }
+    .ph-reps > li > .rp { padding-left: calc(var(--lb-pad, 16px) + 16px); }
+  }
   /* How it works and the play dialog (app/gs-connect.jsx) */
   .hw-head .gs-lead { max-width: none; }
   @container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }
@@ -1299,7 +1315,6 @@
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
-<script type="text/babel" src="app/gs-editions.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

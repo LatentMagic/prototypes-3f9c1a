@@ -1,12 +1,12 @@
 // ============================================================================
 // [Platform] — the Pass (circlists-match-2): dates and prices, the Pass card in
 // every state, Switch and Cancel sheets, the buying block, checkout, and the
-// update-card page. Every price is "£—"; the trial is seven days.
+// update-card page. Every price is "£—"; the trial is 14 days.
 // ============================================================================
 const GS_NB = '\u00A0';
 const GS_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const GS_DAY0 = new Date(2026, 9, 6); // the demo's today, matching GS.today
-const GS_TRIAL_DAYS = 7;
+const GS_TRIAL_DAYS = 14;
 const gsAddDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMonth() + n); return x; };
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
@@ -38,19 +38,22 @@ const GsActs = ({ children }) => <div className="gs-acts">{children}</div>;
 const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
 
 // ---- The Pass card: the same card on the Account page and the Pass page ----------
-// What a player keeps and what locks when a Pass ends (cancel flow, ending and lapsed cards, Pass page).
+// What a player keeps and what freezes when a Pass ends (cancel flow, ending and lapsed cards, Pass page).
 const GsKeepLock = ({ lead, locked }) => (
   <div className="gs-stack-sm">
     <p>{lead}</p>
     <p><b>You keep</b> your results, your History and the achievements you earned.</p>
-    <p><b>What locks:</b> the Pass-only games and editions, and the achievements earned in them. They {locked}.</p>
+    <p><b>What freezes:</b> the Pass-only games and editions, and the achievements earned in them. They {locked}.</p>
   </div>
 );
+// A change to the Pass that did not go through (Config "Pass changes: Fail"). The card stays as it was.
+const gsPassFails = (gs) => !!(gs.review && gs.review.passFail);
 const GsPassCard = () => {
   const gs = useGs();
   const { sub } = gs;
   const [sheet, setSheet] = React.useState(gs.route.sheet || null); // 'switch' | 'cancel'
   const [busy, run] = useGsBusy();
+  const [failed, setFailed] = React.useState(null); // 'resume' | 'keep'
   const date = gsLong(gsSubDate(sub));
   const plan = GS_PLAN[sub.plan];
   const other = gsOther(sub.plan);
@@ -60,8 +63,8 @@ const GsPassCard = () => {
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Pass</h2>
       {sub.freeUsed
-        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(GS_LAPSED_ON)}.</>} locked="are locked until you get the Pass again" />
-        : <p>You’re on the free plan. Free play needs no card, and your results and History are kept. The Pass opens every game and every edition.</p>}
+        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(sub.endedOn ? new Date(sub.endedOn) : GS_LAPSED_ON)}.</>} locked="are frozen until you get the Pass again" />
+        : <p>You have a free account. Free play needs no card, and your results and History are kept. The Pass opens every game and every edition.</p>}
       <div className="gs-card-acts"><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{sub.freeUsed ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );
@@ -74,11 +77,14 @@ const GsPassCard = () => {
     rows.push([sub.status === 'free' ? 'First payment' : 'Next renewal', date]);
     if (sub.pending) rows.push(['From ' + date, GS_PLAN[sub.pending].name + ' · ' + GS_PLAN[sub.pending].price]);
     body = (
-      <div className="gs-pair-even">
-        {update}
-        {sub.pending
-          ? <DS.Button variant="secondary" loading={busy} onClick={() => run(() => gs.setSub({ pending: null }))}>Keep {plan.name.toLowerCase()}</DS.Button>
-          : <DS.Button variant="secondary" onClick={() => setSheet('switch')}>Switch to {other}</DS.Button>}
+      <div className="gs-stack-sm">
+        <div className="gs-pair-even">
+          {update}
+          {sub.pending
+            ? <DS.Button variant="secondary" loading={busy} onClick={() => { setFailed(null); run(() => (gsPassFails(gs) ? setFailed('keep') : gs.setSub({ pending: null }))); }}>Keep {plan.name.toLowerCase()}</DS.Button>
+            : <DS.Button variant="secondary" onClick={() => setSheet('switch')}>Switch to {other}</DS.Button>}
+        </div>
+        {failed === 'keep' && sub.pending && <GsXLine>Your switch to {sub.pending} is still set. Try again.</GsXLine>}
       </div>
     );
   } else if (sub.status === 'failed') {
@@ -87,11 +93,12 @@ const GsPassCard = () => {
     rows.push(['Ends on', date]);
     body = (
       <div className="gs-stack-md">
-        <GsKeepLock lead={<>Your Pass ends on that date. You can resume any time before then.</>} locked="lock when it ends" />
+        <GsKeepLock lead={<>Your Pass ends on that date. You can resume any time before then.</>} locked="freeze when it ends" />
         <div className="gs-pair-even">
           {update}
-          <DS.Button variant="secondary" loading={busy} onClick={() => run(() => gs.setSub({ status: sub.fromFree ? 'free' : 'active', fromFree: false }))}>Resume subscription</DS.Button>
+          <DS.Button variant="secondary" loading={busy} onClick={() => { setFailed(null); run(() => (gsPassFails(gs) ? setFailed('resume') : gs.setSub({ status: sub.fromFree ? 'free' : 'active', fromFree: false }))); }}>Resume subscription</DS.Button>
         </div>
+        {failed === 'resume' && <GsXLine>Your subscription wasn’t resumed. Try again.</GsXLine>}
       </div>
     );
   }
@@ -127,16 +134,20 @@ const GsSwitchSheet = ({ open, onClose }) => {
   if (open) last.current = { from: sub.plan, to, date: gsShort(gsSubDate(sub)) };
   const p = last.current || { from: sub.plan, to, date: '' };
   const [busy, run, cancel] = useGsBusy();
+  const [failed, setFailed] = React.useState(false);
+  React.useEffect(() => { if (open) setFailed(false); }, [open]);
   const close = () => { cancel(); onClose(); };
-  const go = () => run(() => {
+  const go = () => { setFailed(false); run(() => {
+    if (gsPassFails(gs)) { setFailed(true); return; }
     if (sub.status === 'free') gs.setSub({ plan: p.to, pending: null });
     else gs.setSub({ pending: p.to });
     onClose();
-  });
+  }); };
   return (
     <DS.Popup open={open} onClose={close} posture="window" label={'Switch to ' + p.to + '?'}>
       <GsPopTitle>Switch to {p.to}?</GsPopTitle>
       <GsBeforeAfter now={['Now', GS_PLAN[p.from].name, GS_PLAN[p.from].price]} then={['From ' + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price]} />
+      {failed && <GsXLine>Your plan wasn’t switched. Try again.</GsXLine>}
       <GsActs>
         <DS.Button variant="secondary" onClick={close}>Cancel</DS.Button>
         <DS.Button onClick={go} loading={busy}>Switch to {p.to}</DS.Button>
@@ -148,17 +159,26 @@ const GsCancelSheet = ({ open, onClose }) => {
   const gs = useGs();
   const { sub } = gs;
   const last = React.useRef(null);
-  if (open) last.current = { free: sub.status === 'free', plan: sub.plan, date: gsShort(gsSubDate(sub)) };
-  const p = last.current || { free: false, plan: sub.plan, date: '' };
+  if (open) last.current = { free: sub.status === 'free', failed: sub.status === 'failed', plan: sub.plan, date: gsShort(gsSubDate(sub)) };
+  const p = last.current || { free: false, failed: false, plan: sub.plan, date: '' };
   const now = p.free ? ['Now', 'Trial', '£0'] : ['Now', GS_PLAN[p.plan].name, GS_PLAN[p.plan].price];
   const [busy, run, cancel] = useGsBusy();
+  const [failed, setFailed] = React.useState(false);
+  React.useEffect(() => { if (open) setFailed(false); }, [open]);
   const close = () => { cancel(); onClose(); };
-  const go = () => run(() => { gs.setSub({ status: 'ending', pending: null, fromFree: p.free }); onClose(); });
+  // While the payment has failed there is nothing left to run out: the Pass ends today, and the card is the ended one.
+  const go = () => { setFailed(false); run(() => {
+    if (gsPassFails(gs)) { setFailed(true); return; }
+    if (p.failed) gs.setSub({ status: 'none', pending: null, freeUsed: true, endedOn: GS_DAY0.getTime() });
+    else gs.setSub({ status: 'ending', pending: null, fromFree: p.free });
+    onClose();
+  }); };
   return (
     <DS.Popup open={open} onClose={close} posture="window" label="Cancel your subscription?">
       <GsPopTitle>Cancel your subscription?</GsPopTitle>
-      <GsBeforeAfter now={now} then={['From ' + p.date, 'Ends', 'Nothing charged']} />
-      <GsKeepLock lead="You keep the Pass until it ends." locked="lock when it ends, and unlock again if the Pass returns" />
+      <GsBeforeAfter now={now} then={[p.failed ? 'Today' : 'From ' + p.date, 'Ends', 'Nothing charged']} />
+      <GsKeepLock lead={p.failed ? 'Your Pass ends today.' : 'You keep the Pass until it ends.'} locked="freeze when it ends, and carry on if the Pass returns" />
+      {failed && <GsXLine>Your subscription wasn’t cancelled. Try again.</GsXLine>}
       <GsActs>
         <DS.Button variant="secondary" onClick={close}>Keep subscription</DS.Button>
         <DS.Button variant="danger" onClick={go} loading={busy}>Cancel subscription</DS.Button>
@@ -177,7 +197,7 @@ const GsBuyBlock = () => {
   return (
     <section className="gs-buy-block" aria-labelledby="gs-buy-h">
       <div className="gs-stack-sm gs-buy-head">
-        <h2 id="gs-buy-h" className="mcp-t-sec">{free ? 'Start your seven-day trial' : 'Start your Pass'}</h2>
+        <h2 id="gs-buy-h" className="mcp-t-sec">{free ? 'Start your 14-day trial' : 'Start your Pass'}</h2>
         <p className="gs-muted">Choose how you pay.</p>
       </div>
       <fieldset className="gs-plans">
@@ -195,7 +215,7 @@ const GsBuyBlock = () => {
       <GsRows rows={free
         ? [['Due today', '£0.00'], ['From ' + freeEnd, plan.price]]
         : [['Due today', '£—'], ['Renews', renews]]} />
-      <DS.Button block onClick={gs.getPass}>{free ? 'Start 7-day trial' : 'Get the Pass'}</DS.Button>
+      <DS.Button block onClick={gs.getPass}>{free ? 'Start 14-day trial' : 'Get the Pass'}</DS.Button>
       {free && <p className="gs-small gs-center">{'Cancel before ' + freeEnd + ' and pay nothing.'}</p>}
       <p className="gs-small gs-ico-row gs-center-row"><DS.Icon name="lock" size={16} />{gs.view === 'out' ? 'Billed to your account' : 'Billed to ' + gs.user.email}</p>
       <p className="gs-small gs-center">{GS.purchase}</p>
@@ -207,7 +227,7 @@ const GsBuyBlock = () => {
 const GsPass = () => {
   const gs = useGs();
   const holds = gs.view === 'pass';
-  const status = gs.view === 'free' ? 'You’re on the free plan' : holds ? 'You have the Pass' : null;
+  const status = gs.view === 'free' ? 'You have a free account' : holds ? 'You have the Pass' : null;
   return (
     <main className="gs-wrap gs-main">
       <div className="gs-stack-md">
@@ -265,13 +285,13 @@ const GsCheckout = () => {
           <span className="gs-small">[Platform] · {plan.name} plan</span>
           <span className="gs-ico-row"><span className="gs-figure gs-num-text">{free ? '£0.00' : '£—'}</span><span className="gs-muted">due today</span></span>
           <p className="gs-small">{free
-            ? <>Free for 7 days. Then {gsNb('£— ' + per)} from {gsLong(gsAddDays(GS_DAY0, GS_TRIAL_DAYS))}. We email a reminder the day before.</>
+            ? <>Free for 14 days. Then {gsNb('£— ' + per)} from {gsLong(gsAddDays(GS_DAY0, GS_TRIAL_DAYS))}. The payment provider emails you a reminder before your first payment.</>
             : <>Then {gsNb('£— ' + per)} from {gsLong(gsAddMonths(GS_DAY0, plan.months))}.</>}</p>
         </div>
         <form noValidate onSubmit={pay} className="gs-stack-md">
           <DS.TextField label="Email" value={gs.user.email} readOnly />
           <GsCardInputs />
-          <DS.Button type="submit" block loading={paying} loadingLabel="Processing…">{free ? 'Start 7-day trial' : 'Pay and subscribe'}</DS.Button>
+          <DS.Button type="submit" block loading={paying} loadingLabel="Processing…">{free ? 'Start 14-day trial' : 'Pay and subscribe'}</DS.Button>
         </form>
         <div className="gs-center"><DS.TextLink onClick={gs.afterCheckout}>Cancel and return</DS.TextLink></div>
       </DS.Card>

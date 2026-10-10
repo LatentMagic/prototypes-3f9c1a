@@ -10,7 +10,7 @@
 <meta charset="utf-8" />
 <base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Playground · home, how it works</title>
+<title>Landing from Connect, options 1 to 3</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -226,7 +226,10 @@
   /* ==== [Platform] product. Values come from the design system's tokens; layout
      adapts to the width it is handed (container queries on .gs-root). ==== */
   html, body { background: var(--page); color: var(--text); font-family: var(--font-text); }
-  .gs-root { container: gs / inline-size; min-height: 100vh; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); padding-bottom: 44px; }
+  .gs-root { container: gs / inline-size; min-height: 100vh; display: flex; flex-direction: column; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); }
+  /* the footer sits at the foot of the window when the page is short; the spacer keeps it clear of the demo bar */
+  .gs-root > .gs-ft { margin-top: auto; }
+  .gs-demo-space { flex: none; height: 44px; }
   .kit-phone-clip .gs-root { min-height: 100%; }
   .gs-root p, .gs-root ol, .gs-root ul, .gs-root figure { margin: 0; }
   .gs-root :focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
@@ -312,6 +315,11 @@
   .gs-demo-sep { width: 1px; height: 20px; background: var(--control-edge); margin: 0 12px; }
   .gs-demo-in { flex-wrap: nowrap; overflow-x: auto; justify-content: safe center; }
   .gs-demo-in > * { flex: none; }
+  @container gs (max-width: 599px) {
+    .gs-demo-space.is-two { height: 88px; }
+    .gs-demo-in.is-two { flex-wrap: wrap; justify-content: center; overflow-x: visible; }
+    .gs-demo-in.is-two > .gs-demo-sep { flex-basis: 100%; height: 0; margin: 0; }
+  }
   .gs-demo-opt { min-height: 44px; padding: 0 8px; background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; }
   .gs-demo-opt[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--off-white); }
 
@@ -465,6 +473,16 @@
   @container gs (min-width: 720px) {
     .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
     .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
+  }
+  /* home: how it works and the Pass, one band (docs/specs/home-how/, option 4) */
+  .hm-how { display: grid; gap: 24px; }
+  .hm-say { display: grid; gap: 12px; justify-items: start; }
+  .hm-say > h2 { text-wrap: balance; }
+  .hm-pass { display: grid; gap: 8px; justify-items: start; align-content: center; padding-top: 24px; border-top: 1px solid var(--line); }
+  .hm-pass > p { max-width: 36ch; }
+  @container gs (min-width: 900px) {
+    .hm-how { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 36px; align-items: center; }
+    .hm-pass { padding: 0 0 0 36px; border-top: 0; border-left: 1px solid var(--line); }
   }
   @container gs (min-width: 900px) {
     .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
@@ -892,6 +910,9 @@
   }
   @container gs (min-width: 900px) {
     .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
+    /* without the Pass on Casebook and Delve: the first edition over your plays, achievements beside both; every card its own height */
+    .lb-lay.is-three { grid-template-areas: "now ach" "plays ach"; grid-template-rows: auto 1fr; align-items: start; }
+    .lb-lay.is-three > :nth-child(1) { grid-area: now; } .lb-lay.is-three > :nth-child(2) { grid-area: ach; } .lb-lay.is-three > :nth-child(3) { grid-area: plays; }
     .lb-alllay { grid-template-columns: 280px minmax(0, 1fr); align-items: start; }
     .lb-tools { position: sticky; top: 24px; }
     .lb-choice { flex-direction: column; flex-wrap: nowrap; }
@@ -1108,23 +1129,36 @@
     .rp-one.has-cov { column-gap: 8px; grid-template-columns: minmax(0, 1fr) auto 44px 20px 16px; grid-template-areas: "a c d m chev"; }
     .rp-one.has-cov > .ph-cov { display: none; }
   }
-  .rp-flex { grid-template-columns: minmax(0, 1fr); }
-  .rp-flex[data-nodate] .rp-d, .rp-flex[data-nor] .rp-m { display: none; }
-  .rp-flex > li { min-width: 0; }
-  .rp-flex > li > .rp-one { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .rp-flex .rp-one > .rp-a { width: var(--wa, auto); flex: none; min-width: 0; overflow: hidden; }
-  .rp-flex .rp-one > .rp-c { width: var(--wc, auto); flex: none; min-width: 0; overflow: hidden; }
-  .rp-flex .rp-one > .rp-d { width: var(--wd, auto); flex: none; text-align: left; }
-  .rp-flex .rp-one > .rp-m { width: 20px; flex: none; justify-content: center; }
-  .rp-flex .rp-one > .lb-chev, .rp-flex .rp-one > .lb-chev-space { flex: none; }
+  /* a list of plays: columns set on the list and shared by every row (subgrid), so results and dates line up; the edition wraps, nothing is cut */
+  .rp-cols { display: grid; column-gap: 12px; grid-template-columns: minmax(0, 1fr) max-content max-content 20px calc(16px + var(--lb-pad, 16px)); }
+  .rp-cols > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; min-width: 0; }
+  .rp-cols > li > .rp { grid-column: 1 / -1; grid-template-columns: subgrid; grid-template-areas: "a c d m chev"; column-gap: 12px; min-height: 56px; }
+  .rp-cols .rp-m { justify-self: center; }
+  .rp-cols[data-nor] { grid-template-columns: minmax(0, 1fr) max-content max-content calc(16px + var(--lb-pad, 16px)); }
+  .rp-cols[data-nor] > li > .rp { grid-template-areas: "a c d chev"; }
+  .rp-cols[data-nor] .rp-m { display: none; }
+  .rp-cols.is-cov { grid-template-columns: calc(48px + var(--lb-pad, 16px)) minmax(0, 1fr) max-content max-content 20px calc(16px + var(--lb-pad, 16px)); }
+  .rp-cols.is-cov > li > .rp { grid-template-areas: "cov a c d m chev"; min-height: 64px; }
+  @container gs (max-width: 719px) {
+    .rp-cols.is-cov { grid-template-columns: minmax(0, 1fr) max-content max-content 20px calc(16px + var(--lb-pad, 16px)); }
+    .rp-cols.is-cov > li > .rp { grid-template-areas: "a c d m chev"; }
+    .rp-cols.is-cov .ph-cov { display: none; }
+  }
+  @container gs (max-width: 479px) {
+    .rp-cols { column-gap: 8px; }
+    .rp-cols > li > .rp { column-gap: 8px; }
+    .rp-cols.is-cov { grid-template-columns: minmax(0, 1fr) max-content 20px calc(16px + var(--lb-pad, 16px)); }
+    .rp-cols.is-cov > li > .rp { grid-template-areas: "a a m chev" "c d m chev"; }
+    .rp-cols.is-cov .rp-d { justify-self: end; }
+  }
   .rp-two { min-height: 68px; grid-template-columns: minmax(0, 1fr) auto 16px; grid-template-areas: "a d chev" "c m chev"; }
   .rp-two .rp-d { justify-self: end; }
   .rp-two .rp-w::before { content: none; }
   .rp-two .rp-m { justify-self: end; align-self: center; }
-  .rp-t { min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rp-t { min-width: 0; font-weight: 600; text-wrap: pretty; overflow-wrap: break-word; }
   .rp.is-off .rp-t { font-weight: 400; color: var(--muted); }
   .rp-st { display: flex; align-items: center; gap: 6px; min-width: 0; font: 400 16px/1.5 var(--font-text); color: var(--text); }
-  .rp-sl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rp-sl { min-width: 0; text-wrap: pretty; }
   .rp-st.is-none { color: var(--muted); }
   .rp-ico { width: 16px; height: 16px; flex: none; display: grid; place-items: center; }
   .rp-st.is-ok .rp-ico { color: var(--success); }
@@ -1187,6 +1221,8 @@
   @container gs (max-width: 559px) { .ed-row { grid-template-columns: minmax(0, 1fr) 16px; grid-template-areas: "t c" "m c" "s c" "r c"; } .ed-r { justify-self: start; } .ed-slots:not(:has(.mcp-tag)) { display: none; } }
   @media (prefers-reduced-motion: reduce) { .ed-row { transition: none; } }
   /* How it works and the play dialog (app/gs-connect.jsx) */
+  .hw-head .gs-lead { max-width: none; }
+  @container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }
   .hw-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
   .hw-need { margin: 0; text-wrap: pretty; }
   .hw-seg { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1206,48 +1242,58 @@
   /* product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
   @container gs (min-width: 900px) {
     .gs-head-split { align-items: stretch; }
-    .gs-hero-cover, .gs-hero-cover > .mcp-cover { height: 100%; }
-    .gs-hero-cover > .mcp-cover { grid-template-rows: minmax(0, 1fr); }
-    .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; min-height: 320px; }
+    .gs-hero-cover { min-height: 320px; }
+    .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
+    .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
   }
   @container gs (min-width: 1000px) {
     .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
     .hw-ai-act { grid-column: auto; }
   }
-/* ---- playground: home, how it works ---- */
-  :root:not([data-hb="0"]) .gs-home > #gs-how { display: none; }
-  .hb-slot { display: contents; }
-  .hb-roles { display: grid; gap: 12px; }
-  .hb-roles > p { max-width: 52ch; }
-  .hb-ledger { margin: 0; display: grid; }
-  .hb-row { display: grid; gap: 4px 24px; padding: 16px 0; border-top: 1px solid var(--line); }
-  .hb-row:first-child { border-top: 0; padding-top: 0; }
-  .hb-row dt { font-weight: 600; }
-  .hb-row dd { margin: 0; max-width: 64ch; }
-  .hb-say { display: grid; gap: 12px; justify-items: start; }
-  .hb-say > h2 { text-wrap: balance; }
-  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; padding: 0 8px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 760px; width: 100%; margin: 0 auto; }
+
+/* ---- Playground: landing from Connect (docs/specs/authorize-landing/playground/pg-authorize.jsx) ---- */
+  .gs-root { padding-bottom: 136px; }
+  .kit-config-wrap { bottom: 148px; }
+  .gs-auth { min-height: calc(100dvh - 136px); }
+  .gs-full { min-height: calc(100dvh - 136px); }
+
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 820px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 64px; flex: none; }
   .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; flex: none; }
+  .pg-strip .gs-demo-sep { flex: none; }
   .pg-why { display: grid; gap: 12px; }
-  .hb-rows > .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
-  .hb-k { width: 56px; flex: none; }
-  .hb4 { display: grid; gap: 24px; }
-  .hb4-pass { display: grid; gap: 8px; justify-items: start; align-content: center; padding-top: 24px; border-top: 1px solid var(--line); }
-  .hb4-pass > p { max-width: 36ch; }
-  .hb5 { display: grid; gap: 24px; }
-  .hb5 > div { display: grid; gap: 8px; align-content: start; }
-  .hb5 p { max-width: 40ch; }
-  .hb5-h { margin: 0; font: 600 16px/1.3 var(--font-text); }
+
+  .az-pair { display: inline-flex; align-items: center; gap: 12px; }
+  .az-ai { width: 32px; height: 32px; display: grid; place-items: center; color: var(--text); }
+  .az-link { width: 24px; border-top: 2px dotted var(--control-edge); }
+  .az-req-wrap { padding-top: 16px; }
+  .az-req { display: grid; gap: 16px; justify-items: start; padding: 20px; background: var(--card); border: 1px solid var(--control-edge); }
+  @container gs (min-width: 720px) { .az-req { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 24px; } }
+  .az-bar { display: flex; align-items: center; min-height: 64px; }
+  .az-split { display: grid; gap: 36px; padding-top: 16px; padding-bottom: 36px; }
+  .az-task { display: grid; gap: 24px; align-content: start; width: 100%; max-width: 440px; }
+  .az-about { display: grid; gap: 24px; align-content: start; padding-top: 36px; border-top: 1px solid var(--line); min-width: 0; }
   @container gs (min-width: 900px) {
-    .hb4 { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 36px; align-items: center; }
-    .hb4-pass { padding: 0 0 0 36px; border-top: 0; border-left: 1px solid var(--line); }
-    .hb5 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
-    .hb5 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
+    .az-split { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 48px; padding-top: 36px; }
+    .az-about { padding: 0 0 0 48px; border-top: 0; border-left: 1px solid var(--line); }
   }
-  @container gs (min-width: 720px) {
-    .hb-roles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-    .hb-row { grid-template-columns: 200px minmax(0, 1fr); align-items: baseline; }
+  .az-games { list-style: none; padding: 0; margin: 0; display: grid; }
+  .az-game { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+  .az-game:last-child { border-bottom: 1px solid var(--line); }
+  .az-game > .ph-cov { width: 64px; height: 48px; }
+  .az-game-end { justify-self: end; }
+  @container gs (max-width: 479px) {
+    .az-game { grid-template-columns: 48px minmax(0, 1fr); gap: 8px 12px; align-items: start; }
+    .az-game > .ph-cov { width: 48px; height: 36px; grid-row: 1 / span 2; }
+    .az-game-end { grid-column: 2; justify-self: start; }
   }
+  .az-done { max-width: 760px; }
+  .az-can { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .az-can > li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .az-stand { display: grid; gap: 16px; justify-items: center; text-align: center; max-width: 420px; padding: 24px; border: 1px dashed var(--control-edge); }
 </style>
 </head>
 <body>
@@ -1298,7 +1344,7 @@
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
-<script type="text/babel" src="docs/specs/home-how/playground/pg-home-how.jsx"></script>
+<script type="text/babel" src="docs/specs/authorize-landing/playground/pg-authorize.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

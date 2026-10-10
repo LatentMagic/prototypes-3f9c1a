@@ -49,10 +49,10 @@ const GsPassTag = () => {
     </button>
   );
 };
-const GsTagList = ({ tags }) => (
+const GsTagList = ({ tags, ed }) => (
   <div className="gs-tags">
     {tags.map((t, i) => t === 'FREE' ? <DS.Tag key={i} kind="free">Free</DS.Tag>
-      : t === 'FIRST' ? <DS.Tag key={i} kind="free">First edition free</DS.Tag>
+      : t === 'FIRST' ? <DS.Tag key={i} kind="free">{'First ' + (ed ? ed[0] : 'edition') + ' free'}</DS.Tag>
       : t === 'PASS' ? <GsPassTag key={i} />
       : <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}
   </div>
@@ -77,7 +77,7 @@ const GS_COMPARE = [
   { name: 'Streaks and achievements in every game you can play', free: true },
   { name: 'Your results and history', free: true },
   { name: 'Sharing a result', free: true },
-  { name: 'Replay earlier editions', free: false },
+  { name: 'Play earlier editions', free: false },
   { name: 'The full game catalog', free: false },
   { name: 'New releases', free: false },
 ];
@@ -140,7 +140,7 @@ const GsGameCard = ({ id, mark }) => {
         {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
       </div>
       <p className="gs-muted">{g.blurb}</p>
-      <GsTagList tags={g.tags} />
+      <GsTagList tags={g.tags} ed={g.ed} />
     </DS.Card>
   );
 };
@@ -310,7 +310,7 @@ const GsTopBar = () => {
 // ---- Demo bar: a prototype control, not part of the product ---------------------
 const gsDailyRoute = (gs) => { const k = gsGameOfRoute(gs.route.name); return !!(k && GS_GAMES[k].daily); };
 // The "This week" switch shows only where it changes something: a page that shows this edition's play
-// (its product page, library game page or Editions page), and History when signed in.
+// (its product page or library game page), and History when signed in.
 const gsWeekSwitch = (gs) => {
   const r = gs.route; if (r.name === 'history') return gs.view !== 'out';
   const k = gsGameOfRoute(r.name); if (!k || !window.lbNow || (r.page === 'record' && r.sid)) return false;

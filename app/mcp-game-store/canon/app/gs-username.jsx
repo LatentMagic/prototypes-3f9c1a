@@ -1,19 +1,12 @@
 
 // ============================================================================
 // [Platform] — usernames. The store has a username and no real name.
-//   GsUsername      the "Your username" screen, once per new account
+//   GsUsernameField the field, on the sign-up form, Your username and the Account card
+//   GsUsername      the "Your username" screen, for a Google or Apple sign-up only
 //   GsUsernameCard  the Username card on the Account page (same pattern as Change email)
-// Rules, errors and the taken state are shared by both. Demo: only "taken", in
+// No name is ever generated, prefilled or suggested. Demo: only "taken", in
 // any capitals, is taken; your own current name never is.
 // ============================================================================
-const GS_NAME_A = ['Quiet', 'Brave', 'Amber', 'Swift', 'Gentle', 'Silver', 'Misty', 'Bright', 'Hollow', 'Cedar', 'Clever', 'Golden'];
-const GS_NAME_B = ['Lantern', 'Falcon', 'Meadow', 'Compass', 'Pebble', 'Otter', 'Anchor', 'Thistle', 'Ember', 'Harbour', 'Willow', 'Comet'];
-const gsPick = (l) => l[Math.floor(Math.random() * l.length)];
-// Two plain words joined with capitals. Never made from a real name or an email.
-const gsGenName = (not) => {
-  let n; do { n = gsPick(GS_NAME_A) + gsPick(GS_NAME_B); } while (n === not);
-  return n;
-};
 
 const GS_TAKEN = 'That username is taken';
 const gsUsernameRules = (current) => {
@@ -25,44 +18,24 @@ const gsUsernameRules = (current) => {
     ['name', (v) => t(v) === current || t(v).toLowerCase() !== 'taken', GS_TAKEN],
   ];
 };
-// Three free near-matches for a taken name: "Taken" gives Taken7, TakenX, TheTaken.
-const gsNear = (v) => {
-  const b = v.trim().replace(/[^A-Za-z0-9]/g, '').slice(0, 11);
-  const base = b.charAt(0).toUpperCase() + b.slice(1);
-  return [base + '7', base + 'X', 'The' + base];
-};
-
-// The field. Rules show only as errors after a failed save, and near-match buttons when taken.
-const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder, noRules }) => {
+// The field. Rules show only as errors after a failed save. A taken name is refused with its error; nothing is offered.
+const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder }) => {
   const b = form.bind('name');
-  const taken = b.error === GS_TAKEN;
-  const field = aside
+  return aside
     ? <GsLabelled label={label} aside={aside}>
         <DS.TextField aria-label={label} placeholder={placeholder} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />
       </GsLabelled>
     : <DS.TextField label={label} placeholder={placeholder} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />;
-  return (
-    <div className="gs-stack-sm">
-      {field}
-      {taken && (
-        <div className="gs-sugg" role="group" aria-label="Free usernames">
-          {gsNear(form.f.name).map((n) => (
-            <DS.Button key={n} variant="secondary" onClick={() => { form.set('name', n); form.focus('name'); }}>{n}</DS.Button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 };
 
-// ---- Your username: once per new account, never on sign-in. No Skip, no back arrow.
+// ---- Your username: a Google or Apple sign-up, after the provider and the device code.
+// The account is made only when a name is chosen; leaving first leaves no account. No Skip. Back returns to sign-up, where Google or Apple leads here again.
 const GsUsername = () => {
   const gs = useGs();
-  const { next, preset } = gs.route; // preset 'taken' is staged
-  const [first] = React.useState(() => (preset === 'taken' ? 'taken' : gsGenName()));
-  const form = useGsForm({ name: first }, gsUsernameRules(null), (f) => gs.nameChosen(f.name.trim(), next), { tried: preset === 'taken' });
+  const { next, provider, preset } = gs.route; // preset 'taken' is staged
+  const form = useGsForm({ name: preset === 'taken' ? 'taken' : '' }, gsUsernameRules(null), (f) => gs.accountMade(f.name.trim(), provider || 'google', next), { tried: preset === 'taken' });
   return (
-    <GsAuthFrame title="Your username">
+    <GsAuthFrame title="Your username" onBack={() => gs.go('signup', { next })}>
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
         <GsUsernameField form={form} autoFocus />
         <DS.Button type="submit" block loading={form.busy}>Continue</DS.Button>
@@ -92,10 +65,10 @@ const GsUsernameCard = () => {
   return (
     <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <h2 className="mcp-t-card">Username</h2>
-      <p><b>{u.username}</b> is your public name.{u.locked ? '' : ' You can change it once every 30 days.'}</p>
+      <p><b>{u.username}</b> is your username.{u.locked ? '' : ' You can change it once every 30 days.'}</p>
       {u.locked ? <p className="gs-muted">You can change it again on 6 November.</p> : <GsUsernameForm current={u.username} />}
     </DS.Card>
   );
 };
 
-Object.assign(window, { GsUsername, GsUsernameCard, gsGenName });
+Object.assign(window, { GsUsername, GsUsernameCard, GsUsernameField, gsUsernameRules });

@@ -1,5 +1,7 @@
 # Handoff: usernames (username-1)
 
+> Superseded in part on 2026-10-10 by `docs/specs/walk-sweep/handoff-2026-10-10-walk-sweep.md`: the username is a field on the email sign-up form; the Your username step is for Google and Apple sign-ups only, after the code step; it always comes before any payment page; no name is generated or suggested.
+
 Written 2026-10-07. Resume state is in `handoff-2026-10-07-usernames.md`.
 
 ## Built, and where

@@ -65,7 +65,7 @@ const hgWeeks = () => Array.from({ length: 10 }, (_, i) => {
   return { id: 'hw' + i, date: lbDate(start), played };
 });
 const HgLeft = () => (
-  <LbRun n={HG_DAYS.filter((x) => !x.restarted).length} unit="weeks" figure="days played" legend="Not played" weeks={lbRunOf(hgWeeks())} />
+  <LbRun n={HG_DAYS.filter((x) => !x.restarted).length} unit="weeks" figure="days played" on="Played" legend="Not played" weeks={lbRunOf(hgWeeks())} />
 );
 const HG_OLD = HG_DAYS.filter((x) => lbOld(x.date));
 // Without the Pass: the game is closed. A player whose Pass ended keeps their last day, their days and what they earned, locked.

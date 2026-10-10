@@ -27,7 +27,10 @@ const gsSessEd = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
   const list = edList(gs, gid);
   if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === sid); if (x) return list.find((e) => e.key === x.id) || list[0]; }
-  return sid === 'delve-first' ? list[list.length - 1] : list[0];
+  if (sid === 'delve-first') return list[list.length - 1];
+  // A replay is not in the edition's record; it belongs to the edition of its number.
+  if (s.number != null) { const m = list.find((e) => e.n === s.number); if (m) return m; }
+  return list[0];
 };
 const gsPlayReq = (gs, name) => {
   const gid = GS_GAME_ORDER.find((k) => GS_GAMES[k].name === name) || 'delve';
@@ -42,7 +45,7 @@ const GsCopyPrompt = ({ text, label, block }) => {
   React.useEffect(() => { if (!done) return undefined; const t = setTimeout(() => setDone(false), 2400); return () => clearTimeout(t); }, [done]);
   return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); }}>{label || 'Copy prompt'}</DS.Button>;
 };
-const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => { gs.closePlay(); gs.go('connect'); }}>{label || 'How it works'}</button>; };
+const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
 const GsAddress = () => {
   const [done, setDone] = React.useState(false);
   return (
@@ -112,4 +115,4 @@ const GsConnect = () => {
   );
 };
 
-Object.assign(window, { GsConnect, GsPlayDialog, gsPlayReq, gsPromptText, GsHowLink });
+Object.assign(window, { GsConnect, GsPlayDialog, gsPlayReq, gsPromptText, GsHowLink, gsSessEd });

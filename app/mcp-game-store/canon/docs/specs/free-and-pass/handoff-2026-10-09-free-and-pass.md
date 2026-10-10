@@ -1,5 +1,7 @@
 # Handoff: free and the Pass (2026-10-09)
 
+> Superseded in part on 2026-10-10 by `docs/specs/walk-sweep/handoff-2026-10-10-walk-sweep.md`: the trial is 14 days, "free plan" is "free account", "lock" is "freeze", and the checkout reminder line names the payment provider.
+
 Status: built in the prototype, **proposed, not ratified**. QA entry `free-and-pass` in `app/qa.jsx` lists the steps until ratified.
 
 ## What was built, and where
