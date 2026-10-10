@@ -25,6 +25,14 @@ const lbAchView = (items, access, gs) => {
 const lbShort = (d) => { const p = d.split(' '); return p[0] + ' ' + p[1].slice(0, 3) + (p[2] ? ' ' + p[2] : ''); };
 const LbChev = () => <DS.Icon name="back" size={16} className="lb-chev" style={{ transform: 'rotate(180deg)' }} />;
 const LbBack = ({ label, onClick }) => <div><button type="button" className="lb-back" onClick={onClick}><DS.Icon name="back" size={20} />{label}</button></div>;
+// Back to where the player came from: History, or the game's library game page. Opened with no earlier page
+// (a states address, a pasted link) or from anywhere else, it goes to the game's library game page.
+const LbBackTo = ({ gid }) => {
+  const gs = useGs(); const p = gs.route.prev; const g = GS_GAMES[gid];
+  if (p && p.name === 'history') return <LbBack label="History" onClick={gs.back} />;
+  const fromLib = p && p.name === g.route && p.page === 'record';
+  return <LbBack label={g.name} onClick={() => (fromLib ? gs.back() : gs.go(g.route, { page: 'record' }))} />;
+};
 const LbHead = ({ id }) => {
   const gs = useGs(); const g = GS_GAMES[id];
   return (
@@ -55,7 +63,7 @@ const LbRun = ({ n, unit, weeks, locked, figure, on = 'Completed', legend = 'Not
   const cut = weeks.length - 6;
   return (
     <section className="lb-card lb-runcard">
-      <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || unit + ' in a row'}</span></div>
+      <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span></div>
       <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
         aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.played ? on : legend).toLowerCase()).join(', ')}>
@@ -140,14 +148,78 @@ const LbChoice = ({ label, value, opts, onPick }) => (
     <div className="lb-choice">{opts.map(([v, l]) => <button key={v} type="button" aria-pressed={value === v} onClick={() => onPick(v)}>{l}</button>)}</div>
   </div>
 );
+// Search and filters above a long list (History, Library), from docs/specs/filters-on-a-phone/ (option 1b, 2026-10-10).
+// Search stays on the page; every LbChoice moves into one Filters panel. The Game choice is a row that opens a search and
+// a list of games narrowed by Genre and Schedule, so the panel keeps its size however many games there are.
+// A seam: a playground may replace window.LbTools.
+const lbfParts = (children) => {
+  let search = null; const choices = [];
+  React.Children.toArray(children).forEach((k) => { if (!React.isValidElement(k)) return; if (k.type === LbChoice) choices.push(k.props); else if (k.type === DS.SearchField) search = k; });
+  return { search, choices };
+};
+const lbfLabel = (c) => (c.opts.find(([v]) => v === c.value) || c.opts[0])[1];
+const lbfOn = (c) => c.value !== c.opts[0][0];
+const lbfGames = (g, choices) => {
+  const pick = (l) => { const c = choices.find((x) => x.label === l); return c ? c.value : 'all'; };
+  const cat = pick('Genre'); const rhy = pick('Schedule');
+  return g.opts.slice(1).filter(([v]) => v === g.value || ((cat === 'all' || GS_GAMES[v].category === cat) && (rhy === 'all' || gsRhythm(v) === rhy)));
+};
+const LbGamePick = ({ g, list, onBack }) => {
+  const [q, setQ] = React.useState(''); const s = q.trim().toLowerCase();
+  const rows = [['all', 'All games']].concat(list).filter(([, l], i) => i === 0 || !s || l.toLowerCase().includes(s));
+  return (
+    <div className="lbf-pick">
+      <button type="button" className="lbf-back" onClick={onBack}><DS.Icon name="back" size={16} />Filters</button>
+      <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
+      <ul className="lbf-plist" role="list">
+        {rows.map(([v, l]) => (
+          <li key={v}><button type="button" className="lbf-prow" aria-pressed={v === g.value} onClick={() => { g.onPick(v); onBack(); }}>
+            <span>{l}</span>{v === g.value ? <DS.Icon name="check" size={16} /> : <span className="lbf-pgap" />}
+          </button></li>
+        ))}
+        {rows.length === 1 && s && <li className="lbf-pnone">No game called that.</li>}
+      </ul>
+    </div>
+  );
+};
+const LbFilters = ({ children }) => {
+  const { search, choices } = lbfParts(children);
+  const [open, setOpen] = React.useState(false); const [deep, setDeep] = React.useState(false);
+  const on = choices.filter(lbfOn); const g = choices.find((c) => c.label === 'Game');
+  const close = () => { setOpen(false); setDeep(false); };
+  return (
+    <div className="lbf-top">
+      <div className="lbf-bar">
+        <div className="lbf-search">{search}</div>
+        <DS.Button variant="secondary" onClick={() => setOpen(true)}>{on.length ? 'Filters · ' + on.length : 'Filters'}</DS.Button>
+      </div>
+      {on.length > 0 && <p className="lbf-sum">{on.map(lbfLabel).join(' · ')}</p>}
+      <DS.Popup kind="panel" open={open} onClose={close} title="Filters" actions={<DS.Button onClick={close}>Done</DS.Button>}>
+        {deep && g ? <LbGamePick g={g} list={lbfGames(g, choices)} onBack={() => setDeep(false)} /> : (
+          <div className="lbf-groups">{choices.map((c) => (c === g ? (
+            <div key={c.label} className="lbf-grow">
+              <span className="gs-field-label">Game</span>
+              <button type="button" className="lbf-prow is-open" onClick={() => setDeep(true)}><span>{lbfLabel(c)}</span><LbChev /></button>
+            </div>
+          ) : <LbChoice key={c.label} {...c} />))}</div>
+        )}
+      </DS.Popup>
+    </div>
+  );
+};
+window.LbTools = LbFilters;
+window.LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // The preview iframe can refuse the Clipboard API silently, so the textarea copy runs first, inside the click.
 const lbCopy = (lines) => {
+  // The textarea takes focus to copy; focus goes back to the control pressed, never the page root.
+  const was = document.activeElement;
   const t = lines.join('\n'); const ta = document.createElement('textarea');
   ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
   document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
   let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
   document.body.removeChild(ta);
+  if (was && was !== document.body && was.focus) was.focus({ preventScroll: true });
   if (!ok && navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
 };
 const LbCopyBtn = ({ lines }) => {
@@ -180,4 +252,4 @@ const lbNow = (gs, id) => {
   const s = GS_SESSIONS[c.today];
   return { status: s.loss ? { kind: 'bad', label: s.result, short: c.badF } : { kind: 'ok', label: s.result, short: c.short }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — 36,000 Summers Ago's library page: option 16's four parts, fitted to a game with no editions.
-// Per game-specs/36000-summers-ago.md there is no streak and no sharing, so the run shows the weeks you played
+// Per game-specs/36000-summers-ago.md there is no streak and no result to share (its session page shares the product page link), so the run shows the weeks you played
 // rather than a streak. The now card is your latest day, with where you left off. Records are invented.
 // ============================================================================
 const HG_ENDS = ['Home by the fire', 'Slept at the springs', 'Slept in the cave mouth', 'Home with full hands', 'Slept out on the plain'];
@@ -22,7 +22,7 @@ const HG_DAYS = Array.from({ length: 18 }, (_, i) => {
 const HG_LATEST = HG_DAYS[0];
 const hgSid = (x) => 'hunter-' + x.id;
 const hgStatus = (x) => (x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' });
-// A session page for every day: the result matches its row; the record is what happened in the day. No sharing (game spec).
+// A session page for every day: the result matches its row; the record is what happened in the day. Share carries the product page link only (MCPG-030 AF-04).
 HG_DAYS.forEach((x) => {
   GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
     figures: x.end ? [x.title, x.end] : [x.title], listTitle: 'The day', share: null, lines: x.facts };
@@ -74,7 +74,7 @@ const HgClosed = ({ again }) => {
   return (
     <section className="lb-card">
       <h2 className="mcp-t-sec">{again ? 'Your Pass has ended' : 'Only with the Pass'}</h2>
-      <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free player can’t play it.'}</p>
+      <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free account can’t play it.'}</p>
       <div><DS.Button onClick={() => gs.go('pass')}>{again ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
       <p className="gs-small">{GS.purchase}</p>
     </section>

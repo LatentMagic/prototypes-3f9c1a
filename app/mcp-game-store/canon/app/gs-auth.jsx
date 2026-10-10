@@ -6,7 +6,7 @@
 //   sign up (email, username, password) -> verify your email -> connect your AI
 //   sign up (Google / Apple) -> verify this device -> your username -> connect your AI
 //   (from Get the Pass, checkout takes the place of connect: the username always comes first)
-//   sign in -> verify this device on a new device (Google and Apple too) -> games
+//   sign in (email, Google or Apple) -> verify this device on a new device only -> games
 //   Forgot password -> email, sent, code, new password -> games
 // ============================================================================
 const GS_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,7 +25,8 @@ const GsAuthFrame = ({ title, subtitle, onBack, children, foot }) => (
         {subtitle && <p className="gs-muted">{subtitle}</p>}
       </div>
       {children}
-      {foot && <div className="gs-auth-foot">{foot}</div>}
+      {/* Every auth screen carries Terms, Privacy and Refunds (MCPG-PRIV-004); sign-up and sign-in pass their own line. */}
+      <div className="gs-auth-foot">{foot || <GsConsent lead="Your use of [Platform] is covered by our" />}</div>
     </main>
   </div>
 );
@@ -83,9 +84,9 @@ const useGsForm = (initial, rules, onValid, opts) => {
   return { f, bind, submit, busy, reset: () => setTried(false), clear, set, focus };
 };
 
-// Step 2 pushes a history entry; the browser's Back returns to step 1.
+// Step 2 pushes a history entry; the browser's Back returns to step 1. A page returned to by Back opens on the step it was left on.
 const useGsStep = () => {
-  const [step, setStepState] = React.useState(1);
+  const [step, setStepState] = React.useState(() => (window.history.state && window.history.state.gsStep) || 1);
   React.useEffect(() => {
     const onPop = (e) => setStepState((e.state && e.state.gsStep) || 1);
     window.addEventListener('popstate', onPop);
@@ -122,13 +123,16 @@ const GsSignUp = () => {
   const next = gs.route.next;
   const [step, toEmail, back] = useGsStep();
   const [failed, setFailed] = React.useState(null);
-  const form = useGsForm({ email: '', name: '', pw: '' }, gsSignupRules(), (f) => {
+  // Back from "Verify your email" returns the email and username typed (route.draft); the password is typed again.
+  const d = gs.route.draft || {};
+  const form = useGsForm({ email: d.email || '', name: d.name || '', pw: '' }, gsSignupRules(), (f) => {
     gs.setUser({ email: f.email.trim() });
+    gs.keep({ draft: { email: f.email.trim(), name: f.name.trim() } });
     gs.go('verify', { ctx: 'signup', email: f.email.trim(), username: f.name.trim(), next });
   });
   const foot = <>
     <GsConsent lead="By creating an account you accept our" />
-    {step === 1 && <p>Already have an account? <button type="button" className="gs-inlink" onClick={() => gs.go('signin')}>Sign in</button> or <button type="button" className="gs-inlink" onClick={() => gs.go('home')}>learn more</button></p>}
+    {step === 1 && <p>Already have an account? <button type="button" className="gs-inlink" onClick={() => gs.go('signin', next === 'checkout' ? { next: 'pass' } : undefined)}>Sign in</button> or <button type="button" className="gs-inlink" onClick={() => gs.go('home')}>learn more</button></p>}
   </>;
   if (step === 1) return (
     <GsAuthFrame title="Create your account" subtitle="One account for every game you play." foot={foot}>
@@ -188,7 +192,7 @@ const GsVerify = () => {
       else if (code === '111111') setErr('wrong');
       else {
         setErr(null);
-        if (ctx === 'device') gs.signedIn(provider || 'email');
+        if (ctx === 'device') gs.signedIn(provider || 'email', gs.route.next);
         else if (ctx === 'new-provider') gs.go('username', { next: gs.route.next, provider });
         else gs.accountMade(gs.route.username, 'email', gs.route.next);
         return;
@@ -200,7 +204,8 @@ const GsVerify = () => {
   return (
     <GsAuthFrame title={device ? 'Verify this device' : 'Verify your email'}
       subtitle={<>Enter the 6-digit code sent to <b>{email}</b>.</>}
-      onBack={() => (ctx === 'device' ? gs.go('signin') : gs.go('signup', { next: gs.route.next }))}>
+      onBack={() => (ctx === 'device' ? gs.go('signin', gs.route.next ? { next: gs.route.next } : undefined)
+        : gs.route.prev && gs.route.prev.name === 'signup' ? gs.back() : gs.go('signup', { next: gs.route.next }))}>
       <form noValidate onSubmit={submit} className="gs-stack-md">
         <GsCodeField value={code} error={err === 'wrong' ? 'That code’s not right. Check and re-enter.' : null}
           inputRef={(el) => { ref.current = el; }} onChange={(v) => { setCode(v); setErr(null); }} />
@@ -222,8 +227,8 @@ const GsReturning = () => {
   const { mode, next, provider } = gs.route;
   return <GsFullLoader label="Completing sign-in" ms={1500}
     onDone={() => (mode === 'signup' ? gs.go('verify', { ctx: 'new-provider', provider, next })
-      : gs.review.device === 'new' ? gs.go('verify', { ctx: 'device', provider })
-      : gs.signedIn(provider))} />;
+      : gs.review.device === 'new' ? gs.go('verify', { ctx: 'device', provider, next })
+      : gs.signedIn(provider, next))} />;
 };
 
 // ---- Sign in --------------------------------------------------------------------
@@ -235,9 +240,10 @@ const GsSignIn = () => {
   const gs = useGs();
   const [step, toEmail, back] = useGsStep();
   const [failed, setFailed] = React.useState(null);
-  const form = useGsForm({ email: '', pw: '' }, GS_SIGNIN_RULES, (f) => gs.go('verify', { ctx: 'device', email: f.email.trim() }));
+  const next = gs.route.next; // 'pass' when sign-in started from the Pass page's sign-up route
+  const form = useGsForm({ email: '', pw: '' }, GS_SIGNIN_RULES, (f) => (gs.review.device === 'new' ? gs.go('verify', { ctx: 'device', email: f.email.trim(), next }) : gs.signedIn('email', next)));
   // Apple with no account makes one, as Google does: the sign-up route from the provider's return.
-  const onProvider = (p) => gsProviderTrip(gs, p, setFailed, () => gs.go('returning', { mode: 'signin', provider: p.toLowerCase() }));
+  const onProvider = (p) => gsProviderTrip(gs, p, setFailed, () => gs.go('returning', { mode: 'signin', provider: p.toLowerCase(), next }));
   const consent = <GsConsent lead="Your use of [Platform] is covered by our" />;
   const subtitle = 'Pick up where you left off.';
   if (step === 1) return (

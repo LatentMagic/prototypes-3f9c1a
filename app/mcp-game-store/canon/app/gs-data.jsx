@@ -49,8 +49,9 @@ const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve
 // How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
 const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
-// Sample data, not decided: each game's spec will say whether its earlier editions can be played. Here Daily Word's can't; every other game's can.
-const GS_EARLIER_CLOSED = ['word'];
+// Whether a game's earlier editions can be played at all is set per game (decided 2026-10-10). Daily Word, Daily Groups and Daily Mystery keep none open, Pass or not.
+// Escape, Casebook and Delve keep them playable; the Pass comes into it only for those.
+const GS_EARLIER_CLOSED = ['word', 'groups', 'mystery'];
 const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
 // This edition's play of each free game, by plan: today's for a daily, this week's for Escape.
 // Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).

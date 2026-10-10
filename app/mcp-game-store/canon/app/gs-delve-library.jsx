@@ -47,7 +47,7 @@ DV_ALL.forEach((s, i) => {
     lines: Array.from({ length: s.rolls }, (_, k) => GS_ROLLS[(k + i) % GS_ROLLS.length]),
     reached: won ? (threat > 4 ? 'Close call' : 'Clean rescue') : 'Caught', share: e.label + ' · threat ' + threat + '/6 · ' + s.rolls + ' rolls' };
 });
-const dvRow = (gs, s) => ({ key: s.id, title: '#' + (DV_ALL.length - DV_ALL.indexOf(s)), date: lbShort(s.date), status: dvStatus(s), onOpen: s.played ? () => gs.go('session', { id: dvSid(s) }) : null });
+const dvRow = (gs, s) => ({ key: s.id, title: '#' + (DV_ALL.length - DV_ALL.indexOf(s)), date: lbShort(s.date), status: dvStatus(s), onOpen: s.played ? () => gs.go('session', { id: dvSid(s) }) : () => gs.go('session', { gid: 'delve', ed: s.id }) });
 
 const DvNow = ({ s }) => {
   const gs = useGs();
@@ -100,7 +100,7 @@ const DvFirst = () => {
       <p>{s.played ? 'You played ' + s.hero + ' and the ritual finished before Elsie was out, in ' + s.rolls + ' rolls.' : 'The game’s very first scene, the same for everyone. Play it free.'}</p>
       <div className="lb-foot">
         <div className="lb-acts">
-          {s.played ? <DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
+          {s.played ? <><LbShare lines={gsShareText(GS_SESSIONS['delve-first'])} note="It hides the story and the places." /><DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink></> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
         </div>
         <span className="gs-muted">Every other scene comes with the Pass.</span>
       </div>

@@ -26,8 +26,10 @@ const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAM
 const gsSessEd = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
   const list = edList(gs, gid);
-  if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === sid); if (x) return list.find((e) => e.key === x.id) || list[0]; }
-  if (sid === 'delve-first') return list[list.length - 1];
+  // A replay's record is its edition's record with -r<n> on the end.
+  const base = sid.replace(/-r\d+$/, '');
+  if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === base); if (x) return list.find((e) => e.key === x.id) || list[0]; }
+  if (gid === 'delve' && window.DV_ALL) { const x = DV_ALL.find((y) => dvSid(y) === base); if (x) return list.find((e) => e.key === x.id) || list[0]; }
   // A replay is not in the edition's record; it belongs to the edition of its number.
   if (s.number != null) { const m = list.find((e) => e.n === s.number); if (m) return m; }
   return list[0];

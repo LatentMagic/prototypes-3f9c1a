@@ -26,9 +26,9 @@ const GS_WHATSNEW = [
   { v: '1.9', d: '8 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
   { v: '1.8', d: '24 September 2026', t: 'Streaks carry across devices', x: 'Your daily streak and record now follow your account, so they stay intact wherever you connect your AI.' },
   { v: '1.7', d: '10 September 2026', t: 'Connect in under two minutes', x: 'A single link now connects Claude, ChatGPT and other MCP assistants. No settings to copy between apps.' },
-  { v: '1.6', d: '27 August 2026', t: 'Every earlier edition in one place', x: 'Open any past edition of a weekly or daily game from its page.' },
+  { v: '1.6', d: '27 August 2026', t: 'Everything you missed, in History', x: 'History lists every day and week a game has released, played or missed, and opens each one.' },
   { v: '1.5', d: '13 August 2026', t: 'Faster results after each play', x: 'The result and record appear as soon as the last turn is made.' },
-  { v: '1.4', d: '30 July 2026', t: 'Account page', x: 'Manage your plan, card and connected assistants from one place.' },
+  { v: '1.4', d: '30 July 2026', t: 'Account page', x: 'Manage your username, email, password, card and Pass from one place.' },
   { v: '1.3', d: '16 July 2026', t: 'History view', x: 'Look back over every play, grouped by day and by game.' },
   { v: '1.2', d: '2 July 2026', t: 'Search and filters in the library', x: 'Find a game by kind, length or how often it releases.' },
   { v: '1.1', d: '18 June 2026', t: 'Free daily puzzles', x: 'Today’s Daily Puzzles are free with an account.' },
@@ -88,10 +88,9 @@ const GsHome = () => {
       </section>
 
       <section className="gs-band">
-        <h2 className="mcp-t-sec">Available games</h2>
-        <div className="gs-feats" role="region" aria-label="Available games" tabIndex={0}>
+        <GsCardRow label="Available games" head={<h2 className="mcp-t-sec">Available games</h2>}>
           {GS_GAME_ORDER.map((k) => <GsFeature key={k} id={k} />)}
-        </div>
+        </GsCardRow>
         <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
       </section>
@@ -105,7 +104,7 @@ const GsHome = () => {
           </div>
           <div className="hm-pass">
             <span className="gs-label">THE PASS</span>
-            <p>Play every game and every edition. Try it free for 14 days.</p>
+            <p>Play every game in full. Try it free for 14 days.</p>
             <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
           </div>
         </div>

@@ -39,8 +39,11 @@ const KIT_QA = [
     note: 'Each page: facts band, this week’s one, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'fixes', title: 'Fixes, 10 October (docs/specs/fixes/)',
+  note: 'From History, open a row and press its back link: it returns to History, as left. Pass card: cancel, resume, switch and undo each move focus to the control that undoes them and are announced. Tab stays inside every open pop-up.',
+  steps: ['history', 'history-every-edition-all', 'session-delve-past', 'library-delve', 'library-casebook', 'library-mystery-never-played', 'sign-up', 'verify-email', 'not-found', 'pass-card-monthly', 'pass-card-failed-pending-switch', 'switch-sheet-yearly', 'switch-sheet-trial', 'delete-account-confirm', 'cancel-sheet', 'session-hunter', 'library-delve-no-pass', 'library', 'games-free', 'home', 'load-failed'] });
 KIT_QA.unshift({ key: 'free-and-pass', title: 'Free and the Pass (proposed, not ratified)',
-  note: 'Walk each step. Free player: the dailies and Escape in full; Casebook and Delve one first edition, no streak; 36,000 Summers Ago closed. Pass ended: frozen achievements. Trial reads 14 days everywhere. Pass page has no list or table.',
+  note: 'Walk each step. Free player: the dailies and Escape in full; Casebook and Delve one first edition, no streak; 36,000 Summers Ago closed. Pass ended: frozen achievements. Trial reads 14 days everywhere. The Pass page’s “What you get” table shows what free and the Pass each give.',
   steps: ['fp-word-library-free', 'fp-escape-library-free', 'fp-casebook-library-free', 'fp-delve-library-free', 'fp-hunter-library-free', 'fp-casebook-library-lapsed', 'fp-delve-library-lapsed', 'fp-hunter-library-lapsed',
     'fp-product-casebook-free', 'fp-product-hunter-free', 'games-free', 'free-history', 'lapsed-history', 'pass-card-none', 'pass-card-lapsed', 'pass-page-trial-available', 'pass-page-trial-used', 'fp-pass-page-signed-out', 'checkout', 'cancel-sheet', 'cancel-sheet-trial', 'switch-sheet-trial', 'pass-card-trial', 'pass-card-ending'] });
 KIT_QA.unshift({ key: 'loading-pages-and-parts', title: 'Loading on pages and parts',
@@ -68,7 +71,7 @@ KIT_QA.unshift({ key: 'walk-sweep', title: 'Walk sweep 2026-10-10 (not ratified)
 KIT_QA.unshift({ key: 'history-only', title: 'History is the one list (not ratified)',
   note: 'No Editions page and no "All editions" link anywhere. History opens on Played; List switches to Every edition. Every row opens a session page, never a pop-up; no row or filter mentions the Pass. Search: a number, name, date or month, a leading # ignored. By hand: from a library game page press All…, switch List, press a missed row, then Back. Check at 390 and 1280px.',
   steps: ['history', 'history-every-edition-all', 'history-every-edition-groups', 'history-every-edition-word', 'history-every-edition-casebook', 'history-every-edition-casebook-free', 'history-every-edition-casebook-pass-ended', 'history-hunter', 'history-search-empty',
-    'session-new-pass', 'session-new-needs-pass', 'session-new-delve-needs-pass', 'session-new-closed', 'session-word-earlier-closed', 'library-word', 'library-casebook', 'word-signed-out', 'casebook-free'] });
+    'session-new-pass', 'session-new-needs-pass', 'session-new-delve-needs-pass', 'session-new-groups-closed', 'session-new-closed', 'session-word-earlier-closed', 'library-word', 'library-casebook', 'word-signed-out', 'casebook-free'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

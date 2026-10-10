@@ -8,8 +8,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<base href="../../../../" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>[Platform]</title>
+<title>Filters on History and the Library, options 0 to 3</title>
 <link rel="icon" href="assets/logo-32.png" sizes="32x32" />
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
@@ -440,11 +441,7 @@
   .gs-shot > img.is-crop { object-fit: cover; object-position: top left; }
   .gs-hero-art3 > .gs-shot { position: relative; width: 100%; max-width: 600px; justify-self: center; align-self: center; border-color: var(--control-edge); }
   .gs-feats { display: grid; gap: 24px; grid-auto-flow: column; grid-auto-columns: min(280px, 82%); overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: 4px; padding: 4px 4px 12px; margin: -4px -4px 0; }
-  /* Cards share the row when they fit (--n is the card count, GsCardRow); otherwise 220px each and the row scrolls, with Previous and Next. */
-  @container gs (min-width: 560px) { .gs-feats { grid-auto-columns: clamp(220px, calc((100% - (var(--n, 4) - 1) * 24px) / var(--n, 4)), 280px); } }
-  .gs-rowhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; }
-  .gs-rownav { display: flex; gap: 4px; margin-left: auto; }
-  .gs-rownav-btn:focus-visible { outline: 2px solid var(--accent, #EDE8DF); outline-offset: 2px; }
+  @container gs (min-width: 560px) { .gs-feats { grid-auto-columns: clamp(220px, calc((100% - 72px) / 3.4), 280px); } }
   .gs-feats > * { scroll-snap-align: center; }
   .gs-feats:focus-visible { outline: 2px solid var(--accent, #EDE8DF); outline-offset: 2px; }
   .gs-feat { display: grid; gap: 16px; align-content: start; }
@@ -610,7 +607,6 @@
   .gs-acct-who { display: grid; gap: 0; line-height: 1.25; }
   .gs-avatar { width: 32px; height: 32px; flex: none; display: grid; place-items: center; background: var(--popup); border: 1px solid var(--control-edge); font: 700 16px/1 var(--font-heading); color: var(--text); }
   .gs-avatar.is-big { width: 40px; height: 40px; font-size: 20px; }
-  .gs-avatar.is-btn { width: 48px; height: 48px; font-size: 20px; background: transparent; border-width: 1.5px; }
   .gs-pop { min-width: 260px; }
   .gs-idhead { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
   .gs-id-text { min-width: 0; overflow-wrap: anywhere; gap: 0; line-height: 1.3; }
@@ -1301,6 +1297,60 @@
     .hw-ai-act { grid-column: auto; }
   }
 </style>
+<style>
+  /* ---- playground: filters on History and the Library (docs/specs/filters-on-a-phone/playground/) ---- */
+  .kit-config-wrap { bottom: 152px; }
+  .pg-strip { z-index: 91; }
+  .pg-strip-in { display: grid; padding: 0 8px; }
+  .pg-strip-row { display: flex; align-items: center; gap: 0 2px; min-height: 44px; font: 600 13px/1.3 var(--font-text); color: var(--muted); max-width: 760px; width: 100%; margin: 0 auto; overflow-x: auto; }
+  .pg-strip-row + .pg-strip-row { border-top: 1px solid var(--line); }
+  .pg-k { width: 56px; flex: none; }
+  .pg-name { flex: 1; min-width: 0; padding: 0 8px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pg-strip .gs-demo-opt { white-space: nowrap; }
+  .pg-why { display: grid; gap: 12px; }
+  .lb-alllay:has(> .pgf-top) { grid-template-columns: minmax(0, 1fr) !important; }
+  .pgf-top { display: grid; gap: 12px; min-width: 0; }
+  .pgf-bar { display: flex; align-items: flex-end; gap: 12px; }
+  .pgf-bar > .mcp-btn { flex: none; }
+  .pgf-search { flex: 1 1 auto; min-width: 0; max-width: 400px; }
+  .pgf-sum { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
+  .pgf-groups { display: grid; gap: 24px; }
+  .pgf-groups .lb-choice, .pgf-one .lb-choice { flex-direction: row !important; flex-wrap: wrap !important; }
+  .pgf-groups .lb-choice > button, .pgf-one .lb-choice > button { text-align: center !important; }
+  .pgf-grow { display: grid; gap: 8px; }
+  .pgf-pick { display: grid; gap: 16px; }
+  .pgf-back { justify-self: start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; background: none; border: 0; color: var(--text); font: 600 16px/1.5 var(--font-text); cursor: pointer; }
+  .pgf-plist { list-style: none; margin: 0; padding: 0; display: grid; }
+  .pgf-plist > li + li { border-top: 1px solid var(--line); }
+  .pgf-prow { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px; padding: 0 4px; background: none; border: 0; color: var(--text); font: 400 16px/1.5 var(--font-text); text-align: left; cursor: pointer; }
+  .pgf-prow[aria-pressed="true"] { font-weight: 600; }
+  .pgf-prow.is-open { padding: 0 12px 0 16px; border: 1px solid var(--control-edge); font-weight: 600; }
+  .pgf-pgap { width: 16px; }
+  .pgf-pnone { padding: 12px 4px; color: var(--muted); }
+  @media (hover: hover) { .pgf-prow:hover, .pgf-back:hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+  .pgf-bar2 { display: grid; gap: 12px; }
+  .pgf-bar2 > .pgf-search { max-width: none; }
+  .pgf-menus { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+  .pgf-mbtn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 16px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 14px/1.2 var(--font-text); cursor: pointer; white-space: nowrap; transition: transform var(--time-press) var(--ease); }
+  .pgf-mbtn .pgf-mk { font-weight: 400; color: var(--muted); }
+  .pgf-mbtn.is-on { border-color: var(--off-white); box-shadow: inset 0 0 0 1px var(--off-white); }
+  .pgf-mbtn:active { transform: scale(.97); }
+  .pgf-mbtn .mcp-ico { transition: transform var(--time-dropdown) var(--ease); }
+  .pgf-mbtn[aria-expanded="true"] .mcp-ico { transform: rotate(180deg); }
+  @media (hover: hover) { .pgf-mbtn:hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+  .pgf-menus .mcp-menu-item:not(:has(svg)) { padding-left: 44px; }
+  .pgf-wide { display: none; }
+  .pgf-one .lb-choicegrp > .gs-field-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .pgf-fold .mcp-disc-body > div > div { padding: 0 16px 16px; }
+  .pgf-fold .lb-choicegrp .gs-field-label { color: var(--text); }
+  @container gs (min-width: 900px) {
+    .pgf-bar2 { display: flex; align-items: flex-end; gap: 16px; }
+    .pgf-bar2 > .pgf-search { flex: 0 0 320px; }
+    .pgf-narrow { display: none; }
+    .pgf-wide { display: grid; gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pgf-mbtn, .pgf-mbtn .mcp-ico { transition: none; } .pgf-mbtn:active { transform: none; } }
+</style>
 </head>
 <body>
 <!-- ============================================================================
@@ -1350,6 +1400,7 @@
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
+<script type="text/babel" src="docs/specs/filters-on-a-phone/playground/pg-filters.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

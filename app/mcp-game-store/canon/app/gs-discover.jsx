@@ -12,7 +12,7 @@ const gsFind = (q, k) => { const g = GS_GAMES[k]; const s = q.trim().toLowerCase
 const GS_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
 const GS_ADDED = ['hunter', 'casebook', 'delve', 'escape'];
-const GS_PASS_BAND = 'The Pass opens every edition of every game here, and every new game on its release day.';
+const GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
 const dcChev = <DS.Icon name="down" size={16} className="lb-chev" style={{ transform: 'rotate(-90deg)' }} />;
 
 const DcHead = ({ g, mark, open, label }) => (
@@ -77,23 +77,23 @@ const DcBody = () => {
   const rhy = GS_RHYTHMS.map(([v]) => v).filter((v) => on.includes(v));
   const ids = GS_GAME_ORDER.filter((k) => (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!rhy.length || rhy.includes(gsRhythm(k))) && (!free || GS_GAMES[k].free) && gsFind(q, k));
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
-  const clear = () => { setOn([]); setQ(''); };
+  // Clear and Show every game remove themselves; focus moves to the search field, the first of the controls they reset.
+  const tools = React.useRef(null);
+  const clear = () => { setOn([]); setQ(''); setTimeout(() => { const i = tools.current && tools.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const freeIds = GS_GAME_ORDER.filter((k) => GS_GAMES[k].free);
   const wait = useGsPart([q, on.join()]);
   return <>
     <div className="gs-grid2">{GS_PICKS.map(([k, l]) => <DcPick key={k} id={k} label={l} />)}</div>
     <section className="dc-sec">
-      <h2 className="mcp-t-sec">Just added</h2>
-      <div className="gs-feats" role="region" aria-label="Just added" tabIndex={0}>{GS_ADDED.map((k) => <DcRowCard key={k} id={k} />)}</div>
+      <GsCardRow label="Just added" head={<h2 className="mcp-t-sec">Just added</h2>}>{GS_ADDED.map((k) => <DcRowCard key={k} id={k} />)}</GsCardRow>
     </section>
     <section className="dc-sec">
-      <div className="gs-stack-sm"><h2 className="mcp-t-sec">Free to play</h2><p className="gs-muted">{GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}</p></div>
-      <div className="gs-feats" role="region" aria-label="Free to play" tabIndex={0}>{freeIds.map((k) => <DcRowCard key={k} id={k} />)}</div>
+      <GsCardRow label="Free to play" head={<div className="gs-stack-sm"><h2 className="mcp-t-sec">Free to play</h2><p className="gs-muted">{GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}</p></div>}>{freeIds.map((k) => <DcRowCard key={k} id={k} />)}</GsCardRow>
     </section>
     <DcPassBand />
     <section className="dc-sec">
       <div className="gs-sec-head"><h2 className="mcp-t-sec">All games</h2>{on.length || q.trim() ? <DS.TextLink onClick={clear}>Clear</DS.TextLink> : null}</div>
-      <div className="dc-tools">
+      <div className="dc-tools" ref={tools}>
         <DS.SearchField label="Search" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="dc-chips" role="group" aria-label="Show only">
           {[...GS_KINDS.map((c) => [c, gsKind(c)]), ...GS_RHYTHMS, ['free', 'Free']].map(([v, l]) => <button key={v} type="button" aria-pressed={on.includes(v)} onClick={() => flip(v)}>{l}</button>)}
@@ -127,7 +127,7 @@ const GsDiscover = () => {
 // ---- Library: every game, with where this player stands in it. [sort rank, line]. Seed only. ----
 const GS_LIB_ME = {
   lapsed: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'],
-    casebook: [5, 'Last played 13 September'], delve: [6, 'Last played 14 September'], hunter: [7, 'Last played 17 September'] },
+    casebook: [5, 'Last played 13 September'], delve: [6, 'Last played 14 September'], hunter: [7, 'Only with the Pass'] },
   pass: { word: [1, 'Played today'], groups: [2, 'Played today'], mystery: [3, 'Played today'], escape: [4, 'Played this week'], casebook: [5, 'Played this week'],
     delve: [6, 'Played this week'], hunter: [7, 'Last played 5 October'] },
   free: { word: [1, 'Played today'], groups: [null, 'Not played today'], mystery: [null, 'Not played today'], escape: [null, 'Not played this week'],
@@ -143,6 +143,8 @@ const GsLibrary = () => {
   const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
   React.useEffect(() => { setCat(gs.route.kind || 'all'); setRhy(gs.route.rhythm || 'all'); }, [gs.route]);
   const wait = useGsPart([q, cat, rhy, sort]);
+  const lay = React.useRef(null);
+  const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const rank = (k) => { const r = gsLibMe(gs.view, k, gsLapsed(gs), !lbWeekDone(gs))[0]; return r == null ? 99 : r; };
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
   const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
@@ -150,13 +152,13 @@ const GsLibrary = () => {
   return (
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Library</h1>
-      <div className="lb-alllay">
-        <aside className="lb-tools">
+      <div className="lb-alllay" ref={lay}>
+        <window.LbTools>
           <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
-          <LbChoice label="Kind" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
+          <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
           <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
           <LbChoice label="Order" value={sort} opts={[['last', 'Last played'], ['az', 'A to Z']]} onPick={setSort} />
-        </aside>
+        </window.LbTools>
         <div className="lb-box">
           {wait ? <GsPart label="Loading games" /> : ids.length ? (
             <ul className="lb-list">{ids.map((k) => { const g = GS_GAMES[k]; return (
@@ -168,7 +170,7 @@ const GsLibrary = () => {
                 </button>
               </li>
             ); })}</ul>
-          ) : <div className="dc-empty"><p>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={() => { setQ(''); setCat('all'); setRhy('all'); }}>Show every game</DS.TextLink></div>}
+          ) : <div className="dc-empty"><p>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>}
         </div>
       </div>
     </main>

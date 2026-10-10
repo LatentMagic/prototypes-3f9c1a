@@ -144,11 +144,47 @@ const GsChangePassword = () => {
   );
 };
 
+// A copy of the player's data (MCPG-011 BF-01): Confirm it's you, then a machine-readable file. Account details alone if they have never played.
+const GsDataCopy = () => {
+  const gs = useGs();
+  const [ask, setAsk] = React.useState(false); const [ready, setReady] = React.useState(false);
+  const provider = gs.provider === 'email' ? null : gs.provider;
+  const file = () => {
+    const plays = window.phVisible ? phVisible(gs) : [];
+    const out = { account: { username: gs.user.username, email: gs.user.email, signIn: gs.provider } };
+    if (plays.length) {
+      out.sessions = plays.map((p) => ({ game: GS_GAMES[p.gid].name, edition: p.edTitle, played: p.at.toISOString(), result: p.status.label, replay: !!p.again }));
+      out.streaks = 'one per game that has one';
+      out.achievements = 'earned in the games played';
+    }
+    return JSON.stringify(out, null, 2);
+  };
+  const download = () => {
+    try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([file()], { type: 'application/json' })); a.download = 'my-data.json'; a.click(); } catch (e) {}
+  };
+  return (
+    <DS.Card style={GS_ACCT_CARD}>
+      <h2 className="mcp-t-card">Your data</h2>
+      <p>Get a file with your account details, sessions, results, streaks and achievements.</p>
+      <div className="gs-card-acts">
+        {ready && <GsDone>Your copy is ready.</GsDone>}
+        {ready ? <DS.Button variant="secondary" onClick={download}>Download file</DS.Button> : <DS.Button variant="secondary" onClick={() => setAsk(true)}>Get a copy</DS.Button>}
+      </div>
+      <GsIdentity open={ask} provider={provider} onCancel={() => setAsk(false)} onOk={() => { setAsk(false); setReady(true); }} />
+    </DS.Card>
+  );
+};
+
 const GsDeleteAccount = () => {
   const gs = useGs();
   const [step, setStep] = React.useState(gs.route.stage === 'delete' ? 'alert' : gs.route.stage === 'delete-code' ? 'identity' : null); // alert | identity
   const provider = gs.provider === 'email' ? null : gs.provider;
   const holds = GS_SUB_HOLDS.includes(gs.sub.status);
+  // What happens to the Pass, by kind (MCPG-009 AF-01 to AF-04). A free account has no Pass line.
+  const st = gs.sub.status;
+  const passLine = !holds ? null : st === 'free' ? 'Your Pass is cancelled and you’re never charged.'
+    : st === 'failed' ? 'Your Pass ends straight away.'
+    : 'Your Pass is cancelled. No more payments are taken, and nothing is refunded.';
   return (
     <DS.Card style={GS_ACCT_CARD}>
       <h2 className="mcp-t-card">Delete account</h2>
@@ -156,7 +192,8 @@ const GsDeleteAccount = () => {
       <div className="gs-card-acts"><DS.Button variant="secondary" className="gs-btn-danger-outline" onClick={() => setStep('alert')}>Delete your account</DS.Button></div>
       <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture="window" label="Delete your account?">
         <GsPopTitle>Delete your account?</GsPopTitle>
-        <p>It can’t be undone.{holds ? ' Deleting also cancels your Pass.' : ''}</p>
+        <p>This deletes your username, email, results, History, streaks and achievements. It can’t be undone.</p>
+        {passLine && <p>{passLine}</p>}
         <GsActs>
           <DS.Button variant="secondary" onClick={() => setStep(null)}>Cancel</DS.Button>
           <DS.Button variant="danger" onClick={() => setStep('identity')}>Delete account</DS.Button>
@@ -186,6 +223,7 @@ const GsAccount = () => {
               <p>Your email and password are managed by your sign-in provider and can be changed there.</p>
             </DS.Card>
           ) : <><GsChangeEmail /><GsChangePassword /></>}
+          <GsDataCopy />
           <GsDeleteAccount />
         </div>
         <p><a className="gs-support" href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a></p>

@@ -107,7 +107,7 @@ const GsLoadFailed = ({ full, onRetry }) => {
     <div className={full ? 'gs-full' : 'gs-inplace'}>
       <div className="gs-failed">
         <p className="gs-strong">This didn’t load.</p>
-        {!full && <p className="gs-muted">Something went wrong fetching your games.</p>}
+        {!full && <p className="gs-muted">Something went wrong fetching the games.</p>}
         <DS.Button variant="secondary" loading={busy} onClick={() => run(onRetry)}>Try again</DS.Button>
       </div>
     </div>
@@ -180,6 +180,74 @@ const GsLegal = () => {
   );
 };
 
+// ---- Announcements: a success that changes the page in place is read out (the live region sits in main.jsx's root).
+const gsAnnounce = (msg) => {
+  const el = document.getElementById('gs-announce'); if (!el) return;
+  el.textContent = ''; setTimeout(() => { el.textContent = msg; }, 60);
+};
+
+// ---- Focus held inside the open dialog or pop-up (MCPG-A11Y-001). The system's Popup marks itself modal;
+// this keeps Tab and Shift+Tab inside the topmost open one. The prototype's own aids (kit-*) are left alone.
+(() => {
+  if (window.__gsTrap) return; window.__gsTrap = true;
+  const SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  const top = () => { const l = document.querySelectorAll('.mcp-layer.is-open > .mcp-pop'); return l.length ? l[l.length - 1] : null; };
+  const items = (p) => Array.from(p.querySelectorAll(SEL)).filter((el) => el.getClientRects().length > 0);
+  const aid = (el) => !!(el && el.closest && el.closest('[class^="kit-"],[class*=" kit-"]'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const p = top(); if (!p || aid(document.activeElement)) return;
+    const l = items(p); if (!l.length) { e.preventDefault(); return; }
+    const i = l.indexOf(document.activeElement);
+    if (i === -1) { e.preventDefault(); (e.shiftKey ? l[l.length - 1] : l[0]).focus(); }
+    else if (e.shiftKey && i === 0) { e.preventDefault(); l[l.length - 1].focus(); }
+    else if (!e.shiftKey && i === l.length - 1) { e.preventDefault(); l[0].focus(); }
+  }, true);
+  document.addEventListener('focusin', (e) => {
+    const p = top(); if (!p || p.contains(e.target) || aid(e.target)) return;
+    const l = items(p); if (l.length) l[0].focus({ preventScroll: true });
+  });
+})();
+
+// ---- A row of cards that scrolls sideways when they don't fit, with Previous and Next beside its heading
+// whenever it overflows, so every card is reachable without a sideways wheel. Cards share the width when they fit (CSS --n).
+const GsCardRow = ({ label, head, children }) => {
+  const ref = React.useRef(null); const prev = React.useRef(null); const next = React.useRef(null); const pressed = React.useRef(null);
+  const [at, setAt] = React.useState({ over: false, start: true, end: true });
+  React.useLayoutEffect(() => {
+    const el = ref.current; if (!el) return undefined;
+    const read = () => {
+      const over = el.scrollWidth > el.clientWidth + 1; const start = el.scrollLeft <= 1; const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+      setAt((a) => (a.over === over && a.start === start && a.end === end ? a : { over, start, end }));
+    };
+    read(); el.addEventListener('scroll', read, { passive: true });
+    const ro = window.ResizeObserver ? new ResizeObserver(read) : null; if (ro) ro.observe(el);
+    return () => { el.removeEventListener('scroll', read); if (ro) ro.disconnect(); };
+  }, []);
+  // A button that reaches the end hides; focus moves to the other one, never to the page root.
+  React.useEffect(() => {
+    if (pressed.current === 'next' && at.end && prev.current) { prev.current.focus({ preventScroll: true }); pressed.current = 'prev'; }
+    else if (pressed.current === 'prev' && at.start && next.current) { next.current.focus({ preventScroll: true }); pressed.current = 'next'; }
+  }, [at.start, at.end]);
+  const move = (dir) => {
+    const el = ref.current; if (!el) return; pressed.current = dir > 0 ? 'next' : 'prev';
+    const card = el.firstElementChild; const step = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollBy({ left: dir * step, behavior: still ? 'auto' : 'smooth' });
+  };
+  const n = React.Children.count(children);
+  return <>
+    <div className="gs-rowhead">
+      {head}
+      {at.over && <div className="gs-rownav">
+        <button ref={prev} type="button" className="gs-iconbtn gs-rownav-btn" aria-label={'Previous, ' + label} style={at.start ? { visibility: 'hidden' } : null} onClick={() => move(-1)}><DS.Icon name="back" /></button>
+        <button ref={next} type="button" className="gs-iconbtn gs-rownav-btn" aria-label={'Next, ' + label} style={at.end ? { visibility: 'hidden' } : null} onClick={() => move(1)}><DS.Icon name="back" style={{ transform: 'rotate(180deg)' }} /></button>
+      </div>}
+    </div>
+    <div ref={ref} className="gs-feats" role="region" aria-label={label} tabIndex={0} style={{ '--n': n }}>{children}</div>
+  </>;
+};
+
 // ---- Not found: never says which case it is.
 const GsNotFound = () => {
   const gs = useGs();
@@ -197,5 +265,5 @@ const GsNotFound = () => {
 
 Object.assign(window, {
   GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, GS_LOAD_MS, useGsPart, GsPart, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
-  GS_SUPPORT, GsFooter, GsLegal, GsNotFound,
+  GS_SUPPORT, GsFooter, GsLegal, GsNotFound, gsAnnounce, GsCardRow,
 });

@@ -25,7 +25,7 @@ const GsConfigExtra = () => {
       {row('Signed in with', api.provider || 'email', (v) => set(() => api.setProvider(v)), o([['email', 'Email'], ['google', 'Google'], ['apple', 'Apple']]))}
       {row('Provider sheet', r.sheet || 'completes', (v) => set(() => api.setReview({ sheet: v })), o([['completes', 'Completes'], ['cancelled', 'Cancelled']]))}
       {row('Google and Apple sign-in', r.providerFail ? 'fail' : 'ok', (v) => set(() => api.setReview({ providerFail: v === 'fail' })), o([['ok', 'Works'], ['fail', 'Fails']]))}
-      {row('Device, for Google and Apple sign-in', r.device === 'new' ? 'new' : 'known', (v) => set(() => api.setReview({ device: v })), o([['known', 'Known'], ['new', 'New']]))}
+      {row('Device, for email, Google and Apple sign-in', r.device === 'new' ? 'new' : 'known', (v) => set(() => api.setReview({ device: v })), o([['known', 'Known'], ['new', 'New']]))}
       <div className="kit-config-group-title">Username</div>
       {row('Username', (api.user && api.user.locked) ? 'recent' : 'free', (v) => set(() => api.setUser({ locked: v === 'recent' })), o([['free', 'Free to change'], ['recent', 'Changed recently']]))}
       <div className="kit-config-group-title">Library</div>

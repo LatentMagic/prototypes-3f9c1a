@@ -43,12 +43,24 @@ const edList = (gs, gid) => {
 // Whether an edition can be played at all (GS_EARLIER_CLOSED), and whether this player needs the Pass for it. Shown on the session page only.
 const edClosed = (e) => !e.now && GS_EARLIER_CLOSED.includes(e.gid);
 const edNeedsPass = (gs, e) => gs.view !== 'pass' && !edClosed(e) && (GS_GAMES[e.gid].free ? !e.now : !e.free);
-// Search, as the Editions page had it: number, name, date, month; a leading # is ignored.
+// Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Casebook #45"), its title, and its date.
+// Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
+// A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
 const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
+const phWords = (s) => s.toLowerCase().replace(/[’'‘]/g, '').split(/[^a-z0-9]+/).filter(Boolean);
+const phIsDate = (s) => phWords(s).some((w) => w.length >= 3 && PH_MON.some((m) => m.toLowerCase().startsWith(w)));
+const phMatch = (hay, s) => {
+  if (!s) return true;
+  hay = hay.toLowerCase();
+  if (phIsDate(s)) return new RegExp('(^|[^0-9a-z])' + s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(hay);
+  const hw = phWords(hay);
+  return phWords(s).every((w) => (/^\d+$/.test(w) ? hw.includes(w) : hw.some((h) => h.startsWith(w))));
+};
 let PH_META = null;
 const phMeta = () => { if (!PH_META) { PH_META = {}; ED_GAMES.forEach((k) => edList({ view: 'out', sub: {} }, k).forEach((e) => { PH_META[e.key] = e; })); } return PH_META; };
+// A date finds the plays under that date's heading: on Played, the day it was played; on Every edition, the day the edition came out (d).
 const phHay = (gid, ed, title, d) => { const m = phMeta()[ed];
-  return [GS_GAMES[gid].name, title || '', m ? m.n + ' ' + (m.title || '') + ' ' + m.date + ' ' + m.month : '', d ? lbDate(d) + ' ' + PH_MON[d.getMonth()] : ''].join(' ').toLowerCase(); };
+  return [GS_GAMES[gid].name, title || '', m ? m.n + ' ' + (m.title || '') : '', d ? lbDate(d) + ' ' + PH_MON[d.getMonth()] : ''].join(' ').toLowerCase(); };
 
 // ---- The play log. An edition holds its plays, first (the one that counts) first. ----
 // A play: { at, status, open(gs), again, cur (this edition), now? (the in-progress form of this edition's first play) }
@@ -64,11 +76,11 @@ const PH_LIVE = { kind: 'live', label: 'In progress' };
 const PH_HAND = {
   word0: [[0, 12, 40, 'Solved in 1 of 6', 'ok', { lines: [['Guess 1', 'TORCH', 'Solved']] }], [0, 21, 15, 'Solved in 2 of 6', 'ok', { lines: [['Guess 1', 'SLATE', 'T is in the word'], ['Guess 2', 'TORCH', 'Solved']] }]],
   escape0: [[0, 19, 30, 'Escaped in 5 moves']], escape2: [[2, 20, 0, 'Escaped in 6 moves']],
-  groups1: [[1, 7, 50, 'All 4 groups, no mistakes']], mystery2: [[0, 22, 5, 'Case closed']],
+ 
   c0928: [[5, 21, 0, 'Solved', 'ok', 'FQBNFBQFB'], [7, 9, 30, 'Unsolved', 'bad', 'QFNQBFHQNFQBNQ']],
   dv1: [[2, 19, 45, 'Hero fell', 'bad', { figures: ['Threat 4/6', '7 rolls', 'HP 0/12'], tracks: { progress: 2, threat: 4 }, reached: 'Caught', lines: GS_ROLLS.slice(0, 7), share: 'Hero fell · threat 4/6 · 7 rolls' }]],
 };
-const PH_REPLAY = { word: (k) => 'Solved in ' + (2 + (k % 2)) + ' of 6', groups: () => 'All 4 groups, no mistakes', mystery: () => 'Case closed', escape: (k) => 'Escaped in ' + (5 + (k % 2)) + ' moves' };
+const PH_REPLAY = { word: (k) => 'Solved in ' + (2 + (k % 2)) + ' of 6', groups: () => 'All 4 groups, no mistakes', mystery: () => 'Solved', escape: (k) => 'Escaped in ' + (5 + (k % 2)) + ' moves' };
 const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live' };
 Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (!x.played) return;
@@ -77,7 +89,7 @@ Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
   else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
   first.open = phSess(sid);
-  const reps = PH_HAND[x.id] || (x.i > 0 && (x.i * 7 + c.salt * 3) % 11 === 0 ? [[x.i % 2, 21, 10]] : []);
+  const reps = PH_HAND[x.id] || (x.i > 0 && !GS_EARLIER_CLOSED.includes(id) && (x.i * 7 + c.salt * 3) % 11 === 0 ? [[x.i % 2, 21, 10]] : []);
   const plays = [first].concat(reps.map(([plus, h, m, label, kind, extra], k) => {
     const at = phAt(first.at, h, m, plus); const lab = label || PH_REPLAY[id](x.i + k);
     return { at, status: { kind: kind || 'ok', label: lab }, open: phSess(phClone(sid, k, at, lab, kind, extra)) };
@@ -148,17 +160,17 @@ const PhEmpty = () => {
   const gs = useGs();
   return <div className="gs-stack-md" style={{ justifyItems: 'start' }}><p>You haven’t played anything yet. Pick one and see what it does when you talk back.</p><DS.Button onClick={() => gs.go('games')}>Choose a game</DS.Button></div>;
 };
-const usePhList = (initial) => {
-  const gs = useGs(); const all = phVisible(gs);
-  const [g, setG0] = React.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : 'all'); const [pg, setPg] = React.useState(0);
+const usePhList = (initial, k0) => {
+  const gs = useGs(); const all = phVisible(gs); k0 = k0 || {};
+  const [g, setG0] = React.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : 'all'); const [pg, setPg] = React.useState(k0.pg || 0);
   const games = GS_GAME_ORDER.filter((k) => all.some((p) => p.gid === k));
   const setG = (v) => { setG0(v); setPg(0); };
   const go = (x) => { setPg(x); gsScrollTop(); };
-  const [sort, setSort0] = React.useState('new'); const setSort = (v) => { setSort0(v); setPg(0); };
+  const [sort, setSort0] = React.useState(k0.sort || 'new'); const setSort = (v) => { setSort0(v); setPg(0); };
   const shown = g === 'all' ? all : all.filter((p) => p.gid === g);
   return { all, g, setG, pg, go, games, sort, setSort, list: sort === 'old' ? [...shown].reverse() : shown };
 };
-const PhShow = ({ f, games }) => <LbChoice label="Show" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />;
+const PhShow = ({ f, games }) => <LbChoice label="Game" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />;
 
 // ---- Every edition: each once, played or missed, with its plays (first play first) ----
 // A game with no editions (36,000 Summers Ago) adds its days as they were played: for it, every edition is what you played.
@@ -174,12 +186,14 @@ const PhSt = ({ s }) => <span className={'lb-st is-' + s.kind}>{s.kind === 'ok' 
 // ---- One play: edition (wraps), result, date or time, R for a replay ----
 // v: { key, title, when, status, chip: 'again'|null, onOpen, gid? }. Columns come from the list (.rp-cols), so they line up row to row.
 const RpSt = ({ s }) => <span className={'rp-st is-' + s.kind}><span className="rp-ico">{s.kind === 'ok' ? <DS.Icon name="check" size={14} /> : s.kind === 'bad' ? <DS.Icon name="error" size={14} /> : null}</span><span className="rp-sl">{s.short || s.label}</span></span>;
+// An edition number leads its game's name: "#212 Daily Word", the number at text weight.
+const rpNum = (t) => { if (typeof t !== 'string') return t; const m = t.match(/^(.*?)\s(#\d+)$/); return m ? <><span className="rp-n">{m[2]}</span> {m[1]}</> : t; };
 const RpRow = ({ v }) => {
   const on = !!v.onOpen; const T = on ? 'button' : 'div';
   return (
     <T className={'rp rp-one' + (on ? '' : ' is-off')} {...(on ? { type: 'button', onClick: v.onOpen } : {})}>
       {v.gid && <PhCov gid={v.gid} />}
-      <span className="rp-a"><span className="rp-t">{v.title}</span></span>
+      <span className="rp-a"><span className="rp-t">{rpNum(v.title)}</span></span>
       <span className="rp-c"><RpSt s={v.status} /></span>
       <span className="rp-d">{v.when}</span>
       <span className="rp-m">{v.chip === 'again' && <span className="rp-r" title="Replay" role="img" aria-label="Replay">R</span>}</span>
@@ -249,26 +263,28 @@ const RpPages = ({ pg, pages, go }) => (pages > 1 ? (
 // played or missed, its replays beneath it. Filtered to a game when "All…" opens it. Every row opens a session page:
 // a play its record, a missed edition the session page's empty state (route session { gid, ed }). No Pass mark on any row or filter.
 const GsHistory = () => {
-  const gs = useGs(); const r = gs.route; const f = usePhList(r.game);
-  const [rep, setRep] = React.useState('all'); const [rhy, setRhy] = React.useState(r.rhythm || 'all');
-  const [mode, setMode] = React.useState(r.show === 'all' ? 'all' : 'played'); const [q, setQ] = React.useState(r.q || '');
-  const wait = useGsPart([f.sort, rep, rhy, f.g, f.pg, mode, q]);
+  // r.keep: the list as the player left it, written into this history entry so browser Back returns it.
+  const gs = useGs(); const r = gs.route; const k0 = r.keep || {}; const f = usePhList(k0.g || r.game, k0);
+  const [rep, setRep] = React.useState(k0.rep || 'all'); const [rhy, setRhy] = React.useState(k0.rhy || r.rhythm || 'all'); const [cat, setCat] = React.useState(k0.cat || r.kind || 'all');
+  const [mode, setMode] = React.useState(k0.mode || (r.show === 'all' ? 'all' : 'played')); const [q, setQ] = React.useState(k0.q != null ? k0.q : r.q || '');
+  React.useEffect(() => { gs.keep({ keep: { g: f.g, pg: f.pg, sort: f.sort, rep, rhy, cat, mode, q } }); }, [f.g, f.pg, f.sort, rep, rhy, cat, mode, q]);
+  const wait = useGsPart([f.sort, rep, rhy, cat, f.g, f.pg, mode, q]);
   const one = f.g !== 'all';
   // The switch shows only where it changes something: a game with no editions lists what you played either way.
   const hasEds = !one || ED_GAMES.includes(f.g); const every = hasEds && mode === 'all';
-  const s = phNorm(q); const okRhy = (gid) => rhy === 'all' || gsRhythm(gid) === rhy;
+  const s = phNorm(q); const okRhy = (gid) => (rhy === 'all' || gsRhythm(gid) === rhy) && (cat === 'all' || GS_GAMES[gid].category === cat);
+  const name = (p) => (p.edTitle.includes(GS_GAMES[p.gid].name) || one ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle);
+  const edTitle = (e) => (!ED_GAMES.includes(e.gid) ? (one ? e.title : GS_GAMES[e.gid].name + ' · ' + e.title) : one ? edName(e) : GS_GAMES[e.gid].name + ' ' + edName(e));
   let items;
   if (every) {
-    items = phEds(gs, f.g, f.all).filter((e) => okRhy(e.gid) && (rep !== 'again' || e.plays.some((p) => p.again)) && (!s || phHay(e.gid, e.key, e.title, e.at).includes(s)));
+    items = phEds(gs, f.g, f.all).filter((e) => okRhy(e.gid) && (rep !== 'again' || e.plays.some((p) => p.again)) && (!s || phMatch(phHay(e.gid, e.key, e.title, e.at) + ' ' + edTitle(e), s)));
     items.sort((a, b) => b.at - a.at || GS_GAME_ORDER.indexOf(a.gid) - GS_GAME_ORDER.indexOf(b.gid));
     if (f.sort === 'old') items.reverse();
-  } else items = f.list.filter((x) => (rep === 'all' || (rep === 'again') === x.again) && okRhy(x.gid) && (!s || phHay(x.gid, x.ed, x.edTitle, x.edDate).includes(s)));
+  } else items = f.list.filter((x) => (rep === 'all' || (rep === 'again') === x.again) && okRhy(x.gid) && (!s || phMatch(phHay(x.gid, x.ed, x.edTitle, x.at) + ' ' + name(x), s)));
   const size = 24; const pages = Math.max(1, Math.ceil(items.length / size)); const pg = Math.min(f.pg, pages - 1);
   const groups = [];
   items.slice(pg * size, pg * size + size).forEach((p) => { const k = phDayKey(p.at); const last = groups[groups.length - 1]; if (last && last[0] === k) last[2].push(p); else groups.push([k, phDayLabel(p.at), [p]]); });
-  const name = (p) => (p.edTitle.includes(GS_GAMES[p.gid].name) || one ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle);
   const view = (p) => ({ key: p.pid, gid: p.gid, title: name(p), when: phTime(p.at), status: rpSh(p.gid, p.status), chip: p.again ? 'again' : null, onOpen: () => p.open(gs) });
-  const edTitle = (e) => (!ED_GAMES.includes(e.gid) ? (one ? e.title : GS_GAMES[e.gid].name + ' · ' + e.title) : one ? edName(e) : GS_GAMES[e.gid].name + ' ' + edName(e));
   const openEd = (e) => (e.plays.length ? e.plays[0].open(gs) : gs.go('session', { gid: e.gid, ed: e.key }));
   const repView = (e, p) => ({ key: p.pid, title: pzLong(p.at), when: phTime(p.at), status: rpSh(e.gid, p.status), chip: 'again', onOpen: () => p.open(gs) });
   const games = every ? GS_GAME_ORDER.filter((k) => ED_GAMES.includes(k) || f.all.some((p) => p.gid === k)) : GS_GAME_ORDER.filter((k) => k === f.g || f.games.includes(k));
@@ -276,19 +292,20 @@ const GsHistory = () => {
   return (
     <main className="gs-wrap gs-main">
       {r.from && <LbBack label={GS_GAMES[r.from].name} onClick={() => phLib(gs, r.from)} />}
-      <PhHead title={every && one ? GS_GAMES[f.g].name + ' editions' : null} />
+      <PhHead title={every && one ? 'All ' + GS_GAMES[f.g].ed[1] : null} />
       {!f.all.length ? <PhEmpty /> : (
         <div className="lb-alllay">
-          <aside className="lb-tools">
+          <window.LbTools>
             <DS.SearchField label="Search" placeholder="A number, name or date" value={q} onChange={(e) => reset(setQ)(e.target.value)} />
-            {hasEds && <LbChoice label="List" value={mode} opts={[['played', 'Played'], ['all', 'Every edition']]} onPick={reset(setMode)} />}
-            <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={f.setSort} />
-            <LbChoice label="Plays" value={rep} opts={[['all', 'All plays'], ['first', 'First plays'], ['again', 'Replays']]} onPick={reset(setRep)} />
+            {hasEds && <LbChoice label="List" value={mode} opts={[['played', 'Played'], ['all', one ? 'All ' + GS_GAMES[f.g].ed[1] : 'All']]} onPick={reset(setMode)} />}
+            <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={reset(setCat)} />
             <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={reset(setRhy)} />
-            <PhShow f={f} games={games} />
-          </aside>
+            <LbChoice label="Game" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />
+            <LbChoice label="Plays" value={rep} opts={[['all', 'All plays'], ['first', 'First plays'], ['again', 'Replays']]} onPick={reset(setRep)} />
+            <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={f.setSort} />
+          </window.LbTools>
           <div className="lb-box lb-results">
-            {wait ? <GsPart label={every ? 'Loading editions' : 'Loading plays'} /> : <>{groups.length ? groups.map(([k, label, ps]) => (
+            {wait ? <GsPart label={every ? 'Loading' : 'Loading plays'} /> : <>{groups.length ? groups.map(([k, label, ps]) => (
               <React.Fragment key={k + pg}>
                 <h2 className="ph-day">{label}</h2>
                 {every ? <ul className={'lb-list ph-eds' + (one ? ' is-one' : '')}>{ps.map((e) => {
@@ -297,7 +314,7 @@ const GsHistory = () => {
                     <React.Fragment key={e.gid + e.key}>
                       <li><button type="button" className={'ed-row' + (one ? '' : ' ph-edcov')} onClick={() => openEd(e)}>
                         {!one && <PhCov gid={e.gid} />}
-                        <span className="ed-t">{edTitle(e)}</span>
+                        <span className="ed-t">{rpNum(edTitle(e))}</span>
                         <span className="ed-slots is-one"><span className="ed-slot">{e.now && <DS.Tag kind="daily">Latest</DS.Tag>}</span></span>
                         <span className="ed-r"><PhSt s={e.status} /></span>
                         <LbChev />
@@ -308,7 +325,7 @@ const GsHistory = () => {
                 })}</ul>
                   : <ul className="ph-list rp-cols is-cov">{ps.map((p) => <li key={p.pid}><RpRow v={view(p)} /></li>)}</ul>}
               </React.Fragment>
-            )) : <p className="lb-empty gs-muted">{s ? 'Nothing matches that. Try a number or a date.' : every ? 'No editions match that.' : 'No plays match that.'}</p>}
+            )) : <p className="lb-empty gs-muted">{s ? 'Nothing matches that. Try a name, a number or a date.' : every ? 'Nothing matches that.' : 'No plays match that.'}</p>}
             <RpPages pg={pg} pages={pages} go={f.go} /></>}
           </div>
         </div>

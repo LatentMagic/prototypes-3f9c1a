@@ -73,7 +73,7 @@ const GsWhoCols = ({ ai, server }) => (
 // The Pass page's comparison, back (free-and-pass, 2026-10-09). One row per thing; a tick in each column that has it. Rows agree with the free and Pass rules.
 const GS_COMPARE = [
   { name: 'Free games', free: true },
-  { name: 'The first edition of select games', free: true },
+  { name: 'The start of select games', free: true },
   { name: 'Streaks and achievements in every game you can play', free: true },
   { name: 'Your results and history', free: true },
   { name: 'Sharing a result', free: true },
@@ -194,11 +194,11 @@ const GsShot = ({ id, crop, caption, className, zoom }) => {
 };
 
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
-// Manage account, Your AI, divider, Sign out. On a phone the Menu button opens the
-// same items at the button, with Games and History above.
-const GsAvatar = ({ big }) => {
+// Manage account, Your AI, divider, Sign out. On a phone the trigger is the avatar alone,
+// beside the Menu button, which holds only the pages.
+const GsAvatar = ({ big, btn }) => {
   const gs = useGs();
-  return <span className={'gs-avatar' + (big ? ' is-big' : '')} aria-hidden="true">{gsName(gs.user)[0].toUpperCase()}</span>;
+  return <span className={'gs-avatar' + (big ? ' is-big' : '') + (btn ? ' is-btn' : '')} aria-hidden="true">{gsName(gs.user)[0].toUpperCase()}</span>;
 };
 const gsName = (u) => u.username || u.email || '?';
 const GsIdentityHead = () => {
@@ -239,18 +239,24 @@ const gsUseMenuDismiss = (open, setOpen, wrap) => React.useEffect(() => {
   document.addEventListener('pointerdown', onDoc); document.addEventListener('keydown', onKey);
   return () => { document.removeEventListener('pointerdown', onDoc); document.removeEventListener('keydown', onKey); };
 }, [open]);
-const GsUserMenu = () => {
+const GsUserMenu = ({ compact }) => {
   const gs = useGs();
   const [open, setOpen] = React.useState(false);
   const wrap = React.useRef(null);
   gsUseMenuDismiss(open, setOpen, wrap);
   return (
     <div className="gs-acct" ref={wrap}>
-      <button type="button" className="gs-acct-btn" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
-        <GsAvatar />
-        <span className="gs-acct-who"><span className="gs-strong">{gsName(gs.user)}</span><span className="gs-small">{gs.user.email}</span></span>
-        <DS.Icon name="down" />
-      </button>
+      {compact ? (
+        <button type="button" className="gs-acct-btn" aria-label={'Your account, ' + gsName(gs.user)} aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
+          <GsAvatar btn />
+        </button>
+      ) : (
+        <button type="button" className="gs-acct-btn" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
+          <GsAvatar />
+          <span className="gs-acct-who"><span className="gs-strong">{gsName(gs.user)}</span><span className="gs-small">{gs.user.email}</span></span>
+          <DS.Icon name="down" />
+        </button>
+      )}
       {open && (
         <div className="gs-pop" role="menu" aria-label="Your account">
           <GsIdentityHead />
@@ -293,14 +299,14 @@ const GsTopBar = () => {
           <div className="gs-narrow-only gs-menu-anchor" ref={mwrap}>
             <DS.Button variant="secondary" aria-expanded={menu} aria-haspopup="menu" onClick={() => setMenu((m) => !m)}>Menu</DS.Button>
             {menu && (
-              <div className="gs-pop" role="menu" aria-label="Menu">
+              <div className="gs-pop" role="menu" aria-label="Menu" style={out ? undefined : { minWidth: 200 }}>
                 {links.map(([id, l, fn]) => <button key={id} type="button" role="menuitem" className="gs-menu-item" aria-current={cur === id ? 'page' : undefined} onClick={() => pick(fn)}>{l}</button>)}
                 {out && <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(() => gs.go('signin'))}>Sign in</button>}
-                {out ? <div className="gs-pop-cta"><DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button></div>
-                  : <><div className="gs-menu-div" role="separator" /><GsIdentityHead /><GsUserItems role="menuitem" pick={pick} /></>}
+                {out && <div className="gs-pop-cta"><DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button></div>}
               </div>
             )}
           </div>
+          {!out && <div className="gs-narrow-only"><GsUserMenu compact /></div>}
         </div>
       </div>
     </header>

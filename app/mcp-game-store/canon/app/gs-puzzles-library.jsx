@@ -33,7 +33,7 @@ const PZ = {
   },
   mystery: {
     no: (i) => 'Daily Mystery #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
-    ok: () => 'Case closed', bad: 'Missed', short: 'Closed', okF: 'Closed', badF: 'Missed',
+    ok: () => 'Solved', bad: 'Missed', short: 'Solved', okF: 'Solved', badF: 'Missed',
     title: 'Today’s case', next: 'Next case: tomorrow', links: ['See every question', 'See your questions so far'],
     live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
     done: { st: { kind: 'bad', label: 'Missed' }, line: 'You accused after three questions, and it was the wrong suspect.' },
@@ -95,6 +95,7 @@ const pzSession = (id, c, x) => {
 };
 // Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
 Object.entries(PZ).forEach(([id, c]) => {
+  c.gid = id;
   c.all = Array.from({ length: c.weekly ? 30 : 40 }, (_, i) => {
     const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
     const played = i === 0 || !!c.keep[i] || ((i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6);
@@ -117,7 +118,7 @@ Object.entries(PZ).forEach(([id, c]) => {
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line, short: c.short } : { kind: 'bad', label: x.line, short: c.badF });
 const pzHist = (c) => c.all.slice(1);
-const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : null });
+const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : () => gs.go('session', { gid: c.gid, ed: x.id }) });
 
 const PzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const st = done ? c.done : c.live;
@@ -176,9 +177,9 @@ const pzLibrary = (id) => () => {
         <LbRun n={lbStreak(run)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
         <LbAch items={ach} badges={c.badges} access="all" ended={CB_ENDED} />
         <LbRecent title={recent} allLabel={allLabel} rows={rows.slice(0, 8)}
-          empty={c.weekly ? 'Your rooms appear here once you have played one.' : 'Your days appear here once you have played one.'} />
+          empty={recent + ' appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && <p className="gs-muted">Playing earlier editions comes with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
+      {gs.view !== 'pass' && !GS_EARLIER_CLOSED.includes(id) && <p className="gs-muted">{'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
     </main>
   );
 };

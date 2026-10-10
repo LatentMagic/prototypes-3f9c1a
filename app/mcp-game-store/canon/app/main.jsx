@@ -18,7 +18,8 @@ const GS_USER_DEFAULT = { username: 'MonaLaser', locked: false, email: 'you@exam
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };
 // Screens with their own frame (no shared top bar).
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
-// Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline, not-found).
+// Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
+// Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
 const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout'];
@@ -129,6 +130,9 @@ const KitApp = () => {
     // asView false: a staged state, which sets the view itself in the same tick.
     const r0 = { name, ...(extra || {}) };
     const r = asView === false ? r0 : land(r0, asView || view);
+    // Where the player came from, for back links (LbBackTo). A staged state has no earlier page.
+    const cur = stack.current[idx.current];
+    if (asView !== false && cur) r.prev = { name: cur.name, page: cur.page || null };
     idx.current += 1; backNav.current = false;
     stack.current = stack.current.slice(0, idx.current).concat([r]);
     try { window.history.pushState({ gsIdx: idx.current }, ''); } catch (e) {}
@@ -152,6 +156,9 @@ const KitApp = () => {
   const gs = {
     route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640,
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
+    // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
+    keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
+    back: () => { if (idx.current > 0) window.history.back(); },
     goHow: () => go('connect'),
     howFromPlay: () => { stack.current[idx.current] = { ...stack.current[idx.current], reopen: playing }; go('connect'); },
     startFree: () => (view === 'out' ? go('signup') : go('games')),
@@ -178,7 +185,8 @@ const KitApp = () => {
     },
     afterCheckout: () => go('pass'),
     // Back from checkout's "Cancel and return" keeps the plan chosen on the Pass page (choice is held here).
-    signedIn: (how) => { setSignedIn(true); setProvider(how || 'email'); setConnected(true); go('games', null, 'free'); },
+    // next: where sign-in returns (the Pass page, when sign-in started from the Pass page's sign-up route).
+    signedIn: (how, next) => { setSignedIn(true); setProvider(how || 'email'); setConnected(true); go(next || 'games', null, 'free'); },
     paid: (free) => {
       const months = GS_PLAN[choice].months;
       setSubState({ ...GS_SUB_DEFAULT, status: free ? 'free' : 'active', plan: choice, freeUsed: true,
@@ -223,7 +231,8 @@ const KitApp = () => {
       <div className="gs-root" ref={rootRef}>
         {GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && <GsTopBar />}
         <GsArrival key={idx.current} name={route.name} quick={backNav.current} />
-        {GS_FOOTER.includes(route.name) && <GsFooter />}
+        {(GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && <GsFooter />}
+        <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         <GsPlayPopup />
         <GsDemoBar />
       </div>

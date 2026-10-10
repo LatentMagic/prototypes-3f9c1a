@@ -1,8 +1,23 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-09",
+  "generated": "2026-10-10",
   "tickets": [
+    {
+      "id": "—",
+      "slug": "filters-on-a-phone",
+      "name": "How History and the Library hold their filters",
+      "state": "active",
+      "touched": "2026-10-10",
+      "entries": [
+        {
+          "name": "Filters, options 0 to 3 and 1b",
+          "path": "docs/specs/filters-on-a-phone/playground/index.html",
+          "note": "1b is in the app (Today). Before (0) beside one Filters button and panel (1), a control per filter (2), or filters folded in place (3). 1b is 1 with games picked by name, so the list of games can grow. Go between History and the Library; Config sets the viewport."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": "—",
       "slug": "home-product-hero",
@@ -37,16 +52,17 @@
       "id": "—",
       "slug": "plays-and-editions",
       "name": "What a game has put out, and what you played",
-      "state": "active",
-      "touched": "2026-10-09",
-      "entries": [
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
         {
           "name": "Plays and editions, options 1 to 3",
-          "path": "docs/specs/plays-and-editions/playground/index.html",
-          "note": "A panel for each edition, History holding everything, or a page for every edition; each entry says what the edition was."
+          "path": "docs/archive/plays-and-editions/playground/index.html",
+          "note": "Settled: History is the one list and there is no Editions page (docs/specs/history-only/). Archived 2026-10-10; it no longer loads from here."
         }
       ],
-      "archive": []
+      "base": "docs/archive/"
     },
     {
       "id": "—",
@@ -68,7 +84,7 @@
       "slug": "connect-and-prompts",
       "name": "Connecting, and the prompts a player copies",
       "state": "active",
-      "touched": "2026-10-09",
+      "touched": "2026-10-10",
       "entries": [
         {
           "name": "Connect and prompts, options 1 to 3",
@@ -82,16 +98,17 @@
       "id": "—",
       "slug": "editions",
       "name": "A game's Editions page",
-      "state": "active",
-      "touched": "2026-10-09",
-      "entries": [
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
         {
           "name": "Editions page, options 1 to 3",
-          "path": "docs/specs/editions/playground/index.html",
-          "note": "Ledger, a line on every row, or a calendar with one edition in full; each with its own take on the free first edition."
+          "path": "docs/archive/editions/playground/index.html",
+          "note": "Settled: there is no Editions page; History lists every edition (docs/specs/history-only/). Archived 2026-10-10; it no longer loads from here."
         }
       ],
-      "archive": []
+      "base": "docs/archive/"
     },
     {
       "id": "—",
