@@ -1208,6 +1208,13 @@
   .gs-nt-h { margin: 0; font: 600 16px/1.3 var(--font-text); }
   .gs-nt-master { font-size: 17px; line-height: 1.3; }
   .gs-nt-sub { font-size: 14px; line-height: 1.4; }
+  .gs-nt-go { width: 100%; padding-left: 0; padding-right: 0; padding-bottom: 0; background: none; border-left: 0; border-right: 0; border-bottom: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .gs-nt-go:disabled { cursor: default; opacity: .5; }
+  .gs-nt-count { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .gs-nt-panel { display: grid; gap: 16px; }
+  .mcp-pop-body:has(> .gs-nt-panel) { margin: 0 -12px 0 -4px; padding: 4px 12px 0 4px; }
+  .gs-nt-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .gs-nt-list > li + li { border-top: 1px solid var(--line); }
   .gs-sw-slot { display: inline-flex; align-items: center; gap: 8px; }
   .gs-sw { display: inline-grid; place-items: center; width: 52px; height: 44px; margin: 0 -4px; padding: 0; background: none; border: 0; cursor: pointer; }
   .gs-sw-track { position: relative; width: 44px; height: 24px; border: 1.5px solid var(--control-edge); background: transparent; transition: background-color var(--time-swap) var(--ease), border-color var(--time-swap) var(--ease); }

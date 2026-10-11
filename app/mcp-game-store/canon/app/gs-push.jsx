@@ -25,8 +25,8 @@ const GS_PUSH_HOST = 'platform.example';
 // New games is on, and a game's switch is on from its first play. Delve is off here as the player's own choice.
 const GS_PUSH_DEFAULT = { perm: 'default', channel: 'ok', asked: false, snoozes: 0, snoozeAt: 0, on: false, newGames: true,
   games: { word: true, casebook: true, delve: false }, fail: false, prompt: null, turning: false, failed: false };
-// The games the player has played (mock data). A game never played is absent.
-const GS_PUSH_GAMES = ['word', 'casebook', 'delve'];
+// Every game in the library gets a switch (2026-10-11, owner). A game the player hasn't played is off until they turn it on (placeholder).
+const GS_PUSH_GAMES = GS_GAME_ORDER;
 const gsPushWait = (n) => (n ? GS_PUSH_SNOOZE[Math.min(n, GS_PUSH_SNOOZE.length) - 1] : 0);
 const gsPushLoad = () => { try { const s = JSON.parse(localStorage.getItem(GS_PUSH_KEY) || 'null'); return s || {}; } catch (e) { return {}; } };
 const gsPushSave = (p) => { try { const { prompt, turning, failed, ...keep } = p; localStorage.setItem(GS_PUSH_KEY, JSON.stringify(keep)); } catch (e) {} };
@@ -70,6 +70,8 @@ const GsPushAsk = () => {
 // ---- The card ---------------------------------------------------------------------
 const GsNotifCard = () => {
   const gs = useGs(); const p = gs.push;
+  const [open, setOpen] = React.useState(false);
+  const opener = React.useRef(null);
   if (!p || p.channel === 'unsupported') return null;
   const statement = p.channel === 'ios-tab'
     ? 'To get notifications, add [Platform] to your Home Screen first. Tap Share, then Add to Home Screen.'
@@ -87,7 +89,9 @@ const GsNotifCard = () => {
     if (p.perm === 'default') gsPushRaise(gs, 'card'); else gsPushTurnOn(gs);
   };
   const off = !allOn || p.turning;
+  const nOn = GS_PUSH_GAMES.filter((k) => (p.games || {})[k]).length;
   return (
+    <React.Fragment>
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Notifications</h2>
       <div className="gs-nt">
@@ -100,20 +104,46 @@ const GsNotifCard = () => {
           <span className="gs-stack-xs"><span id="nt-new" className="gs-strong">New games</span><span className="gs-muted gs-nt-sub">When a new game is released.</span></span>
           <GsSwitch on={p.newGames} onChange={(v) => gs.setPush({ newGames: v })} labelledBy="nt-new" disabled={off} />
         </div>
-        <div className="gs-nt-sep gs-nt-group">
-          <div className="gs-stack-xs">
-            <h3 className="gs-nt-h">Games you play</h3>
-            <p className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</p>
-          </div>
-          {GS_PUSH_GAMES.map((k) => (
-            <div key={k} className="gs-nt-row">
-              <span id={'nt-g-' + k}>{GS_GAMES[k].name}</span>
-              <GsSwitch on={!!(p.games || {})[k]} onChange={(v) => gs.setPush({ games: { ...p.games, [k]: v } })} labelledBy={'nt-g-' + k} disabled={off} />
-            </div>
-          ))}
-        </div>
+        <button type="button" className="gs-nt-row gs-nt-sep gs-nt-go" onClick={() => setOpen(true)} disabled={off} ref={opener}>
+          <span className="gs-stack-xs"><span className="gs-strong">Games</span><span className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</span></span>
+          <span className="gs-nt-count">{nOn} on<DS.Icon name="next" size={20} /></span>
+        </button>
       </div>
     </DS.Card>
+    <GsNotifGames open={open} onClose={() => { setOpen(false); setTimeout(() => opener.current && opener.current.focus({ preventScroll: true }), 0); }} />
+    </React.Fragment>
+  );
+};
+
+// ---- The games panel: every game's switch, searchable, so the card stays one row however big the library grows.
+const GsNotifGames = ({ open, onClose }) => {
+  const gs = useGs(); const p = gs.push || {};
+  const [q, setQ] = React.useState('');
+  const list = React.useRef(null);
+  // The DS panel focuses its first field, which lit the search box on open (and raises a phone keyboard); start on the first switch instead.
+  React.useEffect(() => {
+    if (!open) return undefined;
+    setQ('');
+    const t = setTimeout(() => { const b = list.current && list.current.querySelector('[role=switch]'); if (b) b.focus({ preventScroll: true }); }, 60);
+    return () => clearTimeout(t);
+  }, [open]);
+  const t = q.trim().toLowerCase();
+  const ids = GS_PUSH_GAMES.filter((k) => !t || GS_GAMES[k].name.toLowerCase().includes(t));
+  return (
+    <DS.Popup kind="panel" open={open} onClose={onClose} title="Games">
+      <div className="gs-nt-panel">
+        <p className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</p>
+        <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
+        {ids.length ? (
+          <ul className="gs-nt-list" role="list" ref={list}>{ids.map((k) => (
+            <li key={k} className="gs-nt-row">
+              <span id={'nt-g-' + k}>{GS_GAMES[k].name}</span>
+              <GsSwitch on={!!(p.games || {})[k]} onChange={(v) => gs.setPush({ games: { ...p.games, [k]: v } })} labelledBy={'nt-g-' + k} />
+            </li>
+          ))}</ul>
+        ) : <p>No game matches “{q}”.</p>}
+      </div>
+    </DS.Popup>
   );
 };
 
