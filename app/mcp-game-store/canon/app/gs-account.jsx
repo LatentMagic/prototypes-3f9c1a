@@ -1,6 +1,7 @@
 // ============================================================================
-// [Platform] — Account page (circlists-match-1): the Username card, then the Pass card, change
-// email, change password, delete account, and the support line. A provider
+// [Platform] — Account page (circlists-match-1): the Pass card, notifications, then the details you change
+// rarely (Username, change email, change password), your data, delete account, and the support line.
+// Username moved down beside email and password 2026-10-11 (phone-snags-second-pass). A provider
 // account (Google, Apple) gets one card in place of the two change cards.
 // ============================================================================
 
@@ -151,7 +152,7 @@ const GsDataCopy = () => {
   const provider = gs.provider === 'email' ? null : gs.provider;
   const file = () => {
     const plays = window.phVisible ? phVisible(gs) : [];
-    const out = { account: { username: gs.user.username, email: gs.user.email, signIn: gs.provider } };
+    const out = { account: { firstName: gs.user.first, lastName: gs.user.last, username: gs.user.username, email: gs.user.email, signIn: gs.provider } };
     if (plays.length) {
       out.sessions = plays.map((p) => ({ game: GS_GAMES[p.gid].name, edition: p.edTitle, played: p.at.toISOString(), result: p.status.label, replay: !!p.again }));
       out.streaks = 'one per game that has one';
@@ -192,7 +193,7 @@ const GsDeleteAccount = () => {
       <div className="gs-card-acts"><DS.Button variant="secondary" className="gs-btn-danger-outline" onClick={() => setStep('alert')}>Delete your account</DS.Button></div>
       <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture="window" label="Delete your account?">
         <GsPopTitle>Delete your account?</GsPopTitle>
-        <p>This deletes your username, email, results, history, streaks and achievements. It can’t be undone.</p>
+        <p>This deletes your name, username, email, results, history, streaks and achievements. It can’t be undone.</p>
         {passLine && <p>{passLine}</p>}
         <GsActs>
           <DS.Button variant="secondary" onClick={() => setStep(null)}>Cancel</DS.Button>
@@ -215,9 +216,9 @@ const GsAccount = () => {
           <p className="gs-muted">{gs.user.email}</p>
         </div>
         <div className="gs-acct-cards">
-          <GsUsernameCard />
           <GsPassCard />
           {window.GsNotifCard && <window.GsNotifCard />}
+          <GsUsernameCard />
           {providerAcct ? (
             <DS.Card style={GS_ACCT_CARD}>
               <h2 className="mcp-t-card">Change email &amp; password</h2>

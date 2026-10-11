@@ -3,7 +3,7 @@
 // (circlists-match-1, ratified); the look is the store's.
 //   step 1  Google, black Apple, email (no panel, no divider, none primary)
 //   step 2  the email form; adds a browser-history entry so Back = the arrow
-//   sign up (email, username, password) -> verify your email -> connect your AI
+//   sign up (first name, last name, email, username, password) -> verify your email -> connect your AI
 //   sign up (Google / Apple) -> your username -> connect your AI (no code: a new account, 2026-10-11)
 //   (from Get the Pass, checkout takes the place of connect: the username always comes first)
 //   sign in (email, Google or Apple) -> verify this device on a new device only -> games
@@ -114,6 +114,8 @@ const gsProviderTrip = (gs, provider, setFailed, onOk) => {
 // ---- Sign up ------------------------------------------------------------------
 // A function: the username rules live in gs-username.jsx, which loads after this file.
 const gsSignupRules = () => [
+  ['first', (v) => v.trim().length > 0, 'Enter your first name.'],
+  ['last', (v) => v.trim().length > 0, 'Enter your last name.'],
   ['email', (v) => GS_EMAIL_RE.test(v.trim()), 'Enter a valid email address.'],
   ...gsUsernameRules(null),
   ['pw', (v) => v.length >= 8, 'Use at least 8 characters.'],
@@ -123,12 +125,12 @@ const GsSignUp = () => {
   const next = gs.route.next;
   const [step, toEmail, back] = useGsStep();
   const [failed, setFailed] = React.useState(null);
-  // Back from "Verify your email" returns the email and username typed (route.draft); the password is typed again.
+  // Back from "Verify your email" returns the names, email and username typed (route.draft); the password is typed again.
   const d = gs.route.draft || {};
-  const form = useGsForm({ email: d.email || '', name: d.name || '', pw: '' }, gsSignupRules(), (f) => {
+  const form = useGsForm({ first: d.first || '', last: d.last || '', email: d.email || '', name: d.name || '', pw: '' }, gsSignupRules(), (f) => {
     gs.setUser({ email: f.email.trim() });
-    gs.keep({ draft: { email: f.email.trim(), name: f.name.trim() } });
-    gs.go('verify', { ctx: 'signup', email: f.email.trim(), username: f.name.trim(), next });
+    gs.keep({ draft: { first: f.first.trim(), last: f.last.trim(), email: f.email.trim(), name: f.name.trim() } });
+    gs.go('verify', { ctx: 'signup', email: f.email.trim(), username: f.name.trim(), first: f.first.trim(), last: f.last.trim(), next });
   });
   const foot = <>
     <GsConsent lead="By creating an account you accept our" />
@@ -144,7 +146,9 @@ const GsSignUp = () => {
   return (
     <GsAuthFrame title="Create your account" onBack={() => { form.reset(); back(); }} foot={foot}>
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
-        <DS.TextField label="Email" type="email" autoComplete="email" placeholder="you@example.com" autoFocus {...form.bind('email')} />
+        <DS.TextField label="First name" autoComplete="given-name" autoFocus {...form.bind('first')} />
+        <DS.TextField label="Last name" autoComplete="family-name" {...form.bind('last')} />
+        <DS.TextField label="Email" type="email" autoComplete="email" placeholder="you@example.com" {...form.bind('email')} />
         <GsUsernameField form={form} hint={GS_USERNAME_HINT} />
         <GsLabelled label="Password" aside="At least 8 characters">
           <DS.TextField type="password" autoComplete="new-password" aria-label="Password" {...form.bind('pw')} />
@@ -193,7 +197,7 @@ const GsVerify = () => {
       else {
         setErr(null);
         if (ctx === 'device') gs.signedIn(provider || 'email', gs.route.next);
-        else gs.accountMade(gs.route.username, 'email', gs.route.next);
+        else gs.accountMade(gs.route.username, 'email', gs.route.next, { first: gs.route.first, last: gs.route.last });
         return;
       }
       refocus();

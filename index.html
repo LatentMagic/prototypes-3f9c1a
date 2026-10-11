@@ -1541,6 +1541,21 @@
                 'Account > Notifications: the "Games you play" list becomes one row, "Games" with a count of how many are on, that opens a searchable panel (gs-push.jsx). Every game in the library gets a switch, not just the three played; an unplayed game starts off.',
               ],
             },
+            {
+              date: '2026-10-11',
+              title: 'Names at sign-up, new accounts, replay and share, phone second pass',
+              items: [
+                'Sign-up asks for first and last name before email. The names are kept on the account, shown in the account menu, included in the data download, and named in the delete-account warning.',
+                'A new account is a real state: Config > Account > New, nothing played. Library, Discover, History and the Casebook and Delve pages show "ready" lines and empty states, with no history, streak or achievements.',
+                'History and session pages: a session page is one play and lists no other plays. Finished results, replays included, can be shared; the share text carries a short "Replay" mark. The button is now "Play again". A day or week that ended before the player finished shows "Not finished" with no result (Config: Ended unfinished). History gets page arrows and an "Ended" date for a lapsed Pass.',
+                'Casebook: a lapsed player keeps this week\'s case if the Pass ended that day. Delve and Casebook library pages follow the same rules.',
+                'Discover: All games gains search and genre chips (Free last); no Pass tile in the wall and no Free tag on tiles. Just added sits under the picks.',
+                'Notifications: with notifications off, the Games row says to turn them on instead of showing a count; the panel gets a Done button and looser search matching.',
+                'Phone: on a phone the account control is a person icon beside Menu; product and session pages show the cover small beside the title; More games cards are 2:1 and play their art on hover, focus and press; touch-holding the home hero plays its motion; buttons and pictures no longer start text selection on a hold. Back links step the app\'s own route if the browser drops history.back() (GOTCHA 14).',
+                'Copy: a game\'s "kind" is now its "genre". The design-system back icon is now the next icon rotated. New "Copy any result as text" and "Search and filters" lines in What\'s new.',
+                'docs/specs/authorize-landing moves to docs/archive/. New docs/specs: final-audit-snags, phone-snags-second-pass, replay-share. Fourteen new uploads/ screenshots, kept as shipped.',
+              ],
+            },
           ],
         }
       ]

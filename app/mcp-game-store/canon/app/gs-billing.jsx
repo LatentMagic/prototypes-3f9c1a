@@ -73,7 +73,7 @@ const GsPassCard = () => {
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Pass</h2>
       {sub.freeUsed
-        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(sub.endedOn ? new Date(sub.endedOn) : GS_LAPSED_ON)}.</>} locked="are frozen until you get the Pass again" />
+        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} locked="are frozen until you get the Pass again" />
         : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
       <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </DS.Card>

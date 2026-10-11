@@ -17,7 +17,8 @@ const HG_DAYS = Array.from({ length: 18 }, (_, i) => {
   const d = new Date(2026, 9, 5 - 3 * i - (i % 2));
   const restarted = i % 5 === 3;
   return { id: 'hg' + i, d, date: lbDate(d), month: lbMonth(d), played: true, restarted, title: 'Day ' + (18 - i), end: restarted ? null : HG_ENDS[i % 5],
-    facts: Object.entries(HG_POOL).map(([k, v], n) => [k, v[(i * (n + 2)) % v.length]]) };
+    // Where you slept agrees with how the day ended (HG_ENDS and HG_POOL.Slept share an order).
+    facts: Object.entries(HG_POOL).map(([k, v], n) => [k, k === 'Slept' ? v[i % 5] : v[(i * (n + 2)) % v.length]]) };
 });
 const HG_LATEST = HG_DAYS[0];
 const hgSid = (x) => 'hunter-' + x.id;
@@ -64,10 +65,22 @@ const hgWeeks = () => Array.from({ length: 10 }, (_, i) => {
   const played = HG_DAYS.some((x) => { const d = new Date(x.date + (x.date.match(/\d{4}$/) ? '' : ' 2026')); return d >= start && d < end; });
   return { id: 'hw' + i, date: lbDate(start), played };
 });
-const HgLeft = () => (
-  <LbRun n={HG_DAYS.filter((x) => !x.restarted).length} unit="weeks" figure="days played" on="Played" legend="Not played" weeks={lbRunOf(hgWeeks())} />
+const HgLeft = ({ fresh }) => (
+  <LbRun n={fresh ? 0 : HG_DAYS.filter((x) => !x.restarted).length} unit="weeks" figure="days played" on="Played" legend="Not played" weeks={lbRunOf(hgWeeks().map((w) => (fresh ? { ...w, played: false } : w)))} />
 );
-const HG_OLD = HG_DAYS.filter((x) => lbOld(x.date));
+// The days played before the Pass ended, read from the one end date (gsEndedOn).
+const hgOld = (gs) => HG_DAYS.filter((x) => lbOld(x.date, gs));
+// A new account with the Pass: no day yet.
+const HgNone = () => {
+  const gs = useGs();
+  return (
+    <section className="lb-card">
+      <div className="gs-stack-xs"><span className="gs-label">YOUR FIRST DAY</span><h2 className="mcp-t-sec">Grey dawn below Chauvet cave</h2></div>
+      <p>Start your first day at camp in any chat, and go where you like.</p>
+      <div><DS.Button onClick={() => gs.play(GS_NAME.hunter)}>Play</DS.Button></div>
+    </section>
+  );
+};
 // Without the Pass: the game is closed. A player whose Pass ended keeps their last day, their days and what they earned, locked.
 const HgClosed = ({ again }) => {
   const gs = useGs();
@@ -85,16 +98,17 @@ const HgLibrary = () => {
   if (!pass && !past) return (
     <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><HgClosed /></div></main>
   );
-  const days = pass ? HG_DAYS : HG_OLD;
+  const fresh = gsFresh(gs); const old = hgOld(gs);
+  const days = fresh ? [] : pass ? HG_DAYS : old;
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="hunter" />
       <div className="lb-lay">
         {!pass && <HgClosed again />}
-        <HgLatest last={pass ? null : HG_OLD[0]} />
-        {pass && <HgLeft />}
-        <LbAch items={HG_ACH} badges={HG_BADGES} access={access} ended={CB_ENDED} />
-        <LbRecent title="Your days" allLabel="All days" rows={days.slice(0, 8).map((x) => hgRow(gs, x))} />
+        {fresh ? <HgNone /> : <HgLatest last={pass ? null : old[0]} />}
+        {pass && <HgLeft fresh={fresh} />}
+        <LbAch items={fresh ? lbNoAch(HG_ACH) : HG_ACH} badges={HG_BADGES} access={access} />
+        <LbRecent title="Your days" allLabel="All days" rows={days.slice(0, 8).map((x) => hgRow(gs, x))} empty="Your days appear here once you have played one." />
       </div>
     </main>
   );

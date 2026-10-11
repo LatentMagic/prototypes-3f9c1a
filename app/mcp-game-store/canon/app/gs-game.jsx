@@ -1,8 +1,10 @@
 // ============================================================================
 // [Platform] — the game page: one template for all four games (first-release-
 // games). Delve's page is the model. Order: cover and play box; facts band
-// (how long, how often, kind tags); pitch beside who does what; how it looks
-// in your chat; (Delve: stat tiles); today's or this week's one; more games. Every null is a gap in the record and shows as "—".
+// (how long, how often, genre tags); pitch beside who does what; how it looks
+// in your chat; (Delve: stat tiles); more games. Every null is a gap in the record and shows as "—".
+// The play box at the top is the page's one Play; the edition card that repeated it went 2026-10-11 (phone-snags-second-pass).
+// `week` stays in GS_PAGES: the library game pages read its line.
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
 const gsOr = (v) => (v == null ? <GsGap /> : v);
@@ -138,29 +140,6 @@ const GsFacts = ({ id }) => {
   );
 };
 
-// One card for this edition: today's, this week's or the day's. A free game plays for everyone; a Pass game needs the Pass.
-// A product page shows nothing from the player's record: no result, no session link, no played marks.
-const GsWeekCard = ({ id }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const w = GS_PAGES[id].week;
-  const paying = gs.view === 'pass'; const can = g.free || paying;
-  return (
-    <section id="gs-today" className="gs-stack-md">
-      <div className="gs-sec-head"><h2 className="mcp-t-sec">{w.title}</h2></div>
-      <DS.Card style={{ justifyItems: 'stretch' }}>
-        <div className="gs-week">
-          <GsCover art={g.art} />
-          <div className="gs-stack-md" style={{ justifyItems: 'start', alignContent: 'center' }}>
-          <h3 className="mcp-t-card">{g.name}</h3>
-          <p className="gs-muted">{w.line}</p>
-          {!can ? <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>{g.first && <p className="gs-small">{w.title + ' comes with the Pass. The first ' + g.ed[0] + ' is free.'}</p>}<GsPassTag /></div>
-            : <div className="gs-act"><DS.Button onClick={() => gs.playReq(window.ED_GAMES && ED_GAMES.includes(id) ? { kind: 'edition', e: edList(gs, id)[0] } : { kind: 'game', gid: id })}>Play</DS.Button></div>}
-          </div>
-        </div>
-      </DS.Card>
-    </section>
-  );
-};
-
 const GsGamePage = ({ id, top }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
@@ -205,8 +184,6 @@ const GsGamePage = ({ id, top }) => {
           <GsStat label="ENDINGS" figure="4 ways out" line="Clean rescue, close call, alone, or caught." />
         </section>
       )}
-
-      <GsWeekCard id={id} />
 
       <section className="gs-stack-md">
         <h2 className="mcp-t-sec">More games</h2>

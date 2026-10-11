@@ -846,7 +846,10 @@ function CardRow({
     } : null,
     onClick: () => move(-1)
   }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
-    name: "back"
+    name: "next",
+    style: {
+      transform: 'rotate(180deg)'
+    }
   })), /*#__PURE__*/React.createElement("button", {
     ref: next,
     type: "button",
@@ -857,10 +860,7 @@ function CardRow({
     } : null,
     onClick: () => move(1)
   }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
-    name: "back",
-    style: {
-      transform: 'rotate(180deg)'
-    }
+    name: "next"
   }))), sub && /*#__PURE__*/React.createElement("p", {
     className: "mcp-crow-sub"
   }, sub)), /*#__PURE__*/React.createElement("div", {

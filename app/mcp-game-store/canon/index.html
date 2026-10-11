@@ -236,6 +236,7 @@
   .gs-root b { font-weight: 600; }
   .gs-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding-inline: 16px; }
   .gs-main { display: grid; gap: 36px; padding-top: 36px; padding-bottom: 36px; }
+  .gs-backbar + .gs-main { padding-top: 24px; }
   .gs-stack-xs { display: grid; gap: 4px; }
   .gs-stack-sm { display: grid; gap: 8px; }
   .gs-stack-md { display: grid; gap: 16px; align-content: start; }
@@ -399,9 +400,9 @@
 
   /* session + history */
   .gs-note { padding: 12px; border: 1px solid var(--control-edge); background: var(--card); }
-  .gs-figs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .gs-fig { padding: 8px 12px; border: 1px solid var(--line); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .gs-fig-quiet { font-weight: 400; color: var(--muted); }
+  .gs-figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); width: 100%; max-width: 400px; }
+  .gs-fig { display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; min-height: 32px; padding: 4px 12px; font-size: 14px; line-height: 1.3; border: 1px solid var(--line); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .gs-fig-quiet { font-weight: 400; color: var(--muted); padding-inline: 8px; }
   .gs-pairwrap { width: 100%; max-width: 400px; }
   .gs-lines { list-style: none; padding: 0; display: grid; font-variant-numeric: tabular-nums; }
   .gs-lines > li { padding: 12px 0; border-top: 1px solid var(--line); }
@@ -735,7 +736,8 @@
   .lb-v.is-ok { color: var(--success); }
   .lb-v.is-bad { color: var(--error); }
   .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
-  .lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
+  .lb-foot { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 24px; }
+  .lb-foot > .gs-muted { min-height: 48px; display: flex; align-items: center; }
   .lb-acts { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
   .lb-acts > .mcp-lnk { min-height: 44px; align-self: flex-start; }
   .lb-streakhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
@@ -945,11 +947,11 @@
   .gs-hero-shapes4 { cursor: pointer; }
   .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
   .gs-hero-shapes4 > i { display: block; width: 14%; height: calc(var(--h) + 24px); margin-bottom: -24px; border-radius: calc(var(--on) * 3cqw) calc(var(--on) * 3cqw) 0 0; transform: translateY(calc(var(--on) * var(--rise) * -1)); }
-  .gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) { --on: 1; }
-  .gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
+  .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) { --on: 1; }
+  .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
   @media (hover: hover) { .gs-hero-field:hover { --on: 1; } }
   .gs-hero-shapes4 > b { position: absolute; top: 18px; right: 0; width: 40px; height: 40px; border-radius: calc((1 - var(--on)) * 50%); background: #E5A63B; transform: translateY(calc(var(--on) * 6px)); }
-  .gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) .gs-hero-shapes4 > b { transition-delay: 50ms; }
+  .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) .gs-hero-shapes4 > b { transition-delay: 50ms; }
   @media (hover: hover) { .gs-hero-field:hover .gs-hero-shapes4 > b { transition-delay: 50ms; } }
   @media (prefers-reduced-motion: reduce) { .gs-hero-shapes4 { --on: 0 !important; } .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: none; } }
   .gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
@@ -1235,6 +1237,22 @@
   .gs-osperm-acts > button { min-height: 32px; padding: 0 16px; border-radius: 16px; border: 1px solid #c4c7c5; background: #fff; color: #0b57d0; font: 500 14px/1 system-ui, sans-serif; cursor: pointer; }
   .gs-osperm-acts > button.is-main { background: #0b57d0; border-color: #0b57d0; color: #fff; }
   .gs-osperm button:focus-visible { outline: 2px solid #0b57d0; outline-offset: 2px; }
+  /* phone-snags-second-pass, 2026-10-11 */
+  /* The hold, by category: anything a press acts on, and any picture, never starts a selection or the phone's callout. Reading text stays selectable; a real link keeps its long-press menu; fields stay editable. */
+  :where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .gs-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  :where(input, textarea, [contenteditable="true"]) { -webkit-user-select: text; user-select: text; }
+  /* Phone account button: a person icon, shaped like the Menu button beside it */
+  .mcp-btn.gs-acct-ico { width: 48px; padding-left: 0; padding-right: 0; justify-content: center; }
+  /* Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */
+  @container gs (max-width: 719px) {
+    .gs-hero-cover { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+    .gs-hero-cover .gs-cover-over { position: static; padding: 0; }
+    .gs-sess-head { grid-template-columns: 96px minmax(0, 1fr); align-items: center; justify-items: start; }
+    .gs-sess-head > .mcp-cover { justify-self: stretch; }
+    .gs-sess-head > .gs-stack-md { display: contents; }
+    .gs-sess-head > .gs-stack-md > :not(:first-child) { grid-column: 1 / -1; }
+    .gs-more .mcp-art { aspect-ratio: 2 / 1; }
+  }
 </style>
 </head>
 <body>

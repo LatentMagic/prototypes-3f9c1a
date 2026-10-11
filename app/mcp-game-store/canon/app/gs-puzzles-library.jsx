@@ -114,7 +114,8 @@ Object.entries(PZ).forEach(([id, c]) => {
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
 const pzHist = (c) => c.all.slice(1);
-const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : () => gs.go('session', { gid: c.gid, ed: x.id }) });
+const pzRow = (gs, c, x) => { const u = window.phUnf && phUnf(gs, x.id);
+  return { key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: u ? PH_UNF : pzStatus(c, x), onOpen: u ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : x.played ? () => gs.go('session', { id: x.sid }) : () => gs.go('session', { gid: c.gid, ed: x.id }) }; };
 
 const PzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const st = done ? c.done : c.live;
@@ -150,8 +151,8 @@ const PzNow = ({ c, done, none, id }) => {
 const pzLibrary = (id) => () => {
   const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
   const [recent, allLabel] = c.plays;
-  // State library-mystery-never-played: a game this player can play and never has.
-  const never = gs.review.never === id;
+  // State library-mystery-never-played: a game this player can play and never has. A new account has played nothing.
+  const never = gs.review.never === id || gsFresh(gs);
   const now = never ? null : lbNow(gs, id); const broken = id === 'word' && gs.review.broken; const none = !now || broken;
   // This edition counts only once completed: in progress, or finished and failed, it adds nothing.
   let run = [{ ...c.all[0], played: !none, done: !none && now.status.kind === 'ok' }, ...c.all.slice(1)];
@@ -170,7 +171,7 @@ const pzLibrary = (id) => () => {
       <div className="lb-lay">
         <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
         <LbRun n={lbStreak(run)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
-        <LbAch items={ach} badges={c.badges} access="all" ended={CB_ENDED} />
+        <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel={allLabel} rows={rows.slice(0, 8)}
           empty={recent + ' appear here once you have played one.'} />
       </div>

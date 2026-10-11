@@ -1,16 +1,17 @@
 // ============================================================================
 // [Platform] — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
 // A session in progress (s.live) has no Share and no Play again: one button carries it on in your AI.
-// A replay (s.again) has no Share: it never changes the streak and is never shared.
+// A replay (s.again) has Share like a first play; its text carries the replay mark (gsReplayMark). It never changes the streak.
+// A session page is one play: it lists no other plays (docs/specs/replay-share/).
 // A 36,000 Summers Ago day has no result to share: Share carries the product page link only.
 // gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
 // ============================================================================
-// The line and button a player without the Pass sees on an edition that needs it (the library game pages' own words).
+// The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 const GsNeedsPass = ({ gid }) => {
-  const gs = useGs(); const lapsed = gsLapsed(gs);
+  const gs = useGs();
   return (
     <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-      <span className="gs-muted">{'Every other ' + GS_GAMES[gid].ed[0] + ' comes with the Pass.'}</span>
+      <span className="gs-muted">{'This ' + GS_GAMES[gid].ed[0] + ' comes with the Pass.'}</span>
       <DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
     </div>
   );
@@ -37,7 +38,12 @@ const gsWordRow = (guess, answer) => {
   g.forEach((ch, i) => { if (res[i] !== '🟩' && left[ch]) { res[i] = '🟨'; left[ch] -= 1; } });
   return res.join('');
 };
-const gsShareText = (s) => {
+// The replay mark: one short tag at the end of the share text's first line.
+const gsReplayMark = (lines) => lines && [lines[0] + '  🔁 Replay', ...lines.slice(1)];
+// The session's date box is one button wide, so its weekday is shortened: Tuesday → Tue.
+const gsShortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
+const gsShareText = (s) => { const t = gsShareBase(s); return s.again ? gsReplayMark(t) : t; };
+const gsShareBase = (s) => {
   if (s.share == null) return null;
   const link = 'https://platform.example/' + GS_GAMES[s.gid].route;
   if (s.number) {
@@ -75,7 +81,7 @@ const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
 
 const GsSessionRecord = () => {
   const gs = useGs();
-  const s = GS_SESSIONS[gs.route.id] || GS_SESSIONS.delve;
+  const s = GS_SESSIONS[gs.route.id];
   const [share, setShare] = React.useState(false);
   // A game with no result block (36,000 Summers Ago) shares its product page link only (MCPG-030 AF-04).
   const linkOnly = s.share == null && s.kind === 'day' && !s.live && !s.again;
@@ -84,13 +90,13 @@ const GsSessionRecord = () => {
   const delve = s.kind === 'delve';
   // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
   // An edition that can't be played at all (edClosed) has no Play again.
+  // Play until an edition is finished once, Play again after (ratified 2026-10-11, docs/specs/replay-share/).
   const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null; const g = s.gid && GS_GAMES[s.gid];
   const needsPass = !!g && (ed ? edNeedsPass(gs, ed) : gs.view !== 'pass' && !g.free);
-  const held = !!ed && !s.live && needsPass; // an edition that needs the Pass: the line and button replace Play and Replay
-  const again = (ed && edClosed(ed)) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Replay{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
+  const held = !!ed && !s.live && needsPass; // an edition that needs the Pass: the line and button replace Play and Play again
+  const again = (ed && edClosed(ed)) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
   const holdBlock = held && <GsNeedsPass gid={s.gid} />;
-  const reps = window.phReplays ? phReplays(gs, s) : [];
-  const back = s.gid && <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
+  const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   const list = (
     <section className="gs-stack-md">
       <h2 className="mcp-t-sec">{gsOr(s.listTitle)}</h2>
@@ -99,6 +105,21 @@ const GsSessionRecord = () => {
       </ol>}
     </section>
   );
+  // A day or week that ended before the player finished: no result, no score line, no play control. What was played stays.
+  if (s.unfinished) return (<>
+    {back}
+    <main className="gs-wrap gs-main">
+      <section className="gs-sess-head">
+        <GsCover art={s.art} />
+        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
+          <h1 className="gs-h1">{ed ? edLabel(ed) : s.game}</h1>
+          <div className="gs-figs"><span className="gs-fig">Not finished</span><span className="gs-fig gs-fig-quiet">{s.date}</span></div>
+          <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
+        </div>
+      </section>
+      {list}
+    </main>
+  </>);
   return (<>
     {back}
     <main className="gs-wrap gs-main">
@@ -108,12 +129,12 @@ const GsSessionRecord = () => {
           <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
           <h1 className="gs-h1">{gsOr(s.result)}</h1>
           <div className="gs-figs">
+            <span className="gs-fig gs-fig-quiet">{gsShortDay(gsSessDate(s, gs))}</span>
             {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
-            <span className="gs-fig gs-fig-quiet">{gsSessDate(s, gs)}</span>
           </div>
           <div className="gs-pairwrap">
             {s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
-              : text && !s.again ? (again ? <DS.ButtonPair>
+              : text ? (again ? <DS.ButtonPair>
                 {again}
                 <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
               </DS.ButtonPair> : <DS.Button onClick={() => setShare(true)}>Share</DS.Button>)
@@ -122,8 +143,6 @@ const GsSessionRecord = () => {
           {holdBlock}
         </div>
       </section>
-
-      {window.PhReplays && <PhReplays reps={reps} />}
 
       {delve ? (
         <section className="gs-pitch">
@@ -157,11 +176,12 @@ const GsSessionRecord = () => {
 // No result and no turns. Three forms, as the product page's edition card: playable (Play, the play pop-up), needs the Pass (the Pass tag only), can't be played (a line and a link).
 const GsSessionNew = (p) => {
   const gs = useGs(); const r = { gid: p.gid || gs.route.gid, ed: p.ed || gs.route.ed }; const gid = GS_GAMES[r.gid] ? r.gid : 'delve'; const g = GS_GAMES[gid];
-  const list = edList(gs, gid); const e = list.find((x) => x.key === r.ed) || list[0];
+  const list = edList(gs, gid); const e = list.find((x) => x.key === r.ed);
+  if (!GS_GAMES[r.gid] || !e) return <GsNotFound />;
   const closed = edClosed(e); const pass = edNeedsPass(gs, e);
   const day = gsRhythm(gid) === 'weekly' ? 'Week of ' + e.date : pzLong(phParse(e.date));
   return (<>
-    <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBackTo gid={gid} /></div>
+    <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={gid} /></div>
     <main className="gs-wrap gs-main">
       <section className="gs-sess-head">
         <GsCover art={g.art} />
@@ -183,6 +203,6 @@ const GsSessionNew = (p) => {
     </main>
   </>);
 };
-const GsSession = () => (useGs().route.ed ? <GsSessionNew /> : <GsSessionRecord />);
+const GsSession = () => { const r = useGs().route; return r.ed ? <GsSessionNew /> : GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
-Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText });
+Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText, gsReplayMark });

@@ -12,8 +12,10 @@
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played' };
-const GS_USER_DEFAULT = { username: 'MonaLaser', locked: false, email: 'you@example.com' };
+const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false };
+// first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
+// fresh: an account made in this session (or Config Account: New), with nothing played yet.
+const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
 // status: none | free (14-day trial) | active | failed | ending
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };
 // Screens with their own frame (no shared top bar).
@@ -22,7 +24,10 @@ const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
-const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout'];
+const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
+// Of those, the pages that belong to the player: a signed-out visitor gets Sign in, then the page asked for.
+const GS_GUARDED = ['library', 'history', 'account', 'session'];
+const gsSignInFor = (r) => ({ name: 'signin', next: { ...r, prev: undefined, next: undefined } });
 // Screens that make or enter an account. Someone signed in never lands on them.
 const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'returning'];
 
@@ -109,6 +114,7 @@ const KitApp = () => {
   // checkout never opens for a Pass holder, and a signed-in home is Discover.
   const land = (r, v) => {
     if (v !== 'out' && (GS_AUTH_ONLY.includes(r.name) || r.name === 'home')) return { name: 'games' };
+    if (v === 'out' && GS_GUARDED.includes(r.name)) return gsSignInFor(r);
     if (v === 'out' && GS_SIGNED_IN_ONLY.includes(r.name)) return { name: 'home' };
     if (v === 'pass' && (r.name === 'checkout' || r.name === 'subscribe')) return { name: 'account' }; // MCPG-012 AF-06
     return r;
@@ -163,7 +169,16 @@ const KitApp = () => {
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
     // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
     keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
-    back: () => { if (idx.current > 0) window.history.back(); },
+    // The preview frame can swallow history.back() with no popstate; if nothing moved, step the stack ourselves (GOTCHA candidate).
+    back: () => {
+      const from = idx.current; if (from < 1) return;
+      try { window.history.back(); } catch (e) {}
+      setTimeout(() => {
+        if (idx.current !== from) return;
+        const i = from - 1; const r = land(stack.current[i], viewRef.current);
+        stack.current[i] = r; idx.current = i; backNav.current = true; setPlaying(null); setRoute(r);
+      }, 120);
+    },
     goHow: () => go('connect'),
     howFromPlay: () => { stack.current[idx.current] = { ...stack.current[idx.current], reopen: playing }; go('connect'); },
     startFree: () => (view === 'out' ? go('signup') : go('games')),
@@ -171,7 +186,8 @@ const KitApp = () => {
     // Each view has its own home: signed out is `home`, signed in is `games`. Switching views swaps one for the other.
     setDemoView: (v) => {
       setView(v);
-      if (v === 'out' && (GS_SIGNED_IN_ONLY.includes(route.name) || (route.name === 'games' && view !== 'out'))) go('home', null, 'out');
+      if (v === 'out' && GS_GUARDED.includes(route.name)) go('signin', gsSignInFor(route), 'out');
+      else if (v === 'out' && (GS_SIGNED_IN_ONLY.includes(route.name) || (route.name === 'games' && view !== 'out'))) go('home', null, 'out');
       else if (v !== 'out' && (route.name === 'home' || GS_AUTH_ONLY.includes(route.name))) go('games', null, v);
     },
     // Every play control opens the play dialog with its prompt (gs-connect.jsx). The store can't know whether the AI is connected.
@@ -184,14 +200,19 @@ const KitApp = () => {
     // An account exists only once it has a username, so the username always comes before any payment page.
     // Email: the username is on the sign-up form and the account is made when the email is verified.
     // Google or Apple: the provider returns, then Your username (no code); the account is made there.
-    accountMade: (name, how, next) => {
-      setSignedIn(true); setProvider(how || 'email'); setConnected(false); setUser({ username: name, locked: false });
+    // A new account: names from the email form (a provider supplies its own), the username locked for 30 days from today, nothing played.
+    accountMade: (name, how, next, names) => {
+      setSignedIn(true); setProvider(how || 'email'); setConnected(false);
+      setUser({ username: name, locked: true, since: GS_DAY0.getTime(), fresh: true, ...(names && names.first ? { first: names.first, last: names.last } : {}) });
       go(next === 'checkout' ? 'checkout' : 'connect', null, 'free');
     },
     afterCheckout: () => go('subscribe'),
     // Back from checkout's "Cancel and return" returns to the subscribe page with the plan still chosen (MCPG-012 EF-01).
-    // next: where sign-in returns (the subscribe page, when sign-in started from its sign-up route).
-    signedIn: (how, next) => { setSignedIn(true); setProvider(how || 'email'); setConnected(true); go(next || 'games', null, 'free'); },
+    // next: where sign-in returns: a route name (the subscribe page, when sign-in started from its sign-up route), or the guarded page asked for.
+    signedIn: (how, next) => {
+      setSignedIn(true); setProvider(how || 'email'); setConnected(true); setUser({ fresh: false });
+      const n = next && typeof next === 'object' ? next : { name: next || 'games' }; go(n.name, n, 'free');
+    },
     paid: (free) => {
       const months = GS_PLAN[choice].months;
       setSubState({ ...GS_SUB_DEFAULT, status: free ? 'free' : 'active', plan: choice, freeUsed: true,

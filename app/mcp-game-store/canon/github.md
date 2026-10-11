@@ -3,11 +3,11 @@ branch: main
 path: work/apps/mcp-game-store
 
 ## Last sync
-date: 2026-10-11T10:29:00Z
+date: 2026-10-11T15:16:04Z
 
 ### Updated in this project
-- Read `LatentMagic/monorepo` `MCPG-012` and `MCPG-026` (branch `docs/mcp-games-stories`) and `ui-design.md` (`main`).
-- The Pass page now describes the Pass, and a new subscribe page holds the plan choice. Prices are £3 a month and £30 a year.
+- Re-read `LatentMagic/monorepo` `specs/governance/standards/ui-design.md` (`main`) for the final audit snags.
+- One Pass end date across Account, library pages and History; new accounts start empty; unfinished sessions; guarded pages route through Sign in.
 
 ## Screen map
 | Screen | Repo files |
@@ -19,6 +19,8 @@ date: 2026-10-11T10:29:00Z
 | Daily Word, Daily Groups, Daily Mystery, Escape: product and library pages (`app/gs-game.jsx`, `app/gs-puzzles-library.jsx`, `app/gs-data.jsx`) | `inception/_outputs/game-specs/daily-puzzles.md`, `demo-delta-split-daily-puzzles.md` |
 
 ## Sync history
+- 2026-10-11T14:10:18Z: re-read `ui-design.md`; phone snags, second pass.
+- 2026-10-11T10:29:00Z: read `MCPG-012`, `MCPG-026` and `ui-design.md`; the Pass page and the new subscribe page.
 - 2026-10-09T06:29:21Z: read `game-specs/daily-puzzles.md` and `demo-delta-split-daily-puzzles.md`; Daily Puzzles split into four games.
 - 2026-10-09T05:12:09Z: re-read `game-specs/delve.md` and `playground-library-game-page.md`; Delve and Daily Puzzles seeded to about ten achievements.
 - 2026-10-08T15:57:51Z: read `playground-library-game-page.md` and `game-specs/casebook.md`; built the Casebook playground, options 4 to 6.

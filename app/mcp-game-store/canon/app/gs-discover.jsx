@@ -1,13 +1,13 @@
 // ============================================================================
 // [Platform] — Discover (route `games`) and Library (route `library`).
 // Discover: round 4 option 16 with Joe's changes, 2026-10-09: two picks, Free to play, the Pass band,
-// then All games with search and kind chips (Free last), no Pass tile in the wall, no Free tag on the tiles. Just added sits under the picks (Joe).
+// then All games with search and genre chips (Free last), no Pass tile in the wall, no Free tag on the tiles. Just added sits under the picks (Joe).
 // Library: option 13, rows with covers. Names Discover and Library. (docs/specs/games-and-library/)
 // Loads after gs-player.jsx; replaces GsGames.
 // ============================================================================
 const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
 const GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
-const gsFind = (q, k) => { const g = GS_GAMES[k]; const s = q.trim().toLowerCase(); return !s || g.name.toLowerCase().includes(s); };
+const gsFind = (q, k) => { const s = gsNorm(q); return !s || gsNorm(GS_GAMES[k].name).includes(s); };
 // The two picks: chosen by us, not by rule. Seed.
 const GS_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
@@ -133,12 +133,16 @@ const gsLibRow = (gs, k) => {
   const lapsed = gsLapsed(gs); const pass = gs.view === 'pass'; const done = lbWeekDone(gs);
   const at = (s) => { const t = s ? new Date(/\d{4}$/.test(s) ? s : s + ' 2026').getTime() : 0; return isNaN(t) ? 0 : t; };
   const row = (result, tone, date) => ({ result, tone, when: date === 'Today' ? 'Today' : gsLibShort(date), at: date === 'Today' ? 9e15 : at(date) });
+  if (gsFresh(gs)) {
+    if (k === 'casebook' || k === 'delve') return row(pass ? (k === 'casebook' ? 'This week’s case is ready' : 'This week’s scene is ready') : (k === 'casebook' ? 'Your free case is ready' : 'Your free scene is ready'), null, '');
+    if (k === 'hunter') return row(pass ? GS_LIB_READY.hunter : 'Pass only', null, '');
+  }
   const c = window.PZ && PZ[k];
   if (c) {
     const now = gs.review.never === k ? null : lbNow(gs, k);
     const today = c.weekly ? gsLibShort(GS_SESSIONS[c.today] && GS_SESSIONS[c.today].date) : 'Today';
     if (now) return now.status.kind === 'live' ? row('In progress', null, today) : row(c.weekly ? 'Done this week' : 'Done today', 'ok', today);
-    const last = gs.review.never === k ? null : c.all.slice(1).find((x) => x.played);
+    const last = gs.review.never === k || gsFresh(gs) ? null : c.all.slice(1).find((x) => x.played);
     return row(GS_LIB_READY[k], null, last ? last.date : '');
   }
   if (k === 'casebook' || k === 'delve') {
@@ -151,7 +155,7 @@ const gsLibRow = (gs, k) => {
   }
   if (k === 'hunter') {
     if (pass) return row(GS_LIB_READY.hunter, null, HG_DAYS[0].date);
-    const old = lapsed ? HG_DAYS.find((x) => lbOld(x.date)) : null;
+    const old = lapsed ? HG_DAYS.find((x) => lbOld(x.date, gs)) : null;
     return row('Pass only', null, old ? old.date : '');
   }
   return row(GS_LIB_READY[k] || null, null, '');
@@ -184,7 +188,7 @@ const GsLibrary = () => {
             <DS.RowList label="Library">{ids.map((k) => { const g = GS_GAMES[k]; const me = rows[k]; return (
               <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={me.result} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />
             ); })}</DS.RowList>
-          ) : <div className="dc-empty"><p>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>}
+          ) : <div className="dc-empty" style={{ minWidth: 0 }}><p style={{ overflowWrap: 'anywhere' }}>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>}
         </div>
       </div>
     </main>

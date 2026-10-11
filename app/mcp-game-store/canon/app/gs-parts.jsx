@@ -8,9 +8,6 @@
 const GsCover = ({ art }) => (
   <DS.Cover><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: GS_ART[art] || '' }} /></DS.Cover>
 );
-const GsCoverButton = ({ art, label, onClick }) => (
-  <button type="button" className="gs-coverbtn" aria-label={label} onClick={onClick}><GsCover art={art} /></button>
-);
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
 const GS_ART_MOTION = ['groups', 'casebook', 'hunter'];
@@ -130,12 +127,14 @@ const GsSoonCard = ({ g }) => (
     </div>
   </DS.Card>
 );
+// "More games" on a product page. The whole card is the target and the hover surface, as on Home and Discover:
+// hover, focus and press play the art's motion (phone-snags-second-pass). On a phone the art is 2:1, so a card never fills the screen.
 const GsGameCard = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id];
+  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
   const open = () => gs.go(g.route);
   return (
-    <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-      <GsCoverButton art={g.art} label={'Open ' + g.name} onClick={open} />
+    <DS.Card className="mcp-art-host gs-host gs-more" style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
+      <div ref={host}><GsArt art={g.art} shape="landscape" /></div>
       <div className="gs-title-row">
         <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
         {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
@@ -170,8 +169,8 @@ const GsPanel = ({ label, children }) => (
 );
 const GsUp = () => <DS.Icon name="back" size={14} style={{ transform: 'rotate(90deg)' }} />;
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
-// Manage account, Your AI, divider, Sign out. On a phone the trigger is the avatar alone,
-// beside the Menu button, which holds only the pages.
+// Manage account, Your AI, divider, Sign out. On a phone the trigger is a person icon in a
+// button shaped like the Menu button beside it, which holds only the pages (phone-snags-second-pass).
 const GsAvatar = ({ big, btn }) => {
   const gs = useGs();
   return <span className={'gs-avatar' + (big ? ' is-big' : '') + (btn ? ' is-btn' : '')} aria-hidden="true">{gsName(gs.user)[0].toUpperCase()}</span>;
@@ -223,9 +222,9 @@ const GsUserMenu = ({ compact }) => {
   return (
     <div className="gs-acct" ref={wrap}>
       {compact ? (
-        <button type="button" className="gs-acct-btn" aria-label={'Your account, ' + gsName(gs.user)} aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
-          <GsAvatar btn />
-        </button>
+        <DS.Button variant="secondary" className="gs-acct-ico" aria-label={'Your account, ' + gsName(gs.user)} aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
+          <GsGlyph name="account" size={24} />
+        </DS.Button>
       ) : (
         <button type="button" className="gs-acct-btn" aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>
           <GsAvatar />
@@ -335,6 +334,6 @@ const GsDemoBar = () => {
 const GsPlayPopup = () => <GsPlayDialog />;
 
 Object.assign(window, {
-  GsCover, GsCoverButton, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
+  GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
   GsChat, GsMe, GsAi, GsPanel, GsUp, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
 });

@@ -7,7 +7,7 @@ Entries 1–3 are code traps. **Entries 4–9 are judgement traps** — the mist
 that cost the most time were not wrong code, they were wrong intent. Read those
 before starting design work, not while debugging it.
 
-Entries 10–13 are code or platform traps; they sit after the judgement traps
+Entries 10–14 are code or platform traps; they sit after the judgement traps
 because they were found later, not because they matter less.
 
 ---
@@ -288,4 +288,22 @@ and `index.html` for every class name before using it.
 **Rule.** Before a class lands in the app, grep for it. After any change to the
 app's shared styles, check the home page and one other page you didn't touch,
 not just the page you changed.
+
+---
+
+## 14. The preview can swallow `history.back()` with no `popstate`
+
+**Symptom.** In-app back links ("← History") did nothing in the user's
+preview. No error; the route never changed.
+
+**Cause.** Back links called `window.history.back()` and waited for
+`popstate` to set the route. The preview frame can drop the call, so the
+event never arrives.
+
+**Fix.** `gs.back` (`app/main.jsx`) calls `history.back()`, then steps the
+app's own route stack if nothing moved within 120ms. A late `popstate` lands
+on the same index, so nothing goes back twice.
+
+**Rule.** In-app navigation never depends on `popstate` alone. Keep the
+route stack in the app, and treat the browser history as a mirror of it.
 

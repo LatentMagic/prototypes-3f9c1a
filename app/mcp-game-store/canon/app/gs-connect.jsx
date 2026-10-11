@@ -26,6 +26,7 @@ const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAM
 const gsSessEd = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
   const list = edList(gs, gid);
+  if (s.edKey) return list.find((e) => e.key === s.edKey) || list[0];
   // A replay's record is its edition's record with -r<n> on the end.
   const base = sid.replace(/-r\d+$/, '');
   if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === base); if (x) return list.find((e) => e.key === x.id) || list[0]; }

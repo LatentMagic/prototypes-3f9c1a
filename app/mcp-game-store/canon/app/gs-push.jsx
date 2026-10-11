@@ -104,10 +104,17 @@ const GsNotifCard = () => {
           <span className="gs-stack-xs"><span id="nt-new" className="gs-strong">New games</span><span className="gs-muted gs-nt-sub">When a new game is released.</span></span>
           <GsSwitch on={p.newGames} onChange={(v) => gs.setPush({ newGames: v })} labelledBy="nt-new" disabled={off} />
         </div>
-        <button type="button" className="gs-nt-row gs-nt-sep gs-nt-go" onClick={() => setOpen(true)} disabled={off} ref={opener}>
-          <span className="gs-stack-xs"><span className="gs-strong">Games</span><span className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</span></span>
-          <span className="gs-nt-count">{nOn} on<DS.Icon name="next" size={20} /></span>
-        </button>
+        {off ? (
+          // While notifications are off here the row is a statement: no count it can't back up, and why it can't be opened.
+          <div className="gs-nt-row gs-nt-sep">
+            <span className="gs-stack-xs"><span className="gs-strong">Games</span><span className="gs-muted gs-nt-sub">Turn on notifications on this device to choose games.</span></span>
+          </div>
+        ) : (
+          <button type="button" className="gs-nt-row gs-nt-sep gs-nt-go" onClick={() => setOpen(true)} ref={opener}>
+            <span className="gs-stack-xs"><span className="gs-strong">Games</span><span className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</span></span>
+            <span className="gs-nt-count">{nOn} on<DS.Icon name="next" size={20} /></span>
+          </button>
+        )}
       </div>
     </DS.Card>
     <GsNotifGames open={open} onClose={() => { setOpen(false); setTimeout(() => opener.current && opener.current.focus({ preventScroll: true }), 0); }} />
@@ -127,11 +134,11 @@ const GsNotifGames = ({ open, onClose }) => {
     const t = setTimeout(() => { const b = list.current && list.current.querySelector('[role=switch]'); if (b) b.focus({ preventScroll: true }); }, 60);
     return () => clearTimeout(t);
   }, [open]);
-  const t = q.trim().toLowerCase();
-  const ids = GS_PUSH_GAMES.filter((k) => !t || GS_GAMES[k].name.toLowerCase().includes(t));
+  const t = gsNorm(q);
+  const ids = GS_PUSH_GAMES.filter((k) => !t || gsNorm(GS_GAMES[k].name).includes(t));
   return (
-    <DS.Popup kind="panel" open={open} onClose={onClose} title="Games">
-      <div className="gs-nt-panel">
+    <DS.Popup kind="panel" open={open} onClose={onClose} title="Games" actions={<DS.Button onClick={onClose}>Done</DS.Button>}>
+      <div className="gs-nt-panel" style={{ minWidth: 0 }}>
         <p className="gs-muted gs-nt-sub">A new edition is out, or your streak is about to end.</p>
         <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
         {ids.length ? (
@@ -141,7 +148,7 @@ const GsNotifGames = ({ open, onClose }) => {
               <GsSwitch on={!!(p.games || {})[k]} onChange={(v) => gs.setPush({ games: { ...p.games, [k]: v } })} labelledBy={'nt-g-' + k} />
             </li>
           ))}</ul>
-        ) : <p>No game matches “{q}”.</p>}
+        ) : <p style={{ overflowWrap: 'anywhere' }}>No game matches “{q}”.</p>}
       </div>
     </DS.Popup>
   );

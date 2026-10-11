@@ -17,7 +17,7 @@ const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
 const GS_CHATS = {
   word: [
     { cap: 'Ask for today’s word and the game sets it.', turns: [gscU('I want to play Daily Word.'),
-      gscAi('daily-word', ['Today’s Daily Word (5 Oct 2026) is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
+      gscAi('daily-word', ['Today’s Daily Word (6 Oct 2026) is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
     { cap: 'Each guess goes to the engine, which marks it and keeps count.', turns: [gscU('amaze'), gscAi('daily-word', 'No hits. 5 guesses left.'), gscU('spain'),
       gscAi('daily-word', 'First green: I is in the fourth spot. 4 guesses left.', [{ type: 'tiles', rows: [{ word: 'AMAZE', marks: 'xxxxx' }, { word: 'SPAIN', marks: 'xxxgx' }] }])] },
     { cap: 'Solved, with the result kept on your session page.', turns: [gscU('torch'),

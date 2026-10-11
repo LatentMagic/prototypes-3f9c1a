@@ -7,10 +7,10 @@
 // What this player can play of a game (free-and-pass, 2026-10-09): 'all' every edition; 'first' the game's one first edition; 'none' nothing.
 // The three dailies and Escape are free in full; Casebook and Delve give a free player their first edition; 36,000 Summers Ago is only with the Pass.
 const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : id === 'hunter' ? 'none' : 'first');
-// Has the player ever held the Pass (now, or until 18 September)?
+// Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
 const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
 // An edition dated before the Pass ended.
-const lbOld = (s) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < new Date(2026, 8, 18);
+const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < gsEndedOn(gs);
 // Achievements by what the player can do now: earned or still to earn when they can earn it; earned and locked when they can't play the game any more.
 const lbAchView = (items, access, gs) => {
   const past = lbPast(gs); const out = [];
@@ -116,7 +116,7 @@ const LbAch = ({ items, badges, access, ended, ed }) => {
     <section className="lb-card">
       <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{live.length > 0 && <span className="gs-muted">{earned + ' of ' + live.length + ' earned'}</span>}</div>
       {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every other ' + (ed || ['edition'])[0] + ' comes with the Pass.'}</p>}
-      {locked && <div className="gs-stack-xs"><p className="gs-muted">{'Your Pass ended on ' + ended + '. Achievements earned in games you can no longer play stay here, frozen. They carry on if the Pass returns.'}</p>
+      {locked && <div className="gs-stack-xs"><p className="gs-muted">{'Your Pass ended on ' + lbDate(gsEndedOn(gs)) + '. Achievements earned in games you can no longer play stay here, frozen. They carry on if the Pass returns.'}</p>
         <p className="gs-muted">You can’t earn any more of the frozen ones until the Pass returns.</p></div>}
       <ul className="lb-ach">
         {list.map((a) => (
@@ -168,8 +168,8 @@ const lbfGames = (g, choices) => {
   return g.opts.slice(1).filter(([v]) => v === g.value || ((cat === 'all' || GS_GAMES[v].category === cat) && (rhy === 'all' || gsRhythm(v) === rhy)));
 };
 const LbGamePick = ({ g, list, onBack }) => {
-  const [q, setQ] = React.useState(''); const s = q.trim().toLowerCase();
-  const rows = [['all', 'All games']].concat(list).filter(([, l], i) => i === 0 || !s || l.toLowerCase().includes(s));
+  const [q, setQ] = React.useState(''); const s = gsNorm(q);
+  const rows = [['all', 'All games']].concat(list).filter(([, l], i) => i === 0 || !s || gsNorm(l).includes(s));
   return (
     <div className="lbf-pick">
       <button type="button" className="lbf-back" onClick={onBack}><DS.Icon name="back" size={16} />Filters</button>
@@ -241,12 +241,26 @@ const LbShare = ({ lines }) => {
   </>;
 };
 
+// This week's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
+const LbFreshNow = ({ title, line, next, onPlay }) => (
+  <section className="lb-card">
+    <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">THIS WEEK</span><h2 className="mcp-t-sec">{title}</h2></div></div>
+    <p>{line}</p>
+    <div className="lb-foot">
+      <div className="lb-acts"><DS.Button onClick={onPlay}>Play</DS.Button></div>
+      {next && <span className="gs-muted">{next}</span>}
+    </div>
+  </section>
+);
+// A new account has earned nothing yet.
+const lbNoAch = (items) => items.map((a) => ({ ...a, got: undefined, gotFree: undefined, have: a.of ? 0 : a.have }));
+
 window.GS_LIBRARY = window.GS_LIBRARY || {};
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
 const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 // This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).
 const lbNow = (gs, id) => {
-  const done = lbWeekDone(gs);
+  const done = lbWeekDone(gs); if (gsFresh(gs)) return null;
   if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
   if (id === 'delve') return gs.view === 'pass' ? { status: dvStatus(done ? DV_DONE : DV_LIVE), open: () => gs.go('session', { id: done ? 'delve' : 'delve-live' }) } : null;
   const c = window.PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
@@ -254,4 +268,4 @@ const lbNow = (gs, id) => {
   const s = GS_SESSIONS[c.today];
   return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+Object.assign(window, { LbFreshNow, lbNoAch, lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

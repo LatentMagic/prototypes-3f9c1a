@@ -24,14 +24,14 @@ const GsFeature = ({ id, children }) => {
 };
 
 const GS_WHATSNEW = [
-  { v: '1.9', d: '8 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
+  { v: '1.9', d: '1 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
   { v: '1.8', d: '24 September 2026', t: 'Streaks carry across devices', x: 'Your daily streak and record now follow your account, so they stay intact wherever you connect your AI.' },
   { v: '1.7', d: '10 September 2026', t: 'Connect in under two minutes', x: 'A single link now connects Claude, ChatGPT and other MCP assistants. No settings to copy between apps.' },
   { v: '1.6', d: '27 August 2026', t: 'Everything you missed, in History', x: 'History lists every day and week a game has released, played or missed, and opens each one.' },
   { v: '1.5', d: '13 August 2026', t: 'Faster results after each play', x: 'The result and record appear as soon as the last turn is made.' },
   { v: '1.4', d: '30 July 2026', t: 'Account page', x: 'Manage your username, email, password, card and Pass from one place.' },
   { v: '1.3', d: '16 July 2026', t: 'History view', x: 'Look back over every play, grouped by day and by game.' },
-  { v: '1.2', d: '2 July 2026', t: 'Search and filters in the library', x: 'Find a game by kind, length or how often it releases.' },
+  { v: '1.2', d: '2 July 2026', t: 'Search and filters in the library', x: 'Find a game by name, genre or how often it releases.' },
   { v: '1.1', d: '18 June 2026', t: 'Free daily puzzles', x: 'Today’s Daily Puzzles are free with an account.' },
 ];
 const GsWhatsNew = () => {
@@ -85,6 +85,14 @@ const useGsHeroScroll = (ref) => {
 
 const GsHome = () => {
   const gs = useGs(); const field = React.useRef(null); const up = useGsHeroScroll(field);
+  // Touch: the Casebook pose plays while a finger is down on the name or the art, as on a game card, and stops on release or scroll.
+  React.useEffect(() => {
+    const f = field.current; if (!f) return undefined;
+    const on = (e) => { if (e.pointerType !== 'mouse' && e.target.closest('.gs-hero-name, .gs-hero-shapes4')) f.classList.add('is-on'); };
+    const off = () => f.classList.remove('is-on'); const ends = ['pointerup', 'pointercancel', 'pointerleave'];
+    f.addEventListener('pointerdown', on); ends.forEach((t) => f.addEventListener(t, off));
+    return () => { f.removeEventListener('pointerdown', on); ends.forEach((t) => f.removeEventListener(t, off)); };
+  }, []);
   return (
     <main className="gs-wrap gs-main gs-home">
       <section className="gs-hero3">

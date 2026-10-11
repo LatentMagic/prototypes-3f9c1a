@@ -52,16 +52,17 @@
       "id": "—",
       "slug": "authorize-landing",
       "name": "Where you land when your AI asks you to connect",
-      "state": "active",
-      "touched": "2026-10-09",
-      "entries": [
+      "state": "archive",
+      "touched": "2026-10-11",
+      "entries": [],
+      "archive": [
         {
           "name": "Landing from Connect, options 1 to 3",
-          "path": "docs/specs/authorize-landing/playground/index.html",
-          "note": "The home page with the request on top, the request beside the product, or connect first with the games after. Arrive, Connect, Connected for Claude or ChatGPT."
+          "path": "docs/archive/authorize-landing/playground/index.html",
+          "note": "Settled: there is no page that asks a player to approve an AI app (ratified; docs/specs/final-audit-snags/). Archived 2026-10-11; it no longer loads from here."
         }
       ],
-      "archive": []
+      "base": "docs/archive/"
     },
     {
       "id": "—",

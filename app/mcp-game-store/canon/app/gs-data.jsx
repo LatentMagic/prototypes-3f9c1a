@@ -61,7 +61,15 @@ const GS_TODAY_PLAYED = {
   pass: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
 };
 // This player's plays of this edition. Config "Free account, today: Not played" empties a free account's (state free-not-played-today).
-const gsTodayPlayed = (gs) => (gs.view === 'free' && gs.review && gs.review.today === 'none' ? {} : GS_TODAY_PLAYED[gs.view] || {});
+const gsTodayPlayed = (gs) => (gsFresh(gs) || (gs.view === 'free' && gs.review && gs.review.today === 'none') ? {} : GS_TODAY_PLAYED[gs.view] || {});
+// A new account (made in the prototype, or Config Account: New): nothing played anywhere (final-audit-snags).
+const gsFresh = (gs) => { gs = gs || window.gsApi; return !!(gs && gs.user && gs.user.fresh); };
+// The one date a Pass ended on: the day this player's own Pass ended (sub.endedOn, set when it ends in the prototype
+// or by Config Pass ended: Today), else the sample, 18 September. Every date printed about a Pass ending comes from here.
+const GS_ENDED_SAMPLE = new Date(2026, 8, 18);
+const gsEndedOn = (gs) => { gs = gs || window.gsApi; return gs && gs.sub && gs.sub.endedOn ? new Date(gs.sub.endedOn) : GS_ENDED_SAMPLE; };
+// Search text: lower case, no apostrophes, and a comma between digits dropped, so 36000 finds 36,000 Summers Ago.
+const gsNorm = (s) => (s || '').toLowerCase().replace(/(\d),(?=\d)/g, '$1').replace(/[’'‘]/g, '').trim();
 // The small mark on a card, per game. Pass: this edition of each game played; free, signed in: the free plays only.
 const gsMarks = (view, gs) => {
   const m = {};
@@ -69,7 +77,7 @@ const gsMarks = (view, gs) => {
   const live = !!(gs && gs.review && gs.review.week === 'live');
   const mark = (k) => (live ? 'In progress' : GS_GAMES[k].daily ? 'Played today' : 'Played this week');
   Object.keys(gs ? gsTodayPlayed(gs) : GS_TODAY_PLAYED[view] || {}).forEach((k) => { m[k] = mark(k); });
-  if (view === 'pass') { m.casebook = mark('casebook'); m.delve = mark('delve'); }
+  if (view === 'pass' && !gsFresh(gs)) { m.casebook = mark('casebook'); m.delve = mark('delve'); }
   return m;
 };
 const GS_SOON = [
@@ -177,9 +185,9 @@ Object.assign(GS_SESSIONS, {
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', lapsedDate: undefined, figures: ['Threat 3/6', '9 rolls'], tracks: { progress: 4, threat: 3 }, lines: GS_ROLLS.slice(0, 9), reached: null, share: null },
 });
 
-// A lapsed player's Pass-game plays predate the day their Pass ended (18 September).
+// A lapsed player's Pass-game plays predate the day their Pass ended (gsEndedOn). The sample (18 September) moves this week's plays before it (lapsedDate).
 const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.freeUsed;
-const gsSessDate = (s, gs) => (gsLapsed(gs) && s.lapsedDate) || s.date;
+const gsSessDate = (s, gs) => (gsLapsed(gs) && !gs.sub.endedOn && s.lapsedDate) || s.date;
 
 // The scroller: the phone frame's screen when forced-mobile, else the document.
 const gsScroller = () => document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;
@@ -206,5 +214,5 @@ const GS_RESULT = {
 Object.assign(window, {
   GS_RESULT, gsMis,
   DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
-  GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsScroller, gsScrollTop, gsScrollToId,
+  GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop, gsScrollToId,
 });

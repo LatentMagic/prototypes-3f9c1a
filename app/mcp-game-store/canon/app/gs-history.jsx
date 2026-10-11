@@ -7,7 +7,6 @@
 // ============================================================================
 // ---- Dates ----
 const PH_TODAY = new Date(2026, 9, 6);
-const PH_ENDED = new Date(2026, 8, 18);
 const PH_MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const phParse = (s) => { const [d, m, y] = s.split(' '); return new Date(+(y || 2026), PH_MON.indexOf(m), +d); };
 const phAt = (d, h, m, plus = 0) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + plus, h, m);
@@ -32,26 +31,42 @@ const edList = (gs, gid) => {
   if (PZ[gid]) {
     const c = PZ[gid];
     return c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
-      status: !signed ? null : x.i === 0 ? (now ? now.status : ED_NONE) : pzStatus(c, x),
-      open: !signed ? null : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
+      status: !signed ? null : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
+      open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
   }
-  const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1]; const lapsed = gsLapsed(gs);
-  const mine = (x) => x.played && (pass || x === first || (lapsed && lbOld(x.week || x.date)));
+  const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1]; const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
+  const mine = (x) => !fresh && x.played && (pass || x === first || (lapsed && lbOld(x.week || x.date, gs)));
   return all.map((x, i) => {
-    const played = i === 0 ? !!now : signed && mine(x);
-    const st = !signed ? null : i === 0 ? (now ? now.status : ED_NONE) : played ? (gid === 'casebook' ? cbStatus(x) : dvStatus(x)) : ED_NONE;
+    // This week's play counts as played before the Pass ended when it ended today.
+    const curOld = i === 0 && !now && signed && lapsed && mine(x);
+    const unf = signed && i > 0 && phUnf(gs, x.id);
+    const played = i === 0 ? !!now || curOld : signed && mine(x);
+    const st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? (gid === 'casebook' ? cbStatus(CB_DONE) : dvStatus(DV_DONE)) : ED_NONE) : played ? (gid === 'casebook' ? cbStatus(x) : dvStatus(x)) : ED_NONE;
     return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first, now: i === 0, status: st,
-      open: !played ? null : i === 0 ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
+      open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: 'delve' }))) : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
   });
 };
 // Whether an edition can be played at all (GS_EARLIER_CLOSED), and whether this player needs the Pass for it. Shown on the session page only.
 const edClosed = (e) => !e.now && GS_EARLIER_CLOSED.includes(e.gid);
 const edNeedsPass = (gs, e) => gs.view !== 'pass' && !edClosed(e) && (GS_GAMES[e.gid].free ? !e.now : !e.free);
+// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Daily Groups day, one Delve week, each an edition the seed leaves unplayed.
+const PH_UNF = { kind: 'none', label: 'Not finished' };
+const PH_UNF_EDS = (() => {
+  // The second unplayed earlier day: the first (groups4) is session-new-groups-closed's missed edition, kept distinct.
+  const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1]; const dv = DV_ALL.find((x, i) => i > 0 && !x.played);
+  const gAt = phAt(g.d, 21, 40); const dAt = phAt(dv.d, 19, 20);
+  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', listTitle: 'Every try', share: null,
+    lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
+  GS_SESSIONS['delve-unfinished'] = { ...GS_SESSIONS.delve, unfinished: true, edKey: dv.id, live: false, result: null, figures: null, lapsedDate: undefined, tracks: { progress: 2, threat: 4 }, reached: null, share: null,
+    lines: GS_ROLLS.slice(0, 5), date: pzLong(dAt) + ', 19:20' };
+  return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt }, [dv.id]: { gid: 'delve', x: dv, sid: 'delve-unfinished', at: dAt } };
+})();
+const phUnf = (gs, key) => { const u = PH_UNF_EDS[key]; return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === 'pass'); };
 // Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Casebook #45"), its title, and its date.
 // Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
 // A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
 const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
-const phWords = (s) => s.toLowerCase().replace(/[’'‘]/g, '').split(/[^a-z0-9]+/).filter(Boolean);
+const phWords = (s) => s.toLowerCase().replace(/(\d),(?=\d)/g, '$1').replace(/[’'‘]/g, '').split(/[^a-z0-9]+/).filter(Boolean);
 const phIsDate = (s) => phWords(s).some((w) => w.length >= 3 && PH_MON.some((m) => m.toLowerCase().startsWith(w)));
 const phMatch = (hay, s) => {
   if (!s) return true;
@@ -137,17 +152,23 @@ const PH_BROKEN = (() => {
   return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first'), again: false },
     { ...f, pid: 'word1-broken-1', n: 1, at: phAt(f.at, 21, 40), status: { kind: 'ok', label: c.ok(1) }, open: phSess('word-broken-replay'), again: true }];
 })();
-const phLog = (gs) => (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN).sort((a, b) => b.at - a.at) : PH_ALL);
+const PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, again: false, pid: ed + '-unf', at: u.at, status: PH_UNF, open: phSess(u.sid) }));
+const phLog = (gs) => {
+  const l = gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL;
+  return (gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l).slice().sort((a, b) => b.at - a.at);
+};
 // Who sees what (free-and-pass, 2026-10-09). A player keeps History for everything they played.
-// Free: the dailies and Escape in full, and the first edition of Casebook and Delve. Pass ended: those plus every play from before it ended.
+// Free: the dailies and Escape in full, and the first edition of Casebook and Delve. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
 const PH_FIRST = { casebook: CB_ALL[CB_ALL.length - 1].id, delve: DV_ALL[DV_ALL.length - 1].id };
 const phVisible = (gs) => {
+  if (gsFresh(gs)) return [];
   const live = !lbWeekDone(gs);
   const all = phLog(gs).filter((p) => !(live && p.cur && p.again)).map((p) => (live && p.now ? { ...p, ...p.now } : p));
   if (gs.view === 'pass') return all;
-  const lapsed = gsLapsed(gs);
-  return all.filter((p) => { const g = GS_GAMES[p.gid]; if (p.cur) return g.free && !!gsTodayPlayed(gs)[p.gid];
-    return g.free || (lapsed ? p.at < PH_ENDED : PH_FIRST[p.gid] === p.ed); });
+  const lapsed = gsLapsed(gs); const end = gsEndedOn(gs);
+  return all.filter((p) => { const g = GS_GAMES[p.gid];
+    if (g.free) return p.cur ? !!gsTodayPlayed(gs)[p.gid] : true;
+    return lapsed ? p.at < end : !p.cur && PH_FIRST[p.gid] === p.ed; });
 };
 // A record shows the time it was played; a replay also carries a Replay chip.
 PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
@@ -155,15 +176,7 @@ PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filte
   const s = id && GS_SESSIONS[id]; if (!s || s.__rp) return;
   s.__rp = true; s.phEd = q.ed; s.phFirst = !q.again; s.date = pzLong(q.at) + ', ' + phTime(q.at); if (q.again && !s.again) { s.again = true; s.figures = [<span className="rp-fig">Replay</span>, ...(s.figures || [])]; }
 }));
-// An edition's record (its first play's page) lists the edition's replays this player can see, oldest first.
-const phEdReplays = (gs, ed) => phVisible(gs).filter((p) => p.ed === ed && p.again).sort((x, y) => x.at - y.at);
-const phReplays = (gs, s) => (s && s.phFirst ? phEdReplays(gs, s.phEd) : []);
-// The Replays section of an edition's record page: one sub row per replay, each opening that play.
-const PhReplays = ({ reps }) => { const gs = useGs(); return reps.length > 0 && (
-  <section className="gs-stack-md">
-    <h2 className="mcp-t-sec">Replays</h2>
-    <DS.RowList label="Replays">{reps.map((p) => <DS.ListRow key={p.pid} sub note="Replay" result={p.status.label} tone={rpTone(p.status)} when={phShort(p.at) + ', ' + phTime(p.at)} onClick={() => p.open(gs)} />)}</DS.RowList>
-  </section>); };
+// A session page is one play: it lists no other plays. Replays are found in History (docs/specs/replay-share/).
 const phLib = (gs, id) => gs.go(GS_GAMES[id].route, { page: 'record' });
 
 // ---- Parts ----
@@ -254,10 +267,10 @@ const LbRecent = ({ title, allLabel, rows, empty }) => {
 // Pager: numbers when they fit, "Page 3 of 9" when they don't (container query in the page CSS).
 const RpPages = ({ pg, pages, go }) => (pages > 1 ? (
   <nav className="lb-pages rp-pg" aria-label="Pages">
-    {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="back" /></button> : <span className="gs-iconbtn-space" />}
+    {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="next" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}
     <div className="lb-pagenums rp-pg-nums">{Array.from({ length: pages }, (_, x) => <button key={x} type="button" aria-current={x === pg ? 'page' : undefined} onClick={() => go(x)}>{x + 1}</button>)}</div>
     <span className="rp-pg-of gs-strong gs-num-text">{'Page ' + (pg + 1) + ' of ' + pages}</span>
-    {pg < pages - 1 ? <button type="button" className="gs-iconbtn" aria-label="Next page" onClick={() => go(pg + 1)}><DS.Icon name="back" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}
+    {pg < pages - 1 ? <button type="button" className="gs-iconbtn" aria-label="Next page" onClick={() => go(pg + 1)}><DS.Icon name="next" /></button> : <span className="gs-iconbtn-space" />}
   </nav>
 ) : null);
 
@@ -330,4 +343,4 @@ const GsHistory = () => {
   </>);
 };
 
-Object.assign(window, { GsHistory, LbRecent, phReplays, phEdReplays, PhReplays, phShort, phTime, rpTone, CB_REPLAYS, PH_EDS, ED_GAMES, edList, edName, edLabel, edClosed, edNeedsPass, ED_NONE });
+Object.assign(window, { phVisible, phUnf, PH_UNF, PH_UNF_EDS, GsHistory, LbRecent, phShort, phTime, rpTone, CB_REPLAYS, PH_EDS, ED_GAMES, edList, edName, edLabel, edClosed, edNeedsPass, ED_NONE });
