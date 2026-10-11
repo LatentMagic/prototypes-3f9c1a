@@ -55,4 +55,4 @@ Checked every daily and weekly game in free, Pass and Pass ended, with the switc
 
 ## Found on other surfaces
 
-- **History, "every edition" list: the result column jumps between day groups.** Each day is its own `RowList`. A list holding a row with an `end` slot (the "Latest" tag) gets an extra 72px column from 640px (`.mcp-rows:has(.mcp-row-end)` in `components.css`). So that group's results sit about 88px to the left of the other groups'. Seen on Casebook, every edition. The column rule is the design system's. Not fixed; it needs a ruling.
+- **History, "every edition" list: the result column jumped between day groups.** Each day is its own `RowList`; the group holding the "Latest" tag (`end`) had an extra column from 640px, so its results sat about 88px left of the others. Fixed in the design system on 11 October: from 640px, separate RowLists line up whether or not a list has an `end`. The latest bundle, `components.css` and `styles.css` are pulled. The build keeps one RowList per day, adds no padding or spacer, and sets `--mcp-row-end` nowhere (if one list ever sets it, every list that should line up must set the same value).

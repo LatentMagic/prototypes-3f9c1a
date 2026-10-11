@@ -137,10 +137,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub{padding-left:calc(var(--space-4) + 52px)}
 .mcp-row.is-sub>.mcp-row-note{justify-self:start}
 @container mcp-rows (min-width:640px){
-.mcp-rows .mcp-row.is-slots{column-gap:var(--space-4);grid-template-columns:minmax(0,1fr) minmax(0,240px) 112px 80px 20px;grid-template-areas:"t s w n g"}
-.mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots{grid-template-columns:40px minmax(0,1fr) minmax(0,240px) 112px 80px 20px;grid-template-areas:"l t s w n g"}
-.mcp-rows:has(.mcp-row-end) .mcp-row.is-slots{grid-template-columns:minmax(0,1fr) minmax(0,240px) 112px 80px var(--mcp-row-end,72px) 20px;grid-template-areas:"t s w n e g"}
-.mcp-rows:has(.mcp-row-lead):has(.mcp-row-end) .mcp-row.is-slots{grid-template-columns:40px minmax(0,1fr) minmax(0,240px) 112px 80px var(--mcp-row-end,72px) 20px;grid-template-areas:"l t s w n e g"}
+.mcp-rows .mcp-row.is-slots{column-gap:var(--space-4);grid-template-columns:minmax(0,1fr) minmax(0,240px) 112px 80px var(--mcp-row-end,72px) 20px;grid-template-areas:"t s w n e g"}
+.mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots{grid-template-columns:40px minmax(0,1fr) minmax(0,240px) 112px 80px var(--mcp-row-end,72px) 20px;grid-template-areas:"l t s w n e g"}
 .mcp-rows .mcp-row.is-slots.is-sub,.mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub{padding-left:var(--space-4)}
 .mcp-rows .mcp-row.is-sub>.mcp-row-note{grid-area:t}
 .mcp-rows .mcp-row.is-slots>.mcp-row-when{grid-area:w}
