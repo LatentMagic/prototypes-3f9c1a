@@ -22,7 +22,7 @@ const KIT_QA = [
     note: 'On each, press the action: its control shows the spinner for about a second and ignores a second press (and Enter). Sign out is in the account menu. Check at phone and desktop width.',
     steps: ['sign-up', 'sign-in', 'verify-email', 'sign-in-new-device', 'reset-password', 'username-new-account', 'account-email', 'change-email-code', 'delete-account-confirm', 'pass-card-pending-switch', 'pass-card-ending', 'switch-sheet-yearly', 'cancel-sheet', 'checkout', 'update-card'] },
   { key: 'username-1', title: 'Usernames',
-    note: 'By hand: sign up by email (username on the form, no name fields), verify, then Connect your AI. By Google or Apple: the code step, then Your username, then Connect your AI; from Get the Pass, checkout comes after the username. On Account, rename and watch the menu, avatar and a share card. Config has the Username row.',
+    note: 'By hand: sign up by email (username on the form, no name fields), verify, then Connect your AI. By Google or Apple: no code, straight to Your username, then Connect your AI; from Get the Pass, checkout comes after the username. On Account, rename and watch the menu, avatar and a share card. Config has the Username row.',
     steps: ['sign-up', 'username-new-account', 'username-taken', 'account-email', 'account-provider', 'account-username-wait', 'session-delve'] },
   { key: 'circlists-match-1', title: 'Circlists match 1: sign-in, menu, Account',
     note: 'Also check by hand: Google, black Apple, email order; email sign-in lands on Verify this device; the user menu (signed in, wide).',
@@ -39,6 +39,9 @@ const KIT_QA = [
     note: 'Each page: facts band, this week’s one, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'iffy-decisions', title: 'Decisions, 11 October (docs/specs/iffy-decisions-2026-10-11/)',
+  note: 'Casebook and Delve product pages: signed out and free read "Play the first case/scene", Pass reads "Play"; signed in drops "The first ... is free with an account." A played session page names its edition above the result. Sign up by Google or Apple: no code, straight to Your username (Config Device = New still gives Verify this device on sign-in). Share from a session page and a library game page: the same pop-up, a bottom sheet on a phone.',
+  steps: ['sign-up', 'username-new-account', 'verify-email', 'sign-in-new-device-provider', 'reset-password-code', 'session-delve', 'history', 'library-casebook', 'library-delve'] });
 KIT_QA.unshift({ key: 'fixes', title: 'Fixes, 10 October (docs/specs/fixes/)',
   note: 'From History, open a row and press its back link: it returns to History, as left. Pass card: cancel, resume, switch and undo each move focus to the control that undoes them and are announced. Tab stays inside every open pop-up.',
   steps: ['history', 'history-every-edition-all', 'session-delve-past', 'library-delve', 'library-casebook', 'library-mystery-never-played', 'sign-up', 'verify-email', 'not-found', 'pass-card-monthly', 'pass-card-failed-pending-switch', 'switch-sheet-yearly', 'switch-sheet-trial', 'delete-account-confirm', 'cancel-sheet', 'session-hunter', 'library-delve-no-pass', 'library', 'games-free', 'home', 'load-failed'] });
@@ -72,6 +75,10 @@ KIT_QA.unshift({ key: 'history-only', title: 'History is the one list (not ratif
   note: 'No Editions page and no "All editions" link anywhere. History opens on Played; List switches to Every edition. Every row opens a session page, never a pop-up; no row or filter mentions the Pass. Search: a number, name, date or month, a leading # ignored. By hand: from a library game page press All…, switch List, press a missed row, then Back. Check at 390 and 1280px.',
   steps: ['history', 'history-every-edition-all', 'history-every-edition-groups', 'history-every-edition-word', 'history-every-edition-casebook', 'history-every-edition-casebook-free', 'history-every-edition-casebook-pass-ended', 'history-hunter', 'history-search-empty',
     'session-new-pass', 'session-new-needs-pass', 'session-new-delve-needs-pass', 'session-new-groups-closed', 'session-new-closed', 'session-word-earlier-closed', 'library-word', 'library-casebook', 'word-signed-out', 'casebook-free'] });
+KIT_QA.unshift({ key: 'notifications', title: 'Notifications (docs/specs/notifications-2026-10-11/, not ratified)',
+  note: 'Card: third on Account, after the Pass card. With the all switch off nothing else changes. Undecided: the all switch raises the browser dialog, even after the banner was dismissed; allowed: it turns on with no dialog. Banner: Discover, Library, History only, signed in, permission undecided. Turn on notifications raises the dialog and the banner never returns, whatever the answer. × hides it on all three pages; Config Notifications moves the clock on (3, 7, then 30 days). Check at 320px and 1280px.',
+  steps: ['notifications-undecided', 'notifications-on', 'notifications-off', 'notifications-turn-on-fails', 'notifications-blocked', 'notifications-ios-tab', 'notifications-unsupported',
+    'push-banner-discover', 'push-banner-library', 'push-banner-history', 'push-permission-dialog', 'push-banner-dismissed', 'push-banner-back', 'games-signed-out'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

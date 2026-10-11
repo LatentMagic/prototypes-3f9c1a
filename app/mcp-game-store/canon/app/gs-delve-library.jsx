@@ -7,7 +7,7 @@
 // ============================================================================
 const DV_TITLES = ['Beneath Gallows Hill', 'The Drum Room', 'The Fungus Path', 'The Escape Tunnel', 'The Drifting Freighter', 'The Cold Hold', 'The Shrine Cavern', 'The Miller’s Cellar'];
 const DV_HEROES = ['Vex the Rogue', 'Bryn the Fighter', 'Oda the Wizard'];
-const DV_END = { won: { kind: 'ok', label: 'Rescued', short: 'Rescued' }, ritual: { kind: 'bad', label: 'Ritual done', short: 'Ritual done' }, fell: { kind: 'bad', label: 'Hero fell', short: 'Hero fell' } };
+const DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: { kind: 'bad', label: GS_RESULT.delve({ end: 'ritual' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
 const DV_ALL = Array.from({ length: 30 }, (_, i) => {
   const d = new Date(2026, 9, 5 - 7 * i);
   const played = i < 3 || i % 4 !== 3;
@@ -65,7 +65,7 @@ const DvNow = ({ s }) => {
       <DS.ProgressBar label={'Rescue ' + s.rescue + ' of 6'} value={s.rescue} max={6} showValue={false} />
       <div className="lb-foot">
         <div className="lb-acts">
-          {lines && <LbShare lines={lines} note="It hides the story and the places." />}
+          {lines && <LbShare lines={lines} />}
           <DS.TextLink onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })}>{s.end ? 'See every roll' : 'See your rolls so far'}</DS.TextLink>
         </div>
         <span className="gs-muted">{'Next scene: ' + DV_NEXT}</span>
@@ -100,11 +100,11 @@ const DvFirst = () => {
       <p>{s.played ? 'You played ' + s.hero + ' and the ritual finished before Elsie was out, in ' + s.rolls + ' rolls.' : 'The game’s very first scene, the same for everyone. Play it free.'}</p>
       <div className="lb-foot">
         <div className="lb-acts">
-          {s.played ? <><LbShare lines={gsShareText(GS_SESSIONS['delve-first'])} note="It hides the story and the places." /><DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink></> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
+          {s.played ? <><LbShare lines={gsShareText(GS_SESSIONS['delve-first'])} /><DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink></> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
         </div>
         <span className="gs-muted">Every other scene comes with the Pass.</span>
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{again ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
+      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
 };
@@ -119,9 +119,10 @@ const DvLibrary = () => {
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
-      <div className={'lb-lay' + (pass ? '' : ' is-three')}>
+      <div className={'lb-lay' + (pass || gsLapsed(gs) ? '' : ' is-three')}>
         {pass ? <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} /> : <DvFirst />}
         {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />; })()}
+        {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ended={CB_ENDED} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your scenes" allLabel="All scenes" rows={rows} />
       </div>

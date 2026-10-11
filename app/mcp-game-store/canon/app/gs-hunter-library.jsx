@@ -21,7 +21,7 @@ const HG_DAYS = Array.from({ length: 18 }, (_, i) => {
 });
 const HG_LATEST = HG_DAYS[0];
 const hgSid = (x) => 'hunter-' + x.id;
-const hgStatus = (x) => (x.restarted ? { kind: 'none', label: 'Restarted' } : { kind: 'ok', label: 'Finished' });
+const hgStatus = (x) => ({ kind: x.restarted ? 'none' : 'ok', label: GS_RESULT.hunter({ restarted: !!x.restarted }) });
 // A session page for every day: the result matches its row; the record is what happened in the day. Share carries the product page link only (MCPG-030 AF-04).
 HG_DAYS.forEach((x) => {
   GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
@@ -75,7 +75,7 @@ const HgClosed = ({ again }) => {
     <section className="lb-card">
       <h2 className="mcp-t-sec">{again ? 'Your Pass has ended' : 'Only with the Pass'}</h2>
       <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free account can’t play it.'}</p>
-      <div><DS.Button onClick={() => gs.go('pass')}>{again ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
+      <div><DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
       <p className="gs-small">{GS.purchase}</p>
     </section>
   );

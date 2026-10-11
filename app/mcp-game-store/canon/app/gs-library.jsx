@@ -63,21 +63,21 @@ const LbRun = ({ n, unit, weeks, locked, figure, on = 'Completed', legend = 'Not
   const cut = weeks.length - 6;
   return (
     <section className="lb-card lb-runcard">
-      <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span></div>
+      <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span>{weeks.some((w) => w.frozen) && <span className="gs-muted gs-strong">· Frozen</span>}</div>
       <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
-        aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.played ? on : legend).toLowerCase()).join(', ')}>
+        aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.frozen ? 'frozen' : w.played ? on : legend).toLowerCase()).join(', ')}>
         {weeks.map((w, i) => {
-          const join = i > 0 && w.played && weeks[i - 1].played;
+          const join = i > 0 && (w.played || w.frozen) && (weeks[i - 1].played || (weeks[i - 1].frozen && w.frozen));
           const newMon = i === 0 || weeks[i - 1].mon !== w.mon;
           return (
-            <span key={w.id} className={'lb-wk' + (w.played ? ' is-on' : '') + (join ? ' is-join' : '') + (w.now ? ' is-now' : '') + (i < cut ? ' is-early' : '') + (i === cut ? ' is-cut' : '')}>
+            <span key={w.id} className={'lb-wk' + (w.played ? ' is-on' : '') + (w.frozen ? ' is-fz' : '') + (join ? ' is-join' : '') + (w.now ? ' is-now' : '') + (i < cut ? ' is-early' : '') + (i === cut ? ' is-cut' : '')}>
               <em><b className="lb-mw">{newMon ? w.mon : ''}</b><b className="lb-mn">{newMon || i === cut ? w.mon : ''}</b></em><i /><span>{w.day}</span>
             </span>
           );
         })}
       </div>
-      <ul className="lb-legend"><li><i className="is-on" />{on}</li><li><i />{legend}</li></ul>
+      <ul className="lb-legend"><li><i className="is-on" />{on}</li><li><i />{legend}</li>{weeks.some((w) => w.frozen) && <li><i className="is-fz" />Frozen</li>}</ul>
       </div>
     </section>
   );
@@ -91,7 +91,7 @@ const lbBadgeSvg = ([bg, shapes], got) => '<svg viewBox="0 0 48 48" aria-hidden=
 const LbBadge = ({ art, got, locked }) => (
   <span className={'lb-badge' + (got ? '' : ' is-todo') + (locked ? ' is-locked' : '')}>
     <span className="lb-badge-art" dangerouslySetInnerHTML={{ __html: lbBadgeSvg(art, got) }} />
-    {locked && <span className="lb-lock"><DS.Icon name="lock" size={12} /></span>}
+    {locked && <span className="lb-lock"><DS.Icon name="lock" size={14} /></span>}
   </span>
 );
 const c13CapLb = (s) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -137,6 +137,9 @@ const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFull
 // A run from a list newest first: [{ id, date, played, done }] → oldest first, with the newest marked as now.
 // A mark is filled only for an edition completed in its first finished play (done); a list without done marks plays.
 const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.done != null ? x.done : x.played, now: i === a.length - 1 }; });
+// A player whose Pass ended: weeks dated after it are frozen (not playable), and the streak counts only the weeks before.
+// get(x) gives an edition's date text; returns the run's weeks (oldest first, with frozen set) and the frozen streak.
+const lbFrozen = (weeks, list, get) => ({ weeks: weeks.map((w) => { const frozen = !lbOld(w.day + ' ' + w.month + ' 2026'); return { ...w, frozen, now: frozen ? false : w.now }; }), n: lbStreak(list.filter((x) => lbOld(get(x)))) });
 // The streak, newest first: editions completed in their first finished play, each in its own day or week.
 // This edition adds only once completed; until its day or week ends it breaks nothing. A replay never counts.
 const lbStreak = (list) => { let n = 0; const l = list[0] && !list[0].done ? list.slice(1) : list; for (const x of l) { if (!x.done) break; n += 1; } return n; };
@@ -187,6 +190,8 @@ const LbFilters = ({ children }) => {
   const [open, setOpen] = React.useState(false); const [deep, setDeep] = React.useState(false);
   const on = choices.filter(lbfOn); const g = choices.find((c) => c.label === 'Game');
   const close = () => { setOpen(false); setDeep(false); };
+  const clear = () => { on.forEach((c) => c.onPick(c.opts[0][0])); setDeep(false); };
+  const done = <DS.Button onClick={close}>Done</DS.Button>;
   return (
     <div className="lbf-top">
       <div className="lbf-bar">
@@ -194,7 +199,7 @@ const LbFilters = ({ children }) => {
         <DS.Button variant="secondary" onClick={() => setOpen(true)}>{on.length ? 'Filters · ' + on.length : 'Filters'}</DS.Button>
       </div>
       {on.length > 0 && <p className="lbf-sum">{on.map(lbfLabel).join(' · ')}</p>}
-      <DS.Popup kind="panel" open={open} onClose={close} title="Filters" actions={<DS.Button onClick={close}>Done</DS.Button>}>
+      <DS.Popup kind="panel" open={open} onClose={close} title="Filters" actions={on.length ? <DS.ButtonPair><DS.Button variant="secondary" onClick={clear}>Clear</DS.Button>{done}</DS.ButtonPair> : done}>
         {deep && g ? <LbGamePick g={g} list={lbfGames(g, choices)} onBack={() => setDeep(false)} /> : (
           <div className="lbf-groups">{choices.map((c) => (c === g ? (
             <div key={c.label} className="lbf-grow">
@@ -227,15 +232,12 @@ const LbCopyBtn = ({ lines }) => {
   React.useEffect(() => { if (!done) return undefined; const t = setTimeout(() => setDone(false), 2400); return () => clearTimeout(t); }, [done]);
   return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { lbCopy(lines); setDone(true); }}>Copy</DS.Button>;
 };
-const LbShare = ({ lines, note }) => {
+// Share on a library game page: the page's own button, the session page's pop-up (GsSharePopup).
+const LbShare = ({ lines }) => {
   const [open, setOpen] = React.useState(false);
   return <>
     <DS.Button variant="main" onClick={() => setOpen(true)}>Share</DS.Button>
-    <DS.Popup open={open} onClose={() => setOpen(false)} kind="panel" title="Share your result"
-      actions={<LbCopyBtn lines={lines} />}>
-      <div className="lb-share-text">{lines.map((l, i) => <span key={i} className={i === lines.length - 1 ? 'lb-share-link' : ''}>{l}</span>)}</div>
-      {note && <p className="gs-muted">{note}</p>}
-    </DS.Popup>
+    <GsSharePopup open={open} onClose={() => setOpen(false)} lines={lines} />
   </>;
 };
 
@@ -250,6 +252,6 @@ const lbNow = (gs, id) => {
   const c = window.PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
   if (!done) return { status: { kind: 'live', label: 'In progress' }, open: () => gs.go('session', { id: c.liveSid }) };
   const s = GS_SESSIONS[c.today];
-  return { status: s.loss ? { kind: 'bad', label: s.result, short: c.badF } : { kind: 'ok', label: s.result, short: c.short }, open: () => gs.go('session', { id: c.today }) };
+  return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+Object.assign(window, { lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

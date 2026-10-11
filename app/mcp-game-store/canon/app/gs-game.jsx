@@ -18,7 +18,6 @@ const GS_PAGES = {
       'You can’t see it yet, so start guessing. Each guess at the five-letter word comes back marked letter by letter.',
       'Your AI passes on your guesses, and the game engine marks every one and keeps count. Make your first guess.'] },
     who: { ai: 'Takes your guesses and shows you how each one scored.', server: 'Holds the word, marks every guess and keeps the count.' },
-    shots: ['Each guess goes to the engine, which marks it and keeps count.'],
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
   groups: {
@@ -30,7 +29,6 @@ const GS_PAGES = {
       'Pick four words you think belong together. You can make four mistakes, and the game tells you when you’re one word away.',
       'Your AI passes on your picks and explains the groups afterwards. The game engine checks every one. Find the first group.'] },
     who: { ai: 'Passes on your picks and explains the groups once you finish.', server: 'Holds the groups, checks every pick and counts your mistakes.' },
-    shots: ['Each set of four goes to the engine, which checks it and counts your mistakes.'],
     week: { title: 'Today’s groups', line: 'Four groups. Four mistakes to spare.', session: 'groups-today' },
   },
   mystery: {
@@ -42,7 +40,6 @@ const GS_PAGES = {
       'The clues point to one suspect, one weapon and one room. Ask the inspector yes-or-no questions, then make one accusation.',
       'Your AI voices the suspects. The game engine holds the answer and keeps it back until you accuse. Make your move.'] },
     who: { ai: 'Voices the suspects and the inspector, and takes your questions.', server: 'Holds the answer, counts your questions and checks your accusation.' },
-    shots: ['Each question goes to the engine, which answers it and keeps count.'],
     week: { title: 'Today’s case', line: 'One case. One accusation.', session: 'mystery-today' },
   },
   escape: {
@@ -54,7 +51,6 @@ const GS_PAGES = {
       'Search the room, try what you find and work out the way out. A new room arrives every Monday.',
       'Your AI describes the room and what you find. The game engine decides what each move does and counts them. Say what you search first.'] },
     who: { ai: 'Describes the room and everything you find in it.', server: 'Decides what each move does, counts your moves and keeps the record.' },
-    shots: ['Each move goes to the engine, which decides what happens and keeps count.'],
     week: { title: 'This week’s room', line: 'Find the way out.', session: 'escape-week' },
   },
   casebook: {
@@ -69,7 +65,6 @@ const GS_PAGES = {
       'Sixteen turns to search, question and confront them. Then one accusation.',
       'The game engine holds every statement word for word, so any story can be checked.'] },
     who: { ai: 'Voices every suspect and narrates what you find.', server: 'Holds every statement and every piece of evidence, counts your turns and keeps the record.' },
-    shots: [null],
     week: { title: 'This week’s case', line: 'Sixteen turns. One accusation.', session: 'casebook' },
   },
   delve: {
@@ -83,7 +78,6 @@ const GS_PAGES = {
       'Goblins have dragged the miller’s daughter into the warren beneath Gallows Hill. When the drums stop, the ritual is complete. You have one scene: sneak, talk, fight or bluff your way through tunnels, fungus galleries and a bone bridge to the ritual chamber, then get back out.',
       <>Every risky move is a d20 roll, made by the game engine where nobody can fudge it. Two tracks decide the scene: your <b>progress</b> towards the captive, and the <b>threat clock</b> that fills as the warren wakes. Your AI tells the story around the dice.</>] },
     who: { ai: 'Narrates the warren, voices the goblins and the captive, and asks what you do next.', server: 'Rolls every die, keeps both tracks, decides each outcome and records your session.' },
-    shots: ['The scene opens. The engine sets up both tracks.', 'A weak hit: progress, with a cost the engine applies.', 'The ending, with a link back to your full session.'],
     week: { title: 'This week’s scene', line: 'Get her out before the drums stop.', session: 'delve' },
   },
   hunter: {
@@ -97,7 +91,6 @@ const GS_PAGES = {
       'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
       'Your AI tells the day and speaks for everyone in it. The game engine rolls the dice and keeps the record. Say what you do first.'] },
     who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
-    shots: [null],
     week: { title: 'The day', line: 'One day, dawn to firelight. Play it again and it goes differently.', session: 'hunter', unmarked: true },
   },
 };
@@ -107,15 +100,19 @@ const GsPlayBox = ({ id }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const b = GS_PAGES[id].box;
   const paying = gs.view === 'pass';
+  // Casebook and Delve: "Play" for a Pass holder, the first-edition label for everyone else. The prompt is the same for all.
+  const label = b.first && !paying ? b.button : 'Play';
+  // Signed in, the first sentence ("The first case is free with an account.") goes; the rest stays.
+  const small = b.first && gs.view !== 'out' && b.small ? b.small.slice(b.small.indexOf('. ') + 2) : b.small;
   return (
     <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <span className="gs-label">{b.label}</span>
       <h2 className="mcp-t-card">{b.heading}</h2>
       <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
       {b.free || b.first || paying
-        ? <DS.Button block onClick={() => gs.play(g.name)}>Play</DS.Button>
+        ? <DS.Button block onClick={() => gs.play(g.name)}>{label}</DS.Button>
         : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
-      {b.small && <p className="gs-small">{b.small}{!b.free && ' ' + GS.purchase}</p>}
+      {small && <p className="gs-small">{small}{!b.free && ' ' + GS.purchase}</p>}
       {b.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
       {!b.free && !b.first && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
       <div className="gs-rule" />
@@ -198,10 +195,7 @@ const GsGamePage = ({ id, top }) => {
 
       <section className="gs-stack-md">
         <h2 className="mcp-t-sec">How it looks in your chat</h2>
-        {/* Stand-ins: the Daily Word screenshot in every slot until each game's own exist in assets/in-use/ */}
-        <div className={p.shots.length > 1 ? 'gs-chats' : 'gs-grid2'}>
-          {p.shots.map((c, i) => <GsShot key={i} id="dailyWord" caption={gsOr(c)} />)}
-        </div>
+        <GsChatRow id={id} />
       </section>
 
       {id === 'delve' && (

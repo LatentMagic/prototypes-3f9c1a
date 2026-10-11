@@ -20,7 +20,7 @@ const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pendi
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
-const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'legal', 'connect', 'history', 'session', 'account'];
+const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
 const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout'];
 // Screens that make or enter an account. Someone signed in never lands on them.
@@ -28,7 +28,7 @@ const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'retu
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
 const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter',
-  'session', 'history', 'pass', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline'];
+  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline'];
 
 const GsScreen = ({ name }) => {
   switch (name) {
@@ -52,6 +52,7 @@ const GsScreen = ({ name }) => {
     case 'session': return <GsSession />;
     case 'history': return <GsHistory />;
     case 'pass': return <GsPass />;
+    case 'subscribe': return <GsSubscribe />;
     case 'checkout': return <GsCheckout />;
     case 'update-card': return <GsUpdateCard />;
     case 'account': return <GsAccount />;
@@ -64,7 +65,7 @@ const GsScreen = ({ name }) => {
 
 // A page loads as a page on arrival: the top bar and footer stand, the content waits.
 // Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
-const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter'];
+const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter'];
 const GsArrival = ({ name, quick }) => {
   const gs = useGs(); const r = gs.route;
   const held = r.hold === 'page';
@@ -95,6 +96,10 @@ const KitApp = () => {
   const [connected, setConnected] = useState(false);
   const [review, setReviewState] = useState(GS_REVIEW_DEFAULT);
   const [playing, setPlaying] = useState(null);
+  // Push notifications (app/gs-push.jsx, droppable): per device, so kept in localStorage.
+  const [push, setPushState] = useState(() => ({ ...(window.GS_PUSH_DEFAULT || {}), ...(window.gsPushLoad ? window.gsPushLoad() : {}) }));
+  useEffect(() => { if (window.gsPushSave) window.gsPushSave(push); }, [push]);
+  const setPush = (patch) => setPushState((p) => ({ ...p, ...patch }));
   const [width, setWidth] = useState(() => window.innerWidth);
   const rootRef = useRef(null);
 
@@ -105,7 +110,7 @@ const KitApp = () => {
   const land = (r, v) => {
     if (v !== 'out' && (GS_AUTH_ONLY.includes(r.name) || r.name === 'home')) return { name: 'games' };
     if (v === 'out' && GS_SIGNED_IN_ONLY.includes(r.name)) return { name: 'home' };
-    if (v === 'pass' && r.name === 'checkout') return { name: 'account' };
+    if (v === 'pass' && (r.name === 'checkout' || r.name === 'subscribe')) return { name: 'account' }; // MCPG-012 AF-06
     return r;
   };
 
@@ -150,11 +155,11 @@ const KitApp = () => {
   };
   const reset = () => {
     setSignedIn(false); setSubState(GS_SUB_DEFAULT); setUserState(GS_USER_DEFAULT); setProvider('email');
-    setChoice('yearly'); setConnected(false); setReviewState(GS_REVIEW_DEFAULT); go('home', null, 'out');
+    setChoice('yearly'); setConnected(false); setReviewState(GS_REVIEW_DEFAULT); setPushState({ ...(window.GS_PUSH_DEFAULT || {}) }); go('home', null, 'out');
   };
 
   const gs = {
-    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640,
+    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640, push, setPush,
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
     // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
     keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
@@ -178,14 +183,14 @@ const KitApp = () => {
     getPass: () => (view === 'out' ? go('signup', { next: 'checkout' }) : go('checkout')),
     // An account exists only once it has a username, so the username always comes before any payment page.
     // Email: the username is on the sign-up form and the account is made when the email is verified.
-    // Google or Apple: the provider returns, the new-device code, then Your username; the account is made there.
+    // Google or Apple: the provider returns, then Your username (no code); the account is made there.
     accountMade: (name, how, next) => {
       setSignedIn(true); setProvider(how || 'email'); setConnected(false); setUser({ username: name, locked: false });
       go(next === 'checkout' ? 'checkout' : 'connect', null, 'free');
     },
-    afterCheckout: () => go('pass'),
-    // Back from checkout's "Cancel and return" keeps the plan chosen on the Pass page (choice is held here).
-    // next: where sign-in returns (the Pass page, when sign-in started from the Pass page's sign-up route).
+    afterCheckout: () => go('subscribe'),
+    // Back from checkout's "Cancel and return" returns to the subscribe page with the plan still chosen (MCPG-012 EF-01).
+    // next: where sign-in returns (the subscribe page, when sign-in started from its sign-up route).
     signedIn: (how, next) => { setSignedIn(true); setProvider(how || 'email'); setConnected(true); go(next || 'games', null, 'free'); },
     paid: (free) => {
       const months = GS_PLAN[choice].months;
@@ -200,7 +205,7 @@ const KitApp = () => {
   // ---- the states register (app/states.jsx, a deletable aid) ----------------------
   const [landing, setLanding] = useState(() => (window.kitResolveState ? window.kitResolveState() : null));
   const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (window.buildStates
-    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser })
+    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPush })
     : { byId: {}, groups: [] });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
   const resetAndShow = window.buildStates && (() => { reset(); setLanding(null); });
@@ -234,6 +239,7 @@ const KitApp = () => {
         {(GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && <GsFooter />}
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         <GsPlayPopup />
+        {window.GsPushHost && <window.GsPushHost />}
         <GsDemoBar />
       </div>
     </GsCtx.Provider>

@@ -1,8 +1,9 @@
 // ============================================================================
 // [Platform] — Home (screen 1) and Games (screen 6). The Pass page is in gs-billing.jsx.
 // ============================================================================
-// The hero: the headline's game (Casebook) as one cover field, with a real screenshot of play set inside it
-// (home-hero option 9, subline a, ratified 2026-10-09; docs/specs/home-hero/).
+// The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPicture) set inside it
+// and scrollable (home-product-hero option 4, ratified 2026-10-11; docs/specs/home-product-hero/). The field is from
+// home-hero option 9 (docs/specs/home-hero/).
 const GsFeature = ({ id, children }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
   return (
@@ -58,55 +59,74 @@ const GsWhatsNew = () => {
     </section>
   );
 };
+// The chat opens on its latest turn and scrolls back; the pill says there is more above and takes you there.
+const useGsHeroScroll = (ref) => {
+  const [chat, setChat] = React.useState(null); const [more, setMore] = React.useState(false);
+  React.useEffect(() => {
+    const b = ref.current && ref.current.querySelector('.mcp-chat-body');
+    if (!b) return;
+    setChat(b.parentElement);
+    b.tabIndex = 0; b.setAttribute('role', 'region'); b.setAttribute('aria-label', 'The Casebook chat, scrolls');
+    let moved = false; const mark = () => { const up = b.scrollTop > 4; b.dataset.more = up ? 'up' : ''; setMore(up); };
+    const end = () => { if (!moved) b.scrollTop = b.scrollHeight; mark(); };
+    const stop = () => { moved = true; };
+    b.addEventListener('scroll', mark, { passive: true });
+    b.addEventListener('wheel', stop, { passive: true }); b.addEventListener('touchstart', stop, { passive: true }); b.addEventListener('keydown', stop);
+    const ro = new ResizeObserver(end); ro.observe(b); [...b.children].forEach((c) => ro.observe(c));
+    end(); const t = setTimeout(end, 600);
+    return () => { clearTimeout(t); ro.disconnect(); };
+  }, []);
+  const toTop = () => { const b = chat.querySelector('.mcp-chat-body'); b.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); };
+  return chat && ReactDOM.createPortal(
+    <button type="button" className="gs-hero-up" hidden={!more} onClick={toTop}>
+      <DS.Icon name="down" size={16} style={{ transform: 'rotate(180deg)' }} />Earlier in the case
+    </button>, chat);
+};
+
 const GsHome = () => {
-  const gs = useGs();
+  const gs = useGs(); const field = React.useRef(null); const up = useGsHeroScroll(field);
   return (
     <main className="gs-wrap gs-main gs-home">
       <section className="gs-hero3">
         <div className="gs-hero-copy">
-          <h1 className="gs-h1 gs-h1-home"><span>Someone’s lying to you.</span> <span>Go and find out who.</span></h1>
-          <p className="gs-hero-sub">Your AI plays every suspect, and some of them are lying. Find the proof that breaks their story.</p>
+          <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
+          <p className="gs-hero-sub">Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             <DS.Button variant="secondary" onClick={gs.goHow}>See how it works</DS.Button>
           </div>
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
-        <div className="gs-hero-field">
+        <div className="gs-hero-field" ref={field}>
           <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.casebook.route)}>
             <i style={{ background: '#D66847', '--h': '62%', '--rise': '12px' }}></i>
             <i style={{ background: '#A390B2', '--h': '86%', '--rise': '6px' }}></i>
-            <i style={{ background: '#F2EBE0', '--h': '48%', '--rise': '18px' }}></i>
+            <i style={{ background: '#F2EBE0', '--h': '66%', '--rise': '18px' }}></i>
             <b></b>
           </div>
           <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.casebook.route)}>
             <span className="gs-label">A NEW CASE EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          <GsShot id="dailyWord" zoom />
+          <GsChatPic turns={GS_HERO_CHAT} height={340} width={480} label="A Casebook case being played in a chat" />
+          {up}
         </div>
       </section>
 
       <section className="gs-band">
-        <GsCardRow label="Available games" head={<h2 className="mcp-t-sec">Available games</h2>}>
+        <DS.CardRow title="Available games">
           {GS_GAME_ORDER.map((k) => <GsFeature key={k} id={k} />)}
-        </GsCardRow>
+        </DS.CardRow>
         <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
       </section>
 
-      {/* Option 4, line c, ratified 2026-10-09 (docs/specs/home-how/). */}
+      {/* The promise moved up into the hero, so this band is the Pass's own (home-product-hero option 4). */}
       <section id="gs-how" className="gs-band">
-        <div className="hm-how">
-          <div className="hm-say">
-            <h2 className="mcp-t-sec">Your AI does the talking. The game keeps the score.</h2>
-            <DS.TextLink onClick={gs.goHow}>See how it works</DS.TextLink>
-          </div>
-          <div className="hm-pass">
-            <span className="gs-label">THE PASS</span>
-            <p>Play every game in full. Try it free for 14 days.</p>
-            <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
-          </div>
+        <div className="gs-stack-sm">
+          <h2 className="mcp-t-sec">The Pass</h2>
+          <p>Play every game in full. Try it free for 14 days.</p>
+          <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
         </div>
       </section>
 

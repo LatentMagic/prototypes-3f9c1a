@@ -6,6 +6,20 @@ const mhSubs = new Set();
 const mhSet = (p) => { mh = { ...mh, ...p }; try { localStorage.setItem(MH_KEY, JSON.stringify(mh)); } catch (e) {} mhSubs.forEach((f) => f(mh)); };
 const useMh = () => { const [s, setS] = React.useState(mh); React.useEffect(() => { mhSubs.add(setS); return () => mhSubs.delete(setS); }, []); return s; };
 
+// app/ retired GsShot (the home now uses DS ChatPicture); this rig keeps the screenshot it was built with.
+const MH_SHOT = 'assets/in-use/daily-word-claude-code-2026-10-05.png';
+const MH_SHOT_ALT = 'Daily Word played in Claude Code';
+const GsShot = window.GsShot || (({ crop, zoom, caption }) => {
+  const [open, setOpen] = React.useState(false);
+  const img = <img src={MH_SHOT} alt={MH_SHOT_ALT} className={crop ? 'is-crop' : undefined} />;
+  return (
+    <figure className="gs-shot">
+      {zoom ? <button type="button" className="gs-shot-btn" onClick={() => setOpen(true)} aria-label="Open the screenshot whole">{img}<span className="gs-shot-hint">Open whole</span></button> : img}
+      {caption && <figcaption className="gs-small gs-muted" style={{ padding: 12 }}>{caption}</figcaption>}
+      {zoom && <div className="gs-zoom"><DS.Popup open={open} onClose={() => setOpen(false)} kind="panel" label={MH_SHOT_ALT}><img className="gs-zoom-img" src={MH_SHOT} alt={MH_SHOT_ALT} /></DS.Popup></div>}
+    </figure>
+  );
+});
 // The line is the home's own (home-how option 4, line c, ratified 2026-10-09), moved up.
 const MhH1 = () => <h1 className="gs-h1 mh-h1"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>;
 const MH_SUB = 'Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record.';
@@ -85,16 +99,120 @@ const MhThree = () => {
   );
 };
 
+// ---- 4 to 6: rebased on today's home (Casebook cover field with its chat, home-hero option 9) ----
+// The field mirrors GsHome's in app/gs-home.jsx; keep the two in step.
+const MhShapes = ({ tall }) => { const gs = useGs(); return (
+  <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.casebook.route)}>
+    <i style={{ background: '#D66847', '--h': '62%', '--rise': '12px' }}></i>
+    <i style={{ background: '#A390B2', '--h': '86%', '--rise': '6px' }}></i>
+    <i style={{ background: '#F2EBE0', '--h': tall ? '66%' : '48%', '--rise': '18px' }}></i>
+    <b></b>
+  </div>
+); };
+const MhName = () => { const gs = useGs(); return (
+  <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.casebook.route)}>
+    <span className="gs-label">A NEW CASE EVERY WEEK</span>
+    <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
+  </button>
+); };
+const MhChat = () => <GsChatPic turns={GS_HERO_CHAT} height={340} width={480} label="A Casebook case being played in a chat" />;
+const MhField = () => <div className="gs-hero-field"><MhShapes /><MhName /><MhChat /></div>;
+const MhCopy = ({ h1 = true }) => <div className="gs-hero-copy">{h1 && <MhH1 />}<p className="gs-hero-sub">{MH_SUB}</p><MhAct /><MhWorks /></div>;
+const MhGamesNow = () => { const gs = useGs(); return (
+  <section className="gs-band">
+    <GsCardRow label="Available games" head={<h2 className="mcp-t-sec">Available games</h2>}>
+      {GS_GAME_ORDER.map((k) => <GsFeature key={k} id={k} />)}
+    </GsCardRow>
+    <MhSoon /><MhAll />
+  </section>
+); };
+// The slogan moved up, so the band's heading is the Pass's own.
+const MhPassNow = () => { const gs = useGs(); return (
+  <section id="gs-how" className="gs-band">
+    <div className="gs-stack-sm">
+      <h2 className="mcp-t-sec">The Pass</h2>
+      <p>Play every game in full. Try it free for 14 days.</p>
+      <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
+    </div>
+  </section>
+); };
+const MhRest = () => <><MhGamesNow /><MhPassNow /><MhTail /></>;
+
+// 4 only: the whole Casebook conversation from its product page, in a chat that scrolls; it opens on the latest turn.
+const MH_CB_ALL = (GS_CHATS.casebook || []).flatMap((c) => c.turns);
+const MhFour = () => {
+  const ref = React.useRef(null);
+  const [chat, setChat] = React.useState(null); const [more, setMore] = React.useState(false);
+  React.useEffect(() => {
+    const b = ref.current && ref.current.querySelector('.mcp-chat-body');
+    if (!b) return;
+    setChat(b.parentElement);
+    b.tabIndex = 0; b.setAttribute('role', 'region'); b.setAttribute('aria-label', 'The Casebook chat, scrolls');
+    let moved = false; const mark = () => { const up = b.scrollTop > 4; b.dataset.more = up ? 'up' : ''; setMore(up); };
+    const end = () => { if (!moved) b.scrollTop = b.scrollHeight; mark(); };
+    b.addEventListener('scroll', mark, { passive: true });
+    const stop = () => { moved = true; };
+    b.addEventListener('wheel', stop, { passive: true }); b.addEventListener('touchstart', stop, { passive: true }); b.addEventListener('keydown', stop);
+    const ro = new ResizeObserver(end); ro.observe(b); [...b.children].forEach((c) => ro.observe(c));
+    end(); const t = setTimeout(end, 600);
+    return () => { clearTimeout(t); ro.disconnect(); };
+  }, []);
+  return (
+    <main className="gs-wrap gs-main gs-home">
+      <section className="gs-hero3 mh4">
+        <MhCopy />
+        <div className="gs-hero-field" ref={ref}>
+          <MhShapes tall /><MhName />
+          <GsChatPic turns={MH_CB_ALL} height={340} width={480} label="A Casebook case being played in a chat" />
+          {chat && ReactDOM.createPortal(
+            <button type="button" className="mh4-up" hidden={!more} onClick={() => { const b = chat.querySelector('.mcp-chat-body'); b.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }}>
+              <DS.Icon name="down" size={16} style={{ transform: 'rotate(180deg)' }} />Earlier in the case
+            </button>, chat)}
+        </div>
+      </section>
+      <MhRest />
+    </main>
+  );
+};
+const MhFive = () => (
+  <main className="gs-wrap gs-main gs-home">
+    <section className="mh-hero mh-wide mh5">
+      <MhH1 />
+      <div className="gs-hero3 mh5-row"><MhCopy h1={false} /><MhField /></div>
+    </section>
+    <MhRest />
+  </main>
+);
+const MhSix = () => (
+  <main className="gs-wrap gs-main gs-home">
+    <section className="mh-hero mh-wide mh6">
+      <div className="gs-hero-copy mh-wide-copy"><MhH1 /><p className="gs-hero-sub">{MH_SUB}</p><MhAct /></div>
+      <div className="gs-hero-field mh6-field">
+        <MhShapes />
+        <div className="mh6-pitch">
+          <MhName />
+          <h2 className="mcp-t-sec">Someone’s lying to you. Go and find out who.</h2>
+          <p>Your AI plays every suspect, and some of them are lying. Find the proof that breaks their story.</p>
+        </div>
+        <MhChat />
+      </div>
+      <MhWorks />
+    </section>
+    <MhRest />
+  </main>
+);
+
 const MH_BASE = { GsHome: window.GsHome };
+const MH_VIEW = { '1': MhOne, '2': MhTwo, '3': MhThree, '4': MhFour, '5': MhFive, '6': MhSix };
 const MhHome = () => {
-  const s = useMh(); const B = MH_BASE.GsHome;
-  return <div className="mh-d" data-d={s.d}>{s.opt === '0' ? <B /> : s.opt === '2' ? <MhTwo /> : s.opt === '3' ? <MhThree /> : <MhOne />}</div>;
+  const s = useMh(); const V = s.opt === '0' ? MH_BASE.GsHome : (MH_VIEW[s.opt] || MhOne);
+  return <div className="mh-d" data-d={s.d}><V /></div>;
 };
 
 // ---- Strip ----
 const MH_OPTS = [
   { id: '0', name: 'Today: one game at the top',
-    idea: 'The hero sells one game: Casebook’s headline and cover field, with a screenshot of Daily Word set inside it. The product line sits lower, after the games.',
+    idea: 'The hero sells one game: Casebook’s headline and cover field, with a Casebook chat set inside it. The product line sits lower, after the games.',
     cost: 'A stranger meets a mystery before they learn what [Platform] does that a chat alone can’t.' },
   { id: '1', name: 'The promise, with play beside it',
     idea: 'The headline says what [Platform] is better at: your AI plays, the game keeps the rules and the score. A real screenshot beside it shows a game inside a chat.',
@@ -105,6 +223,15 @@ const MH_OPTS = [
   { id: '3', name: 'The promise over the library',
     idea: 'The headline sits over the games themselves, so the covers are the art. The screenshot moves down into the how-it-works band.',
     cost: 'The first image is a row of covers, not a game being played. On a phone the games start below the fold.' },
+  { id: '4', name: 'The promise, beside today’s game',
+    idea: 'Option 1 on today’s home: the slogan on two lines, and Casebook’s cover field with its chat where the screenshot was. The band lower down is headed The Pass.',
+    cost: 'The field says Casebook while the headline says the product, so the art and the words point at different things.' },
+  { id: '5', name: 'The promise across, the game below it',
+    idea: 'Option 3’s wide slogan runs across the page. Under it, the product’s line and buttons sit beside Casebook’s cover field and chat.',
+    cost: 'The tallest hero here: on a phone the buttons sit under a large headline and the field starts below the fold.' },
+  { id: '6', name: 'The promise, then the game’s own pitch',
+    idea: 'The wide slogan, line and buttons sell the product. Below them Casebook gets the whole width: its own headline and line beside its chat, inside its cover field.',
+    cost: 'Two headlines in one hero; Casebook’s has to stay clearly second, and the hero runs long before the games.' },
 ];
 let mhBooted = false;
 const MhStrip = () => {

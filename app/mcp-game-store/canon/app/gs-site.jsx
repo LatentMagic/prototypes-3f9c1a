@@ -209,45 +209,6 @@ const gsAnnounce = (msg) => {
   });
 })();
 
-// ---- A row of cards that scrolls sideways when they don't fit, with Previous and Next beside its heading
-// whenever it overflows, so every card is reachable without a sideways wheel. Cards share the width when they fit (CSS --n).
-const GsCardRow = ({ label, head, children }) => {
-  const ref = React.useRef(null); const prev = React.useRef(null); const next = React.useRef(null); const pressed = React.useRef(null);
-  const [at, setAt] = React.useState({ over: false, start: true, end: true });
-  React.useLayoutEffect(() => {
-    const el = ref.current; if (!el) return undefined;
-    const read = () => {
-      const over = el.scrollWidth > el.clientWidth + 1; const start = el.scrollLeft <= 1; const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-      setAt((a) => (a.over === over && a.start === start && a.end === end ? a : { over, start, end }));
-    };
-    read(); el.addEventListener('scroll', read, { passive: true });
-    const ro = window.ResizeObserver ? new ResizeObserver(read) : null; if (ro) ro.observe(el);
-    return () => { el.removeEventListener('scroll', read); if (ro) ro.disconnect(); };
-  }, []);
-  // A button that reaches the end hides; focus moves to the other one, never to the page root.
-  React.useEffect(() => {
-    if (pressed.current === 'next' && at.end && prev.current) { prev.current.focus({ preventScroll: true }); pressed.current = 'prev'; }
-    else if (pressed.current === 'prev' && at.start && next.current) { next.current.focus({ preventScroll: true }); pressed.current = 'next'; }
-  }, [at.start, at.end]);
-  const move = (dir) => {
-    const el = ref.current; if (!el) return; pressed.current = dir > 0 ? 'next' : 'prev';
-    const card = el.firstElementChild; const step = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
-    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    el.scrollBy({ left: dir * step, behavior: still ? 'auto' : 'smooth' });
-  };
-  const n = React.Children.count(children);
-  return <>
-    <div className="gs-rowhead">
-      {head}
-      {at.over && <div className="gs-rownav">
-        <button ref={prev} type="button" className="gs-iconbtn gs-rownav-btn" aria-label={'Previous, ' + label} style={at.start ? { visibility: 'hidden' } : null} onClick={() => move(-1)}><DS.Icon name="back" /></button>
-        <button ref={next} type="button" className="gs-iconbtn gs-rownav-btn" aria-label={'Next, ' + label} style={at.end ? { visibility: 'hidden' } : null} onClick={() => move(1)}><DS.Icon name="back" style={{ transform: 'rotate(180deg)' }} /></button>
-      </div>}
-    </div>
-    <div ref={ref} className="gs-feats" role="region" aria-label={label} tabIndex={0} style={{ '--n': n }}>{children}</div>
-  </>;
-};
-
 // ---- Not found: never says which case it is.
 const GsNotFound = () => {
   const gs = useGs();
@@ -265,5 +226,5 @@ const GsNotFound = () => {
 
 Object.assign(window, {
   GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, GS_LOAD_MS, useGsPart, GsPart, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
-  GS_SUPPORT, GsFooter, GsLegal, GsNotFound, gsAnnounce, GsCardRow,
+  GS_SUPPORT, GsFooter, GsLegal, GsNotFound, gsAnnounce,
 });

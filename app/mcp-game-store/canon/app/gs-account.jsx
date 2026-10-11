@@ -192,7 +192,7 @@ const GsDeleteAccount = () => {
       <div className="gs-card-acts"><DS.Button variant="secondary" className="gs-btn-danger-outline" onClick={() => setStep('alert')}>Delete your account</DS.Button></div>
       <DS.Popup open={step === 'alert'} onClose={() => setStep(null)} posture="window" label="Delete your account?">
         <GsPopTitle>Delete your account?</GsPopTitle>
-        <p>This deletes your username, email, results, History, streaks and achievements. It can’t be undone.</p>
+        <p>This deletes your username, email, results, history, streaks and achievements. It can’t be undone.</p>
         {passLine && <p>{passLine}</p>}
         <GsActs>
           <DS.Button variant="secondary" onClick={() => setStep(null)}>Cancel</DS.Button>
@@ -217,6 +217,7 @@ const GsAccount = () => {
         <div className="gs-acct-cards">
           <GsUsernameCard />
           <GsPassCard />
+          {window.GsNotifCard && <window.GsNotifCard />}
           {providerAcct ? (
             <DS.Card style={GS_ACCT_CARD}>
               <h2 className="mcp-t-card">Change email &amp; password</h2>

@@ -7,37 +7,34 @@
 // Free (free-and-pass, 2026-10-09): a free player plays the current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
-const pzMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
+const pzMis = gsMis;
 const PZ = {
   word: {
     no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
-    ok: (i) => 'Solved in ' + (3 + (i % 4)) + ' of 6', bad: 'Missed', short: 'Solved', okF: 'Solved', badF: 'Missed',
+    ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow', links: ['See every guess', 'See your guesses so far'],
     live: { line: 'You’ve used 2 of your 6 guesses, and two letters are in place.', bar: ['Guess 2 of 6', 2, 6] },
-    done: { st: { kind: 'ok', label: 'Solved in 3 of 6' }, line: 'You found the word on your third guess, with no hints.', bar: ['Guess 3 of 6', 3, 6] },
-    note: 'It hides every letter.', plays: ['Your words', 'All words'],
+    done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with no hints.', bar: ['Guess 3 of 6', 3, 6] }, plays: ['Your words', 'All words'],
     ach: [{ k: 'w1', n: 'Solved', how: 'Solve a Daily Word.', got: '2 October' },
       { k: 'w2', n: 'Solved in two', how: 'Solve a Daily Word in two guesses.' },
       { k: 'w7', n: 'Seven days in a row', how: 'Play Daily Word seven days running.', of: 7, endedHave: 2 }],
   },
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
-    ok: (i) => (i === 1 ? 'All 4 groups, no mistakes' : 'All 4 groups, ' + pzMis(i % 4)), bad: '2 of 4 groups', short: 'Solved', okF: 'Solved', badF: 'Missed',
+    ok: (i) => GS_RESULT.groups({ found: 4, mistakes: i === 1 ? 0 : i % 4 }), bad: GS_RESULT.groups({ found: 2 }),
     title: 'Today’s groups', next: 'Next groups: tomorrow', links: ['See every try', 'See your tries so far'],
     live: { line: 'You’ve found 2 of the 4 groups, with 1 mistake so far.', bar: ['2 of 4 groups', 2, 4] },
-    done: { st: { kind: 'ok', label: 'All 4 groups, 1 mistake' }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] },
-    note: 'It hides every word and group, and shows colours only.', plays: ['Your groups', 'All groups'],
+    done: { st: { kind: 'ok', label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] }, plays: ['Your groups', 'All groups'],
     ach: [{ k: 'g1', n: 'Solved', how: 'Find all four groups in a Daily Groups.', got: '1 October' },
       { k: 'g0', n: 'Solved with no mistakes', how: 'Find all four groups without a mistake.', got: '5 October' },
       { k: 'g7', n: 'Seven days in a row', how: 'Play Daily Groups seven days running.', of: 7, endedHave: 1 }],
   },
   mystery: {
     no: (i) => 'Daily Mystery #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
-    ok: () => 'Solved', bad: 'Missed', short: 'Solved', okF: 'Solved', badF: 'Missed',
+    ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow', links: ['See every question', 'See your questions so far'],
     live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
-    done: { st: { kind: 'bad', label: 'Missed' }, line: 'You accused after three questions, and it was the wrong suspect.' },
-    note: 'It hides the suspects, weapons and rooms.', plays: ['Your cases', 'All cases'],
+    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after three questions, and it was the wrong suspect.' }, plays: ['Your cases', 'All cases'],
     ach: [{ k: 'm1', n: 'Case closed', how: 'Name the culprit in a Daily Mystery.', got: '4 October' },
       { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.' },
       { k: 'm7', n: 'Seven days in a row', how: 'Play Daily Mystery seven days running.', of: 7, endedHave: 0 }],
@@ -45,11 +42,10 @@ const PZ = {
   escape: {
     weekly: true, rooms: ['The Locked Study', 'The Flooded Cellar', 'The Clock Tower', 'The Night Train', 'The Lighthouse', 'The Vault', 'The Greenhouse', 'The Lift Shaft'],
     no: (i) => PZ.escape.rooms[i % 8], salt: 3, keep: { 1: true }, past: 'escape-0928', today: 'escape-week', liveSid: 'escape-live',
-    ok: (i) => 'Escaped in ' + (i === 1 ? 9 : 6 + (i % 5)) + ' moves', bad: 'Still locked in', short: 'Escaped', okF: 'Escaped', badF: 'Locked in',
+    ok: (i) => GS_RESULT.escape({ ok: true, moves: i === 1 ? 9 : 6 + (i % 5) }), bad: GS_RESULT.escape({ ok: false }),
     title: 'The Locked Study', next: 'Next room: Monday 12 October', links: ['See every move', 'See your moves so far'],
     live: { line: 'You’ve made four moves. The hatch is still bolted.' },
-    done: { st: { kind: 'ok', label: 'Escaped in 7 moves' }, line: 'You got out in seven moves, with no hints.' },
-    note: 'It hides the room and what you found.', plays: ['Your rooms', 'All rooms'],
+    done: { st: { kind: 'ok', label: GS_RESULT.escape({ ok: true, moves: 7 }) }, line: 'You got out in seven moves, with no hints.' }, plays: ['Your rooms', 'All rooms'],
     ach: [{ k: 'e1', n: 'Escaped', how: 'Get out of an Escape room.', got: '21 September' },
       { k: 'e6', n: 'Out in six', how: 'Escape a room in six moves or fewer.' },
       { k: 'e4', n: 'Four weeks running', how: 'Play Escape four weeks in a row.', of: 4, endedHave: 2 }],
@@ -116,7 +112,7 @@ Object.entries(PZ).forEach(([id, c]) => {
   if (keep) GS_SESSIONS['word-e1'] = keep; else delete GS_SESSIONS['word-e1'];
 })();
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
-const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line, short: c.short } : { kind: 'bad', label: x.line, short: c.badF });
+const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
 const pzHist = (c) => c.all.slice(1);
 const pzRow = (gs, c, x) => ({ key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: pzStatus(c, x), onOpen: x.played ? () => gs.go('session', { id: x.sid }) : () => gs.go('session', { gid: c.gid, ed: x.id }) });
 
@@ -143,7 +139,7 @@ const PzNow = ({ c, done, none, id }) => {
       {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
       <div className="lb-foot">
         <div className="lb-acts">
-          {lines && <LbShare lines={lines} note={c.note} />}
+          {lines && <LbShare lines={lines} />}
           <DS.TextLink onClick={() => gs.go('session', { id: done ? c.today : c.liveSid })}>{done ? c.links[0] : c.links[1]}</DS.TextLink>
         </div>
         <span className="gs-muted">{c.next}</span>
@@ -166,8 +162,7 @@ const pzLibrary = (id) => () => {
   const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));
   const rows = never ? [] : pzHist({ all: run }).slice(0, 8).map((x) => pzRow(gs, c, x));
   if (broken) {
-    rows[0] = { ...rows[0], own: true, status: { kind: 'bad', label: c.bad, short: c.badF }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
-    rows.unshift({ key: 'word-broken-replay', own: true, title: rows[0].title, date: rows[0].date, status: { kind: 'ok', label: c.ok(1), short: c.short }, chip: 'again', onOpen: () => gs.go('session', { id: 'word-broken-replay' }) });
+    rows[0] = { ...rows[0], own: true, replays: 1, status: { kind: 'bad', label: c.bad }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
   }
   return (
     <main key={k} className="gs-wrap gs-main">

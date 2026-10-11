@@ -4,7 +4,7 @@
 //   step 1  Google, black Apple, email (no panel, no divider, none primary)
 //   step 2  the email form; adds a browser-history entry so Back = the arrow
 //   sign up (email, username, password) -> verify your email -> connect your AI
-//   sign up (Google / Apple) -> verify this device -> your username -> connect your AI
+//   sign up (Google / Apple) -> your username -> connect your AI (no code: a new account, 2026-10-11)
 //   (from Get the Pass, checkout takes the place of connect: the username always comes first)
 //   sign in (email, Google or Apple) -> verify this device on a new device only -> games
 //   Forgot password -> email, sent, code, new password -> games
@@ -132,7 +132,7 @@ const GsSignUp = () => {
   });
   const foot = <>
     <GsConsent lead="By creating an account you accept our" />
-    {step === 1 && <p>Already have an account? <button type="button" className="gs-inlink" onClick={() => gs.go('signin', next === 'checkout' ? { next: 'pass' } : undefined)}>Sign in</button> or <button type="button" className="gs-inlink" onClick={() => gs.go('home')}>learn more</button></p>}
+    {step === 1 && <p>Already have an account? <button type="button" className="gs-inlink" onClick={() => gs.go('signin', next === 'checkout' ? { next: 'subscribe' } : undefined)}>Sign in</button> or <button type="button" className="gs-inlink" onClick={() => gs.go('home')}>learn more</button></p>}
   </>;
   if (step === 1) return (
     <GsAuthFrame title="Create your account" subtitle="One account for every game you play." foot={foot}>
@@ -145,7 +145,7 @@ const GsSignUp = () => {
     <GsAuthFrame title="Create your account" onBack={() => { form.reset(); back(); }} foot={foot}>
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
         <DS.TextField label="Email" type="email" autoComplete="email" placeholder="you@example.com" autoFocus {...form.bind('email')} />
-        <GsUsernameField form={form} />
+        <GsUsernameField form={form} hint={GS_USERNAME_HINT} />
         <GsLabelled label="Password" aside="At least 8 characters">
           <DS.TextField type="password" autoComplete="new-password" aria-label="Password" {...form.bind('pw')} />
         </GsLabelled>
@@ -171,7 +171,7 @@ const GsCodeField = ({ value, onChange, error, inputRef }) => (
 );
 const GsVerify = () => {
   const gs = useGs();
-  const { ctx, provider } = gs.route; // ctx: signup | device | new-provider
+  const { ctx, provider } = gs.route; // ctx: signup | device
   const device = ctx !== 'signup';
   const email = gs.route.email || gs.user.email;
   const preset = gs.route.preset; // staged: 'expired' | 'wrong'
@@ -193,7 +193,6 @@ const GsVerify = () => {
       else {
         setErr(null);
         if (ctx === 'device') gs.signedIn(provider || 'email', gs.route.next);
-        else if (ctx === 'new-provider') gs.go('username', { next: gs.route.next, provider });
         else gs.accountMade(gs.route.username, 'email', gs.route.next);
         return;
       }
@@ -222,11 +221,12 @@ const GsVerify = () => {
 };
 
 // ---- Return from a provider: the spinner alone, "Completing sign-in" as its name.
+// A new account by Google or Apple goes straight to Your username; a returning player on a new device gets Verify this device.
 const GsReturning = () => {
   const gs = useGs();
   const { mode, next, provider } = gs.route;
   return <GsFullLoader label="Completing sign-in" ms={1500}
-    onDone={() => (mode === 'signup' ? gs.go('verify', { ctx: 'new-provider', provider, next })
+    onDone={() => (mode === 'signup' ? gs.go('username', { next, provider })
       : gs.review.device === 'new' ? gs.go('verify', { ctx: 'device', provider, next })
       : gs.signedIn(provider, next))} />;
 };
@@ -275,12 +275,17 @@ const GS_NEWPW_RULES = [
 ];
 const GsRecover = () => {
   const gs = useGs();
-  const [step, setStep] = React.useState('email');
-  const [email, setEmail] = React.useState('');
+  const [step, setStep] = React.useState(gs.route.step || 'email'); // route.step: staged
+  const [email, setEmail] = React.useState(gs.route.email || '');
   const [code, setCode] = React.useState('');
   const [codeErr, setCodeErr] = React.useState(false);
   const codeRef = React.useRef(null);
   const [codeBusy, runCode] = useGsBusy();
+  // Resend code: the control and confirmation line the other code screens use (GsVerify).
+  const [resent, setResent] = React.useState(false);
+  const [sending, runSend] = useGsBusy();
+  React.useEffect(() => { if (!resent) return undefined; const t = setTimeout(() => setResent(false), 2600); return () => clearTimeout(t); }, [resent]);
+  const resend = () => runSend(() => { setResent(true); setCodeErr(false); setCode(''); setTimeout(() => codeRef.current && codeRef.current.focus(), 0); });
   const emailForm = useGsForm({ email: '' }, [['email', (v) => GS_EMAIL_RE.test(v.trim()), 'Enter a valid email address.']], (f) => { setEmail(f.email.trim()); setStep('sent'); });
   const pwForm = useGsForm({ pw: '', pw2: '' }, GS_NEWPW_RULES, () => gs.signedIn('email'));
   if (step === 'email') return (
@@ -309,6 +314,11 @@ const GsRecover = () => {
         <GsCodeField value={code} error={codeErr ? 'That code’s not right. Check and re-enter.' : null}
           inputRef={(el) => { codeRef.current = el; }} onChange={(v) => { setCode(v); setCodeErr(false); }} />
         <DS.Button type="submit" block loading={codeBusy}>Verify</DS.Button>
+        <div className="gs-center gs-link-slot">
+          {resent
+            ? <span className="gs-ico-row" role="status"><DS.Icon name="check" />A fresh code is on its way.</span>
+            : <DS.TextLink onClick={resend} aria-busy={sending || undefined}>{sending && <GsInkSpin />}Resend code</DS.TextLink>}
+        </div>
       </form>
     </GsAuthFrame>
   );

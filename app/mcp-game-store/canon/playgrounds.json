@@ -1,8 +1,23 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-10",
+  "generated": "2026-10-11",
   "tickets": [
+    {
+      "id": "—",
+      "slug": "pass-and-subscribe",
+      "name": "The Pass page and the subscribe page",
+      "state": "active",
+      "touched": "2026-10-11",
+      "entries": [
+        {
+          "name": "Pass and subscribe, options 1 to 5",
+          "path": "docs/specs/pass-and-subscribe/playground/index.html",
+          "note": "5 is the base (approved 2026-10-11): a plain heading, the price and Choose a plan closing the comparison, and a trimmed subscribe page. 4 puts the Pass in a card; 1 to 3 were the first round. Four viewers: signed out, no Pass, trial used, Pass."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": "—",
       "slug": "filters-on-a-phone",
@@ -23,12 +38,12 @@
       "slug": "home-product-hero",
       "name": "The home hero: the product or a game",
       "state": "active",
-      "touched": "2026-10-09",
+      "touched": "2026-10-11",
       "entries": [
         {
-          "name": "Home hero, options 0 to 3, with density",
+          "name": "Home hero, options 0 to 6, with density",
           "path": "docs/specs/home-product-hero/playground/index.html",
-          "note": "Today’s Casebook hero (0) beside three heroes that lead with what the product does better; Density sets Roomy, Today or Compact."
+          "note": "Today’s Casebook hero (0), three heroes that lead with the product (1 to 3), and 4 to 6 rebased on today’s home with the Casebook field kept; Density sets Roomy, Today or Compact."
         }
       ],
       "archive": []

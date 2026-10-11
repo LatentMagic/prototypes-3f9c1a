@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<base href="../../../../" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Streak when access ends</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/styles.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/fonts.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css" />
+<script>
+  // The app's own stylesheet, read live from index.html so the cards never drift from the build.
+  (function () {
+    var x = new XMLHttpRequest(); x.open('GET', 'index.html', false); x.send();
+    var m = x.responseText.match(/<style>([\s\S]*?)<\/style>/);
+    if (m) { var s = document.createElement('style'); s.textContent = m[1]; document.head.appendChild(s); }
+  })();
+</script>
+<style>
+  .pg { max-width: 1200px; margin: 0 auto; padding: 24px 16px 72px; display: grid; gap: 32px; }
+  .pg h1 { margin: 0; font: 700 28px/1.1 var(--font-heading); letter-spacing: -.01em; }
+  .pg-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+  .pg-opt { display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .pg-opt h2 { margin: 0; font: 700 18px/1.2 var(--font-heading); display: flex; gap: 12px; align-items: baseline; }
+  .pg-opt h2 b { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .pg-facts { display: grid; gap: 4px; font: 400 14px/1.45 var(--font-text); color: var(--muted); }
+  .pg-facts b { color: var(--text); font-weight: 600; }
+  .pg-none { border: 1px dashed var(--control-edge); padding: 24px; color: var(--muted); }
+  .pg { --fz: color-mix(in srgb, var(--off-white) 38%, var(--card)); }
+  .lb-wk.is-tone > i { background: var(--fz); box-shadow: none; }
+  .lb-legend i.pg-k-tone { background: var(--fz); box-shadow: none; }
+  .lb-legend { flex-wrap: wrap; gap: 4px 16px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js"></script>
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/gs-data.jsx"></script>
+<script type="text/babel" src="app/gs-library.jsx"></script>
+<script type="text/babel" src="docs/specs/streak-when-access-ends/playground/pg-streak.jsx"></script>
+</body>
+</html>

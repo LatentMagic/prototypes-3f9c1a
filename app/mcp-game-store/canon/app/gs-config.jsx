@@ -39,6 +39,37 @@ const GsConfigExtra = () => {
       {row('Plan', sub.plan || 'monthly', (v) => setSub({ plan: v, pending: null }), o([['monthly', 'Monthly'], ['yearly', 'Yearly']]))}
       {row('Pass changes', r.passFail ? 'fail' : 'work', (v) => set(() => api.setReview({ passFail: v === 'fail' })), o([['work', 'Work'], ['fail', 'Fail']]))}
       <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with the trial used is the lapsed card. Pass changes covers cancel, resume, switch and keeping the current plan.</div>
+      {api.setPush && window.GS_PUSH_DEFAULT && (() => {
+        const p = api.push || {};
+        const perm = p.channel === 'unsupported' ? 'unsupported' : p.channel === 'ios-tab' ? 'ios' : p.perm === 'granted' ? 'granted' : p.perm === 'denied' ? 'denied' : 'default';
+        const setPerm = (v) => set(() => api.setPush({
+          default: { channel: 'ok', perm: 'default', asked: false, on: false },
+          granted: { channel: 'ok', perm: 'granted', asked: true, on: true },
+          denied: { channel: 'ok', perm: 'denied', asked: true, on: false },
+          ios: { channel: 'ios-tab', perm: 'default', asked: false, on: false },
+          unsupported: { channel: 'unsupported', perm: 'default', asked: false, on: false },
+        }[v]));
+        const wait = window.gsPushWait(p.snoozes);
+        const left = p.snoozes ? Math.max(0, Math.ceil((p.snoozeAt + wait * window.GS_PUSH_DAY - Date.now()) / window.GS_PUSH_DAY)) : 0;
+        return (
+          <React.Fragment>
+            <div className="kit-config-group-title">Notifications</div>
+            {row('Permission on this device', perm, setPerm, o([['default', 'Undecided'], ['granted', 'Allowed'], ['denied', 'Blocked'], ['ios', 'iPhone tab'], ['unsupported', 'Unsupported']]))}
+            {row('Banner', p.snoozes && left > 0 ? 'dismissed' : 'showing', (v) => set(() => api.setPush({ channel: 'ok', perm: 'default', asked: false, on: false,
+              ...(v === 'dismissed' ? { snoozes: Math.max(1, p.snoozes || 0), snoozeAt: Date.now() } : { snoozes: 0, snoozeAt: 0 }) })), o([['showing', 'Showing'], ['dismissed', 'Dismissed']]))}
+            {row('Turning on', p.fail ? 'fail' : 'work', (v) => set(() => api.setPush({ fail: v === 'fail' })), o([['work', 'Works'], ['fail', 'Fails']]))}
+            <div className="kit-config-hint">
+              {p.asked ? 'The browser’s dialog has been raised on this device, so the banner never returns. Set Banner to Showing to start again. '
+                : p.snoozes ? 'Dismissed ' + p.snoozes + (p.snoozes === 1 ? ' time' : ' times') + '. ' + (left > 0 ? 'Back in ' + left + (left === 1 ? ' day. ' : ' days. ') : 'Due back now. ') : ''}
+              The banner shows on Discover, Library and History to a signed-in player while permission is Undecided. Its × hides it for 3 days, then 7, then every 30.
+            </div>
+            {!p.asked && p.snoozes > 0 && left > 0 && (
+              <button type="button" className="kit-config-btn-secondary" style={{ marginBottom: 12 }}
+                onClick={() => api.setPush({ snoozeAt: p.snoozeAt - wait * window.GS_PUSH_DAY })}>Move on {wait} days</button>
+            )}
+          </React.Fragment>
+        );
+      })()}
     </React.Fragment>
   );
 };

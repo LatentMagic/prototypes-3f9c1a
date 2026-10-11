@@ -18,17 +18,18 @@ const gsUsernameRules = (current) => {
     ['name', (v) => t(v) === current || t(v).toLowerCase() !== 'taken', GS_TAKEN],
   ];
 };
-// The field. Rules show only as errors after a failed save. A taken name is refused with its error; nothing is offered.
-const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder }) => {
+// The field. The rule shows as one hint line under it on the sign-up form and Your username (hint); a failed save replaces it with the error. A taken name is refused with its error; nothing is offered.
+const GS_USERNAME_HINT = 'Use 3 to 16 letters, numbers or underscores, starting with a letter. You can change it once every 30 days.';
+const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder, hint }) => {
   const b = form.bind('name');
   return aside
     ? <GsLabelled label={label} aside={aside}>
-        <DS.TextField aria-label={label} placeholder={placeholder} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />
+        <DS.TextField aria-label={label} placeholder={placeholder} hint={hint} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />
       </GsLabelled>
-    : <DS.TextField label={label} placeholder={placeholder} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />;
+    : <DS.TextField label={label} placeholder={placeholder} hint={hint} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />;
 };
 
-// ---- Your username: a Google or Apple sign-up, after the provider and the device code.
+// ---- Your username: a Google or Apple sign-up, straight after the provider (no code: a new account has no device to verify, 2026-10-11).
 // The account is made only when a name is chosen; leaving first leaves no account. No Skip. Back returns to sign-up, where Google or Apple leads here again.
 const GsUsername = () => {
   const gs = useGs();
@@ -37,7 +38,7 @@ const GsUsername = () => {
   return (
     <GsAuthFrame title="Your username" onBack={() => gs.go('signup', { next })}>
       <form noValidate onSubmit={form.submit} className="gs-stack-md">
-        <GsUsernameField form={form} autoFocus />
+        <GsUsernameField form={form} autoFocus hint={GS_USERNAME_HINT} />
         <DS.Button type="submit" block loading={form.busy}>Continue</DS.Button>
       </form>
     </GsAuthFrame>
@@ -71,4 +72,4 @@ const GsUsernameCard = () => {
   );
 };
 
-Object.assign(window, { GsUsername, GsUsernameCard, GsUsernameField, gsUsernameRules });
+Object.assign(window, { GsUsername, GsUsernameCard, GsUsernameField, gsUsernameRules, GS_USERNAME_HINT });

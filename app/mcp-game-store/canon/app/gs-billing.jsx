@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — the Pass (circlists-match-2): dates and prices, the Pass card in
 // every state, Switch and Cancel sheets, the buying block, checkout, and the
-// update-card page. Every price is "£—"; the trial is 14 days.
+// update-card page. Prices £3 a month and £30 a year (decided 2026-10-11); the trial is 14 days.
 // ============================================================================
 const GS_NB = '\u00A0';
 const GS_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -13,9 +13,10 @@ const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].jo
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
 const GS_PLAN = {
-  monthly: { name: 'Monthly', price: gsNb('£— a month'), per: gsNb('£— / month'), months: 1 },
-  yearly: { name: 'Yearly', price: gsNb('£— a year'), per: gsNb('£— / year'), months: 12 },
+  monthly: { name: 'Monthly', price: gsNb('£3 a month'), per: gsNb('£3 / month'), due: '£3.00', months: 1 },
+  yearly: { name: 'Yearly', price: gsNb('£30 a year'), per: gsNb('£30 / year'), due: '£30.00', months: 12 },
 };
+const GS_YEAR_MONTH = gsNb('£2.50 a month'); // the yearly plan, per month
 const gsOther = (plan) => (plan === 'yearly' ? 'monthly' : 'yearly');
 // The date that matters for a subscription: next renewal, first payment, or end.
 const gsSubDate = (sub) => {
@@ -42,7 +43,7 @@ const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
 const GsKeepLock = ({ lead, locked }) => (
   <div className="gs-stack-sm">
     <p>{lead}</p>
-    <p><b>You keep</b> your results, your History and the achievements you earned.</p>
+    <p><b>You keep</b> your results, your history and the achievements you earned.</p>
     <p><b>What freezes:</b> the Pass-only games and editions, and the achievements earned in them. They {locked}.</p>
   </div>
 );
@@ -73,8 +74,8 @@ const GsPassCard = () => {
       <h2 className="mcp-t-card">Pass</h2>
       {sub.freeUsed
         ? <GsKeepLock lead={<>Your Pass ended on {gsLong(sub.endedOn ? new Date(sub.endedOn) : GS_LAPSED_ON)}.</>} locked="are frozen until you get the Pass again" />
-        : <p>You have a free account. Free play needs no card, and your results and History are kept. The Pass opens every game in full.</p>}
-      <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>{sub.freeUsed ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
+        : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
+      <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </DS.Card>
   );
   const marker = sub.status === 'failed' ? <span className="gs-marker is-bad">Payment failed</span>
@@ -200,55 +201,56 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
   );
 };
 
-// ---- Pass page buying block ----------------------------------------------------
-const GsBuyBlock = () => {
+// ---- The Pass page and the subscribe page (pass-and-subscribe, option 5, ratified 2026-10-11) ----------
+// The Pass page describes: the comparison, closed by the price and the one way on. No plan choice, no trial (MCPG-012 BF-03).
+const GsPass = () => {
+  const gs = useGs();
+  const holds = gs.view === 'pass';
+  return (
+    <main className="gs-wrap gs-main">
+      <div className="gs-pass-page">
+        <div className="gs-pass-head">
+          <h1 className="gs-h1">[Platform] Pass</h1>
+          {holds && <div className="gs-pass-have"><span className="gs-marker"><DS.Icon name="check" />You have the Pass</span><DS.TextLink onClick={() => gs.go('account')}>Manage in account</DS.TextLink></div>}
+        </div>
+        <GsCompare foot={!holds && (
+          <div className="gs-pass-foot">
+            <span className="gs-pass-price gs-num-text">{GS_PLAN.yearly.price}<span className="gs-muted"> or {GS_PLAN.monthly.price}</span></span>
+            <DS.Button onClick={() => gs.go('subscribe')}>Choose a plan</DS.Button>
+          </div>
+        )} />
+      </div>
+    </main>
+  );
+};
+// The subscribe page: the plan choice (yearly first), what is due, and the one control (MCPG-012 BF-01, AF-02).
+const GsSubscribe = () => {
   const gs = useGs();
   const free = !gs.sub.freeUsed;
   const plan = GS_PLAN[gs.choice];
   const freeEnd = gsLong(gsAddDays(GS_DAY0, GS_TRIAL_DAYS));
-  const renews = gsLong(gsAddMonths(GS_DAY0, plan.months));
-  return (
-    <section className="gs-buy-block" aria-labelledby="gs-buy-h">
-      <div className="gs-stack-sm gs-buy-head">
-        <h2 id="gs-buy-h" className="mcp-t-sec">{free ? 'Start your 14-day trial' : 'Start your Pass'}</h2>
-        <p className="gs-muted">Choose how you pay.</p>
-      </div>
-      <fieldset className="gs-plans">
-        <legend className="gs-vh">Plan</legend>
-        {['yearly', 'monthly'].map((k) => (
-          <label key={k} className={'gs-plan' + (gs.choice === k ? ' is-on' : '')}>
-            <input type="radio" name="gs-plan" value={k} checked={gs.choice === k} onChange={() => gs.setChoice(k)} />
-            <span className="gs-plan-dot" aria-hidden="true" />
-            <span className="gs-plan-name">{GS_PLAN[k].name}</span>
-            {k === 'yearly' && <DS.Tag kind="success">{gsNb('£— a month')}</DS.Tag>}
-            <span className="gs-plan-price gs-num-text">{GS_PLAN[k].per}</span>
-          </label>
-        ))}
-      </fieldset>
-      <GsRows rows={free
-        ? [['Due today', '£0.00'], ['From ' + freeEnd, plan.price]]
-        : [['Due today', '£—'], ['Renews', renews]]} />
-      <DS.Button block onClick={gs.getPass}>{free ? 'Start 14-day trial' : 'Get the Pass'}</DS.Button>
-      {free && <p className="gs-small gs-center">{'Cancel before ' + freeEnd + ' and pay nothing.'}</p>}
-      <p className="gs-small gs-ico-row gs-center-row"><DS.Icon name="lock" size={16} />{gs.view === 'out' ? 'Billed to your account' : 'Billed to ' + gs.user.email}</p>
-      <p className="gs-small gs-center">{GS.purchase}</p>
-    </section>
-  );
-};
-
-// The Pass page's own words (free-and-pass, 2026-10-09). Copy sits above the comparison table.
-const GsPass = () => {
-  const gs = useGs();
-  const holds = gs.view === 'pass';
-  const status = gs.view === 'free' ? 'You have a free account' : holds ? 'You have the Pass' : null;
   return (
     <main className="gs-wrap gs-main">
-      <div className="gs-stack-md">
-        <h1 className="gs-h1">[Platform] Pass</h1>
-        {status && <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0 24px', minHeight: 48 }}>{status && <p className="gs-status">{status}{holds && <DS.Icon name="check" />}</p>}{holds && <DS.TextLink onClick={() => gs.go('account')}>Manage in account</DS.TextLink>}</div>}
-      </div>
-      <GsCompare />
-      {!holds && <GsBuyBlock />}
+      <section className="gs-buy-block" aria-labelledby="gs-buy-h">
+        <h1 id="gs-buy-h" className="mcp-t-sec gs-buy-head">{free ? 'Start your 14-day trial' : 'Start your Pass'}</h1>
+        <fieldset className="gs-plans">
+          <legend className="gs-vh">Plan</legend>
+          {['yearly', 'monthly'].map((k) => (
+            <label key={k} className={'gs-plan' + (gs.choice === k ? ' is-on' : '')}>
+              <input type="radio" name="gs-plan" value={k} checked={gs.choice === k} onChange={() => gs.setChoice(k)} />
+              <span className="gs-plan-dot" aria-hidden="true" />
+              <span className="gs-plan-name">{GS_PLAN[k].name}</span>
+              {k === 'yearly' && <DS.Tag kind="success">{GS_YEAR_MONTH}</DS.Tag>}
+              <span className="gs-plan-price gs-num-text">{GS_PLAN[k].per}</span>
+            </label>
+          ))}
+        </fieldset>
+        <GsRows rows={free
+          ? [['Due today', '£0.00'], ['From ' + freeEnd, plan.price]]
+          : [['Due today', plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
+        <DS.Button block onClick={gs.getPass}>{free ? 'Start 14-day trial' : 'Get the Pass'}</DS.Button>
+        {free && <p className="gs-small gs-center">{'Cancel before ' + freeEnd + ' and pay nothing.'}</p>}
+      </section>
     </main>
   );
 };
@@ -288,7 +290,6 @@ const GsCheckout = () => {
   const gs = useGs();
   const free = !gs.sub.freeUsed;
   const plan = GS_PLAN[gs.choice];
-  const per = gs.choice === 'yearly' ? 'a year' : 'a month';
   const [paying, setPaying] = React.useState(false);
   const pay = (e) => { e.preventDefault(); if (paying) return; setPaying(true); setTimeout(() => gs.paid(free), 1400); };
   return (
@@ -296,10 +297,10 @@ const GsCheckout = () => {
       <DS.Card style={{ gap: 24, justifyItems: 'stretch', padding: 24 }}>
         <div className="gs-stack-xs">
           <span className="gs-small">[Platform] · {plan.name} plan</span>
-          <span className="gs-ico-row"><span className="gs-figure gs-num-text">{free ? '£0.00' : '£—'}</span><span className="gs-muted">due today</span></span>
+          <span className="gs-ico-row"><span className="gs-figure gs-num-text">{free ? '£0.00' : plan.due}</span><span className="gs-muted">due today</span></span>
           <p className="gs-small">{free
-            ? <>Free for 14 days. Then {gsNb('£— ' + per)} from {gsLong(gsAddDays(GS_DAY0, GS_TRIAL_DAYS))}. The payment provider emails you a reminder before your first payment.</>
-            : <>Then {gsNb('£— ' + per)} from {gsLong(gsAddMonths(GS_DAY0, plan.months))}.</>}</p>
+            ? <>Free for 14 days. Then {plan.price} from {gsLong(gsAddDays(GS_DAY0, GS_TRIAL_DAYS))}. The payment provider emails you a reminder before your first payment.</>
+            : <>Then {plan.price} from {gsLong(gsAddMonths(GS_DAY0, plan.months))}.</>}</p>
         </div>
         <form noValidate onSubmit={pay} className="gs-stack-md">
           <DS.TextField label="Email" value={gs.user.email} readOnly />
@@ -331,5 +332,5 @@ const GsUpdateCard = () => {
 
 Object.assign(window, {
   GS_DAY0, GS_PLAN, GS_SUB_HOLDS, gsAddDays, gsAddMonths, gsLong, gsShort, gsSubDate,
-  GsRows, GsActs, GsPopTitle, GsKeepLock, GsPassCard, GsSwitchSheet, GsCancelSheet, GsBuyBlock, GsPass, GsCheckout, GsUpdateCard,
+  GsRows, GsActs, GsPopTitle, GsKeepLock, GsPassCard, GsSwitchSheet, GsCancelSheet, GsPass, GsSubscribe, GsCheckout, GsUpdateCard,
 });

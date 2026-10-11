@@ -11,7 +11,7 @@ const CB_FIRST = CB_ALL[CB_ALL.length - 1];
 // A free player has the first case; a player whose Pass ended has every case they played before it ended; the Pass has all.
 const cbHist = (gs) => CB_ALL.filter((c) => c.id !== CB_LIVE.id && (gs.view === 'pass' ? true : gsLapsed(gs) ? c.played && lbOld(c.week) : c === CB_FIRST));
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
-  : c.verdict === 'right' ? { kind: 'ok', label: 'Solved' } : { kind: 'bad', label: 'Unsolved' });
+  : { kind: c.verdict === 'right' ? 'ok' : 'bad', label: GS_RESULT.casebook({ ok: c.verdict === 'right' }) });
 const cbRow = (gs, c) => ({ key: c.id, title: '#' + (CB_ALL.length - CB_ALL.indexOf(c)), date: lbShort(c.week), status: cbStatus(c), onOpen: c.played ? () => cbGo(gs, c.id) : () => gs.go('session', { gid: 'casebook', ed: c.id }) });
 // Every week newest first, done when the case was solved in its first finished play. This week counts once it is solved.
 const cbRunList = (gs) => CB_ALL.map((c, i) => ({ ...c, done: i === 0 ? cbWeek(gs).verdict === 'right' : c.played && c.verdict === 'right' }));
@@ -36,7 +36,7 @@ const CbNow = ({ c }) => {
       <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
       <div className="lb-foot">
         <div className="lb-acts">
-          {!c.live && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />}
+          {!c.live && <LbShare lines={cbShareLines(c)} />}
           <DS.TextLink onClick={() => cbGo(gs, c.id)}>{c.live ? 'See your turns so far' : 'See every turn'}</DS.TextLink>
         </div>
         <span className="gs-muted">{'Next case: ' + CB_NEXT}</span>
@@ -62,7 +62,7 @@ const CbCase = ({ c }) => {
   const ed = edList(gs, 'casebook').find((x) => x.key === String(c.id).split('-r')[0]);
   const held = !!ed && !c.live && edNeedsPass(gs, ed);
   const replay = <DS.Button variant="secondary" onClick={() => gs.playReq({ kind: 'edition', e: ed })}>Replay</DS.Button>;
-  const share = !c.live && !c.replayed && <LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." />;
+  const share = !c.live && !c.replayed && <LbShare lines={cbShareLines(c)} />;
   const acts = held ? null : c.live ? <DS.Button onClick={() => gs.playReq({ kind: 'edition', e: ed })}>Play</DS.Button>
     : share ? <DS.ButtonPair>{replay}{share}</DS.ButtonPair> : replay;
   return (
@@ -81,6 +81,7 @@ const CbCase = ({ c }) => {
           <div><dt>You accused</dt><dd>{acc ? acc.what : <span className="lb-of">No one yet</span>}</dd></div>
         </dl>
       </section>
+      {window.PhReplays && !c.replayed && <PhReplays reps={phEdReplays(gs, c.id)} />}
       <div className="lb-kinds">
         {CB_KINDS.map(([act, name]) => {
           const rs = rec.filter((r) => r.act === act);
@@ -127,12 +128,12 @@ const CbFirst = () => {
       {c.played && <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />}
       <div className="lb-foot">
         <div className="lb-acts">
-          {c.played ? <><LbShare lines={cbShareLines(c)} note="It hides the killer and the suspects." /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink></>
+          {c.played ? <><LbShare lines={cbShareLines(c)} /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink></>
             : <DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play</DS.Button>}
         </div>
         <span className="gs-muted">Every other case comes with the Pass.</span>
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>{again ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
+      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
 };
@@ -152,9 +153,10 @@ const CbLibrary = () => {
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="casebook" />
-      <div className={'lb-lay' + (pass ? '' : ' is-three')}>
+      <div className={'lb-lay' + (pass || gsLapsed(gs) ? '' : ' is-three')}>
         {pass ? <CbNow c={cbWeek(gs)} /> : <CbFirst />}
         {pass && <LbRun n={lbStreak(cbRunList(gs))} unit="weeks" weeks={cbWeeks(gs)} />}
+        {gsLapsed(gs) && (() => { const f = lbFrozen(cbWeeks(gs), cbRunList(gs), (c) => c.week); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={CB_BADGES} access={access} ended={CB_ENDED} ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="All cases" rows={rows} />
       </div>

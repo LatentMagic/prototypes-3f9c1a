@@ -84,7 +84,7 @@ const GS_COMPARE = [
 const GsCmpMark = ({ on }) => on
   ? <span className="gs-cmp-cell"><DS.Icon name="check" /><span className="gs-vh">Included</span></span>
   : <span className="gs-cmp-cell gs-muted"><span aria-hidden="true">–</span><span className="gs-vh">Not included</span></span>;
-const GsCompare = () => (
+const GsCompare = ({ foot }) => (
   <section className="gs-cmp" aria-labelledby="gs-cmp-h">
     <h2 id="gs-cmp-h" className="mcp-t-sec gs-cmp-h">What you get</h2>
     <div role="table" aria-labelledby="gs-cmp-h" className="gs-cmp-t">
@@ -102,6 +102,7 @@ const GsCompare = () => (
       ))}
       <div className="gs-cmp-tr is-foot" aria-hidden="true"><span /><span /><span className="gs-cmp-band" /></div>
     </div>
+    {foot}
   </section>
 );
 const GsStat = ({ label, figure, line }) => (
@@ -168,31 +169,6 @@ const GsPanel = ({ label, children }) => (
   <div className="gs-panel"><span className="gs-panel-label"><img src="assets/logo.svg" alt="" width="16" height="16" />[PLATFORM] · {label}</span>{children}</div>
 );
 const GsUp = () => <DS.Icon name="back" size={14} style={{ transform: 'rotate(90deg)' }} />;
-// ---- Product in use: a real screenshot from assets/in-use/, never a drawn chat
-const GS_SHOTS = {
-  dailyWord: { src: 'assets/in-use/daily-word-claude-code-2026-10-05.png', w: 1840, h: 1498, cropH: 790,
-    alt: 'Daily Word being played in Claude Code: each guess and the board after it.' },
-};
-// zoom: the image opens whole in a panel, sized to fit the screen (a sheet on a phone, a window on desktop).
-const GsShot = ({ id, crop, caption, className, zoom }) => {
-  const s = GS_SHOTS[id];
-  const [open, setOpen] = React.useState(false);
-  const img = <img src={s.src} alt={s.alt} width={s.w} height={s.h} style={crop ? { aspectRatio: s.w + ' / ' + s.cropH } : null} className={crop ? 'is-crop' : ''} />;
-  return (
-    <figure className={'gs-shot' + (zoom ? ' is-zoom' : '') + (className ? ' ' + className : '')}>
-      {zoom ? <button type="button" className="gs-shot-btn" aria-label="View the screenshot full size" onClick={() => setOpen(true)}>
-        {img}<span className="gs-shot-hint" aria-hidden="true">View full size</span>
-      </button> : img}
-      {caption && <figcaption className="gs-chat-cap">{caption}</figcaption>}
-      {zoom && <div className="gs-zoom">
-        <DS.Popup open={open} onClose={() => setOpen(false)} kind="panel" label="Screenshot, full size">
-          <img className="gs-zoom-img" src={s.src} alt={s.alt} width={s.w} height={s.h} />
-        </DS.Popup>
-      </div>}
-    </figure>
-  );
-};
-
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
 // Manage account, Your AI, divider, Sign out. On a phone the trigger is the avatar alone,
 // beside the Menu button, which holds only the pages.
@@ -301,8 +277,11 @@ const GsTopBar = () => {
             {menu && (
               <div className="gs-pop" role="menu" aria-label="Menu" style={out ? undefined : { minWidth: 200 }}>
                 {links.map(([id, l, fn]) => <button key={id} type="button" role="menuitem" className="gs-menu-item" aria-current={cur === id ? 'page' : undefined} onClick={() => pick(fn)}>{l}</button>)}
-                {out && <button type="button" role="menuitem" className="gs-menu-item" onClick={() => pick(() => gs.go('signin'))}>Sign in</button>}
-                {out && <div className="gs-pop-cta"><DS.Button block onClick={() => pick(gs.startFree)}>Start free</DS.Button></div>}
+                {out && <div className="gs-menu-div" role="separator" />}
+                {out && <div className="gs-pop-cta">
+                  <DS.Button variant="secondary" block role="menuitem" onClick={() => pick(() => gs.go('signin'))}>Sign in</DS.Button>
+                  <DS.Button block role="menuitem" onClick={() => pick(gs.startFree)}>Start free</DS.Button>
+                </div>}
               </div>
             )}
           </div>
@@ -357,5 +336,5 @@ const GsPlayPopup = () => <GsPlayDialog />;
 
 Object.assign(window, {
   GsCover, GsCoverButton, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
-  GsChat, GsMe, GsAi, GsPanel, GsUp, GsShot, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
+  GsChat, GsMe, GsAi, GsPanel, GsUp, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
 });

@@ -1512,6 +1512,21 @@
                 'Docs: editions and plays-and-editions move to docs/archive; new docs/specs decisions-2026-10-10, filters-on-a-phone, fixes. Five new uploads/ screenshots, kept as shipped.',
               ],
             },
+            {
+              date: '2026-10-11',
+              title: 'Prices, a subscribe page, push notifications, a chats page, Library rows',
+              items: [
+                'Prices are set: £3 a month and £30 a year (£2.50 a month shown on the yearly plan). Checkout and the update-card page show them.',
+                'The Pass page now only describes: the comparison, the price and one button, "Choose a plan". The plan choice, what is due and "Start 14-day trial" move to a new Subscribe page (gs-billing.jsx). Checkout cancel and sign-in return there; someone who holds the Pass is sent to Account. "Get the Pass again" is now just "Get the Pass".',
+                'New push notifications (gs-push.jsx, droppable): a banner on Discover, Library and History while permission is undecided (its x hides it for 3 days, then 7, then 30), a Notifications card on Account, and the browser permission dialog. Staged for allowed, blocked, iPhone tab, unsupported and a failing turn-on. Config gets a Notifications group.',
+                'New gs-chats.jsx: "How it looks in your chat" pictures per game, and the home hero\'s. Home and the game pages show them.',
+                'Library rows are rebuilt around what is waiting ("Today\'s word is ready", "In progress", "Done today", "Pass only") with a last-played date, worked out from the same state the game pages read. Discover rows use the design system CardRow.',
+                'Google or Apple sign-up goes straight to Your username with no device code; the code is kept for a returning player on a new device. Reset password gains a Resend code link, and the code step can be opened on its own.',
+                'One result formatter per game (GS_RESULT) feeds every result line. History is reworked, and a lapsed player sees a frozen Casebook run. The Casebook share note is dropped.',
+                'Design-system copy under _ds/ is updated (bundle, components, tokens, adherence rules). Home hero playground reworked (option 4).',
+                'New docs/specs folders: pass-and-subscribe, notifications-2026-10-11, iffy-decisions-2026-10-11, phone-snags, streak-when-access-ends, and a home-hero option 4 handoff. Seven new uploads/ screenshots, kept as shipped.',
+              ],
+            },
           ],
         }
       ]

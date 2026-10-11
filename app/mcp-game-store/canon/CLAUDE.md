@@ -26,7 +26,7 @@ A map of what the product is. This is a prototype and things change, so the map 
 - Not ratified: game names (Casebook, the hunter-gatherer game are working titles), the free-and-Pass rules above until the owner has read the handoff (`docs/specs/free-and-pass/`), seeing where you stand against others (intended, not built).
 
 ### Screen map (route → file in `app/`)
-- Signed-out views: `home` (`gs-home.jsx`), `games` (`gs-home.jsx`), `pass` (`gs-billing.jsx`), `legal` (`gs-site.jsx`).
+- Signed-out views: `home` (`gs-home.jsx`), `games` (`gs-home.jsx`), `pass`, `subscribe` (`gs-billing.jsx`), `legal` (`gs-site.jsx`).
 - Product pages, one template in `gs-game.jsx`: `word`, `groups`, `mystery`, `escape`, `delve`, `casebook`, `hunter`. Library game pages (`page: 'record'`): `gs-puzzles-library.jsx` (the four puzzle games), `gs-delve-library.jsx`, `gs-casebook.jsx`, `gs-hunter-library.jsx`, parts in `gs-library.jsx`.
 - Account and auth: `signup`, `signin`, `verify`, `recover`, `returning` (`gs-auth.jsx`); `username` (`gs-username.jsx`); `connect` (`gs-connect.jsx`); `account` (`gs-account.jsx`).
 - Play record: `session`, `history` (`gs-session.jsx`).

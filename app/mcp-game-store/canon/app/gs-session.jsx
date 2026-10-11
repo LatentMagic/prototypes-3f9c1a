@@ -11,7 +11,7 @@ const GsNeedsPass = ({ gid }) => {
   return (
     <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
       <span className="gs-muted">{'Every other ' + GS_GAMES[gid].ed[0] + ' comes with the Pass.'}</span>
-      <DS.Button variant="secondary" onClick={() => gs.go('pass')}>{lapsed ? 'Get the Pass again' : 'Get the Pass'}</DS.Button>
+      <DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
     </div>
   );
 };
@@ -55,19 +55,32 @@ const GsShareText = ({ lines }) => (
   </DS.Card>
 );
 
+// The one Share pop-up, opened from the session page and every library game page (2026-10-11).
+// A panel by ui-design.md: it is neither one question nor a short list of commands, so it is a bottom sheet on a phone.
+const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
+  const [copied, setCopied] = React.useState(false);
+  React.useEffect(() => { if (!open) setCopied(false); }, [open]);
+  const copy = () => {
+    if (window.lbCopy) lbCopy(lines);
+    else { try { navigator.clipboard && navigator.clipboard.writeText(lines.join('\n')); } catch (e) {} }
+    setCopied(true);
+  };
+  return (
+    <DS.Popup open={open} onClose={onClose} kind="panel" title={linkOnly ? 'Share this game' : 'Share this result'}
+      actions={lines && <DS.Button done={copied} doneLabel="Copied" onClick={copy}>Copy</DS.Button>}>
+      <GsShareText lines={lines} />
+    </DS.Popup>
+  );
+};
+
 const GsSessionRecord = () => {
   const gs = useGs();
   const s = GS_SESSIONS[gs.route.id] || GS_SESSIONS.delve;
   const [share, setShare] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
   // A game with no result block (36,000 Summers Ago) shares its product page link only (MCPG-030 AF-04).
   const linkOnly = s.share == null && s.kind === 'day' && !s.live && !s.again;
   const text = linkOnly ? ['https://platform.example/' + GS_GAMES[s.gid].route] : gsShareText(s);
-  const closeShare = () => { setShare(false); setCopied(false); };
-  const copy = () => {
-    try { navigator.clipboard && navigator.clipboard.writeText(text.join('\n')); } catch (e) {}
-    setCopied(true);
-  };
+  const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
   // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
   // An edition that can't be played at all (edClosed) has no Play again.
@@ -76,6 +89,7 @@ const GsSessionRecord = () => {
   const held = !!ed && !s.live && needsPass; // an edition that needs the Pass: the line and button replace Play and Replay
   const again = (ed && edClosed(ed)) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Replay{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
   const holdBlock = held && <GsNeedsPass gid={s.gid} />;
+  const reps = window.phReplays ? phReplays(gs, s) : [];
   const back = s.gid && <div className="gs-wrap" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   const list = (
     <section className="gs-stack-md">
@@ -91,7 +105,7 @@ const GsSessionRecord = () => {
       <section className="gs-sess-head">
         <GsCover art={s.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="mcp-t-card">{s.game}</span>
+          <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
           <h1 className="gs-h1">{gsOr(s.result)}</h1>
           <div className="gs-figs">
             {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
@@ -108,6 +122,8 @@ const GsSessionRecord = () => {
           {holdBlock}
         </div>
       </section>
+
+      {window.PhReplays && <PhReplays reps={reps} />}
 
       {delve ? (
         <section className="gs-pitch">
@@ -132,10 +148,7 @@ const GsSessionRecord = () => {
         </section>
       ) : list}
 
-      <DS.Popup open={share} onClose={closeShare} title={linkOnly ? 'Share this game' : 'Share this result'} posture={gs.narrow ? 'sheet' : 'window'}
-        actions={text && <DS.Button done={copied} doneLabel="Copied" onClick={copy}>Copy</DS.Button>}>
-        <GsShareText lines={text} />
-      </DS.Popup>
+      <GsSharePopup open={share} onClose={closeShare} lines={text} linkOnly={linkOnly} />
     </main>
   </>);
 };
@@ -153,15 +166,14 @@ const GsSessionNew = (p) => {
       <section className="gs-sess-head">
         <GsCover art={g.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="mcp-t-card">{g.name}</span>
-          <h1 className="gs-h1">{edName(e)}</h1>
+          <h1 className="gs-h1">{edLabel(e)}</h1>
           <div className="gs-figs">
             <span className="gs-fig">Not played</span>
             <span className="gs-fig gs-fig-quiet">{day}</span>
           </div>
           {closed ? (
             <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-              <p>{'Only the latest ' + g.name + ' can be played. This one stays in your History.'}</p>
+              <p>{'Only the latest ' + g.name + ' can be played. This one stays in your history.'}</p>
               <DS.TextLink onClick={() => gs.go(g.route, { page: 'record' })}>{'Go to your ' + g.name}</DS.TextLink>
             </div>
           ) : pass ? <GsNeedsPass gid={gid} />
@@ -173,4 +185,4 @@ const GsSessionNew = (p) => {
 };
 const GsSession = () => (useGs().route.ed ? <GsSessionNew /> : <GsSessionRecord />);
 
-Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, gsShareText });
+Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText });

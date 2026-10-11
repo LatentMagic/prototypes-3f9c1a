@@ -191,7 +191,20 @@ const gsScrollToId = (id) => {
   sc.scrollTop = el.getBoundingClientRect().top - base + sc.scrollTop - 16;
 };
 
+// ---- Results: one formatter per game. Every result line (rows, session pages, the now card) is built here from the play's facts. ----
+const gsMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
+const GS_RESULT = {
+  word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Missed'),
+  groups: (r) => (r.found === 4 ? 'All 4 groups, ' + gsMis(r.mistakes) : r.found + ' of 4 groups'),
+  mystery: (r) => (r.ok ? 'Solved' : 'Missed'),
+  escape: (r) => (r.ok ? 'Escaped in ' + r.moves + ' moves' : 'Still locked in'),
+  casebook: (r) => (r.ok ? 'Solved' : 'Unsolved'),
+  delve: (r) => ({ won: 'Rescued', ritual: 'Ritual done', fell: 'Hero fell' })[r.end],
+  hunter: (r) => (r.restarted ? 'Restarted' : 'Finished'),
+};
+
 Object.assign(window, {
+  GS_RESULT, gsMis,
   DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
   GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsScroller, gsScrollTop, gsScrollToId,
 });
