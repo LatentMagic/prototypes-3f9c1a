@@ -33,14 +33,19 @@ const LbBackTo = ({ gid }) => {
   const fromLib = p && p.name === g.route && p.page === 'record';
   return <LbBack label={g.name} onClick={() => (fromLib ? gs.back() : gs.go(g.route, { page: 'record' }))} />;
 };
-const LbHead = ({ id }) => {
-  const gs = useGs(); const g = GS_GAMES[id];
+// The library game page head: the design system's cover beside a heading (Cover.prompt.md, ratified 2026-10-12; game-editions-list 2g).
+// The cover fills to the text's height, never below 4:3; the art keeps its scale, placed by its declared extend, on its ground.
+// name and more: a seam for playgrounds (a test name, extra links).
+const LbHead = ({ id, name, more }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const a = GS_ART[g.art] || {};
+  // Escape, Casebook and Delve: the way in to the game's editions (app/gs-editions.jsx).
+  const eds = !more && gs.view !== 'out' && window.ED3 && window.ED3.includes(id);
   return (
-    <section className="rf-head">
-      <span><GsCover art={g.art} /></span>
-      <div className="gs-stack-xs" style={{ justifyItems: 'start' }}>
-        <h1 className="gs-h1">{g.name}</h1>
-        <DS.TextLink style={{ marginTop: -8 }} onClick={() => gs.go(g.route)}>{'About ' + g.name}</DS.TextLink>
+    <section className="mcp-cover-head lb-head">
+      <DS.Cover fill ground={a.ground} extend={a.extend}><span dangerouslySetInnerHTML={{ __html: a.svg || '' }} /></DS.Cover>
+      <div className="mcp-cover-head-text">
+        <h1 className="gs-h1">{name || g.name}</h1>
+        <div className="mcp-cover-head-links"><DS.TextLink onClick={() => gs.go(g.route)}>About this game</DS.TextLink>{more}{eds && <DS.TextLink onClick={() => window.pgeList(gs, id, { fromLib: true })}>{'Every ' + g.ed[0]}</DS.TextLink>}</div>
       </div>
     </section>
   );
@@ -185,6 +190,7 @@ const LbGamePick = ({ g, list, onBack }) => {
     </div>
   );
 };
+// Nothing sits under the bar: the button counts what is set, and the panel shows it and clears it (2026-10-12).
 const LbFilters = ({ children }) => {
   const { search, choices } = lbfParts(children);
   const [open, setOpen] = React.useState(false); const [deep, setDeep] = React.useState(false);
@@ -198,7 +204,6 @@ const LbFilters = ({ children }) => {
         <div className="lbf-search">{search}</div>
         <DS.Button variant="secondary" onClick={() => setOpen(true)}>{on.length ? 'Filters · ' + on.length : 'Filters'}</DS.Button>
       </div>
-      {on.length > 0 && <p className="lbf-sum">{on.map(lbfLabel).join(' · ')}</p>}
       <DS.Popup kind="panel" open={open} onClose={close} title="Filters" actions={on.length ? <DS.ButtonPair><DS.Button variant="secondary" onClick={clear}>Clear</DS.Button>{done}</DS.ButtonPair> : done}>
         {deep && g ? <LbGamePick g={g} list={lbfGames(g, choices)} onBack={() => setDeep(false)} /> : (
           <div className="lbf-groups">{choices.map((c) => (c === g ? (

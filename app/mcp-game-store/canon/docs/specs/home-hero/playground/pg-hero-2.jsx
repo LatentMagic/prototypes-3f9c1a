@@ -49,7 +49,7 @@ const H2Caption = ({ id, line }) => {
 };
 const H2OnCover = ({ art, children }) => (
   <div className="h2-oncover">
-    <div className="h2-coverbg" aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[art] }} />
+    <div className="h2-coverbg" aria-hidden="true" dangerouslySetInnerHTML={{ __html: (GS_ART[art] || {}).svg }} />
     {children}
   </div>
 );

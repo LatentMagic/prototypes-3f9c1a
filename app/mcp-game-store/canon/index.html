@@ -281,6 +281,8 @@
   .gs-tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .gs-root .mcp-tag { white-space: normal; height: auto; min-height: 26px; padding-top: 4px; padding-bottom: 4px; line-height: 1.3; }
   .gs-tagbtn { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; color: inherit; }
+  /* The 44px target reaches past the tag without making its row taller, so a card with the Pass tag ends where the others do (2026-10-12) */
+  .gs-tagbtn { margin-block: -9px; }
   .gs-dot { width: 6px; height: 6px; background: var(--off-white); flex: none; }
   .gs-coverbtn, .gs-titlebtn { background: none; border: 0; padding: 0; margin: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; display: block; width: 100%; }
   .gs-coverbtn:active, .gs-titlebtn:active { opacity: .55; }
@@ -442,8 +444,12 @@
   .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
   .gs-hero-covers > span { overflow: hidden; }
   .gs-hero-covers svg { width: 100%; height: 100%; display: block; }
-  .gs-feat { display: grid; gap: 16px; align-content: start; }
-  .gs-feat-body { display: grid; gap: 16px; align-content: start; justify-items: start; }
+  /* A row's cards share one height: the title and line sit at the top, the tags at the bottom, so the spare space falls between them (2026-10-12) */
+  .gs-feat { display: grid; gap: 16px; grid-template-rows: auto 1fr; min-height: 100%; }
+  .gs-feat-body { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .gs-feat-body > :first-child { flex: 1 0 auto; }
+  /* Home's row sizes its cards as Discover's "Just added" (four to a width, 220–280px), not by its own count of seven, which pinned them at 220px and made tags wrap */
+  .gs-row4 .mcp-crow-track { --n: 4 !important; }
   .gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
   .gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
   .gs-card-eq .gs-plain { align-content: start; }
@@ -738,8 +744,12 @@
   .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
   .lb-foot { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 24px; }
   .lb-foot > .gs-muted { min-height: 48px; display: flex; align-items: center; }
-  .lb-acts { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
-  .lb-acts > .mcp-lnk { min-height: 44px; align-self: flex-start; }
+  /* Share and its link share a row at every width, wrapping when they don't fit (game-editions-list, 2026-10-12) */
+  .lb-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+  .lb-acts > .mcp-lnk { min-height: 44px; }
+  /* The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
+  .lb-head { margin-bottom: -12px; }
+  .pge-panel { display: grid; gap: 16px; min-width: 0; }
   .lb-streakhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
   .lb-legend { list-style: none; margin: 0; padding: 0; display: flex; gap: 16px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
   .lb-legend li { display: inline-flex; align-items: center; gap: 8px; }
@@ -867,6 +877,7 @@
   .lbf-bar > .mcp-btn { flex: none; }
   .lbf-search { flex: 1 1 auto; min-width: 0; max-width: 400px; }
   .lbf-sum { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
+  .lb-empty-clear { display: grid; gap: 16px; justify-items: start; }
   .lbf-groups { display: grid; gap: 24px; }
   .lbf-groups .lb-choice { flex-direction: row !important; flex-wrap: wrap !important; }
   .lbf-groups .lb-choice > button { text-align: center !important; }
@@ -917,8 +928,6 @@
     .lb-mw { display: none; } .lb-mn { display: inline; }
   }
   @container gs (min-width: 640px) {
-    .lb-acts { flex-direction: row; align-items: center; gap: 24px; }
-    .lb-acts > .mcp-lnk { align-self: auto; }
   }
   @container gs (min-width: 720px) {
     .lb-card { padding: 24px; --lb-pad: 24px; }
@@ -1068,7 +1077,7 @@
 /* ---- History and play rows (app/gs-history.jsx) ---- */
   .ph-day { margin: 0; padding: 16px var(--lb-pad, 16px) 8px; font: 600 14px/1.3 var(--font-text); color: var(--muted); border-top: 1px solid var(--line); }
   .lb-box > .ph-day:first-child { border-top: 0; }
-  .lb-results { min-height: 720px; }
+  /* A results box ends at its last row; only the loading state holds 720px (five-small-fixes follow-up, 2026-10-12) */
   .lb-results > .gs-inplace { min-height: 720px; padding: 0 16px; }
   
   
@@ -1305,6 +1314,7 @@
 <script type="text/babel" src="app/qa.jsx"></script>
 <script type="text/babel" src="app/gs-config.jsx"></script>
 <script type="text/babel" src="app/gs-history.jsx"></script>
+<script type="text/babel" src="app/gs-editions.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

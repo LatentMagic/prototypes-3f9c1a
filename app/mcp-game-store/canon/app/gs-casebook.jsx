@@ -159,7 +159,7 @@ const CbLibrary = () => {
         {pass && <LbRun n={lbStreak(cbRunList(gs))} unit="weeks" weeks={cbWeeks(gs)} />}
         {gsLapsed(gs) && (() => { const f = lbFrozen(cbWeeks(gs), cbRunList(gs), (c) => c.week); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
-        <LbRecent title="Your cases" allLabel="All cases" rows={rows} empty="Your cases appear here once you have played one." />
+        <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />
       </div>
     </main>
   );

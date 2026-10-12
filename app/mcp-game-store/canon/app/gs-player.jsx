@@ -30,7 +30,7 @@ const GP_ACH = [
 ];
 
 
-const GpMini = ({ art, sm }) => <span className={'pg-mini' + (sm ? ' is-sm' : '')} aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[art] }} />;
+const GpMini = ({ art, sm }) => <span className={'pg-mini' + (sm ? ' is-sm' : '')} aria-hidden="true" dangerouslySetInnerHTML={{ __html: (GS_ART[art] || {}).svg }} />;
 
 // ---- Your Delve parts -----------------------------------------------------------
 const GpThisWeek = ({ who }) => {

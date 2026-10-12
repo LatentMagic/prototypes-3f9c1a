@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"0147ba6a1fee","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"790b19a235f1","components/media/Cover.jsx":"a4fb1618559f","components/media/GameArt.jsx":"b03deeae21f8","components/media/Icon.jsx":"dc8ca13c049f","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"4b2327ce8271","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/ListRow.jsx":"47511f5f0d15","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","playgrounds/rows/rows.jsx":"9c8ccfd05b69","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"0147ba6a1fee","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"790b19a235f1","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"523d9d9ee06f","components/media/Icon.jsx":"dc8ca13c049f","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"b2cdac6b8d49","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/ListRow.jsx":"47511f5f0d15","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -115,14 +115,30 @@ const ART = {
   'dungeon-quest': '<svg viewBox="0 0 171 108" preserveAspectRatio="xMidYMid slice"><rect width="171" height="108" fill="#163328"/><path d="M20,108 L62,36 L104,108Z" fill="#E5A63B"/><path d="M66,108 L112,22 L158,108Z" fill="#A390B2"/><path d="M66,108 L85,72.5 L104,108Z" fill="#328A88"/></svg>',
   'dungeon-quest-single': '<svg viewBox="0 0 171 108" preserveAspectRatio="xMidYMid slice"><rect width="171" height="108" fill="#163328"/><path d="M66,108 L112,22 L158,108Z" fill="#A390B2"/></svg>'
 };
+// Each example declares its ground and how it extends (guidelines/game-art-motion.md "Extending a cover").
+const META = {
+  'daily-puzzles': ['indigo', 'centre'],
+  'daily-puzzles-diagonal': ['indigo', 'centre'],
+  'weekly-interrogation': ['wine', 'centre'],
+  'dungeon-quest': ['forest', 'bottom'],
+  'dungeon-quest-single': ['forest', 'bottom']
+};
 function Cover({
   name,
   art,
   src,
   children,
   onClick,
+  fill = false,
+  ground,
+  extend,
   className = ''
 }) {
+  const m = META[art] || [];
+  const g = ground || m[0] || 'indigo';
+  const x = extend || m[1];
+  if (fill && !x && typeof console !== 'undefined') console.warn('Cover: fill needs the asset to declare extend ("bottom" or "centre").');
+  const cls = 'mcp-cover' + (fill ? ' is-fill is-' + g + ' from-' + (x || 'centre') : '') + (className ? ' ' + className : '');
   const inner = children ? children : src ? /*#__PURE__*/React.createElement("img", {
     src: src,
     alt: ""
@@ -136,7 +152,7 @@ function Cover({
   }) : null;
   const Tag = onClick ? 'button' : 'figure';
   return /*#__PURE__*/React.createElement(Tag, {
-    className: ('mcp-cover ' + className).trim(),
+    className: cls,
     onClick: onClick,
     type: onClick ? 'button' : undefined,
     style: onClick ? {
@@ -148,7 +164,13 @@ function Cover({
       color: 'inherit',
       font: 'inherit'
     } : undefined
-  }, /*#__PURE__*/React.createElement("div", {
+  }, !children && !src && ART[art] ? /*#__PURE__*/React.createElement("div", {
+    className: "mcp-cover-art",
+    "aria-hidden": "true",
+    dangerouslySetInnerHTML: {
+      __html: ART[art]
+    }
+  }) : /*#__PURE__*/React.createElement("div", {
     className: "mcp-cover-art",
     "aria-hidden": "true"
   }, inner), name && (onClick ? /*#__PURE__*/React.createElement("span", {
@@ -162,7 +184,7 @@ Object.assign(__ds_scope, { Cover });
 
 // components/media/GameArt.jsx
 try { (() => {
-// Game art that answers a hover. Place inside an element with class mcp-art-host (the whole card or link). Descriptions live in guidelines/game-art-motion.md.
+// Game art. It moves only as the hover, focus and press response of the link or button it sits in (a clickable Card, ListRow or Cover, or an <a href>/<button> with class mcp-art-host); anywhere else it is still. Rules and descriptions: guidelines/game-art-motion.md.
 const dg = () => /*#__PURE__*/React.createElement("div", {
   className: "mcp-art-dg"
 }, [0, 1, 2, 3].map(r => /*#__PURE__*/React.createElement("div", {
@@ -1239,7 +1261,7 @@ function Popup({
 Object.assign(__ds_scope, { Popup });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/Popup.jsx", error: String((e && e.message) || e) }); }
 
-// playgrounds/rows/rows.jsx
+// docs/archive/rows-and-history/playground/rows.jsx
 try { (() => {
 // Rows proposal: seed, the product's rows as they render today (Before), the proposed rows (After), and the scaled frame.
 const DSX = window.MCPGameStoreDesignSystem_ef1abd;
@@ -2067,7 +2089,7 @@ Object.assign(window, {
   DsCardBefore,
   DsCardAfter
 });
-})(); } catch (e) { __ds_ns.__errors.push({ path: "playgrounds/rows/rows.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "docs/archive/rows-and-history/playground/rows.jsx", error: String((e && e.message) || e) }); }
 
 // ui_kits/shop/Screens.jsx
 try { (() => {

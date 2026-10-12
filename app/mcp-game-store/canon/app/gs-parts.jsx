@@ -6,7 +6,7 @@
 
 // ---- Covers and tags ---------------------------------------------------------
 const GsCover = ({ art }) => (
-  <DS.Cover><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: GS_ART[art] || '' }} /></DS.Cover>
+  <DS.Cover><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: (GS_ART[art] || {}).svg || '' }} /></DS.Cover>
 );
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
@@ -30,7 +30,8 @@ const useGsArtHost = () => {
   const ref = React.useRef(null);
   React.useEffect(() => {
     const host = ref.current && ref.current.closest('.gs-host'); if (!host) return undefined;
-    const on = (e) => { if (e.pointerType !== 'mouse') host.classList.add('is-on'); };
+    // A press on the card's second control (the Pass tag) leaves the art still.
+    const on = (e) => { if (e.pointerType !== 'mouse' && !e.target.closest(':is(a, button):not(.mcp-art-link)')) host.classList.add('is-on'); };
     const off = () => host.classList.remove('is-on');
     host.addEventListener('pointerdown', on);
     ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => host.addEventListener(t, off));
@@ -136,7 +137,7 @@ const GsGameCard = ({ id, mark }) => {
     <DS.Card className="mcp-art-host gs-host gs-more" style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
       <div ref={host}><GsArt art={g.art} shape="landscape" /></div>
       <div className="gs-title-row">
-        <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
+        <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
         {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
       </div>
       <p className="gs-muted">{g.blurb}</p>

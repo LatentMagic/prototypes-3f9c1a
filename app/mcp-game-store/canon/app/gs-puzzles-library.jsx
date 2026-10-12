@@ -79,8 +79,8 @@ const pzSession = (id, c, x) => {
   } else if (id === 'mystery') {
     const who = PZ_SUSPECTS[i % 4]; const wrong = PZ_SUSPECTS[(i + 1) % 4]; const q = 1 + (i % 3);
     const qs = [['Was the window open?', 'Yes'], ['Did anyone leave before ten?', 'One'], ['Was the knife moved?', 'No']].slice(0, q);
-    s = { ...base, result: x.ok ? 'Solved' : 'Missed', listTitle: 'Every question', share: x.ok ? 'Solved' : 'Missed',
-      shareHead: 'Daily Mystery #' + (64 - i) + ' · ' + (x.ok ? '✅ Solved' : '❌ Missed') + ' · ' + '🔎'.repeat(q),
+    s = { ...base, result: x.ok ? 'Solved' : 'Not solved', listTitle: 'Every question', share: x.ok ? 'Solved' : 'Not solved',
+      shareHead: 'Daily Mystery #' + (64 - i) + ' · ' + (x.ok ? '✅ Solved' : '❌ Not solved') + ' · ' + '🔎'.repeat(q),
       lines: [...qs.map(([a, b], k) => ['Question ' + (k + 1), a, b]), ['Accusation', x.ok ? who : wrong, x.ok ? 'Right' : 'Wrong']] };
   } else {
     const n = x.ok ? (i === 1 ? 9 : 6 + (i % 5)) : 10; const mv = PZ_MOVES.slice(0, n);
@@ -104,11 +104,10 @@ Object.entries(PZ).forEach(([id, c]) => {
   c.ach = c.ach.map((a) => (a.of ? { ...a, have: Math.min(run, a.of) } : a));
   c.badges = lbAutoBadges(c.ach);
 });
-// State library-word-streak-broken: yesterday's Daily Word finished in a first play that failed, then a completed replay.
+// State library-word-streak-broken: yesterday's Daily Word finished in a first play that failed.
 (() => {
   const c = PZ.word; const y = c.all[1]; const keep = GS_SESSIONS['word-e1'];
   pzSession('word', c, { ...y, ok: false, line: c.bad }); GS_SESSIONS['word-broken-first'] = GS_SESSIONS['word-e1'];
-  pzSession('word', c, { ...y, ok: true, line: c.ok(1) }); GS_SESSIONS['word-broken-replay'] = { ...GS_SESSIONS['word-e1'], again: true, figures: [<span className="rp-fig">Replay</span>] };
   if (keep) GS_SESSIONS['word-e1'] = keep; else delete GS_SESSIONS['word-e1'];
 })();
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
@@ -150,7 +149,7 @@ const PzNow = ({ c, done, none, id }) => {
 };
 const pzLibrary = (id) => () => {
   const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
-  const [recent, allLabel] = c.plays;
+  const [recent] = c.plays; const allLabel = 'See in History';
   // State library-mystery-never-played: a game this player can play and never has. A new account has played nothing.
   const never = gs.review.never === id || gsFresh(gs);
   const now = never ? null : lbNow(gs, id); const broken = id === 'word' && gs.review.broken; const none = !now || broken;
@@ -163,7 +162,7 @@ const pzLibrary = (id) => () => {
   const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));
   const rows = never ? [] : pzHist({ all: run }).slice(0, 8).map((x) => pzRow(gs, c, x));
   if (broken) {
-    rows[0] = { ...rows[0], own: true, replays: 1, status: { kind: 'bad', label: c.bad }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
+    rows[0] = { ...rows[0], own: true, status: { kind: 'bad', label: c.bad }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
   }
   return (
     <main key={k} className="gs-wrap gs-main">
@@ -172,7 +171,7 @@ const pzLibrary = (id) => () => {
         <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
         <LbRun n={lbStreak(run)} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
         <LbAch items={ach} badges={c.badges} access="all" />
-        <LbRecent title={recent} allLabel={allLabel} rows={rows.slice(0, 8)}
+        <LbRecent title={recent} allLabel={allLabel}
           empty={recent + ' appear here once you have played one.'} />
       </div>
       {gs.view !== 'pass' && !GS_EARLIER_CLOSED.includes(id) && <p className="gs-muted">{'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}

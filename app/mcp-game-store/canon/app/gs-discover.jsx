@@ -18,7 +18,7 @@ const DcHead = ({ g, mark, open, label }) => (
   <div className="gs-stack-sm">
     {label && <span className="gs-label">{label}</span>}
     <div className="gs-title-row">
-      <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
+      <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
       {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
     </div>
     <p className="gs-muted">{g.blurb}</p>
@@ -37,7 +37,7 @@ const DcPick = ({ id, label }) => {
 const DcRowCard = ({ id, mark }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
   return (
-    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'start' }}>
+    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'stretch' }}>
       <div className="gs-feat" ref={host}>
         <GsArt art={g.art} shape="wide" />
         <div className="gs-feat-body"><DcHead g={g} mark={mark} open={open} /><GsTagList tags={g.tags} ed={g.ed} /></div>
@@ -50,7 +50,7 @@ const DcTile = ({ id, mark }) => {
   return (
     <div className="dc-tile mcp-art-host gs-host" ref={host}>
       <GsArt art={g.art} shape="square" />
-      <button type="button" className="dc-tile-name" onClick={open}>{g.name}</button>
+      <button type="button" className="dc-tile-name mcp-art-link" onClick={open}>{g.name}</button>
       <span className="gs-small">{gsKind(g.category)}</span>
       {mark && <span className="dc-tags"><DS.Tag kind="daily" icon="check">{mark}</DS.Tag></span>}
     </div>

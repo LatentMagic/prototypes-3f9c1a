@@ -7,12 +7,12 @@
 const GsFeature = ({ id, children }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
   return (
-    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'start' }}>
+    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'stretch' }}>
       <div className="gs-feat" ref={host}>
         <GsArt art={g.art} shape="wide" />
         <div className="gs-feat-body">
           <div className="gs-stack-sm">
-            <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={open}>{g.name}</button></h3>
+            <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
             <p className="gs-lead">{g.blurb}</p>
           </div>
           <GsTagList tags={g.tags} ed={g.ed} />
@@ -122,7 +122,7 @@ const GsHome = () => {
       </section>
 
       <section className="gs-band">
-        <DS.CardRow title="Available games">
+        <DS.CardRow title="Available games" className="gs-row4">
           {GS_GAME_ORDER.map((k) => <GsFeature key={k} id={k} />)}
         </DS.CardRow>
         <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>

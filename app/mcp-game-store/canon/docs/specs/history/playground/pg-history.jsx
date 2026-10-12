@@ -81,7 +81,7 @@ const phLib = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record',
 const PH_ALL_LABEL = { word: 'All words', groups: 'All groups', mystery: 'All cases', escape: 'All rooms', casebook: 'All cases', delve: 'All scenes', hunter: 'All days' };
 
 // ---- Parts ----
-const PhCov = ({ gid }) => <span className="ph-cov" aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art] }} />;
+const PhCov = ({ gid }) => <span className="ph-cov" aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />;
 const PhMeta = ({ items }) => <span className="ph-m">{items.filter(Boolean).map((t, i) => (t === 'Replay' ? <b key={i} className="ph-again">Replay</b> : <span key={i}>{t}</span>))}</span>;
 // One play. when: 'time' (under a day heading) or 'date'.
 const PhPlayRow = ({ p, showGame, when }) => {

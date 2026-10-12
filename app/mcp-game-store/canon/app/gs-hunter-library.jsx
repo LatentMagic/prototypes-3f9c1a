@@ -108,7 +108,7 @@ const HgLibrary = () => {
         {fresh ? <HgNone /> : <HgLatest last={pass ? null : old[0]} />}
         {pass && <HgLeft fresh={fresh} />}
         <LbAch items={fresh ? lbNoAch(HG_ACH) : HG_ACH} badges={HG_BADGES} access={access} />
-        <LbRecent title="Your days" allLabel="All days" rows={days.slice(0, 8).map((x) => hgRow(gs, x))} empty="Your days appear here once you have played one." />
+        <LbRecent title="Your days" allLabel="See in History" empty="Your days appear here once you have played one." />
       </div>
     </main>
   );

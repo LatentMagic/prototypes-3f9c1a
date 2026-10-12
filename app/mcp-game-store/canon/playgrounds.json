@@ -1,8 +1,38 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-11",
+  "generated": "2026-10-12",
   "tickets": [
+    {
+      "id": "—",
+      "slug": "game-editions-list",
+      "name": "A game's list of editions",
+      "state": "active",
+      "touched": "2026-10-12",
+      "entries": [
+        {
+          "name": "A game's list of editions, head 2g",
+          "path": "docs/specs/game-editions-list/playground/index.html",
+          "note": "The way in is a link under the game's name, \"Every case\", beside \"About this game\". Two head layouts, one each at every width and for every game: title across the top with links stacked beside the cover (2i), or title and links first with the cover at the end (2j). Go has a labelled long-name Casebook."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "—",
+      "slug": "history-filters-redesign",
+      "name": "History's filters, redesigned",
+      "state": "active",
+      "touched": "2026-10-12",
+      "entries": [
+        {
+          "name": "History, options 0 to 3",
+          "path": "docs/specs/history-filters-redesign/playground/index.html",
+          "note": "Today (0) beside Played and All editions as two tabs (1), one list with First plays, Replays and Not played on the page (2), or every control on the page with one Games control (3). Go to Casebook, Escape or Daily Word and press its All link to see where it lands."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": "—",
       "slug": "pass-and-subscribe",

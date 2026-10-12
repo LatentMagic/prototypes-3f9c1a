@@ -127,7 +127,7 @@ const DvLibrary = () => {
         {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list.map((s) => (fresh ? { ...s, played: false } : s)))} />; })()}
         {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
-        <LbRecent title="Your scenes" allLabel="All scenes" rows={rows} empty="Your scenes appear here once you have played one." />
+        <LbRecent title="Your scenes" allLabel="See in History" empty="Your scenes appear here once you have played one." />
       </div>
     </main>
   );

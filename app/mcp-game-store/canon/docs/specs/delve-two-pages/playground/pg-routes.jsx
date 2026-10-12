@@ -90,7 +90,7 @@ const pgMain = (who, gs) => (who === 'out'
 const pgPlayed = (who) => [...(who === 'played' ? ['delve'] : []), 'daily', 'casebook'];
 
 // ---- Shared bits ---------------------------------------------------------------
-const PgMini = ({ art, sm }) => <span className={'pg-mini' + (sm ? ' is-sm' : '')} aria-hidden="true" dangerouslySetInnerHTML={{ __html: GS_ART[art] }} />;
+const PgMini = ({ art, sm }) => <span className={'pg-mini' + (sm ? ' is-sm' : '')} aria-hidden="true" dangerouslySetInnerHTML={{ __html: (GS_ART[art] || {}).svg }} />;
 const PgCrumb = ({ last }) => {
   const gs = useGs();
   return (

@@ -167,6 +167,20 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
 .mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}
 .mcp-cover-art svg,.mcp-cover-art img{width:100%;height:100%;display:block;object-fit:cover}
+/* Fill (guidelines/game-art-motion.md "Extending a cover"): the box takes its parent's height, never less than 4:3; the art stays 4:3, placed by its declared extend; the ground is painted behind it. */
+.mcp-cover.is-fill{height:100%;grid-template-rows:minmax(0,1fr)}
+.mcp-cover.is-fill .mcp-cover-art{position:relative;aspect-ratio:auto;background:var(--cover-bg-indigo)}
+.mcp-cover.is-fill .mcp-cover-art::before{content:"";display:block;aspect-ratio:4/3}
+.mcp-cover.is-fill .mcp-cover-art>*{position:absolute;left:0;width:100%;height:auto;aspect-ratio:4/3}
+.mcp-cover.is-fill.from-bottom .mcp-cover-art>*{bottom:0}
+.mcp-cover.is-fill.from-centre .mcp-cover-art>*{top:50%;translate:0 -50%}
+.mcp-cover.is-fill.is-wine .mcp-cover-art{background:var(--cover-bg-wine)}.mcp-cover.is-fill.is-forest .mcp-cover-art{background:var(--cover-bg-forest)}
+/* Cover beside a heading (Cover.prompt.md). The cover and the text share a top and a bottom edge: the title is trimmed to cap height; each link's box runs from cap height to the bottom of its underline (offset 4px + 1.5px), its touch area kept in padding. Shorter text is centred. */
+.mcp-cover-head{display:grid;grid-template-columns:clamp(112px,26cqi,144px) minmax(0,1fr);column-gap:var(--space-5)}
+.mcp-cover-head-text{align-self:center;display:grid;gap:14px;justify-items:start;min-width:0}
+.mcp-cover-head-text>h1,.mcp-cover-head-text>h2{margin:0;text-box:trim-start cap alphabetic}
+.mcp-cover-head-links{display:flex;flex-wrap:wrap;gap:20px var(--space-5)}
+.mcp-cover-head-links>.mcp-lnk{display:inline-block;min-height:0;padding:17px 0;margin:-17px 0 calc(-17px + 5.5px);text-box:trim-both cap alphabetic}
 .mcp-cover-name{font:700 15px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance;color:var(--text)}
 
 /* Overlays (ui-design.md "Only a panel changes shape on a phone").
@@ -213,15 +227,15 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-msg{animation:none}
 }
 
-/* Game art: flat-shape pieces that answer a hover. Put .mcp-art-host on the whole card or link; --on is 1 while it is hovered, focused or pressed. */
-.mcp-art-host{--on:0; /* @kind other */}
-.mcp-art-host:active,.mcp-art-host.is-on,.mcp-art-host:hover,.mcp-art-host:focus-visible{--on:1; /* @kind other */}
+/* Game art (guidelines/game-art-motion.md "When art moves"). A cover moves only as the hover, focus and press response of the pressable thing it sits in: a link or button that is a Card, ListRow, Cover or carries .mcp-art-host; or a card (.mcp-art-host on a non-pressable box) whose one stretched link or button carries .mcp-art-link, so the card can hold a second control. --on is 0 everywhere else, so art outside anything pressable rests and is still. */
+@property --on{syntax:"<number>";inherits:true;initial-value:0}
+:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:hover,:focus-visible,:active,.is-pressed,.is-on),.mcp-art-host:has(.mcp-art-link:is(:hover,:focus-visible,:active,.is-pressed)),.mcp-art-host.is-on{--on:1; /* @kind other */}
 .mcp-art{position:relative;overflow:hidden;container-type:size;width:100%;background:var(--cover-bg-indigo)}
 .mcp-art-1{aspect-ratio:1}.mcp-art-43{aspect-ratio:4/3}.mcp-art-3{aspect-ratio:3/1}
 .mcp-art.is-forest{background:var(--cover-bg-forest)}
 .mcp-art i,.mcp-art b{position:absolute;display:block;background:var(--fill);transition:transform var(--time-art) var(--ease-art) 0ms,border-radius var(--time-art) var(--ease-art) 0ms}
-.mcp-art-host:is(:active,.is-on) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}
-@media (hover:hover){.mcp-art-host:is(:hover,:focus-visible) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}}
+:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:active,.is-pressed,.is-on) .mcp-art :is(i,b),.mcp-art-host:has(.mcp-art-link:is(:active,.is-pressed)) .mcp-art :is(i,b),.mcp-art-host.is-on .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}
+@media (hover:hover){:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:hover,:focus-visible) .mcp-art :is(i,b),.mcp-art-host:has(.mcp-art-link:is(:hover,:focus-visible)) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}}
 .mcp-art-dg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:80cqmin;aspect-ratio:1;display:grid;grid-template-rows:repeat(4,1fr);gap:5.6cqmin}
 .mcp-art-dg>div{display:grid;grid-template-columns:repeat(4,1fr);gap:5.6cqmin}
 .mcp-art-dg b{position:static;border-radius:calc(var(--on)*50%)}
@@ -251,7 +265,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-art-dm-ring{--x:36; /* @kind other */--y:24; /* @kind other */--w:72; /* @kind other */--h:72; /* @kind other */--fill:transparent;--s:0; /* @kind other */box-sizing:border-box;border:calc(var(--u)*12) solid var(--cover-orange);border-radius:50%;transform:scale(calc(1 - var(--on)*.55))}
 .mcp-art-dm-bar{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:72; /* @kind other */--fill:var(--cover-cream);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
 .mcp-art-dm-cap{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:20; /* @kind other */--fill:var(--cover-amber);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
-@media (prefers-reduced-motion:reduce){.mcp-art i,.mcp-art b{transition-duration:0ms!important;transition-delay:0ms!important}.mcp-art-host,.mcp-art-host:is(:hover,:active,:focus-visible,.is-on){--on:0; /* @kind other */}}
+@media (prefers-reduced-motion:reduce){.mcp-art i,.mcp-art b{transition-duration:0ms!important;transition-delay:0ms!important}.mcp-art{--on:0!important; /* @kind other */}}
 
 /* ChatPicture */
 .mcp-chat{--c-bg:var(--off-white);--c-fg:oklch(23% .01 95);--c-fg2:oklch(50% .01 95);--c-me:oklch(from var(--c-bg) calc(l - .055) c h);--c-edge:oklch(from var(--c-bg) calc(l - .075) c h);--c-tile:oklch(62% .01 95);--c-tile-fg:#fff;--c-g:var(--cover-green);--c-y:var(--cover-amber);--c-send:var(--control-edge);--c-send-fg:#fff;display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-fg);border-radius:16px;overflow:hidden;font:400 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;border:1px solid var(--c-edge)}
