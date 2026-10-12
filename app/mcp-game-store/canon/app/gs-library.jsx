@@ -63,15 +63,15 @@ const LbResult = ({ s }) => (
 // ---- The run: editions completed in a row join into one bar. Under 480px the last six show. ----
 // weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
 // on / legend: the two legend entries. A streak game says Completed / Not completed; 36,000 Summers Ago counts days played.
-const LbRun = ({ n, unit, weeks, locked, figure, on = 'Completed', legend = 'Not completed' }) => {
+const LbRun = ({ n, unit, weeks, locked, figure, pass, on = 'Completed', legend = 'Not completed' }) => {
   const gs = useGs();
   const cut = weeks.length - 6;
   return (
-    <section className="lb-card lb-runcard">
-      <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span>{weeks.some((w) => w.frozen) && <span className="gs-muted gs-strong">· Frozen</span>}</div>
+    <section className={'lb-card lb-runcard' + (pass ? ' is-pass' : '')}>
+      {pass ? <div className="lb-sechead"><h2 className="mcp-t-card">{c13CapLb(unit) + ' in a row'}</h2></div> : <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span>{weeks.some((w) => w.frozen) && <span className="gs-muted gs-strong">· Frozen</span>}</div>}
       <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
-        aria-label={'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.frozen ? 'frozen' : w.played ? on : legend).toLowerCase()).join(', ')}>
+        aria-label={pass ? 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month).join(', ') : 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + (w.frozen ? 'frozen' : w.played ? on : legend).toLowerCase()).join(', ')}>
         {weeks.map((w, i) => {
           const join = i > 0 && (w.played || w.frozen) && (weeks[i - 1].played || (weeks[i - 1].frozen && w.frozen));
           const newMon = i === 0 || weeks[i - 1].mon !== w.mon;
@@ -82,11 +82,15 @@ const LbRun = ({ n, unit, weeks, locked, figure, on = 'Completed', legend = 'Not
           );
         })}
       </div>
-      <ul className="lb-legend"><li><i className="is-on" />{on}</li><li><i />{legend}</li>{weeks.some((w) => w.frozen) && <li><i className="is-fz" />Frozen</li>}</ul>
+      {pass ? <p className="gs-muted gs-small">Your streak comes with the Pass.</p> : <ul className="lb-legend"><li><i className="is-on" />{on}</li><li><i />{legend}</li>{weeks.some((w) => w.frozen) && <li><i className="is-fz" />Frozen</li>}</ul>}
       </div>
     </section>
   );
 };
+
+// The streak card for a free player on a game whose streak comes with the Pass (Casebook, Delve): the same card and place as a Pass holder's, so the page keeps one layout.
+// Its weeks are drawn as the frozen ones are (not playable), and the line replaces the legend.
+const LbRunPass = ({ unit, weeks }) => <LbRun unit={unit} weeks={weeks.map((w) => ({ ...w, played: false, frozen: true, now: false }))} pass />;
 
 // ---- Achievements: badges coloured when earned, outlined while still to earn ----------
 // A badge is [ground, [[tag, attrs, fill], ...]] drawn on a 48 grid.
@@ -273,4 +277,9 @@ const lbNow = (gs, id) => {
   const s = GS_SESSIONS[c.today];
   return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { LbFreshNow, lbNoAch, lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+// The Pass offer on a free first-edition card (Casebook, Delve): its line wraps beside Get the Pass, on the actions' row when there is room.
+const LbPassOffer = ({ unit }) => {
+  const gs = useGs();
+  return <div className="lb-pass"><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button><span className="gs-muted">{'Every other ' + unit + ' comes with the Pass.'}</span></div>;
+};
+Object.assign(window, { LbRunPass, LbPassOffer, LbFreshNow, lbNoAch, lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

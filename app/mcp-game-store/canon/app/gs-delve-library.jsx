@@ -2,7 +2,7 @@
 // [Platform] — Delve's library page, option 16 fitted to Delve (picked by Claude on "decide for me", 2026-10-08).
 // This week's scene: the ending beside the title, the rescue as the bar. Weeks in a row. The spec's four
 // achievements (game-specs/delve.md). Your scenes. Every played scene has its own session page (delve-<id>).
-// Without the Pass: the first scene and your scenes on the left, achievements on the right.
+// Without the Pass: the first scene in this week's place, and the streak card in the Pass holder's place (LbRunPass).
 // Scene titles, heroes and records are invented.
 // ============================================================================
 const DV_TITLES = ['Beneath Gallows Hill', 'The Drum Room', 'The Fungus Path', 'The Escape Tunnel', 'The Drifting Freighter', 'The Cold Hold', 'The Shrine Cavern', 'The Miller’s Cellar'];
@@ -86,9 +86,8 @@ const DvFirst = () => {
       <DS.ProgressBar label="Rescue 2 of 6" value={2} max={6} showValue={false} />
       <div className="lb-foot">
         <div className="lb-acts"><DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button></div>
-        <span className="gs-muted">Every other scene comes with the Pass.</span>
+        <LbPassOffer unit="scene" />
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
   return (
@@ -102,9 +101,8 @@ const DvFirst = () => {
         <div className="lb-acts">
           {s.played ? <><LbShare lines={gsShareText(GS_SESSIONS['delve-first'])} /><DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink></> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
         </div>
-        <span className="gs-muted">Every other scene comes with the Pass.</span>
+        <LbPassOffer unit="scene" />
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
 };
@@ -116,9 +114,10 @@ const DvLibrary = () => {
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
-      <div className={'lb-lay' + (pass || gsLapsed(gs) ? '' : ' is-three')}>
+      <div className="lb-lay">
         {pass ? (fresh ? <LbFreshNow title={DV_LIVE.title} line="You haven’t started this week’s scene yet. Get her out before the drums stop." next={'Next scene: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />) : <DvFirst />}
         {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list.map((s) => (fresh ? { ...s, played: false } : s)))} />; })()}
+        {!pass && !gsLapsed(gs) && <LbRunPass unit="weeks" weeks={lbRunOf(DV_ALL)} />}
         {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your scenes" allLabel="See in History" empty="Your scenes appear here once you have played one." />

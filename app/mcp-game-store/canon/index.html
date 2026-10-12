@@ -739,6 +739,8 @@
   .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
   .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
   .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+  /* A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
+  .lb-sechead > .mcp-lnk { margin-block: -12px; }
   .lb-v { display: inline-flex; align-items: center; gap: 6px; }
   .lb-v.is-ok { color: var(--success); }
   .lb-v.is-bad { color: var(--error); }
@@ -749,6 +751,12 @@
   .lb-acts { display: flex; flex-wrap: nowrap; align-items: center; gap: 24px; min-width: 0; }
   @media (max-width: 399px) { .lb-acts { gap: 16px; } }
   .lb-acts > .mcp-lnk { min-height: 44px; }
+  /* The Pass offer on a free first-edition card: its line and Get the Pass on one row, wrapping under the actions when narrow */
+  .lb-pass { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .lb-pass > .gs-muted { flex: 0 1 auto; min-width: 0; text-wrap: pretty; }
+  .lb-pass > *:first-child { flex: none; }
+  /* Every button in a first-edition card's foot is one width, so stacked buttons line up */
+  .lb-foot .mcp-btn { min-width: 8.5em; }
   /* The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
   .lb-head { margin-bottom: -12px; }
   .pge-panel { display: grid; gap: 16px; min-width: 0; }
@@ -782,7 +790,8 @@
   .lb-list { list-style: none; margin: 0; padding: 0; display: grid; }
   .lb-list > li + li { border-top: 1px solid var(--line); }
   .lb-card > .lb-today { margin: 0 calc(-1 * var(--lb-pad)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .lb-card > .lb-recent { margin: 0 calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); }
+  /* The first row's own top padding (10px) is taken back, so the gap under the heading matches every other card's */
+  .lb-card > .lb-recent { margin: -10px calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); }
   
   
   .lb-chev { color: var(--muted); transition: transform var(--time-press) var(--ease), color var(--time-press) var(--ease); }
@@ -798,7 +807,8 @@
   .lb-st.is-none { color: var(--muted); }
   
   
-  .lb-runcard { display: flex; flex-direction: column; justify-content: center; }
+  /* The streak card's heading sits at the top, as every other card's does, in every state */
+  .lb-runcard { display: flex; flex-direction: column; justify-content: flex-start; }
   .lb-runbody { flex: 1 1 auto; max-height: 132px; display: flex; flex-direction: column; gap: 16px; }
   .lb-runbody > .lb-run { flex: 1 1 auto; }
   .lb-runbody .lb-wk { grid-template-rows: auto minmax(32px, 1fr) auto; }
@@ -834,7 +844,8 @@
   }
   .lb-recentcard.is-fill { display: flex; flex-direction: column; overflow: hidden; }
   .lb-recentcard.is-fill > .lb-recent { flex: 1 1 0; min-height: 0; overflow: hidden; }
-  .lb-recentcard.is-fill > .lb-recent > .mcp-rows { height: 100%; grid-template-rows: repeat(var(--fit), minmax(0, 1fr)); }
+  /* Each row keeps its own height (never stretched to fill the card); spare room sits under the last row */
+  .lb-recentcard.is-fill > .lb-recent > .mcp-rows { grid-template-rows: repeat(var(--fit), max-content); align-content: start; }
   .lb-recentcard.is-fill .lb-recent .mcp-rows > li { display: grid; }
   /* DS rows inside the page's own cards: inset to the card's padding, which grows to 24px from 720px. */
   .lb-card .mcp-row, .lb-box .mcp-row { padding-left: var(--lb-pad); padding-right: var(--lb-pad); }
@@ -941,9 +952,6 @@
   }
   @container gs (min-width: 900px) {
     .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
-    /* without the Pass on Casebook and Delve: the first edition over your plays, achievements beside both; every card its own height */
-    .lb-lay.is-three { grid-template-areas: "now ach" "plays ach"; grid-template-rows: auto 1fr; align-items: start; }
-    .lb-lay.is-three > :nth-child(1) { grid-area: now; } .lb-lay.is-three > :nth-child(2) { grid-area: ach; } .lb-lay.is-three > :nth-child(3) { grid-area: plays; }
     .lb-alllay { grid-template-columns: 280px minmax(0, 1fr); align-items: start; }
     .lb-tools { position: sticky; top: 24px; }
     .lb-choice { flex-direction: column; flex-wrap: nowrap; }

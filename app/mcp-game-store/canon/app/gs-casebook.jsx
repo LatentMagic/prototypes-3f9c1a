@@ -2,7 +2,7 @@
 // [Platform] — Casebook's library page, option 16 as ratified 2026-10-08
 // (docs/specs/library-game-page/handoff-2026-10-08-option-16-direction.md).
 // This week beside the streak, then achievements beside your cases. "All cases" opens History filtered to Casebook;
-// a case opens its page, turns grouped by kind. Without the Pass: the first case and your cases on the left, achievements on the right.
+// a case opens its page, turns grouped by kind. Without the Pass: the first case in this week's place, and the streak card in the Pass holder's place (LbRunPass).
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.
 // ============================================================================
 const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
@@ -114,9 +114,8 @@ const CbFirst = () => {
       <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
       <div className="lb-foot">
         <div className="lb-acts"><DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play</DS.Button></div>
-        <span className="gs-muted">Every other case comes with the Pass.</span>
+        <LbPassOffer unit="case" />
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
   return (
@@ -132,9 +131,8 @@ const CbFirst = () => {
           {c.played ? <><LbShare lines={cbShareLines(c)} /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink></>
             : <DS.Button onClick={() => gs.play(GS_NAME.casebook, 'casebook')}>Play</DS.Button>}
         </div>
-        <span className="gs-muted">Every other case comes with the Pass.</span>
+        <LbPassOffer unit="case" />
       </div>
-      <div><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
     </section>
   );
 };
@@ -149,9 +147,10 @@ const CbLibrary = () => {
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="casebook" />
-      <div className={'lb-lay' + (pass || gsLapsed(gs) ? '' : ' is-three')}>
+      <div className="lb-lay">
         {pass ? (gsFresh(gs) ? <LbFreshNow title={CB_LIVE.title} line="You haven’t opened this week’s case yet. Ask the question they haven’t prepared for." next={'Next case: ' + CB_NEXT} onPlay={() => gs.play(GS_NAME.casebook)} /> : <CbNow c={cbWeek(gs)} />) : <CbFirst />}
         {pass && <LbRun n={lbStreak(cbRunList(gs))} unit="weeks" weeks={cbWeeks(gs)} />}
+        {!pass && !gsLapsed(gs) && <LbRunPass unit="weeks" weeks={cbWeeks(gs)} />}
         {gsLapsed(gs) && (() => { const f = lbFrozen(cbWeeks(gs), cbRunList(gs), (c) => c.week); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />

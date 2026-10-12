@@ -201,11 +201,10 @@ const rpRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0
 
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
 // On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height.
-// With no card beside it (.lb-lay.is-three), it is sized to its own content.
 const LbRecent = ({ title, allLabel, empty }) => {
   const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
   const card = React.useRef(null); const list = React.useRef(null); const probe = React.useRef(null);
-  // list and probe wrap a DS.RowList; its <li>s are the rows measured.
+  // list and probe wrap a DS.RowList; its <li>s are the rows measured. Probe rows keep their chevron, so they wrap exactly as the shown ones do.
   const [fit, setFit] = React.useState(null);
   const vs = React.useMemo(() => rpRecent(gs, gid), [gs, gid]);
   React.useLayoutEffect(() => {
@@ -214,10 +213,12 @@ const LbRecent = ({ title, allLabel, empty }) => {
     const reset = () => { el.style.height = ''; if (pair) pair.style.alignSelf = ''; setFit(null); };
     const measure = () => {
       const two = getComputedStyle(lay).gridTemplateColumns.split(' ').length > 1;
-      if (!two || !pair || lay.classList.contains('is-three')) return reset();
+      if (!two || !pair) return reset();
       pair.style.alignSelf = 'start';
       el.style.height = pair.offsetHeight + 'px';
       const room = list.current ? el.clientHeight - list.current.offsetTop : 0;
+      // The probe measures at the shown list's own width, so its rows wrap as the shown ones do.
+      if (list.current) { probe.current.style.right = 'auto'; probe.current.style.width = list.current.offsetWidth + 'px'; }
       const hs = Array.from(probe.current.firstElementChild.children).map((x) => x.offsetHeight);
       let k = 0; let sum = 0; while (k < hs.length && sum + hs[k] <= room + 1) { sum += hs[k]; k += 1; }
       // Never fewer than the phone's four: a short neighbour grows to match instead.
@@ -233,7 +234,7 @@ const LbRecent = ({ title, allLabel, empty }) => {
     <section ref={card} className={'lb-card lb-recentcard' + (fit ? ' is-fill' : '')}>
       <div className="lb-sechead"><h2 className="mcp-t-card">{title}</h2>{vs.length > 0 && <DS.TextLink onClick={() => gs.go('history', { game: gid, from: gid })}>{allLabel}</DS.TextLink>}</div>
       {vs.length ? <div ref={list} className="lb-recent" style={fit ? { '--fit': fit } : null}><DS.RowList label={title}>{shown.map(rpRow)}</DS.RowList></div> : <p className="gs-muted">{empty}</p>}
-      {vs.length > 0 && <div ref={probe} className="lb-recent lb-probe" aria-hidden="true"><DS.RowList>{vs.map((v) => rpRow({ ...v, onOpen: null }))}</DS.RowList></div>}
+      {vs.length > 0 && <div ref={probe} className="lb-recent lb-probe" aria-hidden="true"><DS.RowList>{vs.map((v) => rpRow({ ...v, onOpen: () => {} }))}</DS.RowList></div>}
     </section>
   );
 };

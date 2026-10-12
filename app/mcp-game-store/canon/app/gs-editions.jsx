@@ -101,8 +101,7 @@ const PgeListPage = ({ gid }) => {
         <div ref={f.box} className="lb-box lb-results ed-results" style={{ maxWidth: 960, minWidth: 0 }}>
           {f.wait ? <GsPart label="Loading" /> : <>
             {!f.rows.length ? <PgeEmpty f={f} gid={gid} /> : <DS.RowList label={title}>{f.rows.map((e) => (
-              <DS.ListRow key={e.key} title={e.title ? '#' + e.n + ' · ' + e.name : '#' + e.n} when={e.when} result={e.played ? 'Played' : undefined}
-                end={e.held ? <DS.Tag kind="locked">Pass</DS.Tag> : undefined} onClick={() => f.set('open', e.key)} />
+              <DS.ListRow key={e.key} title={e.title ? '#' + e.n + ' · ' + e.name : '#' + e.n} when={e.when} result={e.played ? 'Played' : undefined} onClick={() => f.set('open', e.key)} />
             ))}</DS.RowList>}
             <RpPages pg={f.pg} pages={f.pages} go={f.go} />
           </>}
@@ -136,7 +135,7 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
             <DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink>
           </div>
         ) : e.played && <div className="gs-stack-xs" style={{ justifyItems: 'start' }}><p className="gs-muted" style={{ margin: 0 }}>{pgePlayedText(e)}</p><DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink></div>}
-        {done ? null : e.held ? <GsNeedsPass gid={gid} /> : prompt && (
+        {done ? null : e.held ? <div style={{ marginTop: -8 }}><GsNeedsPass gid={gid} /></div> : prompt && (
           <div className="gs-stack-sm">
             <p className="hw-need gs-small" style={{ margin: 0 }}><b>Connect your AI first.</b> <GsHowLink label="How to connect" /></p>
             <GsPrompt text={text} />

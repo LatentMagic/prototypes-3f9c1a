@@ -229,6 +229,7 @@ const KitApp = () => {
     ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPush })
     : { byId: {}, groups: [] });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
+  window.kitGoState = goState; // opens a state by id from a script (checking a build)
   const resetAndShow = window.buildStates && (() => { reset(); setLanding(null); });
 
   const deepLinked = useRef(false);
