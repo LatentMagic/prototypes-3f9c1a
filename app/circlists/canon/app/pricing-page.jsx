@@ -13,11 +13,12 @@ const pppKeep = (s) => String(s).replace(/ /g, '\u00a0');
 const PppPill = ({ children }) => <span className="ppp-pill">{children}</span>;
 
 // P2: white card; picked = 2px accent border, green pill stays green.
+// The choice is a native radio input (as shipped), the card its label.
 const PppPlanCard = ({ plan, on, onPick, still }) => {
   const p = PPP_PLANS[plan];
   const inner = (
     <>
-      {!still && <span aria-hidden className={'ppp-radio' + (on ? ' ppp-radio-on' : '')} />}
+      {!still && <input type="radio" name="ppp-plan" value={plan} checked={on} onChange={() => onPick(plan)} className="ppp-radio-native" />}
       <span className="ppp-plan-name">
         <span>{p.label}</span>
         {plan === 'yearly' && <span><PppPill>{'\u00a3'}2.50 a month</PppPill></span>}
@@ -27,7 +28,7 @@ const PppPlanCard = ({ plan, on, onPick, still }) => {
   );
   if (still) return <div className="ppp-plan ppp-plan-on">{inner}</div>;
   return (
-    <button type="button" role="radio" aria-checked={on} onClick={() => onPick(plan)} className={'ppp-plan' + (on ? ' ppp-plan-on' : '')}>{inner}</button>
+    <label className={'ppp-plan' + (on ? ' ppp-plan-on' : '')}>{inner}</label>
   );
 };
 
@@ -61,9 +62,10 @@ const PricingScreen = ({ ctxOverride }) => {
             <p className="ppp-lede ppp-lede-ph"><span>{pppKeep('Subscribe to run your own circles.')}</span></p>
           </div>
           <div className="ppp-a-decide">
-            <div role="radiogroup" aria-label="Plan" className="ppp-plans">
+            <fieldset className="ppp-plans ppp-fieldset">
+              <legend className="ppp-sr">Plan</legend>
               {['yearly', 'monthly'].map((id) => <PppPlanCard key={id} plan={id} on={st.pick === id} onPick={(v) => window.CircPPP.set({ pick: v })} />)}
-            </div>
+            </fieldset>
             <div className="ppp-receipt">
               {(used
                 ? [['Due today', p.full], ['Renews', st.pick === 'yearly' ? pppYearOn() : pppMonthOn()]]
@@ -116,6 +118,7 @@ const PppCheckout = () => {
 const PppCardPage = () => {
   const api = pppApi();
   const [card, setCard] = React.useState('');
+  const [busy, act] = useAct();
   const back = () => {
     const c = window.CircPPP.get().ctx;
     if (c && c.from === 'card-circle') { window.CircPPP.set({ ctx: null }); api.setTab('active'); api.enterSpace(c.spaceId); return; }
@@ -123,10 +126,13 @@ const PppCardPage = () => {
     api.setRoute('account');
   };
   const save = (e) => {
-    e.preventDefault(); const s = window.CircPPP.get();
-    const from = s.ctx && s.ctx.from;
-    if (s.status === 'failed') window.CircPPP.set({ status: 'active', ...(from === 'card-circle' || from === 'card-create' ? { fixed: 'card' } : {}) });
-    back();
+    e.preventDefault();
+    act(() => {
+      const s = window.CircPPP.get();
+      const from = s.ctx && s.ctx.from;
+      if (s.status === 'failed') window.CircPPP.set({ status: 'active', ...(from === 'card-circle' || from === 'card-create' ? { fixed: 'card' } : {}) });
+      back();
+    });
   };
   const inp = { width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-mono)', fontSize: 16, color: '#0f172a', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 14px', minHeight: 46, marginBottom: 8 };
   return (
@@ -136,7 +142,7 @@ const PppCardPage = () => {
       <form onSubmit={save}>
         <input style={inp} inputMode="numeric" placeholder="1234 1234 1234 1234" value={card} onChange={(e) => setCard(e.target.value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim())} />
         <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}><input style={inp} placeholder="MM / YY" /><input style={inp} placeholder="CVC" /></div>
-        <button type="submit" style={{ width: '100%', minHeight: 48, border: 0, borderRadius: 8, cursor: 'pointer', background: '#047857', color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15 }}>Save card</button>
+        <button type="submit" disabled={busy} style={{ width: '100%', minHeight: 48, border: 0, borderRadius: 8, cursor: busy ? 'default' : 'pointer', background: '#047857', color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>{busy && <Ring size={15} />}Save card</button>
       </form>
       <button onClick={back} style={{ width: '100%', marginTop: 14, background: 'transparent', border: 0, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 13, color: '#64748b', minHeight: 36 }}>Cancel and return</button>
     </ProviderShell>

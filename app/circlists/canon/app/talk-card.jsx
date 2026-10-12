@@ -295,7 +295,8 @@ const CandAltFace = ({ item, api, onClose, innerRef, mark, tab }) => {
 const CandWriteFace = ({ item, api, innerRef, onClose, onDone, open = true }) => {
   const [draft, setDraft] = React.useState('');
   const onSurface = React.useContext(CandSurfaceCtx);
-  const send = () => { const text = draft.trim(); if (!text) return; candAddThought(api, item, text); onDone(); };
+  const [busy, act] = useAct();
+  const send = () => { const text = draft.trim(); if (!text) return; act(() => { candAddThought(api, item, text); onDone(); }); };
   return (
     <div ref={innerRef} style={{ padding: 'var(--space-4) var(--space-5) ' + (onSurface ? 'var(--space-5)' : 'var(--space-3)'),
       display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -320,7 +321,7 @@ const CandWriteFace = ({ item, api, innerRef, onClose, onDone, open = true }) =>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: onSurface ? 0 : -2 }}>
         <div style={{ flex: 1, minWidth: 0 }}><CandSourceLine item={item} foot /></div>
-        <Button size="sm" variant="primary" disabled={!draft.trim()} onClick={send}>Add</Button>
+        <Button size="sm" variant="primary" disabled={!draft.trim()} loading={busy} onClick={send}>Add</Button>
       </div>
     </div>
   );

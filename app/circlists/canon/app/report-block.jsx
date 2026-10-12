@@ -186,15 +186,20 @@ const RbReportDialog = ({ kind, onReport, onClose }) => {
       if (inv && inv.isConnected && inv.focus) inv.focus({ preventScroll: true });
     };
   }, []);
+  const [busy, act] = useAct();
   React.useEffect(() => { if (reason === 'Something else' && noteRef.current) noteRef.current.focus({ preventScroll: true }); }, [reason]);
   const report = () => {
     if (sent) return;
     // onReport returns false when the report did not go: the dialog stays open
     // with its reason and note, the line shows, and nothing is marked reported.
-    // No sending indicator: the wait is under the flicker threshold.
-    if (onReport({ reason, note: reason === 'Something else' ? note.trim() : '' }) === false) { setFailed(true); return; }
-    setFailed(false); setSent(true);
-    timer.current = setTimeout(onClose, RB_BEAT);
+    // Report shows it is sending (CLAUDE.md, every state-changing action): the
+    // staged wait runs first, then Reported or the failure line.
+    const payload = { reason, note: reason === 'Something else' ? note.trim() : '' };
+    act(() => {
+      if (onReport(payload) === false) { setFailed(true); return; }
+      setFailed(false); setSent(true);
+      timer.current = setTimeout(onClose, RB_BEAT);
+    });
   };
   const title = kind === 'comment' ? 'Report this comment?' : 'Report this link?';
   return (
@@ -223,7 +228,7 @@ const RbReportDialog = ({ kind, onReport, onClose }) => {
         )}
         <div className="circ-dlg-act" style={{ marginTop: failed ? 'var(--space-5)' : 'var(--space-6)' }}>
           <Button variant="secondary" onClick={() => { if (!sent) onClose(); }}>Cancel</Button>
-          <Button variant="primary" onClick={report} icon={sent ? <Icon name="check" size={16} /> : null}>{sent ? 'Reported' : 'Report'}</Button>
+          <Button variant="primary" onClick={report} loading={busy} icon={sent ? <Icon name="check" size={16} /> : null}>{sent ? 'Reported' : 'Report'}</Button>
         </div>
       </div>
     </div>
@@ -259,7 +264,8 @@ const CircBlockDialog = ({ member, returnTo, onConfirm, onCancel }) => {
   // onConfirm returns false when the block did not go: the dialog stays open with
   // one line above its buttons, both still pressable (Report's failed send).
   const [failed, setFailed] = React.useState(false);
-  const confirm = () => { if (onConfirm() === false) setFailed(true); };
+  const [busy, act] = useAct();
+  const confirm = () => act(() => { if (onConfirm() === false) setFailed(true); });
   React.useEffect(() => {
     const id = setTimeout(() => cancelRef.current && cancelRef.current.focus(), 40);
     const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
@@ -282,7 +288,7 @@ const CircBlockDialog = ({ member, returnTo, onConfirm, onCancel }) => {
         {failed && <RbFailLine style={{ marginBottom: 'var(--space-5)' }}>Couldn{'\u2019'}t block {n || 'this member'}. Try{'\u00a0'}again.</RbFailLine>}
         <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" onClick={confirm}>Block</Button>
+          <Button variant="primary" onClick={confirm} loading={busy}>Block</Button>
         </div>
       </div>
     </div>

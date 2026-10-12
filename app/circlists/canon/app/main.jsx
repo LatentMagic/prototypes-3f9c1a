@@ -263,7 +263,7 @@ const CircApp = () => {
   const [otc, setOtc] = useState({ context: 'device', error: null });
   const [pendingEmail, setPendingEmail] = useState('sam.rivera@gmail.com');
   const [postAuthTo, setPostAuthTo] = useState('space');
-  // (Config launcher state + drag now live in app/config.jsx — a deletable aid.)
+  // (Config pill state + drag now live in app/config.jsx — a deletable aid.)
   // funding flow: { mode: 'new' | 'refund', name, description, spaceId }
   const [fundFlow, setFundFlow] = useState({ mode: 'new', name: '', description: '', spaceId: null });
   const [manageIntent, setManageIntent] = useState('manage');
@@ -1178,9 +1178,9 @@ const CircApp = () => {
 
   // ---- the states register (app/states.jsx, a deletable aid) --------------
   // Every staged state of the app, with its address. The register feeds all
-  // three of its surfaces from one list: the palette in the launcher, the index,
+  // three of its surfaces from one list: the palette in the Config pill, the index,
   // and `?state=` above. Drop app/states.jsx + app/states-ui.jsx and the states
-  // half of the launcher, the index and the address reading all vanish together,
+  // half of the Config pill, the index and the address reading all vanish together,
   // leaving the product core clean.
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
     ? window.buildStates({
@@ -1252,7 +1252,8 @@ const CircApp = () => {
   if (Pricing && Pricing.bind) Pricing.bind({ user, spaces, space, currentId, route, isMobile, isApp,
     isSheet: isSheetPosture, mobilePayments, fundFlow, layout: tw.layout,
     setRoute, setSpaces, setCurrentId, setTab, setFundFlow, enterSpace, goHome, openAccount,
-    setLayout: (v) => setTweak('layout', v), isChampion });
+    setLayout: (v) => setTweak('layout', v), isChampion,
+    announce: announceOnce, confirm: (kind) => setConfirm(kind ? { kind } : null) });
 
   // Report and Block (app/report-block.jsx, droppable): bound before the screen
   // renders, so the Members rows read this render's blocked list.
@@ -2044,7 +2045,7 @@ const CircApp = () => {
         </div>
       ) : appTree}
 
-      {/* Launcher — prototype aid; leaving app/config.jsx out removes it, no edit here */}
+      {/* Config pill — prototype aid; leaving app/config.jsx out removes it, no edit here */}
       {ConfigLauncher && tw.configBtn !== false && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}

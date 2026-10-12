@@ -504,6 +504,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  const [busy, act] = useAct();
   if (!render) return null;
 
   const submit = (e) => {
@@ -513,19 +514,21 @@ const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
       setError('That doesn\u2019t look like a valid URL. Check it and try again.');
       return;
     }
-    // A link the server refuses (built, not ratified, 6 Oct): same line, no reason.
-    if (window.circFailNext && window.circFailNext('addLink')) {
-      setError('This link can\u2019t be added.');
-      if (inputRef.current) inputRef.current.focus();
-      return;
-    }
     setError(null);
-    const normalized = /^https?:\/\//i.test(v) ? v : 'https://' + v;
-    // Extraction is slow + unreliable, so add never blocks on it: the sheet
-    // closes at once and the card lands PENDING in the feed. Metadata fills it
-    // in place when it resolves (main.jsx schedules the async settle).
-    onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: false, pending: true, at: Date.now() });
-    onClose();
+    // The server's accept is staged (CLAUDE.md): Add shows loading until it lands.
+    // Extraction still never blocks: on accept the sheet closes and the card
+    // lands PENDING; metadata fills it in place (main.jsx schedules the settle).
+    act(() => {
+      // A link the server refuses (built, not ratified, 6 Oct): same line, no reason.
+      if (window.circFailNext && window.circFailNext('addLink')) {
+        setError('This link can\u2019t be added.');
+        if (inputRef.current) inputRef.current.focus();
+        return;
+      }
+      const normalized = /^https?:\/\//i.test(v) ? v : 'https://' + v;
+      onAdd({ id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: false, pending: true, at: Date.now() });
+      onClose();
+    });
   };
 
   const surface = isMobile
@@ -569,7 +572,7 @@ const AddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
         />
         <div className="circ-dlg-act" style={{ marginTop: 'var(--space-1)' }}>
           <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary">Add</Button>
+          <Button type="submit" variant="primary" loading={busy}>Add</Button>
         </div>
       </form>
     </>
@@ -713,6 +716,8 @@ const DeleteDialog = ({ item, space, onDeleteForMe, onDeleteForEveryone, onClose
   const cancelRef = React.useRef(null);
   const invokerRef = React.useRef(null);
   const committed = React.useRef(false);
+  const [busy, act] = useAct();
+  const [which, setWhich] = React.useState(null);
   React.useEffect(() => {
     invokerRef.current = document.activeElement;
     const id = setTimeout(() => cancelRef.current && cancelRef.current.focus({ preventScroll: true }), 40);
@@ -741,7 +746,7 @@ const DeleteDialog = ({ item, space, onDeleteForMe, onDeleteForEveryone, onClose
       }
     };
   }, []);
-  const take = (fn) => { committed.current = true; fn(); };
+  const take = (k, fn) => { if (which) return; setWhich(k); act(() => { committed.current = true; fn(); }); };
   return (
     <div className="circ-confirm-scrim" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div ref={panelRef} className="circ-confirm-panel" role="alertdialog" aria-modal="true"
@@ -749,10 +754,10 @@ const DeleteDialog = ({ item, space, onDeleteForMe, onDeleteForEveryone, onClose
         <h2 id="circ-confirm-title" className="circ-confirm-title">{DELETE_COPY.title}</h2>
         <p id="circ-confirm-sub" className="circ-confirm-sub">{wide ? DELETE_COPY.choose : DELETE_COPY.me.line}</p>
         <div className="circ-confirm-stack">
-          <Button variant="destructive-secondary" full
-            onClick={() => take(() => { onDeleteForMe(item); onClose(); })}>{DELETE_COPY.me.label}</Button>
-          {wide && <Button variant="destructive-secondary" full
-            onClick={() => take(() => onDeleteForEveryone())}>{DELETE_COPY.all.label}</Button>}
+          <Button variant="destructive-secondary" full loading={busy && which === 'me'} disabled={busy && which !== 'me'}
+            onClick={() => take('me', () => { onDeleteForMe(item); onClose(); })}>{DELETE_COPY.me.label}</Button>
+          {wide && <Button variant="destructive-secondary" full loading={busy && which === 'all'} disabled={busy && which !== 'all'}
+            onClick={() => take('all', () => onDeleteForEveryone())}>{DELETE_COPY.all.label}</Button>}
           <Button ref={cancelRef} variant="secondary" full onClick={onClose}>Cancel</Button>
         </div>
       </div>
@@ -790,6 +795,7 @@ const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }
       if (invokerRef.current && invokerRef.current.focus) invokerRef.current.focus({ preventScroll: true });
     };
   }, []);
+  const [busy, act] = useAct();
   if (!v) return null;
   return (
     <div role={v.role} aria-modal="true" aria-label={v.title}
@@ -813,7 +819,7 @@ const ConfirmDialog = ({ kind, item, space, onDeleteForMe, onConfirm, onCancel }
         }}>{v.body}</p>
         <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>{v.dismiss || 'Cancel'}</Button>
-          <Button variant={v.variant} onClick={onConfirm}>{v.primary}</Button>
+          <Button variant={v.variant} loading={busy} onClick={() => act(onConfirm)}>{v.primary}</Button>
         </div>
       </div>
     </div>

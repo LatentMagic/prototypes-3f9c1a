@@ -15,18 +15,20 @@ const PPP_PLANS = {
   monthly: { id: 'monthly', label: 'Monthly', price: '\u00a33', full: '\u00a33.00', unit: 'month', a: '\u00a33 a month' },
   yearly: { id: 'yearly', label: 'Yearly', price: '\u00a330', full: '\u00a330.00', unit: 'year', a: '\u00a330 a year' },
 };
-const PPP_DEFAULT = { status: 'active', plan: 'monthly', pending: null, usedFreeMonth: true, ctx: null, pick: 'yearly', sheet: null, fixed: null };
+const PPP_DEFAULT = { status: 'active', plan: 'monthly', pending: null, usedFreeMonth: true, ctx: null, pick: 'yearly', sheet: null, fixed: null, simLoad: 'ok', simBusy: 'done', noEndDate: false };
+// Review switches (Config), session-only: never persisted.
+const PPP_SIM_KEYS = ['sheet', 'simLoad', 'simBusy', 'noEndDate'];
 const PPP_RENEW_DAYS = 18, PPP_TRIAL_DAYS = 18;
 
 window.CircPPP = (() => {
   let st = { ...PPP_DEFAULT };
-  try { Object.assign(st, JSON.parse(localStorage.getItem(PPP_KEY) || '{}'), { sheet: null }); } catch (e) {}
+  try { const saved = JSON.parse(localStorage.getItem(PPP_KEY) || '{}'); PPP_SIM_KEYS.forEach((k) => { delete saved[k]; }); Object.assign(st, saved); } catch (e) {}
   const subs = new Set();
   return {
     get: () => st,
     set(p) {
       st = { ...st, ...p };
-      try { const { sheet, ...keep } = st; localStorage.setItem(PPP_KEY, JSON.stringify(keep)); } catch (e) {}
+      try { const keep = { ...st }; PPP_SIM_KEYS.forEach((k) => { delete keep[k]; }); localStorage.setItem(PPP_KEY, JSON.stringify(keep)); } catch (e) {}
       subs.forEach((f) => f());
     },
     reset(p) { this.set({ ...PPP_DEFAULT, ...(p || {}) }); },
@@ -71,4 +73,36 @@ const PppManageLine = () => (
   <><span style={{ display: 'inline-block' }}>You can{'\u2019'}t manage your subscription</span> in this{'\u00a0'}app.</>
 );
 
-Object.assign(window, { PPP_PLANS, PPP_DEFAULT, PPP_RENEW_DAYS, PPP_TRIAL_DAYS, usePPP, pppSubscribed, pppDay, pppYearOn, pppMonthOn, pppOther, pppWakeMine, pppSleepMine, pppResumed, pppApi, pppAppNoPay, PppAppLine, PPP_APP_TITLE, PPP_APP_BODY, PPP_APP_MANAGE, PppManageLine });
+// An action in flight (as shipped): the caller's button shows busy, then the act
+// lands or fails. A one-shot refusal (window.circFailNext, the register) fails it;
+// Config → Card actions: Stay busy holds it in flight.
+const PPP_FLIGHT_MS = 600;
+const pppAct = (k, apply, setBusy, setFail) => {
+  setFail(null); setBusy(k);
+  if (window.CircPPP.get().simBusy === 'hold') return;
+  setTimeout(() => {
+    setBusy(null);
+    if (window.circFailNext && window.circFailNext(k)) { setFail(k); return; }
+    apply();
+  }, PPP_FLIGHT_MS);
+};
+// Failure lines (deployed copy, 8 Oct). "Try again." is part of the sentence;
+// only the load failure carries a Try again control (onRetry).
+const PPP_FAIL = {
+  subCancel: 'Your subscription could not be cancelled.',
+  subResume: 'Your subscription could not be resumed.',
+  subCard: 'Could not open the payment update page.',
+  subKeep: 'Your plan could not be kept.',
+  subSwitch: 'Your plan could not be switched.',
+  subLoad: 'Could not load your subscription.',
+  takeover: 'This circle could not be taken over.',
+};
+// The house failure line (RbFailLine's treatment): red x, ink text, role=alert.
+const PppFailLine = ({ k, onRetry, style }) => (
+  <div role="alert" className="ppp-failline" style={style}>
+    <span className="ppp-failline-x"><Icon name="x" size={14} /></span>
+    <span>{PPP_FAIL[k]}{' '}{onRetry ? <><button type="button" className="circ-doorlink ppp-link44" onClick={onRetry}>Try{'\u00a0'}again</button>.</> : 'Try again.'}</span>
+  </div>
+);
+
+Object.assign(window, { PPP_FLIGHT_MS, pppAct, PPP_FAIL, PppFailLine, PPP_PLANS, PPP_DEFAULT, PPP_RENEW_DAYS, PPP_TRIAL_DAYS, usePPP, pppSubscribed, pppDay, pppYearOn, pppMonthOn, pppOther, pppWakeMine, pppSleepMine, pppResumed, pppApi, pppAppNoPay, PppAppLine, PPP_APP_TITLE, PPP_APP_BODY, PPP_APP_MANAGE, PppManageLine });

@@ -2,6 +2,8 @@
 
 Circlists is a reading queue for small trusted circles. It is a React + Babel in-browser prototype with three presentation postures (desktop web, mobile web, app) over one shared core.
 
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product.
+
 ## Always — every session, every task
 - **CRITICAL — read `specs/governance/standards/ui-design.md` (monorepo, live) at the start of EVERY session, before any other work, whatever the task.** It is binding cross-app UI design law. Re-read it before any design decision that sets a convention.
 - **Upstream first.** Product behaviour lives in the monorepo spec, cross-app design law in `specs/governance/standards/ui-design.md`, brand and voice in the wiki, and the reasoning behind any prompt that arrives here in business-ops `work/apps/circlists/<ticket>/`. Read all of it live; paths in `github.md`. Never copy a spec, PRD or voice doc in — a local copy is stale the day after it lands.
@@ -100,7 +102,17 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 </important>
 
 <important if="you are building or changing any overlay: a sheet, modal, dialog or popover">
-- **Overlays adapt.** On a phone, an overlay is a bottom sheet. On desktop, it's a centred modal. A menu that belongs to one button can be a popover. Never use one shape at every width. Check every overlay at phone and desktop width before calling it done.
+- **Only a panel changes shape on a phone.** A surface that opens over the page and takes focus is one of three kinds, sorted by its job. Ask in this order; the first that fits is the kind.
+  - **Dialog.** Asks one question or takes one short edit, and nothing behind it can be used until it is answered or dismissed: a confirmation, a proof of identity, a rename. Its content is fixed and never scrolls. Centred at every width. A dialog that outgrows the space above the on-screen keyboard becomes a page or a panel, never a taller dialog.
+  - **Menu.** A short list of commands opened from a control; choosing one runs it and closes the menu. It opens at its control at every width. A list long enough to scroll is a panel.
+  - **Panel.** Anything else the user stays in and works with: a composer, a picker, a list that can grow or scroll. A bottom sheet on a phone. On desktop it is anchored to its control or centred, the project's call.
+  - What appears over the page without taking focus, such as a tooltip or a status message, is none of these and does not swap.
+- Check every overlay at phone and desktop width before calling it done.
+</important>
+
+<important if="you are building or changing any action that changes state, or any content that loads: a submit, save, send, delete, confirm, pay, a list, a panel, a page">
+- **Every wait shows it is working, where the wait is.** A press that changes state shows a loading indication on the control that was pressed, which cannot be pressed again until the result. A page whose content is arriving shows it loading as a page. A part of a page that loads on its own, such as a panel, a list or the top bar, shows it there and leaves the rest usable. A prototype has no real wait, so stage one long enough to see.
+- **Two indicators, each with its own job** (`ui.md` Decision-13, Decision-53). The **brand spinner** (`BrandSpinner`) is the standalone one: centred in what is waiting, no visible copy (a feed loading, a page settling, app boot). The **in-button ring** (`Ring`, via Button's `loading`) is drawn before a button's label from the press until the action comes back, with the button disabled. The brand spinner never sits inside a button. **Get a link** is the one departure: the button only disables, and the link box draws the brand spinner at its small size.
 </important>
 
 ## Code

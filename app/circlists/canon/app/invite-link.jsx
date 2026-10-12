@@ -39,7 +39,8 @@
 //   empty    no link for the address in the field. The slot at its resting
 //            height holding nothing of value — not even the domain, which would
 //            imply part of the link already exists.
-//   working  pressed; the link is being signed. The app's own spinner.
+//   working  pressed; the link is being signed. The box draws the brand spinner
+//            at its small size; Get a link only disables (ui.md Decision-53).
 //   ready    the link is there, and the box plays .circ-glow — the app's arrival
 //            wash, the same signal a card that just landed plays. The live
 //            region says so.
@@ -136,6 +137,7 @@ const InviteCard = ({ space }) => {
 
   const submit = (e) => {
     e.preventDefault();
+    if (working) return;
     if (!INVITE_EMAIL_RE.test(v)) { setErr('Enter a valid email address.'); return; }
     if (space.members.some(m => (m.email || '').toLowerCase() === v)) {
       setErr('That person is already a member of this circle.'); return;
@@ -191,7 +193,7 @@ const InviteCard = ({ space }) => {
               value={email} onChange={change} error={err} />
           </div>
           <div className="circ-invite-act">
-            <Button type="submit" variant={ready ? 'secondary' : 'primary'} loading={working} disabled={ready}
+            <Button type="submit" variant={ready ? 'secondary' : 'primary'} disabled={ready || working}
               style={{ width: 'var(--circ-invite-btnw, 100%)' }}
               icon={<Icon name="link" size={16} color={ready ? 'var(--color-fg-2)' : '#fff'} />}>Get a link</Button>
           </div>
@@ -222,7 +224,7 @@ const InviteCard = ({ space }) => {
       ) : (
         <div className="circ-invite-box" data-dim="">
           <span style={{ display: 'inline-flex', flexShrink: 0 }}>
-            {working ? <Spinner size={14} light={false} /> : <Icon name="link" size={15} color="var(--color-fg-3)" />}
+            {working ? <BrandSpinner size={18} /> : <Icon name="link" size={15} color="var(--color-fg-3)" />}
           </span>
           {refused
             ? <span style={inviteCardStyles.refusal}>Couldn’t make a link. Try again.</span>

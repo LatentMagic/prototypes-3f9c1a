@@ -1,5 +1,5 @@
 // ============================================================================
-// Circlists — primitives. Icons (inline), Button, Field, Logo, Spinner.
+// Circlists — primitives. Icons (inline), Button, Field, Logo, Ring.
 // Pulse Modernist: one accent, calm neutrals, weight-and-size hierarchy.
 // ============================================================================
 
@@ -73,8 +73,10 @@ const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth
   );
 };
 
-// ---- Spinner ---------------------------------------------------------------
-const Spinner = ({ size = 14, light = true }) => (
+// ---- Ring: the in-button ring (ui.md Decision-13) --------------------------
+// A small plain ring drawn before a button's label from the press until the
+// action comes back. Not the brand spinner, which never sits inside a button.
+const Ring = ({ size = 14, light = true }) => (
   <span className="circ-spin" style={{
     width: size, height: size,
     borderColor: light ? 'rgba(255,255,255,0.4)' : 'rgba(10,10,10,0.18)',
@@ -145,12 +147,32 @@ const Button = React.forwardRef((props, ref) => {
       aria-label={ariaLabel} aria-expanded={ariaExpanded}
       className={cls}
       style={{ ...base, ...variants[variant], ...(style || {}) }}>
-      {loading && <Spinner light={variant === 'primary' || variant === 'destructive'} />}
+      {loading && <Ring light={variant === 'primary' || variant === 'destructive'} />}
       {!loading && icon}
       {children && <span>{children}</span>}
     </button>
   );
 });
+
+// ---- useAct — the staged wait behind every state-changing press -------------
+// CLAUDE.md: from the press until the result, the pressed control shows loading
+// and cannot be pressed again. [busy, act]: act(fn) puts busy on (pass it to the
+// pressed Button's `loading`), then runs fn after CIRC_ACT_MS. A second act while
+// one is in flight is ignored (covers Enter on a form). Unmounting cancels the
+// pending fn, so closing a dialog mid-flight changes nothing. 600ms = the
+// shipped pricing flight (PPP_FLIGHT_MS): long enough to read, under ~1s flow.
+const CIRC_ACT_MS = 600;
+const useAct = () => {
+  const [busy, setBusy] = React.useState(false);
+  const t = React.useRef(null);
+  React.useEffect(() => () => { clearTimeout(t.current); t.current = null; }, []);
+  const act = React.useCallback((fn) => {
+    if (t.current) return;
+    setBusy(true);
+    t.current = setTimeout(() => { t.current = null; setBusy(false); fn(); }, CIRC_ACT_MS);
+  }, []);
+  return [busy, act];
+};
 
 // ---- Field (label + input + inline error) ----------------------------------
 const Field = React.forwardRef(({ label, hint, error, mono = false, suffix, ...rest }, ref) => {
@@ -253,4 +275,4 @@ function displayName(u) {
   return (u && u.name) || '';
 }
 
-Object.assign(window, { Icon, Spinner, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf, displayName });
+Object.assign(window, { CIRC_ACT_MS, useAct, Icon, Ring, AppLoading, Button, Field, LogoMark, Wordmark, Avatar, initialsOf, displayName });

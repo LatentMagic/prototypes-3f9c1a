@@ -173,6 +173,7 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
   const emailBtn = React.useRef(null);
   const appleRef = React.useRef(null);
   const stopRef = React.useRef(null);
+  const [busy, act] = useAct();
   const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
   const goBack = useAuthStepBack(step, back);
   const trip = (provider, go) => {
@@ -195,7 +196,8 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
     if (!EMAIL_RE.test(email.trim())) next.email = 'Enter a valid email address.';
     if (!pw) next.pw = 'Enter your password.';
     setErr(next);
-    if (Object.keys(next).length === 0) onSubmit({ email: email.trim() });
+    const v = email.trim();
+    if (Object.keys(next).length === 0) act(() => onSubmit({ email: v }));
   };
   const consent = <ConsentLine lead="Your use of Circlists is covered by our" />;
   // The stop takes the three buttons' place in the same frame, so the page is
@@ -226,7 +228,7 @@ const SignIn = ({ onSubmit, onGoogle, onApple, onForgot, onGoSignup, lead, subti
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6, marginBottom: 'var(--space-5)' }}>
           <TextLink onClick={onForgot}>Forgot password?</TextLink>
         </div>
-        <Button type="submit" variant="primary" full size="lg">Sign in</Button>
+        <Button type="submit" variant="primary" full size="lg" loading={busy}>Sign in</Button>
       </form>
     </AuthPage>
   );
@@ -242,6 +244,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
   const [err, setErr] = React.useState({});
   const [failed, setFailed] = React.useState(null);
   const emailBtn = React.useRef(null);
+  const [busy, act] = useAct();
   const back = () => { setStep(1); setErr({}); setTimeout(() => emailBtn.current && emailBtn.current.querySelector(':scope > div:nth-child(3) > button').focus(), 0); };
   const goBack = useAuthStepBack(step, back);
   const trip = (provider, go) => {
@@ -259,7 +262,8 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
     if (!EMAIL_RE.test(email.trim())) next.email = 'Enter a valid email address.';
     if (pw.length < 8) next.pw = 'Use at least 8 characters.';
     setErr(next);
-    if (Object.keys(next).length === 0) onSubmit({ firstName: first.trim(), lastName: last.trim(), email: email.trim() });
+    const out = { firstName: first.trim(), lastName: last.trim(), email: email.trim() };
+    if (Object.keys(next).length === 0) act(() => onSubmit(out));
   };
   if (step === 1) return (
     <AuthPage title="Create your account" subtitle="One account, every circle you’re part of." consent={<ConsentLine />}
@@ -284,7 +288,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
           value={email} onChange={(e) => { setEmail(e.target.value); setErr(s => ({ ...s, email: null })); }} error={err.email} />
         <Field label={<LabelHint label="Password" hint="At least 8 characters" />} name="new-password" type="password" autoComplete="new-password"
           value={pw} onChange={(e) => { setPw(e.target.value); setErr(s => ({ ...s, pw: null })); }} error={err.pw} />
-        <Button type="submit" variant="primary" full size="lg" style={{ marginTop: 'var(--space-2)' }}>Create account</Button>
+        <Button type="submit" variant="primary" full size="lg" style={{ marginTop: 'var(--space-2)' }} loading={busy}>Create account</Button>
       </form>
     </AuthPage>
   );
@@ -292,7 +296,7 @@ const SignUp = ({ onSubmit, onGoogle, onApple, onGoSignin }) => {
 
 // ---- One-time-code entry (shared) ------------------------------------------
 // context: 'signup' | 'device' | 'recovery'. initialError lets the scenario
-// launcher showcase the two error registers directly.
+// Config pill showcase the two error registers directly.
 const OTC_TITLE = {
   signup: 'Verify your email',
   device: 'Verify this device',
@@ -303,15 +307,19 @@ const OtcEntry = ({ email, context = 'device', initialError = null, onVerify, on
   const [err, setErr] = React.useState(initialError);
   const [resent, setResent] = React.useState(false);
   const ref = React.useRef(null);
+  const [busy, act] = useAct();
   React.useEffect(() => { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); }, []);
 
   const submit = (e) => {
     e.preventDefault();
     const v = code.replace(/\s/g, '');
     if (v.length < 6) { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; }
-    if (v === '000000') { setErr({ expired: true }); return; }     // demo: expired
-    if (v === '111111') { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; } // demo: wrong
-    setErr(null); onVerify();
+    // The code is checked by the server: the staged wait runs before either answer.
+    act(() => {
+      if (v === '000000') { setErr({ expired: true }); return; }     // demo: expired
+      if (v === '111111') { setErr('That code\u2019s not right \u2014 check and re-enter.'); if (ref.current) ref.current.focus(); return; } // demo: wrong
+      setErr(null); onVerify();
+    });
   };
   const resend = () => { setResent(true); setErr(null); setCode(''); ref.current && ref.current.focus(); setTimeout(() => setResent(false), 2600); };
   const expired = err && err.expired;
@@ -333,7 +341,7 @@ const OtcEntry = ({ email, context = 'device', initialError = null, onVerify, on
             <span>That code’s expired — request a fresh one.</span>
           </div>
         )}
-        <Button type="submit" variant="primary" full size="lg">Verify</Button>
+        <Button type="submit" variant="primary" full size="lg" loading={busy}>Verify</Button>
       </form>
       <div style={{ marginTop: 'var(--space-5)', textAlign: 'center' }}>
         {resent ? (
@@ -362,12 +370,13 @@ const Recovery = ({ onDone, onBackToSignin }) => {
   const [pw, setPw] = React.useState('');
   const [pw2, setPw2] = React.useState('');
   const [err, setErr] = React.useState(null);
+  const [busy, act] = useAct();
 
   if (step === 'email') {
     const submit = (e) => {
       e.preventDefault();
       if (!EMAIL_RE.test(email.trim())) { setErr('Enter a valid email address.'); return; }
-      setErr(null); setStep('sent');
+      setErr(null); act(() => setStep('sent'));
     };
     return (
       <AuthFrame onBack={onBackToSignin} title="Reset your password"
@@ -375,7 +384,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
         <form onSubmit={submit} noValidate>
           <Field label="Email" name="rec-email" type="email" placeholder="you@example.com" autoFocus
             value={email} onChange={(e) => { setEmail(e.target.value); setErr(null); }} error={err} />
-          <Button type="submit" variant="primary" full size="lg">Send code</Button>
+          <Button type="submit" variant="primary" full size="lg" loading={busy}>Send code</Button>
         </form>
       </AuthFrame>
     );
@@ -397,7 +406,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
       e.preventDefault();
       const v = code.replace(/\s/g, '');
       if (v.length < 6) { setErr('That code\u2019s not right \u2014 check and re-enter.'); return; }
-      setErr(null); setStep('newpass');
+      setErr(null); act(() => setStep('newpass'));
     };
     return (
       <AuthFrame onBack={() => setStep('sent')} title="Enter your code"
@@ -406,7 +415,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
           <Field name="rec-code" mono type="text" inputMode="numeric" maxLength={6} placeholder="000000" autoFocus
             value={code} onChange={(e) => { setCode(e.target.value.replace(/[^0-9]/g, '')); setErr(null); }}
             style={{ letterSpacing: '0.5em', fontSize: 22, textAlign: 'center', fontWeight: 600 }} error={err} />
-          <Button type="submit" variant="primary" full size="lg">Verify</Button>
+          <Button type="submit" variant="primary" full size="lg" loading={busy}>Verify</Button>
         </form>
       </AuthFrame>
     );
@@ -416,7 +425,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
     e.preventDefault();
     if (pw.length < 8) { setErr('Use at least 8 characters.'); return; }
     if (pw !== pw2) { setErr('Passwords don\u2019t match. Re-enter to confirm.'); return; }
-    setErr(null); onDone();
+    setErr(null); act(onDone);
   };
   return (
     <AuthFrame title="Set a new password" subtitle="Choose a password you haven’t used here before.">
@@ -425,7 +434,7 @@ const Recovery = ({ onDone, onBackToSignin }) => {
           value={pw} onChange={(e) => { setPw(e.target.value); setErr(null); }} error={err && pw.length < 8 ? err : null} />
         <Field label="Confirm new password" name="np2" type="password" autoComplete="new-password" placeholder="Re-enter password"
           value={pw2} onChange={(e) => { setPw2(e.target.value); setErr(null); }} error={err && pw.length >= 8 ? err : null} />
-        <Button type="submit" variant="primary" full size="lg">Update password</Button>
+        <Button type="submit" variant="primary" full size="lg" loading={busy}>Update password</Button>
       </form>
     </AuthFrame>
   );

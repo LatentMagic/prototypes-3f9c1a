@@ -155,6 +155,9 @@ const CandEditOut = ({ onClick }) => (
 const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxPx = 220, autoFocus = false, ariaLabel, size = 16, onSend }) => {
   const ref = React.useRef(null);
   const [focus, setFocus] = React.useState(false);
+  // Send shows it is working (CLAUDE.md): the arrow becomes the spinner and the
+  // control is inert until the words land.
+  const [busy, act] = useAct();
   React.useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
     el.style.height = 'auto';
@@ -179,9 +182,9 @@ const CandWrite = ({ value, onChange, placeholder, max = 500, minLines = 2, maxP
       </div>
       {onSend && (
         <button type="button" className="cand-infield" data-live={String(value || '').trim() ? '' : undefined}
-          onClick={() => { if (String(value || '').trim()) onSend(); }} aria-label="Send"
-          style={{ position: 'absolute', right: 7, bottom: 7 }}>
-          <CandSendArrow />
+          onClick={() => { if (String(value || '').trim()) act(onSend); }} aria-label="Send" disabled={busy} aria-busy={busy ? 'true' : undefined}
+          style={{ position: 'absolute', right: 7, bottom: 7, cursor: busy ? 'default' : undefined }}>
+          {busy ? <Ring size={14} light={false} /> : <CandSendArrow />}
         </button>
       )}
     </div>

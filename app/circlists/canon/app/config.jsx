@@ -1,5 +1,5 @@
 // ============================================================================
-// Circlists — the launcher (PROTOTYPE AID, not part of the product).
+// Circlists — the Config pill (PROTOTYPE AID, not part of the product).
 //
 // A floating, draggable pill with two halves, both prototype aids and neither
 // part of the product:
@@ -33,7 +33,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   const [qaOpen, setQaOpen] = useCState(false);
-  // draggable launcher-button position. null = default bottom-right.
+  // draggable Config pill position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
     try { const v = JSON.parse(localStorage.getItem('circ_launcher_pos') || 'null'); return v && typeof v.x === 'number' ? v : null; } catch (e) { return null; }
   });

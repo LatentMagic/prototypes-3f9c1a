@@ -3,7 +3,7 @@
 //
 // Both are DERIVED views of the register in app/states.jsx and hold no list of
 // their own:
-//   StatesPalette — over the app, from the launcher's second half. Search, jump,
+//   StatesPalette — over the app, from the Config pill's second half. Search, jump,
 //                   copy a link to any state.
 //   StatesIndex   — a page. What `?state=index` opens, and where a name that is
 //                   not in the register lands: the reader sees a catalogue that

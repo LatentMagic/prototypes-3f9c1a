@@ -151,7 +151,7 @@ const Checkout = ({ user, spaceName, refund, onSuccess, onCancel, offer }) => {
           background: '#047857', color: '#fff', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 15,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         }}>
-          {loading && <Spinner size={15} />}
+          {loading && <Ring size={15} />}
           {loading ? 'Processing\u2026' : (offer ? offer.button : `Pay \u00b7 \u00a3${PRICE_PER_SPACE}.00 / mo`)}
         </button>
       </form>

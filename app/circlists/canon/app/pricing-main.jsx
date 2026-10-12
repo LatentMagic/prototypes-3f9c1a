@@ -51,15 +51,22 @@ window.CircPricing = {
       return { body: <CreateSpace key="ppp-create" initialName={ff.name || ''} initialDescription={ff.description || ''}
         canCancel={api.spaces.length > 0}
         onCancel={() => { window.CircPPP.set({ ctx: null, fixed: null }); api.goHome(); }}
-        onCreate={(name, description) => { window.CircPPP.set({ ctx: null, fixed: null }); api.setFundFlow({ mode: 'new', name, description, spaceId: null }); api.setRoute('setting-up'); }} /> };
+        onCreate={(name, description) => {
+          // Straight to the new circle: no setting-up wait (as shipped, UI Decision-91).
+          window.CircPPP.set({ ctx: null, fixed: null });
+          const email = api.user ? api.user.email : '';
+          const sp = { id: 'sp-' + Date.now(), name, description: description || undefined, funded: true, dormancy: null,
+            champion: 'You', championEmail: email, members: [{ name: 'You', email }], items: [] };
+          api.setSpaces((prev) => [sp, ...prev]); api.setCurrentId(sp.id); api.setTab('active'); api.enterSpace(sp.id);
+        }} /> };
     }
     return null;
   },
   // No dots: subscribing is the person's act, not a step of creating, and the
   // create form is one step. (Ratified by Joe, 2 Oct.)
   createFlow() { return null; },
-  // Heading names the thing, button the act (board 01, ratified by Joe, 2 Oct).
-  createTitle() { return 'New circle'; },
+  // "Create a circle" (as shipped: LM-919 kept this heading; only the intro line changed).
+  createTitle() { return 'Create a circle'; },
   createLabel() { return 'Create circle'; },
   // Ending / Payment failed: one line under Create circle (pg-lapsing-takeover 3, Joe 2 Oct).
   createFoot: () => <PppCreateFoot />,

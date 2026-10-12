@@ -58,12 +58,37 @@ const PPP_STATE_DEFS = [
   ['ppp-no-circles', 'Subscribed with no circles: Account', { store: {}, spaces: () => [], route: 'account' }],
   ['ppp-no-circles-ending', 'Ending, with no circles: Account', { store: { status: 'ending' }, spaces: () => [], route: 'account' }],
   ['ppp-no-circles-failed', 'Payment failed, with no circles: Account', { store: { status: 'failed' }, spaces: () => [], route: 'account' }],
+  // As shipped (8 Oct): docs/specs/per-person-pricing-as-shipped/.
+  ['ppp-cancel-failed-payment', 'Cancel while a payment has failed: "From today", circles sleep at once', { store: { status: 'failed' }, route: 'account', sheet: 'cancel' }],
+  ['ppp-delete-active', 'Delete account, Active', { store: {}, route: 'account', confirm: 'delete-account' }],
+  ['ppp-delete-free-month', 'Delete account, free month', { store: { status: 'trial', plan: 'monthly' }, route: 'account', confirm: 'delete-account' }],
+  ['ppp-delete-ending', 'Delete account, Ending', { store: { status: 'ending' }, route: 'account', confirm: 'delete-account' }],
+  ['ppp-delete-failed', 'Delete account, payment failed', { store: { status: 'failed' }, route: 'account', confirm: 'delete-account' }],
+  ['ppp-delete-lapsed', 'Delete account, lapsed', { store: LAPSED, spaces: pppSleepMine, route: 'account', confirm: 'delete-account' }],
+  ['ppp-delete-none', 'Delete account, no subscription', { store: NOT_SUB, spaces: pppHand, route: 'account', confirm: 'delete-account' }],
+  ['ppp-card-loading', 'Subscription card loading (Config \u2192 Card load: Stays loading)', { store: { simLoad: 'hold' }, route: 'account' }],
+  ['ppp-load-fails', 'Subscription card fails to load (Try again loads it)', { store: {}, route: 'account', fail: 'subLoad' }],
+  ['ppp-cancel-fails', 'Cancel \u2014 the next cancel fails (press Cancel subscription)', { store: {}, route: 'account', sheet: 'cancel', fail: 'subCancel' }],
+  ['ppp-switch-fails', 'Switch \u2014 the next switch fails (press Switch to yearly)', { store: {}, route: 'account', sheet: 'switch', fail: 'subSwitch' }],
+  ['ppp-resume-fails', 'Resume \u2014 the next resume fails (Ending, press Resume subscription)', { store: { status: 'ending' }, route: 'account', platform: 'web', fail: 'subResume' }],
+  ['ppp-keep-fails', 'Keep plan \u2014 the next keep fails (switch pending, press Keep monthly)', { store: { pending: 'yearly' }, route: 'account', platform: 'web', fail: 'subKeep' }],
+  ['ppp-card-page-fails', 'Update payment card \u2014 the payment page fails to open', { store: {}, route: 'account', platform: 'web', fail: 'subCard' }],
+  ['ppp-cancel-busy', 'Cancel in flight (press Cancel subscription; Config \u2192 Card actions: Stay busy)', { store: { simBusy: 'hold' }, route: 'account', sheet: 'cancel' }],
+  ['ppp-switch-busy', 'Switch in flight (press Switch to yearly; stays busy)', { store: { simBusy: 'hold' }, route: 'account', sheet: 'switch' }],
+  ['ppp-resume-busy', 'Resume in flight (Ending, press Resume subscription; stays busy)', { store: { status: 'ending', simBusy: 'hold' }, route: 'account', platform: 'web' }],
+  ['ppp-keep-busy', 'Keep plan in flight (press Keep monthly; stays busy)', { store: { pending: 'yearly', simBusy: 'hold' }, route: 'account', platform: 'web' }],
+  ['ppp-takeover-fails', 'Take over, already subscribed \u2014 the next take-over fails', { store: {}, spaces: pppSleep('sp-book'), current: 'sp-book', platform: 'web', fail: 'takeover' }],
+  ['ppp-takeover-ending-no-date', 'Take over while ending, no known end date', { store: { status: 'ending', noEndDate: true }, spaces: pppSleep('sp-book'), current: 'sp-book', platform: 'web' }],
 ];
 const pppStage = (api, def) => {
   const { seedSpaces, DEFAULT_USER } = window.CircSeed;
   // The register's Platform setting (see app/states.jsx buildStates).
   if (def.platform && api.setPlatform) { api.setPlatform(def.platform); if (api.setMobilePayments) api.setMobilePayments(false); }
   try { localStorage.removeItem(api.STATE_KEY); } catch (e) {}
+  // No residue from the previous stage: unspent refusals and an open confirm.
+  window.circFail = window.circFail || {};
+  Object.keys(PPP_FAIL).forEach((k) => { window.circFail[k] = false; });
+  { const a = pppApi(); if (a && a.confirm) a.confirm(null); }
   let list = seedSpaces(DEFAULT_USER.email).filter((s) => !/^TEST\b/i.test(s.name || ''));
   if (def.spaces) list = def.spaces(list);
   window.CircPPP.reset(def.store);
@@ -74,6 +99,8 @@ const pppStage = (api, def) => {
   if (def.current && !def.route) { api.setCurrentId(def.current); api.setRoute('space'); }
   else { api.setCurrentId(def.current || null); api.setRoute(def.route); }
   if (def.sheet) setTimeout(() => window.CircPPP.set({ sheet: def.sheet }), 80);
+  if (def.fail) { window.circFail = window.circFail || {}; window.circFail[def.fail] = true; }
+  if (def.confirm) setTimeout(() => { const a = pppApi(); if (a && a.confirm) a.confirm(def.confirm); }, 120);
 };
 const PPP_STATES = [];
 PPP_STATE_DEFS.forEach(([id, label, def]) => { PPP_STATES.push({ id, label, def }); });
@@ -120,6 +147,12 @@ const PppConfig = () => {
         options={[['open', 'Available'], ['used', 'Used']]} />
       <PppSeg label="Plan" value={st.plan} onChange={(v) => A.set({ plan: v, pending: null })}
         options={[['monthly', 'Monthly'], ['yearly', 'Yearly']]} />
+      <PppSeg label="Card load" value={st.simLoad} onChange={(v) => A.set({ simLoad: v })}
+        options={[['ok', 'Loads'], ['hold', 'Stays loading']]} />
+      <PppSeg label="Card actions" value={st.simBusy} onChange={(v) => A.set({ simBusy: v })}
+        options={[['done', 'Complete'], ['hold', 'Stay busy']]} />
+      <PppSeg label="End date" value={st.noEndDate ? 'unknown' : 'known'} onChange={(v) => A.set({ noEndDate: v === 'unknown' })}
+        options={[['known', 'Known'], ['unknown', 'Unknown']]} />
     </div>
   );
 };

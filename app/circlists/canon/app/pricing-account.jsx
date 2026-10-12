@@ -57,10 +57,20 @@ const pppNb = (s) => String(s).replace(/ /g, '\u00a0');
 // undoes it (no confirm, like Resume).
 const PppSubscribed = ({ st, user }) => {
   const api = pppApi(); const A = window.CircPPP;
+  // In-flight and failed card acts (as shipped): busy on the pressed button, a failure line with Try again.
+  const [busy, setBusy] = React.useState(null);
+  const [fail, setFail] = React.useState(null);
+  const acts = {
+    subResume: () => A.set(pppResumed(window.CircPPP.get())),
+    subKeep: () => A.set({ pending: null }),
+    subCard: () => api.setRoute('ppp-card'),
+  };
+  const run = (k) => pppAct(k, acts[k], setBusy, setFail);
+  const failLine = fail && acts[fail] ? <PppFailLine k={fail} /> : null;
   const plan = PPP_PLANS[st.plan];
   const renew = pppNb(pppDay(st.status === 'trial' || (st.status === 'ending' && st.wasTrial) ? PPP_TRIAL_DAYS : PPP_RENEW_DAYS));
   const marker = { trial: 'Active', active: 'Active', failed: 'Payment failed', ending: 'Ending' }[st.status];
-  const resume = () => A.set(pppResumed(st));
+  const resume = () => run('subResume');
   const pending = st.pending && st.status !== 'ending';
   // The billing foot: the same line on the web card and the app's status-only card.
   const pppFoot = <div className="ppp-foot-wrap"><p className="ppp-card-foot ppp-foot"><span>Billed to {user ? user.email : 'your account'}</span><span>Card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span></span></p></div>;
@@ -113,15 +123,16 @@ const PppSubscribed = ({ st, user }) => {
       {st.status === 'failed' && (
         <div className="ppp-fail-row">
           <span className="ppp-fail-line">{mine ? <>Update the card within 30 days to keep your circles{'\u00a0'}awake.</> : <>Update the card within 30 days to keep your{'\u00a0'}subscription.</>}</span>
-          <Button variant="secondary" icon={<Icon name="card" size={16} />} onClick={() => api.setRoute('ppp-card')}>Update payment card</Button>
+          <Button variant="secondary" icon={<Icon name="card" size={16} />} loading={busy === 'subCard'} onClick={() => run('subCard')}>Update payment card</Button>
         </div>
       )}
       {st.status !== 'failed' && <div className="ppp-pair">
-        <Button variant="secondary" full icon={<Icon name="card" size={16} />} onClick={() => api.setRoute('ppp-card')}>Update payment card</Button>
+        <Button variant="secondary" full icon={<Icon name="card" size={16} />} loading={busy === 'subCard'} onClick={() => run('subCard')}>Update payment card</Button>
         {canSwitch && <Button variant="secondary" full onClick={() => A.set({ sheet: 'switch' })}>{'Switch to ' + pppOther(st.plan)}</Button>}
-        {pending && <Button variant="secondary" full onClick={() => A.set({ pending: null })}>{'Keep ' + st.plan}</Button>}
-        {st.status === 'ending' && <Button variant="secondary" full onClick={resume}>Resume subscription</Button>}
+        {pending && <Button variant="secondary" full loading={busy === 'subKeep'} onClick={() => run('subKeep')}>{'Keep ' + st.plan}</Button>}
+        {st.status === 'ending' && <Button variant="secondary" full loading={busy === 'subResume'} onClick={resume}>Resume subscription</Button>}
       </div>}
+      {failLine}
       {pppFoot}
       {st.status !== 'ending' && <div className="ppp-end"><Button variant="tertiary" style={{ color: 'var(--color-destructive)', paddingLeft: 0, paddingRight: 0 }} onClick={() => A.set({ sheet: 'cancel' })}>Cancel subscription</Button></div>}
     </div>
@@ -135,7 +146,9 @@ const PppSwitchSheet = ({ st }) => {
   const A = window.CircPPP; const cur = PPP_PLANS[st.plan]; const to = PPP_PLANS[pppOther(st.plan)];
   const close = () => A.set({ sheet: null });
   const trial = st.status === 'trial';
-  const go = () => A.set(trial ? { plan: to.id, sheet: null } : { pending: to.id, sheet: null });
+  const [busy, setBusy] = React.useState(null);
+  const [fail, setFail] = React.useState(null);
+  const go = () => pppAct('subSwitch', () => A.set(trial ? { plan: to.id, sheet: null } : { pending: to.id, sheet: null }), setBusy, setFail);
   const cell = (k, plan, on) => (
     <div className={'ppp-ba-cell' + (on ? ' ppp-ba-on' : '')}>
       <div className="ppp-ba-k">{k}</div>
@@ -144,8 +157,8 @@ const PppSwitchSheet = ({ st }) => {
     </div>
   );
   return (
-    <PppOverlay title={'Switch to ' + to.id + '?'} onClose={close} actions={[
-      { label: 'Switch to ' + to.id, variant: 'primary', onClick: go },
+    <PppOverlay modal title={'Switch to ' + to.id + '?'} onClose={close} actions={[
+      { label: 'Switch to ' + to.id, variant: 'primary', onClick: go, loading: !!busy },
       { label: 'Cancel', variant: 'secondary', onClick: close },
     ]}>
       <div className="ppp-ba">
@@ -153,6 +166,7 @@ const PppSwitchSheet = ({ st }) => {
         <span className="ppp-ba-arrow" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
         {cell(pppNb('From ' + pppDay(trial ? PPP_TRIAL_DAYS : PPP_RENEW_DAYS, true)), to, true)}
       </div>
+      {fail && <PppFailLine k="subSwitch" />}
     </PppOverlay>
   );
 };
@@ -163,28 +177,52 @@ const PppCancelSheet = ({ st }) => {
   // panel, then one line that names the circles.
   const trial = st.status === 'trial';
   const n = trial ? PPP_TRIAL_DAYS : PPP_RENEW_DAYS;
+  // While a payment has failed the cancellation takes effect at once (as shipped,
+  // ticket R2 / #926): "From today", and every circle you champion sleeps now.
+  const failed = st.status === 'failed';
+  const [busy, setBusy] = React.useState(null);
+  const [fail, setFail] = React.useState(null);
+  const apply = failed
+    ? () => { A.set({ status: 'none', usedFreeMonth: true, wasTrial: false, pending: null, sheet: null }); const api = pppApi(); if (api) api.setSpaces(pppSleepMine); }
+    : () => A.set({ status: 'ending', wasTrial: trial, pending: null, sheet: null });
+  const go = () => pppAct('subCancel', apply, setBusy, setFail);
   const cxCell = (k, a, b, on) => (
     <div className={'ppp-ba-cell' + (on ? ' ppp-ba-on' : '')}>
       <div className="ppp-ba-k">{k}</div><div className="ppp-ba-plan">{a}</div><div className="ppp-ba-price">{b}</div>
     </div>
   );
   return (
-    <PppOverlay title="Cancel your subscription?" onClose={close} actions={[
-      { label: 'Cancel subscription', variant: 'destructive', onClick: () => A.set({ status: 'ending', wasTrial: st.status === 'trial', pending: null, sheet: null }) },
+    <PppOverlay modal title="Cancel your subscription?" onClose={close} actions={[
+      { label: 'Cancel subscription', variant: 'destructive', onClick: go, loading: !!busy },
       { label: 'Keep subscription', variant: 'secondary', onClick: close },
     ]}>
       <div className="ppp-ba">
         {cxCell('Now', trial ? 'Free month' : PPP_PLANS[st.plan].label, trial ? '\u00a30' : pppNb(PPP_PLANS[st.plan].a))}
         <span className="ppp-ba-arrow" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
-        {cxCell(pppNb('From ' + pppDay(n, true)), 'Ends', pppNb('Nothing charged'), true)}
+        {cxCell(failed ? 'From today' : pppNb('From ' + pppDay(n, true)), 'Ends', pppNb('Nothing charged'), true)}
       </div>
       {((pppApi() || {}).spaces || []).some((s) => s.champion === 'You') && <p className="ppp-overlay-body ppp-cx-line">Your circles go to sleep. Everything in them stays, and any member can take one{'\u00a0'}over.</p>}
+      {fail && <PppFailLine k="subCancel" />}
     </PppOverlay>
   );
 };
 
 const PppAccountCard = ({ user }) => {
   const st = usePPP();
+  // Loading (as shipped): before the subscription has loaded, the title at full
+  // height and a loading body. Config → Card load holds it; a one-shot refusal
+  // (register) fails it, with Try again.
+  const [load, setLoad] = React.useState('ok');
+  React.useEffect(() => { if (window.circFailNext && window.circFailNext('subLoad')) setLoad('fail'); }, [st]);
+  const retry = () => { setLoad('busy'); setTimeout(() => setLoad('ok'), PPP_FLIGHT_MS); };
+  if (load !== 'ok' || st.simLoad === 'hold') return (
+    <div className="ppp-card">
+      <PppHead />
+      {load === 'fail'
+        ? <PppFailLine k="subLoad" onRetry={retry} />
+        : <div role="status" aria-label="Loading your subscription" className="ppp-card-loading">{window.BrandSpinner ? <window.BrandSpinner size={32} /> : null}</div>}
+    </div>
+  );
   // Switch and Cancel cannot be reached from the app's status-only card.
   const sheets = pppSubscribed(st) && !pppAppNoPay();
   return (

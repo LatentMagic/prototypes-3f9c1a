@@ -132,13 +132,15 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
   const [description, setDescription] = React.useState(initialDescription);
   const [err, setErr] = React.useState(null);
   const ref = React.useRef(null);
+  const [busy, act] = useAct();
   React.useEffect(() => { const t = setTimeout(() => ref.current && ref.current.focus(), 60); return () => clearTimeout(t); }, []);
   const submit = (e) => {
     e.preventDefault();
-    if (!name.trim()) { setErr('Give your circle a name.'); return; }
+    if (!name.trim()) { setErr('Give your circle a name.'); if (ref.current) ref.current.focus(); return; }
     // A blank description never blocks Continue — trimmed here so
     // whitespace-only behaves exactly as never-set from this point on.
-    onCreate(name.trim(), description.trim());
+    const n = name.trim(), d = description.trim();
+    act(() => onCreate(n, d));
   };
   // Step 1 of the shared Create → Fund wizard: same shell, same column as step 2.
   // Candidate hook (droppable): window.CircPricing may set the step dots and the
@@ -156,7 +158,8 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
           value={name} onChange={(e) => { setName(e.target.value); if (err) setErr(null); }} error={err} />
         <CircleDescriptionField id="space-description" value={description} onChange={setDescription}
           placeholder="What’s this circle for?" />
-        <Button type="submit" variant="primary" size="lg" full disabled={!name.trim()}>
+        {/* Enabled on an empty name; validates on submit (CIRC-007 EF-01, as shipped). */}
+        <Button type="submit" variant="primary" size="lg" full loading={busy}>
           {submitLabel ? (typeof submitLabel === 'function' ? submitLabel(name.trim()) : submitLabel) : window.CircPricing && window.CircPricing.createLabel ? window.CircPricing.createLabel() : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>Continue<Icon name="arrow-right" size={18} style={{ display: 'inline-block' }} /></span>}
         </Button>
         {PH && PH.createFoot ? PH.createFoot() : null}
@@ -171,6 +174,7 @@ const CreateSpace = ({ onCreate, onCancel, canCancel, initialName = '', initialD
 // is reserved for account deletion, never removal.
 const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   const cancelRef = React.useRef(null);
+  const [busy, act] = useAct();
   const invokerRef = React.useRef(null);
   React.useEffect(() => {
     invokerRef.current = document.activeElement;
@@ -192,7 +196,7 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
         <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 15, lineHeight: 1.55, color: 'var(--color-fg-2)', margin: '0 0 var(--space-6)' }}>They lose access to this circle. Their links stay, with their name. You can re-invite them later.</p>
         <div className="circ-dlg-act">
           <Button ref={cancelRef} variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="destructive" onClick={() => onConfirm()}>Remove {firstName}</Button>
+          <Button variant="destructive" loading={busy} onClick={() => act(onConfirm)}>Remove {firstName}</Button>
         </div>
       </div>
     </div>
@@ -224,7 +228,8 @@ const EditCircleDialog = ({ currentName, currentDescription, onSave, onCancel })
   }, []);
   // Whitespace-only description is no description: trimmed here so it stores
   // nothing and behaves exactly as never-set.
-  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } onSave(v, descDraft.trim()); };
+  const [busy, act] = useAct();
+  const save = () => { const v = draft.trim(); if (!v) { setErr('Give your circle a name.'); return; } const d = descDraft.trim(); act(() => onSave(v, d)); };
   return (
     <div role="dialog" aria-modal="true" aria-label="Edit circle"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
@@ -246,7 +251,7 @@ const EditCircleDialog = ({ currentName, currentDescription, onSave, onCancel })
         </div>
         <div className="circ-dlg-act">
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" onClick={save} disabled={!draft.trim()}>Save</Button>
+          <Button variant="primary" onClick={save} disabled={!draft.trim()} loading={busy}>Save</Button>
         </div>
       </div>
     </div>
@@ -615,6 +620,7 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
   const [np2, setNp2] = React.useState('');
   const [err, setErr] = React.useState({});
   const [done, setDone] = React.useState(false);
+  const [busy, act] = useAct();
   const submit = (e) => {
     e.preventDefault();
     const next = {};
@@ -622,7 +628,7 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
     if (np.length < 8) next.np = 'Use at least 8 characters.';
     if (np && np2 !== np) next.np2 = 'Passwords don’t match. Re-enter to confirm.';
     setErr(next);
-    if (Object.keys(next).length === 0) { setDone(true); setCur(''); setNp(''); setNp2(''); setTimeout(() => setDone(false), 3200); }
+    if (Object.keys(next).length === 0) act(() => { setDone(true); setCur(''); setNp(''); setNp2(''); setTimeout(() => setDone(false), 3200); });
   };
   return (
     <ContentPage>
@@ -659,7 +665,7 @@ const AccountSettings = ({ user, onChangeEmail, onDeleteAccount, push, onPushCha
               <Icon name="check" size={16} color="var(--color-accent)" /> Password updated.
             </span>
           )}
-          <Button type="submit" variant="primary">Update password</Button>
+          <Button type="submit" variant="primary" loading={busy}>Update password</Button>
         </div>
       </form>
       <div style={{ height: 'var(--space-5)' }} />
@@ -761,6 +767,7 @@ const ReverifyDialog = ({ provider, onPass, onCancel }) => {
   const pwRef = React.useRef(null);
   const cancelRef = React.useRef(null);
   const invokerRef = React.useRef(null);
+  const [busy, act] = useAct();
   React.useEffect(() => {
     invokerRef.current = document.activeElement;
     const id = setTimeout(() => { const el = provider ? cancelRef.current : pwRef.current; el && el.focus(); }, 40);
@@ -775,7 +782,7 @@ const ReverifyDialog = ({ provider, onPass, onCancel }) => {
   const submit = (e) => {
     e.preventDefault();
     if (!provider && !pw) { setErr('Enter your password.'); return; }
-    onPass && onPass();
+    act(() => onPass && onPass());
   };
   return (
     <div role="dialog" aria-modal="true" aria-label="Confirm it’s you"
@@ -802,7 +809,7 @@ const ReverifyDialog = ({ provider, onPass, onCancel }) => {
         )}
         <div className="circ-dlg-act" style={{ marginTop: provider ? 0 : 'var(--space-2)' }}>
           <Button ref={cancelRef} type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button type="submit" variant="primary">{provider ? `Continue with ${provider}` : 'Continue'}</Button>
+          <Button type="submit" variant="primary" loading={busy}>{provider ? `Continue with ${provider}` : 'Continue'}</Button>
         </div>
       </form>
     </div>
@@ -823,6 +830,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
   const [code, setCode] = React.useState('');
   const [err, setErr] = React.useState({});
   const codeRef = React.useRef(null);
+  const [busy, act] = useAct();
 
   React.useEffect(() => { if (phase === 'verify') { const t = setTimeout(() => codeRef.current && codeRef.current.focus(), 60); return () => clearTimeout(t); } }, [phase]);
 
@@ -839,9 +847,12 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
   const confirm = (e) => {
     e.preventDefault();
     if (code.replace(/\s/g, '').length < 6) { setErr({ code: 'That code’s not right — check and re-enter.' }); return; }
-    onChangeEmail && onChangeEmail(email.trim());
-    setPhase('done'); setEmail(''); setCode(''); setErr({});
-    setTimeout(() => setPhase('idle'), 3600);
+    const v = email.trim();
+    act(() => {
+      onChangeEmail && onChangeEmail(v);
+      setPhase('done'); setEmail(''); setCode(''); setErr({});
+      setTimeout(() => setPhase('idle'), 3600);
+    });
   };
 
   const cancel = () => { setPhase('idle'); setEmail(''); setCode(''); setErr({}); };
@@ -867,7 +878,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
             style={{ letterSpacing: '0.4em', fontSize: 20, fontWeight: 600 }} error={err.code} />
           <div className="circ-dlg-act" style={{ marginTop: 'var(--space-2)' }}>
             <Button type="button" variant="secondary" onClick={cancel}>Cancel</Button>
-            <Button type="submit" variant="primary">Confirm</Button>
+            <Button type="submit" variant="primary" loading={busy}>Confirm</Button>
           </div>
         </form>
       ) : (

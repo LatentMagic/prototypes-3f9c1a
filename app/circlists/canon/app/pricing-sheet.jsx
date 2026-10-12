@@ -9,10 +9,13 @@
 // A playground can frame an overlay in place: it sets the pattern and the overlay
 // takes no focus and no keys. Absent in the candidate, so nothing changes there.
 const PppOverlayFrame = React.createContext(null);
-const PppOverlay = ({ title, onClose, children, actions = [] }) => {
+// modal: a centred dialog at every width (Cancel subscription and Switch plan:
+// dialogs by the overlay-kinds rule, like Delete account's confirm). Its buttons
+// stack at phone width (.circ-dlg-act).
+const PppOverlay = ({ title, onClose, children, actions = [], modal }) => {
   const api = pppApi();
   const frame = React.useContext(PppOverlayFrame);
-  const sheet = frame ? frame.sheet : (api ? api.isSheet : true);
+  const sheet = modal ? false : frame ? frame.sheet : (api ? api.isSheet : true);
   const panelRef = React.useRef(null);
   React.useEffect(() => {
     if (frame) return undefined;
@@ -23,14 +26,14 @@ const PppOverlay = ({ title, onClose, children, actions = [] }) => {
     return () => { clearTimeout(t); window.removeEventListener('keydown', onKey); if (invoker && invoker.focus) invoker.focus(); };
   }, []);
   const btns = actions.map((a) => (
-    <Button key={a.label} variant={a.variant || 'secondary'} full={sheet} onClick={a.onClick}>{a.label}</Button>
+    <Button key={a.label} variant={a.variant || 'secondary'} full={sheet} loading={!!a.loading} onClick={a.onClick}>{a.label}</Button>
   ));
   return (
     <div className={'ppp-scrim' + (sheet ? ' ppp-scrim-sheet' : '')} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div ref={panelRef} role="dialog" aria-modal="true" aria-label={title} className={sheet ? 'ppp-sheet' : 'ppp-modal'}>
         <h2 className="ppp-overlay-title">{title}</h2>
         {children}
-        {btns.length > 0 && <div className={sheet ? 'ppp-actions-stack' : 'ppp-actions-row'}>{sheet ? btns : btns.slice().reverse()}</div>}
+        {btns.length > 0 && <div className={sheet ? 'ppp-actions-stack' : 'ppp-actions-row circ-dlg-act'}>{sheet ? btns : btns.slice().reverse()}</div>}
       </div>
     </div>
   );

@@ -47,9 +47,9 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/app-shell.jsx` | droppable module | app posture gone; everything falls back to `AppShell` |
 | `app/home.jsx` | droppable body | home falls back to its empty state (`NoSpaceHome`) |
 | `app/gate.jsx` | droppable module | preview gate gone; real flows run |
-| `app/config.jsx` | deletable aid | launcher + review settings gone |
+| `app/config.jsx` | deletable aid | Config pill + review settings gone |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
-| `app/qa.jsx` | deletable aid (draft) | QA half of the launcher gone; the states it points at stay |
+| `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
 | `app/report-block.jsx` | droppable module | Report and Block gone; cards, comments and Members rows read as before |
 | `app/startup.jsx` | droppable module | no splash and no can't-connect page; the app opens as before |
 | `app/circ-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
@@ -80,7 +80,7 @@ that one list and cannot drift from it:
 - **`?state=index`, or a name the register does not hold** ⇒ the states index (`StatesIndex`,
   `app/states-ui.jsx`) renders instead of the app. That is how a stale ticket link shows itself: the
   reader sees a catalogue that does not contain the name they came for, rather than the wrong screen.
-- **The palette** — the launcher's second half. Jump to a state, or copy its link.
+- **The palette** — the Config pill's second half. Jump to a state, or copy its link.
 - **`window.CIRC_STATES`** — ids, labels and groups, published on the page for anything inspecting
   it. No staging functions, nothing runnable. A sibling JSON file would not survive the single-file
   export, which is why it is a global.

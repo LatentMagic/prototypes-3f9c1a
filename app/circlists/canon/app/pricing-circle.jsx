@@ -23,6 +23,9 @@ const pppCardFrom = (ctx) => { window.CircPPP.set({ ctx }); pppApi().setRoute('p
 const PppDormantSpace = (props) => {
   const { space, dormancy, onLeave } = props;
   const st = usePPP(); const api = pppApi();
+  // A free take-over that fails (as shipped): an error alert on the asleep screen.
+  const [takeFail, setTakeFail] = React.useState(false);
+  const [busy, stage] = useAct();
   if (dormancy === 'suspended' || !api) return <PppShippedDormant {...props} />;
   const mine = !!space && space.champion === 'You';
   const subscribed = pppSubscribed(st);
@@ -31,10 +34,16 @@ const PppDormantSpace = (props) => {
   const takeOver = () => {
     if (mine) { window.CircPPP.set({ ctx: { from: 'resubscribe', spaceId: space.id } }); api.setRoute('subscribe'); return; }
     if (subscribed) {
-      window.CircPPP.set({ fixed: null });
-      api.setSpaces((prev) => prev.map((s) => (s.id === space.id
-        ? { ...s, funded: true, dormancy: null, funding: null, openUntil: null, champion: 'You', championEmail: api.user.email } : s)));
-      api.enterSpace(space.id);
+      setTakeFail(false);
+      stage(() => {
+        if (window.circFailNext && window.circFailNext('takeover')) { setTakeFail(true); return; }
+        window.CircPPP.set({ fixed: null });
+        api.setSpaces((prev) => prev.map((s) => (s.id === space.id
+          ? { ...s, funded: true, dormancy: null, funding: null, openUntil: null, champion: 'You', championEmail: api.user.email } : s)));
+        api.enterSpace(space.id);
+        // Announced through the app's polite live region (as shipped).
+        if (api.announce) api.announce('You champion this circle now.');
+      });
       return;
     }
     window.CircPPP.set({ ctx: { from: 'takeover', spaceId: space.id, name: space.name } });
@@ -42,7 +51,7 @@ const PppDormantSpace = (props) => {
   };
   const act = !lapsing ? takeOver
     : failed ? () => pppCardFrom({ from: 'card-circle', spaceId: space.id })
-    : () => window.CircPPP.set({ ...pppResumed(window.CircPPP.get()), fixed: 'resumed' });
+    : () => stage(() => window.CircPPP.set({ ...pppResumed(window.CircPPP.get()), fixed: 'resumed' }));
   const label = mine ? 'Start your subscription'
     : !lapsing ? 'Take over this circle'
     : failed ? 'Update payment card' : 'Resume subscription';
@@ -66,6 +75,7 @@ const PppDormantSpace = (props) => {
     : <><PppS>Its champion{'\u2019'}s subscription has{'\u00a0'}ended.</PppS> <PppS>Everything in it is still{'\u00a0'}here.</PppS></>;
   const cap = mine ? 'Subscribing again wakes every circle you champion.'
     : lapsing && failed ? <><PppS>Your last payment didn{'\u2019'}t go through.</PppS> <PppS>Update the card, then take this circle{'\u00a0'}over.</PppS></>
+    : lapsing && st.noEndDate ? 'Resume your subscription, then take this circle over.'
     : lapsing ? <><PppS>Your subscription ends on {pppDM(PPP_RENEW_DAYS)}.</PppS> <PppS>Resume it, then take this circle{'\u00a0'}over.</PppS></>
     : subscribed && st.fixed ? <><PppS>{st.fixed === 'card' ? 'Card updated.' : 'Subscription resumed.'}</PppS> <PppS>It covers this circle, so taking it over costs nothing{'\u00a0'}more.</PppS></>
     : subscribed ? 'Your subscription covers it, so taking it over costs nothing more.'
@@ -78,8 +88,9 @@ const PppDormantSpace = (props) => {
           <p className="circ-dormant-body">{body}</p>
           <div className="circ-dormant-actions">
             {onLeave && <Button variant="destructive-secondary" size="lg" full onClick={onLeave}>Leave this circle</Button>}
-            {showAct && <Button variant="primary" size="lg" full icon={lapsing && failed ? <Icon name="card" size={18} /> : null} onClick={act}>{label}</Button>}
+            {showAct && <Button variant="primary" size="lg" full icon={lapsing && failed ? <Icon name="card" size={18} /> : null} loading={busy} onClick={act}>{label}</Button>}
           </div>
+          {takeFail && <PppFailLine k="takeover" style={{ justifyContent: 'center', marginTop: 'var(--space-4)' }} />}
           {showCap && <p className="circ-dormant-cap">{appCap || cap}</p>}
         </div>
       </div>
@@ -116,11 +127,22 @@ const PPP_COPY = {
   championManages: 'The Champion manages this circle\u2019s membership.',
   unchampionedTail: 'after that any member can take it over.',
 };
+// Delete account, one body per subscription state (as shipped, UI Decision-98).
+// Lapsed = had a subscription that has ended; No subscription = never had one.
+const pppDeleteBody = () => {
+  const st = window.CircPPP.get();
+  const head = 'It can\u2019t be undone.';
+  switch (st.status) {
+    case 'active': return head + ' Deleting cancels your subscription \u2014 any circle you champion runs to the end of its paid period, then goes to sleep.';
+    case 'trial': return head + ' Deleting cancels your subscription before anything is charged \u2014 any circle you champion runs to the end of your free month, then goes to sleep.';
+    case 'ending': return head + ' Your subscription already ends on ' + pppNb(pppDay(st.wasTrial ? PPP_TRIAL_DAYS : PPP_RENEW_DAYS)) + ' \u2014 any circle you champion runs to that date, then goes to sleep.';
+    case 'failed': return head + ' Deleting cancels your subscription \u2014 any circle you champion goes to sleep straight away.';
+    default: return st.usedFreeMonth ? head + ' Your subscription has ended, so any circle you champion is already asleep, and stays asleep.' : head;
+  }
+};
 const PPP_CONFIRM = {
-  'delete-account': {
-    title: 'Delete your account?',
-    body: 'It can\u2019t be undone. Deleting cancels your subscription \u2014 any circle you champion runs to the end of its paid period, then goes to sleep.',
-    primary: 'Delete account', variant: 'destructive', role: 'alertdialog',
+  get 'delete-account'() {
+    return { title: 'Delete your account?', body: pppDeleteBody(), primary: 'Delete account', variant: 'destructive', role: 'alertdialog' };
   },
 };
 Object.assign(window, { PPP_COPY, PPP_CONFIRM, PppCreateFoot, pppLapsing });

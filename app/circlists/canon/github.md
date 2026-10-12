@@ -98,6 +98,30 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-08T07:21:04Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start; non-flicker loading, visibility of system status); searched `specs/projects/circlists/` for spinner and in-flight lines. Nothing mirrored; commit 49cb2a203de3 (from search).
+
+### Updated in this project
+- Kit update, loading on action: the rule in `CLAUDE.md`, `useAct` in `app/primitives.jsx`, staged loading on every submit, save, send, delete and confirm. Audit and handoff in `docs/specs/loading-on-action/`.
+
+## Previous sync
+
+date: 2026-10-08T06:56:16Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start; still carries the old adaptive line pending draft PR #1002). business-ops: searched `work/apps/circlists/` for an overlay ticket; none. Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Overlay kinds: `CLAUDE.md` states dialog / menu / panel; Switch plan is a centred dialog at every width; overlay audit and handoff in `docs/specs/overlay-kinds/`.
+
+## Previous sync
+
+date: 2026-10-08T06:01:27Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Per-person pricing as shipped: native plan radios, "Create a circle" with submit-time validation and no setting-up wait, Cancel as a modal ("From today" while failed), per-state Delete bodies, card failure/busy/loading states, take-over announcement and failure. Handoff in `docs/specs/per-person-pricing-as-shipped/`.
+
+## Previous sync
+
 date: 2026-10-06T06:56:36Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
 

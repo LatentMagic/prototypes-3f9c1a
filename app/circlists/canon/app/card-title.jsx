@@ -113,12 +113,13 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel, onAnnounce }) => {
     };
   }, []);
   const v = draft.trim();
+  const [busy, act] = useAct();
   const save = () => {
     // A refused write (onSave / onRestore return false) leaves the dialog and the draft as they were.
     const refused = () => { setFailed(true); if (onAnnounce) onAnnounce(CARD_TITLE_FAIL); };
-    if (!v) { if (custom && onRestore) { if (onRestore() === false) refused(); return; } setErr('Give it a title.'); return; }
+    if (!v) { if (custom && onRestore) { act(() => { if (onRestore() === false) refused(); }); return; } setErr('Give it a title.'); return; }
     if (v === opening.trim()) { onCancel(); return; }
-    if (onSave(v) === false) refused();
+    act(() => { if (onSave(v) === false) refused(); });
   };
   return (
     <div role="dialog" aria-modal="true" aria-label="Edit title"
@@ -145,7 +146,7 @@ const CardTitleDialog = ({ item, onSave, onRestore, onCancel, onAnnounce }) => {
         <p id="card-title-help" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 13, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: '8px 0 0' }}>{custom && onRestore ? 'Clear to restore.' : 'Everyone in the circle sees this title.'}</p>
         <div className="circ-dlg-act" style={{ marginTop: 'var(--space-5)' }}>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button variant="primary" onClick={save}>Save</Button>
+          <Button variant="primary" onClick={save} loading={busy}>Save</Button>
         </div>
       </div>
     </div>

@@ -191,6 +191,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
     setFace(1); setTimeout(() => roomRef.current && roomRef.current.focus({ preventScroll: true }), 320);
   };
   const toLink = () => { setFace(0); setTimeout(() => inputRef.current && inputRef.current.focus({ preventScroll: true }), 320); };
+  const [busy, act] = useAct();
 
   if (!render) return null;
 
@@ -208,6 +209,9 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
   const commit = () => {
     const v = url.trim();
     if (!CAND_URL_RE.test(v)) { setError('That doesn\u2019t look like a valid URL. Check it and try again.'); return; }
+    setError(null);
+    // The server's accept is staged (CLAUDE.md): Add shows loading until it lands.
+    act(() => {
     // The server refuses a link (a blocked site): the invalid-URL line's place and
     // treatment, no reason given; the link and the thought stay (built, not ratified, 6 Oct).
     if (window.circFailNext && window.circFailNext('addLink')) {
@@ -215,7 +219,6 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
       if (inputRef.current) inputRef.current.focus({ preventScroll: true });
       return;
     }
-    setError(null);
     const normalized = /^https?:\/\//i.test(v) ? v : 'https://' + v;
     const item = { id: 'i' + Date.now(), url: normalized, attribution: 'Added by you', read: markRead, pending: true, at: Date.now(), reactions: [],
       // D2 — contributing a link enrols the contributor in watching it. Nothing
@@ -230,6 +233,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
     if (markRead && swell.glyph) item.reactions = [{ name: 'You', glyph: swell.glyph, intensity: swell.intensity, nx: swell.nx, ny: swell.ny, atAdd: true }];
     onAdd(item);
     onClose();
+    });
   };
   // The link face's own submit. Committing from the writing face goes straight
   // to commit(); a URL that fails there sends you back to the slot carrying the
@@ -308,7 +312,7 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
                 </div>
                 <div className="circ-dlg-act" style={{ marginTop: 'var(--space-3)' }}>
                   <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-                  <Button type="submit" variant="primary">Add</Button>
+                  <Button type="submit" variant="primary" loading={busy}>Add</Button>
                 </div>
               </div>
             </div>

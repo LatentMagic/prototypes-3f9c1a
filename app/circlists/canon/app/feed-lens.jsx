@@ -779,7 +779,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
           // value (`add-link-surface.component.css:38`, 40rem). The prop this
           // component takes is still called `isMobile`; the caller
           // (main.jsx) passes `isSheetPosture` (640, not 1024) into it. Posture
-          // overrides (app mode, the launcher's layout override) still win at
+          // overrides (app mode, the Config pill's layout override) still win at
           // any width, same as before — only the raw-width threshold moved.
           //
           // Why it changed at all: Reading A makes this four groups, and four

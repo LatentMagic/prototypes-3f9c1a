@@ -2,7 +2,7 @@
 // Circlists — the QA list (PROTOTYPE AID, not part of the product). DRAFT:
 // the shape is still being iterated on.
 //
-// The launcher's third half. A short, ephemeral walk-through of the states a
+// The Config pill's third half. A short, ephemeral walk-through of the states a
 // piece of work in flight needs checking against. It holds NO staging of its
 // own: every step is a state id from the register (app/states.jsx), so a QA
 // entry can never drift from what the States palette opens.
@@ -18,21 +18,6 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
-  {
-    key: 'auth-step-back', title: 'Sign in and Sign up: Back from the email form',
-    note: 'Built 6 Oct. 1 and 2. Tap Continue with email, then the browser\u2019s Back: step one shows, focus on Continue with email. The page\u2019s back arrow does the same, and a further Back leaves the page.',
-    steps: ['signin-new-device', 'signup-first-circle'],
-  },
-  {
-    key: 'block-failure', title: 'Block and Unblock: when it fails',
-    note: 'Built 6 Oct. 1. Priya\u2019s row \u2192 Block Priya \u2192 Block: the dialog stays open, "Couldn\u2019t block Priya. Try again." above the buttons; Cancel and Block still press, and the second Block goes. 2. Priya\u2019s row \u2192 Unblock Priya: under Blocked, "Couldn\u2019t unblock Priya. Try again."; the row stays Blocked, focus on its menu. The line goes on the next press of that menu (place built, not ratified).',
-    steps: ['block-fails', 'unblock-fails'],
-  },
-  {
-    key: 'add-link-refused', title: 'Add a link: an invalid address, and a refused link',
-    note: 'Built 6 Oct. 1. Opens with Add showing and "not a link" in the slot: "That doesn\u2019t look like a valid URL. Check it and try again." under it (canon\u2019s line, staged for comparison). 2. Press Add (the + button), enter any valid link, Add: "This link can\u2019t be added." in the same place, no reason given; the link stays as typed. Change it or Cancel; Add again succeeds (wording built, not ratified).',
-    steps: ['add-link-invalid', 'add-link-refused'],
-  },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);
 
