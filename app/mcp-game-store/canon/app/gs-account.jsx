@@ -183,8 +183,7 @@ const GsDeleteAccount = () => {
   const holds = GS_SUB_HOLDS.includes(gs.sub.status);
   // What happens to the Pass, by kind (MCPG-009 AF-01 to AF-04). A free account has no Pass line.
   const st = gs.sub.status;
-  const passLine = !holds ? null : st === 'free' ? 'Your Pass is cancelled and you’re never charged.'
-    : st === 'failed' ? 'Your Pass ends straight away.'
+  const passLine = !holds ? null : st === 'failed' ? 'Your Pass ends straight away.'
     : 'Your Pass is cancelled. No more payments are taken, and nothing is refunded.';
   return (
     <DS.Card style={GS_ACCT_CARD}>

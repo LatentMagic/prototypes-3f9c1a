@@ -448,7 +448,7 @@ const lgRouteGame = (name) => (LG_GAMES.find(([k]) => GS_GAMES[k].route === name
 
 const LgPage = ({ id }) => {
   const gs = useGs(); const st = useLg();
-  const k = st.opt + id + gs.view + gs.sub.freeUsed;
+  const k = st.opt + id + gs.view + gs.sub.hadPass;
   if (st.opt === '3' && gs.route.sid) return <LgSessionPage key={k + gs.route.sid} id={id} sid={gs.route.sid} />;
   if (st.opt === '2') return <LgSpot key={k} id={id} />;
   if (st.opt === '3') return <LgOverview key={k} id={id} />;
@@ -464,7 +464,7 @@ const lgGame = (id) => () => {
 let lgBooted = false;
 const lgApply = (gs, viewer, game) => {
   gs.setDemoView(viewer === 'pass' ? 'pass' : 'free');
-  if (viewer === 'ended') gs.setSub({ freeUsed: true });
+  if (viewer === 'ended') gs.setSub({ hadPass: true });
   gs.setConnected(true);
   setTimeout(() => lgToRecord(window.gsApi, game), 0);
 };

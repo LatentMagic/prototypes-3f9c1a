@@ -113,6 +113,18 @@ Brief: "an edition opens over the list, playground, round 3". Nothing ratified.
 
 **Unresolved:** whether Back from History should reopen the panel or return to the bare list; the new copy is still the old page's, unratified.
 
+## In the app (2026-10-12): an edition opens over the list
+Brief: "an edition opens over the list, in the app". Round 3 had been built in the playground only; `app/` still opened the edition's page. Nothing ratified.
+
+**What changed in `app/`:**
+- `app/gs-editions.jsx`: a row sets the list's `open` state and opens `PgeEdPanel`, moved over from the playground as built (panel, prompt and Copy inside, `GsNeedsPass` and no Copy for an edition that needs the Pass). Same for Escape, Casebook and Delve.
+- `PgeEdPage`, the `pgeEd` / `fromList` route and `PgePlay` are removed. No route leads to one edition.
+- `app/states.jsx`: the staged state `library-casebook-edition` ("one case's own page") is removed.
+- `app/gs-connect.jsx`: `GsPrompt` and `GsCopyPrompt` added to its `window` exports, which the panel uses.
+- The "Start…" pop-up is unchanged everywhere else.
+
+**Unresolved:** as round 3: whether Back from History should reopen the panel, and all the panel's copy. No staged state opens the panel directly; one tap from `library-casebook-editions` reaches it.
+
 ## Also fixed (2026-10-12, outside the brief, at the user's request)
 Game cards in a row (Home's "Available games", Games' row cards) had uneven space at the bottom when tags wrapped. The card's body now fills the card: title and line at the top, tags at the bottom, so the spare space sits between them and every card ends on the same line. `app/gs-home.jsx`, `app/gs-discover.jsx`, `.gs-feat` in `index.html` and this rig's `index.html`. To be confirmed.
 - Cause of the wrapping: the design system's `CardRow` sizes cards by `--n`, the number of cards. Home's row has seven, which pinned every card at the 220px minimum, so tags wrapped. Discover's "Just added" has four and reaches 280px. Home's row now sizes as four (`.gs-row4`), so its cards match "Just added" at every width. The `--n` behaviour for rows over four cards is a design-system question to carry back.

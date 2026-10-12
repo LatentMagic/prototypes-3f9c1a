@@ -48,9 +48,6 @@ DV_ALL.forEach((s, i) => {
     lines: Array.from({ length: s.rolls }, (_, k) => GS_ROLLS[(k + i) % GS_ROLLS.length]),
     reached: won ? (threat > 4 ? 'Close call' : 'Clean rescue') : 'Caught', share: e.label + ' · threat ' + threat + '/6 · ' + s.rolls + ' rolls' };
 });
-const dvRow = (gs, s) => { const u = window.phUnf && phUnf(gs, s.id);
-  return { key: s.id, title: '#' + (DV_ALL.length - DV_ALL.findIndex((x) => x.id === s.id)), date: lbShort(s.date), status: u ? PH_UNF : dvStatus(s),
-    onOpen: u ? () => gs.go('session', { id: PH_UNF_EDS[s.id].sid }) : s.played ? () => gs.go('session', { id: s.id === DV_ALL[0].id ? 'delve' : dvSid(s) }) : () => gs.go('session', { gid: 'delve', ed: s.id }) }; };
 
 const DvNow = ({ s }) => {
   const gs = useGs();
@@ -111,13 +108,10 @@ const DvFirst = () => {
     </section>
   );
 };
-const dvPassRow = (gs) => ({ key: 'with-pass', title: 'Every other scene', date: '', status: { kind: 'none', label: 'With the Pass' }, onOpen: () => gs.go('pass') });
 const DvLibrary = () => {
-  const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+  const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
   // A free account's first scene half-done: its row and its achievements say so.
   const fresh = gsFresh(gs); const firstLive = !pass && !gsLapsed(gs) && !lbWeekDone(gs) && !fresh;
-  const rows = dvHist(gs).slice(0, pass ? 8 : 7).map((s) => (firstLive && s === DV_FIRST
-    ? { ...dvRow(gs, s), own: true, status: { kind: 'live', label: 'In progress' }, onOpen: null } : dvRow(gs, s))).concat(pass ? [] : [dvPassRow(gs)]);
   const ach = fresh ? lbNoAch(DV_ACH) : firstLive ? DV_ACH.map((a) => ({ ...a, gotFree: undefined })) : DV_ACH;
   return (
     <main key={k} className="gs-wrap gs-main">

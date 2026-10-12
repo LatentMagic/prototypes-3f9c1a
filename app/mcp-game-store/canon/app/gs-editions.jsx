@@ -1,14 +1,17 @@
 // ============================================================================
 // [Platform] — a game's editions (game-editions-list option 2, head 2g; docs/specs/game-editions-list/).
-// Escape, Casebook and Delve: "Every room / case / scene" under the library game page's title opens the list
-// (route { page: 'record', list: true }); each row opens the edition's own page ({ ..., pgeEd }).
-// The list is settled (owner, 2026-10-12). The edition page is moved over as built and is still undecided.
+// Every game that releases editions (gsRhythm): "Every word / room / case / scene" under the library game page's title opens the list
+// (route { page: 'record', list: true }); each row opens the edition in a panel over the list (round 3), its prompt inside.
+// No route leads to one edition. The list is settled (owner, 2026-10-12); the panel is moved over from the playground, unratified.
 // What an edition says about itself is SAMPLE text (PGE_INFO). Loads after gs-history.jsx, before main.jsx.
 // ============================================================================
-const ED3 = ['escape', 'casebook', 'delve'];
+const ED3 = GS_GAME_ORDER.filter(gsRhythm);
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
 // ---- SAMPLE: what an edition says about itself. The app holds only number, title, date (and Casebook's cast). ----
 const PGE_INFO = {
+  word: 'Five letters, six guesses and one word to find. Start guessing.',
+  groups: 'Sixteen words hide four groups. Find all four.',
+  mystery: 'There’s a body and a story that doesn’t add up. Find out who did it.',
   escape: {
     'The Locked Study': 'A desk drawer won’t open and the window is painted shut. Find the key.',
     'The Flooded Cellar': 'The water is at your knees and still rising. Find the way up.',
@@ -40,12 +43,12 @@ const PGE_INFO = {
     'Everyone agrees the clock stopped at nine. Nobody agrees why.',
   ],
 };
-const PGE_LEN = { escape: 'About 10 min', casebook: '25–40 min', delve: '25–40 min' };
+const PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', escape: 'About 10 min', casebook: '25–40 min', delve: '25–40 min' };
 const pgeAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
 const pgeInfo = (e) => {
-  const line = e.gid === 'casebook' ? PGE_INFO.casebook[e.n % 8] : PGE_INFO[e.gid][e.title] || '';
+  const line = e.gid === 'casebook' ? PGE_INFO.casebook[e.n % 8] : typeof PGE_INFO[e.gid] === 'string' ? PGE_INFO[e.gid] : PGE_INFO[e.gid][e.title] || '';
   const cb = e.gid === 'casebook' && CB_ALL.find((x) => x.id === e.key);
-  return { line, len: PGE_LEN[e.gid], who: cb && cb.cast ? 'You question ' + pgeAnd(cb.cast) + '.' : null, cast: cb && cb.cast ? cb.cast.length + ' suspects' : null };
+  return { line, len: PGE_LEN[e.gid], who: cb && cb.cast ? 'You question ' + pgeAnd(cb.cast) + '.' : null };
 };
 
 // ---- One game's editions, newest first, each once. No result, no replays: those are History's. ----
@@ -54,7 +57,9 @@ const pgePlayed = (e) => !!e.status && e.status.kind !== 'none' && e.status.kind
 const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({ ...e, name: edName(e), when: lbShort(e.date), played: pgePlayed(e), live: !!e.status && e.status.kind === 'live', held: edNeedsPass(gs, e), info: pgeInfo(e),
   hay: phHay(gid, e.key, e.title, phParse(e.date)) + ' ' + edName(e).toLowerCase() }));
 const pgePlayedText = (e) => (e.live ? 'You’re partway through this ' + pgeW(e.gid) + '.' : 'You’ve played this ' + pgeW(e.gid) + '.');
-const pgeFacts = (e) => [e.info.len, e.info.cast].filter(Boolean);
+// A finished edition of a game that can't be replayed: what it was, and that it was played once (wording: every-edition-playable).
+// No game word here: Daily Groups' word ("groups") has no singular that reads in a sentence.
+const pgeOnceText = 'You’ve played this one. It can’t be played again.';
 
 // The list's own state, kept in the history entry (route.pgeList) so browser Back returns it as it was left.
 const pgeScroll = (el) => { for (let n = el && el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) { n.scrollTop = 0; return; } } gsScrollTop(); };
@@ -78,13 +83,11 @@ const usePgeList = (gid) => {
 const PgeEmpty = ({ f, gid }) => <p className="lb-empty gs-muted">{f.s ? (f.show === 'none' ? 'No ' + pgeW(gid) + ' you haven’t played matches that. Try a name, a number or a date.' : 'Nothing matches that. Try a name, a number or a date.') : f.show === 'none' ? 'You’ve played every ' + pgeW(gid) + '.' : 'Nothing matches that.'}</p>;
 const pgeList = (gs, gid, extra) => gs.go(GS_GAMES[gid].route, { page: 'record', list: true, ...(extra || {}) });
 const pgeHistory = (gs, gid, e) => gs.go('history', e ? { game: gid, q: '#' + e.n, from: gid } : { game: gid, from: gid });
-const pgePlay = (gs, e) => gs.playReq({ kind: 'edition', e });
-const PgePlay = ({ e, before }) => { const gs = useGs(); return <DS.Button onClick={() => { if (before) before(); pgePlay(gs, e); }}>Play</DS.Button>; };
 
 // ---- The list: back to the game, H1, search and Filters (Show, Order), then one row per edition ----
 const PgeListPage = ({ gid }) => {
   const gs = useGs(); const g = GS_GAMES[gid]; const f = usePgeList(gid);
-  const fromLib = !!gs.route.fromLib; const title = 'Every ' + pgeW(gid);
+  const fromLib = !!gs.route.fromLib; const title = g.edAll || 'Every ' + pgeW(gid);
   return (
     <main className="gs-wrap gs-main">
       <LbBack label={g.name} onClick={() => (fromLib ? gs.back() : gs.go(g.route, { page: 'record' }))} />
@@ -92,56 +95,63 @@ const PgeListPage = ({ gid }) => {
       <div className="lb-alllay">
         <window.LbTools>
           <DS.SearchField label="Search" placeholder="A number, name or date" value={f.q} onChange={(e) => f.set('q', e.target.value)} />
-          <LbChoice label="Show" value={f.show} opts={[['all', 'Every ' + pgeW(gid)], ['none', 'Not played']]} onPick={(v) => f.set('show', v)} />
+          <LbChoice label="Show" value={f.show} opts={[['all', title], ['none', 'Not played']]} onPick={(v) => f.set('show', v)} />
           <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={(v) => f.set('sort', v)} />
         </window.LbTools>
         <div ref={f.box} className="lb-box lb-results ed-results" style={{ maxWidth: 960, minWidth: 0 }}>
           {f.wait ? <GsPart label="Loading" /> : <>
             {!f.rows.length ? <PgeEmpty f={f} gid={gid} /> : <DS.RowList label={title}>{f.rows.map((e) => (
-              <DS.ListRow key={e.key} title={'#' + e.n + ' · ' + e.name} when={e.when} result={e.played ? 'Played' : undefined}
-                end={e.held ? <DS.Tag kind="locked">Pass</DS.Tag> : undefined} onClick={() => pgeList(gs, gid, { pgeEd: e.key, fromList: true })} />
+              <DS.ListRow key={e.key} title={e.title ? '#' + e.n + ' · ' + e.name : '#' + e.n} when={e.when} result={e.played ? 'Played' : undefined}
+                end={e.held ? <DS.Tag kind="locked">Pass</DS.Tag> : undefined} onClick={() => f.set('open', e.key)} />
             ))}</DS.RowList>}
             <RpPages pg={f.pg} pages={f.pages} go={f.go} />
           </>}
         </div>
       </div>
+      <PgeEdPanel gid={gid} k={f.open} onClose={() => f.set('open', null)} />
     </main>
   );
 };
 
-// ---- Option 2: the edition's own page (route { page: 'record', list: true, pgeEd }) ----
-const PgeEdPage = ({ gid }) => {
-  const gs = useGs(); const g = GS_GAMES[gid]; const e = pgeEds(gs, gid).find((x) => x.key === gs.route.pgeEd);
-  if (!e) return <GsNotFound />;
-  const fromList = !!gs.route.fromList;
+// ---- The edition in a panel over the list (round 3): a bottom sheet under 640px, its prompt inside, no play dialog. ----
+// The open edition is the list's own state (f.open), kept in the history entry, so Back from "See in History" returns with it open.
+const PgeEdPanel = ({ gid, k, onClose }) => {
+  const gs = useGs(); const g = GS_GAMES[gid]; const last = React.useRef(null);
+  const e0 = k ? pgeEds(gs, gid).find((x) => x.key === k) : null; if (e0) last.current = e0; const e = last.current;
+  if (!e) return null;
+  const text = gsPromptText({ kind: 'edition', e });
+  // A finished edition of a game that can't be replayed (gsCanReplay) has nothing left to play: its result and the played-once line, no prompt, no Copy, no Pass line.
+  const done = e.played && !gsCanReplay(gid); const prompt = !e.held && !done;
+  const when = gsRhythm(gid) === 'daily' ? e.date : 'week of ' + e.date;
   return (
-    <main className="gs-wrap gs-main">
-      <LbBack label={'Every ' + pgeW(gid)} onClick={() => (fromList ? gs.back() : pgeList(gs, gid))} />
-      <section className="gs-sess-head">
-        <GsCover art={g.art} />
-        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="gs-label">{(g.name + ' #' + e.n + ' · week of ' + e.date).toUpperCase()}</span>
-          <h1 className="gs-h1">{e.title}</h1>
-          <p style={{ margin: 0, maxWidth: 560 }}>{e.info.line}</p>
-          <div className="gs-figs">{pgeFacts(e).map((x) => <span key={x} className="gs-fig gs-fig-quiet">{x}</span>)}</div>
-          {e.held ? <GsNeedsPass gid={gid} /> : <div className="gs-act"><PgePlay e={e} /></div>}
-        </div>
-      </section>
-      {(e.info.who || e.played) && (
-        <section className="gs-stack-sm" style={{ justifyItems: 'start', maxWidth: 640 }}>
-          {e.info.who && <p className="gs-muted">{e.info.who}</p>}
-          {e.played && <><p className="gs-muted">{pgePlayedText(e)}</p><DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink></>}
-        </section>
-      )}
-    </main>
+    <DS.Popup kind="panel" open={!!e0} onClose={onClose} title={e.title || edLabel(e)} actions={prompt ? <GsCopyPrompt text={text} block /> : undefined}>
+      <div className="pge-panel">
+        <span className="gs-label">{[e.title && g.name + ' #' + e.n, when, e.info.len].filter(Boolean).join(' · ').toUpperCase()}</span>
+        <p style={{ margin: 0 }}>{e.info.line}</p>
+        {e.info.who && <p className="gs-muted" style={{ margin: 0 }}>{e.info.who}</p>}
+        {done ? (
+          <div className="pge-done">
+            <LbResult s={e.status} />
+            <p style={{ margin: 0 }}>{pgeOnceText}</p>
+            <DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink>
+          </div>
+        ) : e.played && <div className="gs-stack-xs" style={{ justifyItems: 'start' }}><p className="gs-muted" style={{ margin: 0 }}>{pgePlayedText(e)}</p><DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink></div>}
+        {done ? null : e.held ? <GsNeedsPass gid={gid} /> : prompt && (
+          <div className="gs-stack-sm">
+            <p className="hw-need gs-small" style={{ margin: 0 }}><b>Connect your AI first.</b> <GsHowLink label="How to connect" /></p>
+            <GsPrompt text={text} />
+          </div>
+        )}
+      </div>
+    </DS.Popup>
   );
 };
 
-// The list and the edition page sit inside the game's library route, as a case page does.
+// The list sits inside the game's library route, as a case page does.
 ED3.forEach((id) => {
   const L0 = window.GS_LIBRARY[id];
   window.GS_LIBRARY[id] = () => { const gs = useGs(); const r = gs.route;
-    if (r.list && !r.sid) return r.pgeEd ? <PgeEdPage key={id + r.pgeEd} gid={id} /> : <PgeListPage key={id} gid={id} />;
+    if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
     return <L0 />; };
 });
 

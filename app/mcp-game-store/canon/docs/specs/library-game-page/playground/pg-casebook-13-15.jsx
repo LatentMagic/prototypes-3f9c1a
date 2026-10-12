@@ -355,7 +355,7 @@ let c13Booted = false;
 const C13Page = () => {
   const gs = useGs(); const st = useC13(); const mode = cbMode(gs);
   const o = C13_OPTS.find((x) => x.id === st.opt) || C13_OPTS[0];
-  const k = st.opt + gs.view + gs.sub.freeUsed + st.week;
+  const k = st.opt + gs.view + gs.sub.hadPass + st.week;
   const sid = gs.route.sid;
   if (sid === 'all') return <C13All key={k} way={o.way} />;
   const c = sid && c10Case(sid, st);

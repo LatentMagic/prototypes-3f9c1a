@@ -36,14 +36,17 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 // category: one per game, printed before the rhythm in the product page's label (proposed values, split-daily-puzzles).
-// free: free in full (every edition, a streak, its achievements). first: a free player gets the game's one first edition. Neither: only with the Pass.
+// free: free to play (the current edition, a streak, its achievements). first: a free player gets the game's one first edition. Neither: only with the Pass.
+// once: an edition has one answer, so a finished edition is never played again (every-edition-playable, 2026-10-12). Read it through gsCanReplay only.
+// edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
+// edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
 // ed: the game's own word for one of its editions, [singular, plural] (walk-sweep-2). Players never see a platform-wide word.
 const GS_GAMES = {
-  word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, blurb: 'You already know today’s answer. Start guessing.', tags: ['FREE', 'Daily', '10 min'] },
-  groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['groups', 'groups'], free: true, daily: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['FREE', 'Daily', '10 min'] },
-  mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], free: true, daily: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
+  word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, once: true, blurb: 'You already know today’s answer. Start guessing.', tags: ['FREE', 'Daily', '10 min'] },
+  groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['groups', 'groups'], edLink: 'See all groups', edAll: 'All groups', free: true, daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['FREE', 'Daily', '10 min'] },
+  mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], free: true, daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
   escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], free: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FREE', 'Weekly', '10 min'] },
-  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', 'Weekly', '25–40 min'] },
+  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', 'Weekly', '25–40 min'] },
   delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['scene', 'scenes'], first: true, blurb: 'Get her out before the drums stop.', tags: ['FIRST', 'Weekly', '25–40 min'] },
   hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
@@ -51,9 +54,9 @@ const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve
 // How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
 const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
-// Whether a game's earlier editions can be played at all is set per game (decided 2026-10-10). Daily Word, Daily Groups and Daily Mystery keep none open, Pass or not.
-// Escape, Casebook and Delve keep them playable; the Pass comes into it only for those.
-const GS_EARLIER_CLOSED = ['word', 'groups', 'mystery'];
+// Every earlier edition of every game that releases them can be played (every-edition-playable, 2026-10-12); the Pass decides who.
+// Whether a finished edition can be played again: the game's own fact (once), read everywhere through this.
+const gsCanReplay = (k) => !!k && !!GS_GAMES[k] && !GS_GAMES[k].once;
 const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
 // This edition's play of each free game, by plan: today's for a daily, this week's for Escape.
 // Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).
@@ -188,7 +191,7 @@ Object.assign(GS_SESSIONS, {
 });
 
 // A lapsed player's Pass-game plays predate the day their Pass ended (gsEndedOn). The sample (18 September) moves this week's plays before it (lapsedDate).
-const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.freeUsed;
+const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.hadPass;
 const gsSessDate = (s, gs) => (gsLapsed(gs) && !gs.sub.endedOn && s.lapsedDate) || s.date;
 
 // The scroller: the phone frame's screen when forced-mobile, else the document.

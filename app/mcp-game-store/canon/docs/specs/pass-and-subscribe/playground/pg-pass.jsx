@@ -75,7 +75,7 @@ const PsPassThree = () => { const gs = useGs(); return (
 // The plan block is GsBuyBlock (app/gs-billing.jsx) with its heading raised to the page's h1. Copy, not improved.
 const PsBuy = () => {
   const gs = useGs();
-  const free = !gs.sub.freeUsed;
+  const free = !gs.sub.hadPass;
   const plan = GS_PLAN[gs.choice];
   const freeEnd = gsLong(gsAddDays(GS_DAY0, 14));
   const renews = gsLong(gsAddMonths(GS_DAY0, plan.months));
@@ -148,7 +148,7 @@ const PsPassFour = () => {
 };
 const PsSubFour = () => {
   const gs = useGs();
-  const free = !gs.sub.freeUsed;
+  const free = !gs.sub.hadPass;
   const plan = GS_PLAN[gs.choice];
   const freeEnd = gsLong(gsAddDays(GS_DAY0, 14));
   return (
@@ -268,11 +268,11 @@ const PsStrip = () => {
   const gs = useGs(); const s = usePs(); const o = PS_OPTS.find((x) => x.id === s.opt) || PS_OPTS[0];
   const [why, setWhy] = React.useState(false);
   React.useEffect(() => { if (!psBooted) { psBooted = true; setTimeout(() => gs.go('pass'), 0); } }, []);
-  const viewer = gs.view === 'free' && gs.sub.freeUsed ? 'used' : gs.view;
+  const viewer = gs.view === 'free' && gs.sub.hadPass ? 'used' : gs.view;
   const page = gs.route.name === 'pass' && gs.route.step === 'subscribe' ? 'sub' : gs.route.name === 'pass' ? 'pass' : null;
   const setViewer = (v) => {
     gs.setView(v === 'used' ? 'free' : v);
-    if (v === 'used') setTimeout(() => gs.setSub({ freeUsed: true, endedOn: GS_DAY0.getTime() - 20 * 864e5 }), 0);
+    if (v === 'used') setTimeout(() => gs.setSub({ hadPass: true, endedOn: GS_DAY0.getTime() - 20 * 864e5 }), 0);
     if (gs.route.name !== 'pass' || (v === 'pass' && page === 'sub')) setTimeout(() => gs.go('pass'), 0);
   };
   const btn = (cur, v, l, fn, title) => <button key={v} type="button" className="gs-demo-opt" aria-pressed={cur === v} title={title} onClick={() => fn(v)}>{l}</button>;

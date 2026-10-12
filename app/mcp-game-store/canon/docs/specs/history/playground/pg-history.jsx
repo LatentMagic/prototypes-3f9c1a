@@ -241,7 +241,7 @@ const PhByGame = () => {
   );
 };
 const PH_PAGES = { '1': PhDiary, '2': PhLedger, '3': PhByGame };
-const PhHistory = () => { const gs = useGs(); const s = usePh(); const B = PH_PAGES[s.opt] || PhDiary; return <B key={s.opt + gs.view + (gs.sub.freeUsed ? 'u' : '')} />; };
+const PhHistory = () => { const gs = useGs(); const s = usePh(); const B = PH_PAGES[s.opt] || PhDiary; return <B key={s.opt + gs.view + (gs.sub.hadPass ? 'u' : '')} />; };
 
 // ---- The library game page: an edition played more than once, and the way to History ----
 const PH_LbRow0 = window.LbRow;

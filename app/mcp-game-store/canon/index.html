@@ -438,6 +438,7 @@
   /* home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
   .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
   .gs-h1.gs-h1-home > span { display: block; }
+  .gs-hero3 .gs-hero-sub { max-width: 56ch; }
   .gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
   .gs-br-wide { display: none; }
   .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
@@ -744,12 +745,17 @@
   .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
   .lb-foot { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 24px; }
   .lb-foot > .gs-muted { min-height: 48px; display: flex; align-items: center; }
-  /* Share and its link share a row at every width, wrapping when they don't fit (game-editions-list, 2026-10-12) */
-  .lb-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+  /* Share and its link share one row at every width, down to 320px (editions-cleanup, 2026-10-12) */
+  .lb-acts { display: flex; flex-wrap: nowrap; align-items: center; gap: 24px; min-width: 0; }
+  @media (max-width: 399px) { .lb-acts { gap: 16px; } }
   .lb-acts > .mcp-lnk { min-height: 44px; }
   /* The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
   .lb-head { margin-bottom: -12px; }
   .pge-panel { display: grid; gap: 16px; min-width: 0; }
+  .pge-done { display: contents; }
+  .pge-done > * { justify-self: start; }
+  /* The link keeps its 48px hit area; pulling it up by the space above its text keeps the gap above it even with the rest. */
+  .pge-done > .mcp-lnk { margin-top: -14px; }
   .lb-streakhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
   .lb-legend { list-style: none; margin: 0; padding: 0; display: flex; gap: 16px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
   .lb-legend li { display: inline-flex; align-items: center; gap: 8px; }
@@ -1167,13 +1173,6 @@
   
   
   
-  /* History, every edition (app/gs-history.jsx) and the session page's empty state (app/gs-session.jsx) */
-  
-  
-  
-  
-  
-  .ss-new { width: 100%; max-width: 560px; }
   /* How it works and the play dialog (app/gs-connect.jsx) */
   .hw-head .gs-lead { max-width: none; }
   @container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }

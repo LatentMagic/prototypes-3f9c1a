@@ -118,4 +118,4 @@ const GsConnect = () => {
   );
 };
 
-Object.assign(window, { GsConnect, GsPlayDialog, gsPlayReq, gsPromptText, GsHowLink, gsSessEd });
+Object.assign(window, { GsConnect, GsPlayDialog, gsPlayReq, gsPromptText, GsHowLink, gsSessEd, GsPrompt, GsCopyPrompt });

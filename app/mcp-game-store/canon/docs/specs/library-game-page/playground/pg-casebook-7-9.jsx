@@ -287,7 +287,7 @@ const C7_OPTS = [
 let c7Booted = false;
 const C7Page = () => {
   const gs = useGs(); const st = useC7();
-  const k = st.opt + gs.view + gs.sub.freeUsed;
+  const k = st.opt + gs.view + gs.sub.hadPass;
   const sid = gs.route.sid;
   if (sid === 'all') return <C7Archive key={k} />;
   const c = sid && cbCase(sid);

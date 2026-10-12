@@ -4,7 +4,7 @@
 // Order at every width: the now card, the run of editions, achievements, your plays. Two columns from 900px.
 // A game's own file holds its seed and its now card, and registers its page on window.GS_LIBRARY.
 // ============================================================================
-// What this player can play of a game (free-and-pass, 2026-10-09): 'all' every edition; 'first' the game's one first edition; 'none' nothing.
+// What this player can play of a game (free-and-pass, 2026-10-09): 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
 // The three dailies and Escape are free in full; Casebook and Delve give a free player their first edition; 36,000 Summers Ago is only with the Pass.
 const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : id === 'hunter' ? 'none' : 'first');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
@@ -45,7 +45,7 @@ const LbHead = ({ id, name, more }) => {
       <DS.Cover fill ground={a.ground} extend={a.extend}><span dangerouslySetInnerHTML={{ __html: a.svg || '' }} /></DS.Cover>
       <div className="mcp-cover-head-text">
         <h1 className="gs-h1">{name || g.name}</h1>
-        <div className="mcp-cover-head-links"><DS.TextLink onClick={() => gs.go(g.route)}>About this game</DS.TextLink>{more}{eds && <DS.TextLink onClick={() => window.pgeList(gs, id, { fromLib: true })}>{'Every ' + g.ed[0]}</DS.TextLink>}</div>
+        <div className="mcp-cover-head-links"><DS.TextLink onClick={() => gs.go(g.route)}>About this game</DS.TextLink>{more}{eds && <DS.TextLink onClick={() => window.pgeList(gs, id, { fromLib: true })}>{g.edLink || 'Every ' + g.ed[0]}</DS.TextLink>}</div>
       </div>
     </section>
   );

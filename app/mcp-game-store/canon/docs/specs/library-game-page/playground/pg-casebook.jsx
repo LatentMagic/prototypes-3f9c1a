@@ -409,7 +409,7 @@ const CB_VIEWERS = [['pass', 'Pass'], ['free', 'No Pass'], ['ended', 'Pass ended
 
 const CbPage = () => {
   const gs = useGs(); const st = useCb();
-  const k = st.opt + gs.view + gs.sub.freeUsed;
+  const k = st.opt + gs.view + gs.sub.hadPass;
   const sid = gs.route.sid; const c = sid && cbCase(sid);
   if (c && st.opt !== '6') return <main className="gs-wrap gs-main"><CbSession key={k + sid} c={c} share={st.opt === '5' ? 'moves' : 'words'} back="Casebook" onBack={() => cbGo(gs)} /></main>;
   if (st.opt === '5') return <CbRegister key={k} />;
@@ -422,7 +422,7 @@ const CbGame = () => { const gs = useGs(); if (gs.view !== 'out' && gs.route.pag
 let cbBooted = false;
 const cbApply = (gs, viewer) => {
   gs.setDemoView(viewer === 'pass' ? 'pass' : 'free');
-  if (viewer === 'ended') gs.setSub({ freeUsed: true });
+  if (viewer === 'ended') gs.setSub({ hadPass: true });
   gs.setConnected(true);
   setTimeout(() => cbGo(window.gsApi), 0);
 };

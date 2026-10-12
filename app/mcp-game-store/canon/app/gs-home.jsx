@@ -27,7 +27,7 @@ const GS_WHATSNEW = [
   { v: '1.9', d: '1 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
   { v: '1.8', d: '24 September 2026', t: 'Streaks carry across devices', x: 'Your daily streak and record now follow your account, so they stay intact wherever you connect your AI.' },
   { v: '1.7', d: '10 September 2026', t: 'Connect in under two minutes', x: 'A single link now connects Claude, ChatGPT and other MCP assistants. No settings to copy between apps.' },
-  { v: '1.6', d: '27 August 2026', t: 'Everything you missed, in History', x: 'History lists every day and week a game has released, played or missed, and opens each one.' },
+  { v: '1.6', d: '27 August 2026', t: 'Every play, in History', x: 'History lists every play under the day you played it. Find one by its name, number or date.' },
   { v: '1.5', d: '13 August 2026', t: 'Faster results after each play', x: 'The result and record appear as soon as the last turn is made.' },
   { v: '1.4', d: '30 July 2026', t: 'Account page', x: 'Manage your username, email, password, card and Pass from one place.' },
   { v: '1.3', d: '16 July 2026', t: 'History view', x: 'Look back over every play, grouped by day and by game.' },
@@ -133,7 +133,7 @@ const GsHome = () => {
       <section id="gs-how" className="gs-band">
         <div className="gs-stack-sm">
           <h2 className="mcp-t-sec">The Pass</h2>
-          <p>Play every game in full. Try it free for 14 days.</p>
+          <p>Play every game in full. £30 a year or £3 a month.</p>
           <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink>
         </div>
       </section>

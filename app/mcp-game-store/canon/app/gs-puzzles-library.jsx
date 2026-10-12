@@ -112,9 +112,6 @@ Object.entries(PZ).forEach(([id, c]) => {
 })();
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
-const pzHist = (c) => c.all.slice(1);
-const pzRow = (gs, c, x) => { const u = window.phUnf && phUnf(gs, x.id);
-  return { key: x.id, title: c.weekly ? '#' + (c.all.length - x.i) : x.title, date: lbShort(x.date), status: u ? PH_UNF : pzStatus(c, x), onOpen: u ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : x.played ? () => gs.go('session', { id: x.sid }) : () => gs.go('session', { gid: c.gid, ed: x.id }) }; };
 
 const PzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const st = done ? c.done : c.live;
@@ -148,7 +145,7 @@ const PzNow = ({ c, done, none, id }) => {
   );
 };
 const pzLibrary = (id) => () => {
-  const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.freeUsed ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
+  const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
   const [recent] = c.plays; const allLabel = 'See in History';
   // State library-mystery-never-played: a game this player can play and never has. A new account has played nothing.
   const never = gs.review.never === id || gsFresh(gs);
@@ -160,10 +157,6 @@ const pzLibrary = (id) => () => {
   // Streak achievements' progress follows the streak shown, so it agrees in every state.
   const n = lbStreak(run);
   const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));
-  const rows = never ? [] : pzHist({ all: run }).slice(0, 8).map((x) => pzRow(gs, c, x));
-  if (broken) {
-    rows[0] = { ...rows[0], own: true, status: { kind: 'bad', label: c.bad }, onOpen: () => gs.go('session', { id: 'word-broken-first' }) };
-  }
   return (
     <main key={k} className="gs-wrap gs-main">
       <LbHead id={id} />
@@ -174,7 +167,7 @@ const pzLibrary = (id) => () => {
         <LbRecent title={recent} allLabel={allLabel}
           empty={recent + ' appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && !GS_EARLIER_CLOSED.includes(id) && <p className="gs-muted">{'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
+      {gs.view !== 'pass' && <p className="gs-muted">{'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>About the Pass</button></p>}
     </main>
   );
 };

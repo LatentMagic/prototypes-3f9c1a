@@ -89,12 +89,12 @@ const GsSessionRecord = () => {
   const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
   // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
-  // An edition that can't be played at all (edClosed) has no Play again.
+  // A game whose finished editions can't be played again (gsCanReplay) has no Play again, and so no Pass line in its place.
   // Play until an edition is finished once, Play again after (ratified 2026-10-11, docs/specs/replay-share/).
   const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null; const g = s.gid && GS_GAMES[s.gid];
   const needsPass = !!g && (ed ? edNeedsPass(gs, ed) : gs.view !== 'pass' && !g.free);
-  const held = !!ed && !s.live && needsPass; // an edition that needs the Pass: the line and button replace Play and Play again
-  const again = (ed && edClosed(ed)) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
+  const held = !!ed && !s.live && needsPass && gsCanReplay(s.gid); // an edition that needs the Pass: the line and button replace Play and Play again
+  const again = !gsCanReplay(s.gid) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
   const holdBlock = held && <GsNeedsPass gid={s.gid} />;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   const list = (
@@ -172,37 +172,6 @@ const GsSessionRecord = () => {
   </>);
 };
 
-// ---- The session page's empty state: an edition this player never played (route session { gid, ed }, opened from History) ----
-// No result and no turns. Three forms, as the product page's edition card: playable (Play, the play pop-up), needs the Pass (the Pass tag only), can't be played (a line and a link).
-const GsSessionNew = (p) => {
-  const gs = useGs(); const r = { gid: p.gid || gs.route.gid, ed: p.ed || gs.route.ed }; const gid = GS_GAMES[r.gid] ? r.gid : 'delve'; const g = GS_GAMES[gid];
-  const list = edList(gs, gid); const e = list.find((x) => x.key === r.ed);
-  if (!GS_GAMES[r.gid] || !e) return <GsNotFound />;
-  const closed = edClosed(e); const pass = edNeedsPass(gs, e);
-  const day = gsRhythm(gid) === 'weekly' ? 'Week of ' + e.date : pzLong(phParse(e.date));
-  return (<>
-    <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={gid} /></div>
-    <main className="gs-wrap gs-main">
-      <section className="gs-sess-head">
-        <GsCover art={g.art} />
-        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <h1 className="gs-h1">{edLabel(e)}</h1>
-          <div className="gs-figs">
-            <span className="gs-fig">Not played</span>
-            <span className="gs-fig gs-fig-quiet">{day}</span>
-          </div>
-          {closed ? (
-            <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-              <p>{'Only the latest ' + g.name + ' can be played. This one stays in your history.'}</p>
-              <DS.TextLink onClick={() => gs.go(g.route, { page: 'record' })}>{'Go to your ' + g.name}</DS.TextLink>
-            </div>
-          ) : pass ? <GsNeedsPass gid={gid} />
-            : <div className="gs-act"><DS.Button onClick={() => gs.playReq({ kind: 'edition', e })}>Play</DS.Button></div>}
-        </div>
-      </section>
-    </main>
-  </>);
-};
-const GsSession = () => { const r = useGs().route; return r.ed ? <GsSessionNew /> : GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
+const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
 Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText, gsReplayMark });

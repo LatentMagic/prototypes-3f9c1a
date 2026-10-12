@@ -16,8 +16,8 @@ const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: fals
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.
 const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
-// status: none | free (14-day trial) | active | failed | ending
-const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', freeUsed: false, pending: null, fromFree: false, renew: null };
+// status: none | active | failed | ending. hadPass: has had the Pass before.
+const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
 // Screens with their own frame (no shared top bar).
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
@@ -157,7 +157,7 @@ const KitApp = () => {
     if (v === 'out') { setSignedIn(false); return; }
     setSignedIn(true);
     if (v === 'free') setSubState({ ...GS_SUB_DEFAULT });
-    if (v === 'pass') setSubState({ ...GS_SUB_DEFAULT, status: 'active', freeUsed: true });
+    if (v === 'pass') setSubState({ ...GS_SUB_DEFAULT, status: 'active', hadPass: true });
   };
   const reset = () => {
     setSignedIn(false); setSubState(GS_SUB_DEFAULT); setUserState(GS_USER_DEFAULT); setProvider('email');
@@ -213,10 +213,10 @@ const KitApp = () => {
       setSignedIn(true); setProvider(how || 'email'); setConnected(true); setUser({ fresh: false });
       const n = next && typeof next === 'object' ? next : { name: next || 'games' }; go(n.name, n, 'free');
     },
-    paid: (free) => {
+    paid: () => {
       const months = GS_PLAN[choice].months;
-      setSubState({ ...GS_SUB_DEFAULT, status: free ? 'free' : 'active', plan: choice, freeUsed: true,
-        renew: (free ? gsAddDays(GS_DAY0, GS_TRIAL_DAYS) : gsAddMonths(GS_DAY0, months)).getTime() });
+      setSubState({ ...GS_SUB_DEFAULT, status: 'active', plan: choice, hadPass: true,
+        renew: gsAddMonths(GS_DAY0, months).getTime() });
       go('pass', null, 'pass');
     },
     deleteAccount: () => { setSignedIn(false); setSubState(GS_SUB_DEFAULT); setConnected(false); go('signin', null, 'out'); },

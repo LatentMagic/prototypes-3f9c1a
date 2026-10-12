@@ -355,7 +355,7 @@ let c10Booted = false;
 const C10Page = () => {
   const gs = useGs(); const st = useC10();
   const o = C10_OPTS.find((x) => x.id === st.opt) || C10_OPTS[0];
-  const k = st.opt + gs.view + gs.sub.freeUsed + st.week;
+  const k = st.opt + gs.view + gs.sub.hadPass + st.week;
   const sid = gs.route.sid;
   if (sid === 'all') { const A = o.All; return <A key={k} />; }
   const c = sid && c10Case(sid, st);

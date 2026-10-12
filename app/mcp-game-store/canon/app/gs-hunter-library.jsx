@@ -94,7 +94,7 @@ const HgClosed = ({ again }) => {
   );
 };
 const HgLibrary = () => {
-  const gs = useGs(); const access = lbAccess(gs, 'hunter'); const pass = access === 'all'; const past = lbPast(gs); const k = gs.view + (gs.sub.freeUsed ? 'u' : '');
+  const gs = useGs(); const access = lbAccess(gs, 'hunter'); const pass = access === 'all'; const past = lbPast(gs); const k = gs.view + (gs.sub.hadPass ? 'u' : '');
   if (!pass && !past) return (
     <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><HgClosed /></div></main>
   );

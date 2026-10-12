@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — History (every play under its day; search and filters), the play rows, the edition helpers, and the library game page's plays card (LbRecent).
-// History is the one list of what a player has played and could have (docs/specs/history-only/). There is no Editions page.
+// History lists every play under the day it was played. A game's editions are listed on its own page (app/gs-editions.jsx).
 // Ported from docs/specs/history/playground/ (pg-history.jsx, pg-replays.jsx). Loads after every library module.
 // Seed: one play log built from the library pages' own seeds, plus replays. Every play opens a record that agrees with its row.
 // This edition's first play has two forms, finished and in progress (Config: This week, or today); in progress hides its replays.
@@ -23,7 +23,7 @@ const ED_GAMES = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve'];
 // "Daily Word #212", "Escape · The Locked Study". A one-game list (the game's own page or filter) writes edName alone.
 const edName = (e) => (e.title ? e.title : '#' + e.n);
 const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
-// Every edition of a game, newest first: { key, gid, n, title, date, month, free, now, status, open }
+// A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
 // Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
 const ED_NONE = { kind: 'none', label: 'Not played' };
 const edList = (gs, gid) => {
@@ -46,13 +46,12 @@ const edList = (gs, gid) => {
       open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: 'delve' }))) : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
   });
 };
-// Whether an edition can be played at all (GS_EARLIER_CLOSED), and whether this player needs the Pass for it. Shown on the session page only.
-const edClosed = (e) => !e.now && GS_EARLIER_CLOSED.includes(e.gid);
-const edNeedsPass = (gs, e) => gs.view !== 'pass' && !edClosed(e) && (GS_GAMES[e.gid].free ? !e.now : !e.free);
+// Whether this player needs the Pass for an edition. Every edition can be played; a free game's current one is free, another game's first one is.
+const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].free ? !e.now : !e.free);
 // Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Daily Groups day, one Delve week, each an edition the seed leaves unplayed.
 const PH_UNF = { kind: 'none', label: 'Not finished' };
 const PH_UNF_EDS = (() => {
-  // The second unplayed earlier day: the first (groups4) is session-new-groups-closed's missed edition, kept distinct.
+  // The second unplayed earlier day of Daily Groups.
   const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1]; const dv = DV_ALL.find((x, i) => i > 0 && !x.played);
   const gAt = phAt(g.d, 21, 40); const dAt = phAt(dv.d, 19, 20);
   GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', listTitle: 'Every try', share: null,
@@ -77,7 +76,7 @@ const phMatch = (hay, s) => {
 };
 let PH_META = null;
 const phMeta = () => { if (!PH_META) { PH_META = {}; ED_GAMES.forEach((k) => edList({ view: 'out', sub: {} }, k).forEach((e) => { PH_META[e.key] = e; })); } return PH_META; };
-// A date finds the plays under that date's heading: on Played, the day it was played; on Every edition, the day the edition came out (d).
+// A date finds a play by the day it was played, or the day its edition came out (d).
 const phHay = (gid, ed, title, d) => { const m = phMeta()[ed];
   return [GS_GAMES[gid].name, title || '', m ? m.n + ' ' + (m.title || '') : '', d ? lbDate(d) + ' ' + PH_MON[d.getMonth()] : ''].join(' ').toLowerCase(); };
 
@@ -94,10 +93,9 @@ const PH_LIVE = { kind: 'live', label: 'In progress' };
 // Replays seeded by hand: [days after the first play, hour, minute, result, kind, record extra]
 const PH_HAND = {
   escape0: [[0, 19, 30, GS_RESULT.escape({ ok: true, moves: 5 })]], escape2: [[2, 20, 0, GS_RESULT.escape({ ok: true, moves: 6 })]],
- 
   dv1: [[2, 19, 45, GS_RESULT.delve({ end: 'fell' }), 'bad', { figures: ['Threat 4/6', '7 rolls', 'HP 0/12'], tracks: { progress: 2, threat: 4 }, reached: 'Caught', lines: GS_ROLLS.slice(0, 7), share: 'Hero fell · threat 4/6 · 7 rolls' }]],
 };
-// Daily Word, Daily Groups, Daily Mystery and Casebook have one answer each, so they are never replayed (five-small-fixes, 2026-10-12).
+// Replays are seeded only for a game that can be replayed (gsCanReplay): Escape here, Delve below.
 const PH_REPLAY = { escape: (k) => GS_RESULT.escape({ ok: true, moves: 5 + (k % 2) }) };
 const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live' };
 Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
@@ -107,34 +105,27 @@ Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
   else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
   first.open = phSess(sid);
-  const reps = PH_HAND[x.id] || (x.i > 0 && PH_REPLAY[id] && !GS_EARLIER_CLOSED.includes(id) && (x.i * 7 + c.salt * 3) % 11 === 0 ? [[x.i % 2, 21, 10]] : []);
+  const reps = !gsCanReplay(id) ? [] : PH_HAND[x.id] || (x.i > 0 && PH_REPLAY[id] && (x.i * 7 + c.salt * 3) % 11 === 0 ? [[x.i % 2, 21, 10]] : []);
   const plays = [first].concat(reps.map(([plus, h, m, label, kind, extra], k) => {
     const at = phAt(first.at, h, m, plus); const lab = label || PH_REPLAY[id](x.i + k);
     return { at, status: { kind: kind || 'ok', label: lab }, open: phSess(phClone(sid, k, at, lab, kind, extra)) };
   }));
   phEd(id, x.id, x.title, x.d, plays, cur);
 }));
-// A Casebook replay is its own case record: CbLibrary finds it in CB_REPLAYS by id.
-const CB_REPLAYS = {};
+// Casebook is never replayed (gsCanReplay): one play per case.
 CB_ALL.forEach((cb, k) => {
   if (!cb.played) return;
   const ed = phParse(cb.week); const cur = cb === CB_LIVE;
   const first = cur ? { at: phAt(ed, 20, 10 + (k % 40)), status: cbStatus(CB_DONE), open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } }
     : { at: phAt(ed, 20, 10 + (k % 40), k % 3), status: cbStatus(cb), open: (gs) => cbGo(gs, cb.id) };
-  const reps = (PH_HAND[cb.id] || []).map(([plus, h, m, label, kind, seq], r) => {
-    const at = phAt(ed, h, m, plus); const id = cb.id + '-r' + r; const verdict = kind === 'bad' ? 'wrong' : 'right';
-    const lies = Array.from(seq).filter((ch) => ch === 'B').length;
-    CB_REPLAYS[id] = { ...cb, id, live: false, verdict, seq, turns: seq.length, lies, total: Math.max(cb.total, lies), rec: cbRecord(seq, cb.cast, verdict, k + r + 1), replayed: lbDate(at) };
-    return { at, status: { kind: kind || 'ok', label }, open: (gs) => cbGo(gs, id) };
-  });
-  phEd('casebook', cb.id, cb.title, ed, [first].concat(reps), cur);
+  phEd('casebook', cb.id, cb.title, ed, [first], cur);
 });
 DV_ALL.forEach((s, i) => {
   if (!s.played) return;
   const ed = phParse(s.date); const cur = i === 0;
   const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, open: phSess('delve'), now: { status: PH_LIVE, open: phSess('delve-live') } }
     : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], open: phSess(dvSid(s)) };
-  const reps = (PH_HAND[s.id] || []).map(([plus, h, m, label, kind, extra], k) => { const at = phAt(ed, h, m, plus); return { at, status: { kind: kind || 'ok', label }, open: phSess(phClone(dvSid(s), k, at, label, kind, extra)) }; });
+  const reps = (gsCanReplay('delve') && PH_HAND[s.id] || []).map(([plus, h, m, label, kind, extra], k) => { const at = phAt(ed, h, m, plus); return { at, status: { kind: kind || 'ok', label }, open: phSess(phClone(dvSid(s), k, at, label, kind, extra)) }; });
   phEd('delve', s.id, s.title, ed, [first].concat(reps), cur);
 });
 // No editions: each day is its own entry, and never a replay.
@@ -192,17 +183,6 @@ const usePhList = (initial, k0) => {
   const [sort, setSort0] = React.useState(k0.sort || 'new'); const setSort = (v) => { setSort0(v); setPg(0); };
   const shown = g === 'all' ? all : all.filter((p) => p.gid === g);
   return { all, g, setG, pg, go, games, sort, setSort, list: sort === 'old' ? [...shown].reverse() : shown };
-};
-const PhShow = ({ f, games }) => <LbChoice label="Game" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />;
-
-// ---- Every edition: each once, played or missed, with its plays (first play first) ----
-// A game with no editions (36,000 Summers Ago) adds its days as they were played: for it, every edition is what you played.
-const phEds = (gs, g, visible) => {
-  const by = {}; visible.forEach((p) => { (by[p.ed] = by[p.ed] || []).push(p); });
-  return (g === 'all' ? GS_GAME_ORDER : [g]).flatMap((k) => {
-    if (!ED_GAMES.includes(k)) return visible.filter((p) => p.gid === k).map((p) => ({ key: p.ed, gid: k, title: p.edTitle, at: p.edDate, now: false, plays: [p] }));
-    return edList(gs, k).map((e) => ({ ...e, at: phParse(e.date), plays: (by[e.key] || []).slice().sort((a, b) => a.n - b.n) }));
-  }).map((e) => ({ ...e, status: e.plays.length ? e.plays[0].status : ED_NONE }));
 };
 
 // ---- One play: a DS.ListRow (title, result, when, note). The title is the edition by edLabel, or edName in a one-game list.
@@ -329,4 +309,4 @@ const GsHistory = () => {
   </>);
 };
 
-Object.assign(window, { phVisible, phUnf, PH_UNF, PH_UNF_EDS, GsHistory, LbRecent, phShort, phTime, rpTone, CB_REPLAYS, PH_EDS, ED_GAMES, edList, edName, edLabel, edClosed, edNeedsPass, ED_NONE });
+Object.assign(window, { phVisible, phUnf, PH_UNF, PH_UNF_EDS, GsHistory, LbRecent, phShort, phTime, rpTone, PH_EDS, ED_GAMES, edList, edName, edLabel, edNeedsPass, ED_NONE });
