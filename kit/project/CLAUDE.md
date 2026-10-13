@@ -155,9 +155,9 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **When to make one.** Only when a brief says "build this as a candidate build" or the user names `$candidate-build`. Never because a brief has unaccepted pieces in it: that goes into `app/`, or you ask.
 - **Where it lives.** In its ticket folder, `docs/specs/<ticket>/candidate/`: an entry page, `index.html`, plus its overlay files `cand-<ticket>-*.jsx`. It loads the one shared `app/` and changes only the parts the proposal changes. `tools/new-candidate.sh <ticket> "Name"` sets the folder up. Add it to `playgrounds.json` with `"kind": "candidate"` in the same change.
 - **How the owner opens it.** From the launcher, `playgrounds.html`, under the ticket, where it is marked as a candidate; or straight at `docs/specs/<ticket>/candidate/index.html`. The main build at `index.html` stays the main build.
-- **The main build is unchanged until the owner accepts the candidate in words.** Nothing in a candidate goes into `app/` or `CHANGELOG.md`, and no decision in it is recorded as settled.
-- **Accepted: merge.** The changes move into `app/` and `index.html`, the candidate folder moves to `docs/archive/<ticket>/` as a record, and its launcher entry is switched off, not removed. **Refused: throw away.** Delete the folder and its launcher entry. Both are step by step in `skills/candidate-build/SKILL.md` and `docs/specs/CLAUDE.md`; read them before doing either.
-- The build ends in a handoff: how to reach each part of the change, the calls you made, and what you opened in `app/`.
+- **The main build shows exactly what it showed before, until the owner accepts the candidate in words.** A candidate's screens, modules, styles and staged states live in its own folder; the only thing in `app/` is the one standing hook, which does nothing when no candidate is open. Nothing in a candidate goes into `CHANGELOG.md`, and no decision in it is recorded as settled.
+- **Accepted: merge. Refused: throw away.** Nothing is deleted either way: the candidate folder is archived to `docs/archive/<ticket>/` and its launcher entry is switched off. The ordered steps are in `skills/candidate-build/SKILL.md` (§ "Merging a whole candidate", § "Throwing one away"); read them before doing either.
+- The build ends in a handoff: how to reach each part of the change, the calls you made, and anything that needs the owner's decision about `app/`.
 </important>
 
 ## Wrapping up

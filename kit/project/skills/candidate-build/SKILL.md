@@ -19,6 +19,11 @@ index.html                             → app/*                          the ap
 docs/specs/<ticket>/candidate/index.html → app/*  +  cand-<ticket>-*.jsx   candidate — being processed
 ```
 
+Everything the candidate adds (screens, modules, styles, staged states, its QA
+walk-through) lives in its own folder under the ticket. The only thing a
+candidate leaves in `app/` is the one standing hook, which does nothing when no
+candidate is open.
+
 ## Which shape
 
 **Requested, never inferred.** A candidate build happens only when the user
@@ -51,11 +56,12 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    slots are needed. Copying a component to change it is a defect, not a
    trade-off: copies rot.
 
-3. **Where a hook is genuinely needed, change `app/` — additively.** "`app/` is
-   frozen" does not outrank building it properly. The addition reads once per
-   render off `window`, exactly like the existing deletable aids, so **absent ⇒
-   shipped behaviour, byte for byte**. The main entry must look and behave
-   identically before and after. Write down what you opened.
+3. **The main build shows exactly what it showed before, until the owner accepts
+   the candidate.** `app/` holds one standing hook (invariant 4), read once per
+   render off `window` like the existing droppable aids, so **absent ⇒ shipped
+   behaviour, byte for byte**. A candidate never adds modules, registers states
+   or edits styles in `app/`. If a delta seems to need a second hook (see "Traps"),
+   stop and name it in the handoff for the owner; do not open `app/` for it.
 
 4. **One handle, one bridge.** The overlay set publishes a single object,
    `window.KitCandidate`, that `app/main.jsx` reads per render. It may hold
@@ -63,9 +69,14 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    component rendered in place of the app's screen; the `api` is the only way the
    overlay reads or writes app state. Not a scatter of globals poked into the root
    component. `main.jsx` carries this hook already; a product that replaces the
-   root keeps it, and adds further hooks (routes, a row wrapper) in the same
-   shape under invariant 3. The same handle switches on the candidate's QA entries
-   (`only: 'KitCandidate'`, `app/qa.jsx`), so they never show in the main build.
+   root keeps it. The kit's hook passes what the kit's own root holds (`items`,
+   `setItems`, `isMobile`). A product passes whatever its own root holds for
+   state, under its own names; deciding what goes in `api` is the builder's call
+   in that project. The candidate's staged states and QA walk-through are added
+   from its own folder, not from `app/`: wrap `window.buildStates` and
+   `window.kitResolveState` to add states, and push the walk-through onto
+   `window.KIT_QA`. They exist only on the candidate's page, so they never show in
+   the main build.
 
 5. **Load order is load-bearing.** Overlays load *after* the `app/` files they
    re-publish over and *before* `app/main.jsx` — mount happens when `main.jsx`
@@ -73,8 +84,10 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    shipped app or no candidate at all.
 
 6. **Its own persisted state.** If the product keeps anything in browser storage,
-   its root reads the storage key as `window.KIT_STATE_KEY || '<default>'` and the
-   entry sets that key in a script before the app scripts load. Otherwise the two
+   the code that reads the storage key reads it as `window.KIT_STATE_KEY ||
+   '<default>'` and the entry sets that key in a script before the app scripts
+   load. The read may not be in the root: find where the product reads its stored
+   state and put the line there. This one-line read is part of the standing hook. Otherwise the two
    entries cross-hydrate and each corrupts the other's review. (The kit's
    placeholder persists nothing; the rule starts to bite when the product's does.)
 
@@ -91,11 +104,12 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    recorded as settled, no move into `app/`, until the owner accepts it in words.
    Flag the calls you made as yours, so review has something to aim at.
 
-10. **Teardown is deletion.** When a piece is accepted mid-flight, its delta moves
-    into `app/` and the overlay file that carried it is deleted. Whatever is still
-    in `cand-<ticket>-*` is still being processed — coverage stays readable at a
-    glance. Destroying a candidate outright is deleting its folder and its
-    launcher entry. Merging a WHOLE candidate is a different act — see below.
+10. **Nothing is deleted.** A piece accepted mid-flight moves into `app/` as the
+    main build's own module, and the overlay file that carried it goes to the
+    archive with the candidate's other files. Whatever is still in
+    `cand-<ticket>-*` is still being processed — coverage stays readable at a
+    glance. Merging a whole candidate and throwing one away are below; both archive
+    the folder and switch the launcher entry off.
 
 ## Placement and naming
 
@@ -113,21 +127,22 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
   `"kind": "candidate"` and a note saying what the candidate is. The launcher shows
   it first in the ticket, marked as a candidate. Add the entry in the same change
   that builds it.
-- States the candidate needs go in the register (`app/states.jsx`) and its walk-through
-  in `app/qa.jsx` with `only: 'KitCandidate'`, as `CLAUDE.md` § Code asks.
+- States the candidate needs, and its walk-through, are added from a file in the
+  `candidate/` folder (invariant 4), not from `app/states.jsx` or `app/qa.jsx`.
 
 ## Traps
 
 - **A file-scoped reference cannot be overridden from outside.** If a component
   reaches for a sibling by closure rather than through `window`, no amount of
-  re-publishing reaches it. The honest minimum is one narrow in-file hook (see
-  invariant 3) — not a copy, and not a redesign of the shipped file.
+  re-publishing reaches it. The honest minimum is one narrow in-file hook, which
+  is a change to the main build's code: stop and name it for the owner (invariant
+  3). Not a copy, and not a redesign of the shipped file.
 - **Overriding a name changes it everywhere.** Re-publishing a shipped component
   replaces every use of it in the candidate, not just the one you had in mind.
   Check the other call sites before choosing that lever.
-- **A candidate's states must work in the main build too, or say they don't.** A
-  state that needs something only the candidate made is unreachable from the main
-  entry; keep its register entry out of the main build or name it as candidate-only.
+- **A candidate's states exist only on its page.** Say so in the handoff, so
+  nobody looks for them from the main entry. After a merge they are registered in
+  `app/states.jsx` like any other state.
 - **Verification clicks share the user's `localStorage`.** Leave the candidate's
   key in a clean state so the owner lands on the demo path, not on your probing.
 - Mount transitions and sheet motion can only be judged live — see `GOTCHA.md`
@@ -137,26 +152,28 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
 
 When the owner accepts the candidate entire, the states it carried become the
 app and the candidate stops being somewhere anyone goes. It is a merge, not a
-clear-out: **the candidate is kept, not deleted.**
+clear-out: **nothing is deleted.** The standing hook stays; it is kit machinery,
+not part of any one candidate. This is the one statement of the steps, in order;
+`CLAUDE.md` and `docs/specs/CLAUDE.md` point here.
 
-1. **The delta lands in `app/`.** The overlay files become app modules, renamed
+1. **Move the candidate's modules into `app/`** as the main build's own, renamed
    off the candidate naming (`cand-<ticket>-*.jsx` → `app/<feature>-*.jsx`) so
-   nothing in the shipped app is labelled provisional. Keep the module split — do
-   not fold a large delta into the file it extended. The bridge file is
-   scaffolding: delete it rather than merging it.
-2. **The candidate's CSS block moves into `index.html`**, retitled for the
-   feature, and its modules load in the same order they did in the candidate
-   entry: after the files they extend, before `app/main.jsx`. Its register entries
-   and QA walk-through lose `only` or are deleted, as the owner says.
-3. **The whole ticket folder's `candidate/` moves to `docs/archive/<ticket>/`** —
-   entry and `cand-*` files together, a move and never a rewrite. They are the
-   record of how the state was reached, so do not delete them and do not rewrite
-   them; the one edit allowed is repointing the entry's own
-   `<script src="docs/specs/…">` lines at the new path (and the `<base href>`
-   depth if the nesting changed).
-4. **Its launcher entry is switched off, never removed:** `"on": false` with an
-   `"off"` note saying it merged and the date. The entry stays on the record; it
-   stops being reachable from `playgrounds.html`.
+   nothing in the shipped app is labelled provisional. Keep the module split. The
+   bridge file (the one that publishes `window.KitCandidate`) is scaffolding and
+   does not move. Rename any `cand-*` CSS classes to house names.
+2. **Wire them in.** The candidate's CSS block moves into `index.html` (and every
+   live entry that loads a changed module), retitled for the feature, and its
+   modules load there in the order they did in the candidate entry: after the
+   files they extend, before `app/main.jsx`. Its staged states go into
+   `app/states.jsx` and its QA walk-through into `app/qa.jsx`, with the `only`
+   filter dropped or kept as the owner says.
+3. **Archive the candidate's folder** to `docs/archive/<ticket>/`: entry, bridge
+   and any `cand-*` files left, a move and never a rewrite. They are the record of
+   how the state was reached. Leave the entry's own `<script src>` lines and
+   `<base href>` as they are, per `CLAUDE.md` § Files: an archived candidate is
+   read, not run.
+4. **Switch its launcher entry off, never remove it:** `"on": false` with an
+   `"off"` note saying it merged and the date.
 5. **One `CHANGELOG.md` entry**, and only now, and only if the merge changed the
    shape of the product — the merge is the moment the work is accepted. It names
    the FEATURES the merge introduces, in the product's own words, one bullet each;
@@ -164,18 +181,16 @@ clear-out: **the candidate is kept, not deleted.**
    a candidate first and that the candidate stays on the record, switched off.
    Draft the entry and have the owner ratify the wording before it lands.
 
-`docs/specs/CLAUDE.md` is the standing version of this section for the folder.
-
 ## Throwing one away
 
-When the owner says no: delete the `candidate/` folder, its register entries and
-QA walk-through, and its `playgrounds.json` entry (or switch the entry off with an
-`"off"` note saying it was not taken, if the owner wants the record). The main
-build never held any of it, so nothing else changes.
+When the owner says no: archive the candidate's folder to `docs/archive/<ticket>/`
+and switch its `playgrounds.json` entry off with an `"off"` note saying it was not
+taken and the date. Nothing is deleted. The main build never held any of it, so
+nothing else changes.
 
 ## The write-up
 
 A candidate build ends in a handoff (`skills/create-handoff`) that carries the demo
 path (how to reach each part of the delta), the judgement calls flagged as yours,
-and what was opened in `app/`. Review is the next step, always; the build is not
+and anything that needs the owner's decision about `app/`. Review is the next step, always; the build is not
 the decision.

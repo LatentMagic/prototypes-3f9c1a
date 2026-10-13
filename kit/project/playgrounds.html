@@ -142,7 +142,7 @@ fetch('playgrounds.json').then(r=>r.json()).then(d=>{
   DATA=d;
   if(d.product){document.getElementById('product').textContent=d.product;document.title=d.product+' — playgrounds'}
   let c=0,r=0;DATA.tickets.forEach(t=>{const k=counts(t);c+=k.c;r+=k.r});
-  document.getElementById('n').textContent=c+' candidates · '+r+' rigs';
+  document.getElementById('n').textContent=c+' candidate'+(c===1?'':'s')+' · '+r+' rig'+(r===1?'':'s');
   home();
 }).catch(()=>{out.appendChild(el('<p class="empty">Could not load playgrounds.json.</p>'))});
 </script>

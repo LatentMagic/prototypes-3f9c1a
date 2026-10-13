@@ -3,7 +3,8 @@
 # candidate/ folder (own <base>, own storage key, an overlay script tag before
 # app/main.jsx) and write a stub bridge file. The shared app/ is not copied.
 # Edit the copy and the overlays; the root index.html stays untouched.
-# Delete docs/specs/<ticket>/candidate/ to throw the candidate away.
+# To throw the candidate away, archive the folder and switch its launcher entry off
+# (skills/candidate-build/SKILL.md); nothing is deleted.
 set -euo pipefail
 usage='usage: tools/new-candidate.sh <ticket> ["Name"]'
 case "${1:-}" in ''|-h|--help) echo "$usage" >&2; exit 1 ;; esac
