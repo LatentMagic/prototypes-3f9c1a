@@ -130,6 +130,35 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
 - States the candidate needs, and its walk-through, are added from a file in the
   `candidate/` folder (invariant 4), not from `app/states.jsx` or `app/qa.jsx`.
 
+## Making the entry
+
+You make the candidate by writing files; there is nothing to run. For a ticket
+`<ticket>` (lowercase letters, digits, hyphens) and a display name `<Name>`:
+
+1. **Create the folder** `docs/specs/<ticket>/candidate/`. If it exists, stop: that candidate is already built.
+2. **Write the bridge** `docs/specs/<ticket>/candidate/cand-<ticket>-bridge.jsx` with these contents:
+
+   ```jsx
+   // Candidate build for <ticket>: the one handle app/main.jsx reads (skills/candidate-build).
+   // Loads after the app/ files it re-publishes over and before app/main.jsx.
+   // bind(api) is called each render with the app's state and setters; Screen, if set,
+   // is rendered in place of the app's screen. Nothing here is accepted.
+   Object.assign(window, {
+     KitCandidate: {
+       bind(api) { window.KitCandidateApi = api; },
+       // Screen: ({ api }) => <CandidateScreen api={api} />,
+     },
+   });
+   ```
+
+3. **Copy the root `index.html`** to `docs/specs/<ticket>/candidate/index.html`, whole. Do not copy `app/`; the entry loads the shared one. Then make exactly these four edits to the copy and no others:
+   1. Change the title line to `<title><Name> (candidate)</title>`.
+   2. Directly after `<head>`, add `<base href="../../../../" />`. Every other path in the file stays root-relative as it is.
+   3. Directly before the first `<script src="https://unpkg.com/react@` line, add `<script>window.KIT_STATE_KEY = "kit_<ticket>_candidate";</script>`.
+   4. Directly before the `<script type="text/babel" src="app/main.jsx"></script>` line, add `<script type="text/babel" src="docs/specs/<ticket>/candidate/cand-<ticket>-bridge.jsx"></script>`.
+4. **Add the launcher entry** to the ticket's `entries` in `playgrounds.json`: `{ "kind": "candidate", "name": "<Name>", "path": "docs/specs/<ticket>/candidate/index.html", "note": "<one line>" }`. If the ticket has no record yet, add one.
+5. **Build the delta** in further `cand-<ticket>-*.jsx` files in that folder, each loaded by a `<script type="text/babel" src="docs/specs/<ticket>/candidate/cand-<ticket>-<name>.jsx"></script>` line placed after the bridge's line and before `app/main.jsx`. The root `index.html` and `app/` stay as they were.
+
 ## Traps
 
 - **A file-scoped reference cannot be overridden from outside.** If a component

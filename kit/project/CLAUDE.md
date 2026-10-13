@@ -43,7 +43,6 @@ This file holds the working rules every product built from this kit shares. It n
 - `skills/` — our own skills (see below).
 - Durable docs: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `CHANGELOG.md` (the product creates it when its first entry is earned).
 - `docs/specs/<id>-<topic>/` — everything task-scoped; `docs/specs/CLAUDE.md` says what happens to a ticket folder over its life. `docs/archive/<topic>/` — finished work.
-- `tools/new-candidate.sh` — scaffolds a candidate build (see "Candidate builds").
 
 ## Reference docs
 - The product block at the top of this file — the product's name and where each kind of its truth lives upstream (behaviour, design law, brand, copy voice, tracker). Read first, every session.
@@ -131,7 +130,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 
 <important if="you are creating, naming, moving or archiving any file or folder">
 - **File naming: kebab-case, always.** Lowercase kebab-case with no spaces — `checkout-playground-standalone.html`, `pg-checkout-app.jsx`, `handoff-2026-07-27-checkout-playground.md`. No spaces, no title case, no ` - ` separators, no underscores. This includes downloadable deliverables and bundled output. Spaces in paths break shell use, URLs and tooling on the user's end.
-- **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, `tools/`, the durable docs, and whatever the product block lists as extra root files.
+- **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, the durable docs, and whatever the product block lists as extra root files.
 - **`docs/`** holds durable docs only.
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the product's tracker, as the product block names it. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
@@ -153,7 +152,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 <important if="the user asks for a candidate build or names `$candidate-build`, or you are touching, merging or discarding one">
 - **What it is.** An alternative build proposed to replace part of the main build. It is the whole app, played as the product, with the change in it, kept apart from the main build until the owner accepts it. It is not a playground, which compares options and may be partial.
 - **When to make one.** Only when a brief says "build this as a candidate build" or the user names `$candidate-build`. Never because a brief has unaccepted pieces in it: that goes into `app/`, or you ask.
-- **Where it lives.** In its ticket folder, `docs/specs/<ticket>/candidate/`: an entry page, `index.html`, plus its overlay files `cand-<ticket>-*.jsx`. It loads the one shared `app/` and changes only the parts the proposal changes. `tools/new-candidate.sh <ticket> "Name"` sets the folder up. Add it to `playgrounds.json` with `"kind": "candidate"` in the same change.
+- **Where it lives.** In its ticket folder, `docs/specs/<ticket>/candidate/`: an entry page, `index.html`, plus its overlay files `cand-<ticket>-*.jsx`. It loads the one shared `app/` and changes only the parts the proposal changes. `skills/candidate-build/SKILL.md` § "Making the entry" says how to write it. Add it to `playgrounds.json` with `"kind": "candidate"` in the same change.
 - **How the owner opens it.** From the launcher, `playgrounds.html`, under the ticket, where it is marked as a candidate; or straight at `docs/specs/<ticket>/candidate/index.html`. The main build at `index.html` stays the main build.
 - **The main build shows exactly what it showed before, until the owner accepts the candidate in words.** A candidate's screens, modules, styles and staged states live in its own folder; the only thing in `app/` is the one standing hook, which does nothing when no candidate is open. Nothing in a candidate goes into `CHANGELOG.md`, and no decision in it is recorded as settled.
 - **Accepted: merge. Refused: throw away.** Nothing is deleted either way: the candidate folder is archived to `docs/archive/<ticket>/` and its launcher entry is switched off. The ordered steps are in `skills/candidate-build/SKILL.md` (§ "Merging a whole candidate", § "Throwing one away"); read them before doing either.

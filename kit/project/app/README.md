@@ -30,7 +30,7 @@ Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: r
 
 ## Candidate builds
 
-`main.jsx` reads `window.KitCandidate` once per render, if a candidate build's entry has loaded one: `bind(api)` is handed the app's state and setters, and `Screen` replaces the app's screen. Absent, the page is unchanged. `skills/candidate-build/SKILL.md` says how it is used; `tools/new-candidate.sh` scaffolds an entry.
+`main.jsx` reads `window.KitCandidate` once per render, if a candidate build's entry has loaded one: `bind(api)` is handed the app's state and setters, and `Screen` replaces the app's screen. Absent, the page is unchanged. `skills/candidate-build/SKILL.md` says how it is used.
 
 ## Known limits
 
