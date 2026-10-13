@@ -6,6 +6,11 @@
 // `window` and each may be ABSENT: leave a file
 // and its script tag out and the app carries on without it, no edit here.
 //
+// A candidate build (skills/candidate-build) may publish window.KitCandidate; it is
+// read below, per render, and absent means the shipped behaviour. If the product
+// persists state, its root reads the storage key as `window.KIT_STATE_KEY || '<default>'`
+// so a candidate entry can set its own.
+//
 // PlaceholderScreen and KIT_SEED_ITEMS stand in for the product. Replace them;
 // keep the wiring below them.
 // ============================================================================
@@ -91,7 +96,16 @@ const KitApp = () => {
   const StatesIndexView = window.StatesIndex;
   const showIndex = !!StatesIndexView && !!landing && (landing.kind === 'index' || landing.kind === 'unresolved');
 
-  const appTree = <PlaceholderScreen items={items} isMobile={isMobile} />;
+  // Candidate-build hook (droppable, like the aids above): window.KitCandidate may
+  // hold bind(api), handed the app's state and setters, and Screen, rendered in place
+  // of the app's screen. Absent -> the shipped screen, unchanged.
+  const Cand = window.KitCandidate || null;
+  const candApi = Cand ? { items, setItems, isMobile } : null;
+  if (Cand && Cand.bind) Cand.bind(candApi);
+
+  const appTree = Cand && Cand.Screen
+    ? <Cand.Screen api={candApi} />
+    : <PlaceholderScreen items={items} isMobile={isMobile} />;
 
   return (
     <>

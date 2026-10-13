@@ -28,6 +28,10 @@ Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: r
 
   A button with the class `kit-config-btn-secondary` inside the modal runs its handler and then closes the modal. A control that should leave the modal open uses `window.ConfigSeg` or its own class.
 
+## Candidate builds
+
+`main.jsx` reads `window.KitCandidate` once per render, if a candidate build's entry has loaded one: `bind(api)` is handed the app's state and setters, and `Screen` replaces the app's screen. Absent, the page is unchanged. `skills/candidate-build/SKILL.md` says how it is used; `tools/new-candidate.sh` scaffolds an entry.
+
 ## Known limits
 
 - The Viewport setting is held in `main.jsx` for the page's life only: a reload returns it to auto.

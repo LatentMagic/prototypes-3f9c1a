@@ -1,6 +1,6 @@
 # Prototype kit
 
-A product-neutral starting pack for Claude Design prototypes. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `playgrounds.html`, `playgrounds.json`, `tokens.css`, `app/`, `docs/`, `skills/`.
+A product-neutral starting pack for Claude Design prototypes. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `playgrounds.html`, `playgrounds.json`, `tokens.css`, `app/`, `docs/`, `skills/`, `tools/`.
 
 Nothing in `project/` names a product (this README names Circlists, where the kit was cut from). This repo is public, so nothing private goes in.
 
@@ -28,8 +28,8 @@ Not yet verified. Each takes about a minute:
 This is the refresh from Circlists canon into the kit, a separate job from carrying a kit change out to projects (below). It will be stale. First, run `git log` and `git diff dddbb6c..HEAD` on `app/circlists/canon/`. Look at what changed in the shared files and carry over what improved:
 
 - `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`
-- `app/` (the machinery files, not the Circlists screens)
-- `skills/`: `bro`, `build-playground`, `create-handoff`, `edit-before-it-leaves`, `frontend-ui-engineering`, `future-fragility`, `idea-refine`, `must-read`, `noise`, `show-me`, `unslop`
+- `app/` (the machinery files, not the Circlists screens), and `tools/new-candidate.sh` (the kit's is its own, not canon's)
+- `skills/`: `bro`, `build-playground`, `candidate-build`, `create-handoff`, `edit-before-it-leaves`, `frontend-ui-engineering`, `future-fragility`, `idea-refine`, `must-read`, `noise`, `show-me`, `unslop`
 - `skills/impeccable-local/` and `skills/impeccable/` (see Refreshing Impeccable)
 
 Then update "Last cut" above.
@@ -63,7 +63,7 @@ There is no `PRODUCT.md`, by the owner's ruling: "GitHub should describe the pro
 
 `GOTCHA.md` took canon's 1, 2, 5 to 13, reworded to drop episode names, files and first-person confessions, and added the SVG-stripping platform fact. Canon's 3 and 4 are Circlists-only and left. The kit's entries are renumbered 1 to 12 (canon's 13 is the kit's 11); the intro's code/judgement split was recounted, and `build-playground/references/fidelity-and-wiring.md` cites "GOTCHA #3".
 
-`docs/` ships `specs/README.md`, `specs/_handoffs/README.md` and `archive/README.md`, the last two new, so the paths the rules name exist. Not shipped: `docs/ABOUT.md` (its skeleton fed an earlier `PRODUCT.md`), `docs/specs/CLAUDE.md` (it concerned candidate builds).
+`docs/` ships `specs/README.md`, `specs/_handoffs/README.md` and `archive/README.md`, the last two new, so the paths the rules name exist. `docs/specs/CLAUDE.md` ships (2026-10-13): what happens to a ticket folder, the candidate-build merge steps from canon's file, product-neutral. Not shipped: `docs/ABOUT.md` (its skeleton fed an earlier `PRODUCT.md`).
 
 ### App machinery (`app/`, `index.html`, `tokens.css`)
 
@@ -86,7 +86,9 @@ Byte-identical to canon: `bro`, `must-read`, `noise` (copied from `biz-standards
 
 `validate-ui` (2026-10-10, written for the kit, not cut from canon): adapted from the workspace's `biz-standards:validate-ui` for a fresh Claude Design session checking a build it did not make. Dropped: subagent and model-tier rules, Playwright commands, plugin and wiki pointers, the vent route. 2026-10-10 rework on the owner's correction: a UI check, not a requirements audit; it fixes what is broken (smallest change, looked at again rendered), leaves differences from the brief alone, and reports taste calls unfixed. Rendering is whatever the environment offers; the skill says to report a check it could not run. Used with a Validate brief from `biz-authoring:build-design-prompt`. Carried to live projects by a kit-carry brief that inlines the skill, since it is a new file.
 
-`create-handoff`: the "adapted for Circlists" author and version and the `BIZ-80` examples removed; the filename is now `handoff-{YYYY-MM-DD}-{topic}.md` (no underscore, as `CLAUDE.md` § Files requires), in the task's folder or `docs/specs/_handoffs/`. `build-playground`: Circlists specifics replaced with product-neutral nouns; rule 4 (the config rail replacing the app's rail) keeps canon's shape with a "Product slot" bullet for a separate native posture. `i-have-adhd` removed from the groupings and the `$name` examples, by decision. `candidate-build` not shipped, by decision.
+`create-handoff`: the "adapted for Circlists" author and version and the `BIZ-80` examples removed; the filename is now `handoff-{YYYY-MM-DD}-{topic}.md` (no underscore, as `CLAUDE.md` § Files requires), in the task's folder or `docs/specs/_handoffs/`. `build-playground`: Circlists specifics replaced with product-neutral nouns; rule 4 (the config rail replacing the app's rail) keeps canon's shape with a "Product slot" bullet for a separate native posture. `i-have-adhd` removed from the groupings and the `$name` examples, by decision.
+
+`candidate-build` (2026-10-13, on the owner's ruling): cut from canon's skill and made product-neutral. `CircCandidate` became `KitCandidate` and `CIRC_STATE_KEY` became `KIT_STATE_KEY`; `circlists-<ticket>.html` became `docs/specs/<ticket>/candidate/index.html` (four-deep, `<base href>` four `../`, the same rule as a playground, so it sits beside `playground/`); "ratified" became "accepted"; the `SwellDoor` example is generic. Kept: the ten invariants, merge by archive-and-switch-off, one `CHANGELOG.md` entry at merge. Added: a section on throwing one away. Fitted to the kit: `app/main.jsx` carries the bridge hook (`bind(api)` and `Screen`, read per render, absent means unchanged); `playgrounds.html` shows `kind: "candidate"` entries first, marked, and counts them; `tools/new-candidate.sh` (new, not canon's) copies the root `index.html` into the candidate folder and writes a stub bridge, where canon's script copied a whole canon into a rail node; `CLAUDE.md` carries the trigger, the placement rule, the launcher lines and a "Candidate builds" section.
 
 ### Impeccable
 
@@ -94,8 +96,6 @@ Version 4.5.0. `SKILL.md` and `reference/` are byte-identical to upstream, under
 
 ### Rules dropped because their machinery did not ship
 
-- Candidate builds: the skill, its trigger, "a candidate build lives in its ticket folder", the rail-node and `tools/new-candidate.sh` mention.
-- Launcher candidate-build lines and "hiding, not deleting" for candidates. The launcher itself and its manifest shipped on 2026-10-08 (`playgrounds.html`, `playgrounds.json`, rule in `CLAUDE.md` § Files); the kit's page is product-neutral, with the product's name set in the manifest.
 - "No config surface": it was about the launcher page, and as worded it collides with the shipped Config aid.
 - `github.md` and the rules sending the agent to it; its job moved to the product block's sources.
 - Canon's motion-SVG rule, kept as a platform fact in `GOTCHA.md` 12.

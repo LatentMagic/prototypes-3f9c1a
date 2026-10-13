@@ -42,7 +42,8 @@ This file holds the working rules every product built from this kit shares. It n
 - `index.html` — the app entry. `app/` — its modules; `app/README.md` lists them in load order. `tokens.css` — shared styles.
 - `skills/` — our own skills (see below).
 - Durable docs: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `CHANGELOG.md` (the product creates it when its first entry is earned).
-- `docs/specs/<id>-<topic>/` — everything task-scoped. `docs/archive/<topic>/` — finished work.
+- `docs/specs/<id>-<topic>/` — everything task-scoped; `docs/specs/CLAUDE.md` says what happens to a ticket folder over its life. `docs/archive/<topic>/` — finished work.
+- `tools/new-candidate.sh` — scaffolds a candidate build (see "Candidate builds").
 
 ## Reference docs
 - The product block at the top of this file — the product's name and where each kind of its truth lives upstream (behaviour, design law, brand, copy voice, tracker). Read first, every session.
@@ -73,13 +74,14 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Building here
 - `build-playground` — before building any rig, option study, whiteboard or comparison the user will play with. When a playground teaches you something durable about building them, propose it for `skills/build-playground/SKILL.md` (+ `references/`) and note it in the handoff, so it can be carried back to the kit.
+- `candidate-build` — **only when the user explicitly asks for a candidate build, or names `$candidate-build`; never inferred** — not from "delta", not from unaccepted items in a brief, not from the ratification rule. A prompt that says build it into the app goes into `app/`; if unaccepted pieces make that feel wrong, ask before choosing a shape. Once requested, read it before building; before touching an existing candidate entry or its `cand-*` overlays; and before merging an accepted candidate into the main build or throwing one away. See "Candidate builds" below.
 - `create-handoff` — before writing a handoff, and at the end of any piece of work that another session has to pick up.
 - `validate-ui` — in a new session, never the one that built the thing, when asked to check a build. Renders it, fixes what is broken, leaves differences from the brief alone, and reports taste calls unfixed. Fires on `$validate-ui`, or when the user asks to validate, check or QA a build.
 - `frontend-ui-engineering` (+ `references/accessibility-checklist.md`) — before non-trivial `app/` UI work or any refactor. Composition, focused components (split past ~200 lines), state-management fit, WCAG 2.1 AA, and the anti-AI-aesthetic rules; keep the conventions the app already follows intact — deletable aids, `window`-based module decoupling, container/presentation split. Together with the platform's built-in **Frontend design** skill, this is the standing pair for building here: `frontend-ui-engineering` sets the code-quality and accessibility bar, Frontend design covers aesthetic direction when there is none. Once the product has one (`tokens.css` and the design law the product block names), the skill below is for range, not for direction; until then, ask.
 
 ### Design range — opt-in toolkit, imported from open source
 One external skill, vendored into `skills/impeccable/` exactly as upstream ships it, with LatentMagic's adapter beside it in `skills/impeccable-local/`. It does not fire as part of routine build work: reach for it on `$impeccable`, or when a piece of work genuinely needs critique depth beyond the standing pair. **Read `skills/impeccable-local/SKILL.md` first, then `skills/impeccable/SKILL.md`** — the adapter says what applies here, what replaces upstream's Setup, and what was left out.
-- `impeccable` — a critique-and-refine vocabulary (`critique`, `audit`, `polish`, `clarify`, `layout`, `typeset`, plus the native-platform references) with one playbook per move in `skills/impeccable/reference/`. Best used on surfaces that already exist. `shape` / `new-work` only inside a playground, never straight into `app/`. Upstream `pbakaus/impeccable`.
+- `impeccable` — a critique-and-refine vocabulary (`critique`, `audit`, `polish`, `clarify`, `layout`, `typeset`, plus the native-platform references) with one playbook per move in `skills/impeccable/reference/`. Best used on surfaces that already exist. `shape` / `new-work` only inside a playground or candidate build, never straight into `app/`. Upstream `pbakaus/impeccable`.
 
 **Precedence over it: the theme is not its to set.** `tokens.css` and the design law the product block names are binding. `skills/impeccable-local/SKILL.md` says what it may and may not do here.
 
@@ -129,20 +131,33 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 
 <important if="you are creating, naming, moving or archiving any file or folder">
 - **File naming: kebab-case, always.** Lowercase kebab-case with no spaces — `checkout-playground-standalone.html`, `pg-checkout-app.jsx`, `handoff-2026-07-27-checkout-playground.md`. No spaces, no title case, no ` - ` separators, no underscores. This includes downloadable deliverables and bundled output. Spaces in paths break shell use, URLs and tooling on the user's end.
-- **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, the durable docs, and whatever the product block lists as extra root files.
+- **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, `tools/`, the durable docs, and whatever the product block lists as extra root files.
 - **`docs/`** holds durable docs only.
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the product's tracker, as the product block names it. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
 - **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
 </important>
 
-<important if="you are building, moving or archiving a playground or rig">
-- **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product".
+<important if="you are building, moving or archiving a playground, rig or candidate build, or editing playgrounds.html / playgrounds.json">
+- **A candidate build lives in its ticket folder**, in `docs/specs/<ticket>/candidate/`, next to its `cand-*` modules. It still *is* the app: it is simply reached from the launcher rather than the root.
+- **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product", never a candidate of it.
 - **Making a nested entry load:**
   - `<base href="../../../../" />` in `<head>`, one `../` per level of nesting — four for `docs/specs/<ticket>/playground/`. That is the whole mechanism.
   - **Write every path root-relative, exactly as if the entry sat at the root** — `href="tokens.css"`, `src="app/main.jsx"`, and `src="docs/specs/<ticket>/playground/pg-foo.jsx"` for the rig's own modules. Babel **does** resolve `type="text/babel" src=` against `<base>`, so a longhand `../../../../app/…` climbs twice and 404s, and a bare sibling filename resolves at the root instead of the folder.
   - The preview warns "referenced file not found" for base-relative paths. It is a false positive only when the `<base>` depth is right, and the warning reads the same either way, so it can never confirm the depth: count the `../` against the file's own depth, load the page, and confirm one token-driven thing rendered before handing it over. Never explain the warning away without having looked (`GOTCHA.md` 11 is how it went wrong).
-- **`playgrounds.html` at the root is the launcher, and `playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved or archived, or a ticket folder moves**, and add the rig to it in the same change that builds the rig. If it drifts, rebuild it from the tree rather than patching it. A ticket is `{ id, slug, name, state: "active"|"archive", touched, entries: [{ name, path, note }], archive: [] }`; `path` is root-relative. Hiding an entry is `"on": false`, never deletion. Set `product` in the manifest to the product's name. It is reached by URL (`/playgrounds.html`), not from inside the app.
-- **A state is a scenario, never a width.** QA and scenario lists (playgrounds, the Config / QA aid) carry one entry per scenario. Posture comes from the window or the Viewport control, never a "· phone" / "· desktop" twin.
+- **`playgrounds.html` at the root is the launcher, and `playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's candidate build and rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved or archived, or a ticket folder moves**, and add the rig to it in the same change that builds the rig. If it drifts, rebuild it from the tree rather than patching it. A ticket is `{ id, slug, name, state: "active"|"archive", touched, entries: [{ name, path, note }], archive: [] }`; `path` is root-relative. An entry is `{ name, path, note, kind? }`; `kind` is `"candidate"` for a candidate build, and the page shows it first, marked. Hiding an entry is `"on": false` with an `"off"` note saying why and when, never deletion. Set `product` in the manifest to the product's name. It is reached by URL (`/playgrounds.html`), not from inside the app.
+- **A state is a scenario, never a width.** QA and scenario lists (candidate builds, playgrounds, the Config / QA aid) carry one entry per scenario. Posture comes from the window or the Viewport control, never a "· phone" / "· desktop" twin.
+</important>
+
+## Candidate builds
+
+<important if="the user asks for a candidate build or names `$candidate-build`, or you are touching, merging or discarding one">
+- **What it is.** An alternative build proposed to replace part of the main build. It is the whole app, played as the product, with the change in it, kept apart from the main build until the owner accepts it. It is not a playground, which compares options and may be partial.
+- **When to make one.** Only when a brief says "build this as a candidate build" or the user names `$candidate-build`. Never because a brief has unaccepted pieces in it: that goes into `app/`, or you ask.
+- **Where it lives.** In its ticket folder, `docs/specs/<ticket>/candidate/`: an entry page, `index.html`, plus its overlay files `cand-<ticket>-*.jsx`. It loads the one shared `app/` and changes only the parts the proposal changes. `tools/new-candidate.sh <ticket> "Name"` sets the folder up. Add it to `playgrounds.json` with `"kind": "candidate"` in the same change.
+- **How the owner opens it.** From the launcher, `playgrounds.html`, under the ticket, where it is marked as a candidate; or straight at `docs/specs/<ticket>/candidate/index.html`. The main build at `index.html` stays the main build.
+- **The main build is unchanged until the owner accepts the candidate in words.** Nothing in a candidate goes into `app/` or `CHANGELOG.md`, and no decision in it is recorded as settled.
+- **Accepted: merge.** The changes move into `app/` and `index.html`, the candidate folder moves to `docs/archive/<ticket>/` as a record, and its launcher entry is switched off, not removed. **Refused: throw away.** Delete the folder and its launcher entry. Both are step by step in `skills/candidate-build/SKILL.md` and `docs/specs/CLAUDE.md`; read them before doing either.
+- The build ends in a handoff: how to reach each part of the change, the calls you made, and what you opened in `app/`.
 </important>
 
 ## Wrapping up
