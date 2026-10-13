@@ -1,8 +1,32 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-12",
+  "generated": "2026-10-13",
   "tickets": [
+    {
+      "id": null,
+      "slug": "soon-card-phone",
+      "name": "Coming soon cards on a phone",
+      "state": "active",
+      "touched": "2026-10-13",
+      "entries": [
+        {
+          "name": "Four covers at phone width",
+          "path": "docs/specs/soon-card-phone/playground/index.html",
+          "note": "Today, better art, stack on a phone, cover kept 4:3. Real SoonCard pair at 320 and 390."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "LM-1110",
+      "slug": "1110-daily-word-mystery-content",
+      "name": "Daily Word and Daily Mystery show the real games",
+      "state": "active",
+      "touched": "2026-10-13",
+      "entries": [],
+      "archive": []
+    },
     {
       "id": "—",
       "slug": "game-editions-list",

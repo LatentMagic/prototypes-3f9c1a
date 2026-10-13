@@ -47,6 +47,7 @@ header.top .n{margin-left:auto;font-family:var(--font-mono);font-size:12px;color
 .rnote{display:block;color:var(--color-fg-2);font-size:var(--text-sm);margin-top:3px;text-wrap:pretty}
 .rpath{display:block;font-family:var(--font-mono);font-size:12px;color:var(--color-fg-3);margin-top:6px;overflow-wrap:anywhere}
 .open{font-size:var(--text-sm);font-weight:500;color:var(--color-accent);white-space:nowrap}
+.cand{background:var(--color-surface);border-left:2px solid var(--color-accent);padding-left:16px}
 .empty{padding:16px 6px;border-top:1px solid var(--color-border-2);border-bottom:1px solid var(--color-border-2);color:var(--color-fg-3);font-size:var(--text-sm);text-wrap:pretty}
 .held{margin:20px 0 0;font-size:var(--text-sm);color:var(--color-fg-3);text-wrap:pretty;max-width:64ch}
 .held code,footer code{font-family:var(--font-mono);font-size:12px}
@@ -68,11 +69,16 @@ const shortDate=s=>{if(!s)return '';const[y,m,d]=s.split('-');return (+d)+' '+MO
 const live=a=>(a||[]).filter(e=>e.on!==false);
 let DATA=null;
 
-function count(t){return live(t.entries).length+live(t.archive).length}
+function counts(t){
+  const l=live(t.entries), a=live(t.archive);
+  const c=l.filter(e=>e.kind==='candidate').length, r=l.length-c+a.length;
+  const bits=[]; if(c)bits.push(c+' candidate'); if(r)bits.push(r+' rig'+(r>1?'s':''));
+  return {c,r,bits};
+}
 function tkRow(t){
-  const n=count(t);
+  const {bits}=counts(t);
   const b=el('<button class="tk"><span class="tkid">'+esc(t.id)+'</span><span class="tkname">'+esc(t.name)+
-    '</span><span class="tkmeta">'+(n?n+' rig'+(n>1?'s':''):'documents only')+
+    '</span><span class="tkmeta">'+(bits.length?esc(bits.join(' · ')):'documents only')+
     '</span><span class="tkdate">'+esc(shortDate(t.touched))+'</span></button>');
   b.addEventListener('click',()=>ticket(t));
   return b;
@@ -87,8 +93,8 @@ function home(){
   out.innerHTML='';
   const active=DATA.tickets.filter(t=>t.state==='active');
   const byDate=(a,b)=>String(b.touched||'').localeCompare(String(a.touched||''));
-  const playable=active.filter(count).sort(byDate);
-  const docsOnly=active.filter(t=>!count(t)).sort(byDate);
+  const playable=active.filter(t=>counts(t).bits.length).sort(byDate);
+  const docsOnly=active.filter(t=>!counts(t).bits.length).sort(byDate);
   const archived=DATA.tickets.filter(t=>t.state==='archive');
   out.appendChild(el('<p class="lede">Everything playable in this project, by ticket, most recently touched first.</p>'));
   if(!DATA.tickets.length)out.appendChild(el('<p class="empty">No playgrounds yet.</p>'));
@@ -97,7 +103,7 @@ function home(){
   if(archived.length)out.appendChild(fold('Archive',archived.length,shelf(archived)));
 }
 function rowHtml(e){
-  return '<a class="row" href="'+esc(e.path)+'"><span><span class="rname">'+
+  return '<a class="row'+(e.kind==='candidate'?' cand':'')+'" href="'+esc(e.path)+'"><span><span class="rname">'+
     esc(e.name)+'</span>'+(e.note?'<span class="rnote">'+esc(e.note)+'</span>':'')+
     '<span class="rpath">'+esc(e.path)+'</span></span><span class="open">Open</span></a>';
 }
@@ -117,8 +123,10 @@ function ticket(t){
   out.appendChild(el('<p class="path">'+esc((t.base||'docs/specs/')+(t.folder||t.slug)+'/')+
     (t.touched?' · touched '+esc(shortDate(t.touched)):'')+'</p>'));
   const l=live(t.entries);
-  if(l.length)out.appendChild(group('Playgrounds',l));
-  else out.appendChild(el('<p class="empty">No playable entry. The record for this ticket is documents — handoffs, prompts and modules in the folder above.</p>'));
+  const cands=l.filter(e=>e.kind==='candidate'), rigs=l.filter(e=>e.kind!=='candidate');
+  if(cands.length)out.appendChild(group('Candidate build',cands));
+  if(rigs.length)out.appendChild(group('Playgrounds',rigs));
+  if(!l.length)out.appendChild(el('<p class="empty">No playable entry. The record for this ticket is documents — handoffs, prompts and modules in the folder above.</p>'));
   const arch=live(t.archive);
   if(arch.length){
     const d=el('<details class="fold"></details>');
@@ -133,8 +141,8 @@ function ticket(t){
 fetch('playgrounds.json').then(r=>r.json()).then(d=>{
   DATA=d;
   if(d.product){document.getElementById('product').textContent=d.product;document.title=d.product+' — playgrounds'}
-  let r=0;DATA.tickets.forEach(t=>{r+=count(t)});
-  document.getElementById('n').textContent=r+' rig'+(r===1?'':'s');
+  let c=0,r=0;DATA.tickets.forEach(t=>{const k=counts(t);c+=k.c;r+=k.r});
+  document.getElementById('n').textContent=c+' candidate'+(c===1?'':'s')+' · '+r+' rig'+(r===1?'':'s');
   home();
 }).catch(()=>{out.appendChild(el('<p class="empty">Could not load playgrounds.json.</p>'))});
 </script>

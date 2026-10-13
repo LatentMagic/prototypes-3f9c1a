@@ -4,24 +4,12 @@
 // The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPicture) set inside it
 // and scrollable (home-product-hero option 4, ratified 2026-10-11; docs/specs/home-product-hero/). The field is from
 // home-hero option 9 (docs/specs/home-hero/).
-const GsFeature = ({ id, children }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
-  return (
-    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'stretch' }}>
-      <div className="gs-feat" ref={host}>
-        <GsArt art={g.art} shape="wide" />
-        <div className="gs-feat-body">
-          <div className="gs-stack-sm">
-            <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
-            <p className="gs-lead">{g.blurb}</p>
-          </div>
-          <GsTagList tags={g.tags} ed={g.ed} />
-          {children}
-        </div>
-      </div>
-    </DS.Card>
-  );
-};
+const GsFeature = ({ id }) => <GsCard id={id} />;
+// NOTE (owner, 2026-10-13): Available games is NOT meant to hold every game. It is a small, chosen sample so a visitor gets a sense
+// of what exists; the whole library is on Discover. A game is added here only on the owner's approval: this row is what we highlight.
+// More games on each game's page uses this same list, minus the page's own game (owner, 2026-10-13).
+// It already holds too much and needs revisiting. Daily Groups and Casebook were taken off (owner, 2026-10-13).
+const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
 
 const GS_WHATSNEW = [
   { v: '1.9', d: '1 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
@@ -59,32 +47,8 @@ const GsWhatsNew = () => {
     </section>
   );
 };
-// The chat opens on its latest turn and scrolls back; the pill says there is more above and takes you there.
-const useGsHeroScroll = (ref) => {
-  const [chat, setChat] = React.useState(null); const [more, setMore] = React.useState(false);
-  React.useEffect(() => {
-    const b = ref.current && ref.current.querySelector('.mcp-chat-body');
-    if (!b) return;
-    setChat(b.parentElement);
-    b.tabIndex = 0; b.setAttribute('role', 'region'); b.setAttribute('aria-label', 'The Casebook chat, scrolls');
-    let moved = false; const mark = () => { const up = b.scrollTop > 4; b.dataset.more = up ? 'up' : ''; setMore(up); };
-    const end = () => { if (!moved) b.scrollTop = b.scrollHeight; mark(); };
-    const stop = () => { moved = true; };
-    b.addEventListener('scroll', mark, { passive: true });
-    b.addEventListener('wheel', stop, { passive: true }); b.addEventListener('touchstart', stop, { passive: true }); b.addEventListener('keydown', stop);
-    const ro = new ResizeObserver(end); ro.observe(b); [...b.children].forEach((c) => ro.observe(c));
-    end(); const t = setTimeout(end, 600);
-    return () => { clearTimeout(t); ro.disconnect(); };
-  }, []);
-  const toTop = () => { const b = chat.querySelector('.mcp-chat-body'); b.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); };
-  return chat && ReactDOM.createPortal(
-    <button type="button" className="gs-hero-up" hidden={!more} onClick={toTop}>
-      <DS.Icon name="down" size={16} style={{ transform: 'rotate(180deg)' }} />Earlier in the case
-    </button>, chat);
-};
-
 const GsHome = () => {
-  const gs = useGs(); const field = React.useRef(null); const up = useGsHeroScroll(field);
+  const gs = useGs(); const field = React.useRef(null);
   // Touch: the Casebook pose plays while a finger is down on the name or the art, as on a game card, and stops on release or scroll.
   React.useEffect(() => {
     const f = field.current; if (!f) return undefined;
@@ -116,14 +80,14 @@ const GsHome = () => {
             <span className="gs-label">A NEW CASE EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
+          {/* The design system's ChatPicture scrolls itself, opens on the latest turn and has its own "Back to the start" pill. */}
           <GsChatPic turns={GS_HERO_CHAT} height={340} width={480} label="A Casebook case being played in a chat" />
-          {up}
         </div>
       </section>
 
       <section className="gs-band">
         <DS.CardRow title="Available games" className="gs-row4">
-          {GS_GAME_ORDER.map((k) => <GsFeature key={k} id={k} />)}
+          {GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)}
         </DS.CardRow>
         <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
@@ -145,4 +109,4 @@ const GsHome = () => {
   );
 };
 
-Object.assign(window, { GsHome, GsFeature });
+Object.assign(window, { GsHome, GsFeature, GS_HOME_GAMES });

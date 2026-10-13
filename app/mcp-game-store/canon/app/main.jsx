@@ -9,6 +9,11 @@
 // The demo bar (GsDemoBar) is a prototype control: signed out, free (not
 // subscribed) and Pass (active, monthly). It and the Subscription config row
 // always agree, because the view is derived from the subscription.
+//
+// A candidate build (skills/candidate-build) may publish window.KitCandidate; it is
+// read below, per render, and absent means the shipped behaviour. Stored state reads
+// its key as `window.KIT_STATE_KEY || '<default>'` (app/gs-push.jsx) so a candidate
+// entry can set its own.
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
@@ -22,7 +27,7 @@ const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pendin
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
-const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
+const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
 const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
 // Of those, the pages that belong to the player: a signed-out visitor gets Sign in, then the page asked for.
@@ -32,7 +37,7 @@ const gsSignInFor = (r) => ({ name: 'signin', next: { ...r, prev: undefined, nex
 const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'returning'];
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
-const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter',
+const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow',
   'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline'];
 
 const GsScreen = ({ name }) => {
@@ -54,6 +59,7 @@ const GsScreen = ({ name }) => {
     case 'escape': return <GsEscape />;
     case 'casebook': return <GsCasebook />;
     case 'hunter': return <GsHunter />;
+    case 'barrow': return <GsBarrow />;
     case 'session': return <GsSession />;
     case 'history': return <GsHistory />;
     case 'pass': return <GsPass />;
@@ -70,7 +76,7 @@ const GsScreen = ({ name }) => {
 
 // A page loads as a page on arrival: the top bar and footer stand, the content waits.
 // Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
-const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter'];
+const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow'];
 const GsArrival = ({ name, quick }) => {
   const gs = useGs(); const r = gs.route;
   const held = r.hold === 'page';
@@ -253,11 +259,19 @@ const KitApp = () => {
     return () => ro.disconnect();
   }, [forcedMobile, showIndex]);
 
+  // Candidate-build hook (droppable, like the aids above): window.KitCandidate may hold
+  // bind(api), handed the app's context object, and Screen, rendered in place of the routed
+  // page (the top bar, footer and popups stay). Absent -> the shipped page, unchanged.
+  const Cand = window.KitCandidate || null;
+  if (Cand && Cand.bind) Cand.bind(gs);
+
   const appTree = (
     <GsCtx.Provider value={gs}>
       <div className="gs-root" ref={rootRef}>
         {GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && <GsTopBar />}
-        <GsArrival key={idx.current} name={route.name} quick={backNav.current} />
+        {Cand && Cand.Screen
+          ? <Cand.Screen api={gs} />
+          : <GsArrival key={idx.current} name={route.name} quick={backNav.current} />}
         {(GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && <GsFooter />}
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         <GsPlayPopup />

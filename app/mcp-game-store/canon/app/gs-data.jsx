@@ -40,17 +40,20 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // once: an edition has one answer, so a finished edition is never played again (every-edition-playable, 2026-10-12). Read it through gsCanReplay only.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
+// eds: the game has editions but no schedule (the Barrow's chapters), so it has an editions list without a Daily or Weekly filter.
 // ed: the game's own word for one of its editions, [singular, plural] (walk-sweep-2). Players never see a platform-wide word.
 const GS_GAMES = {
-  word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, once: true, blurb: 'You already know today’s answer. Start guessing.', tags: ['FREE', 'Daily', '10 min'] },
+  word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['FREE', 'Daily', '10 min'] },
   groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['groups', 'groups'], edLink: 'See all groups', edAll: 'All groups', free: true, daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['FREE', 'Daily', '10 min'] },
   mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], free: true, daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
   escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], free: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FREE', 'Weekly', '10 min'] },
   casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', 'Weekly', '25–40 min'] },
   delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['scene', 'scenes'], first: true, blurb: 'Get her out before the drums stop.', tags: ['FIRST', 'Weekly', '25–40 min'] },
+  // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
+  barrow: { name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', first: true, blurb: 'Something under the hill wants its gold back. Go down anyway.', tags: ['FIRST', '45–60 min'] },
   hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
-const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'hunter'];
+const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
 // How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
 const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
@@ -87,7 +90,8 @@ const gsMarks = (view, gs) => {
 };
 const GS_SOON = [
   { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction' },
-  { name: 'The Barrow of Hollowmere', art: 'barrow', line: 'A short campaign with levels and loot' },
+  // The Barrow's next chapter: the line is the game's own blurb (SoonCard.prompt.md).
+  { name: GS_GAMES.barrow.name, art: 'barrow', line: GS_GAMES.barrow.blurb, label: 'CHAPTER 2', play: 'Play chapter 1', route: 'barrow' },
 ];
 
 const GS_ROLLS = [
@@ -104,6 +108,8 @@ const GS_ROLLS = [
   ['Athletics','d20 13 + 2 = 15 vs 15','Hit'],
 ];
 
+// Today's Daily Mystery questions, shared by the finished play and its in-progress form.
+const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'Yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'Yes']];
 const GS_SESSIONS = {
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Rescued', date: 'Monday 5 October', lapsedDate: 'Monday 14 September',
@@ -113,10 +119,11 @@ const GS_SESSIONS = {
     endings: ['Clean rescue', 'Close call', 'Alone', 'Caught'], reached: 'Close call',
     share: 'Rescued · threat 5/6 · 11 rolls · 1 natural 20',
   },
+  // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play (LM-1110).
   'word-today': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     listTitle: 'Every guess', share: 'Solved in 3 of 6',
-    lines: [['Guess 1', 'SLATE', '1 in the word'], ['Guess 2', 'TONIC', '2 in place, 1 in the word'], ['Guess 3', 'TORCH', 'Solved']],
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'The word contains the letter I.'], ['Guess 3', 'STILL', 'Solved']],
   },
   // This week's room, played on Tuesday.
   'escape-week': {
@@ -127,15 +134,15 @@ const GS_SESSIONS = {
       ['Move 6', 'Take crowbar', 'Crowbar'], ['Move 7', 'Lever hatch', 'Out']],
   },
   'mystery-today': {
-    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', result: 'Not solved', loss: true, date: GS.today,
-    listTitle: 'Every question', share: 'Not solved', shareHead: 'Daily Mystery #64 · ❌ Not solved · 🔎🔎🔎',
-    lines: [['Question 1', 'Who found the body?', 'The cook'], ['Question 2', 'Who had the key?', 'Nobody'],
-      ['Question 3', 'Where was the gardener at nine?', 'Unclear'], ['Accusation', 'The gardener', 'Wrong']],
+    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Missed', loss: true, date: GS.today,
+    setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
+    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Missed',
+    lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong']],
   },
   'word-1005': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 211, result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     listTitle: 'Every guess', share: 'Solved in 4 of 6',
-    lines: [['Guess 1', 'CRANE', '1 in place, 1 in the word'], ['Guess 2', 'STORE', '3 in place'], ['Guess 3', 'SPREE', '2 in place, 1 in the word'], ['Guess 4', 'SHIRE', 'Solved']],
+    lines: [['Guess 1', 'CRANE', '2 in place, 1 in the word'], ['Guess 2', 'CHANT', '3 in place, 1 in the word'], ['Guess 3', 'CHAIR', '4 in place'], ['Guess 4', 'CHAIN', 'Solved']],
   },
   // Daily Groups. Fish 🟦, weather 🟨, music 🟪, fence 🟩. Share rows hide every word.
   'groups-today': {
@@ -171,20 +178,21 @@ const GS_SESSIONS = {
     ],
   },
   'mystery-1004': {
-    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', result: 'Solved', date: 'Sunday 4 October',
-    listTitle: 'Every question', share: 'Solved', shareHead: 'Daily Mystery #62 · ✅ Solved · 🔎🔎🔎',
-    lines: [['Question 1', 'Who heard the shot?', 'Everyone'], ['Question 2', 'Who was outside?', 'The neighbour'],
-      ['Question 3', 'Whose dog was it?', 'Not the neighbour'], ['Accusation', 'The neighbour', 'Right']],
+    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
+    setting: 'the annual gala of the Royal Botanical Society', victim: 'Dr Ambrose Kell, the collector',
+    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Solved',
+    lines: [['Question 1', 'Was Mr Graves in the study?', 'Yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'Yes'],
+      ['Accusation', 'Ivy Marchbank, with the vial of foxglove, in the wine cellar', 'Right']],
   },
 };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
-    lines: [['Guess 1', 'SLATE', '1 in the word'], ['Guess 2', 'TONIC', '2 in place, 1 in the word']] },
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word']] },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], listTitle: 'Every try', share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
-  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', live: true, result: 'In progress', date: GS.today, listTitle: 'Every question', share: null,
-    lines: [['Question 1', 'Who found the body?', 'The cook'], ['Question 2', 'Who had the key?', 'Nobody']] },
+  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
+    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: null, lines: GS_MYSTERY_QS.slice() },
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, listTitle: 'Every move', share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', lapsedDate: undefined, figures: ['Threat 3/6', '9 rolls'], tracks: { progress: 4, threat: 3 }, lines: GS_ROLLS.slice(0, 9), reached: null, share: null },
@@ -207,9 +215,9 @@ const gsScrollToId = (id) => {
 // ---- Results: one formatter per game. Every result line (rows, session pages, the now card) is built here from the play's facts. ----
 const gsMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
 const GS_RESULT = {
-  word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Not solved'),
+  word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Missed'),
   groups: (r) => (r.found === 4 ? 'All 4 groups, ' + gsMis(r.mistakes) : r.found + ' of 4 groups'),
-  mystery: (r) => (r.ok ? 'Solved' : 'Not solved'),
+  mystery: (r) => (r.ok ? 'Solved' : 'Missed'),
   escape: (r) => (r.ok ? 'Escaped in ' + r.moves + ' moves' : 'Still locked in'),
   casebook: (r) => (r.ok ? 'Solved' : 'Unsolved'),
   delve: (r) => ({ won: 'Rescued', ritual: 'Ritual done', fell: 'Hero fell' })[r.end],

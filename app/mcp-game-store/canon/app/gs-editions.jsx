@@ -5,13 +5,14 @@
 // No route leads to one edition. The list is settled (owner, 2026-10-12); the panel is moved over from the playground, unratified.
 // What an edition says about itself is SAMPLE text (PGE_INFO). Loads after gs-history.jsx, before main.jsx.
 // ============================================================================
-const ED3 = GS_GAME_ORDER.filter(gsRhythm);
+const ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
 // ---- SAMPLE: what an edition says about itself. The app holds only number, title, date (and Casebook's cast). ----
 const PGE_INFO = {
-  word: 'Five letters, six guesses and one word to find. Start guessing.',
+  word: 'Five letters. Six guesses.',
   groups: 'Sixteen words hide four groups. Find all four.',
-  mystery: 'There’s a body and a story that doesn’t add up. Find out who did it.',
+  mystery: 'One suspect, one weapon, one room. One accusation.',
+  barrow: 'Five levels under the hill. Your loot carries on.',
   escape: {
     'The Locked Study': 'A desk drawer won’t open and the window is painted shut. Find the key.',
     'The Flooded Cellar': 'The water is at your knees and still rising. Find the way up.',
@@ -43,7 +44,7 @@ const PGE_INFO = {
     'Everyone agrees the clock stopped at nine. Nobody agrees why.',
   ],
 };
-const PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', escape: 'About 10 min', casebook: '25–40 min', delve: '25–40 min' };
+const PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', escape: 'About 10 min', casebook: '25–40 min', delve: '25–40 min', barrow: '45–60 min' };
 const pgeAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
 const pgeInfo = (e) => {
   const line = e.gid === 'casebook' ? PGE_INFO.casebook[e.n % 8] : typeof PGE_INFO[e.gid] === 'string' ? PGE_INFO[e.gid] : PGE_INFO[e.gid][e.title] || '';
@@ -121,7 +122,7 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
   const text = gsPromptText({ kind: 'edition', e });
   // A finished edition of a game that can't be replayed (gsCanReplay) has nothing left to play: its result and the played-once line, no prompt, no Copy, no Pass line.
   const done = e.played && !gsCanReplay(gid); const prompt = !e.held && !done;
-  const when = gsRhythm(gid) === 'daily' ? e.date : 'week of ' + e.date;
+  const when = gsRhythm(gid) === 'weekly' ? 'week of ' + e.date : e.date;
   return (
     <DS.Popup kind="panel" open={!!e0} onClose={onClose} title={e.title || edLabel(e)} actions={prompt ? <GsCopyPrompt text={text} block /> : undefined}>
       <div className="pge-panel">

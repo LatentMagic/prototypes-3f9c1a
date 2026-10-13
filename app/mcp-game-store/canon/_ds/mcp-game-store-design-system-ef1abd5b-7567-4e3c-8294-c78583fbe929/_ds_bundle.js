@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"0147ba6a1fee","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"790b19a235f1","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"523d9d9ee06f","components/media/Icon.jsx":"dc8ca13c049f","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"b2cdac6b8d49","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/ListRow.jsx":"47511f5f0d15","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"33f766ec48bc","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"dc8ca13c049f","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"303dd3f2749d","components/surfaces/GamePick.jsx":"5a1ada649278","components/surfaces/GameTile.jsx":"4ba7f7a3efd4","components/surfaces/ListRow.jsx":"47511f5f0d15","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"b35f2c8c8de7","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -229,7 +229,7 @@ const dw = () => /*#__PURE__*/React.createElement("div", {
 }), /*#__PURE__*/React.createElement("i", {
   className: "mcp-art-dw mcp-art-dw-2"
 }), /*#__PURE__*/React.createElement("i", {
-  className: "mcp-art-dw-3"
+  className: "mcp-art-dw mcp-art-dw-3"
 }));
 const PIECES = {
   groups: {
@@ -355,7 +355,7 @@ function Tag({
   go
 }) {
   const ic = icon || (kind === 'locked' ? 'lock' : null);
-  const g = go ?? kind === 'locked';
+  const g = go ?? (kind === 'locked' || kind === 'open');
   return /*#__PURE__*/React.createElement("span", {
     className: 'mcp-tag mcp-tag-' + kind + (g ? ' has-go' : '')
   }, ic && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
@@ -488,6 +488,55 @@ function Block({
   return null;
 }
 const paras = t => t == null ? [] : Array.isArray(t) ? t : [t];
+// Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
+// Stays at the latest turn while it lays out, until the reader scrolls it themselves.
+function useChatScroll(body, turns) {
+  const [up, setUp] = React.useState(false);
+  React.useEffect(() => {
+    const b = body.current;
+    if (!b) return undefined;
+    let moved = false;
+    const mark = () => {
+      const u = b.scrollTop > 4;
+      b.dataset.more = u ? 'up' : '';
+      setUp(u);
+    };
+    const end = () => {
+      if (!moved) b.scrollTop = b.scrollHeight;
+      mark();
+    };
+    const stop = () => {
+      moved = true;
+    };
+    b.addEventListener('scroll', mark, {
+      passive: true
+    });
+    ['wheel', 'touchstart', 'keydown'].forEach(t => b.addEventListener(t, stop, {
+      passive: true
+    }));
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(end) : null;
+    if (ro) {
+      ro.observe(b);
+      [...b.children].forEach(c => ro.observe(c));
+    }
+    end();
+    const t = setTimeout(end, 600);
+    return () => {
+      clearTimeout(t);
+      if (ro) ro.disconnect();
+      b.removeEventListener('scroll', mark);
+      ['wheel', 'touchstart', 'keydown'].forEach(t => b.removeEventListener(t, stop));
+    };
+  }, [turns]);
+  const toStart = () => {
+    const b = body.current;
+    if (b) b.scrollTo({
+      top: 0,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
+  };
+  return [up, toStart];
+}
 function ChatPicture({
   turns,
   title,
@@ -495,25 +544,34 @@ function ChatPicture({
   mark,
   height = 290,
   width = 360,
+  fill = false,
   composer = true,
   placeholder = 'Reply',
   label,
+  more = 'Back to the start',
   className = ''
 }) {
+  const body = React.useRef(null);
+  const [up, toStart] = useChatScroll(body, turns);
+  const name = label || 'A game being played in a chat';
   return /*#__PURE__*/React.createElement("div", {
-    className: ('mcp-chat ' + className).trim(),
-    style: {
+    className: ('mcp-chat' + (fill ? ' is-fill' : '') + ' ' + className).trim(),
+    style: fill ? undefined : {
       width: 'min(100%,' + width + 'px)'
     },
     role: "group",
-    "aria-label": label || 'A game being played in a chat'
+    "aria-label": name
   }, title && /*#__PURE__*/React.createElement("div", {
     className: "mcp-chat-head"
   }, title), /*#__PURE__*/React.createElement("div", {
+    ref: body,
     className: "mcp-chat-body",
-    style: {
+    style: fill ? undefined : {
       height
-    }
+    },
+    tabIndex: 0,
+    role: "region",
+    "aria-label": name + ', scrolls'
   }, turns.map((t, i) => t.from === 'user' ? /*#__PURE__*/React.createElement("p", {
     key: i,
     className: "mcp-chat-me"
@@ -532,7 +590,19 @@ function ChatPicture({
     b: b
   })), paras(t.text).map((p, k) => /*#__PURE__*/React.createElement("p", {
     key: k
-  }, p))))), composer && /*#__PURE__*/React.createElement("div", {
+  }, p))))), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "mcp-chat-up",
+    hidden: !up,
+    onClick: toStart,
+    "aria-label": more
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "down",
+    size: 16,
+    style: {
+      transform: 'rotate(180deg)'
+    }
+  })), composer && /*#__PURE__*/React.createElement("div", {
     className: "mcp-chat-comp",
     "aria-hidden": "true"
   }, /*#__PURE__*/React.createElement("span", null, placeholder), /*#__PURE__*/React.createElement("i", null, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
@@ -784,6 +854,7 @@ function CardRow({
   sub,
   label,
   as = 'h2',
+  kind = 'cards',
   children,
   className = ''
 }) {
@@ -851,7 +922,7 @@ function CardRow({
     name = label || (typeof title === 'string' ? title : 'Cards'),
     n = React.Children.count(children);
   return /*#__PURE__*/React.createElement("div", {
-    className: ('mcp-crow ' + className).trim()
+    className: ('mcp-crow' + (kind === 'chat' ? ' is-chat' : '') + ' ' + className).trim()
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-crow-head"
   }, /*#__PURE__*/React.createElement(T, {
@@ -971,6 +1042,93 @@ function FormCard({
 }
 Object.assign(__ds_scope, { FormCard });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/FormCard.jsx", error: String((e && e.message) || e) }); }
+
+// components/surfaces/GameCard.jsx
+try { (() => {
+// The one game card: picture, name, blurb, tags, always in that order and always all four slots. Works anywhere.
+// Name and blurb sit snug under the picture; tags rest on the card's bottom edge. Cards in a CardRow stretch to one height.
+function GameCard({
+  art,
+  title,
+  mark,
+  blurb,
+  tags,
+  className = '',
+  style
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-card mcp-gcard ' + className).trim(),
+    style: style
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gcard-art"
+  }, art), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gcard-name"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "mcp-t-card"
+  }, title), mark), /*#__PURE__*/React.createElement("p", {
+    className: "mcp-gcard-blurb"
+  }, blurb), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gcard-tags"
+  }, tags));
+}
+Object.assign(__ds_scope, { GameCard });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/GameCard.jsx", error: String((e && e.message) || e) }); }
+
+// components/surfaces/GamePick.jsx
+try { (() => {
+// One of Discover's two picks: a featured game. A 3:1 picture, a label, the name and blurb, tags. Two side by side in .mcp-gpicks line up.
+function GamePick({
+  art,
+  label,
+  title,
+  blurb,
+  tags,
+  className = '',
+  style
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-card mcp-gpick ' + className).trim(),
+    style: style
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gpick-art"
+  }, art), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gpick-text"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-gpick-label"
+  }, label), /*#__PURE__*/React.createElement("h3", {
+    className: "mcp-t-card"
+  }, title), /*#__PURE__*/React.createElement("p", {
+    className: "mcp-gpick-blurb"
+  }, blurb)), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gpick-tags"
+  }, tags));
+}
+Object.assign(__ds_scope, { GamePick });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/GamePick.jsx", error: String((e && e.message) || e) }); }
+
+// components/surfaces/GameTile.jsx
+try { (() => {
+// A game tile for the all-games wall: square picture, name and kind. Smaller and plainer than a GameCard, for scanning and searching the whole catalogue.
+function GameTile({
+  art,
+  title,
+  kind,
+  className = '',
+  style
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-gtile ' + className).trim(),
+    style: style
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-gtile-art"
+  }, art), /*#__PURE__*/React.createElement("span", {
+    className: "mcp-gtile-name"
+  }, title), kind && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-gtile-kind"
+  }, kind));
+}
+Object.assign(__ds_scope, { GameTile });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/GameTile.jsx", error: String((e && e.message) || e) }); }
 
 // components/surfaces/ListRow.jsx
 try { (() => {
@@ -1260,6 +1418,52 @@ function Popup({
 }
 Object.assign(__ds_scope, { Popup });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/Popup.jsx", error: String((e && e.message) || e) }); }
+
+// components/surfaces/SoonCard.jsx
+try { (() => {
+// A game, or a game's next chapter, that is not out yet. Cover beside label, name, line, the Coming soon chip.
+// The card is not a way in. A chapter of a game that is out adds one pressable chip (Play chapter 1) after Coming soon, on the same row; it wraps under only when the row is too narrow.
+function SoonCard({
+  art,
+  label,
+  title,
+  line,
+  play,
+  onPlay,
+  playHref,
+  className = '',
+  style
+}) {
+  const P = playHref ? 'a' : 'button';
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-card mcp-soon ' + className).trim(),
+    style: style
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-soon-art"
+  }, art), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-soon-body"
+  }, label && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-soon-label"
+  }, label), /*#__PURE__*/React.createElement("h3", {
+    className: "mcp-t-card"
+  }, title), line && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-soon-line"
+  }, line), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-soon-tags"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Tag, {
+    kind: "daily"
+  }, "Coming soon"), play && /*#__PURE__*/React.createElement(P, {
+    className: "mcp-soon-play",
+    href: playHref,
+    type: playHref ? undefined : 'button',
+    onClick: onPlay
+  }, /*#__PURE__*/React.createElement(__ds_scope.Tag, {
+    kind: "open",
+    icon: "play"
+  }, play)))));
+}
+Object.assign(__ds_scope, { SoonCard });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/SoonCard.jsx", error: String((e && e.message) || e) }); }
 
 // docs/archive/rows-and-history/playground/rows.jsx
 try { (() => {
@@ -2091,6 +2295,445 @@ Object.assign(window, {
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/archive/rows-and-history/playground/rows.jsx", error: String((e && e.message) || e) }); }
 
+// docs/specs/card-snug-title/playground/pg-card-snug-title.jsx
+try { (() => {
+// Card snug title rig: the real design-system CardRow, Tag and GameCard parts with the product's eight Available games.
+// Options change only the card's geometry (CSS keyed on data-pgs-opt); Today is the shipped rule.
+(() => {
+  const DS = window.MCPGameStoreDesignSystem_ef1abd;
+  const KEY = 'pg_card_snug_title_v1';
+  const OPTS = [{
+    n: 0,
+    name: 'Today',
+    why: 'Four lines shared across the row. The name line is as tall as the tallest name, so a one-line name sits above a blank line.',
+    cost: 'The gap you flagged: one two-line name opens a gap under every other title in the row.'
+  }, {
+    n: 1,
+    name: 'Snug, chips bottom',
+    why: 'Each card stands alone: picture, then name and blurb together, then chips on the card\u2019s bottom edge. Cards are as tall as the tallest in the row. Spare height sits between blurb and chips.',
+    cost: 'Nothing is shared but the picture and the card\u2019s edges. A card with two rows of chips starts its chips higher than one with a single row; their bottom edges stay level.'
+  }, {
+    n: 2,
+    name: 'Block, shared chips',
+    why: 'Name and blurb become one block (a text slot added to GameCard). The row shares three lines: picture, block, chips. Chips sit centred in their line as ratified.',
+    cost: 'Needs a wrapper in GameCard around name and blurb. One chip row beside a two-row set is centred, so its chips float a little above the bottom edge.'
+  }, {
+    n: 3,
+    name: 'Block, chips floor',
+    why: 'As 2, with every chip set sitting on the bottom of its line.',
+    cost: 'Needs the same wrapper. A single chip row sits flush with the other card\u2019s last row, but loses the centring ratified earlier.'
+  }];
+  GS_GAMES.stress = {
+    name: 'The Hollow Under the Hill',
+    art: 'barrow',
+    ed: ['chapter', 'chapters'],
+    blurb: 'Something under the hill wants its gold back.',
+    tags: ['FIRST', 'Weekly', '45\u201360 min']
+  };
+  const load = () => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  };
+  const save = s => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(s));
+    } catch (e) {}
+  };
+  const init = load();
+  const Art = ({
+    id
+  }) => {
+    const a = GS_ART[GS_GAMES[id].art] || {};
+    const svg = (a.svg || '').replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet').replace('<svg ', '<svg style="width:100%;height:100%;display:block" ');
+    return /*#__PURE__*/React.createElement("div", {
+      className: 'mcp-art mcp-art-3' + (a.ground && a.ground !== 'indigo' ? ' is-' + a.ground : ''),
+      style: {
+        position: 'relative'
+      },
+      "aria-hidden": "true"
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: 'absolute',
+        inset: 0,
+        display: 'grid'
+      },
+      dangerouslySetInnerHTML: {
+        __html: svg
+      }
+    }));
+  };
+  const Tags = ({
+    tags,
+    ed
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "gs-tags"
+  }, tags.map((t, i) => t === 'FREE' ? /*#__PURE__*/React.createElement(DS.Tag, {
+    key: i,
+    kind: "free"
+  }, "Free") : t === 'FIRST' ? /*#__PURE__*/React.createElement(DS.Tag, {
+    key: i,
+    kind: "free"
+  }, 'First ' + (ed ? ed[0] : 'edition') + ' free') : t === 'PASS' ? /*#__PURE__*/React.createElement("button", {
+    key: i,
+    type: "button",
+    className: "gs-tagbtn",
+    "aria-label": "Pass. See the Pass"
+  }, /*#__PURE__*/React.createElement(DS.Tag, {
+    kind: "locked"
+  }, "Pass")) : /*#__PURE__*/React.createElement(DS.Tag, {
+    key: i,
+    kind: "daily"
+  }, t)));
+  const keepLast = s => {
+    const i = s.lastIndexOf(' ');
+    const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1;
+    return j < 0 ? s : /*#__PURE__*/React.createElement(React.Fragment, null, s.slice(0, j + 1), /*#__PURE__*/React.createElement("span", {
+      style: {
+        whiteSpace: 'nowrap'
+      }
+    }, s.slice(j + 1)));
+  };
+  // GameCard's own markup, plus one wrapper (pgs-text) around name and blurb. It is display:contents except in options 2 and 3.
+  const Card = ({
+    id
+  }) => {
+    const g = GS_GAMES[id];
+    return /*#__PURE__*/React.createElement("div", {
+      className: "mcp-card mcp-gcard mcp-art-host gs-host"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "mcp-gcard-art"
+    }, /*#__PURE__*/React.createElement(Art, {
+      id: id
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "pgs-text"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "mcp-gcard-name"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "mcp-t-card"
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "gs-titlebtn mcp-art-link"
+    }, g.name))), /*#__PURE__*/React.createElement("p", {
+      className: "mcp-gcard-blurb"
+    }, keepLast(g.blurb))), /*#__PURE__*/React.createElement("div", {
+      className: "mcp-gcard-tags"
+    }, /*#__PURE__*/React.createElement(Tags, {
+      tags: g.tags,
+      ed: g.ed
+    })));
+  };
+  const measure = () => {
+    const cards = [...document.querySelectorAll('.mcp-gcard')];
+    if (!cards.length) return null;
+    const gap = cards.map(c => c.querySelector('.mcp-gcard-blurb').getBoundingClientRect().top - c.querySelector('h3').getBoundingClientRect().bottom);
+    const tb = cards.map(c => {
+      const t = [...c.querySelectorAll('.mcp-tag')];
+      return Math.max(...t.map(x => x.getBoundingClientRect().bottom)) - c.getBoundingClientRect().bottom;
+    });
+    const hs = cards.map(c => c.getBoundingClientRect().height);
+    const sp = a => Math.max(...a) - Math.min(...a);
+    const bl = cards.map(c => {
+      const t = c.querySelector('.mcp-gcard-tags').firstElementChild;
+      const tt = Math.min(...[...c.querySelectorAll('.mcp-tag')].map(x => x.getBoundingClientRect().top));
+      return tt - (() => {
+        const rg = document.createRange();
+        rg.selectNodeContents(c.querySelector('.mcp-gcard-blurb'));
+        return Math.max(...[...rg.getClientRects()].map(x => x.bottom));
+      })() - 12;
+    });
+    return {
+      gap: Math.max(...gap) - 12,
+      tb: sp(tb),
+      hs: sp(hs),
+      blank: Math.max(...bl)
+    };
+  };
+  const App = () => {
+    const [opt, setOpt] = React.useState(Math.min(init.opt ?? 1, 3));
+    const [vp, setVp] = React.useState(init.vp || 'auto');
+    const [open, setOpen] = React.useState(init.open ?? true);
+    const [stress, setStress] = React.useState(init.stress ?? false);
+    const [why, setWhy] = React.useState(false);
+    const [read, setRead] = React.useState(null);
+    const [w, setW] = React.useState(window.innerWidth);
+    const ref = React.useRef(null);
+    React.useEffect(() => {
+      document.documentElement.dataset.pgsOpt = String(opt);
+      save({
+        opt,
+        vp,
+        open,
+        stress
+      });
+    }, [opt, vp, open, stress]);
+    React.useEffect(() => {
+      const t = setInterval(() => setRead(measure()), 500);
+      const r = () => setW(window.innerWidth);
+      window.addEventListener('resize', r);
+      return () => {
+        clearInterval(t);
+        window.removeEventListener('resize', r);
+      };
+    }, []);
+    React.useEffect(() => {
+      const el = ref.current;
+      if (!el) return undefined;
+      const ro = new ResizeObserver(() => document.documentElement.style.setProperty('--pgs-h', el.offsetHeight + 'px'));
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    const o = OPTS[opt],
+      f = x => Math.round(x);
+    const forced = vp === 'mobile';
+    const page = /*#__PURE__*/React.createElement("div", {
+      className: "gs-root"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "gs-wrap",
+      style: {
+        paddingBlock: 36
+      }
+    }, /*#__PURE__*/React.createElement(DS.CardRow, {
+      title: "Available games",
+      className: "gs-row4"
+    }, (stress ? ['stress'].concat(GS_GAME_ORDER) : GS_GAME_ORDER).map(k => /*#__PURE__*/React.createElement(Card, {
+      key: k,
+      id: k
+    })))));
+    return /*#__PURE__*/React.createElement(React.Fragment, null, forced ? /*#__PURE__*/React.createElement("div", {
+      className: "kit-stage"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "kit-phone"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "kit-phone-clip"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "kit-phone-screen"
+    }, page)))) : page, /*#__PURE__*/React.createElement("div", {
+      ref: ref,
+      className: "pgs-strip",
+      role: "region",
+      "aria-label": "Playground options"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pgs-row"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pgs-k"
+    }, "OPTION"), OPTS.map(x => /*#__PURE__*/React.createElement("button", {
+      key: x.n,
+      type: "button",
+      className: "pgs-b",
+      "aria-pressed": opt === x.n,
+      onClick: () => setOpt(x.n)
+    }, x.n + ' ' + x.name)), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "pgs-b",
+      "aria-expanded": why,
+      onClick: () => setWhy(!why)
+    }, why ? 'Less' : 'Why \u00b7 cost'), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "pgs-b pgs-fold",
+      "aria-expanded": open,
+      onClick: () => setOpen(!open)
+    }, open ? 'Hide' : 'Show')), why && /*#__PURE__*/React.createElement("p", {
+      className: "pgs-why"
+    }, /*#__PURE__*/React.createElement("b", null, o.n + ' ' + o.name, "."), " ", o.why, " ", /*#__PURE__*/React.createElement("b", null, "Cost:"), " ", o.cost), open && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "pgs-row"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pgs-k"
+    }, "VIEWPORT"), [['auto', 'Auto'], ['mobile', 'Mobile']].map(([v, l]) => /*#__PURE__*/React.createElement("button", {
+      key: v,
+      type: "button",
+      className: "pgs-b",
+      "aria-pressed": vp === v,
+      onClick: () => setVp(v)
+    }, l)), /*#__PURE__*/React.createElement("span", {
+      className: "pgs-k",
+      style: {
+        width: 'auto',
+        marginLeft: 12
+      }
+    }, "SEED"), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "pgs-b",
+      "aria-pressed": stress,
+      onClick: () => setStress(!stress)
+    }, "Stress: 2-line name + blurb, 3 chips"), /*#__PURE__*/React.createElement("span", {
+      className: "pgs-note"
+    }, forced ? 'Phone frame' : (w < 1024 ? 'Mobile layout' : 'Desktop layout') + ', ' + w + 'px')), /*#__PURE__*/React.createElement("div", {
+      className: "pgs-read"
+    }, read ? /*#__PURE__*/React.createElement(React.Fragment, null, "Blank under a title ", /*#__PURE__*/React.createElement("span", {
+      className: read.gap > 1 ? 'bad' : ''
+    }, f(read.gap), "px"), " ", '\u00b7', " chip bottoms differ from card edge by ", /*#__PURE__*/React.createElement("span", {
+      className: read.tb > 1 ? 'bad' : ''
+    }, f(read.tb), "px"), " ", '\u00b7', " most blank above chips ", /*#__PURE__*/React.createElement("span", {
+      className: read.blank > 24 ? 'bad' : ''
+    }, f(read.blank), "px"), " ", '\u00b7', " card heights differ ", /*#__PURE__*/React.createElement("span", {
+      className: read.hs > 1 ? 'bad' : ''
+    }, f(read.hs), "px")) : '\u2026'))));
+  };
+  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+})();
+})(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/card-snug-title/playground/pg-card-snug-title.jsx", error: String((e && e.message) || e) }); }
+
+// docs/specs/card-snug-title/playground/pg-data.jsx
+try { (() => {
+// Product data, copied from app/gs-data.jsx (covers, names, the eight Available games).
+const GS_SVG = body => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + '</svg>';
+const GS_ART = {
+  delve: {
+    ground: 'wine',
+    extend: 'bottom',
+    svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>')
+  },
+  escape: {
+    ground: 'indigo',
+    extend: 'bottom',
+    svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>')
+  },
+  murder: {
+    ground: 'wine',
+    extend: 'centre',
+    svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>')
+  },
+  // Daily Groups: four rows of four, one colour a group, as a solved board (added 2026-10-09, split-daily-puzzles).
+  groups: {
+    ground: 'indigo',
+    extend: 'centre',
+    svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/>' + ['#E5A63B', '#328A88', '#D66847', '#A390B2'].map((c, r) => [0, 1, 2, 3].map(k => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join('')).join(''))
+  },
+  word: {
+    ground: 'forest',
+    extend: 'centre',
+    svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>')
+  },
+  derelict: {
+    ground: 'indigo',
+    extend: 'centre',
+    svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>')
+  },
+  barrow: {
+    ground: 'wine',
+    extend: 'bottom',
+    svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>')
+  },
+  casebook: {
+    ground: 'indigo',
+    extend: 'bottom',
+    svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>')
+  },
+  hunter: {
+    ground: 'forest',
+    extend: 'bottom',
+    svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>')
+  }
+};
+const GS_NAME = {
+  casebook: 'Casebook',
+  hunter: '36,000 Summers Ago'
+};
+const GS_GAMES = {
+  word: {
+    name: 'Daily Word',
+    category: 'PUZZLE',
+    art: 'word',
+    route: 'word',
+    ed: ['word', 'words'],
+    free: true,
+    daily: true,
+    once: true,
+    blurb: 'Six guesses to find today’s five-letter word.',
+    tags: ['FREE', 'Daily', '10 min']
+  },
+  groups: {
+    name: 'Daily Groups',
+    category: 'PUZZLE',
+    art: 'groups',
+    route: 'groups',
+    ed: ['groups', 'groups'],
+    edLink: 'See all groups',
+    edAll: 'All groups',
+    free: true,
+    daily: true,
+    once: true,
+    blurb: 'Sixteen words hide four groups. Find all four.',
+    tags: ['FREE', 'Daily', '10 min']
+  },
+  mystery: {
+    name: 'Daily Mystery',
+    category: 'PUZZLE',
+    art: 'murder',
+    route: 'mystery',
+    ed: ['case', 'cases'],
+    free: true,
+    daily: true,
+    once: true,
+    blurb: 'There’s a body and a story that doesn’t add up.',
+    tags: ['FREE', 'Daily', '10 min']
+  },
+  escape: {
+    name: 'Escape',
+    category: 'PUZZLE',
+    art: 'escape',
+    route: 'escape',
+    ed: ['room', 'rooms'],
+    free: true,
+    blurb: 'The door’s locked and you’re on the wrong side of it.',
+    tags: ['FREE', 'Weekly', '10 min']
+  },
+  casebook: {
+    name: GS_NAME.casebook,
+    category: 'MYSTERY',
+    art: 'casebook',
+    route: 'casebook',
+    ed: ['case', 'cases'],
+    once: true,
+    blurb: 'Ask the question they haven’t prepared for.',
+    first: true,
+    tags: ['FIRST', 'Weekly', '25–40 min']
+  },
+  delve: {
+    name: 'Delve',
+    category: 'ADVENTURE',
+    art: 'delve',
+    route: 'delve',
+    ed: ['scene', 'scenes'],
+    first: true,
+    blurb: 'Get her out before the drums stop.',
+    tags: ['FIRST', 'Weekly', '25–40 min']
+  },
+  // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
+  barrow: {
+    name: 'The Barrow of Hollowmere',
+    category: 'ADVENTURE',
+    art: 'barrow',
+    route: 'barrow',
+    ed: ['chapter', 'chapters'],
+    eds: true,
+    edLink: 'All chapters',
+    edAll: 'All chapters',
+    first: true,
+    blurb: 'Something under the hill wants its gold back. Go down anyway.',
+    tags: ['FIRST', '45–60 min']
+  },
+  hunter: {
+    name: GS_NAME.hunter,
+    category: 'LEARNING',
+    art: 'hunter',
+    route: 'hunter',
+    blurb: 'Grey dawn below Chauvet cave. Go where you like.',
+    tags: ['PASS', '2 hours']
+  }
+};
+const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
+Object.assign(window, {
+  GS_ART,
+  GS_NAME,
+  GS_GAMES,
+  GS_GAME_ORDER
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/card-snug-title/playground/pg-data.jsx", error: String((e && e.message) || e) }); }
+
 // ui_kits/shop/Screens.jsx
 try { (() => {
 const {
@@ -2446,6 +3089,12 @@ __ds_ns.Disclosure = __ds_scope.Disclosure;
 
 __ds_ns.FormCard = __ds_scope.FormCard;
 
+__ds_ns.GameCard = __ds_scope.GameCard;
+
+__ds_ns.GamePick = __ds_scope.GamePick;
+
+__ds_ns.GameTile = __ds_scope.GameTile;
+
 __ds_ns.RowList = __ds_scope.RowList;
 
 __ds_ns.ListRow = __ds_scope.ListRow;
@@ -2455,5 +3104,7 @@ __ds_ns.Menu = __ds_scope.Menu;
 __ds_ns.PageGrid = __ds_scope.PageGrid;
 
 __ds_ns.Popup = __ds_scope.Popup;
+
+__ds_ns.SoonCard = __ds_scope.SoonCard;
 
 })();

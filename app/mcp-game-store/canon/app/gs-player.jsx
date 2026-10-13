@@ -61,7 +61,8 @@ const GP_CFG = {
 const GP_LINE = {
   word: 'See every day’s word and how many guesses it took you.', groups: 'See every day’s groups and how many mistakes you made.',
   mystery: 'See every case you closed and every one that got away.', escape: 'See every room you got out of and how many moves it took.',
-  casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.' };
+  casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.',
+  barrow: 'See every chapter you’ve played and what you carried out.' };
 const gpUp = (t) => t.toUpperCase();
 const GpRecord = ({ id }) => {
   const c = GP_CFG[id];
@@ -137,7 +138,7 @@ const GpCard = ({ id }) => {
       <GpMini art={g.art} />
       <div className="gs-stack-xs"><span className="gs-label">IN YOUR LIBRARY</span>
         <span className="gs-small">{GP_LINE[id] || 'See every ' + GP_CFG[id].units.replace(/s$/, '') + ' you’ve played and how each one ended.'}</span></div>
-      <div className="pg-band-link"><DS.TextLink onClick={() => gpToRecord(gs, id)}>{'Go to your ' + g.name}</DS.TextLink></div>
+      <div className="pg-band-link"><DS.TextLink onClick={() => gpToRecord(gs, id)}>{'Go to your ' + g.name.replace(/^The /, '')}</DS.TextLink></div>
     </section>
   );
 };
@@ -162,8 +163,10 @@ const GpPlayer = ({ id }) => {
 const gpGame = (id) => () => {
   const gs = useGs();
   if (gs.view !== 'out' && gs.route.page === 'record') { const L = window.GS_LIBRARY && window.GS_LIBRARY[id]; return L ? <L /> : <GpPlayer id={id} />; }
-  return <GsGamePage id={id} top={gs.view !== 'out' ? <GpCard id={id} /> : null} />;
+  // The card shows only where the player can play: part of the game is free (free, first), or the Pass. A lapsed Pass is view 'free'.
+  const canPlay = gs.view === 'pass' || !!(GS_GAMES[id].free || GS_GAMES[id].first);
+  return <GsGamePage id={id} top={gs.view !== 'out' && canPlay ? <GpCard id={id} /> : null} />;
 };
 
 Object.assign(window, { GsDelve: gpGame('delve'), GsWord: gpGame('word'), GsGroups: gpGame('groups'), GsMystery: gpGame('mystery'), GsEscape: gpGame('escape'),
-  GsCasebook: gpGame('casebook'), GsHunter: gpGame('hunter') });
+  GsCasebook: gpGame('casebook'), GsHunter: gpGame('hunter'), GsBarrow: gpGame('barrow') });

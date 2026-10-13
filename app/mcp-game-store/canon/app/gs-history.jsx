@@ -28,6 +28,7 @@ const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #'
 const ED_NONE = { kind: 'none', label: 'Not played' };
 const edList = (gs, gid) => {
   const pass = gs.view === 'pass'; const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null;
+  if (gid === 'barrow') return bwEds(gs);
   if (PZ[gid]) {
     const c = PZ[gid];
     return c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
@@ -201,7 +202,18 @@ const rpRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0
 
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
 // On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height.
-const LbRecent = ({ title, allLabel, empty }) => {
+// A game never played shows the card's empty line only (library-mystery-never-played).
+const LbRecent = (p) => {
+  const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
+  if (gs.review && gs.review.never === gid) return (
+    <section className="lb-card lb-recentcard">
+      <div className="lb-sechead"><h2 className="mcp-t-card">{p.title}</h2></div>
+      <p className="gs-muted">{p.empty}</p>
+    </section>
+  );
+  return <LbRecentList {...p} />;
+};
+const LbRecentList = ({ title, allLabel, empty }) => {
   const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
   const card = React.useRef(null); const list = React.useRef(null); const probe = React.useRef(null);
   // list and probe wrap a DS.RowList; its <li>s are the rows measured. Probe rows keep their chevron, so they wrap exactly as the shown ones do.

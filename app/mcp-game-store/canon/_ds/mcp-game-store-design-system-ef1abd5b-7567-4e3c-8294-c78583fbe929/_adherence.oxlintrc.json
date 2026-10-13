@@ -22,7 +22,7 @@
               "components/forms/**",
               "components/media/**",
               "components/surfaces/**",
-              "playgrounds/rows/**",
+              "docs/archive/rows-and-history/playground/**",
               "ui_kits/shop/**"
             ],
             "message": "Import design-system components from 'index.js', not component internals."
@@ -65,12 +65,16 @@
         "message": "<Card> doesn't accept that prop. Declared props: title, action, children, className, style, href, onClick, label, chevron."
       },
       {
-        "selector": "JSXOpeningElement[name.name='CardRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|sub|label|as|children|className|key|ref|className|style|children)$/]",
-        "message": "<CardRow> doesn't accept that prop. Declared props: title, sub, label, as, children, className."
+        "selector": "JSXOpeningElement[name.name='CardRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|sub|label|as|kind|children|className|key|ref|className|style|children)$/]",
+        "message": "<CardRow> doesn't accept that prop. Declared props: title, sub, label, as, kind, children, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='CardRow'] > JSXAttribute[name.name='as'] > Literal[value!=/^(?:h2|h3)$/]",
         "message": "<CardRow> as must be one of 'h2' | 'h3'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='CardRow'] > JSXAttribute[name.name='kind'] > Literal[value!=/^(?:cards|chat)$/]",
+        "message": "<CardRow> kind must be one of 'cards' | 'chat'."
       },
       {
         "selector": "JSXOpeningElement[name.name='ChatTurn'] > JSXAttribute > JSXIdentifier[name!=/^(?:from|text|tool|blocks|key|ref|className|style|children)$/]",
@@ -85,12 +89,20 @@
         "message": "<Checkbox> doesn't accept that prop. Declared props: label, checked, defaultChecked, onChange, className."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|art|src|children|onClick|className|key|ref|className|style|children)$/]",
-        "message": "<Cover> doesn't accept that prop. Declared props: name, art, src, children, onClick, className."
+        "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|art|src|children|fill|ground|extend|onClick|className|key|ref|className|style|children)$/]",
+        "message": "<Cover> doesn't accept that prop. Declared props: name, art, src, children, fill, ground, extend, onClick, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute[name.name='art'] > Literal[value!=/^(?:daily-puzzles|daily-puzzles-diagonal|weekly-interrogation|dungeon-quest|dungeon-quest-single)$/]",
         "message": "<Cover> art must be one of 'daily-puzzles' | 'daily-puzzles-diagonal' | 'weekly-interrogation' | 'dungeon-quest' | 'dungeon-quest-single'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute[name.name='ground'] > Literal[value!=/^(?:indigo|wine|forest)$/]",
+        "message": "<Cover> ground must be one of 'indigo' | 'wine' | 'forest'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute[name.name='extend'] > Literal[value!=/^(?:bottom|centre)$/]",
+        "message": "<Cover> extend must be one of 'bottom' | 'centre'."
       },
       {
         "selector": "JSXOpeningElement[name.name='Disclosure'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|children|defaultOpen|key|ref|className|style|children)$/]",
@@ -111,6 +123,18 @@
       {
         "selector": "JSXOpeningElement[name.name='GameArt'] > JSXAttribute[name.name='shape'] > Literal[value!=/^(?:square|landscape|wide)$/]",
         "message": "<GameArt> shape must be one of 'square' | 'landscape' | 'wide'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='GameCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|title|mark|blurb|tags|className|style|key|ref|className|style|children)$/]",
+        "message": "<GameCard> doesn't accept that prop. Declared props: art, title, mark, blurb, tags, className, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='GamePick'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|label|title|blurb|tags|className|style|key|ref|className|style|children)$/]",
+        "message": "<GamePick> doesn't accept that prop. Declared props: art, label, title, blurb, tags, className, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='GameTile'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|title|kind|className|style|key|ref|className|style|children)$/]",
+        "message": "<GameTile> doesn't accept that prop. Declared props: art, title, kind, className, style."
       },
       {
         "selector": "JSXOpeningElement[name.name='Icon'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|className|style|label|key|ref|className|style|children)$/]",
@@ -227,6 +251,15 @@
         "replaces": []
       },
       "GameArt": {
+        "replaces": []
+      },
+      "GameCard": {
+        "replaces": []
+      },
+      "GamePick": {
+        "replaces": []
+      },
+      "GameTile": {
         "replaces": []
       },
       "Icon": {

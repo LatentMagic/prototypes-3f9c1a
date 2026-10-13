@@ -11,51 +11,9 @@ const gsFind = (q, k) => { const s = gsNorm(q); return !s || gsNorm(GS_GAMES[k].
 // The two picks: chosen by us, not by rule. Seed.
 const GS_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
-const GS_ADDED = ['hunter', 'casebook', 'delve', 'escape'];
+const GS_ADDED = ['barrow', 'hunter', 'casebook', 'delve', 'escape'];
 const GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
 
-const DcHead = ({ g, mark, open, label }) => (
-  <div className="gs-stack-sm">
-    {label && <span className="gs-label">{label}</span>}
-    <div className="gs-title-row">
-      <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
-      {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
-    </div>
-    <p className="gs-muted">{g.blurb}</p>
-  </div>
-);
-const DcPick = ({ id, label }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
-  return (
-    <DS.Card className="mcp-art-host gs-host" style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
-      <div className="gs-gcard" ref={host}><GsArt art={g.art} shape="wide" /></div>
-      <DcHead g={g} open={open} label={label} />
-      <GsTagList tags={g.tags} ed={g.ed} />
-    </DS.Card>
-  );
-};
-const DcRowCard = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
-  return (
-    <DS.Card className="mcp-art-host gs-host" style={{ justifyItems: 'stretch', alignContent: 'stretch' }}>
-      <div className="gs-feat" ref={host}>
-        <GsArt art={g.art} shape="wide" />
-        <div className="gs-feat-body"><DcHead g={g} mark={mark} open={open} /><GsTagList tags={g.tags} ed={g.ed} /></div>
-      </div>
-    </DS.Card>
-  );
-};
-const DcTile = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const open = () => gs.go(g.route); const host = useGsArtHost();
-  return (
-    <div className="dc-tile mcp-art-host gs-host" ref={host}>
-      <GsArt art={g.art} shape="square" />
-      <button type="button" className="dc-tile-name mcp-art-link" onClick={open}>{g.name}</button>
-      <span className="gs-small">{gsKind(g.category)}</span>
-      {mark && <span className="dc-tags"><DS.Tag kind="daily" icon="check">{mark}</DS.Tag></span>}
-    </div>
-  );
-};
 const DcPassBand = () => {
   const gs = useGs(); if (gs.view === 'pass') return null;
   return (
@@ -82,12 +40,12 @@ const DcBody = () => {
   const freeIds = GS_GAME_ORDER.filter((k) => GS_GAMES[k].free);
   const wait = useGsPart([q, on.join()]);
   return <>
-    <div className="gs-grid2">{GS_PICKS.map(([k, l]) => <DcPick key={k} id={k} label={l} />)}</div>
+    <div className="mcp-gpicks">{GS_PICKS.map(([k, l]) => <GsPick key={k} id={k} label={l} />)}</div>
     <section className="dc-sec">
-      <DS.CardRow title="Just added">{GS_ADDED.map((k) => <DcRowCard key={k} id={k} />)}</DS.CardRow>
+      <DS.CardRow title="Just added" className="gs-row4">{GS_ADDED.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <section className="dc-sec">
-      <DS.CardRow title="Free to play" sub={GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}>{freeIds.map((k) => <DcRowCard key={k} id={k} />)}</DS.CardRow>
+      <DS.CardRow title="Free to play" className="gs-row4" sub={GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}>{freeIds.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <DcPassBand />
     <section className="dc-sec">
@@ -98,7 +56,7 @@ const DcBody = () => {
           {[...GS_KINDS.map((c) => [c, gsKind(c)]), ...GS_RHYTHMS, ['free', 'Free']].map(([v, l]) => <button key={v} type="button" aria-pressed={on.includes(v)} onClick={() => flip(v)}>{l}</button>)}
         </div>
       </div>
-      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="dc-wall">{ids.map((k) => <DcTile key={k} id={k} />)}</div>
+      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <GsTile key={k} id={k} kind={gsKind(GS_GAMES[k].category)} />)}</div>
         : <div className="dc-empty"><p>No game matches that.</p><DS.TextLink onClick={clear}>Show every game</DS.TextLink></div>}
     </section>
   </>;
@@ -126,7 +84,7 @@ const GsDiscover = () => {
 
 // ---- Library: every game, and whether something is waiting to be played (design system ListRow, "A library of games").
 // Worked out from the same state the game's own page reads (lbNow, lbWeekDone, the Today switch), so the two always agree.
-const GS_LIB_READY = { word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
+const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
 const gsLibShort = (s) => { const m = /(\d{1,2}) ([A-Z][a-z]{2})[a-z]*,?( \d{4})?/.exec(s || ''); return m ? m[1] + ' ' + m[2] + (m[3] && m[3] !== ' 2026' ? m[3] : '') : ''; };
 // { result, tone, when, at }: at is the last-played time for the "Last played" order (higher is more recent), 0 when never played.
 const gsLibRow = (gs, k) => {

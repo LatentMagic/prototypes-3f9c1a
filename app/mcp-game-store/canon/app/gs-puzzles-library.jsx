@@ -13,11 +13,11 @@ const PZ = {
     no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow', links: ['See every guess', 'See your guesses so far'],
-    live: { line: 'You’ve used 2 of your 6 guesses, and two letters are in place.', bar: ['Guess 2 of 6', 2, 6] },
-    done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with no hints.', bar: ['Guess 3 of 6', 3, 6] }, plays: ['Your words', 'All words'],
+    live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
+    done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with one hint.', bar: ['Guess 3 of 6', 3, 6] }, plays: ['Your words', 'All words'],
     ach: [{ k: 'w1', n: 'Solved', how: 'Solve a Daily Word.', got: '2 October' },
       { k: 'w2', n: 'Solved in two', how: 'Solve a Daily Word in two guesses.' },
-      { k: 'w7', n: 'Seven days in a row', how: 'Play Daily Word seven days running.', of: 7, endedHave: 2 }],
+      { k: 'w7', n: 'Seven days in a row', how: 'Solve Daily Word seven days running.', of: 7, endedHave: 2 }],
   },
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
@@ -34,10 +34,10 @@ const PZ = {
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow', links: ['See every question', 'See your questions so far'],
     live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
-    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after three questions, and it was the wrong suspect.' }, plays: ['Your cases', 'All cases'],
-    ach: [{ k: 'm1', n: 'Case closed', how: 'Name the culprit in a Daily Mystery.', got: '4 October' },
+    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after two questions, and the weapon was wrong.' }, plays: ['Your cases', 'All cases'],
+    ach: [{ k: 'm1', n: 'Case closed', how: 'Solve a Daily Mystery case.', got: '4 October' },
       { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.' },
-      { k: 'm7', n: 'Seven days in a row', how: 'Play Daily Mystery seven days running.', of: 7, endedHave: 0 }],
+      { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7, endedHave: 0 }],
   },
   escape: {
     weekly: true, rooms: ['The Locked Study', 'The Flooded Cellar', 'The Clock Tower', 'The Night Train', 'The Lighthouse', 'The Vault', 'The Greenhouse', 'The Lift Shaft'],
@@ -55,7 +55,12 @@ const PZ = {
 const PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
 const PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
 const PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
-const PZ_SUSPECTS = ['the gardener', 'the cook', 'the vicar', 'the niece'];
+// Earlier Daily Mystery days, in the real grammar: SAMPLES, not real cases. At most two questions; a wrong accusation gets one part wrong.
+const PZ_SUS = ['Ivy Marchbank', 'Colonel Rufus Hale', 'Delphine Rooke', 'Arthur Penhallow', 'Mr Graves', 'Sebastian Wyle', 'Dr Helena Strand', 'Nell Okafor'];
+const PZ_WPN = ['brass candlestick', 'vial of foxglove', 'antique pistol', 'iron poker', 'curtain cord', 'paper knife', 'marble bust', 'hatpin'];
+const PZ_RMS = ['library', 'conservatory', 'butler’s pantry', 'billiard room', 'wine cellar', 'dining room', 'morning room', 'study'];
+const pzQn = (q) => (q === 0 ? 'No questions' : q === 1 ? '1 question' : q + ' questions');
+const pzAcc = (s, w, r) => s + ', with the ' + w + ', in the ' + r;
 const PZ_MOVES = [['Search the desk', 'Note'], ['Try door', 'Locked'], ['Move painting', 'Safe'], ['Read note', 'Three numbers'],
   ['Enter numbers on safe', 'Wrong order'], ['Check clock', '4:12'], ['Enter 4, 1, 2', 'Opens'], ['Take key', 'Key'], ['Unlock door', 'Out'], ['Pull rug', 'Nothing']];
 const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
@@ -77,11 +82,15 @@ const pzSession = (id, c, x) => {
     s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], listTitle: 'Every try', share: x.line,
       shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
   } else if (id === 'mystery') {
-    const who = PZ_SUSPECTS[i % 4]; const wrong = PZ_SUSPECTS[(i + 1) % 4]; const q = 1 + (i % 3);
-    const qs = [['Was the window open?', 'Yes'], ['Did anyone leave before ten?', 'One'], ['Was the knife moved?', 'No']].slice(0, q);
-    s = { ...base, result: x.ok ? 'Solved' : 'Not solved', listTitle: 'Every question', share: x.ok ? 'Solved' : 'Not solved',
-      shareHead: 'Daily Mystery #' + (64 - i) + ' · ' + (x.ok ? '✅ Solved' : '❌ Not solved') + ' · ' + '🔎'.repeat(q),
-      lines: [...qs.map(([a, b], k) => ['Question ' + (k + 1), a, b]), ['Accusation', x.ok ? who : wrong, x.ok ? 'Right' : 'Wrong']] };
+    const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
+    const qs = Array.from({ length: q }, (_, k) => (k === 0
+      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'Yes' : 'No']
+      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'Yes' : 'No']));
+    const part = i % 3;
+    const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
+      : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
+    s = { ...base, number: 64 - i, q, hints: 0, listTitle: 'Every question', share: x.line, figures: [pzQn(q), 'No hints'],
+      lines: [...qs, ['Accusation', acc, x.ok ? 'Right' : 'Wrong']] };
   } else {
     const n = x.ok ? (i === 1 ? 9 : 6 + (i % 5)) : 10; const mv = PZ_MOVES.slice(0, n);
     s = { ...base, listTitle: 'Every move', share: x.line, shareHead: 'Escape 🚪 ' + x.title + ' · ' + (x.ok ? 'out in ' + n + ' moves' : 'still locked in'),

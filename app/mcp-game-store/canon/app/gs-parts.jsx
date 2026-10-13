@@ -10,10 +10,9 @@ const GsCover = ({ art }) => (
 );
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
-const GS_ART_MOTION = ['groups', 'casebook', 'hunter'];
+const GS_ART_MOTION = ['groups', 'casebook', 'hunter', 'word'];
 const I = (c) => <i className={c} />;
 const GS_ART_LOCAL = {
-  word: { bg: 'is-forest', body: <>{I('ga-w ga-w1')}{I('ga-w ga-w2')}{I('ga-w3')}</> },
   murder: { bg: 'is-wine', body: <>{I('ga-m-ring')}{I('ga-m-bar')}{I('ga-m-cap')}</> },
   escape: { bg: '', body: <>{I('ga-e-door')}{I('ga-e-knob')}{I('ga-e-win')}</> },
   delve: { bg: 'is-wine', body: <>{I('ga-d-out')}{I('ga-d-in')}{I('ga-d-st')}{I('ga-d-st2')}{I('ga-d-st3')}{I('ga-d-post l')}{I('ga-d-post r')}{I('ga-d-fl l')}{I('ga-d-fl r')}</> },
@@ -21,7 +20,14 @@ const GS_ART_LOCAL = {
 const GS_RATIO = { square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
 const GsArt = ({ art, shape }) => {
   if (GS_ART_MOTION.includes(art)) return <DS.GameArt art={art} shape={shape} />;
-  const p = GS_ART_LOCAL[art]; if (!p) return <GsCover art={art} />;
+  const p = GS_ART_LOCAL[art];
+  // A cover with no drawn motion piece (the Barrow): its 4:3 art at the box's height, centred, on its own ground, so every shape keeps the row's ratio.
+  if (!p) {
+    const a = GS_ART[art] || {}; if (!shape || !GS_RATIO[shape]) return <GsCover art={art} />;
+    const svg = (a.svg || '').replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet');
+    return <div className={'mcp-art ' + GS_RATIO[shape] + (a.ground && a.ground !== 'indigo' ? ' is-' + a.ground : '')} style={{ position: 'relative' }} aria-hidden="true">
+      <span style={{ position: 'absolute', inset: 0, display: 'grid' }} dangerouslySetInnerHTML={{ __html: svg.replace('<svg ', '<svg style="width:100%;height:100%;display:block" ') }} /></div>;
+  }
   return <div className={'mcp-art ' + GS_RATIO[shape] + ' ' + p.bg} aria-hidden="true"><div className="gs-st">{p.body}</div></div>;
 };
 // Touch: the pose plays while a finger is down on the card and stops on release or when a scroll takes over.
@@ -118,56 +124,55 @@ const GsTrack = ({ label, value, max = 6, threat }) => (
     </div>
   </div>
 );
-const GsSoonCard = ({ g }) => (
-  <DS.Card style={{ gridTemplateColumns: 'minmax(96px, 1fr) minmax(0, 2fr)', gap: 16, alignItems: 'center', justifyItems: 'stretch' }}>
-    <GsCover art={g.art} />
-    <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-      <h3 className="mcp-t-card">{g.name}</h3>
-      <p className="gs-muted">{g.line}</p>
-      <DS.Tag kind="daily">Coming soon</DS.Tag>
-    </div>
-  </DS.Card>
-);
-// "More games" on a product page. The whole card is the target and the hover surface, as on Home and Discover:
-// hover, focus and press play the art's motion (phone-snags-second-pass). On a phone the art is 2:1, so a card never fills the screen.
-const GsGameCard = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
-  const open = () => gs.go(g.route);
+// Coming soon is the design system's SoonCard (2026-10-13). A chapter of a game that is out carries label, play and its route.
+const GsSoonCard = ({ g }) => {
+  const gs = useGs(); const a = GS_ART[g.art] || {};
   return (
-    <DS.Card className="mcp-art-host gs-host gs-more" style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-      <div ref={host}><GsArt art={g.art} shape="landscape" /></div>
-      <div className="gs-title-row">
-        <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn mcp-art-link" onClick={open}>{g.name}</button></h3>
-        {mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
-      </div>
-      <p className="gs-muted">{g.blurb}</p>
-      <GsTagList tags={g.tags} ed={g.ed} />
-    </DS.Card>
+    <DS.SoonCard
+      art={<DS.Cover fill ground={a.ground} extend={a.extend}><span style={{ display: 'block' }} dangerouslySetInnerHTML={{ __html: a.svg || '' }} /></DS.Cover>}
+      label={g.label} title={g.name} line={g.line}
+      play={g.play} onPlay={g.play ? () => gs.go(g.route) : undefined} />
   );
 };
+// ---- A game in three forms, all from the design system (2026-10-13): GsCard (GameCard) in every card row,
+// GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall. Coming soon is GsSoonCard.
+// The whole card is the target and the hover surface: hover, focus and press play the art's motion (phone-snags-second-pass).
+// A blurb's last two words stay together, so its last line is never one word (LM-1110 product copy, 2026-10-13).
+const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
+const GsCard = ({ id, mark }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
+  return (
+    <DS.GameCard className="mcp-art-host gs-host"
+      art={<div ref={host}><GsArt art={g.art} shape="wide" /></div>}
+      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
+      mark={mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
+      blurb={gsKeepLast(g.blurb)}
+      tags={<GsTagList tags={g.tags} ed={g.ed} />} />
+  );
+};
+const GsPick = ({ id, label }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
+  return (
+    <DS.GamePick className="mcp-art-host gs-host"
+      art={<div ref={host}><GsArt art={g.art} shape="wide" /></div>}
+      label={label}
+      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
+      blurb={gsKeepLast(g.blurb)}
+      tags={<GsTagList tags={g.tags} ed={g.ed} />} />
+  );
+};
+const GsTile = ({ id, kind }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
+  return (
+    <DS.GameTile className="mcp-art-host gs-host"
+      art={<div ref={host}><GsArt art={g.art} shape="square" /></div>}
+      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
+      kind={kind} />
+  );
+};
+// "More games" on a product page.
+const GsGameCard = GsCard;
 
-// ---- Chat window: player right in a bubble, assistant plain left, server in a panel
-const GsChat = ({ caption, framed, children }) => (
-  <figure className={'gs-chat' + (framed ? ' is-framed' : '')}>
-    <div className="gs-chat-bar">
-      {framed && <span className="gs-win-dots" aria-hidden="true"><i /><i /><i /></span>}
-      <span>Your AI app</span>
-    </div>
-    <div className="gs-chat-body">{children}</div>
-    {framed && (
-      <div className="gs-composer" aria-hidden="true">
-        <span>Reply to your AI</span>
-        <span className="gs-composer-send"><DS.Icon name="back" size={16} style={{ transform: 'rotate(90deg)' }} /></span>
-      </div>
-    )}
-    {caption && <figcaption className="gs-chat-cap">{caption}</figcaption>}
-  </figure>
-);
-const GsMe = ({ children }) => <p className="gs-me">{children}</p>;
-const GsAi = ({ children }) => <p className="gs-ai">{children}</p>;
-const GsPanel = ({ label, children }) => (
-  <div className="gs-panel"><span className="gs-panel-label"><img src="assets/logo.svg" alt="" width="16" height="16" />[PLATFORM] · {label}</span>{children}</div>
-);
 const GsUp = () => <DS.Icon name="back" size={14} style={{ transform: 'rotate(90deg)' }} />;
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
 // Manage account, Your AI, divider, Sign out. On a phone the trigger is a person icon in a
@@ -335,6 +340,6 @@ const GsDemoBar = () => {
 const GsPlayPopup = () => <GsPlayDialog />;
 
 Object.assign(window, {
-  GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard,
-  GsChat, GsMe, GsAi, GsPanel, GsUp, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
+  GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard, GsCard, GsPick, GsTile, gsKeepLast,
+  GsUp, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
 });

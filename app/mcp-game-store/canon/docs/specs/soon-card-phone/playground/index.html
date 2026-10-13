@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<base href="../../../../" />
+<title>Coming soon cards on a phone</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/styles.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/fonts.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=soon2" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); padding: 32px 24px 64px; }
+  .wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 56px; }
+  h1 { font: 700 28px/1.2 var(--font-heading); margin: 0; }
+  .note { color: var(--muted); margin: 8px 0 0; max-width: 64ch; }
+  .opt { display: grid; gap: 16px; }
+  .opt h2 { font: 700 22px/1.2 var(--font-heading); margin: 0; }
+  .opt p { margin: 0; max-width: 64ch; }
+  .cost { color: var(--muted); }
+  .frames { display: flex; flex-wrap: wrap; gap: 32px; align-items: start; }
+  .frame { display: grid; gap: 8px; }
+  .frame > span { font: 600 12px/1 var(--font-text); letter-spacing: .08em; color: var(--muted); }
+  .screen { padding: 16px; border: 1px solid var(--line); display: grid; gap: 16px; }
+  .tall { display: block; width: 100%; height: 100%; min-height: 100%; }
+  .tall svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=soon2"></script>
+<script type="text/babel" src="app/gs-data.jsx"></script>
+<script type="text/babel" data-presets="react">
+// Whiteboard: the shipped SoonCard and Cover with the app's own pair (GS_SOON, GS_ART), at two phone widths.
+const art = (k) => GS_ART[k] || {};
+const Svg = ({ k }) => <span dangerouslySetInnerHTML={{ __html: art(k).svg }} />;
+const FillCover = ({ k }) => <DS.Cover fill ground={art(k).ground} extend={art(k).extend}><Svg k={k} /></DS.Cover>;
+const PlainCover = ({ k }) => <DS.Cover><Svg k={k} /></DS.Cover>;
+// Option 1: each cover drawn tall (3:5), anchored at the bottom; a wide box trims the sky, a tall box shows more of it.
+const TALL = {
+  barrow: '<svg viewBox="0 0 120 200" preserveAspectRatio="xMidYMax slice"><rect width="120" height="200" fill="#421A28"/>'
+    + '<rect x="78" y="22" width="14" height="14" fill="#328A88"/>'
+    + [[18, 30], [44, 14], [100, 62], [30, 70], [64, 44]].map(([x, y]) => '<rect x="' + x + '" y="' + y + '" width="3" height="3" fill="#F2EBE0"/>').join('')
+    + '<path d="M-10 200 Q60 90 130 200 Z" fill="#1D1B3A"/><rect x="52" y="150" width="16" height="24" fill="#E5A63B"/>'
+    + '<path d="M0 200L32 146L64 200Z" fill="#E5A63B"/><path d="M50 200L84 152L118 200Z" fill="#F2EBE0"/></svg>',
+  derelict: '<svg viewBox="0 0 120 200" preserveAspectRatio="xMidYMid slice"><rect width="120" height="200" fill="#1D1B3A"/>'
+    + [[14, 20], [92, 30], [24, 176], [100, 160], [60, 12], [70, 186]].map(([x, y]) => '<rect x="' + x + '" y="' + y + '" width="3" height="3" fill="#F2EBE0"/>').join('')
+    + '<circle cx="74" cy="92" r="30" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="18" y="118" width="20" height="20" fill="#D66847"/><circle cx="30" cy="58" r="4" fill="#F2EBE0"/></svg>',
+};
+const TallCover = ({ k }) => <span className="mcp-cover tall" dangerouslySetInnerHTML={{ __html: TALL[k] }} />;
+const Pair = ({ cover, style }) => GS_SOON.map((g) => (
+  <DS.SoonCard key={g.name} style={style} art={cover(g.art)} label={g.label} title={g.name} line={g.line} play={g.play} onPlay={() => {}} />
+));
+const OPTS = [
+  { n: 0, name: 'Today', claim: 'Cover fill beside the text. The art stays 4:3 at the bottom and wine fills the rest.', cost: 'A narrow column under a tall card leaves a strip of plain ground above the art.', cover: (k) => <FillCover k={k} /> },
+  { n: 1, name: 'Better art', claim: 'Each cover is drawn tall, with sky and a moon above the hill, and a tall box shows more of it. The layout stays as it is.', cost: 'Every cover needs a tall drawing, and Cover has to allow art that trims at the top on wide boxes, which its "never crops" rule forbids today. A design-system change.', cover: (k) => <TallCover k={k} /> },
+  { n: 2, name: 'Stack on a phone', claim: 'Below about 480px the cover sits full width on top at 4:3 and the text goes under it. It never gets tall, for any game.', cost: 'Each card grows by the height of its cover, so the pair takes most of a phone screen. A SoonCard change in the design system.', cover: (k) => <PlainCover k={k} />, style: { gridTemplateColumns: 'minmax(0, 1fr)' } },
+  { n: 3, name: 'Cover kept 4:3, not filled', claim: 'On a phone the cover keeps its 4:3 at the top beside the name, with no fill, as a thumbnail.', cost: 'The space under the cover is empty card, and the cover no longer meets the card’s bottom edge, which SoonCard asks for today. A design-system change.', cover: (k) => <PlainCover k={k} />, style: { alignItems: 'start' } },
+];
+const Board = () => (
+  <div className="wrap">
+    <div>
+      <h1>Coming soon cards on a phone</h1>
+      <p className="note">The real SoonCard pair (Derelict, then the Barrow’s chapter 2) at 320 and 390 wide, as it sits under Available games. Only the cover and the card’s layout change.</p>
+    </div>
+    {OPTS.map((o) => (
+      <section key={o.n} className="opt">
+        <h2>{o.n + ' · ' + o.name}</h2>
+        <p>{o.claim}</p>
+        <p className="cost"><b>Cost.</b> {o.cost}</p>
+        <div className="frames">{[320, 390].map((w) => (
+          <div key={w} className="frame"><span>{w + ' WIDE'}</span><div className="screen" style={{ width: w }}><Pair cover={o.cover} style={o.style} /></div></div>
+        ))}</div>
+      </section>
+    ))}
+  </div>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<Board />);
+</script>
+</body>
+</html>

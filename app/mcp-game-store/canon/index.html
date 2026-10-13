@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
-<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=snug1" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -254,7 +254,7 @@
   .gs-foot { padding-top: 16px; border-top: 1px solid var(--line); }
   .gs-inlink { background: none; border: 0; padding: 0; font: inherit; color: var(--off-white); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; cursor: pointer; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
   .gs-small a { text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
-  .gs-inlink:active, .dc-tile-name:active, .gs-legal-col a:active { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; }
+  .gs-inlink:active, .gs-legal-col a:active { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; }
   .gs-ft-link:active, .gs-ft-mail:active, .gs-support:active, .gs-small a:active { text-decoration-color: currentColor; text-underline-offset: 6px; color: var(--text); }
   @media (hover: hover) { .gs-inlink:hover, .gs-ft-mail:hover, .gs-support:hover, .gs-small a:hover, .gs-legal-col a:hover { text-decoration-color: currentColor; text-underline-offset: 6px; } .gs-inlink:hover { color: #fff; } }
   .gs-pz-item, .gs-hrow, .lb-tile, .lb-achbtn, .dc-chips > button, .lb-choice > button, .gs-plan { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -267,11 +267,6 @@
   .gs-grid2, .gs-grid3 { display: grid; gap: 16px; }
   .gs-cols2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
   .gs-head-split, .gs-pitch { display: grid; gap: 24px; }
-  .gs-chatrow { display: grid; grid-auto-flow: column; grid-auto-columns: min(340px, 86%); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 2px; padding: 2px 2px 12px; margin-inline: -2px; }
-  .gs-chatrow:focus-visible { outline: 2px solid var(--accent, #EDE8DF); outline-offset: 2px; }
-  .gs-chatfig { margin: 0; min-width: 0; display: grid; gap: 12px; align-content: start; scroll-snap-align: start; }
-  .gs-chatfig > .mcp-chat { width: 100% !important; }
-  .gs-chatcap { font: 400 13px/1.4 var(--font-text); color: var(--muted); text-wrap: pretty; }
   .gs-pz-head, .gs-sess-head { display: grid; gap: 16px; }
   .gs-top-align { align-items: start; }
   .gs-sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
@@ -338,7 +333,6 @@
   .gs-hero-art { position: relative; overflow: hidden; padding: 36px 16px; display: grid; }
   .gs-hero-shapes { position: absolute; inset: 0; }
   .gs-hero-shapes > svg { width: 100%; height: 100%; display: block; }
-  .gs-hero-art > .gs-chat { position: relative; width: 100%; max-width: 440px; justify-self: center; }
   .gs-band { display: grid; gap: 24px; padding-top: 36px; border-top: 1px solid var(--line); }
   .gs-how { list-style: none; padding: 0; display: grid; gap: 24px; }
   .gs-how > li { display: grid; gap: 8px; align-content: start; }
@@ -353,22 +347,6 @@
   .gs-step > div { padding-top: 4px; }
 
   /* chat window */
-  .gs-chat { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); min-width: 0; }
-  .gs-chat-bar { padding: 12px 16px; border-bottom: 1px solid var(--line); font: 600 13px/1.3 var(--font-text); color: var(--muted); }
-  .gs-chat-body { flex: 1; padding: 16px; display: grid; gap: 12px; align-content: start; }
-  .gs-chat-cap { padding: 12px 16px; border-top: 1px solid var(--line); font: 400 13px/1.4 var(--font-text); color: var(--muted); }
-  .gs-me { justify-self: end; max-width: 85%; background: var(--popup); border: 1px solid var(--line); padding: 8px 12px; }
-  .gs-ai { max-width: 96%; }
-  .gs-panel { border: 1px solid var(--control-edge); background: var(--page); padding: 12px; display: grid; gap: 8px; justify-items: start; font-variant-numeric: tabular-nums; }
-  .gs-panel .mcp-lnk { min-height: 44px; }
-  .gs-panel-label { display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; color: var(--off-white); }
-  .gs-panel-label img { width: 16px; height: 16px; display: block; flex: none; }
-  .gs-chat.is-framed { background: var(--card); border: 1px solid var(--control-edge); box-shadow: var(--shadow-card); }
-  .gs-chat.is-framed .gs-chat-bar { display: flex; align-items: center; gap: 12px; background: var(--popup); border-bottom-color: var(--control-edge); }
-  .gs-win-dots { display: inline-flex; gap: 6px; }
-  .gs-win-dots > i { width: 10px; height: 10px; background: var(--control-edge); }
-  .gs-composer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px 16px; min-height: 48px; padding: 0 4px 0 12px; border: 1px solid var(--control-edge); background: var(--page); color: var(--muted); }
-  .gs-composer-send { width: 40px; height: 40px; display: grid; place-items: center; background: var(--off-white); color: var(--page); }
   .gs-pair { display: flex; flex-wrap: wrap; gap: 4px 24px; font-weight: 600; }
   .gs-roll { display: flex; align-items: center; gap: 12px; }
   .gs-badge { width: 56px; height: 56px; flex: none; display: grid; place-content: center; text-align: center; gap: 2px; background: var(--warning); color: var(--warning-on); }
@@ -445,20 +423,14 @@
   .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
   .gs-hero-covers > span { overflow: hidden; }
   .gs-hero-covers svg { width: 100%; height: 100%; display: block; }
-  /* A row's cards share one height: the title and line sit at the top, the tags at the bottom, so the spare space falls between them (2026-10-12) */
-  .gs-feat { display: grid; gap: 16px; grid-template-rows: auto 1fr; min-height: 100%; }
-  .gs-feat-body { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
-  .gs-feat-body > :first-child { flex: 1 0 auto; }
-  /* Home's row sizes its cards as Discover's "Just added" (four to a width, 220–280px), not by its own count of seven, which pinned them at 220px and made tags wrap */
+  /* Every game-card row sizes its cards four to a width (220–280px), not by its own count: a row of five or more pinned cards at 220px, narrower than other rows, and made tags wrap */
   .gs-row4 .mcp-crow-track { --n: 4 !important; }
   .gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
   .gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
   .gs-card-eq .gs-plain { align-content: start; }
-  .gs-feat .mcp-cover-art { aspect-ratio: 2 / 1; }
   .gs-today-list > li + li { border-top: 1px solid var(--line); }
   .gs-gdaily { display: grid; gap: 16px; }
   .gs-gdaily .mcp-cover-art { aspect-ratio: 2 / 1; }
-  .gs-gcard .mcp-cover-art { aspect-ratio: 3 / 1; }
   @container gs (min-width: 720px) {
     .gs-gdaily { grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; }
     .gs-gdaily .mcp-cover-art { aspect-ratio: 4 / 3; }
@@ -513,9 +485,6 @@
     .gs-head-split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
     .gs-hero2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: stretch; padding-top: 36px; }
     .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
-  }
-  @container gs (min-width: 1000px) {
-    .gs-chatrow { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; overflow: visible; padding: 0; margin: 0; }
   }
 
   /* ==== circlists-match-1..3 and first-release-games ==== */
@@ -944,8 +913,6 @@
     .lb-run > .is-cut > em { padding-left: 0; }
     .lb-mw { display: none; } .lb-mn { display: inline; }
   }
-  @container gs (min-width: 640px) {
-  }
   @container gs (min-width: 720px) {
     .lb-card { padding: 24px; --lb-pad: 24px; }
     .lb-box { --lb-pad: 24px; }
@@ -997,21 +964,6 @@
     .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
     .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
   }
-  /* the hero chat scrolls: it opens on the latest turn; the bar and the pill take the chat's send-button colours (DS ChatPicture --c-send / --c-send-fg) */
-  .gs-hero-field > .mcp-chat .mcp-chat-body { overflow-y: auto; justify-content: flex-start; overscroll-behavior: contain; }
-  .gs-hero-field > .mcp-chat .mcp-chat-body > :first-child { margin-top: auto; }
-  .gs-hero-field > .mcp-chat .mcp-chat-body:focus-visible { outline: 2px solid var(--page); outline-offset: -2px; }
-  .gs-hero-field .mcp-chat-body::-webkit-scrollbar { width: 14px; }
-  .gs-hero-field .mcp-chat-body::-webkit-scrollbar-track { background: transparent; margin: 10px 0; }
-  .gs-hero-field .mcp-chat-body::-webkit-scrollbar-thumb { background: var(--c-send); background-clip: content-box; border: 4px solid transparent; border-radius: 999px; min-height: 40px; }
-  .gs-hero-field .mcp-chat-body::-webkit-scrollbar-button { display: none; height: 0; }
-  @supports not selector(::-webkit-scrollbar) { .gs-hero-field .mcp-chat-body { scrollbar-width: thin; scrollbar-color: var(--c-send) transparent; } }
-  .gs-hero-field .mcp-chat-body[data-more="up"] { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 56px); mask-image: linear-gradient(to bottom, transparent 0, #000 56px); }
-  .gs-hero-up { position: absolute; z-index: 2; top: 10px; left: 50%; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: 999px; background: var(--c-send); color: var(--c-send-fg); font: 600 13px/1 var(--font-text); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.18); transform: translateX(-50%); transition: opacity var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
-  .gs-hero-up[hidden] { display: inline-flex; opacity: 0; pointer-events: none; transform: translate(-50%, -6px); }
-  .gs-hero-up:active { transform: translateX(-50%) scale(.97); }
-  .gs-hero-up:focus-visible { outline: 2px solid var(--c-send); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { .gs-hero-up { transition: none; } }
 
   /* Discover and Library (app/gs-discover.jsx) */
   .dc-sec { display: grid; gap: 16px; }
@@ -1023,44 +975,30 @@
   .dc-empty { display: grid; gap: 8px; justify-items: start; padding: 24px 16px; }
   .dc-empty .mcp-lnk { min-height: 44px; }
   .dc-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; width: 100%; }
-  .dc-wall { display: grid; gap: 24px 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); align-content: start; }
-  .dc-tile { display: grid; gap: 4px; align-content: start; min-width: 0; }
-  .dc-tile .mcp-cover-art { aspect-ratio: 1 / 1; }
-  .dc-tile > .gs-coverbtn { margin-bottom: 4px; }
-  .dc-tile-name { background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.3 var(--font-text); text-align: left; cursor: pointer; min-height: 24px; }
-  .dc-tile-name { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); text-underline-offset: 4px; text-decoration-thickness: 1.5px; transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
-  .dc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   @container gs (min-width: 720px) {
     .dc-tools { grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); align-items: end; }
-    .dc-wall { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
   }
   /* hover on everything that goes somewhere (mouse only) */
   .gs-coverbtn .mcp-cover-art { transition: outline-color 160ms var(--ease); outline: 1px solid transparent; outline-offset: -1px; }
   .gs-coverbtn .mcp-cover-art svg { transition: transform 260ms var(--ease); }
   @media (hover: hover) {
-    .gs-coverbtn:hover .mcp-cover-art, .dc-tile:has(.dc-tile-name:hover) .mcp-cover-art { outline-color: var(--control-edge); }
-    .gs-coverbtn:hover .mcp-cover-art svg, .dc-tile:has(.dc-tile-name:hover) .mcp-cover-art svg { transform: scale(1.04); }
-    .dc-tile-name:hover { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; }
+    .gs-coverbtn:hover .mcp-cover-art { outline-color: var(--control-edge); }
+    .gs-coverbtn:hover .mcp-cover-art svg { transform: scale(1.04); }
     .dc-chips > button:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
     .gs-tagbtn:hover .mcp-tag { border-color: var(--text); color: var(--text); }
   }
   /* Game cards on Home and Discover: the whole card is the target and the hover surface (design system game-art-motion.md).
      The title button stretches over the card; the Pass tag sits above it. */
   .gs-host { position: relative; }
-  .gs-host .gs-titlebtn::after, .gs-host .dc-tile-name::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+  .gs-host .gs-titlebtn::after { content: ''; position: absolute; inset: 0; z-index: 1; }
   .gs-host .gs-tagbtn { position: relative; z-index: 2; }
-  .gs-host .gs-titlebtn:focus-visible, .gs-host .dc-tile-name:focus-visible { outline: none; }
-  .gs-host:has(.gs-titlebtn:focus-visible, .dc-tile-name:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
-  .gs-feat .mcp-art { aspect-ratio: 2 / 1; }
+  .gs-host .gs-titlebtn:focus-visible { outline: none; }
+  .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
   /* Motion art for Daily Word, Daily Mystery, Escape, Delve (described in docs/specs/game-art-motion-more/). Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
   .mcp-art.is-wine { background: var(--cover-bg-wine); }
   .mcp-art.is-forest { background: var(--cover-bg-forest); }
   .gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }
   .gs-st > i, .gs-st > b { left: calc(var(--u) * var(--x)); top: calc(var(--u) * var(--y)); width: calc(var(--u) * var(--w)); height: calc(var(--u) * var(--h)); }
-  .ga-w { --y: 44; --w: 32; --h: 32; border-radius: calc(var(--on) * 50%); }
-  .ga-w1 { --x: 24; --fill: var(--cover-amber); --s: 0; }
-  .ga-w2 { --x: 64; --fill: var(--cover-cream); --s: 40; }
-  .mcp-art i.ga-w3 { --x: 106; --y: 46; --w: 28; --h: 28; --fill: transparent; --s: 20; box-sizing: border-box; border: solid var(--cover-teal); border-width: calc(var(--u) * (4 + var(--on) * 10)); border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * var(--u) * -2), calc(var(--on) * var(--u) * -2)) scale(calc(1 + var(--on) * .142857)); transform-origin: 0 0; transition: transform calc(var(--time-art) * .6) var(--ease-art), border-radius calc(var(--time-art) * .6) var(--ease-art), border-width calc(var(--time-art) * .6) var(--ease-art); }
   .ga-m-ring { --x: 36; --y: 24; --w: 72; --h: 72; --fill: transparent; --s: 0; box-sizing: border-box; border: calc(var(--u) * 12) solid var(--cover-orange); border-radius: 50%; transform: scale(calc(1 - var(--on) * .55)); }
   .ga-m-bar { --x: 114; --y: 24; --w: 10; --h: 72; --fill: var(--cover-cream); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
   .ga-m-cap { --x: 114; --y: 24; --w: 10; --h: 20; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
@@ -1076,7 +1014,6 @@
   .ga-d-post.l { --x: 22; } .ga-d-post.r { --x: 132; }
   .ga-d-fl { --y: 46; --w: 16; --h: 16; --fill: var(--cover-orange); --s: 60; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(calc(var(--on) * var(--u) * -7.5)); }
   .ga-d-fl.l { --x: 17; } .ga-d-fl.r { --x: 127; }
-  .dc-tile > .mcp-art, .dc-tile > .mcp-cover { margin-bottom: 4px; }
   .mcp-card.gs-host { transition: background-color var(--time-press) var(--ease), border-color var(--time-press) var(--ease); }
   .mcp-card.gs-host:is(.is-on, :active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); border-color: var(--control-edge); }
   @media (hover: hover) {
@@ -1255,7 +1192,7 @@
   .gs-osperm button:focus-visible { outline: 2px solid #0b57d0; outline-offset: 2px; }
   /* phone-snags-second-pass, 2026-10-11 */
   /* The hold, by category: anything a press acts on, and any picture, never starts a selection or the phone's callout. Reading text stays selectable; a real link keeps its long-press menu; fields stay editable. */
-  :where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .gs-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  :where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   :where(input, textarea, [contenteditable="true"]) { -webkit-user-select: text; user-select: text; }
   /* Phone account button: a person icon, shaped like the Menu button beside it */
   .mcp-btn.gs-acct-ico { width: 48px; padding-left: 0; padding-right: 0; justify-content: center; }
@@ -1267,8 +1204,30 @@
     .gs-sess-head > .mcp-cover { justify-self: stretch; }
     .gs-sess-head > .gs-stack-md { display: contents; }
     .gs-sess-head > .gs-stack-md > :not(:first-child) { grid-column: 1 / -1; }
-    .gs-more .mcp-art { aspect-ratio: 2 / 1; }
   }
+
+  /* ==== LM-1110 (2026-10-13): Daily Word and Daily Mystery layout fixes, made once in the shared parts ==== */
+  /* C5: the pitch and "How it plays" share a top */
+  .gs-pitch > * { align-self: start !important; }
+  /* C2: achievement items align to the top */
+  .lb-achbtn { align-items: start; }
+  /* C1, reversed by the owner 2026-10-13: cards side by side on the library game page end level; the shorter one takes the spare space at its foot */
+  /* C1, C2: beside the plays card the achievements are one list, a row each, so no title wraps in a narrow column */
+  @container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: minmax(0, 1fr); } }
+  /* S10: the pitch heading wraps at the column's width, as the paragraph under it does */
+  /* SoonCard on a phone (owner, 2026-10-13; docs/specs/soon-card-phone/ option 2): below 480px the cover sits full width on top at 4:3, the text under it.
+     Local until SoonCard carries it upstream; then delete this rule. */
+  @container gs (max-width: 479px) {
+    .mcp-soon { grid-template-columns: minmax(0, 1fr); }
+    /* The cover runs the card's full width as a 2:1 band. The art keeps its 4:3 at the band's height, centred; its ground fills the sides. */
+    .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art::before { aspect-ratio: 2 / 1; }
+    .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art > * { width: auto; height: 100%; top: 0; bottom: auto; left: 50%; translate: -50% 0; }
+  }
+  .gs-pitch h2 { text-wrap: pretty; }
+  /* F6 (owner, 2026-10-13): the editions list's rows are one height, the played row's, so the Played line never makes a row taller than its neighbours */
+  .ed-results .mcp-rows { display: grid; grid-auto-rows: 1fr; }
+  .ed-results .mcp-rows > * { min-height: 0; }
+  .ed-results .mcp-rows > * > .mcp-row, .ed-results .mcp-rows > .mcp-row { height: 100%; }
 </style>
 </head>
 <body>
@@ -1290,7 +1249,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=snug1"></script>
 
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/gs-data.jsx"></script>
@@ -1307,6 +1266,7 @@
 <script type="text/babel" src="app/gs-delve-library.jsx"></script>
 <script type="text/babel" src="app/gs-puzzles-library.jsx"></script>
 <script type="text/babel" src="app/gs-hunter-library.jsx"></script>
+<script type="text/babel" src="app/gs-barrow-library.jsx"></script>
 <script type="text/babel" src="app/gs-player.jsx"></script>
 <script type="text/babel" src="app/gs-discover.jsx"></script>
 <script type="text/babel" src="app/gs-auth.jsx"></script>

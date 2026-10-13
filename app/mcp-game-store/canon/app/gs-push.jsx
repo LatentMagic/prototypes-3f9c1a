@@ -17,7 +17,7 @@
 //   snoozes / snoozeAt   the banner's ×: back after 3 days, then 7, then every 30
 //   on       the all switch for this device; newGames and games[gid] are the others
 // ============================================================================
-const GS_PUSH_KEY = 'gs_push_v1';
+const GS_PUSH_KEY = window.KIT_STATE_KEY || 'gs_push_v1';
 const GS_PUSH_DAY = 86400000;
 const GS_PUSH_SNOOZE = [3, 7, 30];
 const GS_PUSH_HOST = 'platform.example';

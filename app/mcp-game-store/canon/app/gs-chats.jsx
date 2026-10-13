@@ -1,5 +1,5 @@
 // ============================================================================
-// [Platform] — "How it looks in your chat": three DS ChatPictures per game, and the home hero's.
+// [Platform] — "In your chat": three DS ChatPictures per game, and the home hero's.
 // Turns are invented, written to follow each game's seed record (gs-data.jsx).
 // ============================================================================
 const GS_CHAT_BY = '[Platform]';
@@ -16,12 +16,12 @@ const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
 
 const GS_CHATS = {
   word: [
-    { cap: 'Ask for today’s word and the game sets it.', turns: [gscU('I want to play Daily Word.'),
-      gscAi('daily-word', ['Today’s Daily Word (6 Oct 2026) is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
-    { cap: 'Each guess goes to the engine, which marks it and keeps count.', turns: [gscU('amaze'), gscAi('daily-word', 'No hits. 5 guesses left.'), gscU('spain'),
-      gscAi('daily-word', 'First green: I is in the fourth spot. 4 guesses left.', [{ type: 'tiles', rows: [{ word: 'AMAZE', marks: 'xxxxx' }, { word: 'SPAIN', marks: 'xxxgx' }] }])] },
-    { cap: 'Solved, with the result kept on your session page.', turns: [gscU('torch'),
-      gscAi('daily-word', 'Solved in 3 of 6. Your result is on your session page.', [{ type: 'tiles', rows: [{ word: 'SLATE', marks: 'xxxyx' }, { word: 'TONIC', marks: 'ggxxy' }, { word: 'TORCH', marks: 'ggggg' }] }])] },
+    { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('I want to play Daily Word.'),
+      gscAi('daily-word', ['Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
+    { cap: 'Green: right place. Amber: in the word, wrong place. Grey: not in it.', turns: [gscU('crane'), gscAi('daily-word', 'No letters in the word. 5 guesses left.'), gscU('slate'),
+      gscAi('daily-word', 'S is in place. L and T are in the word. 4 guesses left.', [{ type: 'tiles', rows: [{ word: 'CRANE', marks: 'xxxxx' }, { word: 'SLATE', marks: 'gyxyx' }] }])] },
+    { cap: 'Ask for a hint and the engine gives one. Two a day.', turns: [gscU('Give me a hint.'),
+      gscAi('daily-word', 'The word contains the letter I. One hint left today.')] },
   ],
   groups: [
     { cap: 'Sixteen words hide four groups of four.', turns: [gscU('I want to play Daily Groups.'),
@@ -32,13 +32,12 @@ const GS_CHATS = {
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'list', items: ['Found: parts of a fence'] }])] },
   ],
   mystery: [
-    { cap: 'A body, a locked door and an inspector who answers yes or no.', turns: [gscU('I want to play Daily Mystery.'),
-      gscAi('daily-mystery', ['Daily Mystery #64. Colonel Ashby is dead in the locked library.', 'Ask the inspector yes-or-no questions, then make one accusation.'])] },
-    { cap: 'Each question goes to the engine, which answers it and keeps count.', turns: [gscU('Did the cook find the body?'),
-      gscAi('daily-mystery', '“Yes. She brought his tea at nine and found the door locked.”'), gscU('Did anyone else have a key?'),
-      gscAi('daily-mystery', '“No. The only key was inside, on the desk.” 2 questions asked.')] },
-    { cap: 'One accusation, checked by the engine.', turns: [gscU('The butler, with the poker, in the library.'),
-      gscAi('daily-mystery', 'Solved in 5 questions. Your result is on your session page.', [{ type: 'list', items: ['Suspect: right', 'Weapon: right', 'Room: right'] }])] },
+    { cap: 'A body, four suspects and an inspector who answers yes or no.', turns: [gscU('I want to play Daily Mystery.'),
+      gscAi('mystery', ['Daily Mystery No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.', 'The body was found in the dining room. Read the clues, ask the inspector, then make one accusation.'])] },
+    { cap: 'Two questions a day: was a suspect in a room, or did they have a weapon?', turns: [gscU('Was Delphine Rooke in the study?'), gscAi('mystery', 'The inspector says yes. One question left today.'),
+      gscU('Did Arthur Penhallow have the paper knife?'), gscAi('mystery', 'Yes. That was your last question.')] },
+    { cap: 'One accusation, checked by the engine.', turns: [gscU('It was Sebastian Wyle, with the iron poker, in the dining room.'),
+      gscAi('mystery', 'Accuse Sebastian Wyle of the murder, with the iron poker, in the dining room? This is the one accusation today.')] },
   ],
   escape: [
     { cap: 'The door shuts behind you.', turns: [gscU('I want to play Escape.'),
@@ -63,6 +62,14 @@ const GS_CHATS = {
     { cap: 'The ending, with a link back to your full session.', turns: [gscU('I carry her across the bone bridge and run.'),
       gscAi('delve', ['You reach daylight as the drums stop. Rescued, with the threat clock at 5 of 6.', 'Every roll is on your session page.'], [{ type: 'mono', text: 'Athletics  d20 13 + 2 = 15 vs 15\nHit' }])] },
   ],
+  barrow: [
+    { cap: 'Chapter 1 opens at the broken seal.', turns: [gscU('I want to play The Barrow of Hollowmere.'),
+      gscAi('barrow', ['The seal on the barrow lies in three pieces. Hoof prints lead inside and none come out.', 'Two doors: the stone one ahead, or the root-choked one to your left. Which do you take?'], [{ type: 'mono', text: 'Level  1 of 5\nPack   torch, rope, 4 silver' }])] },
+    { cap: 'The engine rolls; your AI tells what happens.', turns: [gscU('I squeeze through the roots.'),
+      gscAi('barrow', 'The roots give way to a low hall. Something glints under the dust.', [{ type: 'mono', text: 'Search  d20 15 + 2 = 17 vs 13\nHit · Bronze ring added to your pack' }])] },
+    { cap: 'What you carry out goes with you.', turns: [gscU('I climb back to daylight.'),
+      gscAi('barrow', ['You reach the hillside at dusk with five levels behind you.', 'Your pack and your wounds carry into chapter 2.'])] },
+  ],
   hunter: [
     { cap: 'Grey dawn. The band sets out without waiting.', turns: [gscU('I want to play 36,000 Summers Ago.'),
       gscAi('summers', ['Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.', 'What do you do?'])] },
@@ -78,18 +85,19 @@ const GS_HERO_CHAT = GS_CHATS.casebook.flatMap((c) => c.turns);
 const GsChatPic = ({ turns, height, width, label }) => (
   <DS.ChatPicture turns={turns} mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={height} width={width} label={label} />
 );
-// Three across from 1000px; below that one row that scrolls sideways, each chat at most 340px.
+// The product page's row: the design system's CardRow kind="chat". It shares the width when the pictures fit and scrolls sideways
+// with Previous and Next when they don't. Each ChatPicture scrolls itself, opens on its latest turn and has its own "Back to the start" pill.
 const GsChatRow = ({ id }) => {
   const name = GS_GAMES[id].name;
   return (
-    <div className="gs-chatrow" tabIndex={0} role="region" aria-label={'How ' + name + ' looks in your chat'}>
-      {(GS_CHATS[id] || []).map((c, i) => (
-        <figure key={i} className="gs-chatfig">
-          <GsChatPic turns={c.turns} width={440} label={name + ' being played in a chat'} />
-          <figcaption className="gs-chatcap">{c.cap}</figcaption>
+    <DS.CardRow kind="chat" title="In your chat">
+      {(GS_CHATS[id] || []).map((x, i) => (
+        <figure key={i} className="mcp-chatfig">
+          <GsChatPic turns={x.turns} label={name + ' being played in a chat'} />
+          <figcaption>{x.cap}</figcaption>
         </figure>
       ))}
-    </div>
+    </DS.CardRow>
   );
 };
 

@@ -46,20 +46,33 @@ const gsShareText = (s) => { const t = gsShareBase(s); return s.again ? gsReplay
 const gsShareBase = (s) => {
   if (s.share == null) return null;
   const link = 'https://platform.example/' + GS_GAMES[s.gid].route;
-  if (s.number) {
-    const guesses = s.lines.map((l) => l[1]); const answer = s.answer || guesses[guesses.length - 1];
-    return [s.game + ' #' + s.number + '  ' + (s.loss ? 'X' : guesses.length) + '/6' + (s.hints ? '  💡' + s.hints : ''), ...guesses.map((g) => gsWordRow(g, answer)), link];
+  if (s.gid === 'word' && s.number) {
+    // A Hint line is not a guess: the tile rows and the count skip it.
+    const guesses = s.lines.filter((l) => /^Guess/.test(l[0])).map((l) => l[1]); const answer = s.answer || guesses[guesses.length - 1];
+    const h = s.hints || 0;
+    const head = 'Daily Word No. ' + s.number + ' · ' + (s.loss ? 'X' : guesses.length) + '/6' + (h ? ' · ' + h + (h === 1 ? ' hint ' : ' hints ') + '💡'.repeat(h) : '');
+    return [head, '', ...guesses.map((g) => gsWordRow(g, answer)), link];
+  }
+  if (s.gid === 'mystery' && s.number) {
+    const q = s.q != null ? s.q : s.lines.filter((l) => /^Question/.test(l[0])).length;
+    const qn = q === 0 ? 'no questions' : q === 1 ? '1 question' : q + ' questions';
+    return ['Daily Mystery No. ' + s.number + ' · ' + (s.loss ? 'wrong accusation' : 'solved') + ' · ' + qn + (q ? ' ' + '🔎'.repeat(q) : ''), s.loss ? '❌' : '✅', link];
   }
   if (s.shareHead) return [s.shareHead, ...(s.rows || []), link];
   if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
 };
-const GsShareText = ({ lines }) => (
-  <DS.Card style={{ gap: 4, justifyItems: 'start' }}>
-    {lines ? lines.map((l, i) => <span key={i} className="gs-num-text" style={{ overflowWrap: 'anywhere' }}>{l}</span>) : <GsGap />}
-  </DS.Card>
-);
+// A blank line stays a blank line (Daily Word's line after its head). It is drawn inside the line above it,
+// so the card's gaps stay one token (4px); Copy still carries the empty line.
+const GsShareText = ({ lines }) => {
+  const shown = []; (lines || []).forEach((l) => { if (l === '' && shown.length) shown[shown.length - 1] += '\n'; else shown.push(l); });
+  return (
+    <DS.Card style={{ gap: 4, justifyItems: 'start' }}>
+      {lines ? shown.map((l, i) => <span key={i} className="gs-num-text" style={{ overflowWrap: 'anywhere', whiteSpace: 'pre-line' }}>{/\n$/.test(l) ? l + '\u200b' : l}</span>) : <GsGap />}
+    </DS.Card>
+  );
+};
 
 // The one Share pop-up, opened from the session page and every library game page (2026-10-11).
 // A panel by ui-design.md: it is neither one question nor a short list of commands, so it is a bottom sheet on a phone.
