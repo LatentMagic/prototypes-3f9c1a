@@ -50,8 +50,8 @@ const PG_FRAMES = {
   '4a': { letter: '4A', name: 'Next free thing', screen: 'Daily Word', label: '4A · Next free thing · step 1',
     note: 'Word done, Mystery unplayed: a line and a Play Daily Mystery button sit under the result. The earlier-words line is gone (4.3-A).',
     route: { name: 'word', page: 'record' }, node: () => <PgDailyWord variant="next" /> },
-  '4a-2': { letter: '4A', name: 'Next free thing', screen: 'Daily Word', label: '4A · Next free thing · step 2 (Mystery done too)',
-    note: 'Route step 2: both free dailies done, seeded frame: both free dailies done. The base close replaces the Mystery line and canon’s “Next word: tomorrow”.',
+  '4a-2': { letter: '4A', name: 'Next free thing', screen: 'Daily Word', label: '4A · Next free thing · seeded frame (Mystery done too)',
+    note: 'Seeded frame: both free dailies done. The base close replaces the Mystery line and canon’s “Next word: tomorrow”.',
     route: { name: 'word', page: 'record' }, node: () => <PgDailyWord variant="closed" /> },
   '4b': { letter: '4B', name: 'Today’s free set', screen: 'Daily Word', label: '4B · Today’s free set',
     note: 'The done card ends in a small list of the free dailies with their state. No sentence, no Pass. Earlier-words line gone.',
@@ -79,7 +79,7 @@ const PgRig = () => {
     <div className="pg-shell">
       <div className="pg-bar" role="group" aria-label="Playground notes, not part of the product"><b>Rig 4 · daily-day</b>
         <span>Posture: Free. Staging: free dailies are Daily Word and Daily Mystery only, Daily Groups hidden. Dates and counts are placeholders.</span></div>
-      <ol className="pg-list">{Object.entries(PG_FRAMES).map(([id, f]) => <li key={id}><a href={'?frame=' + id}>{f.letter}{id === '4a-2' ? ' step 2' : ''}</a> <b>{f.name}</b><br /><span>{f.note}</span></li>)}</ol>
+      <ol className="pg-list">{Object.entries(PG_FRAMES).map(([id, f]) => <li key={id}><a href={'?frame=' + id}>{f.letter}{id === '4a-2' ? ' seeded' : ''}</a> <b>{f.name}</b><br /><span>{f.note}</span></li>)}</ol>
       <div className="pg-row">
         {Object.entries(PG_FRAMES).map(([id, f]) => (
           <div key={id} className="pg-col"><div className="pg-cap">{f.label}</div><PgPhone><PgFrame id={id} onNav={onNav} /></PgPhone></div>
