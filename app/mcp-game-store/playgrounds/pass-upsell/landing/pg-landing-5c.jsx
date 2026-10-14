@@ -6,7 +6,22 @@
 // Daily Groups and 36,000 Summers Ago (no free part) are not shown; "Free" chip reads Joe's line (PG_FREE_FIRST, pg-landing-5b.jsx).
 // Same data state as 5A/5B (PG_STATE): no new fake data. Row cards are canon's GsCard, the wall is canon's GsTile.
 const PG_5C_BAND = 'The start of select games comes with your account. The rest comes with the Pass.';
-const PgLanding5C = () => {
+// Part-free cards carry no tag under 1.3-A (review #5): strip canon's "First <noun> free" tag from the games this rig shows. Rig-only runtime patch; 5A/5B show no tags.
+PG_SHOWN.forEach((k) => { GS_GAMES[k].tags = GS_GAMES[k].tags.filter((t) => t !== 'FIRST'); });
+// 5C-N: the 3.3-A note (once ever), built on GsPushAsk's pattern (canon gs-push.jsx:55): a .gs-pushask region, copy, a dismiss. "Got it" retires it (B3.5).
+const PgFirstPartsNote = () => {
+  const gs = useGs(); const [gone, setGone] = React.useState(false);
+  if (gone) return null;
+  return (
+    <div className="gs-pushask" role="region" aria-label="Notice" style={{ borderRadius: 'var(--radius-3, 12px)' }}>
+      <div className="gs-wrap gs-pushask-in" style={{ alignItems: 'center' }}>
+        <p>You’ve played the first part of each game.<br /><button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>Everything else</button> comes with the Pass.</p>
+        <DS.TextLink onClick={() => setGone(true)}>Got it</DS.TextLink>
+      </div>
+    </div>
+  );
+};
+const PgLanding5C = ({ allDone }) => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [on, setOn] = React.useState([]);
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
@@ -34,7 +49,7 @@ const PgLanding5C = () => {
       ) : <>
         <div className="mcp-gpicks">{picks.map(([k, l]) => <GsPick key={k} id={k} label={l} />)}</div>
         <section className="dc-sec"><DS.CardRow title="Just added" className="gs-row4">{added.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow></section>
-        {freeRow.length ? <section className="dc-sec"><DS.CardRow title="Free to play" className="gs-row4" sub={GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}>{freeRow.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow></section> : null}
+        {allDone ? <PgFirstPartsNote /> : freeRow.length ? <section className="dc-sec"><DS.CardRow title="Free to play" className="gs-row4">{freeRow.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow></section> : null}
         <p className="gs-lead" style={{ margin: 0 }}>{PG_5C_BAND} <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink></p>
         <section className="dc-sec">
           <div className="gs-sec-head"><h2 className="mcp-t-sec">All games</h2></div>

@@ -53,7 +53,9 @@ const PG_FRAMES = {
   '5b': { id: '5B', name: 'The games hub', note: 'Discover recomposed: search and chips first, each game once in a 2-up grid under Every day / Every week / In chapters, doors under each tile, no lock anywhere. Same data state as 5A: doors follow what is played. Marks: "Every ..." doors [Q-G5]; "Play the first scene" [Q-G3] [Q-G13]. Games with no free part (Daily Groups, 36,000 Summers Ago) not shown.',
     ds: 'DS change, faked: tile doors (a play door where something is unplayed, and an "Every ..." door, under the GameTile).', route: { name: 'games' }, node: () => <PgLanding5B /> },
   '5c': { id: '5C', name: 'Discover, tidied', note: 'Today\u2019s Discover with only the tidy of 6.1-C: search and chips moved above the rows, each game once on the first screen (picks, then Just added and Free to play without repeats), the Pass band a plain text link. Everything else is canon\u2019s Discover, same data state as 5A.',
-    route: { name: 'games' }, node: () => <PgLanding5C /> },
+    ds: 'Band note (B3.2): in the real product this link would stay hidden until today\u2019s free thing is done; shown here so the link form can be judged. Fixtures, not canon: The Drowned Light and its cover.', route: { name: 'games' }, node: () => <PgLanding5C /> },
+  '5c-n': { id: '5C-N', name: 'Discover tidied, every first part played', note: 'The 3.3-A note, once ever: every free first part is done (Word and Mystery today, Escape room 1, Casebook case 1, Delve scene 1 [noun], Barrow chapter 1, Drowned Light chapter 1), so the "Free to play" row is replaced by a note built on the notification banner\u2019s dismiss pattern. "Everything else" links to the Pass page; "Got it" retires it (B3.5). Rest as 5C.',
+    ds: 'Faked: the note reuses canon\u2019s .gs-pushask banner markup inside the page. Part-free cards carry no tag (1.3-A). Fixtures, not canon: The Drowned Light (a second chaptered campaign, chapter 1 free) and its cover.', route: { name: 'games' }, node: () => <PgLanding5C allDone /> },
 };
 const PgFrame = ({ id, posture, onNav }) => {
   const f = PG_FRAMES[id];
@@ -88,7 +90,7 @@ const PgRig = () => {
         <span className="pg-sep" />
         {ids.map((i) => <a key={i} href={'?frame=' + i} className="pg-link">{PG_FRAMES[i].id} full-bleed</a>)}
       </div>
-      <p className="pg-stage"><b>Staged on Joe's free line (2026-10-14), not the prototype's:</b> posture is a signed-in free player. Free dailies are Daily Word and Daily Mystery only (Daily Groups hidden). Escape, Casebook and Delve: edition 1 free. Barrow: chapter 1 free. Every state shown is fake data. 5A and 5B carry no Pass line; 5C keeps one text link, as the tidy specifies.</p>
+      <p className="pg-stage"><b>Staged on Joe's free line (2026-10-14), not the prototype's:</b> posture is a signed-in free player. Free dailies are Daily Word and Daily Mystery only (Daily Groups hidden). Escape, Casebook and Delve: edition 1 free. Barrow and The Drowned Light (a fixture, not canon): chapter 1 free. The Lantern Keepers (fixture, not canon) has no free part. Every state shown is fake data. 5A and 5B carry no Pass line; 5C keeps one text link, as the tidy specifies.</p>
       <div className="pg-row">
         {shown.map((id) => (
           <div key={id} className="pg-col">

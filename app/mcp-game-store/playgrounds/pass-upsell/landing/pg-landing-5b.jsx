@@ -7,7 +7,7 @@
 const PG_HUB = [
   ['Every day', ['word', 'mystery']],
   ['Every week', ['escape', 'casebook', 'delve']],
-  ['In chapters', ['barrow']],
+  ['In chapters', ['barrow', 'drowned']],
 ];
 // play door by game, shown only while the player has something unplayed to play (matches PG_STATE); all: the second door.
 const PG_DOORS = {
@@ -17,9 +17,10 @@ const PG_DOORS = {
   casebook: { play: null, all: 'Every case' },      // case 1 done
   delve: { play: 'Play the first scene', all: 'Every scene' },   // not started
   barrow: { play: null, all: 'Every chapter' },     // chapter 1 done
+  drowned: { play: 'Play chapter 1', all: null },   // no chapter 2 exists, so no 'Every chapter' door (B1.4)
 };
 const PG_SHOWN = PG_HUB.flatMap(([, ids]) => ids);
-// Joe's free line (2026-10-14): every game shown here has a free first part (Word, Mystery, Escape, Casebook, Delve, Barrow ch.1). The "Free" chip filters on THIS, not canon's GS_GAMES[k].free.
+// Joe's free line (2026-10-14): every game shown here has a free first part (Word, Mystery, Escape, Casebook, Delve, Barrow ch.1, Drowned Light ch.1). The "Free" chip filters on THIS, not canon's GS_GAMES[k].free.
 const PG_FREE_FIRST = PG_SHOWN;
 const PG_HUB_CHIPS = () => [...GS_KINDS.filter((c) => PG_SHOWN.some((k) => GS_GAMES[k].category === c)).map((c) => [c, gsKind(c)]), ...GS_RHYTHMS, ['free', 'Free']];   // canon's Discover chips and filters, minus a kind with no game shown
 
@@ -33,7 +34,7 @@ const PgDoorTile = ({ id }) => {
         kind={gsKind(g.category)} />
       <p style={{ margin: 0, font: '400 14px/1.3 var(--font-text)', color: 'var(--text-muted, inherit)' }}>{st}</p>
       {d.play && <DS.Button variant="secondary" onClick={() => gs.go(g.route)}>{d.play}</DS.Button>}
-      <div style={{ minHeight: 48, display: 'flex', alignItems: 'center' }}><DS.TextLink onClick={() => gs.go(g.route, { page: 'editions' })}>{d.all}</DS.TextLink></div>
+      {d.all && <div style={{ minHeight: 48, display: 'flex', alignItems: 'center' }}><DS.TextLink onClick={() => gs.go(g.route, { page: 'editions' })}>{d.all}</DS.TextLink></div>}
     </div>
   );
 };
