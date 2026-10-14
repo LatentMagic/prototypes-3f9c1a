@@ -94,7 +94,7 @@ const pgStyle = document.createElement('style');
 pgStyle.textContent = `
   .pg-shell { min-height: 100vh; background: #1c1c1a; color: #eee; font: 13px/1.4 system-ui, sans-serif; padding-bottom: 24px; }
   .pg-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; background: #111; border-bottom: 1px solid #333; }
-  .pg-tab { background: #2a2a27; color: #ddd; border: 1px solid #444; border-radius: 6px; padding: 6px 10px; min-height: 32px; cursor: pointer; font: inherit; }
+  .pg-tab { background: #2a2a27; color: #ddd; border: 1px solid #444; border-radius: 6px; padding: 6px 14px; min-height: 48px; min-width: 48px; cursor: pointer; font: inherit; }
   .pg-tab[aria-pressed="true"] { background: #FF2EC4; color: #000; border-color: #FF2EC4; }
   .pg-link { color: #9cf; }
   .pg-stage { max-width: 840px; margin: 12px auto 0; padding: 0 16px; color: #bbb; }

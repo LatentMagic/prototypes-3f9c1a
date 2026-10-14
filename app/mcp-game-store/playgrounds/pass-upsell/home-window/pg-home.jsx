@@ -67,7 +67,7 @@ const PgBand = ({ kind }) => {
       <div className="gs-stack-sm">
         <h2 className="mcp-t-sec">The Pass</h2>
         {(kind === 'a' || kind === 'b') && <><p>Two daily puzzles and the start of select games come with your account.</p>
-          <div className="pg-bandline">{link}<p>{kind === 'a' ? 'comes with the Pass.' : 'comes with the Pass, for £30 a year or £3 a month.'}</p></div></>}
+          <p className="pg-inline">{link} {kind === 'a' ? 'comes with the Pass.' : 'comes with the Pass, for £30 a year or £3 a month.'}</p></>}
         {kind === 'd' && <p className="pg-inline">Two daily puzzles and the start of select games come with your account. <DS.TextLink onClick={() => gs.go('pass')}>The Pass</DS.TextLink> is the rest, for £30 a year or £3 a month.</p>}
       </div>
     </section>
@@ -95,7 +95,10 @@ const PgWhatsNew = () => (
 
 // Hero chat for 1C: the Casebook conversation, ending on the honest refusal (1.1-B).
 // Earlier turns trimmed to the last case beat so the closing exchange is in view. [Q-G5]
-const PG_REFUSAL_CHAT = [...window.GS_CHATS.casebook[2].turns, { from: 'user', text: 'Is there another case?' }, { from: 'ai', tool: 'casebook', text: 'You’ve finished this one. The other cases are part of the Pass.' }];
+// Finished: the closing exchange follows the end of case 1, so the last card says the case is solved, not "Turn 5 of 16".
+const PG_CASE_DONE = window.GS_CHATS.casebook[2].turns.map((t, i, a) => i === a.length - 1
+  ? { ...t, blocks: [{ type: 'list', items: ['Lie exposed: Maeve Doyle', 'Case solved'] }] } : t);
+const PG_REFUSAL_CHAT = [...PG_CASE_DONE, { from: 'user', text: 'Is there another case?' }, { from: 'ai', tool: 'casebook', text: 'You’ve finished this one. The other cases are part of the Pass.' }];
 
 // v = { hero: 'caption' | 'chat' | 'stock', band: 'a' | 'b' | 'd' | 'none', cards: 'lock' | 'split' | 'order' | 'visible', rowSub, trust }
 const PgHome = ({ v }) => {
@@ -129,7 +132,7 @@ const PgHome = ({ v }) => {
             <i style={{ background: '#F2EBE0', '--h': '66%', '--rise': '18px' }}></i>
             <b></b>
           </div>
-          <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.casebook.route)}>
+          <button type="button" className={'gs-hero-name' + (v.hero === 'caption' ? ' pg-cap-wrap' : '')} onClick={() => gs.go(GS_GAMES.casebook.route)}>
             <span className="gs-label">{v.hero === 'caption' ? 'YOUR AI NEVER ASKS YOU TO PAY' : 'A NEW CASE EVERY WEEK'}</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
@@ -161,9 +164,8 @@ pgHomeStyle.textContent = `
   .pg-corner { position: absolute; top: 0; right: 0; height: 32px; padding: 0 8px; display: inline-flex; align-items: center; gap: 4px;
     background: var(--page); color: var(--text); border-left: 1.5px solid var(--control-edge); border-bottom: 1.5px solid var(--control-edge); }
   .pg-corner-l { font: 600 12px/16px var(--font-sans, inherit); }
-  .pg-bandline { display: flex; flex-wrap: wrap; align-items: center; column-gap: 4px; }
-  .pg-bandline > p { margin: 0; }
-  .pg-inline .mcp-lnk { display: inline; min-height: 0; font: inherit; font-weight: 600; }
+  .pg-cap-wrap { max-width: calc(54% - 32px); }
+  .pg-inline .mcp-lnk { display: inline-block; min-height: 48px; box-sizing: border-box; padding: 12px 0; margin: -12px 0; vertical-align: baseline; line-height: 24px; font: inherit; font-weight: 600; }
   .pg-split { display: inline-flex; align-items: center; }
   .pg-split > .mcp-tag-locked { border-left-width: 0; padding-left: 8px; }`;
 document.head.appendChild(pgHomeStyle);
