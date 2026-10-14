@@ -29,13 +29,17 @@ const PgSplitTag = ({ open }) => {
   );
 };
 
+// 1B: a Pass-only card's tag is the same outlined chip as the split tags' Pass half, with no chevron.
+const PgPlainPass = () => { const gs = useGs(); return <button type="button" className="gs-tagbtn" aria-label="Pass. See the Pass" onClick={() => gs.go('pass')}><DS.Tag kind="locked" go={false}>Pass</DS.Tag></button>; };
+
 const PgTags = ({ id, mode }) => {
   const a = PG_ACCESS[id], g = PG_G[id];
   if (mode === 'order') return <GsTagList tags={g.tags} ed={g.ed} />;                       // 1C: stock tags, cards untouched
   if (mode === 'lock') return <GsTagList tags={pgOthers(id, false)} />;                      // 1A: access tag leaves the row
-  const others = <GsTagList tags={pgOthers(id, a.kind === 'open')} />;                       // 1B, 1D
+  const lengthOnly = mode === 'split' && a.kind === 'part';                                  // 1B: the split tag carries the cadence, so one row
+  const others = <GsTagList tags={pgOthers(id, a.kind === 'open').filter((t) => !(lengthOnly && /^(Weekly|Daily)$/.test(t)))} />;                       // 1B, 1D
   if (mode === 'split') {
-    return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? <PgSplitTag open={a.unit} /> : <GsPassTag />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;
+    return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? <PgSplitTag open={a.unit} /> : <PgPlainPass />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;
   }
   return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? <DS.Tag kind="free">{a.unit}</DS.Tag> : <GsPassTag />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;  // 'visible'
 };
@@ -47,7 +51,7 @@ const PgCard = ({ id, mode }) => {
   return (
     <DS.GameCard className="mcp-art-host gs-host"
       art={<div ref={host} style={{ position: 'relative' }}><GsArt art={g.art} shape="wide" />
-        {corner && <span className="pg-corner"><DS.Icon name="lock" size={16} /><span className="gs-vh">Pass</span></span>}</div>}
+        {corner && <span className="pg-corner"><DS.Icon name="lock" size={16} /><span className="pg-corner-l">Pass</span></span>}</div>}
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
       blurb={gsKeepLast(g.blurb)}
       tags={<PgTags id={id} mode={mode} />} />
@@ -62,10 +66,9 @@ const PgBand = ({ kind }) => {
     <section id="gs-how" className="gs-band">
       <div className="gs-stack-sm">
         <h2 className="mcp-t-sec">The Pass</h2>
-        {kind === 'a' && <p className="pg-inline">Two daily puzzles and the start of select games come with your account. {link} comes with the Pass.</p>}
-        {kind === 'b' && <p className="pg-inline">Two daily puzzles and the start of select games come with your account. {link} comes with the Pass, for £30 a year or £3 a month.</p>}
-        {kind === 'd' && <><p>Two daily puzzles and the start of select games come with your account.</p><p>The Pass is the rest, for £30 a year or £3 a month.</p>
-          <DS.TextLink onClick={() => gs.go('pass')}>About the Pass</DS.TextLink></>}
+        {(kind === 'a' || kind === 'b') && <><p>Two daily puzzles and the start of select games come with your account.</p>
+          <div className="pg-bandline">{link}<p>{kind === 'a' ? 'comes with the Pass.' : 'comes with the Pass, for £30 a year or £3 a month.'}</p></div></>}
+        {kind === 'd' && <p className="pg-inline">Two daily puzzles and the start of select games come with your account. <DS.TextLink onClick={() => gs.go('pass')}>The Pass</DS.TextLink> is the rest, for £30 a year or £3 a month.</p>}
       </div>
     </section>
   );
@@ -91,9 +94,8 @@ const PgWhatsNew = () => (
 );
 
 // Hero chat for 1C: the Casebook conversation, ending on the honest refusal (1.1-B).
-const PG_REFUSAL_CHAT = [...PG_HERO_CHAT,
-  { from: 'user', text: 'Is there another case?' },
-  { from: 'ai', tool: 'casebook', text: 'Case 2 is part of the Pass. You can read about the Pass on [Platform].' }];
+// Earlier turns trimmed to the last case beat so the closing exchange is in view. [Q-G5]
+const PG_REFUSAL_CHAT = [...window.GS_CHATS.casebook[2].turns, { from: 'user', text: 'Is there another case?' }, { from: 'ai', tool: 'casebook', text: 'You’ve finished this one. The other cases are part of the Pass.' }];
 
 // v = { hero: 'caption' | 'chat' | 'stock', band: 'a' | 'b' | 'd' | 'none', cards: 'lock' | 'split' | 'order' | 'visible', rowSub, trust }
 const PgHome = ({ v }) => {
@@ -156,8 +158,11 @@ const PgHome = ({ v }) => {
 
 const pgHomeStyle = document.createElement('style');
 pgHomeStyle.textContent = `
-  .pg-corner { position: absolute; top: 0; right: 0; width: 32px; height: 32px; display: grid; place-items: center;
+  .pg-corner { position: absolute; top: 0; right: 0; height: 32px; padding: 0 8px; display: inline-flex; align-items: center; gap: 4px;
     background: var(--page); color: var(--text); border-left: 1.5px solid var(--control-edge); border-bottom: 1.5px solid var(--control-edge); }
+  .pg-corner-l { font: 600 12px/16px var(--font-sans, inherit); }
+  .pg-bandline { display: flex; flex-wrap: wrap; align-items: center; column-gap: 4px; }
+  .pg-bandline > p { margin: 0; }
   .pg-inline .mcp-lnk { display: inline; min-height: 0; font: inherit; font-weight: 600; }
   .pg-split { display: inline-flex; align-items: center; }
   .pg-split > .mcp-tag-locked { border-left-width: 0; padding-left: 8px; }`;
