@@ -9,10 +9,10 @@ const PG_SUB = { none: { status: 'none', plan: 'monthly', hadPass: false, pendin
 const PG_USER = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
 const PG_REVIEW = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false };
 
-const pgMakeGs = ({ posture, route, width, log, review }) => {
+const pgMakeGs = ({ posture, route, width, log, review, lapsed }) => {
   const noop = (name) => (...a) => log && log(name + '(' + a.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(', ') + ')');
   return {
-    route, view: posture, sub: posture === 'pass' ? PG_SUB.active : PG_SUB.none, user: PG_USER, provider: 'email', choice: 'yearly',
+    route, view: posture, sub: posture === 'pass' ? PG_SUB.active : lapsed ? { ...PG_SUB.none, hadPass: true, endedOn: new Date(2026, 9, 3).getTime() } : PG_SUB.none, user: PG_USER, provider: 'email', choice: 'yearly',
     connected: posture !== 'out', review: { ...PG_REVIEW, ...(review || {}) }, playing: null, width, narrow: width < 640, push: { ...(window.GS_PUSH_DEFAULT || {}) },
     setPush: noop('setPush'), go: noop('go'), setConnected: noop('setConnected'), setReview: noop('setReview'), setView: noop('setView'),
     setSub: noop('setSub'), setUser: noop('setUser'), setProvider: noop('setProvider'), setChoice: noop('setChoice'),
@@ -24,14 +24,14 @@ const pgMakeGs = ({ posture, route, width, log, review }) => {
 };
 
 // Mounts children under the context in a canon-shaped .gs-root; measures width like main.jsx does.
-const PgApp = ({ posture, route, children, onNav, review }) => {
+const PgApp = ({ posture, route, children, onNav, review, lapsed }) => {
   const [width, setWidth] = React.useState(390);
   const ref = React.useRef(null);
   React.useEffect(() => {
     const el = ref.current && ref.current.querySelector('.gs-root'); if (!el || !window.ResizeObserver) return undefined;
     const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width)); ro.observe(el); return () => ro.disconnect();
   }, []);
-  const gs = pgMakeGs({ posture, route, width, log: onNav, review });
+  const gs = pgMakeGs({ posture, route, width, log: onNav, review, lapsed });
   return (
     <GsCtx.Provider value={gs}>
       <div ref={ref} style={{ display: 'contents' }}>
@@ -59,15 +59,18 @@ const PG_FRAMES = {
   '3C-1': { fr: '3C', step: 'Mid-case', label: '3C-1 · Visible: mid-case, Play and outlined Get the Pass', review: { week: 'live' }, route: CB_ROUTE, node: () => <PgCbLibrary state="o7mid" /> },
   '3C-2': { fr: '3C', step: 'Finished', label: '3C-2 · Visible: finished, Get the Pass is the main button', route: CB_ROUTE, node: () => <PgCbLibrary state="o7done" /> },
 };
+PG_FRAMES['3D-1'] = { fr: '3D', step: 'Lapsed: first visit', label: '3D-1 · Lapsed: your place, once [Q-G11, open: drawn so Joe can judge it, not a pick]. “You stopped here” is unverified: whether a lapsed player’s chapter-2 position is kept is not read in the campaign store', lapsed: true, route: { name: 'barrow', page: 'record' }, node: () => <PgBwLapsed showing={1} /> };
+PG_FRAMES['3D-2'] = { fr: '3D', step: 'Lapsed: second visit', label: '3D-2 · Lapsed: second showing, the link only [Q-G11, open]', lapsed: true, route: { name: 'barrow', page: 'record' }, node: () => <PgBwLapsed showing={2} /> };
 const PG_RIG = [
   { id: '3A', name: 'Finished case, decaying (recommended)', note: 'Casebook library page after the first case. Pass line: full on showing 1, a link on showing 2, gone from showing 3, fresh once, on the first release after the finish. Each frame is seeded: the showings cannot be reached with the app’s controls, because the showing counter is not built. Streak card stays throughout. Option 3.1-A.', ids: ['3A-M', '3A-1', '3A-2', '3A-3', '3A-N'] },
   { id: '3B', name: 'Chapter 1 done', note: 'Barrow library page. Hero record large, the Pass fact muted beside Get the Pass. Level 4 and dates are placeholders. Option 3.2-A.', ids: ['3B'] },
   { id: '3C', name: 'Visible game page (O7)', note: 'Casebook page the loud way: a second button mid-case; once finished, Get the Pass becomes the main button and says what is out. Option O7 game-page row.', ids: ['3C-1', '3C-2'] },
+  { id: '3D', name: 'Lapsed, your place once (option 3.5-A, open: Q-G11)', note: 'Barrow library page for a player whose Pass ended, chapter 2 started. First visit: where they stopped, then the link. Second visit: the link only. Earned badges lit with dates, no padlock, no “Frozen”. Level 3, chapter 2 and dates are placeholders. Drawn so Joe can judge it, only in scope if he says so.', ids: ['3D-1', '3D-2'] },
 ];
 
 const PgFrame = ({ id, onNav }) => {
   const f = PG_FRAMES[id];
-  return <PgApp key={id} posture="free" route={f.route} review={f.review} onNav={onNav}>{f.node()}</PgApp>;
+  return <PgApp key={id} posture="free" route={f.route} review={f.review} lapsed={f.lapsed} onNav={onNav}>{f.node()}</PgApp>;
 };
 
 const PgPhone = ({ children, full }) => (
@@ -88,7 +91,7 @@ const PgRig = () => {
     <div className="pg-shell">
       <div className="pg-head">
         <h1>end-of-road: the end of the free road</h1>
-        <p>Where the free road truly ends, the Pass is named once, then gets quieter. Three frames, played as a free player on the Casebook and Barrow pages. 3A against 3C is quiet against visible.</p>
+        <p>Where the free road truly ends, the Pass is named once, then gets quieter. Frames played as a free player on the Casebook and Barrow pages (3D: a player whose Pass ended). 3A against 3C is quiet against visible.</p>
         <p className="pg-stage"><b>Staging.</b> Joe’s free line of 14 October, not the prototype’s: Casebook edition 1 is free for an account; Barrow chapter 1 is free and chapter 2 is out. Every number and date here is a placeholder. Nothing on these pages is clickable; taps are logged below.</p>
       </div>
       {PG_RIG.map((r) => (

@@ -98,12 +98,12 @@ const PgBwChapter = () => (
 );
 // Same shape as canon's LbRecentList (gs-history.jsx:216): "See in History" link in the head, rows with a chevron (onClick). Canon's own
 // list reads the play-history store, which has no staged play here, so the one row is faked.
-const PgBwPlays = () => {
+const PgBwPlays = ({ when = '13 Oct' }) => {
   const gs = useGs();
   return (
     <section className="lb-card lb-recentcard">
       <div className="lb-sechead"><h2 className="mcp-t-card">Your chapters</h2><DS.TextLink onClick={() => gs.go('history', { game: 'barrow', from: 'barrow' })}>See in History</DS.TextLink></div>
-      <div className="lb-recent"><DS.RowList label="Your chapters"><DS.ListRow lead={<PhLead gid="barrow" />} title={'Chapter 1 · ' + BW_CH1.title} result="Finished" tone="ok" when="13 Oct" onClick={() => gs.go('history', { game: 'barrow', from: 'barrow' })} /></DS.RowList></div>
+      <div className="lb-recent"><DS.RowList label="Your chapters"><DS.ListRow lead={<PhLead gid="barrow" />} title={'Chapter 1 · ' + BW_CH1.title} result="Finished" tone="ok" when={when} onClick={() => gs.go('history', { game: 'barrow', from: 'barrow' })} /></DS.RowList></div>
     </section>
   );
 };
@@ -118,4 +118,34 @@ const PgBwLibrary = () => (
   </main></PgHide>
 );
 
-Object.assign(window, { PgHide, PgCbFirst, PgCbLibrary, PgBwLibrary });
+
+// ---- Barrow, Pass ended, chapter 2 started (rig 3D, option 3.5-A, open: Q-G11) ----------------------------------------------
+// Canon's lapsed test (gsLapsed) is gs.sub.hadPass; the rig supplies it. Canon's BwChapter has no lapsed branch and shows chapter 1 as playable, so the
+// card above the record is the rig's own. "You stopped here" is unverified: whether a lapsed player's chapter-2 position is kept is not read in the campaign store.
+// Level 3, chapter 2 and the earned dates are placeholders. Earned badges lit with dates, no padlock, no "Frozen" (B1.10): the staged items are all `first`,
+// so canon's achievements view never locks them.
+const PG_BW_LAPSED_ACH = BW_ACH.map((a) => (({ seal: '24 September', ring: '27 September', deep: '2 October' })[a.k] ? { ...a, got: ({ seal: '24 September', ring: '27 September', deep: '2 October' })[a.k] } : a.k === 'heavy' ? { ...a, have: 6 } : a));
+const PgBwLapsedCard = ({ showing }) => {
+  const gs = useGs();
+  return (
+    <section className="lb-card" style={{ gridColumn: '1 / -1' }}>
+      {showing === 1 && <>
+        <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">CHAPTER 2 · LEVEL 3</span></div></div>
+        <p className="lb-big">You stopped here. Everything you earned is still yours.</p>
+      </>}
+      <div className="lb-foot"><div className="lb-acts"><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass again</DS.TextLink></div></div>
+    </section>
+  );
+};
+const PgBwLapsed = ({ showing }) => (
+  <PgHide match="Every other chapter comes with the Pass."><main className="gs-wrap gs-main">
+    <LbHead id="barrow" />
+    <div className="lb-lay">
+      <PgBwLapsedCard showing={showing} />
+      <LbAch items={PG_BW_LAPSED_ACH} badges={BW_BADGES} access="first" ed={GS_GAMES.barrow.ed} />
+      <PgBwPlays when="2 Oct" />
+    </div>
+  </main></PgHide>
+);
+
+Object.assign(window, { PgHide, PgCbFirst, PgCbLibrary, PgBwLibrary, PgBwLapsed });
