@@ -54,10 +54,22 @@ const PgShareBtn = ({ lines }) => {
   return <><DS.Button variant="secondary" onClick={() => setOpen(true)}>Share</DS.Button><GsSharePopup open={open} onClose={() => setOpen(false)} lines={lines} /></>;
 };
 
+// Mid-case plays card: canon's LbRecent would list the case as solved (play-history seed). Same shape as PgBwPlays, row says In progress.
+const PgCbPlaysLive = () => {
+  const gs = useGs();
+  return (
+    <section className="lb-card lb-recentcard">
+      <div className="lb-sechead"><h2 className="mcp-t-card">Your cases</h2><DS.TextLink onClick={() => gs.go('history', { game: 'casebook', from: 'casebook' })}>See in History</DS.TextLink></div>
+      <div className="lb-recent"><DS.RowList label="Your cases"><DS.ListRow lead={<PhLead gid="casebook" />} title={CB_FIRST.title} result="In progress" when="Today" onClick={() => gs.go('history', { game: 'casebook', from: 'casebook' })} /></DS.RowList></div>
+    </section>
+  );
+};
+
 // The page: canon's CbLibrary free branch with PgCbFirst in place of CbFirst. introGone removes the achievements' "Every other case…" line (3A).
 const PgCbLibrary = ({ state, introGone }) => {
   const gs = useGs(); const mid = state === 'mid' || state === 'o7mid';
-  const ach = mid ? CB_ACH.map((a) => ({ ...a, gotFree: undefined })) : CB_ACH;
+  // Finished: 3 of 3 lies exposed, so "Every lie exposed" is earned (canon leaves it unearned: rig override).
+  const ach = mid ? CB_ACH.map((a) => ({ ...a, gotFree: undefined })) : CB_ACH.map((a) => (a.k === 'every' ? { ...a, gotFree: '3 December 2025' } : a));
   const page = (
     <main className="gs-wrap gs-main">
       <LbHead id="casebook" />
@@ -65,7 +77,7 @@ const PgCbLibrary = ({ state, introGone }) => {
         <PgCbFirst state={state} />
         <LbRunPass unit="weeks" weeks={cbWeeks(gs)} />
         <LbAch items={ach} badges={CB_BADGES} access="first" ed={GS_GAMES.casebook.ed} />
-        <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />
+        {mid ? <PgCbPlaysLive /> : <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />}
       </div>
     </main>
   );

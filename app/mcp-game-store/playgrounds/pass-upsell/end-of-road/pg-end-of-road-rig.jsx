@@ -71,7 +71,7 @@ const PgFrame = ({ id, onNav }) => {
 };
 
 const PgPhone = ({ children, full }) => (
-  <div className="kit-phone-clip" style={{ width: 390, height: full ? 844 : 780, borderRadius: full ? 0 : 24, flex: 'none', border: full ? 0 : '1px solid #444' }}>
+  <div className="kit-phone-clip" style={{ width: full ? 390 : 'min(390px, calc(100vw - 32px))', height: full ? 844 : 780, borderRadius: full ? 0 : 24, flex: 'none', border: full ? 0 : '1px solid #444' }}>
     <div className="kit-phone-screen">{children}</div>
   </div>
 );
@@ -123,7 +123,8 @@ pgStyle.textContent = `
   .pg-link { color: #9cf; }
   .pg-row { display: flex; flex-wrap: wrap; gap: 24px; padding: 12px 0; }
   .pg-col { display: grid; gap: 8px; justify-items: center; align-content: start; }
-  .pg-cap { color: #ddd; max-width: 390px; text-align: center; }
+  .pg-col { max-width: 100%; }
+  .pg-cap { color: #ddd; max-width: min(390px, calc(100vw - 32px)); text-align: center; }
   .pg-log { padding: 16px; color: #999; text-align: center; }
   .lb-acts > .mcp-lnk.pg-muted-link { color: var(--muted); min-height: 48px; }
   .pg-acts-wrap { flex-wrap: wrap; row-gap: 8px; }`;
