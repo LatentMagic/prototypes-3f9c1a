@@ -2,15 +2,23 @@
 // Canon source mirrored: GsLibrary in canon/app/gs-discover.jsx (h1 + .lb-box + DS.RowList/DS.ListRow + GpMini lead).
 // What is new: a TODAY group on top, "Your games" rows that say state only, a "Find another game" link. No Pass line (B3.2).
 // Fake data only: this is a staged free player (Joe's free line, 2026-10-14). Daily Groups is hidden; only two dailies exist.
-const PG_TODAY = [['word', 'Today’s word is ready', null], ['mystery', 'Done today', 'ok']];
-const PG_YOURS = [['barrow', 'Chapter 1 done', 'ok'], ['casebook', 'Case 1 done', 'ok'], ['escape', 'Room 1 done', 'ok'], ['delve', 'Not started', null]];
+// ONE data state for 5A and 5B (fix round): what this free player has played. 5B's doors read PG_STATE too.
+// [result text, tone, date shown in the row's `when` slot (fake)]
+const PG_STATE = {
+  word: ['Today’s word is ready', null, 'Today'], mystery: ['Done today', 'ok', 'Today'],
+  barrow: ['Chapter 1 done', 'ok', '6 Oct'], casebook: ['Case 1 done', 'ok', '4 Oct'], escape: ['Room 1 done', 'ok', '2 Oct'], delve: ['Not started', null, null],
+};
+const PG_TODAY = ['word', 'mystery'];
+const PG_YOURS = ['barrow', 'casebook', 'escape', 'delve'];
+// A text link with a 48px hit area (review polish).
+const PgLink48 = ({ onClick, children }) => <div style={{ minHeight: 48, display: 'flex', alignItems: 'center' }}><DS.TextLink onClick={onClick}>{children}</DS.TextLink></div>;
 
 const PgLibRows = ({ label, rows }) => {
   const gs = useGs();
   return (
     <div className="lb-box">
-      <DS.RowList label={label}>{rows.map(([k, result, tone]) => { const g = GS_GAMES[k]; return (
-        <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={result} tone={tone || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />
+      <DS.RowList label={label}>{rows.map((k) => { const [result, tone, when] = PG_STATE[k]; const g = GS_GAMES[k]; return (
+        <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={result} when={when || undefined} tone={tone || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />
       ); })}</DS.RowList>
     </div>
   );
@@ -30,7 +38,7 @@ const PgLanding5A = () => {
           <h2 className="mcp-t-sec">Your games</h2>
           <PgLibRows label="Your games" rows={PG_YOURS} />
         </section>
-        <div><DS.TextLink onClick={() => gs.go('games')}>Find another game</DS.TextLink></div>
+        <PgLink48 onClick={() => gs.go('games')}>Find another game</PgLink48>
       </div>
     </main>
   );

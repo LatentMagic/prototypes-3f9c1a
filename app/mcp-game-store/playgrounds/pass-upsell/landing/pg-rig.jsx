@@ -48,10 +48,10 @@ const PgApp = ({ posture, route, children, onNav }) => {
 
 // ---- the frames: 5A, 5B (modules pg-landing-*.jsx). Posture is always free (Joe's free line, staged in pg-landing-lib / hub). ----
 const PG_FRAMES = {
-  '5a': { id: '5A', name: 'Library as landing', note: 'Signed-in players land on Library: a Today group of the free dailies, then Your games saying state only, then a link to Discover.',
+  '5a': { id: '5A', name: 'Library as landing', note: 'Signed-in players land on Library: a Today group of the free dailies, then Your games saying state only (5.2-A, now core, not only O5), then a link to Discover.',
     route: { name: 'library' }, node: () => <PgLanding5A /> },
-  '5b': { id: '5B', name: 'The games hub', note: 'Discover recomposed: search first, each game once under Every day / Every week / In chapters, two doors on each card, no lock anywhere.',
-    ds: 'DS change, faked: card doors (a play door and an "Every ..." door inside the GameCard tag slot).', route: { name: 'games' }, node: () => <PgLanding5B /> },
+  '5b': { id: '5B', name: 'The games hub', note: 'Discover recomposed: search and chips first, each game once in a 2-up grid under Every day / Every week / In chapters, doors under each tile, no lock anywhere. Same data state as 5A: doors follow what is played. Marks: "Every ..." doors [Q-G5]; "Play the first scene" [Q-G3] [Q-G13]. Games with no free part (Daily Groups, 36,000 Summers Ago) not shown.',
+    ds: 'DS change, faked: tile doors (a play door where something is unplayed, and an "Every ..." door, under the GameTile).', route: { name: 'games' }, node: () => <PgLanding5B /> },
 };
 const PgFrame = ({ id, posture, onNav }) => {
   const f = PG_FRAMES[id];
