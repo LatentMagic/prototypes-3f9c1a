@@ -48,11 +48,11 @@ const PgApp = ({ posture, route, children, onNav }) => {
 
 // ---- the frames. id = <screen>-<a|b>. Add a pair per alternative; B is whatever the option changes. -------------------
 const PG_FRAMES = {
-  '2a': { screen: '2A Edition line', label: '2A · Edition line (2.2-B). Word page, arriving from a friend\u2019s share, signed out. Shared No. 212 has passed; line above Play. New line is rig-built; edition number is [placeholder].',
+  '2a': { screen: '2A Edition line', label: '2A · Edition line (2.2-B). Word page, arriving from a friend\u2019s share, signed out. Shared No. 212 has passed; line above Play, body size; the stock \u201cfree with an account\u201d line is hidden here so the page says it once. New line is rig-built; edition number is [placeholder].',
     route: { name: 'word' }, node: () => <><GsGamePage id="word" /><PgEditionLine /></> },
   '2b': { screen: '2B Today first', label: '2B · Today first (2.2-C). Same page, signed out. Play-box label names today\u2019s edition; the shared one is never named. Label patched in the rig; "NO. 215" is [placeholder].',
     route: { name: 'word' }, node: () => <PgPatch patches={[['FREE WITH AN ACCOUNT', 'TODAY\u2019S WORD \u00b7 NO. 215']]}><GsGamePage id="word" /></PgPatch> },
-  '2c': { screen: '2C Receipt in Library', label: '2C · Receipt in the Library (2.4-B). New account, nothing played, free. Receipt card is new UI built in the rig from DS parts; foot line links "Everything else".',
+  '2c': { screen: '2C Receipt in Library', label: '2C · Receipt in the Library (2.4-B). New account, nothing played, free. Receipt card is new UI built in the rig from DS parts; foot line links "Everything else". [Q-G3] [Q-G5]: "the first room / case / scene" is an earlier edition for a late joiner. Rows are DS ListRow (whole row taps, 48px).',
     route: { name: 'library' }, posture: 'free', node: () => <PgLibraryNew /> },
 };
 const PgFrame = ({ id, posture, onNav }) => {

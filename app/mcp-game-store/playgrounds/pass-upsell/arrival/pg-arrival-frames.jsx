@@ -13,9 +13,15 @@ const PgAboveButton = ({ children }) => {
   return host ? ReactDOM.createPortal(children, host) : null;
 };
 
-const PgEditionLine = () => (
-  <PgAboveButton><p className="gs-small" style={{ color: 'var(--mcp-text, inherit)', margin: 0 }}>No. 212 was yesterday’s word. Today’s is yours with an account.</p></PgAboveButton>
-);
+// 2A: the line sits at body size (16 above, 16 below via the card's 16 gap) and replaces the stock small line, so the page says it once.
+const PgEditionLine = () => {
+  React.useLayoutEffect(() => {
+    const el = [...document.querySelectorAll('.gs-head-split p.gs-small')].find((p) => /free with an account/.test(p.textContent));
+    if (!el) return undefined;
+    el.style.display = 'none'; return () => { el.style.display = ''; };
+  }, []);
+  return <PgAboveButton><p style={{ margin: 0, textWrap: 'balance' }}>No. 212 was yesterday’s word. Today’s is yours with an account.</p></PgAboveButton>;
+};
 
 // 2C. Receipt: composed from DS Card, gs-label, rows with covers (GpMini). New UI, rig-built.
 const PG_RECEIPT = [['word', 'every day'], ['mystery', 'every day'], ['escape', 'the first room'], ['casebook', 'the first case'], ['delve', 'the first scene'], ['barrow', 'chapter 1']];
@@ -24,25 +30,18 @@ const PgReceipt = () => {
   return (
     <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <span className="gs-label">YOUR ACCOUNT OPENS</span>
-      <div style={{ display: 'grid', gap: 0 }}>
-        {PG_RECEIPT.map(([k, what], i) => (
-          <div key={k} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: 12, padding: '12px 0', borderTop: i ? '1px solid var(--mcp-border, rgba(128,128,128,.25))' : 0 }}>
-            <GpMini art={GS_GAMES[k].art} sm />
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 600, overflowWrap: 'anywhere' }}>{GS_GAMES[k].name}</div>
-              <div className="gs-small">{what}</div>
-            </div>
-            <DS.TextLink onClick={() => gs.go(GS_GAMES[k].route)}>Play</DS.TextLink>
-          </div>
+      <DS.RowList label="Your account opens">
+        {PG_RECEIPT.map(([k, what]) => (
+          <DS.ListRow key={k} lead={<GpMini art={GS_GAMES[k].art} sm />} title={GS_GAMES[k].name} meta={what} end="Play" onClick={() => gs.go(GS_GAMES[k].route)} />
         ))}
-      </div>
+      </DS.RowList>
       <p className="gs-small">Your results, history and achievements stay yours.</p>
       <p className="gs-small"><DS.TextLink onClick={() => gs.go('pass')}>Everything else</DS.TextLink> comes with the Pass.</p>
     </DS.Card>
   );
 };
 const PgLibraryNew = () => (
-  <main className="gs-wrap gs-main">
+  <main className="gs-wrap gs-main" style={{ paddingBottom: 32 }}>
     <h1 className="gs-h1">Library</h1>
     <PgReceipt />
   </main>
