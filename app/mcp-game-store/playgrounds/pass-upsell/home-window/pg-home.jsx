@@ -8,13 +8,35 @@ const { GS_GAMES: PG_G, GS_SOON: PG_SOON, GS_HERO_CHAT: PG_HERO_CHAT } = window;
 
 // ---- Staging: Joe's free line (2026-10-14 position), in the rig only. Restored on unmount. ----------------------------------
 // Escape is first-edition-only under his line (the prototype has it free in full). Nothing else on Home's row needs changing.
-const pgStage = () => pgPatchData(PG_G.escape, { tags: ['FIRST', 'Weekly', '10 min'], free: false, first: true });
+const pgStageEscape = () => pgPatchData(PG_G.escape, { tags: ['FIRST', 'Weekly', '10 min'], free: false, first: true });
+
+// FIXTURES, not canon: canon has no The Drowned Light and no The Lantern Keepers (they are deployed in the monorepo catalogue,
+// libs/mcp-games/shared/catalogue/src/lib/games/{drowned-light,lantern-keepers}.ts). Names, blurbs and lengths follow that catalogue.
+// Covers are rig-made from cover-palette tokens. Added to canon's data objects while mounted, removed on unmount.
+// The row's Pass-only card is The Lantern Keepers: deployed removed 36,000 Summers Ago (absent from the catalogue at monorepo e6ef1300).
+const PG_FIX_ART = {
+  drowned: { ground: 'indigo', extend: 'bottom', svg: '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice"><rect width="160" height="120" fill="#1D1B3A"/><rect x="70" y="30" width="20" height="90" fill="#F2EBE0"/><rect x="66" y="22" width="28" height="12" fill="#E5A63B"/><rect x="0" y="86" width="160" height="34" fill="#328A88"/><circle cx="30" cy="40" r="8" fill="#A390B2"/></svg>' },
+  lantern: { ground: 'forest', extend: 'bottom', svg: '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice"><rect width="160" height="120" fill="#163328"/><rect x="60" y="48" width="40" height="72" fill="#D66847"/><rect x="68" y="30" width="24" height="22" fill="#E5A63B"/><circle cx="130" cy="28" r="10" fill="#F2EBE0"/><rect x="14" y="96" width="30" height="24" fill="#A390B2"/></svg>' },
+};
+const PG_FIX_GAMES = {
+  drowned: { name: 'The Drowned Light', category: 'ADVENTURE', art: 'drowned', route: 'barrow', ed: ['chapter', 'chapters'], first: true, blurb: 'The light on Gull Rock is dark. Carry it up from the sea.', tags: ['FIRST', 'Several sessions'] },
+  lantern: { name: 'The Lantern Keepers', category: 'ADVENTURE', art: 'lantern', route: 'barrow', blurb: 'A storm on Gull Rock, and everyone remembers what you chose.', tags: ['PASS', '20–30 min'] },
+};
+const pgStage = () => {
+  const undoEsc = pgStageEscape();
+  Object.assign(window.GS_ART, PG_FIX_ART); Object.assign(PG_G, PG_FIX_GAMES);
+  return () => { undoEsc(); Object.keys(PG_FIX_ART).forEach((k) => delete window.GS_ART[k]); Object.keys(PG_FIX_GAMES).forEach((k) => delete PG_G[k]); };
+};
+// Home's row for this rig: canon's, with the Pass-only card swapped to The Lantern Keepers and The Drowned Light added after Barrow.
+const PG_ROW = ['word', 'mystery', 'escape', 'delve', 'barrow', 'drowned', 'lantern'];
 
 // ---- Access, per game on Home's row. open = free to anyone; part = first part free; pass = Pass only. -----------------------
 const PG_ACCESS = {
   word: { kind: 'open' }, mystery: { kind: 'open' },
   escape: { kind: 'part', unit: 'Room 1' }, delve: { kind: 'part', unit: 'Scene 1' }, barrow: { kind: 'part', unit: 'Chapter 1' },
-  hunter: { kind: 'pass' },
+  // Drowned Light: chapter 1 free, and no Pass half while no chapter 2 exists (solo: split tag drawn as the open half alone).
+  drowned: { kind: 'part', unit: 'Chapter 1', solo: true },
+  lantern: { kind: 'pass' },
 };
 // The tags that are not about access: cadence and length. Daily is dropped where an access tag already says "Every day".
 const pgOthers = (id, dropDaily) => PG_G[id].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS' && !(dropDaily && t === 'Daily'));
@@ -39,7 +61,7 @@ const PgTags = ({ id, mode }) => {
   const lengthOnly = mode === 'split' && a.kind === 'part';                                  // 1B: the split tag carries the cadence, so one row
   const others = <GsTagList tags={pgOthers(id, a.kind === 'open').filter((t) => !(lengthOnly && /^(Weekly|Daily)$/.test(t)))} />;                       // 1B, 1D
   if (mode === 'split') {
-    return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? <PgSplitTag open={a.unit} /> : <PgPlainPass />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;
+    return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? (a.solo ? <DS.Tag kind="free">{a.unit}</DS.Tag> : <PgSplitTag open={a.unit} />) : <PgPlainPass />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;
   }
   return <div className="gs-tags">{a.kind === 'open' ? <DS.Tag kind="free">Every day</DS.Tag> : a.kind === 'part' ? <DS.Tag kind="free">{a.unit}</DS.Tag> : <GsPassTag />}{others.props.tags.map((t, i) => <DS.Tag key={i} kind="daily">{t}</DS.Tag>)}</div>;  // 'visible'
 };
@@ -144,7 +166,7 @@ const PgHome = ({ v }) => {
 
       <section className="gs-band">
         <DS.CardRow title="Available games" sub={v.rowSub} className="gs-row4">
-          {window.GS_HOME_GAMES.map((k) => <PgCard key={k} id={k} mode={v.cards} />)}
+          {PG_ROW.map((k) => <PgCard key={k} id={k} mode={v.cards} />)}
         </DS.CardRow>
         <div className="gs-grid2">{PG_SOON.filter((g) => !g.label).map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>

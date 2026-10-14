@@ -76,7 +76,7 @@ const PgRig = () => {
       <div className="pg-bar" role="group" aria-label="Playground controls, not part of the product">
         <b>Home window</b>{tab('all', 'All four')}{PG_FRAMES.map((f) => tab(f.id, f.id))}
       </div>
-      <p className="pg-stage">Signed out, first visit. Staged to Joe’s free line (his 2026-10-14 position, not a ruling): two free dailies (Word, Mystery), first edition free for Escape and Delve, Barrow chapter 1 free, Hunter Pass only. Casebook is off Home’s row. Derelict is the only game coming soon.</p>
+      <p className="pg-stage">Signed out, first visit. Staged to Joe’s free line (his 2026-10-14 position, not a ruling): two free dailies (Word, Mystery), first edition free for Escape and Delve, Barrow and The Drowned Light chapter 1 free (fixture, not canon), The Lantern Keepers Pass only (fixture, not canon; 36,000 Summers Ago is gone from deployed). Casebook is off Home’s row. Derelict is the only game coming soon.</p>
       <div className="pg-row">
         {shown.map((f) => (
           <div key={f.id} className="pg-col">
