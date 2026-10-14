@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<!-- base = canon's root. Depth: playgrounds/pass-upsell/<slug>/ -> three ../ to reach mcp-game-store/, then canon/.
+     Every canon path below is written as if this file sat at canon's root. The rig's own files go through ../playgrounds/... -->
+<base href="../../../canon/" />
+<title>Pass upsell: landing rig</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/styles.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/fonts.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=snug1" />
+<!-- The app's own gs-* rules live in canon/index.html's inline <style>. Copy them at load from canon itself (never paste a copy): -->
+<script src="../playgrounds/pass-upsell/landing/pg-canon-css.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=snug1"></script>
+<!-- Canon app modules: index.html's order, minus the aids (states, config, qa, gs-config) and main.jsx, which this rig replaces. -->
+<script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/gs-data.jsx"></script>
+<script type="text/babel" src="app/gs-site.jsx"></script>
+<script type="text/babel" src="app/gs-parts.jsx"></script>
+<script type="text/babel" src="app/gs-chats.jsx"></script>
+<script type="text/babel" src="app/gs-home.jsx"></script>
+<script type="text/babel" src="app/gs-puzzles.jsx"></script>
+<script type="text/babel" src="app/gs-session.jsx"></script>
+<script type="text/babel" src="app/gs-game.jsx"></script>
+<script type="text/babel" src="app/gs-library.jsx"></script>
+<script type="text/babel" src="app/gs-casebook-data.jsx"></script>
+<script type="text/babel" src="app/gs-casebook.jsx"></script>
+<script type="text/babel" src="app/gs-delve-library.jsx"></script>
+<script type="text/babel" src="app/gs-puzzles-library.jsx"></script>
+<script type="text/babel" src="app/gs-hunter-library.jsx"></script>
+<script type="text/babel" src="app/gs-barrow-library.jsx"></script>
+<script type="text/babel" src="app/gs-player.jsx"></script>
+<script type="text/babel" src="app/gs-discover.jsx"></script>
+<script type="text/babel" src="app/gs-auth.jsx"></script>
+<script type="text/babel" src="app/gs-username.jsx"></script>
+<script type="text/babel" src="app/gs-connect.jsx"></script>
+<script type="text/babel" src="app/gs-billing.jsx"></script>
+<script type="text/babel" src="app/gs-account.jsx"></script>
+<script type="text/babel" src="app/gs-push.jsx"></script>
+<script type="text/babel" src="app/gs-history.jsx"></script>
+<script type="text/babel" src="app/gs-editions.jsx"></script>
+<!-- The rig's own modules: path from <base> (canon/) back out to the playgrounds folder. -->
+<script type="text/babel" src="../playgrounds/pass-upsell/landing/pg-overrides.jsx"></script>
+<script type="text/babel" src="../playgrounds/pass-upsell/landing/pg-landing-5a.jsx"></script>
+<script type="text/babel" src="../playgrounds/pass-upsell/landing/pg-landing-5b.jsx"></script>
+<script type="text/babel" src="../playgrounds/pass-upsell/landing/pg-rig.jsx"></script>
+</body>
+</html>
