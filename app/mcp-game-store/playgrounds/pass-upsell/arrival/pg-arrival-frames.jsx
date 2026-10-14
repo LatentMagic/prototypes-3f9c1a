@@ -2,6 +2,11 @@
 // DS change, faked: none to the DS. New UI built here from DS tokens/components: the edition line (2A), the receipt card (2C).
 // Staging: Joe's free line (2026-10-14). Every number and edition is [placeholder].
 
+// Staging on Joe's free line for the stock "More games" row (rig-only data patch; canon untouched, this page only):
+// Escape is first room free with an account (not plain Free); Barrow chapter 2 is out, so the soon card is chapter 3.
+Object.assign(window.GS_GAMES.escape, { tags: ['FIRST', 'Weekly', '10 min'], free: false, first: true });
+window.GS_SOON.filter((g) => g.name === window.GS_GAMES.barrow.name).forEach((g) => { g.label = 'CHAPTER 3'; });
+
 // Puts a React node into the real play box, just above the Play button (GsPlayBox is one block inside gs-game.jsx; it has no slot).
 const PgAboveButton = ({ children }) => {
   const [host, setHost] = React.useState(null);
