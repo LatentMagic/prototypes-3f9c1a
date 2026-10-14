@@ -19,6 +19,8 @@ const PG_DOORS = {
   barrow: { play: null, all: 'Every chapter' },     // chapter 1 done
 };
 const PG_SHOWN = PG_HUB.flatMap(([, ids]) => ids);
+// Joe's free line (2026-10-14): every game shown here has a free first part (Word, Mystery, Escape, Casebook, Delve, Barrow ch.1). The "Free" chip filters on THIS, not canon's GS_GAMES[k].free.
+const PG_FREE_FIRST = PG_SHOWN;
 const PG_HUB_CHIPS = () => [...GS_KINDS.filter((c) => PG_SHOWN.some((k) => GS_GAMES[k].category === c)).map((c) => [c, gsKind(c)]), ...GS_RHYTHMS, ['free', 'Free']];   // canon's Discover chips and filters, minus a kind with no game shown
 
 const PgDoorTile = ({ id }) => {
@@ -40,7 +42,7 @@ const PgLanding5B = () => {
   const [q, setQ] = React.useState(''); const [on, setOn] = React.useState([]);
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
   const kinds = GS_KINDS.filter((c) => on.includes(c)); const rhy = on.filter((v) => v === 'daily' || v === 'weekly'); const free = on.includes('free');
-  const keep = (k) => gsFind(q, k) && (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!rhy.length || rhy.includes(gsRhythm(k))) && (!free || GS_GAMES[k].free);
+  const keep = (k) => gsFind(q, k) && (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!rhy.length || rhy.includes(gsRhythm(k))) && (!free || PG_FREE_FIRST.includes(k));
   const groups = PG_HUB.map(([h, ids]) => [h, ids.filter(keep)]).filter(([, ids]) => ids.length);
   const clear = () => { setQ(''); setOn([]); };
   return (

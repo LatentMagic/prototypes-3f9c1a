@@ -46,12 +46,14 @@ const PgApp = ({ posture, route, children, onNav }) => {
   );
 };
 
-// ---- the frames: 5A, 5B (modules pg-landing-*.jsx). Posture is always free (Joe's free line, staged in pg-landing-lib / hub). ----
+// ---- the frames: 5A, 5B, 5C (modules pg-landing-*.jsx). Posture is always free (Joe's free line, staged in pg-landing-lib / hub). ----
 const PG_FRAMES = {
   '5a': { id: '5A', name: 'Library as landing', note: 'Signed-in players land on Library: a Today group of the free dailies, then Your games saying state only (5.2-A, now core, not only O5), then a link to Discover.',
     route: { name: 'library' }, node: () => <PgLanding5A /> },
   '5b': { id: '5B', name: 'The games hub', note: 'Discover recomposed: search and chips first, each game once in a 2-up grid under Every day / Every week / In chapters, doors under each tile, no lock anywhere. Same data state as 5A: doors follow what is played. Marks: "Every ..." doors [Q-G5]; "Play the first scene" [Q-G3] [Q-G13]. Games with no free part (Daily Groups, 36,000 Summers Ago) not shown.',
     ds: 'DS change, faked: tile doors (a play door where something is unplayed, and an "Every ..." door, under the GameTile).', route: { name: 'games' }, node: () => <PgLanding5B /> },
+  '5c': { id: '5C', name: 'Discover, tidied', note: 'Today\u2019s Discover with only the tidy of 6.1-C: search and chips moved above the rows, each game once on the first screen (picks, then Just added and Free to play without repeats), the Pass band a plain text link. Everything else is canon\u2019s Discover, same data state as 5A.',
+    route: { name: 'games' }, node: () => <PgLanding5C /> },
 };
 const PgFrame = ({ id, posture, onNav }) => {
   const f = PG_FRAMES[id];
@@ -86,7 +88,7 @@ const PgRig = () => {
         <span className="pg-sep" />
         {ids.map((i) => <a key={i} href={'?frame=' + i} className="pg-link">{PG_FRAMES[i].id} full-bleed</a>)}
       </div>
-      <p className="pg-stage"><b>Staged on Joe's free line (2026-10-14), not the prototype's:</b> posture is a signed-in free player. Free dailies are Daily Word and Daily Mystery only (Daily Groups hidden). Escape, Casebook and Delve: edition 1 free. Barrow: chapter 1 free. Every state shown is fake data. Nothing here is the Pass pitch: neither frame carries a Pass line.</p>
+      <p className="pg-stage"><b>Staged on Joe's free line (2026-10-14), not the prototype's:</b> posture is a signed-in free player. Free dailies are Daily Word and Daily Mystery only (Daily Groups hidden). Escape, Casebook and Delve: edition 1 free. Barrow: chapter 1 free. Every state shown is fake data. 5A and 5B carry no Pass line; 5C keeps one text link, as the tidy specifies.</p>
       <div className="pg-row">
         {shown.map((id) => (
           <div key={id} className="pg-col">
