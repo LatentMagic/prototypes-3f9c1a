@@ -4,7 +4,16 @@
 //   PgDailyWord <- pzLibrary('word') (same file, :155)            drops the standing "Playing earlier words comes with the Pass." line (4.3-A)
 // Everything else (LbHead, LbRun, LbAch, LbRecent, LbShare, DS.ListRow) is canon's own.
 
-const PgNow = ({ c, after }) => {
+// Canon's LbShare with a secondary Share, so the frame's next step (Play Daily Mystery) leads. Copy of gs-library.jsx:245.
+const PgShare = ({ lines }) => {
+  const [open, setOpen] = React.useState(false);
+  return <>
+    <DS.Button variant="secondary" onClick={() => setOpen(true)}>Share</DS.Button>
+    <GsSharePopup open={open} onClose={() => setOpen(false)} lines={lines} />
+  </>;
+};
+
+const PgNow = ({ c, after, secondaryShare, hideNext }) => {
   const gs = useGs();
   const lines = window.gsShareText ? window.gsShareText(GS_SESSIONS[c.today]) : null;
   return (
@@ -17,10 +26,10 @@ const PgNow = ({ c, after }) => {
       <DS.ProgressBar label={c.done.bar[0]} value={c.done.bar[1]} max={c.done.bar[2]} showValue={false} />
       <div className="lb-foot">
         <div className="lb-acts">
-          {lines && <LbShare lines={lines} />}
+          {lines && (secondaryShare ? <PgShare lines={lines} /> : <LbShare lines={lines} />)}
           <DS.TextLink onClick={() => gs.go('session', { id: c.today })}>{c.links[0]}</DS.TextLink>
         </div>
-        <span className="gs-muted">{c.next}</span>
+        {!hideNext && <span className="gs-muted">{c.next}</span>}
       </div>
       {after}
     </section>
@@ -33,13 +42,13 @@ const PgAfter = ({ variant }) => {
   if (variant === 'next') return (
     <div className="pg-next">
       <p>Today’s case is ready too.</p>
-      <DS.Button onClick={() => gs.playReq({ kind: 'daily', id: 'mystery' })}>Play Daily Mystery</DS.Button>
+      <DS.Button variant="main" onClick={() => gs.playReq({ kind: 'daily', id: 'mystery' })}>Play Daily Mystery</DS.Button>
     </div>
   );
-  if (variant === 'closed') return <div className="pg-next"><p>That’s today’s two done. The next word lands at midnight.</p></div>;
+  if (variant === 'closed') return <div className="pg-next"><p>That’s today’s two done. Both are back tomorrow.</p></div>;
   if (variant === 'set') return (
     <div className="pg-set" role="list">
-      <DS.ListRow lead={<GpMini art={GS_GAMES.word.art} sm />} title="Daily Word" result="Done" tone="ok" onClick={() => gs.go('word', { page: 'record' })} />
+      <DS.ListRow lead={<GpMini art={GS_GAMES.word.art} sm />} title="Daily Word" result="Done" tone="ok" />
       <DS.ListRow lead={<GpMini art={GS_GAMES.mystery.art} sm />} title="Daily Mystery" result="Ready" onClick={() => gs.go('mystery', { page: 'record' })} />
     </div>
   );
@@ -56,7 +65,7 @@ const PgDailyWord = ({ variant }) => {
     <main className="gs-wrap gs-main">
       <LbHead id="word" />
       <div className="lb-lay">
-        <PgNow c={c} after={<PgAfter variant={variant} />} />
+        <PgNow c={c} secondaryShare={variant === 'next'} hideNext={variant === 'closed'} after={<PgAfter variant={variant} />} />
         <LbRun n={n} unit="days" weeks={lbRunOf(run)} />
         <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
@@ -70,6 +79,8 @@ pgDailyStyle.textContent = `
   .pg-next { display: grid; gap: 12px; justify-items: start; border-top: 1px solid var(--line); padding-top: 16px; }
   .pg-next p { margin: 0; }
   .pg-set { margin: 0 calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); border-top: 1px solid var(--line); display: grid; }
+  .pg-set .mcp-row-st.is-none { color: var(--text); font-weight: 600; }
+  .pg-set .mcp-row-st.is-ok { color: var(--muted, var(--text)); }
   .pg-set > * + * { border-top: 1px solid var(--line); }`;
 document.head.appendChild(pgDailyStyle);
 Object.assign(window, { PgDailyWord });

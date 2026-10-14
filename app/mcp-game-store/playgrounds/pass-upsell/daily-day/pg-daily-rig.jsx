@@ -51,7 +51,7 @@ const PG_FRAMES = {
     note: 'Word done, Mystery unplayed: a line and a Play Daily Mystery button sit under the result. The earlier-words line is gone (4.3-A).',
     route: { name: 'word', page: 'record' }, node: () => <PgDailyWord variant="next" /> },
   '4a-2': { letter: '4A', name: 'Next free thing', screen: 'Daily Word', label: '4A · Next free thing · step 2 (Mystery done too)',
-    note: 'Route step 2: both free dailies done, the base close replaces the Mystery line. Midnight is [line], rollover time unrecorded.',
+    note: 'Route step 2: both free dailies done, seeded frame: both free dailies done. The base close replaces the Mystery line and canon’s “Next word: tomorrow”.',
     route: { name: 'word', page: 'record' }, node: () => <PgDailyWord variant="closed" /> },
   '4b': { letter: '4B', name: 'Today’s free set', screen: 'Daily Word', label: '4B · Today’s free set',
     note: 'The done card ends in a small list of the free dailies with their state. No sentence, no Pass. Earlier-words line gone.',
