@@ -7,6 +7,10 @@
 Object.assign(window.GS_GAMES.escape, { tags: ['FIRST', 'Weekly', '10 min'], free: false, first: true });
 window.GS_SOON.filter((g) => g.name === window.GS_GAMES.barrow.name).forEach((g) => { g.label = 'CHAPTER 3'; });
 
+// Fixture, not canon (fix round 3): The Drowned Light, a second chaptered campaign. Chapter 1 free with an account; no chapter 2 out. Rig-only.
+window.GS_ART.drowned = { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#12303A"/><path d="M0 84Q40 72 80 84T160 84V120H0Z" fill="#328A88"/><rect x="72" y="30" width="16" height="28" fill="#E5A63B"/><rect x="76" y="22" width="8" height="8" fill="#F2EBE0"/>') };
+window.GS_GAMES.drowned = { name: 'The Drowned Light', category: 'ADVENTURE', art: 'drowned', route: 'drowned', ed: ['chapter', 'chapters'], eds: true, first: true, blurb: 'Fixture, not canon.', tags: ['FIRST', '45–60 min'] };
+
 // Puts a React node into the real play box, just above the Play button (GsPlayBox is one block inside gs-game.jsx; it has no slot).
 const PgAboveButton = ({ children }) => {
   const [host, setHost] = React.useState(null);
@@ -29,7 +33,7 @@ const PgEditionLine = () => {
 };
 
 // 2C. Receipt: composed from DS Card, gs-label, rows with covers (GpMini). New UI, rig-built.
-const PG_RECEIPT = [['word', 'every day'], ['mystery', 'every day'], ['escape', 'the first room'], ['casebook', 'the first case'], ['delve', 'the first scene'], ['barrow', 'chapter 1']];
+const PG_RECEIPT = [['word', 'every day'], ['mystery', 'every day'], ['escape', 'the first room'], ['casebook', 'the first case'], ['delve', 'the first scene'], ['barrow', 'chapter 1'], ['drowned', 'chapter 1']];
 const PgReceipt = () => {
   const gs = useGs();
   return (
@@ -52,4 +56,22 @@ const PgLibraryNew = () => (
   </main>
 );
 
-Object.assign(window, { PgEditionLine, PgLibraryNew });
+// 2D. Connect on a phone: canon GsConnect, one plain line (and a button, builder's call) placed above the steps.
+const PgConnectPhone = () => {
+  const [host, setHost] = React.useState(null);
+  React.useLayoutEffect(() => {
+    const head = document.querySelector('main .hw-head'); if (!head) return undefined;
+    const el = document.createElement('div'); head.insertAdjacentElement('afterend', el); setHost(el);
+    return () => el.remove();
+  }, []);
+  return <>
+    <GsConnect />
+    {host && ReactDOM.createPortal(
+      <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
+        <p>Adding a game link is easiest on a computer.</p>
+        <DS.Button variant="main" onClick={() => {}}>Email me the link</DS.Button>
+      </div>, host)}
+  </>;
+};
+
+Object.assign(window, { PgEditionLine, PgLibraryNew, PgConnectPhone });

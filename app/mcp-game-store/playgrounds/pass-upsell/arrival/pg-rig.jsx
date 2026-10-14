@@ -57,6 +57,8 @@ const PG_FRAMES = {
     route: { name: 'word' }, node: () => <PgPatch patches={[['FREE WITH AN ACCOUNT', 'TODAY\u2019S WORD \u00b7 NO. 213'], ...PG_CHAT_213]}><GsGamePage id="word" /></PgPatch> },
   '2c': { screen: '2C Receipt in Library', label: '2C · Receipt in the Library (2.4-B). New account, nothing played, free. Receipt card is new UI built in the rig from DS parts; foot line links "Everything else". [Q-G3] [Q-G5]: "the first room / case / scene" is an earlier edition for a late joiner. Rows are DS ListRow (whole row taps, 48px).',
     route: { name: 'library' }, posture: 'free', node: () => <PgLibraryNew /> },
+  '2d': { screen: '2D Connect on a phone', label: '2D · Connect on a phone (2.3-A). New free account lands on connect, 390 px, nothing played. Canon GsConnect with one plain line above the steps and an \u201cEmail me the link\u201d button (button, not link: builder\u2019s call). No phone claim. No sent state drawn: v3 gives no copy for it.',
+    route: { name: 'connect' }, posture: 'free', node: () => <PgConnectPhone /> },
 };
 const PgFrame = ({ id, posture, onNav }) => {
   const f = PG_FRAMES[id];
@@ -72,6 +74,7 @@ const PgPhone = ({ children, full }) => (
 
 const PG_NOTES = { '2a': ['Edition line', 'One small line above Play says the shared word has passed and today\u2019s is yours with an account.'],
   '2b': ['Today first', 'No extra line. The play-box label names today\u2019s word, so nothing reads as gone.'],
+  '2d': ['Connect on a phone', 'The connect page says adding a game link is easiest on a computer, and offers to email the link.'],
   '2c': ['Receipt in the Library', 'A new account\u2019s empty Library shows what the account opens, once, with the Pass named in the foot line.'] };
 const pgQuery = () => new URLSearchParams(location.search);
 
