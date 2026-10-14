@@ -29,9 +29,8 @@ const PgCbFirst = ({ state }) => {
   let acts; let tail = null;
   if (mid) acts = <><DS.Button onClick={play}>Play</DS.Button>{state === 'o7mid' && getPass('secondary')}</>;
   else if (state === 'o7done') acts = <>{getPass('main')}<PgShareBtn lines={cbShareLines(c)} /></>;
-  else acts = <><LbShare lines={cbShareLines(c)} /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink></>;
-  if (state === 's1') tail = <LbPassOffer unit="case" />;
-  if (state === 's2') tail = <DS.TextLink className="pg-muted-link" onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink>;
+  else acts = <><LbShare lines={cbShareLines(c)} /><DS.TextLink onClick={() => cbGo(gs, c.id)}>See every turn</DS.TextLink>{state === 's2' && <DS.TextLink className="pg-muted-link" onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink>}</>;
+  if (state === 's1') tail = <PgPatch patches={[['Every other case comes with the Pass.', 'This week’s case comes with the Pass.']]}><LbPassOffer unit="case" /></PgPatch>;
   if (state === 'mon') tail = <div className="lb-pass">{getPass('secondary')}<span className="gs-muted">This week’s case is out. It comes with the Pass.</span></div>;
   return (
     <section className="lb-card">
@@ -43,7 +42,7 @@ const PgCbFirst = ({ state }) => {
       <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
       {state === 'o7done' && <div className="gs-stack-xs"><span className="gs-label">THIS WEEK’S CASE</span><p>It’s out. It comes with the Pass.</p></div>}
       <div className="lb-foot">
-        <div className={'lb-acts' + (state === 'o7mid' || state === 'o7done' ? ' pg-acts-wrap' : '')}>{acts}</div>
+        <div className={'lb-acts' + (state === 'o7mid' || state === 'o7done' || state === 's2' ? ' pg-acts-wrap' : '')}>{acts}</div>
         {tail}
       </div>
     </section>
@@ -85,12 +84,17 @@ const PgBwChapter = () => (
     </div>
   </section>
 );
-const PgBwPlays = () => (
-  <section className="lb-card lb-recentcard">
-    <div className="lb-sechead"><h2 className="mcp-t-card">Your chapters</h2></div>
-    <div className="lb-recent"><DS.RowList label="Your chapters"><DS.ListRow lead={<PhLead gid="barrow" />} title={'Chapter 1 · ' + BW_CH1.title} result="Finished" tone="ok" when="13 Oct" /></DS.RowList></div>
-  </section>
-);
+// Same shape as canon's LbRecentList (gs-history.jsx:216): "See in History" link in the head, rows with a chevron (onClick). Canon's own
+// list reads the play-history store, which has no staged play here, so the one row is faked.
+const PgBwPlays = () => {
+  const gs = useGs();
+  return (
+    <section className="lb-card lb-recentcard">
+      <div className="lb-sechead"><h2 className="mcp-t-card">Your chapters</h2><DS.TextLink onClick={() => gs.go('history', { game: 'barrow', from: 'barrow' })}>See in History</DS.TextLink></div>
+      <div className="lb-recent"><DS.RowList label="Your chapters"><DS.ListRow lead={<PhLead gid="barrow" />} title={'Chapter 1 · ' + BW_CH1.title} result="Finished" tone="ok" when="13 Oct" onClick={() => gs.go('history', { game: 'barrow', from: 'barrow' })} /></DS.RowList></div>
+    </section>
+  );
+};
 const PgBwLibrary = () => (
   <PgHide match="Every other chapter comes with the Pass."><main className="gs-wrap gs-main">
     <LbHead id="barrow" />

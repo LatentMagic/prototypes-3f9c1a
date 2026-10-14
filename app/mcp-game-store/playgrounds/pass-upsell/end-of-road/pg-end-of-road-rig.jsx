@@ -50,17 +50,17 @@ const PgApp = ({ posture, route, children, onNav, review }) => {
 // Posture is always `free`. week: 'live' = the first case half-played (CbFirst's own switch); 'done' = solved.
 const CB_ROUTE = { name: 'casebook', page: 'record' };
 const PG_FRAMES = {
-  '3A-M': { fr: '3A', step: 'Before: mid-case', label: '3A · step 0 · Mid-case, Play only', review: { week: 'live' }, route: CB_ROUTE, node: () => <PgCbLibrary state="mid" introGone /> },
-  '3A-1': { fr: '3A', step: 'Visit 1', label: '3A-1 · First visit after finishing: line and button', route: CB_ROUTE, node: () => <PgCbLibrary state="s1" introGone /> },
-  '3A-2': { fr: '3A', step: 'Visit 2', label: '3A-2 · Second visit: a muted link only', route: CB_ROUTE, node: () => <PgCbLibrary state="s2" introGone /> },
-  '3A-3': { fr: '3A', step: 'Visit 3', label: '3A-3 · Third visit onward: result only, line gone', route: CB_ROUTE, node: () => <PgCbLibrary state="s3" introGone /> },
-  '3A-N': { fr: '3A', step: 'After: new case out', label: '3A · step 5 · Monday, a new case is out: one fresh showing', route: CB_ROUTE, node: () => <PgCbLibrary state="mon" introGone /> },
+  '3A-M': { fr: '3A', step: 'Seeded: mid-case', label: '3A-M · Seeded: mid-case. Play only', review: { week: 'live' }, route: CB_ROUTE, node: () => <PgCbLibrary state="mid" introGone /> },
+  '3A-1': { fr: '3A', step: 'Seeded: showing 1', label: '3A-1 · Seeded: showing 1. Line and button [Q-G5]', route: CB_ROUTE, node: () => <PgCbLibrary state="s1" introGone /> },
+  '3A-2': { fr: '3A', step: 'Seeded: showing 2', label: '3A-2 · Seeded: showing 2. A muted link only', route: CB_ROUTE, node: () => <PgCbLibrary state="s2" introGone /> },
+  '3A-3': { fr: '3A', step: 'Seeded: showing 3+', label: '3A-3 · Seeded: showing 3 and after. Result only, line gone', route: CB_ROUTE, node: () => <PgCbLibrary state="s3" introGone /> },
+  '3A-N': { fr: '3A', step: 'Seeded: first new case', label: '3A-N · First new case after the finish: one fresh showing. Later new cases bring none', route: CB_ROUTE, node: () => <PgCbLibrary state="mon" introGone /> },
   '3B': { fr: '3B', step: '', label: '3B · Chapter 1 done', route: { name: 'barrow', page: 'record' }, node: () => <PgBwLibrary /> },
   '3C-1': { fr: '3C', step: 'Mid-case', label: '3C-1 · Visible: mid-case, Play and outlined Get the Pass', review: { week: 'live' }, route: CB_ROUTE, node: () => <PgCbLibrary state="o7mid" /> },
   '3C-2': { fr: '3C', step: 'Finished', label: '3C-2 · Visible: finished, Get the Pass is the main button', route: CB_ROUTE, node: () => <PgCbLibrary state="o7done" /> },
 };
 const PG_RIG = [
-  { id: '3A', name: 'Finished case, decaying (recommended)', note: 'Casebook library page after the first case. Pass line: full on visit 1, a link on visit 2, gone from visit 3, fresh once on release day. Step 0 is mid-case; streak card stays throughout. Option 3.1-A.', ids: ['3A-M', '3A-1', '3A-2', '3A-3', '3A-N'] },
+  { id: '3A', name: 'Finished case, decaying (recommended)', note: 'Casebook library page after the first case. Pass line: full on showing 1, a link on showing 2, gone from showing 3, fresh once, on the first release after the finish. Each frame is seeded: the showings cannot be reached with the app’s controls, because the showing counter is not built. Streak card stays throughout. Option 3.1-A.', ids: ['3A-M', '3A-1', '3A-2', '3A-3', '3A-N'] },
   { id: '3B', name: 'Chapter 1 done', note: 'Barrow library page. Hero record large, the Pass fact muted beside Get the Pass. Level 4 and dates are placeholders. Option 3.2-A.', ids: ['3B'] },
   { id: '3C', name: 'Visible game page (O7)', note: 'Casebook page the loud way: a second button mid-case; once finished, Get the Pass becomes the main button and says what is out. Option O7 game-page row.', ids: ['3C-1', '3C-2'] },
 ];
@@ -125,7 +125,7 @@ pgStyle.textContent = `
   .pg-col { display: grid; gap: 8px; justify-items: center; align-content: start; }
   .pg-cap { color: #ddd; max-width: 390px; text-align: center; }
   .pg-log { padding: 16px; color: #999; text-align: center; }
-  .pg-muted-link { color: var(--muted); }
+  .lb-acts > .mcp-lnk.pg-muted-link { color: var(--muted); min-height: 48px; }
   .pg-acts-wrap { flex-wrap: wrap; row-gap: 8px; }`;
 document.head.appendChild(pgStyle);
 
