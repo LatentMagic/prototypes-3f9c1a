@@ -10,8 +10,8 @@ A starting kit has just been dropped into this project. This is scaffolding only
    - the page renders with no console errors;
    - the config button is there, and Config, States and QA each open and close;
    - switching state in States changes the screen;
-   - the desktop / mobile switch in Config shows and removes the phone frame;
-   - in the phone frame, a status bar sits at the top and a home indicator at the bottom, and the placeholder's text clears both.
+   - Viewport: Mobile in Config shows the phone frame with no status bar, and Desktop removes it;
+   - Platform: Mobile in Config shows the phone frame with a status bar at the top and a home indicator at the bottom, and the placeholder's text clears both.
 6. **Report, briefly:**
    - where the files landed and what you moved or deleted;
    - whether `CLAUDE.md` was already in your instructions before step 3 told you to read it, or only after;

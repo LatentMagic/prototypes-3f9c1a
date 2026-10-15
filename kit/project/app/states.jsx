@@ -3,7 +3,7 @@
 //
 // THE SINGLE SOURCE for every staged state of the app. One entry per state:
 //
-//     { group, id, label, stage(ctx) }
+//     { group, id, label, platform?, stage(ctx) }
 //
 //   id     — the state's ADDRESS: lowercase letters, digits and single hyphens
 //            (`sign-in`), unique, and not `index` or `states`. An id that
@@ -14,6 +14,9 @@
 //            unresolved name lands on the states index, which is how that shows
 //            up rather than silently opening the wrong screen).
 //   label  — how it reads to a person, in the palette and the index.
+//   platform (optional) 'app' | 'web'. Sets Config → Platform before staging,
+//            so an app-only state opens in the app posture and its web twin in
+//            web. Without it the Platform is left as it is.
 //   stage  — the staging function, handed the context built from main.jsx's
 //            setters.
 //
@@ -91,6 +94,9 @@ function buildStates(api) {
   const states = KIT_STATES_ACCEPTED.map((s) => ({
     id: s.id, label: s.label, group: s.group,
     go: () => {
+      // An entry's `platform: 'app' | 'web'` sets Config → Platform before it
+      // stages, so its address opens in the right posture. No platform: left as is.
+      if (s.platform && api.setPlatform) api.setPlatform(s.platform);
       const c = kitStateContext(api);
       c.reseed();
       s.stage(c);

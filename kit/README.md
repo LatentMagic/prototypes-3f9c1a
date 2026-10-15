@@ -59,7 +59,7 @@ There is no `PRODUCT.md`, by the owner's ruling: "GitHub should describe the pro
 
 ### Architecture and gotchas
 
-`ARCHITECTURE.md` took the deletable-aids table (rows are the kit's files), Addressable states (neutral ids, `kitResolveState`, `KIT_STATES`), the note that the resolver looks inert, and Conventions. Left: the three postures, the swap, web-only payments, the `platform` field and "Mobile app: where it differs", the paragraph naming a monorepo process doc, and a stale `canon/`, `next/` sentence.
+`ARCHITECTURE.md` took the deletable-aids table (rows are the kit's files), Addressable states (neutral ids, `kitResolveState`, `KIT_STATES`), the note that the resolver looks inert, and Conventions. Left: the three postures, the swap, web-only payments, the `platform` field and "Mobile app: where it differs", the paragraph naming a monorepo process doc, and a stale `canon/`, `next/` sentence. The postures and the `platform` field came back on 2026-10-15 (below).
 
 `GOTCHA.md` took canon's 1, 2, 5 to 13, reworded to drop episode names, files and first-person confessions, and added the SVG-stripping platform fact. Canon's 3 and 4 are Circlists-only and left. The kit's entries are renumbered 1 to 12 (canon's 13 is the kit's 11); the intro's code/judgement split was recounted, and `build-playground/references/fidelity-and-wiring.md` cites "GOTCHA #3".
 
@@ -77,7 +77,7 @@ Differences from canon:
 - Below 640px the Config, States and QA aids are bottom sheets, because they are panels under the three kinds of overlay in `CLAUDE.md`. Carried back from the MCP Game Store project on 2026-10-08 (its `docs/specs/overlay-kinds/handoff.md`).
 - Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
 - The playground `<base href>` is four `../`, not canon's three (below).
-- The phone frame draws a status bar (clock, island, battery) and a home indicator over the screen, and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (59px / 34px, on the frame's clip layer; screens read them as `var(--safe-area-inset-top, env(safe-area-inset-top))`, so outside the frame `env()` answers); `CLAUDE.md` § Designing carries the rule that reads them. Added 2026-10-15, after the Circlists store-launch research found the app had no top inset handling and no prototype showed one (business-ops `mobile-readiness/_resources/research/2026-10-15_status-bar-overlap.md`). Not cut from canon.
+- Config → Platform (Web / Mobile) came back from canon on 2026-10-15, as the kit's app posture: `isApp` in `main.jsx`, the register's `platform` field, and the Postures section of `ARCHITECTURE.md`. The app posture draws a status bar and home indicator in the phone frame and sets `--safe-area-inset-top` / `--safe-area-inset-bottom`; mobile web (Viewport: Mobile) draws neither. Canon has the switch but no bars. Added after the Circlists store-launch research found the app had no top inset handling and no prototype showed one (business-ops `mobile-readiness/_resources/research/2026-10-15_status-bar-overlap.md`).
 
 Known limits are listed in `project/app/README.md`.
 

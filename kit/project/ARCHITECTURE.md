@@ -2,6 +2,14 @@
 
 How the prototype is put together. App-wide structure only — the product's own structure (its screens, its postures, its guards) belongs in the specs the product block in `CLAUDE.md` names, or a doc beside this one. `app/README.md` lists the skeleton's files in load order.
 
+## Postures
+
+Desktop web, mobile web and **app** (native mobile) are three presentation postures of one product, not three products. A change to a shared surface lands in all three with no per-posture edit; only the persistent chrome may differ.
+
+- `isApp` comes from one switch, **Config → Platform (Web / Mobile)**. Session-only, not persisted. `main.jsx` holds it and hands it to the screen and to a candidate build.
+- The app posture always implies the phone frame, whatever the Viewport says. Only the app posture draws the status bar and home indicator and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (on `.kit-phone-clip[data-app]`, `index.html`). Viewport: Mobile is mobile web: the same frame with no bars and no insets.
+- A product with an app posture gives it its own chrome the way Circlists does: one shell for web, one for the app, the same children inside both. The placeholder only pads by the insets.
+
 ## Deletable aids and droppable modules
 
 Files the app tolerates being **absent**, read once per render off `window` so no import breaks:
@@ -33,6 +41,8 @@ An id names the situation, not the app's internals — `members-non-owner`, neve
 An `id` is **public** once a ticket links to it: renaming or removing one breaks those links, and the index is the only thing that catches it.
 
 A state is a scenario, never a width: posture comes from the window or the Viewport control, so a state never has a "· phone" twin.
+
+An entry may carry **`platform: 'app' | 'web'`**. An app-only state sets Config → Platform to Mobile so its address opens it correctly; its web twin sets Web. An entry without one leaves the Platform as it is. App-only states are a named exception to "a state is never a twin": the app differs in content, not width, so each sits beside its web twin.
 
 > **The resolver looks inert in preview, and is not.** Nothing in the design tool can hand this page a URL, so `?state=` does nothing there. It is exercised by driving the register directly (`window.buildStates`, the palette, the index) — never by concluding from a screenshot that the address reading is dead. **Do not delete it on that evidence.** A copied link also depends on the host: when the page is framed in a console that addresses a prototype by its URL hash (`#<app>/<slug>`), `kitStateLink` rebuilds that address with `?state=<id>` after the hash, and the console must forward that query onto the iframe `src`. Both are outside this project.
 

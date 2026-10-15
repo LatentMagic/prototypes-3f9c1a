@@ -27,7 +27,7 @@
 const { useState: useCState, useRef: useCRef, useEffect: useCEffect } = React;
 
 const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
-                         onReset, layout, onLayoutChange }) => {
+                         onReset, layout, onLayoutChange, platform, onPlatformChange }) => {
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   const [qaOpen, setQaOpen] = useCState(false);
@@ -137,6 +137,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
         <ConfigModal
           onReset={onReset}
           layout={layout} onLayoutChange={onLayoutChange}
+          platform={platform} onPlatformChange={onPlatformChange}
           onClose={() => closeAt(setOpen)}
         />
       )}
@@ -156,7 +157,8 @@ const ConfigSeg = ({ options, value, onChange }) => (
 );
 
 // ---- The modal itself ----
-const ConfigModal = ({ onReset, layout, onLayoutChange, onClose }) => {
+const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, onClose }) => {
+  const isApp = platform === 'app';
   const [shown, setShown] = useCState(false);
   useCEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -202,13 +204,25 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, onClose }) => {
         <div className="kit-config-body" onClickCapture={onBodyClickCapture}>
           <div className="kit-config-eyebrow">Review settings</div>
 
+          {onPlatformChange && (
+            <React.Fragment>
+              <div className="kit-config-row">
+                <div className="kit-config-row-label">Platform</div>
+                <ConfigSeg value={platform || 'web'} onChange={onPlatformChange} options={[
+                  { value: 'web', label: 'Web' }, { value: 'app', label: 'Mobile' },
+                ]} />
+              </div>
+              <div className="kit-config-hint">Mobile renders the product as a native app, with the phone's status bar and home indicator drawn over it. Always shown in a phone.</div>
+            </React.Fragment>
+          )}
+
           <div className="kit-config-row">
             <div className="kit-config-row-label">Viewport</div>
             <ConfigSeg value={layout} onChange={onLayoutChange} options={[
               { value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' },
             ]} />
           </div>
-          <div className="kit-config-hint">Mobile frames every screen in a phone bezel, regardless of window size.</div>
+          <div className="kit-config-hint">Web posture only. Mobile frames every screen in a phone bezel, regardless of window size: mobile web, so no status bar.{isApp ? ' The mobile app overrides this and always uses the phone.' : ''}</div>
 
           {onReset && (
             <React.Fragment>
