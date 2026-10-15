@@ -18,7 +18,7 @@ const GS_AI_OTHERS = [
 const GsAiLogo = ({ ai, size = 20 }) => <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false"><path d={GS_AI_LOGO[ai]} /></svg>;
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
-const gsEdPromptName = (e) => GS_GAMES[e.gid].name + ' #' + e.n + (e.title ? ', “' + e.title + '”' : '');
+const gsEdPromptName = (e) => (e.title ? GS_GAMES[e.gid].name + ', “' + e.title + '”' : GS_GAMES[e.gid].name + ' #' + e.n + (e.title ? ', “' + e.title + '”' : ''));
 const gsPromptText = (r) => r.kind === 'games' ? 'Load the [Platform] games tool and show me the games it lists, with a line about each.'
   : 'Load the [Platform] games tool and start ' + (r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + '. Run it exactly as the tool says.';
 const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;

@@ -62,7 +62,7 @@ const PH_UNF_EDS = (() => {
   return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt }, [dv.id]: { gid: 'delve', x: dv, sid: 'delve-unfinished', at: dAt } };
 })();
 const phUnf = (gs, key) => { const u = PH_UNF_EDS[key]; return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === 'pass'); };
-// Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Casebook #45"), its title, and its date.
+// Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Daily Mystery #64"), its title, and its date.
 // Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
 // A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
 const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
@@ -186,19 +186,19 @@ const usePhList = (initial, k0) => {
   return { all, g, setG, pg, go, games, sort, setSort, list: sort === 'old' ? [...shown].reverse() : shown };
 };
 
-// ---- One play: a DS.ListRow (title, result, when, note). The title is the edition by edLabel, or edName in a one-game list.
-// v: { key, title, when, status, chip: 'again'|null, onOpen, gid?, sub? } ----
+// ---- One play: a DS.ListRow, given its parts (canonical row 19E). Title is the edition alone (edName); the game's name goes in game, only in a list that mixes games.
+// v: { key, title, game?, when (text or forms), status, chip: 'again'|null, onOpen, gid?, sub? } ----
 const rpTone = (s) => (s.kind === 'ok' || s.kind === 'bad' ? s.kind : 'none');
 const PhLead = ({ gid }) => <span dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />;
 const rpRow = (v) => (
-  <DS.ListRow key={v.key} sub={!!v.sub} lead={v.gid ? <PhLead gid={v.gid} /> : undefined} title={v.title}
-    result={v.status.label} tone={rpTone(v.status)} when={v.when} note={v.chip === 'again' ? 'Replay' : undefined}
+  <DS.ListRow key={v.key} sub={!!v.sub} lead={v.gid ? <PhLead gid={v.gid} /> : undefined} title={v.title} game={v.gid ? v.game : undefined}
+    result={gsForms(v.status.label)} tone={rpTone(v.status)} when={v.when} replay={v.chip === 'again'}
     onClick={v.onOpen || undefined} />
 );
 // The library game page's plays card is the newest of History's rows for the game: one row per play, a replay its own row (2026-10-12).
 // The card has no day headings, so a row shows its day where History shows its time.
 const rpRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0, 8)
-  .map((p) => ({ key: p.pid, title: phTitle(p, true), when: phShort(p.at), status: p.status, chip: p.again ? 'again' : null, onOpen: () => p.open(gs) }));
+  .map((p) => ({ key: p.pid, title: phParts(p, true).title, when: [phShort(p.at) + ', ' + phTime(p.at), phShort(p.at)], status: p.status, chip: p.again ? 'again' : null, onOpen: () => p.open(gs) }));
 
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
 // On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height.
@@ -269,6 +269,9 @@ const PH_REP = [['all', 'With replays'], ['first', 'No replays'], ['again', 'Onl
 // A row's title comes from its edition: edLabel ("Daily Word #212"), or edName in a one-game list ("#212").
 const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m && ED_GAMES.includes(p.gid)) return one ? edName(m) : edLabel(m);
   return one || p.edTitle.includes(GS_GAMES[p.gid].name) ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle; };
+// A row's parts: the edition's own name, and the game's name for a list that mixes games (ListRow joins them).
+const phParts = (p, one) => { const m = phMeta()[p.ed]; const name = GS_GAMES[p.gid].name;
+  const t = m && ED_GAMES.includes(p.gid) ? edName(m) : p.edTitle; return { title: t, game: one || t.includes(name) ? undefined : name }; };
 const GsHistory = () => {
   // r.keep: the list as the player left it, written into this history entry so browser Back returns it.
   const gs = useGs(); const r = gs.route; const k0 = r.keep || {}; const f = usePhList(k0.g || r.game, k0);
@@ -282,7 +285,7 @@ const GsHistory = () => {
   const size = 24; const pages = Math.max(1, Math.ceil(items.length / size)); const pg = Math.min(f.pg, pages - 1);
   const groups = [];
   items.slice(pg * size, pg * size + size).forEach((p) => { const k = phDayKey(p.at); const last = groups[groups.length - 1]; if (last && last[0] === k) last[2].push(p); else groups.push([k, phDayLabel(p.at), [p]]); });
-  const view = (p) => ({ key: p.pid, gid: one ? undefined : p.gid, title: phTitle(p, one), when: phTime(p.at), status: p.status, chip: p.again ? 'again' : null, onOpen: () => p.open(gs) });
+  const view = (p) => ({ key: p.pid, gid: one ? undefined : p.gid, ...phParts(p, one), when: phTime(p.at), status: p.status, chip: p.again ? 'again' : null, onOpen: () => p.open(gs) });
   const games = GS_GAME_ORDER.filter((k) => k === f.g || f.games.includes(k));
   const reset = (fn) => (v) => { fn(v); f.go(0); };
   const anySet = one || cat !== 'all' || rhy !== 'all' || rep !== 'all' || f.sort !== 'new' || !!q;

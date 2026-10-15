@@ -23,6 +23,9 @@
               "components/media/**",
               "components/surfaces/**",
               "docs/archive/rows-and-history/playground/**",
+              "docs/specs/canonical-row/playground/**",
+              "docs/specs/card-chip-alignment/playground/**",
+              "docs/specs/card-snug-title/playground/**",
               "ui_kits/shop/**"
             ],
             "message": "Import design-system components from 'index.js', not component internals."
@@ -185,6 +188,10 @@
         "message": "<ProgressBar> doesn't accept that prop. Declared props: label, value, max, showValue."
       },
       {
+        "selector": "JSXOpeningElement[name.name='SoonCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|label|title|line|play|onPlay|playHref|className|style|key|ref|className|style|children)$/]",
+        "message": "<SoonCard> doesn't accept that prop. Declared props: art, label, title, line, play, onPlay, playHref, className, style."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='StatusMessage'] > JSXAttribute > JSXIdentifier[name!=/^(?:kind|children|key|ref|className|style|children)$/]",
         "message": "<StatusMessage> doesn't accept that prop. Declared props: kind, children."
       },
@@ -197,8 +204,8 @@
         "message": "<Tag> doesn't accept that prop. Declared props: kind, children, icon, go."
       },
       {
-        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='kind'] > Literal[value!=/^(?:free|daily|locked|success|warning|error)$/]",
-        "message": "<Tag> kind must be one of 'free' | 'daily' | 'locked' | 'success' | 'warning' | 'error'."
+        "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='kind'] > Literal[value!=/^(?:free|daily|locked|open|success|warning|error)$/]",
+        "message": "<Tag> kind must be one of 'free' | 'daily' | 'locked' | 'open' | 'success' | 'warning' | 'error'."
       },
       {
         "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute[name.name='icon'] > Literal[value!=/^(?:search|back|close|lock|play|settings)$/]",
@@ -281,6 +288,9 @@
         "replaces": []
       },
       "ProgressBar": {
+        "replaces": []
+      },
+      "SoonCard": {
         "replaces": []
       },
       "StatusMessage": {

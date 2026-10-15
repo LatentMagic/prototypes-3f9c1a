@@ -19,7 +19,9 @@ const cbRunList = (gs) => CB_ALL.map((c, i) => ({ ...c, done: gsFresh(gs) ? fals
 // The last ten weeks, oldest first.
 const cbWeeks = (gs) => cbRunList(gs).slice(0, 10).reverse().map((c) => {
   const p = c.week.split(' ');
-  return { id: c.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: c.done, now: c.id === CB_LIVE.id };
+  const now = c.id === CB_LIVE.id;
+  const failed = !gsFresh(gs) && (now ? cbWeek(gs).verdict === 'wrong' : !!c.played && c.verdict !== 'right');
+  return { id: c.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: c.done, failed, now };
 });
 
 // This week: the result sits beside the title once you've named someone; the turns bar stays either way.

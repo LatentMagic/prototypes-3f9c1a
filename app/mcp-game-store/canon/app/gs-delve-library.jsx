@@ -116,9 +116,9 @@ const DvLibrary = () => {
       <LbHead id="delve" />
       <div className="lb-lay">
         {pass ? (fresh ? <LbFreshNow title={DV_LIVE.title} line="You haven’t started this week’s scene yet. Get her out before the drums stop." next={'Next scene: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />) : <DvFirst />}
-        {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list.map((s) => (fresh ? { ...s, played: false } : s)))} />; })()}
+        {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won', failed: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end !== 'won' : s.played && s.end !== 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list.map((s) => (fresh ? { ...s, played: false } : s)))} />; })()}
         {!pass && !gsLapsed(gs) && <LbRunPass unit="weeks" weeks={lbRunOf(DV_ALL)} />}
-        {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
+        {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won', failed: i > 0 && s.played && s.end !== 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your scenes" allLabel="See in History" empty="Your scenes appear here once you have played one." />
       </div>

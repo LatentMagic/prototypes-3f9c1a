@@ -121,11 +121,13 @@ const GsOffline = () => {
 
 // ---- Footer: a directory. Wide: brand, contact, legal. Narrow: see CSS.
 const GS_SUPPORT = 'support@[platform].example';
+// Placeholder until the owner names the real second address.
+const GS_HELLO = 'hello@[platform].example';
 const GS_LEGAL_LINKS = [['privacy', 'Privacy'], ['terms', 'Terms'], ['refunds', 'Refunds']];
 const GsFooter = () => {
   const gs = useGs();
   const legal = (doc) => gs.go('legal', { doc });
-  const mail = <a className="gs-ft-mail" href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a>;
+  const mail = <button type="button" className="gs-ft-link" onClick={() => legal('contact')}>Get in touch</button>;
   return (
     <footer className="gs-ft">
       <div className="gs-wrap">
@@ -151,14 +153,36 @@ const GsFooter = () => {
 };
 
 // ---- Legal pages: stand-ins. Real heading structure, no legal text.
+// REQUIRED when Terms are written: "Who we are" must carry Harness Intent Ltd's company number and
+// registered office (UK company website disclosure). Owner's call, 2026-10-15, docs/specs/contact/. Do not ship Terms without them.
 const GS_LEGAL = {
   terms: { title: 'Terms and Conditions', sections: ['Who we are', 'What [Platform] is', 'Your account', 'Payments', 'When the Pass ends', 'Support', 'Your content', 'Ending things', 'Our liability', 'Changes to these terms', 'Governing law'] },
   privacy: { title: 'Privacy', opening: 'This page isn’t written yet.', sections: ['On the website', ['In the app', ['Your account', 'Your play history', 'Payments', 'App analytics', 'Server logs']], 'Where your data lives', 'Cookies and storage', 'Children', 'Keeping and deleting your data', 'Contact', 'Updates'] },
   refunds: { title: 'Refund Policy', sections: ['The short version', 'How refunds work', 'Your legal rights', 'Complaints'] },
 };
 const GS_UNWRITTEN = 'This section isn’t written yet.';
+// Contact page, ratified 2026-10-15 (docs/specs/contact/, option 2j).
+const GsContact = () => (
+  <main className="gs-wrap gs-legal">
+    <article className="gs-legal-col">
+      <header className="gs-stack-sm"><h1 className="gs-legal-h1">Get in touch</h1></header>
+      <section className="gs-legal-sec">
+        <h2 className="gs-legal-h2">Get help</h2>
+        <p>Email support about anything to do with a game, your account or the Pass. Say where you got stuck.</p>
+        <p><a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a></p>
+      </section>
+      <section className="gs-legal-sec">
+        <h2 className="gs-legal-h2">Talk to the team</h2>
+        <p>If you’d like to contribute, or have anything else in mind, email the team.</p>
+        <p><a href={'mailto:' + GS_HELLO}>{GS_HELLO}</a></p>
+      </section>
+      <p className="gs-legal-foot">[Platform] is made by <a href="https://www.harnessintent.com/" target="_blank" rel="noopener">Harness Intent</a>.</p>
+    </article>
+  </main>
+);
 const GsLegal = () => {
   const gs = useGs();
+  if (gs.route.doc === 'contact') return <GsContact />;
   const doc = GS_LEGAL[gs.route.doc] || GS_LEGAL.terms;
   return (
     <main className="gs-wrap gs-legal">
@@ -227,5 +251,5 @@ const GsNotFound = () => {
 
 Object.assign(window, {
   GsGlyph, GsMark, GsWordmark, GS_LOADER, gsSettle, GS_WORK_MS, GS_LOAD_MS, useGsPart, GsPart, useGsBusy, GsInkSpin, GsSpin, GsFullLoader, GsLoadFailed, GsOffline,
-  GS_SUPPORT, GsFooter, GsLegal, GsNotFound, gsAnnounce,
+  GS_SUPPORT, GS_HELLO, GsFooter, GsLegal, GsNotFound, gsAnnounce,
 });

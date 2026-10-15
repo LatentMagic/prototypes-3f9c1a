@@ -2,6 +2,15 @@
 
 How the prototype is put together. App-wide structure only — the product's own structure (its screens, its postures, its guards) belongs in the specs the product block in `CLAUDE.md` names, or a doc beside this one. `app/README.md` lists the skeleton's files in load order.
 
+## Postures
+
+One app, three postures: desktop web, mobile web and app (native mobile). Every screen inside the chrome is the same component in all three.
+
+- **Config → Viewport** (Auto / Desktop / Mobile) switches the two web postures. Mobile draws the phone frame (`.kit-stage` → `.kit-phone` → `.kit-phone-clip` → `.kit-phone-screen`) with no system bars: there a browser owns the top of the screen.
+- **Config → Platform** (Web / Mobile) switches the app posture on. It is `platform` state in `app/main.jsx`, session-only like the Viewport, read in code as `isApp` (also on the app context, `gs.isApp`). The app posture always implies the phone frame, whatever the Viewport says.
+- **Only the app posture draws the system bars** (`KitPhoneBars`: status bar and home indicator, over the screen inside the clip) and sets `--safe-area-inset-top: 59px` / `--safe-area-inset-bottom: 34px` on the clip (`[data-app]`). Content reads them as `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`, so on a real phone, where nothing sets them, `env()` answers.
+- A states register entry may carry `platform: 'app' | 'web'`, which sets Platform before it stages.
+
 ## Deletable aids and droppable modules
 
 Files the app tolerates being **absent**, read once per render off `window` so no import breaks:
@@ -24,6 +33,7 @@ A ticket in the real build links to this prototype, so a reviewer has to be able
 - **`?state=<id>`** on the entry. `main.jsx` reads it once at mount (`kitResolveState`) and stages the named state in an effect, so a named state **overrides any restored route**. Nothing in the address ⇒ the app opens where the real app does.
 - **`?state=index`, or a name the register does not hold** ⇒ the states index (`StatesIndex`, `app/states-ui.jsx`) renders instead of the app. That is how a stale ticket link shows itself: the reader sees a catalogue that does not contain the name they came for, rather than the wrong screen.
 - **The palette** — the Config pill's second half. Jump to a state, or copy its link.
+- The palette and the index list groups by title and states by label, A to Z, sorted in `buildStates`; register order does not matter. A leading `App: ` is skipped when sorting, so an app-only state sits beside its web twin.
 - **`window.KIT_STATES`** — ids, labels and groups, published on the page for anything inspecting it. No staging functions, nothing runnable. A sibling JSON file would not survive the single-file export, which is why it is a global.
 
 A state earns an entry by being hard to reach — a situation the app has to be staged into (an account you do not own, a dormant account, a retrying payment). A screen you can click to from a state already in the register does not get one; the register is not a sitemap, and doubling the app as a second index leaves two things to keep in step.

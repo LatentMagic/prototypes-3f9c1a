@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
-<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=snug1" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=row19e" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -222,13 +222,31 @@
   }
   .kit-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
 
+  /* ---- app posture (Config → Platform: Mobile) only: the system bars ----
+     Drawn over the screen, as a phone draws them over an app that fills it. The
+     clip sets the space they take; content reads it as
+     var(--safe-area-inset-top, env(safe-area-inset-top, 0px)), so on a real phone,
+     where nothing sets the variables, env() answers (viewport-fit=cover above).
+     Mobile web (Viewport: Mobile) sets nothing and draws nothing. Icons take
+     --kit-status-fg, which a product sets wherever its top chrome is dark. */
+  .kit-phone-clip[data-app] { --safe-area-inset-top: 59px; --safe-area-inset-bottom: 34px; }
+  .kit-phone-status, .kit-phone-home { position: absolute; left: 0; right: 0; z-index: 2147483000; pointer-events: none; color: var(--kit-status-fg, var(--text)); }
+  .kit-phone-status {
+    top: 0; height: var(--safe-area-inset-top); padding: 0 30px 0 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    font: 600 16px/1 var(--font-sans); letter-spacing: -0.01em;
+  }
+  .kit-phone-island { position: absolute; top: 11px; left: 50%; width: 120px; height: 35px; margin-left: -60px; border-radius: 20px; background: #000; }
+  .kit-phone-home { bottom: 0; height: var(--safe-area-inset-bottom); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
+  .kit-phone-home::after { content: ''; width: 134px; height: 5px; border-radius: 3px; background: currentColor; }
+
   /* ==== [Platform] product. Values come from the design system's tokens; layout
      adapts to the width it is handed (container queries on .gs-root). ==== */
   html, body { background: var(--page); color: var(--text); font-family: var(--font-text); }
   .gs-root { container: gs / inline-size; min-height: 100vh; display: flex; flex-direction: column; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); }
   /* the footer sits at the foot of the window when the page is short; the spacer keeps it clear of the demo bar */
   .gs-root > .gs-ft { margin-top: auto; }
-  .gs-demo-space { flex: none; height: 44px; }
+  .gs-demo-space { flex: none; height: calc(44px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
   .kit-phone-clip .gs-root { min-height: 100%; }
   .gs-root p, .gs-root ol, .gs-root ul, .gs-root figure { margin: 0; }
   .gs-root :focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
@@ -284,7 +302,7 @@
   .gs-titlebtn { width: auto; }
 
   /* top bar */
-  .gs-top { border-bottom: 1px solid var(--line); background: var(--page); }
+  .gs-top { border-bottom: 1px solid var(--line); background: var(--page); padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
   .gs-root > .gs-top { position: sticky; top: 0; z-index: 50; }
   .gs-top-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; }
   .gs-brand { font: 700 20px/1.2 var(--font-heading); letter-spacing: -.01em; color: var(--text); background: none; border: 0; padding: 0; cursor: pointer; min-height: 44px; white-space: nowrap; display: inline-flex; align-items: center; gap: 12px; }
@@ -299,8 +317,9 @@
   .gs-navlink { position: relative; }
   .gs-navlink::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--off-white); opacity: .45; transform: scaleX(0); transform-origin: 50% 50%; transition: transform var(--time-swap) var(--ease); pointer-events: none; }
   .gs-navlink:active { opacity: .55; }
-  @media (hover: hover) { .gs-navlink:not([aria-current="page"]):hover::after { transform: scaleX(1); } .gs-acct-btn .gs-avatar { transition: border-color var(--time-swap) var(--ease); } .gs-brand-mark, .gs-brand-mark .tr { transition: transform 460ms cubic-bezier(.2,.8,.2,1); } .gs-brand:hover .gs-brand-mark { transform: rotate(-18deg) scale(1.3); } .gs-brand:hover .gs-brand-mark .tr { transform: translate(-3px,3px); } .gs-acct-btn:hover .gs-avatar { border-color: var(--off-white); } .gs-menu-item { transition: background-color var(--time-press) var(--ease); } .gs-menu-item:hover { background: color-mix(in srgb, var(--text) 8%, var(--popup)); } }
-  @media (prefers-reduced-motion: reduce) { .gs-navlink::after, .gs-brand-mark, .gs-brand-mark .tr, .gs-acct-btn .gs-avatar, .gs-menu-item { transition: none; } }
+  @media (hover: hover) { .gs-navlink:not([aria-current="page"]):hover::after { transform: scaleX(1); } .gs-acct-btn .gs-avatar { transition: border-color var(--time-swap) var(--ease); } .gs-brand-mark i { transition: transform 330ms cubic-bezier(.16,1,.3,1); } .gs-brand:hover .gs-brand-mark i { transition-duration: 440ms; } .gs-brand:hover .gs-brand-mark .tr { transform: translate(28px,-28px); } .gs-brand:hover .gs-brand-mark .tl { transform: translate(0,6px); } .gs-brand:hover .gs-brand-mark .br { transform: translate(-6px,0); } .gs-acct-btn:hover .gs-avatar { border-color: var(--off-white); } .gs-menu-item { transition: background-color var(--time-press) var(--ease); } .gs-menu-item:hover { background: color-mix(in srgb, var(--text) 8%, var(--popup)); } }
+  @media (prefers-reduced-motion: reduce) { .gs-navlink::after, .gs-brand-mark i, .gs-acct-btn .gs-avatar, .gs-menu-item { transition: none; } }
+  @media (hover: hover) and (prefers-reduced-motion: reduce) { .gs-brand:hover .gs-brand-mark .tr { transform: translate(10px,-10px); } .gs-brand:hover .gs-brand-mark .tl, .gs-brand:hover .gs-brand-mark .br { transform: none; } }
   .gs-acct { position: relative; }
   .gs-acct-btn .mcp-ico { transition: transform var(--time-dropdown) var(--ease); }
   .gs-acct-btn[aria-expanded="true"] .mcp-ico { transform: rotate(180deg); }
@@ -312,13 +331,13 @@
   .gs-menu-item:active { background: color-mix(in srgb, var(--text) 16%, var(--popup)); }
 
   /* demo bar (prototype control, not product) */
-  .gs-demo { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: var(--page); border-top: 1px dashed var(--control-edge); }
+  .gs-demo { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: var(--page); border-top: 1px dashed var(--control-edge); padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)); }
   .gs-demo-in { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 0 8px; font: 600 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
   .gs-demo-sep { width: 1px; height: 20px; background: var(--control-edge); margin: 0 12px; }
   .gs-demo-in { flex-wrap: nowrap; overflow-x: auto; justify-content: safe center; }
   .gs-demo-in > * { flex: none; }
   @container gs (max-width: 599px) {
-    .gs-demo-space.is-two { height: 88px; }
+    .gs-demo-space.is-two { height: calc(88px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
     .gs-demo-in.is-two { flex-wrap: wrap; justify-content: center; overflow-x: visible; }
     .gs-demo-in.is-two > .gs-demo-sep { flex-basis: 100%; height: 0; margin: 0; }
   }
@@ -397,7 +416,9 @@
   .gs-buy > .mcp-btn { width: 100%; }
 
   /* auth, connect, checkout */
-  .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; }
+  .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
+  /* In the phone frame the auth screen fills the screen it sits in (gs-root is a flex column at the screen's height), less the demo bar's spacer, not the browser window */
+  .kit-phone-clip .gs-auth { min-height: 0; flex: 1 0 auto; }
   .gs-auth-col { width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 16px 36px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
   .gs-auth-foot { margin-top: auto; padding-top: 24px; }
   .gs-auth-head { display: grid; gap: 8px; text-align: center; }
@@ -508,7 +529,7 @@
   .gs-link-slot { min-height: 48px; align-items: center; }
 
   /* loader + load failed */
-  .gs-full { min-height: 100vh; display: grid; place-items: center; align-content: center; padding: 24px 16px; background: var(--page); }
+  .gs-full { min-height: 100vh; display: grid; place-items: center; align-content: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 24px; background: var(--page); }
   .kit-phone-clip .gs-full { min-height: 100%; }
   .gs-spin-slot { width: 100px; height: 100px; display: grid; place-items: center; }
   .gs-inplace { display: grid; place-items: center; min-height: 320px; padding: 72px 16px; }
@@ -552,6 +573,7 @@
   .gs-legal-col { max-width: 720px; margin: 0 auto; display: grid; gap: 24px; }
   .gs-legal-h1 { margin: 0; font: 700 clamp(28px, 8cqi, 40px)/1.05 var(--font-heading); letter-spacing: -.015em; text-wrap: balance; }
   .gs-legal-rev { font: 400 12px/1.3 var(--gs-mono); color: var(--muted); }
+  .gs-legal-foot { color: var(--muted); padding-top: 8px; }
   .gs-legal-sec, .gs-legal-sub { display: grid; gap: 8px; max-width: 64ch; }
   .gs-legal-sec { gap: 12px; }
   .gs-legal-h2 { margin: 0; font: 700 20px/1.2 var(--font-heading); }
@@ -560,7 +582,7 @@
   .gs-legal-col a { color: var(--text); text-decoration-color: var(--off-white); text-decoration-color: color-mix(in srgb, var(--off-white) 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
 
   /* not found */
-  .gs-nf { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: 24px 16px 72px; background: var(--page); }
+  .gs-nf { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 72px; background: var(--page); }
   .kit-phone-clip .gs-nf { min-height: 100%; }
   .gs-nf-col { align-self: center; width: 100%; max-width: 460px; display: grid; gap: 16px; justify-items: center; text-align: center; padding: 36px 0; }
 
@@ -748,6 +770,11 @@
   .lb-wk.is-on > i { background: var(--off-white); box-shadow: none; }
   .lb-wk.is-fz > i { background: color-mix(in srgb, var(--off-white) 38%, var(--card)); box-shadow: none; }
   .lb-wk.is-join > em { padding-left: 0; }
+  /* A failed day: the Not played outline with a cross (failed-vs-missed-strip option 2). The legend's square takes a full X in the outline's colour. */
+  .lb-wk > i:has(> svg) { display: grid; place-items: center; }
+  .lb-wk.is-fail > i { color: var(--text); }
+  .lb-legend i.is-fail { color: var(--control-edge); }
+  .lb-legend i.is-fail > svg { display: block; }
   .lb-legend { flex-wrap: nowrap; gap: 8px; font-size: 13px; white-space: nowrap; }
   .lb-legend li { gap: 5px; }
   @container gs (max-width: 359px) { .lb-legend { flex-wrap: wrap; gap: 4px 12px; } }
@@ -1181,7 +1208,7 @@
   .gs-sw[aria-busy="true"] { cursor: progress; }
   @media (hover: hover) { .gs-sw:not(:disabled):not([aria-checked="true"]):hover .gs-sw-track { background: color-mix(in srgb, var(--text) 8%, transparent); } }
   @media (prefers-reduced-motion: reduce) { .gs-sw-track, .gs-sw-thumb { transition: none; } }
-  .gs-osperm { position: fixed; z-index: 200; top: 8px; left: 8px; width: min(320px, calc(100% - 16px)); padding: 16px; background: #fff; color: #1f1f1f; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); font: 400 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; gap: 12px; }
+  .gs-osperm { position: fixed; z-index: 200; top: calc(8px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); left: 8px; width: min(320px, calc(100% - 16px)); padding: 16px; background: #fff; color: #1f1f1f; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); font: 400 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; gap: 12px; }
   .gs-osperm-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .gs-osperm-x { width: 28px; height: 28px; border: 0; background: none; border-radius: 50%; font: 400 20px/1 system-ui, sans-serif; color: #444; cursor: pointer; }
   .gs-osperm-x:hover { background: #eee; }
@@ -1249,7 +1276,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=snug1"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=row19e"></script>
 
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/gs-data.jsx"></script>

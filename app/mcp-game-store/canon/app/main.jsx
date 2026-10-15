@@ -91,10 +91,36 @@ const GsArrival = ({ name, quick }) => {
   return <main className="gs-wrap gs-main" aria-busy="true"><div className="gs-inplace" style={{ minHeight: '60vh' }}><GsSpin /></div></main>;
 };
 
+// ---- The app posture's system bars ---------------------------------------------
+// Platform: Mobile only. Drawn over the screen inside the phone clip, as a phone
+// draws them over an app that fills it. The space they take is
+// --safe-area-inset-top / --safe-area-inset-bottom (the entry HTML's styles). Mobile
+// web (Viewport: Mobile) draws neither: there a browser owns the top of the screen.
+const KitPhoneBars = () => (
+  <>
+    <div className="kit-phone-status" aria-hidden="true">
+      <span>9:41</span>
+      <span className="kit-phone-island" />
+      <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+        <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="currentColor" opacity="0.4" />
+        <rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor" />
+        <path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity="0.4" />
+      </svg>
+    </div>
+    <div className="kit-phone-home" aria-hidden="true" />
+  </>
+);
+
 const KitApp = () => {
   // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
   const [layout, setLayout] = useState('auto');
-  const forcedMobile = layout === 'mobile';
+  // Platform posture: 'web' | 'app', set from Config. Session-only like the
+  // Viewport. 'web' = the two web postures (desktop web, mobile web); 'app' = the
+  // native app posture. The app posture always uses the phone frame, whatever
+  // the Viewport says, and only it draws the system bars.
+  const [platform, setPlatform] = useState('web');
+  const isApp = platform === 'app';
+  const forcedMobile = layout === 'mobile' || isApp;
   const ConfigLauncher = window.ConfigLauncher;
 
   // ---- product state ------------------------------------------------------------
@@ -171,7 +197,7 @@ const KitApp = () => {
   };
 
   const gs = {
-    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640, push, setPush,
+    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640, push, setPush, isApp,
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
     // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
     keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
@@ -232,7 +258,7 @@ const KitApp = () => {
   // ---- the states register (app/states.jsx, a deletable aid) ----------------------
   const [landing, setLanding] = useState(() => (window.kitResolveState ? window.kitResolveState() : null));
   const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (window.buildStates
-    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPush })
+    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPush, setPlatform })
     : { byId: {}, groups: [] });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
   window.kitGoState = goState; // opens a state by id from a script (checking a build)
@@ -287,7 +313,12 @@ const KitApp = () => {
         <StatesIndexView reason={landing} groups={STATE_GROUPS} onGo={goState} onDismiss={() => setLanding(null)} />
       ) : forcedMobile ? (
         <div className="kit-stage">
-          <div className="kit-phone"><div className="kit-phone-clip"><div className="kit-phone-screen">{appTree}</div></div></div>
+          <div className="kit-phone">
+            <div className="kit-phone-clip" data-app={isApp ? '1' : undefined}>
+              <div className="kit-phone-screen">{appTree}</div>
+              {isApp && <KitPhoneBars />}
+            </div>
+          </div>
         </div>
       ) : appTree}
 
@@ -296,7 +327,8 @@ const KitApp = () => {
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
         onReset={resetAndShow}
-        layout={layout} onLayoutChange={setLayout} />}
+        layout={layout} onLayoutChange={setLayout}
+        platform={platform} onPlatformChange={setPlatform} />}
     </>
   );
 };

@@ -77,6 +77,9 @@ KIT_QA.unshift({ key: 'every-edition-playable', title: 'Every edition can be pla
 KIT_QA.unshift({ key: 'replay-share', title: 'A replay can be shared (docs/specs/replay-share/)',
   note: 'A finished play of a game that can be replayed (Escape, Delve), first or replay, has Play again and Share; Casebook and the daily puzzles have Share only; a replay keeps its Replay chip. Copy ends the first line with "🔁 Replay" and keeps the product page link. A first play shares as before. No session page lists other plays; History still lists replays. Check at 390 and 1280px.',
   steps: ['session-replay', 'session-puzzle', 'session-escape', 'session-casebook', 'history'] });
+KIT_QA.unshift({ key: 'failed-on-strip', title: 'Failed on the streak strip (docs/specs/failed-vs-missed-strip/)',
+  note: 'A failed day: the Not played outline with a cross; legend Completed / Failed / Not played. 36,000 Summers Ago keeps Played / Not played.',
+  steps: ['library-word', 'library-word-streak-broken', 'library-word-in-progress', 'library-mystery-never-played', 'library-casebook', 'library-delve', 'library-casebook-pass-ended', 'library-delve-pass-ended'] });
 KIT_QA.unshift({ key: 'notifications', title: 'Notifications (docs/specs/notifications-2026-10-11/, not ratified)',
   note: 'Card: second on Account, after the Pass card. With the all switch off nothing else changes. Undecided: the all switch raises the browser dialog, even after the banner was dismissed; allowed: it turns on with no dialog. Banner: Discover, Library, History only, signed in, permission undecided. Turn on notifications raises the dialog and the banner never returns, whatever the answer. × hides it on all three pages; Config Notifications moves the clock on (3, 7, then 30 days). Check at 320px and 1280px.',
   steps: ['notifications-undecided', 'notifications-on', 'notifications-off', 'notifications-turn-on-fails', 'notifications-blocked', 'notifications-ios-tab', 'notifications-unsupported',

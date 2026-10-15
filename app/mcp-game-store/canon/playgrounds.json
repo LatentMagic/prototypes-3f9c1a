@@ -1,8 +1,52 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-13",
+  "generated": "2026-10-15",
   "tickets": [
+    {
+      "id": null,
+      "slug": "failed-vs-missed-strip",
+      "name": "Failed and not played on the streak strip",
+      "state": "active",
+      "touched": "2026-10-15",
+      "entries": [
+        {
+          "name": "Options 1 to 3",
+          "path": "docs/specs/failed-vs-missed-strip/playground/index.html",
+          "note": "Two states, three states, three states quiet; desktop and phone; tap a day for its record."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": null,
+      "slug": "app-posture-kit",
+      "name": "App posture and its system bars (kit update)",
+      "state": "active",
+      "touched": "2026-10-15",
+      "entries": [],
+      "archive": []
+    },
+    {
+      "id": null,
+      "slug": "contact",
+      "name": "How people get in touch",
+      "state": "active",
+      "touched": "2026-10-15",
+      "entries": [
+        {
+          "name": "Contact page, options 2a to 2j",
+          "path": "docs/specs/contact/playground/page-options.html",
+          "note": "Option 2 chosen (2026-10-15): a Get in touch page from the footer, with support and one address for everything else. Three takes, and 2d is 2a rewritten; Why holds the critique for each."
+        },
+        {
+          "name": "Contact, options 0 to 4",
+          "path": "docs/specs/contact/playground/index.html",
+          "note": "Today (0), three addresses in the footer (1), a contact page (2), a contact panel (3), or a partners band above the footer (4). For players, contributors and buyers."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": null,
       "slug": "soon-card-phone",

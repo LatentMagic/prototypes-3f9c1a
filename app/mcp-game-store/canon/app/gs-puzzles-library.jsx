@@ -163,6 +163,8 @@ const pzLibrary = (id) => () => {
   let run = [{ ...c.all[0], played: !none, done: !none && now.status.kind === 'ok' }, ...c.all.slice(1)];
   if (never) run = run.map((x) => ({ ...x, played: false, ok: false, done: false }));
   if (broken) run[1] = { ...run[1], played: true, ok: false, done: false, line: c.bad, sid: 'word-broken-first' };
+  // Failed: a first play finished and lost. Today counts only once it has ended in a loss.
+  run = run.map((x, i) => ({ ...x, failed: i === 0 ? !none && !never && now.status.kind === 'bad' : !!x.played && !x.done }));
   // Streak achievements' progress follows the streak shown, so it agrees in every state.
   const n = lbStreak(run);
   const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));

@@ -7,6 +7,9 @@
 // ============================================================================
 const ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
+// Only the dailies go by number. A game whose editions are named scenarios shows the name alone, no number anywhere (owner, 2026-10-15).
+const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== 'daily';
+const pgeTry = (gid) => (pgeNoNum(gid) ? 'Try a name or a date.' : 'Try a name, a number or a date.');
 // ---- SAMPLE: what an edition says about itself. The app holds only number, title, date (and Casebook's cast). ----
 const PGE_INFO = {
   word: 'Five letters. Six guesses.',
@@ -81,9 +84,9 @@ const usePgeList = (gid) => {
   if (!k0.pg && st.open && st.pg === 0) { const i = items.findIndex((x) => x.key === st.open); if (i >= size) pg = Math.floor(i / size); }
   return { ...st, s, wait, box, set, pages, pg, rows: items.slice(pg * size, pg * size + size), go: (x) => { set('pg', x); pgeScroll(box.current); } };
 };
-const PgeEmpty = ({ f, gid }) => <p className="lb-empty gs-muted">{f.s ? (f.show === 'none' ? 'No ' + pgeW(gid) + ' you haven’t played matches that. Try a name, a number or a date.' : 'Nothing matches that. Try a name, a number or a date.') : f.show === 'none' ? 'You’ve played every ' + pgeW(gid) + '.' : 'Nothing matches that.'}</p>;
+const PgeEmpty = ({ f, gid }) => <p className="lb-empty gs-muted">{f.s ? (f.show === 'none' ? 'No ' + pgeW(gid) + ' you haven’t played matches that. ' + pgeTry(gid) : 'Nothing matches that. ' + pgeTry(gid)) : f.show === 'none' ? 'You’ve played every ' + pgeW(gid) + '.' : 'Nothing matches that.'}</p>;
 const pgeList = (gs, gid, extra) => gs.go(GS_GAMES[gid].route, { page: 'record', list: true, ...(extra || {}) });
-const pgeHistory = (gs, gid, e) => gs.go('history', e ? { game: gid, q: '#' + e.n, from: gid } : { game: gid, from: gid });
+const pgeHistory = (gs, gid, e) => gs.go('history', e ? { game: gid, q: pgeNoNum(gid) ? e.title : '#' + e.n, from: gid } : { game: gid, from: gid });
 
 // ---- The list: back to the game, H1, search and Filters (Show, Order), then one row per edition ----
 const PgeListPage = ({ gid }) => {
@@ -95,14 +98,14 @@ const PgeListPage = ({ gid }) => {
       <h1 className="gs-h1">{title}</h1>
       <div className="lb-alllay">
         <window.LbTools>
-          <DS.SearchField label="Search" placeholder="A number, name or date" value={f.q} onChange={(e) => f.set('q', e.target.value)} />
+          <DS.SearchField label="Search" placeholder={pgeNoNum(gid) ? 'A name or date' : 'A number, name or date'} value={f.q} onChange={(e) => f.set('q', e.target.value)} />
           <LbChoice label="Show" value={f.show} opts={[['all', title], ['none', 'Not played']]} onPick={(v) => f.set('show', v)} />
           <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={(v) => f.set('sort', v)} />
         </window.LbTools>
         <div ref={f.box} className="lb-box lb-results ed-results" style={{ maxWidth: 960, minWidth: 0 }}>
           {f.wait ? <GsPart label="Loading" /> : <>
             {!f.rows.length ? <PgeEmpty f={f} gid={gid} /> : <DS.RowList label={title}>{f.rows.map((e) => (
-              <DS.ListRow key={e.key} title={e.title ? '#' + e.n + ' · ' + e.name : '#' + e.n} when={e.when} result={e.played ? 'Played' : undefined} onClick={() => f.set('open', e.key)} />
+              <DS.ListRow key={e.key} title={e.title && !pgeNoNum(gid) ? '#' + e.n + ' · ' + e.name : e.name} when={e.when} result={e.played ? 'Played' : undefined} onClick={() => f.set('open', e.key)} />
             ))}</DS.RowList>}
             <RpPages pg={f.pg} pages={f.pages} go={f.go} />
           </>}
@@ -126,7 +129,7 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
   return (
     <DS.Popup kind="panel" open={!!e0} onClose={onClose} title={e.title || edLabel(e)} actions={prompt ? <GsCopyPrompt text={text} block /> : undefined}>
       <div className="pge-panel">
-        <span className="gs-label">{[e.title && g.name + ' #' + e.n, when, e.info.len].filter(Boolean).join(' · ').toUpperCase()}</span>
+        <span className="gs-label">{[e.title && (pgeNoNum(gid) ? g.name : g.name + ' #' + e.n), when, e.info.len].filter(Boolean).join(' · ').toUpperCase()}</span>
         <p style={{ margin: 0 }}>{e.info.line}</p>
         {e.info.who && <p className="gs-muted" style={{ margin: 0 }}>{e.info.who}</p>}
         {done ? (

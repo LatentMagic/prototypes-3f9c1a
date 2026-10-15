@@ -134,9 +134,9 @@ const GS_SESSIONS = {
       ['Move 6', 'Take crowbar', 'Crowbar'], ['Move 7', 'Lever hatch', 'Out']],
   },
   'mystery-today': {
-    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Missed', loss: true, date: GS.today,
+    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
     setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
-    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Missed',
+    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Failed',
     lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong']],
   },
   'word-1005': {
@@ -215,17 +215,27 @@ const gsScrollToId = (id) => {
 // ---- Results: one formatter per game. Every result line (rows, session pages, the now card) is built here from the play's facts. ----
 const gsMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
 const GS_RESULT = {
-  word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Missed'),
+  word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Failed'),
   groups: (r) => (r.found === 4 ? 'All 4 groups, ' + gsMis(r.mistakes) : r.found + ' of 4 groups'),
-  mystery: (r) => (r.ok ? 'Solved' : 'Missed'),
+  mystery: (r) => (r.ok ? 'Solved' : 'Failed'),
   escape: (r) => (r.ok ? 'Escaped in ' + r.moves + ' moves' : 'Still locked in'),
   casebook: (r) => (r.ok ? 'Solved' : 'Unsolved'),
   delve: (r) => ({ won: 'Rescued', ritual: 'Ritual done', fell: 'Hero fell' })[r.end],
   hunter: (r) => (r.restarted ? 'Restarted' : 'Finished'),
 };
 
+// A row's result in its forms, longest first (ListRow): the short form is the score alone, or the game's own short word.
+const gsForms = (s) => {
+  let m; if (!s) return s;
+  if ((m = /^(?:Solved|Escaped) in (.+)$/.exec(s))) return [s, m[1]];
+  if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+  if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
+  if (/^Done (today|this week)$/.test(s)) return [s, 'Done'];
+  return s;
+};
+
 Object.assign(window, {
-  GS_RESULT, gsMis,
+  GS_RESULT, gsMis, gsForms,
   DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
   GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop, gsScrollToId,
 });

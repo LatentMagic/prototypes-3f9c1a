@@ -16,6 +16,10 @@
 //   label  — how it reads to a person, in the palette and the index.
 //   stage  — the staging function, handed the context built from main.jsx's
 //            setters.
+//   platform (optional) — 'app' | 'web': sets Config → Platform before the
+//            state stages, so its address opens in that posture. Absent: the
+//            posture is left as it is. An app-only state sits beside its web
+//            twin: the app differs in content, not width.
 //
 // Everything else is DERIVED from this list and cannot drift from it: the URL
 // resolver below, window.KIT_STATES (ids + labels only, for anything reading
@@ -45,8 +49,9 @@ function kitStateContext(api) {
 }
 
 // ---- THE REGISTER ----------------------------------------------------------
-// Order here is the order the palette and the index read in. Group titles are
-// plain strings; a new group is simply a new title.
+// Order here does not matter: the palette and the index read alphabetically
+// (sorted in buildStates). Group titles are plain strings; a new group is
+// simply a new title.
 const KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'home', label: '1. Home, signed out', stage: (c) => c.go('home') },
   { group: 'Screens', id: 'sign-up', label: '2. Sign up', stage: (c) => c.go('signup') },
@@ -292,6 +297,9 @@ function buildStates(api) {
   const states = KIT_STATES_ACCEPTED.map((s) => ({
     id: s.id, label: s.label, group: s.group,
     go: () => {
+      // An entry's `platform: 'app' | 'web'` sets Config → Platform before it
+      // stages, so its address opens in the right posture. No platform: left as is.
+      if (s.platform && api.setPlatform) api.setPlatform(s.platform);
       const c = kitStateContext(api);
       c.reseed();
       s.stage(c);
@@ -305,6 +313,12 @@ function buildStates(api) {
     if (!g) { g = { title: s.group, notes: KIT_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
     g.items.push(s);
   });
+  // Alphabetical, always, so a state can be found by name. A leading "App: "
+  // is skipped, so an app-only state sorts beside its web twin.
+  const kitSortKey = (t) => t.replace(/^App:\s*/i, '');
+  const kitCompare = (a, b) => kitSortKey(a).localeCompare(kitSortKey(b), undefined, { sensitivity: 'base', numeric: true });
+  groups.sort((a, b) => kitCompare(a.title, b.title));
+  groups.forEach((g) => g.items.sort((a, b) => kitCompare(a.label, b.label)));
   return { states, byId, groups, reset: ctx.reset };
 }
 
