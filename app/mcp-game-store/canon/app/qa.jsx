@@ -92,6 +92,9 @@ KIT_QA.unshift({ key: 'final-audit-snags', title: 'Final audit snags (docs/specs
   steps: ['pass-cancel-sheet-payment-failed', 'pass-ended-today', 'library-hunter-pass-ended-today', 'history-pass-ended-today', 'library-hunter-pass-ended', 'new-account-library', 'new-account-history', 'new-account-casebook-pass',
     'sign-up', 'account-email', 'account-username-wait', 'session-groups-unfinished', 'session-delve-unfinished', 'history-unfinished',
     'notifications-on', 'notifications-off', 'notifications-undecided', 'sign-in-return-library', 'session-unknown', 'library', 'home', 'word-signed-out', 'pass-page-never-subscribed', 'pass-page-subscribed-before'] });
+KIT_QA.unshift({ key: 'directory-listings', title: 'Directory listings',
+  note: 'The copy on both pages awaits the owner’s review. Check each page at desktop and phone width (Config, Viewport).',
+  steps: ['directory-listing-claude', 'directory-listing-chatgpt'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

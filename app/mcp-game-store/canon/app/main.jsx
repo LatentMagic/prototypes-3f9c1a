@@ -24,7 +24,9 @@ const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', 
 // status: none | active | failed | ending. hadPass: has had the Pass before.
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
 // Screens with their own frame (no shared top bar).
-const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline'];
+const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt'];
+// The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar, play pop-up or push host over them.
+const GS_LISTING = ['directory-claude', 'directory-chatgpt'];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
@@ -38,7 +40,7 @@ const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'retu
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
 const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow',
-  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline'];
+  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt'];
 
 const GsScreen = ({ name }) => {
   switch (name) {
@@ -70,6 +72,8 @@ const GsScreen = ({ name }) => {
     case 'legal': return <GsLegal />;
     case 'loading': return <GsFullLoader />;
     case 'offline': return <GsOffline />;
+    case 'directory-claude': return window.DlClaudeListing ? <window.DlClaudeListing /> : null;
+    case 'directory-chatgpt': return window.DlChatGptListing ? <window.DlChatGptListing /> : null;
     default: return <GsNotFound />;
   }
 };
@@ -300,9 +304,11 @@ const KitApp = () => {
           : <GsArrival key={idx.current} name={route.name} quick={backNav.current} />}
         {(GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && <GsFooter />}
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
-        <GsPlayPopup />
-        {window.GsPushHost && <window.GsPushHost />}
-        <GsDemoBar />
+        {!GS_LISTING.includes(route.name) && <>
+          <GsPlayPopup />
+          {window.GsPushHost && <window.GsPushHost />}
+          <GsDemoBar />
+        </>}
       </div>
     </GsCtx.Provider>
   );

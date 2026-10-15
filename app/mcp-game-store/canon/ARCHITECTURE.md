@@ -21,6 +21,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
 | `app/config-extra.example.jsx` | deletable example | no product rows in Config |
+| `app/directory-listings.jsx` | droppable module (review aid) | the routes `directory-claude` and `directory-chatgpt` render nothing, and the register's Store listing entries are not there |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
 
