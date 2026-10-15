@@ -101,6 +101,12 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **When layout rules collide, a role never changes.** Overhang, space economy and an even vertical rhythm can pull against each other. Resolve them with the levers in order: size within the element's role, then spacing within its step, then layout (width, stacking), then rewording. Rewording is the last lever, not one to avoid, because copy is designed for each width. An H1 may scale with the page, but it stays the H1 and reads as the largest thing on the page at every width. Never demote a role, or break the rhythm, to make something fit. The role's size range belongs to the design system, not to this file.
 </important>
 
+<important if="you are building or changing anything at a screen's top or bottom edge: a top bar, a bottom bar, a floating button, a bottom sheet, a full-height page">
+- **Phones draw over the app's edges, so the app keeps clear of them.** The phone frame draws a status bar at the top and a home indicator at the bottom, as a phone does over an app that fills the screen. Pad top chrome by `var(--kit-safe-top)` and anything pinned to the bottom (a bottom bar, a floating button, a sheet's last row) by `var(--kit-safe-bottom)`; never `env(safe-area-inset-*)` directly, and never a fixed number. On a real phone the two variables are the device's own insets, so the same code holds there.
+- **The status bar sits on the app's colour.** The top chrome's background runs up under the status bar; no gap and no separate band. The status bar's icons take `--kit-status-fg` (the main text colour unless set): set it wherever the top chrome is dark, so the icons stay legible in light and dark.
+- Check both edges in the phone frame (Config, Viewport: Mobile) before calling it done.
+</important>
+
 <important if="you are writing or editing product copy (any UI text, empty state, dialog, error or label)">
 - Read the product's voice doc live, as the product block names it, **before** writing any UI string — not after it is challenged.
 </important>

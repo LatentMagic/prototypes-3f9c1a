@@ -77,6 +77,7 @@ Differences from canon:
 - Below 640px the Config, States and QA aids are bottom sheets, because they are panels under the three kinds of overlay in `CLAUDE.md`. Carried back from the MCP Game Store project on 2026-10-08 (its `docs/specs/overlay-kinds/handoff.md`).
 - Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
 - The playground `<base href>` is four `../`, not canon's three (below).
+- The phone frame draws a status bar (clock, island, battery) and a home indicator over the screen, and sets `--kit-safe-top` / `--kit-safe-bottom` (59px / 34px inside the frame, `env(safe-area-inset-*)` outside it); `CLAUDE.md` § Designing carries the rule that reads them. Added 2026-10-15, after the Circlists store-launch research found the app had no top inset handling and no prototype showed one (business-ops `mobile-readiness/_resources/research/2026-10-15_status-bar-overlap.md`). Not cut from canon.
 
 Known limits are listed in `project/app/README.md`.
 

@@ -38,6 +38,24 @@ const PlaceholderScreen = ({ items, isMobile }) => (
   </main>
 );
 
+// ---- The phone frame's system bars --------------------------------------------
+// Drawn over the screen inside the clip, as a phone draws them over an app. The
+// space they take is --kit-safe-top / --kit-safe-bottom (index.html).
+const KitPhoneBars = () => (
+  <>
+    <div className="kit-phone-status" aria-hidden="true">
+      <span>9:41</span>
+      <span className="kit-phone-island" />
+      <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+        <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="currentColor" opacity="0.4" />
+        <rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor" />
+        <path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity="0.4" />
+      </svg>
+    </div>
+    <div className="kit-phone-home" aria-hidden="true" />
+  </>
+);
+
 // ---- App -------------------------------------------------------------------
 const KitApp = () => {
   // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
@@ -115,7 +133,7 @@ const KitApp = () => {
           onDismiss={() => setLanding(null)} />
       ) : forcedMobile ? (
         <div className="kit-stage">
-          <div className="kit-phone"><div className="kit-phone-clip"><div className="kit-phone-screen">{appTree}</div></div></div>
+          <div className="kit-phone"><div className="kit-phone-clip"><div className="kit-phone-screen">{appTree}</div><KitPhoneBars /></div></div>
         </div>
       ) : appTree}
 
