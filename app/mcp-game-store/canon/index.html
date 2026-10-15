@@ -726,6 +726,8 @@
   .lb-lay { display: grid; gap: 24px; }
   .lb-card { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; display: grid; gap: 16px; align-content: start; min-width: 0; --lb-pad: 16px; }
   .lb-card .mcp-prog-top { display: none; }
+  .lb-card.is-closed { align-content: center; justify-items: center; text-align: center; gap: 24px; }
+  .lb-card.is-closed p { max-width: 48ch; text-wrap: pretty; }
   .lb-box { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); display: grid; align-content: start; min-width: 0; --lb-pad: 16px; }
   .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
   .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }

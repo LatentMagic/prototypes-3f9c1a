@@ -85,11 +85,12 @@ const HgNone = () => {
 const HgClosed = ({ again }) => {
   const gs = useGs();
   return (
-    <section className="lb-card">
-      <h2 className="mcp-t-sec">{again ? 'Your Pass has ended' : 'Only with the Pass'}</h2>
-      <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free account can’t play it.'}</p>
-      <div><DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
-      <p className="gs-small">{GS.purchase}</p>
+    <section className="lb-card is-closed">
+      <div className="gs-stack-xs">
+        <h2 className="mcp-t-sec">{again ? 'Your Pass has ended' : 'Only with the Pass'}</h2>
+        <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free account can’t play it.'}</p>
+      </div>
+      <DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
     </section>
   );
 };

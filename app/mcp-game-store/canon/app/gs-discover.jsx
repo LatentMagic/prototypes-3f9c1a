@@ -128,7 +128,9 @@ const GsLibrary = () => {
   const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const rows = {}; GS_GAME_ORDER.forEach((k) => { rows[k] = gsLibRow(gs, k); });
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
-  const ids = GS_GAME_ORDER.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
+  // Listed only if the player can play some part of it now, or has held the Pass (owner, 2026-10-15; docs/specs/library-access/).
+  const listed = GS_GAME_ORDER.filter((k) => lbAccess(gs, k) !== 'none' || lbPast(gs));
+  const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || GS_GAME_ORDER.indexOf(a) - GS_GAME_ORDER.indexOf(b)));
   return (<>
     {window.GsPushAsk && <window.GsPushAsk />}
