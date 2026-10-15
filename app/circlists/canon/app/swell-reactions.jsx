@@ -653,8 +653,8 @@ const SwellReviewModal = ({ item, onClose }) => {
           position: 'relative', background: 'var(--color-surface)',
           borderTopLeftRadius: 16, borderTopRightRadius: 16,
           boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
-          padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom, 0px))',
-          maxHeight: 'calc(100% - 24px)', overflowY: 'auto', overscrollBehavior: 'contain',
+          padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
+          maxHeight: 'calc(100% - 24px - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))', overflowY: 'auto', overscrollBehavior: 'contain',
           transform: shown ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform var(--duration-slow) var(--ease-quiet)',
         } : {
@@ -864,8 +864,8 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
         position: 'relative', background: 'var(--color-surface)',
         borderTopLeftRadius: 16, borderTopRightRadius: 16,
         boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
-        padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom, 0px))',
-        maxHeight: 'calc(100% - 24px)', overflowY: 'auto',
+        padding: 'var(--space-5) var(--space-3) calc(var(--space-3) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
+        maxHeight: 'calc(100% - 24px - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))', overflowY: 'auto',
         transform: shown ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform var(--duration-slow) var(--ease-quiet)',
       } : {

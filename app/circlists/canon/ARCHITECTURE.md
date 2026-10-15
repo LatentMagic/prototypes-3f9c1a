@@ -31,6 +31,12 @@ const inShell = (content, opts = {}) => <Shell {...props}>{content}</Shell>;
   breaking that contract — which is the point.
 - `isApp` comes from one switch: **Config → Platform (Web / Mobile)**. Session-only, not persisted.
   App posture always implies the phone viewport.
+- **Only the app posture draws the system bars.** With Platform: Mobile the phone clip gets
+  `data-app`, draws a status bar and a home indicator over the screen (`KitPhoneBars`, `main.jsx`),
+  and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (59px / 34px). Content reads them as
+  `var(--safe-area-inset-*, env(safe-area-inset-*, 0px))`. Viewport: Mobile on Web draws neither and
+  sets nothing. The native top bar publishes the top inset as `--circ-app-top-inset` for the shared
+  surfaces that stick below it.
 
 The other posture-aware branches are payments (below) and a short, named list of content
 differences the owner asked for on 5 Oct: the not-subscribed line and the status-only Subscription

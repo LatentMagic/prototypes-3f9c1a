@@ -78,6 +78,26 @@ const CIRC_TWEAK_FALLBACK = { accent: '#047857', layout: 'auto', pulseDepth: 7.5
 const CIRC_CHECK_MS = { off: 0, slow: 45000, fast: 7000 };
 const useTweaksSafe = (typeof useTweaks === 'function') ? useTweaks : (d) => [d, () => {}];
 
+// ---- The app posture's system bars ---------------------------------------------
+// Platform: Mobile only. Drawn over the screen inside the phone clip, as a phone
+// draws them over an app that fills it. The space they take is
+// --safe-area-inset-top / --safe-area-inset-bottom (the entry HTML's styles). Mobile
+// web (Viewport: Mobile) draws neither: there a browser owns the top of the screen.
+const KitPhoneBars = () => (
+  <>
+    <div className="kit-phone-status" aria-hidden="true">
+      <span>9:41</span>
+      <span className="kit-phone-island" />
+      <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+        <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="currentColor" opacity="0.4" />
+        <rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor" />
+        <path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity="0.4" />
+      </svg>
+    </div>
+    <div className="kit-phone-home" aria-hidden="true" />
+  </>
+);
+
 // ---- App -------------------------------------------------------------------
 const CircApp = () => {
   const [tw, setTweak] = useTweaksSafe(window.CIRC_TWEAK_DEFAULTS || CIRC_TWEAK_FALLBACK);
@@ -2041,7 +2061,7 @@ const CircApp = () => {
           onExit={() => setDevicePreview(false)} />
       ) : forcedMobile ? (
         <div className="circ-stage">
-          <div className="circ-phone"><div className="circ-phone-clip"><div className="circ-phone-screen">{appTree}</div></div></div>
+          <div className="circ-phone"><div className="circ-phone-clip" data-app={isApp ? '1' : undefined}><div className="circ-phone-screen">{appTree}</div>{isApp && <KitPhoneBars />}</div></div>
         </div>
       ) : appTree}
 

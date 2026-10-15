@@ -60,10 +60,10 @@ const WizardSubject = ({ children }) => (
   }}>{children}</span>
 );
 const WizardShell = ({ flow = null, subject, onBack, onExit, children }) => (
-  <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
+  <div style={{ height: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column', paddingBottom: 'var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))' }}>
     <header style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: 'clamp(10px, 1.2vw, 16px) clamp(12px, 1.4vw, 20px)', flex: 'none',
+      padding: 'calc(clamp(10px, 1.2vw, 16px) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) clamp(12px, 1.4vw, 20px) clamp(10px, 1.2vw, 16px)', flex: 'none',
     }}>
       {(flow && onBack) ? <WizardIconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40 }} />}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>

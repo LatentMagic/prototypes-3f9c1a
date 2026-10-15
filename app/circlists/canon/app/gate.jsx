@@ -51,7 +51,7 @@ const GateOverlay = ({ open, isMobile, onClose }) => {
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 121,
         background: 'var(--color-surface)',
         borderTopLeftRadius: 16, borderTopRightRadius: 16,
-        padding: 'var(--space-5) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom, 0px))',
+        padding: 'var(--space-5) var(--space-5) calc(var(--space-4) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
         boxShadow: 'var(--shadow-overlay)',
         transform: shown ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform var(--duration-slow) var(--ease-quiet)',

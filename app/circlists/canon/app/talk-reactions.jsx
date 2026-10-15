@@ -187,8 +187,8 @@ const CandReactSheet = ({ list, onRemove, onClose }) => {
         onKeyDown={(e) => window.trapTab && window.trapTab(panelRef.current, e)}
         style={{ position: 'relative', background: 'var(--color-surface)', borderTopLeftRadius: 16, borderTopRightRadius: 16,
           boxShadow: 'var(--shadow-overlay)', width: '100%', maxWidth: 520,
-          padding: 'var(--space-4) var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom, 0px))',
-          maxHeight: 'calc(100% - 24px)', overflowY: 'auto', overscrollBehavior: 'contain',
+          padding: 'var(--space-4) var(--space-3) calc(var(--space-4) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
+          maxHeight: 'calc(100% - 24px - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))', overflowY: 'auto', overscrollBehavior: 'contain',
           transform: shown ? 'translateY(0)' : 'translateY(100%)', transition: 'transform var(--duration-slow) var(--ease-quiet)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0 8px 10px' }}>
           <h2 style={{ margin: 0, font: '600 17px/1.3 var(--font-sans)', letterSpacing: '-0.01em', color: 'var(--color-fg-1)' }}>Reactions</h2>

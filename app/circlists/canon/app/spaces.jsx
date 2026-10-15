@@ -41,9 +41,9 @@ const CalmPage = ({ eyebrow, title, body, actionLabel, onAction, children }) => 
     position: 'relative',
     minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)',
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'safe center',
-    padding: '76px 24px', textAlign: 'center',
+    padding: 'calc(76px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 24px 76px', textAlign: 'center',
   }}>
-    <div style={{ position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)' }}><Wordmark size={21} /></div>
+    <div style={{ position: 'absolute', top: 'calc(28px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))', left: '50%', transform: 'translateX(-50%)' }}><Wordmark size={21} /></div>
     <div style={{ maxWidth: 460 }}>
       {/* `title` is optional: the app's not-subscribed page carries one ratified
           line and no heading (mobile-readiness, 5 Oct), so the line stands alone. */}
@@ -908,7 +908,7 @@ const ChangeEmail = ({ user, onChangeEmail }) => {
 const NoSpaceHome = ({ onCreate }) => (
   <main style={{ flex: 1, width: '100%' }}>
     <div style={{
-      maxWidth: 480, margin: '0 auto', minHeight: 'calc(var(--circ-vh) - var(--top-bar-height))',
+      maxWidth: 480, margin: '0 auto', minHeight: 'calc(var(--circ-vh) - var(--top-bar-height) - var(--circ-app-top-inset, 0px))',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '48px 24px 96px', textAlign: 'center',
     }}>

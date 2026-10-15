@@ -966,6 +966,16 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-10-15',
+              title: 'App posture: phone system bars and safe-area insets',
+              items: [
+                'Config → Platform: Mobile now draws a status bar (time, island, battery) and a home indicator over the phone screen (KitPhoneBars in main.jsx); mobile web (Viewport: Mobile) draws neither.',
+                'The space the bars take is published as --safe-area-inset-top (59px) and --safe-area-inset-bottom (34px) on the phone clip; on a real phone env() answers. Every bottom sheet, the FAB, bottom nav, auth and wizard pages, calm pages and the config modal now read them in place of env() alone; sheets cap their height below the top inset.',
+                'The app top bar runs up under the status bar and a still strip of its own surface sits behind it; Tabs, the lens row and the New pill stick below it via --circ-app-top-inset. The payment provider page, being dark, gets white status icons.',
+                'New spec folders app-posture-kit and system-bars; CLAUDE.md, ARCHITECTURE.md and github.md updated.',
+              ],
+            },
+            {
               date: '2026-10-12',
               title: 'Buttons show working; the ring is Ring; pricing as shipped',
               items: [

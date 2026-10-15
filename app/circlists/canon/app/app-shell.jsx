@@ -40,7 +40,7 @@ const { useState: usAppState, useEffect: usAppEffect, useRef: usAppRef } = React
 // it. Published because the FAB is rendered by main.jsx from the shared
 // app/feed.jsx component: the chrome owns the number, the caller passes it on.
 const APP_NAV_HEIGHT = 54;
-const APP_FAB_BOTTOM = 'calc(' + (APP_NAV_HEIGHT + 20) + 'px + env(safe-area-inset-bottom, 0px))';
+const APP_FAB_BOTTOM = 'calc(' + (APP_NAV_HEIGHT + 20) + 'px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))';
 
 // ---- Push presentation ------------------------------------------------------
 // The app has ONE mount choreography (also used by AddReveal in feed.jsx):
@@ -92,9 +92,11 @@ const TopBarNative = ({ space, isHome = false, onSettings, canSettings = false, 
   const gear = !isSub && !isHome && canSettings;
   return (
     <header style={{
-      height: 'var(--top-bar-height)', background: 'var(--color-surface)',
+      // The bar runs up under the status bar: its height and top padding take the
+      // app's top inset (set by the phone frame; env() on a real phone).
+      height: 'calc(var(--top-bar-height) + var(--circ-app-top-inset))', background: 'var(--color-surface)',
       borderBottom: '1px solid var(--color-border-2)', display: 'flex', alignItems: 'center',
-      padding: isSub ? '0 8px' : gear ? '0 10px 0 16px' : '0 16px', gap: 8,
+      padding: 'var(--circ-app-top-inset) ' + (isSub ? '8px 0' : gear ? '10px 0 16px' : '16px 0'), gap: 8,
       position: 'sticky', top: 0, zIndex: 50,
     }}>
       {isSub ? (
@@ -148,7 +150,7 @@ const BottomNav = ({ user, isHome, onHome, onAccount }) => (
   <nav aria-label="Circlists" style={{
     position: 'sticky', bottom: 0, zIndex: 40, display: 'flex', alignItems: 'stretch',
     background: 'var(--color-surface)', borderTop: '1px solid var(--color-border-2)',
-    paddingBottom: 'env(safe-area-inset-bottom, 0px)', boxShadow: '0 -1px 0 rgba(10,10,10,0.02)',
+    paddingBottom: 'var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))', boxShadow: '0 -1px 0 rgba(10,10,10,0.02)',
   }}>
     <NavItem icon="home" label="Home" active={isHome} onClick={onHome} />
     <NavItem label="Account" glyph={<Avatar name={displayName(user)} size={22} accent />} onClick={onAccount} />
@@ -166,7 +168,11 @@ const AppShellNative = ({ isMobile, user, spaces, currentId, space, showMembers 
   const openAccount = () => { if (onAccountGate) { onAccountGate(); return; } onManageAccount && onManageAccount(); };
 
   const view = (
-    <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)' }}>
+    // --circ-app-top-inset: the status bar's height, published for the shared
+    // surfaces that stick below this top bar (Tabs, the lens row, the New pill).
+    // Only this shell sets it, so the web postures read their 0px fallback.
+    <div style={{ minHeight: 'var(--circ-vh)', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)',
+      '--circ-app-top-inset': 'var(--safe-area-inset-top, env(safe-area-inset-top, 0px))' }}>
       <TopBarNative space={space} isHome={isHome && !isSub} subView={subView}
         onSettings={onMembers} canSettings={showMembers && !!space} />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{children}</div>
@@ -185,6 +191,10 @@ const AppShellNative = ({ isMobile, user, spaces, currentId, space, showMembers 
         position: 'absolute', inset: 0, overflow: 'hidden', background: 'var(--color-canvas)',
         boxShadow: '-8px 0 24px rgba(10,10,10,0.10)',
       }}>{anim.top}</div>
+      {/* The strip behind the status bar stays still while the page passes under
+          it: the top bar's own surface, so bar and strip read as one band. */}
+      <div aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1,
+        height: 'var(--safe-area-inset-top, env(safe-area-inset-top, 0px))', background: 'var(--color-surface)' }} />
     </div>
   );
 };

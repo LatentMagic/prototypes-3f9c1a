@@ -88,7 +88,7 @@ const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }
 // A deliberately different register (cool slate) — "you have left Circlists
 // and are on the payment provider."
 const ProviderShell = ({ children, merchant = 'Circlists' }) => (
-  <div style={{
+  <div className="circ-provider" style={{
     minHeight: 'var(--circ-vh)', background: '#0f172a',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     padding: '32px 20px 48px', fontFamily: 'var(--font-sans)',

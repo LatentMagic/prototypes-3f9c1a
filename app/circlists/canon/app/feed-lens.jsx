@@ -816,7 +816,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // last row sat about 20px off the screen edge, which puts "Former
             // member" under a handset's home indicator. `--space-5` plus the
             // safe-area inset, which is what AddReveal's own sheet uses.
-            padding: '0 0 calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
+            padding: '0 0 calc(var(--space-5) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
             // ONE scroll region, which is the second thing four groups broke.
             // The popover scrolled AND the filter list scrolled inside it — a
             // scroller nested in a scroller, which Linear's own display popover
@@ -1192,7 +1192,7 @@ const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, i
     // swipe, and the chip is the whole reason folding the sort label away was
     // affordable — it cannot be a thing that only exists above the fold.
     <div style={{
-      position: 'sticky', top: 'calc(var(--top-bar-height) + 48px)', zIndex: 48,
+      position: 'sticky', top: 'calc(var(--top-bar-height) + var(--circ-app-top-inset, 0px) + 48px)', zIndex: 48,
       background: 'var(--color-canvas)',
       borderBottom: '1px solid var(--color-border-2)', width: '100%',
     }}>

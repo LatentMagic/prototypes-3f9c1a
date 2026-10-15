@@ -14,7 +14,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // above the heading.
 const AuthPage = ({ title, subtitle, onBack, lead, children, consent, footer }) => (
   <div style={{ minHeight: 'var(--circ-vh)', background: 'var(--color-canvas)', display: 'flex', flexDirection: 'column' }}>
-    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'clamp(10px, 1.2vw, 16px) clamp(12px, 1.4vw, 20px)', flex: 'none' }}>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'calc(clamp(10px, 1.2vw, 16px) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) clamp(12px, 1.4vw, 20px) clamp(10px, 1.2vw, 16px)', flex: 'none' }}>
       {onBack ? <WizardIconBtn name="arrow-left" label="Back" onClick={onBack} /> : <span style={{ width: 40, height: 40 }} />}
       <span style={{ width: 40 }} />
     </header>
@@ -31,7 +31,7 @@ const AuthPage = ({ title, subtitle, onBack, lead, children, consent, footer }) 
         <div style={{ marginTop: 'var(--space-6)' }}>{children}</div>
       </div>
     </main>
-    <footer style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 22px 24px' }}>
+    <footer style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 22px calc(24px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))' }}>
       <div className="circ-auth-col">
         {consent}
         {footer && <div style={{ marginTop: 'var(--space-4)', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-fg-2)', textAlign: 'center' }}>{footer}</div>}

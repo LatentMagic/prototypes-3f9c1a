@@ -98,6 +98,14 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-15T08:52:23Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Kit update, app posture system bars: status bar and home indicator in Platform: Mobile, the inset variables, the postures block in `CLAUDE.md`, edge audit and corrections. Handoff in `docs/specs/app-posture-kit/`.
+
+## Previous sync
+
 date: 2026-10-08T07:21:04Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start; non-flicker loading, visibility of system status); searched `specs/projects/circlists/` for spinner and in-flight lines. Nothing mirrored; commit 49cb2a203de3 (from search).
 

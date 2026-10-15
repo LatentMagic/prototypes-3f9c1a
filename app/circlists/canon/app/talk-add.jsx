@@ -249,9 +249,9 @@ const CandAddReveal = ({ open, isMobile, onClose, onAdd, initialUrl = '' }) => {
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 121,
         background: 'var(--color-surface)',
         borderTopLeftRadius: 20, borderTopRightRadius: 20,
-        padding: 'var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom, 0px))',
+        padding: 'var(--space-5) var(--space-5) calc(var(--space-5) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
         boxShadow: 'var(--shadow-overlay)',
-        maxHeight: 'calc(100% - 32px)', overflowY: 'auto', overscrollBehavior: 'contain',
+        maxHeight: 'calc(100% - 32px - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))', overflowY: 'auto', overscrollBehavior: 'contain',
         transform: shown ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform var(--duration-slow) var(--ease-quiet)',
       }

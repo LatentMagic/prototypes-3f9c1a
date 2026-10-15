@@ -244,7 +244,7 @@ const Tabs = ({ active, onChange, right = null }) => {
     <div style={{
       background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border-2)',
       padding: '0 16px', display: 'flex', gap: 4, alignItems: 'center',
-      position: 'sticky', top: 'var(--top-bar-height)', zIndex: 49,
+      position: 'sticky', top: 'calc(var(--top-bar-height) + var(--circ-app-top-inset, 0px))', zIndex: 49,
     }}>
       {tabItems.map((t) => {
         const on = active === t.id;

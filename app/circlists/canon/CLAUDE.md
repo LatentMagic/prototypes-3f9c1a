@@ -93,6 +93,13 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - **Calm is the floor.** Avoid anxiety, performance pressure, FOMO by design.
 </important>
 
+<important if="you are building or changing the app posture (Config → Platform: Mobile), or anything at a screen's top or bottom edge in it: a top bar, a bottom bar, a floating button, a bottom sheet, a full-height page">
+- **One app, three postures.** Desktop web, mobile web and app (native mobile) are one product in three presentations; every screen inside the chrome is the same component in all three. Config → Viewport switches the two web postures. Config → Platform (Web / Mobile) switches the app posture on (`isApp` in code; the mechanism is in `ARCHITECTURE.md`).
+- **In the app posture the phone draws over the app's edges, so content stays clear of them.** The frame draws a status bar at the top and a home indicator at the bottom, and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` to their heights. Pad top chrome by `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))` and anything pinned to the bottom (a bottom bar, a floating button, a sheet's last row) by `var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))`; never a bare `env(safe-area-inset-*)` and never a fixed number. On a real phone nothing sets the variables and `env()` answers, so the same code holds in the native build. Mobile web draws no bars and sets nothing: there the browser owns the top of the screen.
+- **The status bar strip takes the app's surface colour.** The top chrome's background runs up under the status bar, with no gap and no separate band. The bar's icons take `--kit-status-fg` (the main text colour unless set); set it wherever the top chrome is dark.
+- Check both edges with Config → Platform: Mobile before calling it done.
+</important>
+
 <important if="you are writing or editing product copy (any UI text, empty state, dialog, error or label)">
 - Source of truth is the wiki's `wiki/products/circlists/circlists-copy-voice.md` — read it live (see `github.md`) first. In short: direct, present-tense, verb-led. Evergreen copy (no first-visit/temporal framing). Calm and non-blaming at failures. No emoji, ever.
 </important>
