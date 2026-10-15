@@ -40,7 +40,7 @@ const PlaceholderScreen = ({ items, isMobile }) => (
 
 // ---- The phone frame's system bars --------------------------------------------
 // Drawn over the screen inside the clip, as a phone draws them over an app. The
-// space they take is --kit-safe-top / --kit-safe-bottom (index.html).
+// space they take is --safe-area-inset-top / --safe-area-inset-bottom (index.html).
 const KitPhoneBars = () => (
   <>
     <div className="kit-phone-status" aria-hidden="true">
