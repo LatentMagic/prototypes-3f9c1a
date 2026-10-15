@@ -60,11 +60,12 @@ const StatesRow = ({ state, onGo }) => {
 // not remembered — no localStorage-backed view state (CLAUDE.md). A search
 // opens every group it matches, or the matches would sit hidden.
 // A group's `notes` (per group, from CIRC_STATE_GROUP_NOTES) sit at its foot.
+// Groups render A–Z by title (Joe, 2026-10-15), whatever order the register holds.
 const StatesGroups = ({ groups, onGo, forceOpen = false }) => {
   const [open, setOpen] = useStState({});
   return (
     <div className="circ-states-groups">
-      {groups.map((g) => {
+      {[...groups].sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })).map((g) => {
         const isOpen = forceOpen || !!open[g.title];
         const bodyId = 'circ-states-g-' + g.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         return (

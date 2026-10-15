@@ -60,8 +60,87 @@ const CIRC_SEED_DESC = {
   'https://longreads.com/2026/01/the-long-walk-home/': 'A memoir of walking three hundred miles back to a childhood town.',
 };
 
+// ---- Frontend Guild (docs/specs/frontend-guild/) --------------------------
+// The landing circle, matching the store screenshots. Copy is verbatim from the
+// brief. Ages, thoughts and conversations are set by circGuildFinish() AFTER the
+// liveliness pass below, which would otherwise overwrite each card's `at`.
+const GUILD_IMG = 'uploads/card-previews/';
+const GUILD_CARDS = [
+  { k: 'fg1', url: 'https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html', by: 'Marcus T.', read: false, age: 5, title: 'Understanding Success Criterion 1.4.3: Contrast (Minimum)', source: 'W3C', image: 'guild-apollo.jpg', thought: 'Read this before the next design review. The 4.5:1 rule is shorter than it looks.', watching: true },
+  { k: 'fg2', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties', by: 'Priya N.', read: false, age: 20, title: 'Using CSS custom properties (variables)', source: 'MDN Web Docs', image: 'guild-babbage.jpg', thought: 'For the theming work. The fallback section is the useful bit.' },
+  { k: 'fg3', url: 'https://www.youtube.com/watch?v=cCOL7MC4Pl0', by: 'Dev K.', read: false, age: 31, title: 'Jake Archibald on the web browser event loop, setTimeout, micro tasks, requestAnimationFrame, ...', source: 'YouTube', image: 'guild-orrery.jpg', thought: 'Thirty-five minutes, and the animations will finally make sense.', watching: true },
+  { k: 'fg4', url: 'https://overreacted.io/before-you-memo/', by: 'Amara O.', read: false, age: 52, title: 'Before You memo()', source: 'overreacted', image: 'guild-eniac.jpg' },
+  { k: 'fg5', url: 'https://changelog.com/jsparty/349', by: 'You', read: false, age: 70, title: 'React: then & now with Tom Occhino & Shruti Kapoor (JS Party #349)', source: 'Changelog', image: 'guild-hopper.jpg', thought: 'One for the commute, for Friday\u2019s catch-up?' },
+  { k: 'fh1', url: 'https://www.youtube.com/watch?v=AdNJ3fydeao', by: 'Tomasz W.', read: true, age: 140, title: 'Rich Harris - Rethinking reactivity', source: 'YouTube', image: 'guild-crystal.jpg', thought: 'Shorter than I expected, and it changed how I read our state code.', watching: true,
+    reactions: [['You', HEART, 0.85], ['Priya N.', BULB, 0.55], ['Marcus T.', HEART, 0.3], ['Amara O.', BULB, 0.85]] },
+  { k: 'fh2', url: 'https://web.dev/articles/vitals', by: 'Marcus T.', read: true, age: 260, title: 'Web Vitals', source: 'web.dev', image: 'guild-vitruvian.jpg', watching: true,
+    reactions: [['Dev K.', FIRE, 0.85], ['You', THUMB, 0.55]] },
+  { k: 'fh3', url: 'https://overreacted.io/writing-resilient-components/', by: 'Priya N.', read: true, age: 380, title: 'Writing Resilient Components', source: 'overreacted', image: 'guild-ironbridge.jpg', thought: 'The four principles, on one page.',
+    reactions: [['Dev K.', LOL, 0.55]] },
+  { k: 'fh4', url: 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/', by: 'You', read: true, age: 520, title: 'Dialog (Modal) Pattern', source: 'W3C', image: 'guild-wellswindow.jpg',
+    reactions: [['Priya N.', HEART, 0.55]] },
+];
+// Conversations: [id, by, hoursAgo, text, replyTo?, [[who, glyph, hoursAgo]...]?]
+const GUILD_TALK = {
+  fh1: { seen: 60, turns: [
+    ['fh1a', 'Priya N.', 120, 'The part about doing the work at build time stayed with me. We ship a lot of runtime we never needed.', null, [['Marcus T.', HEART, 118], ['You', BULB, 100]]],
+    ['fh1b', 'You', 110, 'Same. I want to try it on the settings page and see how much code goes away.', 'fh1a', [['Priya N.', HEART, 108]]],
+    ['fh1c', 'Marcus T.', 96, 'Skeptical for the first ten minutes, then it clicked. Worth it for the live demo alone.'],
+    ['fh1d', 'Amara O.', 80, 'Putting it on the agenda for the next guild session.', null, [['Tomasz W.', THUMB, 70]]],
+    ['fh1e', 'Priya N.', 20, 'Tried it on a small page this morning and the bundle got noticeably smaller.'],
+  ] },
+  fh2: { seen: 50, turns: [
+    ['fh2a', 'Dev K.', 230, 'Our LCP is the number to fix first. The hero image is the whole story.', null, [['Priya N.', FIRE, 220]]],
+    ['fh2b', 'Tomasz W.', 220, 'Agreed, I can take the image sizing this sprint.', 'fh2a', [['Amara O.', THUMB, 30]]],
+    ['fh2c', 'You', 210, 'I can pair on it. A smaller hero on mobile alone would move the number.', 'fh2a', [['Amara O.', HEART, 30], ['Dev K.', BULB, 28], ['Priya N.', FIRE, 25]]],
+  ] },
+  fh3: { seen: 310, turns: [
+    ['fh3a', 'Dev K.', 340, 'The one about not stopping the data flow is the one I keep breaking.'],
+    ['fh3b', 'Priya N.', 330, 'Same here. It is the first thing I check in review now.', 'fh3a'],
+    ['fh3c', 'Marcus T.', 300, 'Worth reading alongside Before You memo() for the next session.'],
+  ] },
+  fg3: { seen: 12, turns: [
+    ['fg3a', 'Dev K.', 30, 'The microtask bit finally explained the flicker we chased last month.'],
+    ['fg3b', 'Amara O.', 6, 'Watching it tonight. Save me the animation frame part.', 'fg3a'],
+  ] },
+};
+const guildItems = () => GUILD_CARDS.map((c) => {
+  const it = IT(c.url, c.by === 'You' ? 'Added by you' : 'Added by ' + c.by, c.read,
+    (c.reactions || []).map(([name, glyph, intensity]) => ({ name, glyph, intensity })),
+    { title: c.title, source: c.source, image: GUILD_IMG + c.image });
+  it.guildKey = c.k;
+  return it;
+});
+const circGuildFinish = (sp, NOW, HOUR) => {
+  const ago = (h) => NOW - h * HOUR;
+  sp.items.forEach((it) => {
+    const c = GUILD_CARDS.find((x) => x.k === it.guildKey);
+    delete it.guildKey;
+    if (!c) return;
+    it.at = ago(c.age);
+    if (c.thought) it.thought = { by: c.by, text: c.thought, at: ago(c.age) };
+    if (c.watching) it.watching = true;
+    const t = GUILD_TALK[c.k];
+    if (t) {
+      it.talkSeenAt = ago(t.seen);
+      it.talk = t.turns.map(([id, by, h, text, replyTo, rx]) => ({ id, by, text, at: ago(h),
+        ...(replyTo ? { replyTo } : null),
+        ...(rx ? { reactions: rx.map(([who, glyph, rh]) => ({ who, glyph, at: ago(rh) })) } : null) }));
+    }
+  });
+};
+
 function seedSpaces(userEmail) {
   const spaces = [
+    {
+      // The landing circle. You champion it; six of ten, so the invite card shows.
+      id: 'sp-guild',
+      name: 'Frontend Guild',
+      description: 'Articles, talks and specs for frontend engineers across our teams.',
+      funded: true, dormancy: null, champion: 'You', championEmail: userEmail,
+      members: [M('You', userEmail), M('Priya N.', 'priya.n@example.com'), M('Marcus T.', 'marcus.t@example.com'), M('Tomasz W.', 'tomasz.w@example.com'), M('Dev K.', 'dev.k@example.com'), M('Amara O.', 'amara.o@example.com')],
+      items: guildItems(),
+    },
     {
       // You champion it → Invite + Manage funding + "Championed by You".
       id: 'sp-backend',
@@ -320,6 +399,8 @@ function seedSpaces(userEmail) {
     sp.pending = [];
     sp.queued = [];
   });
+  const guild = spaces.find((sp) => sp.id === 'sp-guild');
+  if (guild) circGuildFinish(guild, NOW, HOUR);
   return spaces;
 }
 

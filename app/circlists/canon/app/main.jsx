@@ -56,7 +56,8 @@ const circShareExtractUrl = (payload) => {
 // v15: the go.dev "both" row's reactions come from people who did not reply.
 // v16: Backend Pod gains the card-title fixtures (a failed fetch you added, a
 // custom title of yours, a custom title of Marcus's).
-const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v16';
+// v17: Frontend Guild joins the seed as the first circle.
+const STATE_KEY = window.CIRC_STATE_KEY || 'circ_state_v17';
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); } catch (e) { return null; } })();
 // Saved state can predate seeded descriptions (search-only meta); fill them in.
 if (SAVED && Array.isArray(SAVED.spaces) && window.CircSeed.SEED_DESC) {
@@ -190,7 +191,7 @@ const CircApp = () => {
   // direction: the held link is ephemeral by design, so a RESTORED picker is a
   // share screen with nothing being shared — the member's next ordinary visit
   // would open on a question nobody asked, dressed as a bare arrival.
-  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full', 'share-intake', 'splash', 'cant-connect'];
+  const CIRC_UNRESUMABLE = ['not-found', 'invalid-invite', 'space-full', 'share-intake', 'splash', 'cant-connect', 'store-app-store', 'store-google-play'];
   // A fresh session (nothing stored) lands on home — home is a shared surface
   // now, not an app-only chrome state (per
   // MOBILE.md's promotion test). A RESTORED session goes back exactly where it
@@ -215,7 +216,7 @@ const CircApp = () => {
   // a dead click on the landing screen, for every returning member. No staged
   // state could show it, because every stager sets currentId explicitly.
   const [currentId, setCurrentId] = useState(
-    INITIAL_ROUTE === 'home' ? null : (SAVED?.currentId || 'sp-backend')
+    INITIAL_ROUTE === 'home' ? null : (SAVED?.currentId || 'sp-guild')
   );
   // 'saved' is NOT a tab this app has any more (the third-tab reading was
   // superseded and its stager removed, 2026-09-14) — but `tab` is persisted,
@@ -1309,6 +1310,11 @@ const CircApp = () => {
   } else if (route === 'splash' && window.CircSplash) {
     // Start-up (app/startup.jsx): the app's splash, then the loading state, then home.
     screen = <window.CircSplash hold={holdLoading} onDone={goHome} />;
+  } else if (route === 'store-app-store' && window.CircStoreAppStore) {
+    // Review aid (app/store-listings.jsx): the App Store page mock. Not product UI.
+    screen = <window.CircStoreAppStore />;
+  } else if (route === 'store-google-play' && window.CircStoreGooglePlay) {
+    screen = <window.CircStoreGooglePlay />;
   } else if (route === 'cant-connect' && window.CircCantConnect) {
     // Start-up could not reach the servers: every posture.
     screen = <window.CircCantConnect onDone={goHome} />;

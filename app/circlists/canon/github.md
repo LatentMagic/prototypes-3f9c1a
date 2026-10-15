@@ -98,6 +98,22 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-15T12:44:18Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Frontend Guild added as the first seeded circle and landing circle; store screenshots replaced. Handoff in `docs/specs/frontend-guild/`.
+
+## Previous sync
+
+date: 2026-10-15T09:39:52Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Store listings: App Store and Google Play page mocks as two register states (`app/store-listings.jsx`). Handoff in `docs/specs/store-listings/`.
+
+## Previous sync
+
 date: 2026-10-15T08:52:23Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
 

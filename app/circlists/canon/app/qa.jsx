@@ -18,6 +18,7 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const CIRC_QA = [
+  { key: 'store-listings', title: 'Store listings', note: 'Copy and shots await the owner\u2019s review.', steps: ['store-listing-app-store', 'store-listing-google-play'] },
 ];
 const circQaShown = () => CIRC_QA.filter((w) => !w.only || !!window[w.only]);
 

@@ -153,7 +153,7 @@ function circStateContext(api) {
   const reset = () => {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
     const s = seedSpaces(DEFAULT_USER.email);
-    setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-backend'); setTab('active'); enterSpace('sp-backend');
+    setSpaces(s); setUser(DEFAULT_USER); setCurrentId('sp-guild'); setTab('active'); enterSpace('sp-guild');
     clearFeedError();
   };
 
@@ -900,7 +900,7 @@ const CIRC_STATE_REGISTER = [
   { group: 'Onboarding', id: 'forgot-password', label: 'Forgot password', stage: (c) => c.setRoute('recovery') },
   { group: 'Onboarding', id: 'otc-error', label: 'One-time code — errors', stage: (c) => { c.setOtc({ context: 'device', error: { expired: true } }); c.setPostAuthTo('space'); c.setRoute('otc'); } },
 
-  { group: 'Feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-backend') },
+  { group: 'Feed', id: 'reading-loop', label: 'The reading loop', stage: (c) => c.goSpace('sp-guild') },
   { group: 'Feed', id: 'empty-feed', label: 'Empty feed (no links)', stage: (c) => c.goEmptyFeed() },
   { group: 'Feed', id: 'no-circles', label: 'No circles yet', stage: (c) => { c.setSpaces([]); c.setCurrentId(null); c.setRoute('home'); } },
   // THE RULING, made visible as a PAIR — drawn in both orders again as of
@@ -1013,6 +1013,11 @@ const CIRC_STATE_REGISTER = [
   { group: 'Start-up', id: 'app-splash', label: 'App: splash — the still mark on cream, held', platform: 'app', stage: (c) => c.holdInterstitial('splash') },
   { group: 'Start-up', id: 'app-start-up', label: 'App: start-up — the splash, then the loading mark, then home', platform: 'app', stage: (c) => c.setRoute('splash') },
   { group: 'Start-up', id: 'startup-cant-connect', label: 'Start-up — the servers could not be reached (Try again)', stage: (c) => c.setRoute('cant-connect') },
+
+  // Store listings (review aid; app/store-listings.jsx). A deliberate exception to
+  // "a state is a situation of the app": mocks of the two store pages. No platform.
+  { group: 'Store listings', id: 'store-listing-app-store', label: 'Store listing: Apple App Store (iPhone)', stage: (c) => c.setRoute('store-app-store') },
+  { group: 'Store listings', id: 'store-listing-google-play', label: 'Store listing: Google Play (Android)', stage: (c) => c.setRoute('store-google-play') },
 
   { group: 'Members & funding', id: 'members-champion', label: 'Members — champion (you)', stage: (c) => c.stageFunding(null) },
   { group: 'Members & funding', id: 'members-champion-sole', label: 'Members — champion, the only member', stage: (c) => c.stageSoleChampion() },

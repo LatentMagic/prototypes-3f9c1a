@@ -3,6 +3,14 @@
 Major milestones only — not a granular log. Newest first. History is not backfilled
 exhaustively; entries capture the shape of each significant step, not every change.
 
+## Frontend Guild is the landing circle — 2026-10-15
+
+- Frontend Guild added as the first seeded circle and the landing circle; reading-loop now stages it.
+
+## Store listings as review states — 2026-10-15
+
+- **Mocks of the App Store and Google Play pages**, in each store's own chrome with the copy deck's content, at `?state=store-listing-app-store` and `?state=store-listing-google-play`. A deletable review aid, not product UI.
+
 ## Sign-in stops and failure lines — 2026-10-05
 
 - Sign in with Apple stops in place when no account exists; Google and Apple failures, and a report that fails to send, each show one line in place.

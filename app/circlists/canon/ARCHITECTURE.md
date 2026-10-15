@@ -58,6 +58,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
 | `app/report-block.jsx` | droppable module | Report and Block gone; cards, comments and Members rows read as before |
 | `app/startup.jsx` | droppable module | no splash and no can't-connect page; the app opens as before |
+| `app/store-listings.jsx` | deletable aid | the two store-page routes render nothing; the register's Store listings group goes stale |
 | `app/circ-tweaks.jsx`, `app/tweaks-panel.jsx` | deletable aids | Tweaks gone; baked-in defaults render |
 
 ## Addressable states
