@@ -1,0 +1,54 @@
+<!-- @dsCard group="Components · Layout" viewport="900x1000" name="ListRow in use" subtitle="The same row in every list: history at 360 and wide, a library, one game, every edition, states" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);margin:0;color:var(--text);font:400 16px/1.5 var(--font-text)}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}.cell{display:grid;gap:8px;align-content:start;min-width:0}.box{background:var(--card);border:1px solid var(--line)}.cov{display:block;width:100%;height:100%}.key{margin:0;padding-left:20px;display:grid;gap:2px;font-size:14px;color:var(--muted)}.key b{color:var(--text);font-weight:600}.day{margin:0;padding:12px 16px 4px;font:600 13px/1.3 var(--font-text);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {ListRow,RowList}=window.MCPGameStoreDesignSystem_ef1abd;
+const C=({bg,ink})=><svg className="cov" viewBox="0 0 48 36"><rect width="48" height="36" style={{fill:'var(--cover-bg-'+bg+')'}}/><rect x="16" y="10" width="16" height="16" style={{fill:'var(--cover-'+ink+')'}}/></svg>;
+const word=<C bg="wine" ink="amber"/>,myst=<C bg="indigo" ink="orange"/>,groups=<C bg="forest" ink="teal"/>,esc=<C bg="indigo" ink="amber"/>;
+const f=()=>{};
+const History=()=><><p className="day">Today</p><RowList label="Today">
+<ListRow onClick={f} lead={esc} title="The Locked Study" game="Escape" result={['Escaped in 5 moves','5 moves']} tone="ok" when="19:30" replay/>
+<ListRow onClick={f} lead={esc} title="The Locked Study" game="Escape" result={['Escaped in 7 moves','7 moves']} tone="ok" when="12:40"/>
+<ListRow onClick={f} lead={myst} title="#64" game="Daily Mystery" result="Missed" tone="bad" when="10:27"/>
+<ListRow onClick={f} lead={groups} title="#88" game="Daily Groups" result={['All 4 groups, 1 mistake','1 mistake']} tone="ok" when="09:16"/>
+<ListRow onClick={f} lead={word} title="#212" game="Daily Word" result={['Solved in 3 of 6','3 of 6']} tone="ok" when="08:05"/>
+</RowList></>;
+function App(){return <div style={{display:'grid',gap:20}}>
+<div style={{display:'grid',gridTemplateColumns:'360px minmax(0,1fr)',gap:16,alignItems:'start'}}>
+<div className="cell"><div className="box"><History/></div><span className="cap">History at 360: short results, the game's name dropped where the title is long</span></div>
+<div className="cell"><div className="box"><History/></div><span className="cap">The same list wide: the same two lines, full results</span></div>
+</div>
+<div style={{display:'grid',gridTemplateColumns:'360px minmax(0,1fr)',gap:16,alignItems:'start'}}>
+<div className="cell"><div className="box"><RowList label="Library">
+<ListRow onClick={f} lead={word} title="Daily Word" result={['Done today','Done']} tone="ok" when="Today"/>
+<ListRow onClick={f} lead={groups} title="Daily Groups" result={['Today’s groups are ready','Ready']} when="5 Oct"/>
+<ListRow onClick={f} lead={myst} title="Daily Mystery" result="In progress" when="Today"/>
+<ListRow onClick={f} lead={esc} title="Escape" result={['This week’s room is ready','Ready']}/>
+</RowList></div><span className="cap">Library: the game is the title; no game's name</span></div>
+<div className="cell"><div className="box"><RowList label="Every case">
+<ListRow onClick={f} title="The Widow’s Lantern" when="5 Oct"/>
+<ListRow onClick={f} title="The Night Train to Fort William" result="Played" when="28 Sep"/>
+<ListRow onClick={f} title="Three Keys to the Vestry" result="Played" when="7 Sep"/>
+</RowList></div><span className="cap">One game, no covers: no game's name. A row with nothing under it centres its title.</span></div>
+</div>
+<div style={{display:'grid',gridTemplateColumns:'360px minmax(0,1fr)',gap:16,alignItems:'start'}}>
+<div className="cell"><div className="box"><RowList label="Every word">
+<ListRow onClick={f} title="#212" result="Played" when="6 Oct"/>
+<ListRow onClick={f} title="#211" result="Played" when="5 Oct"/>
+<ListRow onClick={f} title="#210" when="4 Oct"/>
+<ListRow onClick={f} title="#209" result="Played" when="3 Oct"/>
+</RowList></div><span className="cap">Every edition of one game: "Played" marks a finished one, nothing marks the rest</span></div>
+<div className="cell" style={{maxWidth:360}}><div className="box"><RowList>
+<ListRow className="is-hover" onClick={f} title="Hover" result="Solved" tone="ok" when="5 Oct"/>
+<ListRow className="is-pressed" onClick={f} title="Press" result="Solved" tone="ok" when="5 Oct"/>
+<ListRow className="is-focus" onClick={f} title="Focus" result="Solved" tone="ok" when="5 Oct"/>
+<ListRow muted title="Muted: can't be opened" meta={<span>21 Sep</span>}/>
+</RowList></div><span className="cap">Whole row is one target. No inline actions.</span></div>
+</div>
+</div>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

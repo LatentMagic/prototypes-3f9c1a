@@ -1,0 +1,64 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Find · MCP Game Store design system</title><link rel="stylesheet" href="styles.css">
+<style>
+body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.45 var(--font-text)}
+a{color:var(--text)}a:hover{color:var(--muted)}
+main{max-width:860px;margin:0 auto;padding:40px 20px 80px;display:grid;gap:20px}
+h1{margin:0;font:700 32px/1.1 var(--font-heading);letter-spacing:-.01em}
+.intro{margin:0;color:var(--muted);font-size:15px}
+.q{width:100%;box-sizing:border-box;height:48px;padding:0 14px;background:var(--card);border:1px solid var(--control-edge);color:var(--text);font:inherit;border-radius:0}
+.q:focus{outline:2px solid var(--text);outline-offset:2px}
+.kinds{display:flex;flex-wrap:wrap;gap:8px}
+.kinds button{min-height:44px;padding:0 14px;background:none;border:1px solid var(--line);color:var(--muted);font:600 14px/1 var(--font-text);cursor:pointer}
+.kinds button[aria-pressed="true"]{border-color:var(--text);color:var(--text)}
+.sec{display:grid;gap:4px}
+.sec h2{margin:12px 0 4px;font:700 18px/1.2 var(--font-heading)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding:10px 0;border-top:1px solid var(--line);text-decoration:none}
+.row:hover .nm{text-decoration:underline}
+.nm{font-weight:600}
+.where{color:var(--muted);font-size:13px;text-align:right}
+.sub{grid-column:1/-1;color:var(--muted);font-size:14px}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid var(--line);vertical-align:-1px;margin-right:6px}
+.empty{color:var(--muted)}
+code{font:13px/1.3 ui-monospace,monospace}
+</style></head><body><main>
+<h1>Find</h1>
+<p class="intro">Searches every card, component, token and guideline in this design system. Cards open on their own; the same cards are in the Design System tab under the group shown.</p>
+<input class="q" id="q" type="search" placeholder="Try popup, delete, colour, 48px" aria-label="Search the design system" autofocus>
+<div class="kinds" id="kinds"></div>
+<div id="out"></div>
+</main>
+<script>
+const docs=[
+['visual-foundations.md','Colour, type, spacing, corners, depth'],
+['layout-and-patterns.md','Page layout, overlays, card rows, errors, destructive actions'],
+['ui-standard.md','UI rules every screen follows'],
+['game-art-motion.md','How game art is built and moves'],
+['iconography.md','Icon drawing rules'],
+['voice.md','How the shop writes'],
+['sources-and-index.md','Where each rule came from']
+].map(([f,s])=>({kind:'Guideline',name:f.replace('.md','').replace(/-/g,' '),sub:s,path:'guidelines/'+f,where:'guidelines/'+f}));
+const KINDS=['All','Card','Component','Token','Guideline'];
+let items=[],kind='All';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+fetch('_ds_manifest.json').then(r=>r.json()).then(m=>{
+const cards=m.cards.map(c=>({kind:'Card',name:c.name,sub:c.subtitle,path:c.path,where:c.group,group:c.group}));
+const comps=m.components.map(c=>{const dir=c.sourcePath.replace(/[^/]+$/,'');const own=m.cards.filter(k=>k.path.startsWith(dir));const hit=own.find(k=>k.name===c.name)||own.find(k=>(k.subtitle||'').includes(c.name))||own[0];
+return {kind:'Component',name:c.name,sub:hit?'Shown on card: '+hit.name+' ('+hit.group+')':'',path:hit?hit.path:c.sourcePath,where:c.sourcePath};});
+const toks=m.tokens.map(t=>({kind:'Token',name:t.name,sub:t.value,path:t.definedIn,where:t.definedIn,color:t.kind==='color'?t.value:null}));
+items=[...comps,...cards,...toks,...docs];render();
+}).catch(()=>{items=docs;render();document.getElementById('out').insertAdjacentHTML('afterbegin','<p class="empty">Could not load the manifest; showing guidelines only.</p>');});
+const kindsEl=document.getElementById('kinds');
+kindsEl.innerHTML=KINDS.map(k=>`<button type="button" data-k="${k}" aria-pressed="${k===kind}">${k==='All'?k:k+'s'}</button>`).join('');
+kindsEl.onclick=e=>{const b=e.target.closest('button');if(!b)return;kind=b.dataset.k;kindsEl.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===kind));render();};
+document.getElementById('q').oninput=render;
+function render(){
+const words=document.getElementById('q').value.toLowerCase().split(/\s+/).filter(Boolean);
+const hay=i=>(i.kind+' '+i.name+' '+i.sub+' '+i.where).toLowerCase().replace(/colou?r/g,'color colour');
+const list=items.filter(i=>(kind==='All'||i.kind===kind)&&words.every(w=>hay(i).includes(w.replace(/colou?r/,'colo'))));
+const order=['Component','Card','Token','Guideline'];
+const out=order.map(k=>{const rows=list.filter(i=>i.kind===k);if(!rows.length)return'';
+const shown=(!words.length&&k==='Token'&&kind!=='Token')?rows.slice(0,0):rows;
+const more=rows.length-shown.length;
+return `<section class="sec"><h2>${k}s <span class="where">${rows.length}</span></h2>${shown.map(i=>`<a class="row" href="${esc(i.path)}"><span class="nm">${i.color?`<span class="sw" style="background:${esc(i.color)}"></span>`:''}${k==='Token'?'<code>'+esc(i.name)+'</code>':esc(i.name)}</span><span class="where">${esc(i.where)}</span>${i.sub?`<span class="sub">${k==='Token'?'<code>'+esc(i.sub)+'</code>':esc(i.sub)}</span>`:''}</a>`).join('')}${more?`<p class="empty">${more} tokens. Type to search them, or pick Tokens.</p>`:''}</section>`;}).join('');
+document.getElementById('out').innerHTML=out||'<p class="empty">Nothing matches. Try fewer words.</p>';}
+</script></body></html>

@@ -1,0 +1,117 @@
+// Chapter coming soon rig: a bottom strip with the options. Each option is one place the news of 36,000 Summers Ago's
+// chapter 2 could live; picking it takes you there. The app copies call the four hooks below (PgChSoon, PgChTag, PgChPage,
+// PgChLib) and render nothing when they are absent. Loads before main.jsx.
+(() => {
+  const KEY = 'pg_chapter_coming_soon_v1';
+  const G = 'hunter';
+  const OPTS = [
+    { n: 0, name: 'Today', where: 'Nowhere', who: 'No one', why: 'The app as it is: nothing says a chapter is coming.', cost: 'Players learn about chapter 2 only when it arrives.', go: () => go('home', '.gs-grid2') },
+    { n: 1, name: 'Beside the Barrow', where: 'Home and More games, in the Coming soon pair', who: 'Everyone browsing', why: 'An alt of the Coming soon card for a chapter. It sits with Derelict and The Barrow of Hollowmere, where people already look for what is next. The label says CHAPTER 2, the line says chapter 1 is out now, and the name opens the game.', cost: 'Three cards in a slot of two, and one of them is a game you can already play. The card has to work hard to read differently from a new game.', go: () => go('home', '.pgch-mark') },
+    { n: 2, name: 'On the game', where: 'Every card of the game: Home, Discover, More games', who: 'Everyone, wherever the game is listed', why: 'The news belongs to the game, so it travels with it as one more tag. No new card, no new place.', cost: 'Two words among the other tags, so it is easy to miss, and it can say nothing more than "soon". It adds to the tags line, which is written to fit one line at 220px.', go: () => go('home', '.pgch-mark') },
+    { n: 3, name: 'On its page', where: 'The game’s page, under the facts', who: 'Anyone who opens the game', why: 'Chapters are part of what the game is, so the page lists them: chapter 1 out now beside chapter 2 coming soon. The context is the game itself.', cost: 'Only people who open the page see it. Nothing on Home or Discover says the game is growing.', go: () => go('hunter-pass', '.pgch-mark') },
+    { n: 4, name: 'For its players', where: 'Your 36,000 Summers Ago, in the Library', who: 'Only players with days in it', why: 'The people who care about chapter 2 are the ones who played chapter 1. It tells them, in their own record of the game, and no one else.', cost: 'Newcomers never hear of it, and a player only sees it when they open the game’s library page.', go: () => go('library-hunter', '.pgch-mark') },
+  ];
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+  const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} };
+  const init = load();
+  window.PG_CH = { opt: Math.min(init.opt ?? 1, 4) };
+  const subs = new Set();
+  const setOpt = (o) => { window.PG_CH.opt = o; subs.forEach((f) => f(o)); };
+  const useOpt = () => { const [o, set] = React.useState(window.PG_CH.opt); React.useEffect(() => { subs.add(set); return () => subs.delete(set); }, []); return o; };
+
+  const scroller = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const s = getComputedStyle(p); if (/(auto|scroll)/.test(s.overflowY) && p.scrollHeight > p.clientHeight) return p; } return document.scrollingElement; };
+  const ring = (sel, tries = 0) => {
+    let r = document.querySelector(sel);
+    if (r && getComputedStyle(r).display === 'contents') r = r.firstElementChild;
+    if (!r) { if (tries < 30) setTimeout(() => ring(sel, tries + 1), 150); return; }
+    for (let p = r.parentElement; p; p = p.parentElement) { const s = getComputedStyle(p); if (/(auto|scroll)/.test(s.overflowX) && p.scrollWidth > p.clientWidth) { p.scrollLeft += r.getBoundingClientRect().left - p.getBoundingClientRect().left - 24; break; } }
+    const sc = scroller(r); const top = r.getBoundingClientRect().top - (sc === document.scrollingElement ? 0 : sc.getBoundingClientRect().top) + sc.scrollTop - 120;
+    sc.scrollTo({ top, behavior: 'auto' });
+    r.classList.add('pgch-ring'); setTimeout(() => r.classList.remove('pgch-ring'), 1600);
+  };
+  function go(state, sel) { window.kitGoState && window.kitGoState(state); setTimeout(() => ring(sel), 900); }
+
+  // 1 Beside the Barrow: the Coming soon card's shape (GsSoonCard, app/gs-parts.jsx), for a chapter of a game that is out.
+  const PgChSoon = ({ except }) => {
+    const gs = useGs(); const o = useOpt();
+    if (o !== 1 || except === G) return null;
+    const g = GS_GAMES[G];
+    return (
+      <DS.Card className="pgch-mark" style={{ gridTemplateColumns: 'minmax(96px, 1fr) minmax(0, 2fr)', gap: 16, alignItems: 'center', justifyItems: 'stretch' }}>
+        <GsCover art={g.art} />
+        <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
+          <span className="gs-label">CHAPTER 2</span>
+          <h3 className="mcp-t-card"><button type="button" className="gs-titlebtn" onClick={() => gs.go(g.route)}>{g.name}</button></h3>
+          <p className="gs-muted">Chapter 1 is out now.</p>
+          <DS.Tag kind="daily">Coming soon</DS.Tag>
+        </div>
+      </DS.Card>
+    );
+  };
+  // 2 On the game: one more tag in the game's tag list, wherever GsTagList draws it.
+  const PgChTag = ({ tags }) => {
+    const o = useOpt();
+    if (o !== 2 || tags !== GS_GAMES[G].tags) return null;
+    return <span className="pgch-mark" style={{ display: 'contents' }}><DS.Tag kind="daily">Chapter 2 soon</DS.Tag></span>;
+  };
+  // 3 On its page: the chapters, under the facts band.
+  const PgChPage = ({ id }) => {
+    const o = useOpt();
+    if (o !== 3 || id !== G) return null;
+    return (
+      <section className="gs-stack-md pgch-mark">
+        <h2 className="mcp-t-sec">Chapters</h2>
+        <div className="gs-grid2">
+          <DS.Card style={{ gap: 8, alignContent: 'start' }}>
+            <span className="gs-label">CHAPTER 1</span>
+            <h3 className="mcp-t-card">Out now</h3>
+            <p className="gs-muted">{GS_PAGES[G].week.line}</p>
+          </DS.Card>
+          <DS.Card style={{ gap: 8, alignContent: 'start', justifyItems: 'start' }}>
+            <span className="gs-label">CHAPTER 2</span>
+            <h3 className="mcp-t-card">Coming soon</h3>
+            <p className="gs-muted">Comes with the Pass, like chapter 1.</p>
+          </DS.Card>
+        </div>
+      </section>
+    );
+  };
+  // 4 For its players: a card at the top of the game's library page, for a Pass holder with days played.
+  const PgChLib = ({ show }) => {
+    const o = useOpt();
+    if (o !== 4 || !show) return null;
+    const n = HG_DAYS.filter((x) => !x.restarted).length; // the same count as the page's "days played"
+    return (
+      <section className="lb-card pgch-mark" style={{ gridColumn: '1 / -1' }}>
+        <div className="gs-stack-xs"><span className="gs-label">CHAPTER 2 · COMING SOON</span><h2 className="mcp-t-sec">Chapter 2 is on its way</h2></div>
+        <p>{'You’ve played ' + n + ' days of chapter 1. When chapter 2 arrives, it opens here beside your days.'}</p>
+      </section>
+    );
+  };
+  Object.assign(window, { PgChSoon, PgChTag, PgChPage, PgChLib });
+
+  const Strip = () => {
+    const opt = useOpt();
+    const [open, setOpen] = React.useState(init.open ?? true);
+    const [why, setWhy] = React.useState(false);
+    const ref = React.useRef(null);
+    React.useEffect(() => { save({ opt, open }); }, [opt, open]);
+    React.useEffect(() => { const el = ref.current; if (!el) return undefined; const ro = new ResizeObserver(() => document.documentElement.style.setProperty('--pgc-h', el.offsetHeight + 'px')); ro.observe(el); return () => ro.disconnect(); }, []);
+    const o = OPTS[opt];
+    return (
+      <div ref={ref} className="pgc-strip" data-open={String(open)} role="region" aria-label="Playground options">
+        <div className="pgc-row">
+          <span className="pgc-k">OPTION</span>
+          {OPTS.map((x) => <button key={x.n} type="button" className="pgc-b" aria-pressed={opt === x.n} onClick={() => { setOpt(x.n); x.go(); }}>{x.n + ' ' + x.name}</button>)}
+          <button type="button" className="pgc-b" aria-expanded={why} onClick={() => setWhy(!why)}>{why ? 'Less' : 'Why · cost'}</button>
+          <button type="button" className="pgc-b pgc-fold" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? 'Hide' : 'Show'}</button>
+        </div>
+        {open && <div className="pgc-row pgc-where"><span><b>{o.n + ' ' + o.name}</b> · {o.where} · seen by {o.who.toLowerCase()}</span><button type="button" className="pgc-b" onClick={o.go}>Go there</button></div>}
+        {why && <p className="pgc-why">{o.why} <b>Cost:</b> {o.cost}</p>}
+      </div>
+    );
+  };
+  const host = document.createElement('div'); host.id = 'pgc-host';
+  const mount = () => { document.body.appendChild(host); ReactDOM.createRoot(host).render(<Strip />); };
+  if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
+})();

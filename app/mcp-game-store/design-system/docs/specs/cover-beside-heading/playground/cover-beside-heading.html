@@ -1,0 +1,117 @@
+<!doctype html><html lang="en-GB"><head><base href="../../../../"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Proposed: Cover that fills its height</title><link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text)}
+a{color:var(--off-white)}a:hover{color:#fff}
+.pg{max-width:1100px;margin:0 auto;padding:32px 16px 64px;display:grid;gap:40px}
+.pg h1{margin:0;font:700 30px/1.1 var(--font-heading)}
+.pg h2{margin:0;font:700 22px/1.2 var(--font-heading)}
+.lede{margin:0;color:var(--muted);max-width:70ch}
+.sec{display:grid;gap:16px}
+.k{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.file{display:grid;gap:8px;align-content:start;background:var(--card);border:1px solid var(--line);padding:16px}
+.file code{font:500 13px/1.3 var(--font-mono,monospace);color:var(--muted)}
+.file pre{margin:0;white-space:pre-wrap;font:400 13.5px/1.5 var(--font-mono,monospace);color:var(--text)}
+.file ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}}
+.vp{container:vp/inline-size;border:1px solid var(--line);padding:24px 16px;display:grid;gap:32px;min-width:0}
+.cap{font:400 13px/1.35 var(--font-text);color:var(--muted)}
+.art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.art-cell{display:grid;gap:8px;align-content:start}
+.art-cell .box{height:200px;display:grid}
+/* DRAFT Cover fill (would go in components.css). The box takes its parent's height, never less than 4:3. The art stays a 4:3 picture on the bottom edge; the box behind it is the ground colour. */
+.mcp-cover.is-fill{height:100%;grid-template-rows:minmax(0,1fr)}
+.mcp-cover.is-fill .mcp-cover-art{position:relative;aspect-ratio:auto;background:var(--cover-bg-indigo)}
+.mcp-cover.is-fill .mcp-cover-art::before{content:"";display:block;aspect-ratio:4/3}
+.mcp-cover.is-fill .mcp-cover-art>svg,.mcp-cover.is-fill .mcp-cover-art>img{position:absolute;left:0;bottom:0;width:100%;height:auto;aspect-ratio:4/3}
+.mcp-cover.is-fill.from-centre .mcp-cover-art>svg,.mcp-cover.is-fill.from-centre .mcp-cover-art>img{bottom:auto;top:50%;translate:0 -50%}
+.mcp-cover.is-fill.is-wine .mcp-cover-art{background:var(--cover-bg-wine)}.mcp-cover.is-fill.is-forest .mcp-cover-art{background:var(--cover-bg-forest)}
+/* DRAFT pattern: picture beside a heading (would go in the Cover guidance as a layout snippet) */
+.mh{display:grid;grid-template-columns:clamp(112px,26cqi,144px) minmax(0,1fr);column-gap:24px}
+.mh-text{align-self:center;display:grid;gap:14px;justify-items:start;min-width:0}
+.mh-text h1{margin:0;font:700 clamp(28px,8cqi,34px)/1.08 var(--font-heading);letter-spacing:-.01em;text-wrap:balance;text-box:trim-start cap alphabetic}
+/* The link's layout box runs from its cap height to the bottom of its underline (TextLink: offset 4px + thickness 1.5px). Padding keeps the 45px touch area; negative margins take it out of the layout. Set once, from the link's own tokens. */
+.mh-links{display:flex;flex-wrap:wrap;gap:20px 24px}
+.mh-links .mcp-lnk{display:inline-block;min-height:0;padding:17px 0;margin:-17px 0 calc(-17px + 5.5px);text-box:trim-both cap alphabetic}
+.guides .mh{position:relative}
+.guides .mh::before,.guides .mh::after{content:"";position:absolute;left:0;right:0;border-top:1px dashed var(--cover-amber);pointer-events:none;z-index:-1}
+.guides .mh{isolation:isolate}
+.guides .mh::before{top:0}.guides .mh::after{bottom:0}
+.bar{display:flex;gap:20px;align-items:center;font:600 13px/1.3 var(--font-text);color:var(--muted)}
+.bar label{display:flex;gap:8px;align-items:center;min-height:44px;cursor:pointer}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const DS=window.MCPGameStoreDesignSystem_ef1abd;
+const KEY='pg_cover-beside-heading_v3';
+// The product's covers (app/gs-data.jsx), unchanged. The draft needs nothing from the SVG: no string edits.
+const S=b=>'<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">'+b+'</svg>';
+const ART={
+delve:S('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>'),
+escape:S('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>'),
+murder:S('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>'),
+groups:S('<rect width="160" height="120" fill="#1D1B3A"/>'+['#E5A63B','#328A88','#D66847','#A390B2'].map((c,r)=>[0,1,2,3].map(k=>'<rect x="'+(31+k*26)+'" y="'+(11+r*26)+'" width="20" height="20" fill="'+c+'"/>').join('')).join('')),
+word:S('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>'),
+casebook:S('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>'),
+hunter:S('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>')};
+// Each asset declares its ground and how it extends. Required for fill; nothing is inferred from the picture.
+const ASSET={casebook:{ground:'indigo',extend:'bottom'},escape:{ground:'indigo',extend:'bottom'},hunter:{ground:'forest',extend:'bottom'},delve:{ground:'wine',extend:'bottom'},groups:{ground:'indigo',extend:'centre'},word:{ground:'forest',extend:'centre'},murder:{ground:'wine',extend:'centre'}};
+// Draft of Cover with fill + ground. Mirrors DS.Cover's markup.
+function FillCover({art}){
+  const a=ASSET[art];
+  return <figure className={'mcp-cover is-fill is-'+a.ground+' from-'+a.extend}><div className="mcp-cover-art" aria-hidden="true" dangerouslySetInnerHTML={{__html:ART[art]}}></div></figure>;
+}
+const nop=()=>{};
+const HEADS=[
+  {art:'casebook',ground:'indigo',name:'Casebook',links:['About this game','Every case']},
+  {art:'casebook',ground:'indigo',name:'Casebook of the Long Winter Nights',links:['About this game','Every case']},
+  {art:'escape',ground:'indigo',name:'Escape',links:['About this game','Every room']},
+  {art:'hunter',ground:'forest',name:'36,000 Summers Ago',links:['About this game']}];
+const Head=({h})=><section className="mh"><FillCover art={h.art}/><div className="mh-text"><h1>{h.name}</h1><div className="mh-links">{h.links.map(l=><DS.TextLink key={l} onClick={nop}>{l}</DS.TextLink>)}</div></div></section>;
+const ARTS=[['casebook','Casebook'],['escape','Escape'],['hunter','36,000 Summers Ago'],['delve','Delve'],['groups','Daily Groups'],['word','Daily Word'],['murder','Daily Mystery']];
+function App(){
+  const [o,setO]=React.useState(()=>{try{return {guides:true,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return {guides:true}}});
+  const set=(k,v)=>setO(s=>{const n={...s,[k]:v};try{localStorage.setItem(KEY,JSON.stringify(n))}catch(e){}return n});
+  return <div className={'pg'+(o.guides?' guides':'')}>
+    <div className="sec"><h1>Proposed: a Cover that fills its height</h1><p className="lede">What would go into the design system so any product can use option 2g’s head without its workaround. Everything below runs on a draft; nothing in components/ has changed.</p></div>
+    <section className="sec"><h2>1 · What gets written down</h2>
+      <div className="files">
+        <div className="file"><code>components/media/Cover.d.ts</code><pre>{`/** Fill the parent's height, never
+ *  less than 4:3. The art stays 4:3 on
+ *  the bottom edge; the ground colour
+ *  fills the space above it. */
+fill?: boolean;
+/** From the asset: its ground colour. */
+ground?: 'indigo' | 'wine' | 'forest';
+/** From the asset: how it extends.
+ *  bottom: the subject stands on the
+ *  bottom edge; ground grows above.
+ *  centre: the subject floats; ground
+ *  grows above and below equally. */
+extend?: 'bottom' | 'centre';`}</pre></div>
+        <div className="file"><code>components/media/Cover.prompt.md</code><ul>
+          <li>Beside a heading, use <b>fill</b> so the cover and the text share a top and a bottom edge. The layout stretches the cover; nothing is measured.</li>
+          <li>The text’s edges are its ink: the title is trimmed to cap height, and each link’s box runs from its cap height to the bottom of its underline, with the touch area kept in padding. Shorter text is centred on the cover.</li>
+          <li>No maximum height. Keep the title short instead.</li></ul></div>
+        <div className="file"><code>guidelines (Brand → Covers)</code><ul>
+          <li>A cover has one flat ground colour: indigo, wine or forest.</li>
+          <li><b>Every visual asset must declare how it extends</b> when its box changes shape: from the bottom edge or from the centre. The declaration ships with the asset, beside its ground colour. Nothing is inferred from the picture.</li>
+          <li>An asset without a declaration can’t be used where the box may change shape.</li></ul></div>
+      </div></section>
+    <section className="sec"><h2>2 · In use, beside a heading</h2>
+      <div className="bar"><label><input type="checkbox" checked={o.guides} onChange={e=>set('guides',e.target.checked)}/>Show the shared top and bottom edges</label></div>
+      <div className="cols">
+        <div className="vp">{HEADS.map((h,i)=><Head key={i} h={h}/>)}</div>
+        <div className="vp" style={{maxWidth:390}}>{HEADS.map((h,i)=><Head key={i} h={h}/>)}</div>
+      </div>
+      <span className="cap">Desktop on the left, 390px phone on the right. The covers are the product’s files, unedited: the draft paints the ground colour itself, so it needs no change to the SVG.</span></section>
+    <section className="sec"><h2>3 · Every product cover, filled to the same tall box</h2><p className="lede">Each one extends the way its asset declares.</p>
+      <div className="art-grid">{ARTS.map(([a,n])=><div className="art-cell" key={a}><div className="box"><FillCover art={a}/></div><span className="cap"><b style={{color:'var(--text)'}}>{n}</b> · {ASSET[a].ground}, extends from the {ASSET[a].extend==='centre'?'centre':'bottom edge'}</span></div>)}</div></section>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

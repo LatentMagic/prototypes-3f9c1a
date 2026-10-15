@@ -1,0 +1,30 @@
+<!-- @dsCard group="Components · Controls" viewport="700x480" name="Button" subtitle="Main, secondary, delete; hover, working, done, disabled. ButtonPair puts two side by side" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);margin:0}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}.cell{display:grid;gap:8px;align-content:start;min-width:0}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS=window.MCPGameStoreDesignSystem_ef1abd;
+const {Button,ButtonPair}=NS;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function App(){const [done,setDone]=React.useState(false);
+const add=()=>wait(1500).then(()=>{setDone(true);setTimeout(()=>setDone(false),1800);});
+return <div style={{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:'16px 12px'}}>
+<div className="cell"><Button>Add to Claude</Button><span className="cap">Main</span></div>
+<div className="cell"><Button variant="secondary">See how it plays</Button><span className="cap">Secondary</span></div>
+<div className="cell"><Button variant="danger">Delete save</Button><span className="cap">Delete, filled</span></div>
+<div className="cell"><Button className="is-hover">Add to Claude</Button><span className="cap">Main, hover (mouse only)</span></div>
+<div className="cell"><Button className="is-hover" variant="secondary">See how it plays</Button><span className="cap">Secondary, hover</span></div>
+<div className="cell"><Button className="is-hover" variant="danger">Delete save</Button><span className="cap">Delete, hover</span></div>
+<div className="cell"><Button loading loadingLabel="Adding">Add to Claude</Button><span className="cap">Working, main</span></div>
+<div className="cell"><Button variant="secondary" loading loadingLabel="Signing in">Sign in</Button><span className="cap">Working, secondary</span></div>
+<div className="cell"><Button variant="danger" loading loadingLabel="Deleting">Delete save</Button><span className="cap">Working, delete</span></div>
+<div className="cell"><Button onClick={add} loadingLabel="Adding" done={done} doneLabel="Added">Add to Claude</Button><span className="cap">Click: working, can't press again, then done</span></div>
+<div className="cell"><Button disabled>Add to Claude</Button><span className="cap">Disabled</span></div>
+<div className="cell"></div>
+<div className="cell" style={{gridColumn:'1/-1'}}><ButtonPair><Button variant="secondary">Sign in</Button><Button>Sign up</Button></ButtonPair><span className="cap">ButtonPair: secondary, then main</span></div>
+</div>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

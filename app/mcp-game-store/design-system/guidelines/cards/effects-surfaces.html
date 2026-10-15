@@ -1,0 +1,12 @@
+<!-- @dsCard group="Effects" viewport="700x190" name="Depth: fill, outline, shadow" subtitle="Page, card and pop-up told apart by fill, outline and shadow" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>
+body{padding:20px;background:var(--page)}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.s{border:1px solid var(--line)}.s i{display:block;height:56px}.s span{display:grid;gap:2px;padding:8px 12px;background:var(--card);font:600 13px/1.3 var(--font-text)}.s b{font-weight:400;color:var(--muted)}
+.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.lab{font:600 14px/1.2 var(--font-text);color:var(--muted)}
+</style></head><body><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:8px 0">
+<div style="display:grid;gap:8px"><div style="height:100px;background:var(--page);border:1px solid var(--line)"></div><span class="cap">Page · 1px line</span></div>
+<div style="display:grid;gap:8px"><div style="height:100px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card)"></div><span class="cap">Card · line + --shadow-card</span></div>
+<div style="display:grid;gap:8px"><div style="height:100px;background:var(--popup);border:1px solid var(--control-edge);box-shadow:var(--shadow-card)"></div><span class="cap">Pop-up window · control edge</span></div></div></body></html>

@@ -1,0 +1,28 @@
+<!-- @dsCard group="Patterns" viewport="1320x620" name="Page layout" subtitle="paired cards side by side from 900px, stacked in priority order on a phone. Component: PageGrid" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);margin:0}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}.cell{display:grid;gap:8px;align-content:start;min-width:0}.frame{border:1px solid var(--line);padding:16px;background:var(--page)}.lab{font:var(--type-small);color:var(--muted);letter-spacing:.04em}.ok{color:var(--success)}.bad{color:var(--error)}.mut{color:var(--muted);margin:0;font-size:14px}p{margin:0}.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px 24px;justify-self:stretch}.acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px}.slot{justify-self:stretch;height:64px;border:1px dashed var(--control-edge);display:grid;place-items:center;font:400 13px/1 ui-monospace,monospace;color:var(--muted)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {PageGrid,Card,Heading,ListRow,RowList,TextLink,Button,ProgressBar}=window.MCPGameStoreDesignSystem_ef1abd;
+const meta=(d,r,k)=><><span>{d}</span><span className={k}>{r}</span></>;
+const Page=()=><PageGrid>
+<Card><div className="top"><div style={{display:'grid',gap:4}}><span className="lab">THIS WEEK</span><Heading level="section">The Gull Point Lighthouse</Heading></div><span className="ok" style={{font:'700 20px/1.25 var(--font-heading)'}}>Solved</span></div>
+<p>You used 13 of 16 turns and exposed 4 of 5 lies.</p><div style={{justifySelf:'stretch'}}><ProgressBar label="13 of 16 turns used" value={13} max={16} showValue={false}/></div>
+<div className="acts"><Button variant="secondary">Share</Button><TextLink onClick={()=>{}}>See every turn</TextLink></div></Card>
+<Card title="Streak"><p>6 weeks in a row</p><div className="slot">game's own streak</div></Card>
+<Card title="Achievements"><p className="mut">4 of 10 earned</p><div className="slot">badge grid</div></Card>
+<Card title="Your cases" action={<TextLink onClick={()=>{}}>All cases</TextLink>}><RowList label="Your recent cases">
+<ListRow onClick={()=>{}} title="The Night Train" meta={meta('28 Sep','Unsolved','bad')}/>
+<ListRow onClick={()=>{}} title="A Death at the Regatta" meta={meta('14 Sep','Solved','ok')}/>
+<ListRow muted title="Not played" meta={<span>7 Sep</span>}/>
+</RowList></Card>
+</PageGrid>;
+function App(){return <div style={{display:'grid',gridTemplateColumns:'920px 340px',gap:20,alignItems:'start'}}>
+<div className="cell"><div className="frame"><Page/></div><span className="cap">Desktop (900px+): most important card in the wide column; paired tops and heights line up; same padding throughout</span></div>
+<div className="cell"><div className="frame"><Page/></div><span className="cap">Phone: source order is the reading order</span></div>
+</div>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

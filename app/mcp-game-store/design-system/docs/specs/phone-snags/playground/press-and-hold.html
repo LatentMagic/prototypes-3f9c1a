@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><base href="../../../../"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Playground - Press and Hold</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
+p{margin:0}
+.pg{max-width:1280px;margin:0 auto;padding:32px 16px 64px;display:grid;gap:40px}
+.pg-lede{display:grid;gap:8px;max-width:68ch}.pg-lede h1{margin:0;font:700 28px/1.1 var(--font-heading);letter-spacing:-.01em}.pg-lede p{color:var(--muted);text-wrap:pretty}.pg-lede b{color:var(--text)}
+h2.pg-sec{margin:0;font:700 24px/1.15 var(--font-heading);letter-spacing:-.01em}
+.pg-grid{display:grid;gap:40px 24px;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}
+.pg-opt{display:grid;gap:12px;align-content:start;min-width:0}
+.pg-num{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.pg-name{margin:0;font:700 20px/1.2 var(--font-heading)}
+.pg-claim,.pg-cost{font:400 14px/1.45 var(--font-text);color:var(--muted);text-wrap:pretty}.pg-cost b{color:var(--text);font-weight:600}
+.pg-read{font:600 14px/1.4 var(--font-text);min-height:40px;color:var(--text)}
+/* the card: pressed state is driven by classes so a held mouse button acts as a finger */
+.pg-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:16px;display:grid;gap:12px;color:var(--text);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),border-color var(--time-press) var(--ease)}
+.pg-card.mcp-art-host:not(.is-on):is(:hover,:active){--on:0}
+.pg-card.is-on{background:color-mix(in srgb,var(--text) 10%,var(--card));border-color:var(--control-edge)}
+.pg-card.is-on.is-spent{--on:0;background:var(--card);border-color:var(--line)}
+.pg-card.is-fixed{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pg-card.is-fixed.is-on .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}
+.pg-title{margin:0;font:700 20px/1.2 var(--font-heading)}
+.pg-blurb{color:var(--muted)}
+.pg-tags{display:flex;flex-wrap:wrap;gap:8px}
+.pg-links{display:grid;gap:8px;max-width:420px}
+.pg-linkrow{display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:center;border-top:1px solid var(--line)}
+.pg-linkrow>span{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.mcp-lnk.lnk-new:active{opacity:1;color:#fff;text-underline-offset:6px;text-decoration-color:currentColor}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {GameArt}=window.MCPGameStoreDesignSystem_ef1abd;
+const OPTS=[
+ {k:'today',n:'0',name:'Today',claim:'As built: the pose and the shaded card last as long as the finger is down. The text can be selected.',cost:<><b>Problem:</b> on a hold, the chips lose their box (same colour as the pressed card) and a word selects.</>},
+ {k:'stay',n:'1',name:'Stay',claim:'Selection off, chips stay visible. Everything else as today: the pose lasts the whole hold.',cost:<><b>Cost:</b> a long hold still leaves the card posed and shaded for as long as you wait.</>},
+ {k:'boop',n:'2',name:'Boop',claim:'The pose plays on touch and settles after 0.7 seconds, even if you keep holding. Lifting opens the game as normal.',cost:<><b>Cost:</b> a held finger gets no feedback after 0.7 seconds, so the card no longer says it is still pressed.</>},
+ {k:'peek',n:'3',name:'Hold to peek',claim:'Holding for half a second keeps the pose and cancels the tap: you look without opening, then lift. A quick tap still opens.',cost:<><b>Cost:</b> new behaviour nobody asked for, and nothing tells you it exists. A slow tap now does nothing.</>}
+];
+function Card({o}){
+ const [on,setOn]=React.useState(false),[spent,setSpent]=React.useState(false),[msg,setMsg]=React.useState('Hold the mouse button on the card, or tap it.');
+ const t=React.useRef(),held=React.useRef(false);
+ const down=e=>{if(e.button>0)return;held.current=false;setSpent(false);setOn(true);setMsg('Finger down…');clearTimeout(t.current);
+  if(o.k==='boop')t.current=setTimeout(()=>{setSpent(true);setMsg('Settled, still holding');},700);
+  if(o.k==='peek')t.current=setTimeout(()=>{held.current=true;setMsg('Peeking: lift and it will not open');},500);};
+ const up=()=>{clearTimeout(t.current);setOn(false);setSpent(false);};
+ const click=()=>{if(o.k==='peek'&&held.current){held.current=false;setMsg('Let go: did not open.');return;}setMsg('Opened Casebook.');};
+ const cancel=()=>{up();setMsg('Moved off: cancelled.');};
+ return <section className="pg-opt"><span className="pg-num">{o.n}</span><h3 className="pg-name">{o.name}</h3>
+  <div className={'pg-card mcp-art-host'+(o.k==='today'?'':' is-fixed')+(on?' is-on':'')+(spent?' is-spent':'')} onPointerDown={down} onPointerUp={up} onPointerCancel={cancel} onPointerLeave={e=>{if(on)cancel();}} onClick={click} onContextMenu={e=>e.preventDefault()}>
+   <GameArt art="casebook" shape="wide"/>
+   <h4 className="pg-title">Casebook</h4>
+   <p className="pg-blurb">A new case every week. Question suspects and catch the lies.</p>
+   <div className="pg-tags"><span className="mcp-tag mcp-tag-daily">Weekly</span><span className="mcp-tag mcp-tag-daily">30 minutes</span></div>
+  </div>
+  <p className="pg-read" aria-live="polite">{msg}</p>
+  <p className="pg-claim">{o.claim}</p><p className="pg-cost">{o.cost}</p></section>;
+}
+function App(){return <main className="pg">
+ <header className="pg-lede"><h1>Press and hold</h1>
+  <p>On a laptop, <b>hold the mouse button down to act as a finger</b>: the pose, the shading and the chips respond as they do on a phone. Moving off the card cancels, like scrolling away. Try a quick click, then a hold of two seconds, on each card. To see the selection problem, drag across the text on card 0, then on the others.</p></header>
+ <h2 className="pg-sec">Holding a card</h2>
+ <div className="pg-grid">{OPTS.map(o=><Card key={o.k} o={o}/>)}</div>
+ <h2 className="pg-sec">Holding a link</h2>
+ <div className="pg-lede"><p>Hold the mouse button on each link. Today the whole link fades, which reads as disabled. The new press turns it white and moves the underline away, the same as hover.</p></div>
+ <div className="pg-links">
+  <div className="pg-linkrow"><span>TODAY</span><button type="button" className="mcp-lnk">About the Pass</button></div>
+  <div className="pg-linkrow"><span>NEW</span><button type="button" className="mcp-lnk lnk-new">About the Pass</button></div>
+ </div>
+</main>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

@@ -1,0 +1,79 @@
+/* Canonical row, round 4 (copy of round 3 plus 19B): the row (.c3) and options 16 to 19B. Chrome, surfaces and list (.crbox, .crl) come from pg-row.css. */
+.sf>.crbox{max-width:760px}
+.c3{display:grid;align-items:center;column-gap:12px;row-gap:2px;padding:10px 16px;color:var(--text);text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease)}
+.c3:hover{color:var(--text)}
+@media (hover:hover){.c3:hover{background:color-mix(in srgb,var(--text) 6%,var(--card))}.c3:hover .c3-go{color:var(--text);transform:translateX(2px)}}
+.c3:active{background:color-mix(in srgb,var(--text) 10%,var(--card))}
+.c3:focus-visible{outline:2px solid var(--off-white);outline-offset:-2px}
+.c3-lead{grid-area:l;display:block;overflow:hidden;width:40px;height:30px}
+.c3-lead svg{width:100%;height:100%;display:block}
+.c3-t{grid-area:t;min-width:0;font:600 16px/20px var(--font-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* A row with nothing on line two centres its one line, as the time does. */
+.c3:not(.has-r) .c3-t{grid-row:1/span 2}
+.is-voice .c3-g{font-weight:400;color:var(--muted)}
+.c3-r{grid-area:r;display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;font:400 14px/20px var(--font-text)}
+.c3-r>svg{flex:none}.c3-r.is-ok>svg{color:var(--success)}.c3-r.is-bad>svg{color:var(--error)}.c3-r.is-none{color:var(--muted)}
+.c3-r>span{overflow:hidden;text-overflow:ellipsis}
+.c3-rs{display:none}
+.c3-w{grid-area:w;justify-self:end;font:400 14px/20px var(--font-text);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.c3-x{grid-area:x;justify-self:end;font:600 14px/20px var(--font-text);white-space:nowrap}
+.c3-go{grid-area:g;width:20px;height:20px;color:var(--muted);transition:transform var(--time-press) var(--ease),color var(--time-press) var(--ease)}
+/* Two fixed lines under 640px of list width. The trailing column centres one item and gives two items a line each. Cover matches the two lines. */
+@container crl (max-width:639px){
+.c3{grid-template-columns:minmax(0,1fr) auto 20px;grid-template-rows:20px 20px;grid-template-areas:"t w g" "r w g"}
+.c3.has-x{grid-template-areas:"t w g" "r x g"}
+.c3.has-lead{grid-template-columns:56px minmax(0,1fr) auto 20px;grid-template-areas:"l t w g" "l r w g"}
+.c3.has-lead.has-x{grid-template-areas:"l t w g" "l r x g"}
+.c3-lead{width:56px;height:42px}
+/* 17: the chevron goes; the row is the target. */
+.o17 .c3{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t w" "r w"}
+.o17 .c3.has-x{grid-template-areas:"t w" "r x"}
+.o17 .c3.has-lead{grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"l t w" "l r w"}
+.o17 .c3.has-lead.has-x{grid-template-areas:"l t w" "l r x"}
+.o17 .c3-go{display:none}
+}
+@container crl (max-width:439px){
+/* 16: the title says as much as fits (measured in JS: game · edition, then edition beside a cover, then edition cut, no space before the “…”); the result takes its short form. */
+.o16 .c3-rl,.o19 .c3-rl,.o19b .c3-rl,.o19c .c3-rl,.o19d .c3-rl{display:none}.o16 .c3-rs,.o19 .c3-rs,.o19b .c3-rs,.o19c .c3-rs,.o19d .c3-rs{display:inline}
+/* 18: the words name the game, so the cover goes. Rows that are the game (Library) keep it. */
+.o18 .c3.has-g .c3-lead{display:none}
+.o18 .c3.has-g{grid-template-columns:minmax(0,1fr) auto 20px;grid-template-areas:"t w g" "r w g"}
+.o18 .c3.has-g.has-x{grid-template-areas:"t w g" "r x g"}
+}
+@container crl (max-width:399px){
+.o17 .c3.has-lead .c3-g{display:none}
+.o17 .c3-rl{display:none}.o17 .c3-rs{display:inline}
+}
+@container crl (max-width:359px){
+.o18 .c3-rl{display:none}.o18 .c3-rs{display:inline}
+}
+/* One line of fixed columns from 640px: title, result, Replay, time, chevron. Cover 40×30 beside the one line. */
+@container crl (min-width:640px){
+.c3{grid-template-columns:minmax(0,1fr) 12rem 4rem var(--cqw,3.25rem) 20px;grid-template-areas:"t r x w g";min-height:50px}
+.c3.has-lead{grid-template-columns:40px minmax(0,1fr) 12rem 4rem var(--cqw,3.25rem) 20px;grid-template-areas:"l t r x w g"}
+.c3-x{justify-self:start}
+/* 19C: no fixed result column. Result, Replay (only where there is one) and time pack against the right edge; no empty slots. */
+.o19c .c3{column-gap:16px;grid-template-columns:minmax(0,1fr) auto var(--cqw,3.25rem) 20px;grid-template-areas:"t r w g"}
+.o19c .c3.has-x{grid-template-columns:minmax(0,1fr) auto auto var(--cqw,3.25rem) 20px;grid-template-areas:"t r x w g"}
+.o19c .c3.has-lead{grid-template-columns:40px minmax(0,1fr) auto var(--cqw,3.25rem) 20px;grid-template-areas:"l t r w g"}
+.o19c .c3.has-lead.has-x{grid-template-columns:40px minmax(0,1fr) auto auto var(--cqw,3.25rem) 20px;grid-template-areas:"l t r x w g"}
+/* 19D: the phone shape at every width. Two lines, result under the title, time top right, Replay under it. */
+.o19d .c3{grid-template-columns:minmax(0,1fr) auto 20px;grid-template-rows:20px 20px;grid-template-areas:"t w g" "r w g"}
+.o19d .c3.has-x{grid-template-areas:"t w g" "r x g"}
+.o19d .c3.has-lead{grid-template-columns:56px minmax(0,1fr) auto 20px;grid-template-areas:"l t w g" "l r w g"}
+.o19d .c3.has-lead.has-x{grid-template-areas:"l t w g" "l r x g"}
+.o19d .c3-lead{width:56px;height:42px}
+.o19d .c3-x{justify-self:end}
+}
+/* 19: 16 with a quiet result. The words go muted; the icon keeps its tone; Replay is the only ink on line two. */
+.o19 .c3-r,.o19b .c3-r,.o19c .c3-r,.o19d .c3-r{color:var(--muted)}
+/* 19B: 19 with the title flipped, edition first in ink, game's name after it, quiet. */
+/* 19E: 19D with the result in ink. Only the game's name stays quiet; a row with no result keeps its muted dash. */
+.o19e .c3-r:not(.is-none){color:var(--text)}
+.o19e .c3-w{max-width:var(--cqw,3.25rem);text-align:right;overflow:hidden;text-overflow:ellipsis}
+.pg-rules{font:400 14px/1.45 var(--font-text);color:var(--muted);max-width:80ch;margin-top:12px}.pg-rules b{color:var(--text);font-weight:600}.pg-rules ol{margin:8px 0 0;padding-left:20px;display:grid;gap:4px;color:var(--text)}
+.pg-shared{font:400 14px/1.45 var(--font-text);color:var(--muted);max-width:80ch}
+.pg-shared b{color:var(--text);font-weight:600}
+
+/* Round 3 review: no rail; options sit in the header; frames wrap so every width is on one page. */
+.pg{display:block}.pg-main{max-width:none}.pg-strip{flex-wrap:wrap;overflow:visible}

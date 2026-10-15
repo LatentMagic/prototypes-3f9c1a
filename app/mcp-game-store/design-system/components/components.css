@@ -1,0 +1,501 @@
+/* Component classes, ported from the hand-off design-system.html. Prefix: mcp- */
+.mcp-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:48px;padding:0 var(--space-4);border:1.5px solid transparent;border-radius:var(--radius);font:600 16px/1.2 var(--font-text);text-align:center;white-space:nowrap;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;margin:0;
+transition:transform var(--time-press) var(--ease),background-color var(--time-press) var(--ease),opacity var(--time-press) var(--ease)}
+.mcp-btn.is-block{display:flex;width:100%}
+.mcp-btn-main{background:var(--off-white);color:var(--page)}
+.mcp-btn-main:active,.mcp-btn-main.is-pressed{background:color-mix(in srgb,var(--off-white) 74%,var(--page));transform:scale(.97)}
+.mcp-btn-secondary{background:transparent;color:var(--text);border-color:var(--control-edge)}
+.mcp-btn-secondary:active,.mcp-btn-secondary.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
+.mcp-btn-danger{background:var(--error);color:var(--error-on)}
+.mcp-btn-danger:active,.mcp-btn-danger.is-pressed{background:color-mix(in srgb,var(--error) 78%,#000);transform:scale(.97)}
+@media (hover:hover){.mcp-btn-main:hover,.mcp-btn-main.is-hover{background:color-mix(in srgb,var(--off-white) 87%,var(--page))}.mcp-btn-secondary:hover,.mcp-btn-secondary.is-hover{background:color-mix(in srgb,var(--text) 8%,var(--page))}.mcp-btn-danger:hover,.mcp-btn-danger.is-hover{background:color-mix(in srgb,var(--error) 89%,#000)}
+.mcp-btn-main:active,.mcp-btn-main.is-pressed{background:color-mix(in srgb,var(--off-white) 74%,var(--page))}.mcp-btn-secondary:active,.mcp-btn-secondary.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--page))}.mcp-btn-danger:active,.mcp-btn-danger.is-pressed{background:color-mix(in srgb,var(--error) 78%,#000)}
+.mcp-btn[disabled]:hover{background:color-mix(in srgb,var(--text) 14%,var(--page))}.mcp-btn-main.is-busy:hover{background:var(--off-white)}.mcp-btn-secondary.is-busy:hover{background:transparent}.mcp-btn-danger.is-busy:hover{background:var(--error)}}
+.mcp-btn[disabled]{background:color-mix(in srgb,var(--text) 14%,var(--page));color:color-mix(in srgb,var(--text) 66%,var(--page));border-color:transparent;cursor:not-allowed;transform:none}
+.mcp-btn.is-busy{cursor:progress}
+.mcp-btn.is-busy:active,.mcp-btn.is-busy.is-pressed{transform:none}
+.mcp-btn-main.is-busy:active{background:var(--off-white)}.mcp-btn-secondary.is-busy:active{background:transparent}.mcp-btn-danger.is-busy:active{background:var(--error)}
+.mcp-btn-danger .mcp-spin{border-color:color-mix(in srgb,var(--error-on) 30%,transparent);border-top-color:var(--error-on)}
+.mcp-spin{width:16px;height:16px;border:2px solid color-mix(in srgb,var(--page) 30%,transparent);border-top-color:var(--page);border-radius:50%;animation:mcp-spin .8s linear infinite}
+.mcp-btn-secondary .mcp-spin{border-color:color-mix(in srgb,var(--text) 30%,transparent);border-top-color:var(--text)}
+.mcp-swap{display:grid;place-items:center}
+.mcp-swap>span{grid-area:1/1;display:flex;align-items:center;gap:var(--space-2);transition:opacity var(--time-swap) var(--ease),transform var(--time-swap) var(--ease)}
+.mcp-swap .b{opacity:0;transform:translateY(6px)}
+.mcp-btn.is-done .mcp-swap .a{opacity:0;transform:translateY(-6px)}
+.mcp-btn.is-done .mcp-swap .b{opacity:1;transform:none}
+.mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
+.mcp-btn-pair>:only-child{grid-column:1/-1}
+
+.mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
+@media (hover:hover){.mcp-lnk:hover{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):hover{color:#fff}}
+/* A held link reads as pressed, not disabled: it takes the hover look (text to white, underline moves away) and never fades. */
+.mcp-lnk:active,.mcp-lnk.is-pressed{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):active,.mcp-lnk:not(.is-danger).is-pressed{color:#fff}
+.mcp-lnk.is-danger{color:var(--error)}
+
+.mcp-fld{display:grid;gap:var(--space-2)}
+.mcp-fld>label,.mcp-fld .mcp-lab{font:600 14px/1.2 var(--font-text);color:var(--text)}
+.mcp-in{width:100%;height:48px;padding:0 var(--space-4);background:var(--card);color:var(--text);border:1px solid var(--control-edge);border-radius:0;font:400 16px/1 var(--font-text);-webkit-appearance:none;appearance:none;margin:0}
+.mcp-in::placeholder{color:var(--muted);opacity:1}
+.mcp-in:focus-visible,.mcp-in.is-focus{outline:2px solid var(--off-white);outline-offset:2px;border-color:var(--off-white)}
+.mcp-in.is-bad{border-color:var(--error);box-shadow:inset 0 0 0 1px var(--error)}
+.mcp-fmsg{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--error);font:600 14px/1.35 var(--font-text)}
+.mcp-fmsg .mcp-ico{margin-top:-1px}
+.mcp-hint{font:400 var(--size-small)/1.3 var(--font-text);color:var(--muted)}
+.mcp-srch{position:relative}
+.mcp-srch>.mcp-ico{position:absolute;left:14px;top:14px;color:var(--muted);pointer-events:none}
+.mcp-srch .mcp-in{padding-left:44px}
+.mcp-ico{width:20px;height:20px;flex:none;display:block}
+
+.mcp-check{position:relative;display:flex;align-items:center;gap:var(--space-3);min-height:48px;cursor:pointer;color:var(--text);font:400 16px/1.5 var(--font-text)}
+.mcp-check input{position:absolute;opacity:0;width:24px;height:24px;margin:0}
+.mcp-box{flex:none;width:24px;height:24px;border:2px solid var(--control-edge);display:grid;place-items:center;color:var(--page);transition:background-color var(--time-press) var(--ease)}
+.mcp-box svg{width:18px;height:18px;opacity:0}
+.mcp-check input:checked+.mcp-box{background:var(--off-white);border-color:var(--off-white)}
+.mcp-check input:checked+.mcp-box svg{opacity:1}
+.mcp-check input:focus-visible+.mcp-box{outline:2px solid var(--off-white);outline-offset:2px}
+.mcp-check:active .mcp-box{background:color-mix(in srgb,var(--text) 22%,var(--page))}
+
+.mcp-tag{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;font:600 var(--size-small)/1 var(--font-text);white-space:nowrap;border:1.5px solid transparent}
+.mcp-tag .mcp-ico{width:14px;height:14px}
+.mcp-tag-free{background:var(--off-white);color:var(--page)}
+.mcp-tag-daily{background:color-mix(in srgb,var(--text) 14%,var(--page));color:var(--text)}
+/* locked: the Secondary button's look (no fill, solid edge, same press) so it reads as the chip you can press. Padding and margins are optical: the lock and chevron drawings carry empty space, so edge-to-ink and ink-to-text gaps match. Press and hover come from the button or link it sits in. */
+.mcp-tag-locked,.mcp-tag-open{background:transparent;color:var(--text);border-color:var(--control-edge);padding-left:8px;transition:background-color var(--time-press) var(--ease),transform var(--time-press) var(--ease),border-color var(--time-swap) var(--ease)}
+.mcp-tag-locked>.mcp-ico:first-child,.mcp-tag-open>.mcp-ico:first-child{margin-top:-1px}
+.mcp-tag-locked.has-go,.mcp-tag-open.has-go{padding-right:5px}.mcp-tag-locked>.mcp-tag-go,.mcp-tag-open>.mcp-tag-go{margin-left:-3px}
+.mcp-tag-open:not(:has(>.mcp-ico:first-child)){padding-left:10px}
+:is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
+@media (hover:hover){:is(button,a):hover>:is(.mcp-tag-locked,.mcp-tag-open){border-color:var(--off-white)}}
+@media (prefers-reduced-motion:reduce){.mcp-tag-locked,.mcp-tag-open{transition:none}:is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){transform:none}}
+.mcp-tag-success{background:var(--success);color:var(--success-on)}
+.mcp-tag-warning{background:var(--warning);color:var(--warning-on)}
+.mcp-tag-error{background:var(--error);color:var(--error-on)}
+
+.mcp-msg{display:flex;gap:var(--space-3);align-items:flex-start;margin:0;padding:var(--space-3);color:var(--text);font:400 15px/1.35 var(--font-text);background:color-mix(in srgb,var(--c) 14%,var(--page));border:1px solid color-mix(in srgb,var(--c) 45%,var(--page))}
+.mcp-msg{animation:mcp-msg-in var(--time-swap) var(--ease) both}
+.mcp-msg .mcp-ico{color:var(--c);margin-top:1px}
+.mcp-msg-success{--c:var(--success)}.mcp-msg-warning{--c:var(--warning)}.mcp-msg-error{--c:var(--error)}
+
+.mcp-prog{display:grid;gap:var(--space-2);justify-self:stretch;width:100%}
+.mcp-card>.mcp-msg,.mcp-card>.mcp-fld,.mcp-card>.mcp-disc{justify-self:stretch}
+.mcp-prog-top{display:flex;justify-content:space-between;font:600 14px/1.2 var(--font-text);color:var(--text)}
+.mcp-track{height:8px;background:var(--line);overflow:hidden}
+.mcp-track>i{display:block;height:100%;background:var(--off-white);transition:width var(--time-dropdown) var(--ease)}
+
+.mcp-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:var(--space-4);display:grid;gap:var(--space-2);justify-items:start;color:var(--text)}
+.mcp-card.is-link{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--space-3);width:100%;margin:0;text-align:left;font:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),border-color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-card.is-link.no-go{grid-template-columns:minmax(0,1fr)}
+.mcp-card-body{display:grid;gap:var(--space-2);justify-items:start;min-width:0}
+.mcp-card-go{color:var(--muted);transition:transform var(--time-press) var(--ease),color var(--time-press) var(--ease)}
+@media (hover:hover){.mcp-card.is-link:hover,.mcp-card.is-link.is-hover{background:color-mix(in srgb,var(--text) 6%,var(--card));border-color:var(--control-edge)}.mcp-card.is-link:hover .mcp-card-go,.mcp-card.is-link.is-hover .mcp-card-go{color:var(--text);transform:translateX(3px)}}
+.mcp-card.is-link:active,.mcp-card.is-link.is-pressed{background:color-mix(in srgb,var(--text) 10%,var(--card));border-color:var(--control-edge);transform:scale(.985)}
+.mcp-card.is-link:focus-visible,.mcp-card.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
+
+/* SoonCard: cover beside the text, the cover extended to the card's height (Cover fill). Text runs from the top; the chips sit on the card's bottom edge, so a pair (one height) has its chips on one line. Decided 2026-10-15 (docs/specs/card-chip-alignment/). Chips share one row and wrap only when it is too narrow. The play chip's 44px target reaches past it without making its row taller. */
+.mcp-soon{grid-template-columns:minmax(96px,1fr) minmax(0,2fr);gap:var(--space-4);align-items:stretch;justify-items:stretch}
+.mcp-soon-art{display:grid;min-width:0}
+.mcp-soon-body{display:flex;flex-direction:column;gap:var(--space-2);align-items:flex-start;min-width:0}
+.mcp-soon-body>.mcp-soon-tags{margin-top:auto;padding-top:var(--space-2)}
+.mcp-soon-body>.mcp-t-card{margin:0}
+.mcp-soon-label{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.mcp-soon-line{margin:0;color:var(--muted)}
+.mcp-soon-tags{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center}
+.mcp-soon-tags .mcp-tag{white-space:normal;height:auto;min-height:26px;padding-top:4px;padding-bottom:4px;line-height:1.3}
+.mcp-soon-play{background:none;border:0;padding:0;min-height:44px;margin-block:-9px;display:inline-flex;align-items:center;cursor:pointer;color:inherit;font:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.mcp-soon-play:focus-visible{outline:none}.mcp-soon-play:focus-visible>.mcp-tag{outline:2px solid var(--off-white);outline-offset:2px}
+.mcp-card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--space-4);justify-self:stretch;min-width:0}
+.mcp-card-head>.mcp-lnk,.mcp-card-head>a{min-height:44px}
+
+.mcp-pgrid-wrap{container:mcp-pg/inline-size;min-width:0}
+.mcp-pgrid{display:grid;gap:var(--space-5);min-width:0}
+.mcp-pgrid>*{min-width:0}
+.mcp-pgrid>.mcp-card{align-content:start}
+@container mcp-pg (min-width:900px){.mcp-pgrid.is-main{grid-template-columns:minmax(0,2fr) minmax(320px,1fr)}.mcp-pgrid.is-even{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.mcp-rows{list-style:none;margin:0;padding:0;display:grid;min-width:0;container:mcp-rows / inline-size}
+.mcp-rows>li+li{border-top:1px solid var(--line)}
+.mcp-rows>li:has(>.mcp-row.is-sub){border-top:0}
+.mcp-card>.mcp-rows{justify-self:stretch;margin:0 calc(-1*var(--space-4))}
+.mcp-card>.mcp-rows:last-child{margin-bottom:calc(-1*var(--space-2))}
+.mcp-row{display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;column-gap:var(--space-3);row-gap:2px;width:100%;min-height:56px;padding:10px var(--space-4);margin:0;background:none;border:0;border-radius:0;color:var(--text);font:400 16px/1.4 var(--font-text);text-align:left;text-decoration:none;box-sizing:border-box}
+.mcp-row.has-end{grid-template-columns:minmax(0,1fr) auto 20px}
+.mcp-row.is-link{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease)}
+.mcp-row-body{display:grid;gap:2px;min-width:0}
+.mcp-row-title{font-weight:600;text-wrap:pretty;min-width:0}
+.mcp-row-meta{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--space-3);font:400 14px/1.5 var(--font-text);color:var(--muted);font-variant-numeric:tabular-nums}
+.mcp-row-end{display:flex;align-items:center}
+.mcp-row-go{width:20px;height:20px;color:var(--muted);transition:transform var(--time-press) var(--ease),color var(--time-press) var(--ease)}
+.mcp-row.is-muted .mcp-row-title{font-weight:400;color:var(--muted)}
+@media (hover:hover){.mcp-row.is-link:hover,.mcp-row.is-link.is-hover{background:color-mix(in srgb,var(--text) 6%,var(--card))}.mcp-row.is-link:hover .mcp-row-go,.mcp-row.is-link.is-hover .mcp-row-go{color:var(--text);transform:translateX(3px)}}
+.mcp-row.is-link:active,.mcp-row.is-link.is-pressed{background:color-mix(in srgb,var(--text) 10%,var(--card))}
+.mcp-row.is-link:focus-visible,.mcp-row.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:-2px}
+.mcp-row.has-lead{grid-template-columns:40px minmax(0,1fr) 20px;min-height:64px}
+.mcp-row.has-lead.has-end{grid-template-columns:40px minmax(0,1fr) auto 20px}
+.mcp-row-lead{display:block;width:40px;height:30px;overflow:hidden}
+.mcp-row-lead>img,.mcp-row-lead>svg,.mcp-row-lead>*{width:100%;height:100%;display:block;object-fit:cover}
+/* A slotted row: two 20px lines at every width, 62px. Title over result; when on the right, centred, or over Replay. */
+.mcp-row.is-slots{min-height:0;grid-template-rows:20px 20px;grid-template-columns:minmax(0,1fr) auto 20px;grid-template-areas:"t w g" "s w g"}
+.mcp-row.is-slots.has-note{grid-template-areas:"t w g" "s n g"}
+.mcp-row.is-slots.has-lead{grid-template-columns:56px minmax(0,1fr) auto 20px;grid-template-areas:"l t w g" "l s w g"}
+.mcp-row.is-slots.has-lead.has-note{grid-template-areas:"l t w g" "l s n g"}
+.mcp-row.is-slots>.mcp-row-lead{grid-area:l;width:56px;height:42px}.mcp-row.is-slots>.mcp-row-go{grid-area:g}
+/* Line one: the title. */
+.mcp-row-head{grid-area:t;display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.mcp-row-head>.mcp-row-title{flex:0 1 auto;font:600 16px/20px var(--font-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mcp-row.is-slots:not(.has-result)>.mcp-row-head{grid-row:1 / 3}
+.mcp-row-game{font-weight:400;color:var(--muted)}
+.mcp-row-st{grid-area:s;display:flex;align-items:center;gap:6px;min-width:0;font:400 14px/20px var(--font-text);color:var(--text);white-space:nowrap}
+.mcp-row-st>svg{flex:none}
+.mcp-row-st>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mcp-row-st.is-ok>svg{color:var(--success)}
+.mcp-row-st.is-bad>svg{color:var(--error)}
+.mcp-row-st.is-none{color:var(--muted)}
+.mcp-row-when{grid-area:w;justify-self:end;align-self:center;max-width:8rem;overflow:hidden;text-overflow:ellipsis;font:400 14px/20px var(--font-text);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcp-row-note{grid-area:n;justify-self:end;font:600 14px/20px var(--font-text);color:var(--text);white-space:nowrap}
+.mcp-row.is-slots.is-sub{min-height:44px;padding-top:6px;padding-bottom:6px;padding-left:var(--space-4);grid-template-rows:auto;grid-template-columns:auto minmax(0,1fr) auto 20px;grid-template-areas:"n s w g"}
+.mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub{padding-left:calc(var(--space-4) + 68px)}
+.mcp-row.is-sub>.mcp-row-note{justify-self:start}
+
+.mcp-panel{position:relative;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);overflow:hidden;color:var(--text)}
+.mcp-panel>.mcp-deco{position:absolute;top:0;right:0;width:120px;height:76px}
+.mcp-panel-in{position:relative;padding:28px var(--space-4) var(--space-5);display:grid;gap:var(--space-4)}
+.mcp-panel-in>.mcp-t-card{margin:0 0 var(--space-2)}
+
+.mcp-t-page{margin:0;font:700 34px/1.08 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
+.mcp-t-sec{margin:0;font:700 24px/1.15 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
+.mcp-t-card{margin:0;font:700 20px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
+
+.mcp-disc{display:grid;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);color:var(--text)}
+.mcp-disc-btn{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);min-height:52px;padding:0 var(--space-4);font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;width:100%;background:none;border:0;color:inherit;cursor:pointer;text-align:left;transition:background-color var(--time-press) var(--ease)}
+@media (hover:hover){.mcp-disc-btn:hover,.mcp-disc-btn.is-hover{background:color-mix(in srgb,var(--text) 6%,var(--card))}}
+.mcp-disc-btn:active,.mcp-disc-btn.is-pressed{background:color-mix(in srgb,var(--text) 10%,var(--card))}
+.mcp-disc-btn .mcp-ico{transition:transform var(--time-dropdown) var(--ease)}
+.mcp-disc-btn[aria-expanded="true"] .mcp-ico{transform:rotate(180deg)}
+.mcp-disc-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows var(--time-dropdown) var(--ease),opacity var(--time-swap) var(--ease)}
+.mcp-disc-body.is-open{grid-template-rows:1fr;opacity:1}
+.mcp-disc-body>div{overflow:hidden}
+.mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
+
+.mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
+.mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}
+.mcp-cover-art svg,.mcp-cover-art img{width:100%;height:100%;display:block;object-fit:cover}
+/* Fill (guidelines/game-art-motion.md "Extending a cover"): the box takes its parent's height, never less than 4:3; the art stays 4:3, placed by its declared extend; the ground is painted behind it. */
+.mcp-cover.is-fill{height:100%;grid-template-rows:minmax(0,1fr)}
+.mcp-cover.is-fill .mcp-cover-art{position:relative;aspect-ratio:auto;background:var(--cover-bg-indigo)}
+.mcp-cover.is-fill .mcp-cover-art::before{content:"";display:block;aspect-ratio:4/3}
+.mcp-cover.is-fill .mcp-cover-art>*{position:absolute;left:0;width:100%;height:auto;aspect-ratio:4/3}
+.mcp-cover.is-fill.from-bottom .mcp-cover-art>*{bottom:0}
+.mcp-cover.is-fill.from-centre .mcp-cover-art>*{top:50%;translate:0 -50%}
+.mcp-cover.is-fill.is-wine .mcp-cover-art{background:var(--cover-bg-wine)}.mcp-cover.is-fill.is-forest .mcp-cover-art{background:var(--cover-bg-forest)}
+/* Cover beside a heading (Cover.prompt.md). The cover and the text share a top and a bottom edge: the title is trimmed to cap height; each link's box runs from cap height to the bottom of its underline (offset 4px + 1.5px), its touch area kept in padding. Shorter text is centred. */
+.mcp-cover-head{display:grid;grid-template-columns:clamp(112px,26cqi,144px) minmax(0,1fr);column-gap:var(--space-5)}
+.mcp-cover-head-text{align-self:center;display:grid;gap:14px;justify-items:start;min-width:0}
+.mcp-cover-head-text>h1,.mcp-cover-head-text>h2{margin:0;text-box:trim-start cap alphabetic}
+.mcp-cover-head-links{display:flex;flex-wrap:wrap;gap:20px var(--space-5)}
+.mcp-cover-head-links>.mcp-lnk{display:inline-block;min-height:0;padding:17px 0;margin:-17px 0 calc(-17px + 5.5px);text-box:trim-both cap alphabetic}
+.mcp-cover-name{font:700 15px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance;color:var(--text)}
+
+/* Overlays (ui-design.md "Only a panel changes shape on a phone").
+   Dialog: centred window at every width. Panel: bottom sheet below the breakpoint (640px), centred window at and above. The width is the area the popup renders in, not the browser window.
+   Menu: opens at its control at every width. */
+.mcp-layer{position:fixed;inset:0;z-index:100;pointer-events:none}
+.mcp-layer.is-contained{position:absolute}
+.mcp-layer.is-open{pointer-events:auto}
+.mcp-dim{position:absolute;inset:0;background:var(--dim);opacity:0;visibility:hidden;transition:opacity var(--time-dim) var(--ease),visibility 0s linear var(--time-dim)}
+.mcp-layer.is-open .mcp-dim{opacity:1;visibility:visible;transition:opacity var(--time-dim) var(--ease),visibility 0s}
+.mcp-pop{position:absolute;background:var(--popup);color:var(--text);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3);visibility:hidden;box-sizing:border-box}
+.mcp-pop>h3{margin:0}
+.mcp-pop{container-type:inline-size}
+@container (max-width:300px){.mcp-pop .mcp-btn-pair{grid-template-columns:minmax(0,1fr)}}
+.mcp-pop-body{display:grid;gap:var(--space-3);align-content:start}
+.mcp-pop-body>p{margin:0}
+.mcp-pop.is-panel .mcp-pop-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.mcp-pop.is-sheet{left:0;right:0;bottom:0;max-height:85%;border-top:1px solid var(--control-edge);box-shadow:var(--shadow-sheet);transform:translateY(100%);transition:transform var(--time-close) var(--ease),visibility 0s linear var(--time-close);padding-bottom:max(var(--space-4),var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
+.mcp-layer.is-open .mcp-pop.is-sheet{transform:none;visibility:visible;transition:transform var(--time-popup) var(--ease),visibility 0s}
+.mcp-pop.is-window{left:50%;top:50%;width:min(380px,calc(100% - 32px));border:1px solid var(--control-edge);box-shadow:var(--shadow-card);transform:translate(-50%,-46%);opacity:0;transition:transform var(--time-close) var(--ease),opacity var(--time-close) var(--ease),visibility 0s linear var(--time-close)}
+.mcp-pop.is-window.is-panel{width:min(480px,calc(100% - 32px));max-height:min(640px,calc(100% - 64px))}
+.mcp-layer.is-open .mcp-pop.is-window{transform:translate(-50%,-50%);opacity:1;visibility:visible;transition:transform var(--time-popup) var(--ease),opacity var(--time-popup) var(--ease),visibility 0s}
+.mcp-menu-wrap{position:relative;display:inline-block}
+.mcp-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:110;min-width:220px;max-width:min(320px,calc(100vw - 32px));margin:0;padding:var(--space-1) 0;display:grid;background:var(--popup);border:1px solid var(--control-edge);box-shadow:var(--shadow-card);opacity:0;transform:translateY(-4px);visibility:hidden;transition:opacity var(--time-close) var(--ease),transform var(--time-close) var(--ease),visibility 0s linear var(--time-close)}
+.mcp-menu.is-end{left:auto;right:0}
+.mcp-menu.is-up{top:auto;bottom:calc(100% + var(--space-1));transform:translateY(4px)}
+.mcp-menu.is-open{opacity:1;transform:none;visibility:visible;transition:opacity var(--time-dropdown) var(--ease),transform var(--time-dropdown) var(--ease),visibility 0s}
+.mcp-menu-item{display:flex;align-items:center;gap:var(--space-2);width:100%;min-height:48px;padding:0 var(--space-4);margin:0;background:none;border:0;border-radius:0;color:var(--text);font:400 16px/1.3 var(--font-text);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease)}
+.mcp-menu-item:active,.mcp-menu-item.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--popup))}
+.mcp-menu-item:focus-visible{outline:2px solid var(--off-white);outline-offset:-2px}
+.mcp-menu-item.is-danger{color:var(--error)}
+
+.mcp-loader{display:inline-block;flex:none}
+.mcp-loader-m{position:relative;display:block;width:120px;height:120px}
+.mcp-loader-m i{position:absolute;width:32px;height:32px;background:#4CC38A;animation:mcp-loader var(--time-loader) var(--ease) infinite}
+.mcp-loader-m .tl{left:20px;top:20px;animation-delay:calc(var(--time-loader)*-.375)}.mcp-loader-m .tr{left:68px;top:20px;animation-delay:calc(var(--time-loader)*-.125)}.mcp-loader-m .br{left:68px;top:68px;animation-delay:calc(var(--time-loader)*-.875)}.mcp-loader-m .bl{left:20px;top:68px;animation-delay:calc(var(--time-loader)*-.625)}
+
+@media (prefers-reduced-motion:reduce){
+.mcp-loader-m i{animation:none}.mcp-loader-m .tr{background:#D66847;border-radius:50%;transform:translate(10px,-10px)}
+.mcp-card.is-link,.mcp-card-go,.mcp-row.is-link,.mcp-row-go,.mcp-btn,.mcp-lnk,.mcp-disc-btn,.mcp-disc-btn .mcp-ico,.mcp-disc-body,.mcp-swap>span,.mcp-box,.mcp-dim,.mcp-pop,.mcp-menu,.mcp-menu-item,.mcp-track>i{transition:none!important}
+.mcp-btn:active,.mcp-btn.is-pressed,.mcp-card.is-link:active,.mcp-card.is-link.is-pressed,.mcp-card.is-link:hover .mcp-card-go,.mcp-row.is-link:hover .mcp-row-go,.mcp-row.is-link.is-hover .mcp-row-go{transform:none}
+.mcp-spin{display:none}
+.mcp-btn.is-busy{animation:mcp-busy 1.2s ease-in-out infinite alternate}
+.mcp-msg{animation:none}
+}
+
+/* Game art (guidelines/game-art-motion.md "When art moves"). A cover moves only as the hover, focus and press response of the pressable thing it sits in: a link or button that is a Card, ListRow, Cover or carries .mcp-art-host; or a card (.mcp-art-host on a non-pressable box) whose one stretched link or button carries .mcp-art-link, so the card can hold a second control. --on is 0 everywhere else, so art outside anything pressable rests and is still. */
+@property --on{syntax:"<number>";inherits:true;initial-value:0}
+:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:hover,:focus-visible,:active,.is-pressed,.is-on),.mcp-art-host:has(.mcp-art-link:is(:hover,:focus-visible,:active,.is-pressed)),.mcp-art-host.is-on{--on:1; /* @kind other */}
+.mcp-art{position:relative;overflow:hidden;container-type:size;width:100%;background:var(--cover-bg-indigo)}
+.mcp-art-1{aspect-ratio:1}.mcp-art-43{aspect-ratio:4/3}.mcp-art-3{aspect-ratio:3/1}
+.mcp-art.is-forest{background:var(--cover-bg-forest)}
+.mcp-art i,.mcp-art b{position:absolute;display:block;background:var(--fill);transition:transform var(--time-art) var(--ease-art) 0ms,border-radius var(--time-art) var(--ease-art) 0ms}
+:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:active,.is-pressed,.is-on) .mcp-art :is(i,b),.mcp-art-host:has(.mcp-art-link:is(:active,.is-pressed)) .mcp-art :is(i,b),.mcp-art-host.is-on .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}
+@media (hover:hover){:is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:hover,:focus-visible) .mcp-art :is(i,b),.mcp-art-host:has(.mcp-art-link:is(:hover,:focus-visible)) .mcp-art :is(i,b){transition-delay:calc(var(--s,0)*1ms)}}
+.mcp-art-dg{position:absolute;left:50%;top:50%;translate:-50% -50%;width:80cqmin;aspect-ratio:1;display:grid;grid-template-rows:repeat(4,1fr);gap:5.6cqmin}
+.mcp-art-dg>div{display:grid;grid-template-columns:repeat(4,1fr);gap:5.6cqmin}
+.mcp-art-dg b{position:static;border-radius:calc(var(--on)*50%)}
+.mcp-art-dg>div:nth-child(1) b{background:var(--cover-amber)}.mcp-art-dg>div:nth-child(2) b{background:var(--cover-teal)}.mcp-art-dg>div:nth-child(3) b{background:var(--cover-orange)}.mcp-art-dg>div:nth-child(4) b{background:var(--cover-lilac)}
+.mcp-art-cb-bar{bottom:-20cqh;left:var(--x);width:var(--w);height:calc(var(--h) + 20cqh);--s:0; /* @kind other */border-radius:calc(var(--on)*var(--w)/2) calc(var(--on)*var(--w)/2) 0 0}
+.mcp-art-cb-1{--fill:var(--cover-orange);--x:16cqw; /* @kind other */--w:15cqw; /* @kind other */--h:48cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-7cqh),-12px))}
+.mcp-art-cb-2{--fill:var(--cover-lilac);--x:38cqw; /* @kind other */--w:15cqw; /* @kind other */--h:70cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-3cqh),-6px))}
+.mcp-art-cb-3{--fill:var(--cover-cream);--x:60cqw; /* @kind other */--w:15cqw; /* @kind other */--h:36cqh; /* @kind other */transform:translateY(max(calc(var(--on)*-10cqh),-18px))}
+.mcp-art-cb-sun{--fill:var(--cover-amber);--s:50; /* @kind other */border-radius:calc((1 - var(--on))*50%);left:64cqw;top:9cqh;width:24cqw;height:24cqw;transform:translate(max(calc(var(--on)*-12%),-10px),min(calc(var(--on)*18%),14px))}
+@container (min-aspect-ratio:6/5){.mcp-art-cb-1{--x:18.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:66.7cqh; /* @kind other */}.mcp-art-cb-2{--x:38.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:76.7cqh; /* @kind other */}.mcp-art-cb-3{--x:58.75cqw; /* @kind other */--w:11.25cqw; /* @kind other */--h:61.7cqh; /* @kind other */}.mcp-art-cb-sun{left:72.5cqw;top:11.7cqh;width:20cqh;height:20cqh}}
+@container (min-aspect-ratio:2/1){.mcp-art-cb-1{--x:30cqw; /* @kind other */--w:6cqw; /* @kind other */--h:56cqh; /* @kind other */}.mcp-art-cb-2{--x:41cqw; /* @kind other */--w:6cqw; /* @kind other */--h:80cqh; /* @kind other */}.mcp-art-cb-3{--x:52cqw; /* @kind other */--w:6cqw; /* @kind other */--h:40cqh; /* @kind other */}.mcp-art-cb-sun{left:68cqw;top:12cqh;width:36cqh;height:36cqh}}
+.mcp-art-hu-sun{--fill:var(--cover-amber);--s:40; /* @kind other */border-radius:calc((1 - var(--on))*50%);left:8cqw;top:40cqh;width:43cqh;height:43cqh;transform:translateY(max(calc(var(--on)*-8cqh),-14px))}
+.mcp-art-hu-peak{--fill:var(--cover-lilac);--s:80; /* @kind other */clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scale(calc(1 + var(--on)*.07));left:22cqw;width:78cqw;top:42cqh;bottom:0}
+.mcp-art-hu-teal{--fill:var(--cover-teal);--s:0; /* @kind other */border-radius:calc(var(--on)*50%);left:6cqw;top:86cqh;width:11cqh;height:11cqh}
+.mcp-art-hu-cream{--fill:var(--cover-cream);--s:120; /* @kind other */border-radius:calc(var(--on)*50%);left:78cqw;top:16cqh;width:8cqh;height:8cqh;transform:translate(calc(var(--on)*30%),calc(var(--on)*-30%))}
+@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:75cqw;top:41.7cqh}.mcp-art-hu-teal{left:11.25cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:80cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
+@container (min-aspect-ratio:2/1){.mcp-art-hu-sun{left:30cqw;top:36cqh;width:48cqh;height:48cqh}.mcp-art-hu-peak{left:38cqw;width:36cqw;top:30cqh}.mcp-art-hu-teal{left:24cqw;top:80cqh;width:12cqh;height:12cqh}.mcp-art-hu-cream{left:78cqw;top:14cqh;width:9cqh;height:9cqh}}
+.mcp-art.is-wine{background:var(--cover-bg-wine)}
+/* Daily Word and Daily Mystery, from the Game Store prototype. Each is drawn on a centred 4:3 stage so square and wide frames show the whole piece with more ground; --u is 1/160 of the stage. */
+.mcp-art-st{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(100cqw,133.333cqh);aspect-ratio:4/3;container-type:size;--u:.625cqw; /* @kind other */}
+.mcp-art-st>i{left:calc(var(--u)*var(--x));top:calc(var(--u)*var(--y));width:calc(var(--u)*var(--w));height:calc(var(--u)*var(--h))}
+.mcp-art-dw{--y:44; /* @kind other */--w:32; /* @kind other */--h:32; /* @kind other */border-radius:calc(var(--on)*50%)}
+.mcp-art-dw-1{--x:24; /* @kind other */--fill:var(--cover-amber);--s:0; /* @kind other */}
+.mcp-art-dw-2{--x:64; /* @kind other */--fill:var(--cover-cream);--s:40; /* @kind other */}
+.mcp-art-dw-3{--x:104; /* @kind other */--fill:color-mix(in srgb,var(--cover-teal) calc(var(--on)*100%),transparent);--s:20; /* @kind other */box-sizing:border-box;border:solid var(--cover-teal);border-width:calc(var(--u)*(4 + var(--on)*12));background-clip:border-box}
+.mcp-art i.mcp-art-dw-3{transition:border-radius calc(var(--time-art)*.6) var(--ease-art),border-width calc(var(--time-art)*.6) var(--ease-art),background-color calc(var(--time-art)*.6) var(--ease-art)}
+.mcp-art-dm-ring{--x:36; /* @kind other */--y:24; /* @kind other */--w:72; /* @kind other */--h:72; /* @kind other */--fill:transparent;--s:0; /* @kind other */box-sizing:border-box;border:calc(var(--u)*12) solid var(--cover-orange);border-radius:50%;transform:scale(calc(1 - var(--on)*.55))}
+.mcp-art-dm-bar{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:72; /* @kind other */--fill:var(--cover-cream);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
+.mcp-art-dm-cap{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:20; /* @kind other */--fill:var(--cover-amber);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
+@media (prefers-reduced-motion:reduce){.mcp-art i,.mcp-art b{transition-duration:0ms!important;transition-delay:0ms!important}.mcp-art{--on:0!important; /* @kind other */}}
+
+/* ChatPicture */
+.mcp-chat{--c-bg:var(--off-white);--c-fg:oklch(23% .01 95);--c-fg2:oklch(50% .01 95);--c-me:oklch(from var(--c-bg) calc(l - .055) c h);--c-edge:oklch(from var(--c-bg) calc(l - .075) c h);--c-tile:oklch(62% .01 95);--c-tile-fg:#fff;--c-g:var(--cover-green);--c-y:var(--cover-amber);--c-send:var(--control-edge);--c-send-fg:#fff;display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-fg);border-radius:16px;overflow:hidden;position:relative;font:400 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;border:1px solid var(--c-edge)}
+.mcp-chat p,.mcp-chat ul,.mcp-chat pre{margin:0}
+.mcp-chat-head{padding:9px 16px;border-bottom:1px solid var(--c-edge);font:600 15px/1.2 var(--font-heading);text-align:center;flex:none}
+.mcp-chat-body{overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;padding:12px 16px 14px;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 36px);mask-image:linear-gradient(to bottom,transparent,#000 36px)}
+.mcp-chat-body>:first-child{margin-top:auto}
+.mcp-chat-body[data-more="up"]{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 56px);mask-image:linear-gradient(to bottom,transparent 0,#000 56px)}
+.mcp-chat-body:focus-visible{outline:2px solid var(--page);outline-offset:-2px}
+.mcp-chat-body::-webkit-scrollbar{width:14px}.mcp-chat-body::-webkit-scrollbar-track{background:transparent;margin:10px 0}
+.mcp-chat-body::-webkit-scrollbar-thumb{background:var(--c-send);background-clip:content-box;border:4px solid transparent;border-radius:999px;min-height:40px}
+.mcp-chat-body::-webkit-scrollbar-button{display:none;height:0}
+@supports not selector(::-webkit-scrollbar){.mcp-chat-body{scrollbar-width:thin;scrollbar-color:var(--c-send) transparent}}
+.mcp-chat.is-fill{width:100%;height:100%;min-height:0}.mcp-chat.is-fill>.mcp-chat-body{flex:1;min-height:0}
+/* The pill: arrow only, 28px tall, 12px down, centred; ::before keeps the target 44px tall */
+.mcp-chat-up{position:absolute;z-index:2;top:12px;left:50%;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18);transform:translateX(-50%);-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
+.mcp-chat-up::before{content:"";position:absolute;inset:-8px -2px}
+.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
+@media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
+.mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
+.mcp-chat-up:focus-visible{outline:2px solid var(--c-send);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.mcp-chat-up{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
+.mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
+.mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
+.mcp-chat-call{display:inline-flex;align-items:center;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px}
+.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-fg2)}
+.mcp-chat-board{display:grid;gap:4px}.mcp-chat-row{display:flex;gap:4px}
+.mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
+.mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
+.mcp-chat-list{padding-left:18px;display:grid;gap:2px}
+.mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;max-width:100%}
+.mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
+.mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
+.mcp-chat-body.is-auto{overflow:visible;-webkit-mask-image:none;mask-image:none}
+.mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
+
+/* Chat parts (components/chat/): what a game draws inside an AI turn. They sit on the chat's light ground in the system's own language:
+   square corners, Hanken and Bricolage (the host chat around them keeps its round bubbles and system type), ink and tone, status and cover colours.
+   Sized to the chat's text. Fenced parts (panel fill + edge) read as one unit. Buttons are one shape: a full-width row on the panel fill with a 1px edge.
+   A move is its words alone; going somewhere leads with an icon. Tile marks use the cover green and amber players already know. */
+.mcp-cb{--cb-ground:var(--c-bg,var(--off-white));--cb-ink:var(--c-fg,oklch(23% .01 95));--cb-ink2:var(--c-fg2,oklch(50% .01 95));--cb-soft:oklch(from var(--cb-ink) calc(l + .17) c h);--cb-tone:var(--c-me,oklch(from var(--off-white) calc(l - .055) c h));--cb-edge:var(--c-edge,oklch(from var(--off-white) calc(l - .075) c h));--cb-line:oklch(from var(--cb-ground) calc(l - .16) c h);--cb-panel:oklch(from var(--cb-ground) calc(l + .03) c h);--cb-band-ink:#0D0B09;margin:0;font:400 14px/1.4 var(--font-text);color:var(--cb-ink);min-width:0;max-width:100%;box-sizing:border-box;text-align:left}
+.mcp-cb *,.mcp-cb *::before,.mcp-cb *::after{box-sizing:border-box}
+.mcp-cb p,.mcp-cb ul,.mcp-cb dl,.mcp-cb dd{margin:0}
+.mcp-cb-fence{background:var(--cb-panel);border:1px solid var(--cb-edge)}
+.mcp-cb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mcp-cb-kind{font:600 12.5px/1.3 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-title{font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
+.mcp-cb-note{font-size:13px;line-height:1.35;color:var(--cb-ink2);text-wrap:pretty}
+.mcp-cb-card{display:grid;gap:12px;padding:14px 16px 16px;width:100%}
+/* TileGrid: the tile is 32px, smaller when a long row would not fit its turn; the letter is half the tile. Right place green, wrong place amber, not in it a flat tone */
+.mcp-cb-tiles{container-type:inline-size;width:100%}
+.mcp-cb-tiles-in{--t:min(32px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)));display:inline-grid;gap:4px}
+.mcp-cb-tiles-in.mcp-cb-fence{padding:6px}
+.mcp-cb-tiles-row{display:flex;gap:4px}
+.mcp-cb-tile{position:relative;width:var(--t);height:var(--t);display:grid;place-items:center;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:700 calc(var(--t) * .5)/1 var(--font-text);text-transform:uppercase;overflow:hidden}
+.mcp-cb-tile.is-filled{border:1.5px solid var(--cb-ink)}
+.mcp-cb-tile.is-hit{background:var(--cover-green);border-color:var(--cover-green);color:var(--success-on)}
+.mcp-cb-tile.is-near{background:var(--cover-amber);border-color:var(--cover-amber);color:var(--warning-on)}
+.mcp-cb-tile.is-miss{background:var(--cb-tone);border-color:var(--cb-tone);color:var(--cb-soft)}
+/* WordBoard */
+.mcp-cb-board{container-type:inline-size;display:grid;gap:4px;padding:6px;width:100%}
+.mcp-cb-chips{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:4px}
+.mcp-cb-chip{display:grid;place-items:center;min-height:34px;padding:2px;margin:0;border:1px solid var(--cb-edge);background:var(--cb-ground);color:var(--cb-ink);font:600 clamp(10.5px,3.6cqi,13px)/1.1 var(--font-text);text-transform:uppercase;text-align:center;hyphens:auto;overflow-wrap:anywhere;-webkit-tap-highlight-color:transparent}
+.mcp-cb-chip.is-picked{background:var(--cb-ink);border-color:var(--cb-ink);color:var(--cb-panel)}
+button.mcp-cb-chip{cursor:pointer;transition:transform var(--time-press) var(--ease)}button.mcp-cb-chip:active{transform:scale(.97)}
+.mcp-cb-band{display:grid;gap:1px;justify-items:center;text-align:center;padding:6px 8px;color:var(--cb-band-ink);font:600 clamp(10px,3.4cqi,13px)/1.25 var(--font-text)}
+.mcp-cb-band>b{font-weight:700}.mcp-cb-band>span{text-transform:uppercase;font-weight:500}
+.mcp-cb-band.is-amber{background:var(--cover-amber)}.mcp-cb-band.is-teal{background:var(--cover-teal)}.mcp-cb-band.is-orange{background:var(--cover-orange)}.mcp-cb-band.is-lilac{background:var(--cover-lilac)}
+/* ChoiceButtons and NavButtons: a stacked list of full-width rows, 42px tall with 6px between (a 44px+ target), never a ragged wrap.
+   Same shape for both; a move is its words, going somewhere leads with an icon. Picked fills ink; the rest go quiet. */
+.mcp-cb-choices,.mcp-cb-nav{display:grid;gap:6px;width:100%;max-width:26rem}
+.mcp-cb-nav.is-stack{max-width:none}
+.mcp-cb-choice,.mcp-cb-go{position:relative;display:flex;align-items:center;gap:10px;min-height:42px;padding:8px 14px;margin:0;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:600 14px/1.25 var(--font-text);text-align:left;text-decoration:none;text-wrap:pretty;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background-color var(--time-press) var(--ease)}
+.mcp-cb-choice::before,.mcp-cb-go::before{content:"";position:absolute;inset:-3px 0}
+.mcp-cb-choice.is-main,.mcp-cb-choice.is-picked{background:var(--cb-ink);border-color:var(--cb-ink);color:var(--cb-panel)}
+.mcp-cb-choice.is-spent{background:transparent;border-color:var(--cb-edge);color:var(--cb-ink2)}
+.mcp-cb-go-t{display:grid;gap:2px;min-width:0}.mcp-cb-go-t small{font:400 12.5px/1.25 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-go-out{margin-left:auto;flex:none;color:var(--cb-ink2)}
+.mcp-cb-go .mcp-ico,.mcp-cb-choice .mcp-ico{flex:none}
+:is(button,a):is(.mcp-cb-choice,.mcp-cb-go){cursor:pointer}
+:is(button,a):is(.mcp-cb-choice,.mcp-cb-go):active{background:var(--cb-tone);transform:scale(.985)}button.mcp-cb-choice.is-main:active{background:var(--cb-soft)}
+@media (hover:hover){:is(button,a):is(.mcp-cb-choice:not(.is-main),.mcp-cb-go):hover{background:color-mix(in srgb,var(--cb-tone) 60%,var(--cb-panel))}}
+:is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip,.mcp-cb-ent):focus-visible{outline:2px solid var(--cb-ink);outline-offset:2px}
+/* ConfirmCard: Cancel and Confirm side by side; stacked with Confirm on top when the card is narrow */
+.mcp-cb-confirm{container-type:inline-size}
+.mcp-cb-confirm>.mcp-cb-facts{border-block:1px solid var(--cb-edge);padding:10px 0;row-gap:6px}
+.mcp-cb-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px}.mcp-cb-pair>*{justify-content:center;text-align:center}
+@container (max-width:340px){.mcp-cb-pair{grid-template-columns:minmax(0,1fr)}.mcp-cb-pair>:last-child{order:-1}}
+.mcp-cb-q{font-size:15px;line-height:1.4;text-wrap:pretty}.mcp-cb-q b,.mcp-cb-clue b{font-weight:700}
+/* FactRows, StatRow, StatusTag */
+.mcp-cb-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:start;width:100%}
+.mcp-cb-facts.mcp-cb-fence{padding:8px 10px}
+.mcp-cb-facts>div{display:contents}
+.mcp-cb-facts dt{font:600 13px/1.35 var(--font-text);color:var(--cb-ink2)}.mcp-cb-facts dd{font-weight:600}
+.mcp-cb-stats{display:flex;flex-wrap:wrap;gap:6px 20px;width:100%}
+.mcp-cb-stat dt{font:600 12px/1.3 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-stat dd{font:700 17px/1.2 var(--font-heading);font-variant-numeric:tabular-nums}
+.mcp-cb-stats.is-grid{display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:4px}
+.mcp-cb-stats.is-grid .mcp-cb-stat{background:var(--cb-ground);border:1px solid var(--cb-edge);padding:6px 10px}
+.mcp-cb-status{display:inline-flex;align-items:center;height:22px;padding:0 8px;font:600 12px/1 var(--font-text);white-space:nowrap;border:1.5px solid transparent;flex:none}
+.mcp-cb-status.is-live{border-color:var(--cb-ink)}.mcp-cb-status.is-won{background:var(--success);color:var(--success-on)}.mcp-cb-status.is-lost{background:var(--error);color:var(--error-on)}.mcp-cb-status.is-warn{background:var(--warning);color:var(--warning-on)}.mcp-cb-status.is-idle{background:var(--cb-tone)}
+/* EntityCards */
+.mcp-cb-ents{display:grid;gap:6px;width:100%}
+.mcp-cb-ents-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,156px),1fr));gap:4px}
+.mcp-cb-ent{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;column-gap:8px;width:100%;height:100%;margin:0;padding:5px 8px 5px 5px;background:var(--cb-panel);border:1px solid var(--cb-edge);color:var(--cb-ink);font:inherit;text-align:left}
+.mcp-cb-ent:has(>.mcp-cb-ent-pic){grid-template-columns:28px minmax(0,1fr);padding-left:5px}.mcp-cb-ent:not(:has(>.mcp-cb-ent-pic)){padding:7px 10px}
+button.mcp-cb-ent{cursor:pointer}
+.mcp-cb-ent-pic{width:28px;height:28px;display:grid;place-items:center;overflow:hidden;font:700 11px/1 var(--font-text);color:var(--cb-band-ink);align-self:start}
+.mcp-cb-ent-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.mcp-cb-ent-pic.is-icon{background:var(--cb-tone);color:var(--cb-ink)}
+.mcp-cb-ent-pic.is-amber{background:var(--cover-amber)}.mcp-cb-ent-pic.is-teal{background:var(--cover-teal)}.mcp-cb-ent-pic.is-orange{background:var(--cover-orange)}.mcp-cb-ent-pic.is-lilac{background:var(--cover-lilac)}.mcp-cb-ent-pic.is-green{background:var(--cover-green)}.mcp-cb-ent-pic.is-cream{background:var(--cover-cream);outline:1px solid var(--cb-edge);outline-offset:-1px}
+.mcp-cb-ent-t{display:grid;gap:1px;min-width:0}.mcp-cb-ent-t b{font-weight:600;font-size:13.5px;line-height:1.2}.mcp-cb-ent-t small{font-size:12px;line-height:1.25;color:var(--cb-ink2)}
+.mcp-cb-ent:not(:has(small)) .mcp-cb-ent-pic{align-self:center}
+.mcp-cb-ent.is-out{background:transparent}.mcp-cb-ent.is-out b{text-decoration:line-through;color:var(--cb-ink2)}.mcp-cb-ent.is-out .mcp-cb-ent-pic{opacity:.45}
+.mcp-cb-ent.is-picked{border-color:var(--cb-ink);outline:1px solid var(--cb-ink);outline-offset:-2px}
+/* ClueCards: one notebook card. A section per kind: its name and count, then each fact on its own ruled line. New facts are tinted with a New mark at the end */
+.mcp-cb-clues{display:grid;width:100%;padding:2px 0}
+.mcp-cb-clue{display:grid;padding:10px 14px 6px}
+.mcp-cb-clue+.mcp-cb-clue{border-top:1px solid var(--cb-edge)}
+.mcp-cb-clue-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:4px}
+.mcp-cb-clue-h .mcp-cb-kind{color:var(--cb-ink);font-weight:700}
+.mcp-cb-clue-n{font:600 12px/1 var(--font-text);color:var(--cb-ink2);font-variant-numeric:tabular-nums}
+.mcp-cb-clue ul{list-style:none;padding:0;display:grid}
+.mcp-cb-clue li{display:grid;grid-template-columns:6px minmax(0,1fr) auto;align-items:baseline;column-gap:10px;padding:7px 0;font-size:14px;line-height:1.4;text-wrap:pretty}
+.mcp-cb-clue li::before{content:"";width:6px;height:6px;background:var(--cb-line);transform:translateY(-1px)}
+.mcp-cb-clue li+li{border-top:1px solid color-mix(in srgb,var(--cb-edge) 70%,transparent)}
+.mcp-cb-clue li.is-new{margin:0 -8px;padding-inline:8px;background:color-mix(in srgb,var(--cb-tone) 55%,var(--cb-panel))}
+.mcp-cb-clue li.is-new::before{background:var(--cb-ink)}
+.mcp-cb-new{display:inline-flex;align-items:center;height:18px;padding:0 6px;background:var(--cb-ink);color:var(--cb-panel);font:600 11px/1 var(--font-text);align-self:center}
+/* ResultCard */
+.mcp-cb-result-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
+/* Track */
+.mcp-cb-track{display:grid;gap:6px;width:100%}
+.mcp-cb-track-row{display:grid;grid-template-columns:5.5em minmax(0,max-content) auto;justify-content:start;column-gap:10px;align-items:center;--cb-on:var(--cb-ink)}
+.mcp-cb-track-row.is-threat{--cb-on:oklch(from var(--error) calc(l - .14) c h)}.mcp-cb-track-row.is-health{--cb-on:oklch(from var(--success) calc(l - .22) c h)}
+.mcp-cb-track-l{font:600 13px/1.3 var(--font-text)}.mcp-cb-track-n{font-size:12px;color:var(--cb-ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcp-cb-steps{display:flex;gap:3px;min-width:0}
+.mcp-cb-steps>i{flex:0 1 18px;width:18px;min-width:5px;height:10px;border:1px solid var(--cb-line)}.mcp-cb-steps>i.is-on{background:var(--cb-on);border-color:var(--cb-on)}
+.mcp-cb-bar{display:block;height:8px;background:var(--cb-tone);width:200px;max-width:100%}.mcp-cb-bar>i{display:block;height:100%;background:var(--cb-on)}
+/* RollLine */
+.mcp-cb-roll{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;position:relative}
+.mcp-cb-roll-in{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-variant-numeric:tabular-nums}
+.mcp-cb-roll-in>b{font-weight:600}.mcp-cb-die{font-size:12px;font-weight:600;color:var(--cb-ink2)}
+.mcp-cb-pip{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border:1.5px solid var(--cb-ink);font-weight:700}
+.mcp-cb-roll-vs{color:var(--cb-ink2)}
+/* MenuRows */
+.mcp-cb-menu{display:grid;width:100%}
+.mcp-cb-menu ul{list-style:none;padding:0}
+.mcp-cb-mrow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 10px}
+.mcp-cb-mrow>.mcp-cb-go{min-height:34px;padding:0 12px;gap:6px}.mcp-cb-mrow>.mcp-cb-go::before{inset:-5px 0}
+.mcp-cb-mrow+.mcp-cb-mrow{border-top:1px solid var(--cb-edge)}
+.mcp-cb-mart{width:40px;height:40px;display:grid;place-items:center;overflow:hidden;align-self:center}
+.mcp-cb-mart>svg,.mcp-cb-mart>img{width:100%;height:100%;display:block;object-fit:cover}
+.mcp-cb-mart.is-icon{background:var(--cb-tone)}
+.mcp-cb-mtext{display:grid;gap:2px;min-width:0}.mcp-cb-mtext>b{font:700 15px/1.2 var(--font-heading);letter-spacing:-.01em}.mcp-cb-mtext>small{font-size:12.5px;line-height:1.3;color:var(--cb-ink2);text-wrap:pretty}
+.mcp-cb-mmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:3px;font-size:12px;color:var(--cb-ink2)}
+.mcp-cb-search{display:flex;align-items:center;gap:8px;margin:8px 10px 2px;padding:0 10px;min-height:40px;border:1px solid var(--cb-line);background:var(--cb-ground);color:var(--cb-ink2)}
+.mcp-cb-search:focus-within{outline:2px solid var(--cb-ink);outline-offset:1px}
+.mcp-cb-search input{flex:1;min-width:0;border:0;background:transparent;font:400 16px/1.2 var(--font-text);color:var(--cb-ink);outline:none;padding:0}
+.mcp-cb-search input::placeholder{color:var(--cb-ink2)}
+@media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
+
+/* CardRow. The heading line is its own row: title left, arrows right, both centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). The sentence runs under both. */
+.mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
+.mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
+.mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
+.mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
+.mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
+.mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
+.mcp-crow-btn:active{opacity:.55}
+.mcp-crow-btn:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+.mcp-crow-track{display:grid;gap:var(--space-5);grid-auto-flow:column;grid-auto-columns:min(280px,82%);overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-inline:4px;padding:4px 4px 12px;margin:-4px -4px 0;scrollbar-width:none}
+.mcp-crow-track::-webkit-scrollbar{display:none}
+.mcp-crow-track>*{scroll-snap-align:center;min-width:0}
+.mcp-crow-track:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+@container mcp-crow (min-width:560px){.mcp-crow-track{grid-auto-columns:clamp(220px,calc((100% - (var(--n,4) - 1) * var(--space-5)) / var(--n,4)),280px)}}
+@media (prefers-reduced-motion:reduce){.mcp-crow-btn{transition:none}}
+/* CardRow kind="chat": wider items for ChatPictures; the picture fills its item */
+.mcp-crow.is-chat .mcp-crow-track{grid-auto-columns:min(340px,86%)}
+@container mcp-crow (min-width:560px){.mcp-crow.is-chat .mcp-crow-track{grid-auto-columns:clamp(300px,calc((100% - (var(--n,3) - 1) * var(--space-5)) / var(--n,3)),380px)}}
+.mcp-crow.is-chat .mcp-crow-track>*{scroll-snap-align:start}
+.mcp-chatfig{margin:0;min-width:0;display:grid;gap:12px;align-content:start}
+.mcp-chatfig>.mcp-chat{width:100%!important}
+.mcp-chatfig>figcaption{font:400 13px/1.4 var(--font-text);color:var(--muted);text-wrap:pretty}
+/* GameCard, the one game card: picture, text (name and blurb, snug), chips. Inside a CardRow the row shares these three lines (subgrid): the text line is as tall as the tallest text, the chip line as tall as the tallest chip set, and each card's chips are centred in it, so one row of chips sits level with the middle of another card's two. Decided 2026-10-15 (docs/specs/card-chip-alignment/). Don't move chips to the card's bottom edge: that leaves blank space above every one-row set. */
+.mcp-gcard{grid-template-rows:auto 1fr auto;row-gap:var(--space-3);justify-items:stretch;align-content:stretch}
+.mcp-crow-track:has(>.mcp-gcard){grid-template-rows:repeat(3,auto);row-gap:0}
+.mcp-crow-track>.mcp-gcard{grid-row:span 3;grid-template-rows:subgrid}
+.mcp-gcard-art{min-width:0}
+.mcp-gcard-art .mcp-art{aspect-ratio:2/1}
+.mcp-gcard-text{display:grid;align-content:start;row-gap:var(--space-3);min-width:0}
+.mcp-gcard-name{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;justify-content:space-between;gap:var(--space-2);min-width:0}
+.mcp-gcard-blurb{margin:0;font:400 16px/1.5 var(--font-text);color:var(--muted);text-wrap:wrap}
+.mcp-gcard-tags{display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:var(--space-2);align-self:stretch}
+/* GamePick: one of Discover's two picks. Bigger than a GameCard: a 3:1 picture, a label, the name and blurb as one block, tags. Two side by side share three lines (subgrid). */
+.mcp-gpicks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,348px),1fr));grid-auto-rows:auto;column-gap:var(--space-5);row-gap:0;margin-bottom:calc(-1*var(--space-4))}
+.mcp-gpick{grid-template-rows:auto auto auto;row-gap:var(--space-4);justify-items:stretch;align-content:start}
+.mcp-gpicks>.mcp-gpick{grid-row:span 3;grid-template-rows:subgrid;margin-bottom:var(--space-4)}
+.mcp-gpick-art{min-width:0}
+.mcp-gpick-text{display:grid;gap:var(--space-2);align-content:start;min-width:0}
+.mcp-gpick-label{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.mcp-gpick-blurb{margin:0;font:400 16px/1.5 var(--font-text);color:var(--muted);text-wrap:wrap}
+.mcp-gpick-tags{display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:var(--space-2);align-self:stretch}
+/* GameTile and the all-games wall. The name is the tile's one link, stretched over it. */
+.mcp-gwall{container:mcp-gwall/inline-size;display:grid;gap:var(--space-5) var(--space-4);grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr));align-content:start}
+@container mcp-gwall (min-width:720px){.mcp-gwall{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-5)}}
+.mcp-gtile{position:relative;display:grid;gap:var(--space-1);align-content:start;min-width:0}
+.mcp-gtile-art{margin-bottom:var(--space-1);min-width:0}
+.mcp-gtile-art .mcp-art{aspect-ratio:1}
+.mcp-gtile-name{font:600 16px/1.3 var(--font-text);color:var(--text);min-width:0}
+.mcp-gtile-open{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:4px;text-decoration-thickness:1.5px;min-height:24px}
+.mcp-gtile-open::after{content:'';position:absolute;inset:0;z-index:1}
+.mcp-gtile-open:focus-visible{outline:none}
+.mcp-gtile:has(.mcp-gtile-open:focus-visible){outline:2px solid var(--off-white);outline-offset:2px}
+@media (hover:hover){.mcp-gtile-open:hover{text-decoration-color:currentColor;text-underline-offset:6px}}
+.mcp-gtile-kind{font:400 14px/1.4 var(--font-text);color:var(--muted)}
+
+/* Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
+.mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* A tag keeps its box while its card or row is pressed: its 14% fill matches the 10% press fill exactly, so it lifts a step for the length of the press. */
+.mcp-card.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-row.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-art-host:is(:active,.is-on) .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}

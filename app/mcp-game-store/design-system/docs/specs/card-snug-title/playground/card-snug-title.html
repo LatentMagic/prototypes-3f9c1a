@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<base href="../../../../" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Playground: card snug title</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="tokens/fonts.css" />
+<link rel="stylesheet" href="tokens/colors.css" />
+<link rel="stylesheet" href="tokens/typography.css" />
+<link rel="stylesheet" href="tokens/spacing.css" />
+<link rel="stylesheet" href="tokens/motion.css" />
+<link rel="stylesheet" href="tokens/effects.css" />
+<link rel="stylesheet" href="tokens/base.css" />
+<link rel="stylesheet" href="components/components.css" />
+<link rel="stylesheet" href="docs/specs/card-snug-title/playground/pg-product.css" />
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--text);font-family:var(--font-text);-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;padding-bottom:var(--pgs-h,120px)}
+a{color:var(--text)}a:hover{color:var(--muted)}
+/* Options. Today = components.css as shipped. */
+.pgs-text{display:contents}
+/* Option 0 restores the rule shipped before this decision. */
+[data-pgs-opt="0"] .mcp-crow-track:has(>.mcp-gcard){grid-template-rows:repeat(4,auto);row-gap:0}
+[data-pgs-opt="0"] .mcp-crow-track>.mcp-gcard{grid-row:span 4;grid-template-rows:subgrid;align-content:start}
+[data-pgs-opt="0"] .mcp-gcard-tags{align-self:stretch;align-content:center}
+[data-pgs-opt="2"] .mcp-gcard-tags,[data-pgs-opt="3"] .mcp-gcard-tags{align-self:stretch;align-content:center}
+[data-pgs-opt="2"] .mcp-gcard,[data-pgs-opt="3"] .mcp-gcard{align-content:start}
+[data-pgs-opt="1"] .mcp-crow-track:has(>.mcp-gcard){grid-template-rows:none}
+[data-pgs-opt="1"] .mcp-crow-track>.mcp-gcard{grid-row:auto;grid-template-rows:auto auto 1fr auto;align-content:stretch}
+[data-pgs-opt="1"] .mcp-gcard-tags{align-self:end;align-content:end}
+[data-pgs-opt="2"] .mcp-crow-track:has(>.mcp-gcard),[data-pgs-opt="3"] .mcp-crow-track:has(>.mcp-gcard){grid-template-rows:repeat(3,auto)}
+[data-pgs-opt="2"] .mcp-crow-track>.mcp-gcard,[data-pgs-opt="3"] .mcp-crow-track>.mcp-gcard{grid-row:span 3;grid-template-rows:subgrid}
+[data-pgs-opt="2"] .pgs-text,[data-pgs-opt="3"] .pgs-text{display:grid;align-content:start;row-gap:var(--space-3);min-width:0}
+[data-pgs-opt="3"] .mcp-gcard-tags{align-content:end;align-items:flex-end}
+/* Tooling strip */
+.pgs-strip{position:fixed;left:0;right:0;bottom:0;z-index:200;background:#0c0c0b;color:#e8e6df;border-top:1px solid #3a3a36;padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:grid;gap:8px;font:400 13px/1.4 ui-monospace,Menlo,monospace}
+.pgs-strip .pgs-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pgs-k{color:#8d8b82;width:76px;flex:none}
+.pgs-b{font:inherit;color:inherit;background:#1d1d1b;border:1px solid #3a3a36;padding:0 12px;min-height:44px;cursor:pointer}
+.pgs-b[aria-pressed="true"]{background:#e8e6df;color:#0c0c0b;border-color:#e8e6df}
+.pgs-b:focus-visible{outline:2px solid #e8e6df;outline-offset:2px}
+.pgs-note{color:#8d8b82;margin-left:6px}
+.pgs-why{margin:0;max-width:90ch;text-wrap:pretty}
+.pgs-read{color:#b9b7ad}.pgs-read .bad{color:#ff9a7a}
+@media (max-width:600px){.pgs-k{width:100%}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+<script type="text/babel" src="docs/specs/card-snug-title/playground/pg-data.jsx"></script>
+<script type="text/babel" src="docs/specs/card-snug-title/playground/pg-card-snug-title.jsx"></script>
+</body>
+</html>

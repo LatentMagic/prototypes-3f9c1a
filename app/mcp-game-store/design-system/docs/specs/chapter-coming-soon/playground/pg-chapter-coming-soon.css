@@ -1,0 +1,20 @@
+/* Chapter coming soon. The options use only the system's parts (Card, Cover, Tag, labels, lb-card); this file is the rig's strip. */
+.pgc-strip{position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#0d0c0b;color:#f0eee8;border-top:1px solid #37332e;font:400 14px/1.4 var(--font-text);padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));display:grid;gap:8px}
+.pgc-strip[data-open="false"]{padding-block:6px calc(6px + env(safe-area-inset-bottom))}
+.pgc-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pgc-where{color:#aba79e;font-size:13px;gap:10px}
+.pgc-where b{color:#f0eee8;font-weight:600}
+.pgc-k{font:600 12px/1 var(--font-text);letter-spacing:.06em;color:#aba79e;margin-right:4px}
+.pgc-b{min-height:36px;padding:0 12px;background:#262320;color:#f0eee8;border:1px solid #37332e;font:600 14px/1 var(--font-text);cursor:pointer}
+.pgc-b[aria-pressed="true"]{background:#ede8df;color:#1b1917;border-color:#ede8df}
+.pgc-b:focus-visible{outline:2px solid #ede8df;outline-offset:2px}
+.pgc-why{margin:0;color:#aba79e;max-width:90ch;text-wrap:pretty;font-size:13px}
+.pgc-why b{color:#f0eee8;font-weight:600}
+.pgc-fold{margin-left:auto}
+.pgch-ring{outline:2px dashed #e8a08a !important;outline-offset:6px}
+span.pgch-ring{outline:none !important}
+span.pgch-ring > *{outline:2px dashed #e8a08a;outline-offset:4px}
+body{padding-bottom:var(--pgc-h,0px)}
+.kit-stage{min-height:calc(100vh - var(--pgc-h,0px)) !important}
+.kit-phone{height:min(872px,calc(100vh - 48px - var(--pgc-h,0px))) !important}
+@media (max-width:600px){.pgc-k{display:none}.pgc-b{padding:0 10px;font-size:13px}}

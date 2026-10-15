@@ -1,0 +1,21 @@
+<!doctype html><html lang="en-GB"><head><base href="../../../../"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>body{padding:20px;background:var(--page);margin:0}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted);margin:8px 0 0}.wrap{display:flex;gap:24px;flex-wrap:wrap;align-items:start}</style></head><body><div id="root"></div>
+<script>
+// Scratch: renders a card's turns from the component sources directly, before the bundle is rebuilt. ?card=tile-grid
+(async()=>{try{
+const files=['components/media/Icon.jsx','components/chat/chat-press.js','components/chat/StatusTag.jsx','components/chat/FactRows.jsx','components/chat/StatRow.jsx','components/chat/NavButtons.jsx','components/chat/TileGrid.jsx','components/chat/WordBoard.jsx','components/chat/ChoiceButtons.jsx','components/chat/ConfirmCard.jsx','components/chat/EntityCards.jsx','components/chat/ClueCards.jsx','components/chat/ResultCard.jsx','components/chat/Track.jsx','components/chat/RollLine.jsx','components/chat/MenuRows.jsx','components/media/ChatPicture.jsx'];
+try{
+let src='';for(const f of files){let t=await (await fetch(f)).text();const names=[...t.matchAll(/^export (?:const|function) (\w+)/mg)].map(m=>m[1]);t=t.replace(/^import .*$/mg,'').replace(/^export (const|function)/mg,'$1');src+='(()=>{'+t+'\nObject.assign(window,{'+names.join(',')+'});})();\n';}
+const out=Babel.transform(src+'\nwindow.DEV={ChatPicture};',{presets:['react']}).code;(0,eval)(out);
+}catch(e){document.body.textContent=String(e);return;}
+const card=new URLSearchParams(location.search).get('card')||'tile-grid';
+const CARDS=card==='all'?['tile-grid','word-board','choice-buttons','confirm-card','fact-rows','stat-row','status-tag','entity-cards','clue-cards','result-card','track','roll-line','nav-buttons','menu-rows']:card.split(',');
+const sets=[];if(card==='sampler'){sets.push(['sampler',await (await fetch('docs/specs/chat-blocks/sampler/turns.json')).json()]);CARDS.length=0;}for(const c of CARDS){const html=await (await fetch('components/chat/'+c+'.card.html')).text();sets.push([c,JSON.parse(html.match(/const turns=(.*);\n/)[1])]);}
+const w=+(new URLSearchParams(location.search).get('w')||0);
+const Pic=({w,cap,turns})=>React.createElement('div',{style:{width:w}},React.createElement(DEV.ChatPicture,{turns,width:w,height:'auto',composer:false,mark:'assets/logo.svg',toolBy:'MCP Game Store'}),React.createElement('p',{className:'cap'},cap));
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement('div',{style:{display:'grid',gap:32}},sets.map(([c,turns])=>React.createElement('div',{key:c,id:c,className:'wrap'},React.createElement(Pic,{w:c==='sampler'?340:300,cap:c+' narrow',turns}),React.createElement(Pic,{w:c==='sampler'?560:440,cap:c+' wide',turns})))));
+}catch(e){document.body.style.color="#fff";document.body.textContent="ERR "+(e.stack||e);}})();
+</script></body></html>

@@ -1,0 +1,29 @@
+:root{
+/* Surfaces and text (base) */
+--page:#1B1917;--card:#262320;--popup:#322E2A;--line:#37332E;--control-edge:#918B80;
+--text:#F0EEE8;--muted:#ABA79E;--off-white:#EDE8DF;
+--dim:rgba(0,0,0,.55);--shadow-color:rgba(0,0,0,.55);
+/* Status */
+--success:#4CC38A;--success-on:#08140E;
+--warning:#FFD23A;--warning-on:#1A1203;
+--error:#FF6B5E;--error-on:#1A0805;
+/* Cover backgrounds */
+--cover-bg-indigo:#1D1B3A;--cover-bg-wine:#421A28;--cover-bg-forest:#163328;
+/* Cover shapes */
+--cover-green:#4CC38A;--cover-orange:#D66847;--cover-amber:#E5A63B;--cover-teal:#328A88;--cover-lilac:#A390B2;--cover-cream:#F2EBE0;
+
+/* Semantic aliases */
+--surface-page:var(--page);--surface-card:var(--card);--surface-popup:var(--popup);
+--border-line:var(--line);--border-control:var(--control-edge);
+--text-body:var(--text);--text-muted:var(--muted);--text-on-light:var(--page);
+--accent:var(--off-white);--link:var(--off-white);--focus-ring:var(--off-white);
+--action-main-bg:var(--off-white);--action-main-fg:var(--page);
+--action-main-pressed:color-mix(in srgb,var(--off-white) 74%,var(--page));
+--action-secondary-pressed:color-mix(in srgb,var(--text) 16%,var(--page));
+--action-danger-bg:var(--error);--action-danger-fg:var(--error-on);
+--action-danger-pressed:color-mix(in srgb,var(--error) 78%,#000);
+--action-disabled-bg:color-mix(in srgb,var(--text) 14%,var(--page));
+--action-disabled-fg:color-mix(in srgb,var(--text) 66%,var(--page));
+--tag-neutral-bg:color-mix(in srgb,var(--text) 14%,var(--page));
+color-scheme:dark;
+}

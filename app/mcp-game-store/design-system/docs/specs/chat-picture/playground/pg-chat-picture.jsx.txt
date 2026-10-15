@@ -1,0 +1,143 @@
+// ============================================================================
+// Playground: our own picture of a game being played (Daily Word product page).
+// Replaces window.GsShot for the product page's "How it looks in your chat" slot only
+// (calls without `zoom`); the home hero's screenshot (zoom) stays today's.
+// Turns are the real Daily Word play of 5 Oct 2026, from
+// assets/in-use/daily-word-claude-code-2026-10-05.png, verbatim. Nothing is added.
+// ============================================================================
+const PGC_KEY = 'pg_chat-picture_v1';
+const PGC_OPTS = [
+  { n: 0, name: 'Today', stance: 'The Claude Code screenshot, as the page ships it now.', cost: 'Shows another company’s app.' },
+  { n: 1, name: 'Brand header', stance: 'A light chat whose header is ours: the logo and MCP Game Store in the page’s heading face, on the warm dark of the site.', cost: 'Reads as our app’s window rather than a neutral chat.' },
+  { n: 2, name: 'Brand tool call', stance: 'A plain light chat. The branding sits where our tool appears: the tool call is a small card with the logo, and the tiles use the cover greens and ambers.', cost: 'Subtler. At a glance it is just a chat; the brand is in the detail.' },
+  { n: 3, name: 'Dark', stance: 'The same chat in the site’s own warm dark, logo in the header, tiles in the status colours. It sits in the page without a bright block.', cost: 'Looks closer to a dark-mode chat app, so it says less about “any chat”.' },
+];
+const pgcLoad = () => { try { const v = JSON.parse(localStorage.getItem(PGC_KEY)); return v && typeof v.opt === 'number' ? v : null; } catch (e) { return null; } };
+const pgcStore = { ...{ opt: 2, open: true, why: false, tone: 0 }, ...(pgcLoad() || {}), subs: new Set() };
+const pgcSet = (patch) => {
+  Object.assign(pgcStore, patch);
+  try { localStorage.setItem(PGC_KEY, JSON.stringify({ tone: pgcStore.tone, opt: pgcStore.opt, open: pgcStore.open, why: pgcStore.why })); } catch (e) {}
+  pgcStore.subs.forEach((f) => f());
+};
+const usePgc = () => { const [, f] = React.useState(0); React.useEffect(() => { const s = () => f((x) => x + 1); pgcStore.subs.add(s); return () => pgcStore.subs.delete(s); }, []); return pgcStore; };
+
+// ---- the record ----------------------------------------------------------------
+// x absent, y in the word, g right spot
+const PGC_MARKS = { AMAZE: 'xxxxx', SPAIN: 'xxxgx', DRAIN: 'yyxgx' };
+const PGC_TURNS = [
+  { me: 'I want to play Daily Word.' },
+  { call: true, ai: ['Today’s Daily Word (5 Oct 2026) is ready. The board’s empty and you have six tries to find the hidden five-letter word.', 'What’s your first guess?'] },
+  { me: 'amaze' },
+  { call: true, board: ['AMAZE'], ai: ['No hits, but A, M, Z and E are all out now, so that clears some ground. 5 guesses left. What’s next?'] },
+  { me: 'spain' },
+  { call: true, board: ['AMAZE', 'SPAIN'], ai: ['First green: I is in the fourth spot. 4 guesses left. What’s your next word?'] },
+  { me: 'drain' },
+  { call: true, board: ['AMAZE', 'SPAIN', 'DRAIN'] },
+];
+const PGC_TONES = [['Text','var(--text)'],['Off-white','var(--off-white)'],['Cream','var(--cover-cream)']];
+const PGC_ALT = 'Daily Word being played in a chat: each guess and the board after it.';
+
+const PgcTiles = ({ words, cls }) => (
+  <div className={cls + '-board'} role="img" aria-label={words.map((w) => w + ': ' + PGC_MARKS[w].split('').map((m, i) => w[i] + (m === 'g' ? ' right spot' : m === 'y' ? ' in the word' : ' not in it')).join(', ')).join('. ')}>
+    {words.map((w) => (
+      <div key={w} className={cls + '-row'}>
+        {w.split('').map((ch, i) => <span key={i} className={'is-' + PGC_MARKS[w][i]}>{ch}</span>)}
+      </div>
+    ))}
+  </div>
+);
+const PgcSquares = ({ words }) => (
+  <div className="pgc2-board" role="img" aria-label={words.join(', ')}>
+    {words.map((w) => (
+      <div key={w} className="pgc2-row"><b>{w}</b><span>{PGC_MARKS[w].split('').map((m, i) => <i key={i} className={'is-' + m} />)}</span></div>
+    ))}
+  </div>
+);
+
+const PgcSend = () => <i className="pgv-send"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" /></svg></i>;
+const PgcChat = ({ v }) => (
+  <div className={'pgv pgv' + v} aria-label={PGC_ALT}>
+    <div className="pgv-head">{v !== 2 && <img src="assets/logo.svg" alt="" width="22" height="22" />}<b>{v === 1 ? 'MCP Game Store' : 'Daily Word'}</b>{v === 3 && <span>MCP Game Store</span>}</div>
+    <div className="pgv-body">
+      {PGC_TURNS.map((t, i) => t.me ? <p key={i} className="pgv-me">{t.me}</p> : (
+        <div key={i} className="pgv-ai">
+          {t.call && <span className="pgv-call">{v === 2 && <img src="assets/logo.svg" alt="" width="16" height="16" />}Called daily-word{v === 2 && <em>MCP Game Store</em>}</span>}
+          {t.board && <PgcTiles words={t.board} cls="pgv" />}
+          {(t.ai || []).map((p, k) => <p key={k}>{p}</p>)}
+        </div>
+      ))}
+    </div>
+    <div className="pgv-comp" aria-hidden="true"><span>Reply</span><PgcSend /></div>
+  </div>
+);
+const PgcA = () => <PgcChat v={1} />, PgcB = () => <PgcChat v={2} />, PgcC = () => <PgcChat v={3} />;
+
+const PGC_BODY = { 1: PgcA, 2: PgcB, 3: PgcC };
+const GsShotToday = window.GsShot;
+const PgcShot = (props) => {
+  const st = usePgc();
+  if (props.zoom || st.opt === 0) return <GsShotToday {...props} />;
+  const Body = PGC_BODY[st.opt];
+  return (
+    <figure className={'pgc pgc-o' + st.opt} data-pgc-picture="">
+      <Body />
+      {props.caption && <figcaption className="pgc-cap">{props.caption}</figcaption>}
+    </figure>
+  );
+};
+window.GsShot = PgcShot;
+
+// ---- the rig's strip: dark, above the demo bar, collapsible ---------------------
+const pgcScrollToPicture = () => {
+  const fig = document.querySelector('[data-pgc-picture], .gs-main .gs-shot');
+  const sec = fig && fig.closest('section'); if (!sec) return;
+  const scroller = sec.closest('.kit-phone-screen');
+  const top = sec.getBoundingClientRect().top - 80;
+  if (scroller) scroller.scrollBy({ top, behavior: 'smooth' }); else window.scrollBy({ top, behavior: 'smooth' });
+};
+const PgcStrip = () => {
+  const st = usePgc();
+  const [lift, setLift] = React.useState(44);
+  React.useEffect(() => {
+    const m = () => { const d = document.querySelector('.gs-demo'); setLift(d ? d.getBoundingClientRect().height : 0); };
+    m(); const t = setInterval(m, 600); return () => clearInterval(t);
+  }, []);
+  const o = PGC_OPTS[st.opt];
+  const pick = (n) => { pgcSet({ opt: n }); setTimeout(pgcScrollToPicture, 30); };
+  if (!st.open) return (
+    <button type="button" className="pgc-tab" style={{ bottom: lift + 12 }} onClick={() => pgcSet({ open: true })} aria-label="Show the playground strip">
+      Chat picture · {o.n} {o.name}
+    </button>
+  );
+  return (
+    <div className="pgc-strip" style={{ bottom: lift }} role="group" aria-label="Playground, not part of the product">
+      <div className="pgc-strip-in">
+        <span className="pgc-strip-t">Chat picture</span>
+        <div className="pgc-opts">
+          {PGC_OPTS.map((x) => (
+            <button key={x.n} type="button" className="pgc-opt" aria-pressed={st.opt === x.n} onClick={() => pick(x.n)}><b>{x.n}</b>{x.name}</button>
+          ))}
+        </div>
+                <div className="pgc-end">
+          <button type="button" className="pgc-mini" aria-expanded={st.why} onClick={() => pgcSet({ why: !st.why })}>Why</button>
+          <button type="button" className="pgc-mini" onClick={() => pgcSet({ open: false })} aria-label="Hide the playground strip">Hide</button>
+        </div>
+      </div>
+      {st.why && (
+        <div className="pgc-why">
+          <p><b>{o.n} · {o.name}.</b> {o.stance}</p>
+          <p><b>Cost.</b> {o.cost}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+const pgcRoot = document.createElement('div'); pgcRoot.id = 'pgc-root'; document.body.appendChild(pgcRoot);
+ReactDOM.createRoot(pgcRoot).render(<PgcStrip />);
+
+// Open on the Daily Word product page, through the app's own router.
+(function pgcStart() {
+  if (!window.gsApi) return setTimeout(pgcStart, 50);
+  if (window.gsApi.route.name !== 'word') window.gsApi.go('word');
+  let n = 0; const t = setInterval(() => { if (document.querySelector('[data-pgc-picture], .gs-main .gs-shot') || ++n > 60) { clearInterval(t); setTimeout(pgcScrollToPicture, 150); } }, 100);
+})();

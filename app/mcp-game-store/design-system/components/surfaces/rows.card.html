@@ -1,0 +1,30 @@
+<!-- @dsCard group="Components · Layout" viewport="900x720" name="ListRow" subtitle="The canonical row: its parts, then a list of them" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:28px;background:var(--page);margin:0;color:var(--text);font:400 16px/1.5 var(--font-text)}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}.h{margin:0;font:600 13px/1.3 var(--font-text);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.box{background:var(--card);border:1px solid var(--line)}.cov{display:block;width:100%;height:100%}.day{margin:0;padding:12px 16px 4px;font:600 13px/1.3 var(--font-text);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.anat{position:relative;padding:44px 0}.lab{position:absolute;font:400 13px/1 var(--font-text);color:var(--text);white-space:nowrap}.lab i{position:absolute;left:0;width:1px;background:var(--muted);opacity:.6}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {ListRow,RowList}=window.MCPGameStoreDesignSystem_ef1abd;
+const C=({bg,ink})=><svg className="cov" viewBox="0 0 48 36"><rect width="48" height="36" style={{fill:'var(--cover-bg-'+bg+')'}}/><rect x="16" y="10" width="16" height="16" style={{fill:'var(--cover-'+ink+')'}}/></svg>;
+const word=<C bg="wine" ink="amber"/>,myst=<C bg="indigo" ink="orange"/>,groups=<C bg="forest" ink="teal"/>,esc=<C bg="indigo" ink="amber"/>;
+const f=()=>{};
+const parts=[['.mcp-row-lead','Cover','top'],['.mcp-row-title > span:first-child','Title','top'],['.mcp-row-game','Game’s name','top'],['.mcp-row-when','When','top'],['.mcp-row-st','Result','bottom'],['.mcp-row-note','Replay','bottom'],['.mcp-row-go','Opens','bottom']];
+function Anatomy(){
+  const ref=React.useRef(null);const [labs,setLabs]=React.useState([]);
+  React.useLayoutEffect(()=>{const t=setTimeout(()=>{const box=ref.current.getBoundingClientRect();setLabs(parts.map(([sel,name,side])=>{const el=ref.current.querySelector(sel);if(!el)return null;const r=el.getBoundingClientRect();const x=r.left-box.left+(sel.includes('game')?14:0);return side==='top'?{name,x,top:4,line:{top:16,height:r.top-box.top-18}}:{name,x,top:box.height-17,line:{top:-(box.bottom-r.bottom-4),height:box.bottom-r.bottom-8}};}).filter(Boolean));},300);return()=>clearTimeout(t);},[]);
+  return <div className="anat" ref={ref}><div className="box"><RowList label="Anatomy"><ListRow onClick={f} lead={esc} title="The Locked Study" game="Escape" result={['Escaped in 5 moves','5 moves']} tone="ok" when="19:30" replay/></RowList></div>
+  {labs.map((l)=><span key={l.name} className="lab" style={{left:l.x,top:l.top}}>{l.name}<i style={l.line}></i></span>)}</div>;
+}
+function App(){return <div style={{display:'grid',gap:28,maxWidth:600}}>
+<div style={{display:'grid',gap:4}}><p className="h">One row</p><Anatomy/><span className="cap">Two 20px lines, 62px. Title in ink; the game’s name is the only quiet text, and only beside a cover. The whole row is one target.</span></div>
+<div style={{display:'grid',gap:8}}><p className="h">A list of them</p><div className="box"><p className="day">Today</p><RowList label="Today">
+<ListRow onClick={f} lead={esc} title="The Locked Study" game="Escape" result={['Escaped in 5 moves','5 moves']} tone="ok" when="19:30" replay/>
+<ListRow onClick={f} lead={myst} title="#64" game="Daily Mystery" result="Missed" tone="bad" when="10:27"/>
+<ListRow onClick={f} lead={groups} title="#88" game="Daily Groups" result={['All 4 groups, 1 mistake','1 mistake']} tone="ok" when="09:16"/>
+<ListRow onClick={f} lead={word} title="#212" game="Daily Word" result={['Solved in 3 of 6','3 of 6']} tone="ok" when="08:05"/>
+</RowList></div><span className="cap">Every row the same height. More lists in “ListRow in use”; the rows that broke earlier versions in “ListRow edge cases”.</span></div>
+</div>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

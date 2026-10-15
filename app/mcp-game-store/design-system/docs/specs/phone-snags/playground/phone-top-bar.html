@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><base href="../../../../"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Playground - Phone Top Bar</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
+p{margin:0}
+.pg{max-width:1100px;margin:0 auto;padding:32px 16px 64px;display:grid;gap:40px}
+.pg-lede{display:grid;gap:12px;max-width:68ch}.pg-lede h1{margin:0;font:700 28px/1.1 var(--font-heading);letter-spacing:-.01em}.pg-lede p{color:var(--muted);text-wrap:pretty}.pg-lede b{color:var(--text)}
+.pg-seg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pg-seg span{font:600 14px/1.2 var(--font-text);color:var(--muted);margin-right:8px}
+.pg-seg button{min-height:44px;padding:0 14px;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);font:600 15px/1 var(--font-text);cursor:pointer}
+.pg-seg button[aria-pressed="true"]{background:var(--off-white);border-color:var(--off-white);color:var(--page)}
+.pg-opt{display:grid;gap:12px;align-content:start;border-top:1px solid var(--line);padding-top:24px}
+.pg-num{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.pg-name{margin:0;font:700 20px/1.2 var(--font-heading)}
+.pg-claim,.pg-cost{font:400 14px/1.45 var(--font-text);color:var(--muted);text-wrap:pretty;max-width:72ch}.pg-cost b{color:var(--text);font-weight:600}
+.pg-frames{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.pg-fwrap{display:grid;gap:8px;max-width:100%}
+.pg-cap{font:600 13px/1.3 var(--font-text);color:var(--muted)}
+.pg-fit{font:600 13px/1.3 var(--font-text)}.pg-fit.is-bad{color:var(--error)}.pg-fit.is-ok{color:var(--success)}
+.pg-frame{position:relative;border:1px solid var(--line);background:var(--page);overflow:hidden;min-height:440px;max-width:100%}
+.pg-bar{border-bottom:1px solid var(--line);background:var(--page)}
+.pg-bar-in{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;padding-inline:16px}
+.pg-brand{display:inline-flex;align-items:center;gap:12px;min-height:44px;white-space:nowrap;font:700 20px/1.2 var(--font-heading);letter-spacing:-.01em;color:var(--text);flex:none}
+.pg-brand img{width:32px;height:32px;display:block}
+.pg-end{display:flex;align-items:center;gap:16px;margin-left:auto;flex:none}
+.pg-anchor{position:relative}
+.pg-iconbtn{width:48px;height:48px;display:inline-grid;place-items:center;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);cursor:pointer;padding:0}
+.pg-pop{position:absolute;right:0;top:calc(100% + 8px);min-width:240px;background:var(--popup);border:1px solid var(--control-edge);box-shadow:var(--shadow-card);display:grid;padding:4px 0;z-index:5}
+.pg-item{text-align:left;background:none;border:0;min-height:48px;padding:0 16px;color:var(--text);font:600 16px/1.2 var(--font-text);cursor:pointer;width:100%}
+.pg-cta{padding:8px 16px;display:grid;gap:8px}
+.pg-cta .mcp-btn{width:100%}
+.pg-div{height:1px;background:var(--line);margin:4px 0}
+.pg-hero{padding:24px 16px;display:grid;gap:16px}
+.pg-hero h2{margin:0;font:700 28px/1.08 var(--font-heading);letter-spacing:-.01em}
+.pg-hero .mcp-btn{width:100%}
+.pg-label{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--muted)}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {Button,TextLink}=window.MCPGameStoreDesignSystem_ef1abd;
+const noop=()=>{};
+const LINKS=['Discover','How it works','Pricing'];
+const Burger=()=><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7H20M4 12H20M4 17H20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="square"/></svg>;
+const Menu=()=><Button variant="secondary" onClick={noop}>Menu</Button>;
+const Icon=()=><button type="button" className="pg-iconbtn" aria-label="Menu"><Burger/></button>;
+const SignIn=()=><TextLink onClick={noop}>Sign in</TextLink>;
+const Start=()=><Button onClick={noop}>Start free</Button>;
+const OPTS=[
+ {n:'0',name:'Today',end:null,menu:<Menu/>,
+  extra:<><button type="button" className="pg-item">Sign in</button><div className="pg-cta"><Start/></div></>,
+  claim:'The bar holds the logo and Menu. In the menu, Sign in is a plain row like the pages, and Start free is a button below.',
+  cost:<><b>Problem:</b> Sign in does not look like an action, and neither Sign in nor Start free is visible without opening the menu.</>},
+ {n:'A',name:'Sign in beside Menu',end:<SignIn/>,menu:<Menu/>,
+  extra:<div className="pg-cta"><Start/></div>,
+  claim:'Returning players sign in with one tap. Start free stays in the menu and in the home hero.',
+  cost:<><b>Cost:</b> on every page without a hero, Start free is two taps away. Sign in as a text link is easy to miss next to the Menu button.</>},
+ {n:'B',name:'Start free beside Menu',end:<Start/>,menu:<Menu/>,
+  extra:<div className="pg-cta"><Button variant="secondary" onClick={noop}>Sign in</Button></div>,
+  claim:'New visitors always have the main action in reach. Sign in moves into the menu as a Secondary button.',
+  cost:<><b>Cost:</b> on Home, Start free appears twice on one screen (bar and hero). Returning players need two taps to sign in.</>},
+ {n:'C',name:'Both in the bar',end:<><SignIn/><Start/></>,menu:<Icon/>,
+  extra:null,
+  claim:'What you would expect from other sites: Sign in and Start free always visible, the menu shrunk to an icon.',
+  cost:<><b>Cost:</b> four things in one bar. It does not fit a phone: see the readout under each width. Menu as an icon is harder to find than the word.</>},
+ {n:'D',name:'Menu holds both as buttons',end:null,menu:<Menu/>,
+  extra:<div className="pg-cta"><Button variant="secondary" onClick={noop}>Sign in</Button><Start/></div>,
+  claim:'The bar is as it is. In the menu, Sign in and Start free are a pair of buttons under the pages, so Sign in reads as the secondary action.',
+  cost:<><b>Cost:</b> both actions still need the menu open. Smallest change, and it fixes only the menu half of the problem.</>}
+];
+function Frame({o,open,w,onFit}){
+ const ref=React.useRef(null);
+ React.useLayoutEffect(()=>{const el=ref.current;if(el&&onFit)onFit(Math.max(0,el.scrollWidth-el.clientWidth));});
+ return <div className="pg-frame" style={{width:w}}>
+  <header className="pg-bar"><div className="pg-bar-in" ref={ref}>
+   <span className="pg-brand"><img src="assets/logo.svg" alt=""/>[Platform]</span>
+   <div className="pg-end">{o.end}<div className="pg-anchor">{o.menu}
+    {open&&<div className="pg-pop" role="menu">{LINKS.map(l=><button key={l} type="button" className="pg-item" role="menuitem">{l}</button>)}{o.extra&&<><div className="pg-div"></div>{o.extra}</>}</div>}
+   </div></div>
+  </div></header>
+  <div className="pg-hero"><span className="pg-label">HOME</span><h2>Your AI does the talking. The game keeps the score.</h2><Button onClick={noop}>Start free</Button><Button variant="secondary" onClick={noop}>See how it works</Button></div>
+ </div>;
+}
+function Opt({o,w}){
+ const [over,setOver]=React.useState(0);
+ return <section className="pg-opt"><span className="pg-num">{o.n}</span><h3 className="pg-name">{o.name}</h3>
+  <div className="pg-frames">
+   <div className="pg-fwrap"><span className="pg-cap">Menu closed</span><Frame o={o} w={w} onFit={setOver}/><span className={'pg-fit '+(over?'is-bad':'is-ok')}>{over?'The bar overflows by '+over+'px at '+w+'px.':'The bar fits at '+w+'px.'}</span></div>
+   <div className="pg-fwrap"><span className="pg-cap">Menu open</span><Frame o={o} open w={w}/></div>
+  </div>
+  <p className="pg-claim">{o.claim}</p><p className="pg-cost">{o.cost}</p></section>;
+}
+function App(){
+ const [w,setW]=React.useState(()=>+localStorage.getItem('pg_topbar_v1')||390);
+ React.useEffect(()=>{localStorage.setItem('pg_topbar_v1',w);},[w]);
+ return <main className="pg">
+  <header className="pg-lede"><h1>Phone top bar, signed out</h1>
+   <p>Each option shows the bar closed and with the menu open, over the home screen so you can see how it sits with the hero's own Start free. The buttons are the system's. The bar reports whether it fits at the width you pick.</p>
+   <div className="pg-seg" role="group" aria-label="Phone width"><span>Width</span>{[390,360,320].map(v=><button key={v} type="button" aria-pressed={w===v} onClick={()=>setW(v)}>{v}px</button>)}</div>
+  </header>
+  {OPTS.map(o=><Opt key={o.n} o={o} w={w}/>)}
+ </main>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

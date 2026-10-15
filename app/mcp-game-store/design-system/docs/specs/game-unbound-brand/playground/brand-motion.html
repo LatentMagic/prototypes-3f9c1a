@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><base href="../../../../"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Whiteboard - Game Unbound motion</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
+p,h1,h2,h3{margin:0}
+a{color:var(--off-white)}a:hover{color:#fff}
+.wb{max-width:1180px;margin:0 auto;padding:32px 16px calc(64px + env(safe-area-inset-bottom));display:grid;gap:56px}
+.wb-lede{display:grid;gap:12px;max-width:72ch}.wb-lede h1{font:700 30px/1.1 var(--font-heading);letter-spacing:-.01em}.wb-lede p{color:var(--muted);text-wrap:pretty}.wb-lede b{color:var(--text);font-weight:600}
+.wb-sec{display:grid;gap:20px}
+.wb-sec>header{display:grid;gap:6px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.wb-sec>header h2{font:700 24px/1.15 var(--font-heading);letter-spacing:-.01em}
+.wb-sec>header p{color:var(--muted);font-size:14px;max-width:72ch;text-wrap:pretty}
+.wb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px}
+.wb-cell{background:var(--card);border:1px solid var(--line);padding:20px;display:grid;gap:16px;align-content:start;min-width:0}
+.wb-cell.is-ctx{background:transparent}
+.wb-tag{display:flex;gap:10px;align-items:baseline}
+.wb-num{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.wb-name{font:700 20px/1.2 var(--font-heading);letter-spacing:-.01em}
+.wb-ctx{font:600 12px/1.3 var(--font-text);color:var(--muted);margin-left:auto;letter-spacing:.04em;text-transform:uppercase}
+.wb-claim,.wb-cost{font-size:14px;line-height:1.45;color:var(--muted);text-wrap:pretty}.wb-cost b{color:var(--text);font-weight:600}
+.wb-sizes{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;padding:12px 0}
+.wb-size{display:grid;gap:10px;justify-items:start}
+.wb-size small{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.wb-hov{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.wb-pad{display:grid;place-items:center;width:180px;height:180px;border:1px dashed var(--line);cursor:pointer}
+.wb-scroll{overflow-x:auto;max-width:100%}
+.wb-frame{border:1px solid var(--line);background:var(--page);width:1024px}
+.wb-cap{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.bar{display:flex;align-items:center;gap:24px;min-height:64px;padding-inline:16px;border-bottom:1px solid var(--line)}
+.bar-brand{display:inline-flex;align-items:center;gap:12px;min-height:44px;flex:none;color:var(--text);background:none;border:0;padding:0;cursor:pointer}
+.bar-nav{display:flex;gap:24px;font:600 16px/1.2 var(--font-text)}
+.bar-end{display:flex;align-items:center;gap:12px;margin-left:auto;flex:none}
+.wm{white-space:nowrap;font:700 22px/1 var(--font-heading);letter-spacing:-.015em;color:var(--text);display:inline-flex;align-items:baseline}
+.wm-pre{display:inline-grid;line-height:.82}.wm-pre .g{font:600 .42em/1 var(--font-text);letter-spacing:.14em;text-transform:uppercase;color:var(--text);margin-left:.1em}.wm-pre .u{font-size:1.18em;letter-spacing:-.03em}
+.mk{display:block;position:relative;flex:none;transform-origin:50% 50%}
+.mk-in{position:absolute;left:0;top:0;width:120px;height:120px;transform-origin:0 0}
+.mk-in i{position:absolute;width:32px;height:32px;background:#4CC38A}
+.mk-in .tl{left:20px;top:20px}.mk-in .tr{left:68px;top:20px;background:#D66847;border-radius:50%;transform:translate(21px,-21px) scale(1.1875)}.mk-in .br{left:68px;top:68px}.mk-in .bl{left:20px;top:68px}
+.mk-in b{position:absolute;background:#4CC38A}
+.mk-in .fl{left:4px;top:4px;width:5px;height:112px}.mk-in .fb{left:4px;top:111px;width:112px;height:5px}.mk-in .ft{left:4px;top:4px;width:44px;height:5px;transform-origin:0 50%}.mk-in .fr{left:111px;top:72px;width:5px;height:44px;transform-origin:50% 100%}
+.mk-in.is-slide i{transition:left 240ms var(--ease),top 240ms var(--ease),transform 240ms var(--ease)}
+</style></head>
+<body>
+<main class="wb">
+<section class="wb-lede">
+<h1>Game Unbound: mark motion, round 3</h1>
+<p>Everything runs on <b>M24 Wide break</b>, beside the <b>W21</b> wordmark. <b>Decided:</b> H5 Lift out, break opens, for the header hover.</p>
+<p><b>New:</b> L3 and L4, two loaders that move the frame as well as the pieces. <b>Cut:</b> L1 and L2, which ignored the frame, and the other hovers.</p>
+</section>
+<section class="wb-sec">
+<header><h2>1 · Loading</h2><p>L5 is new: today's soft lap with L3's travelling break. L3 is the slide puzzle with the break travelling too; L4 is today's loader with the ball escaping through the break once a lap.</p></header>
+<div class="wb-grid" id="loaders"></div>
+</section>
+<section class="wb-sec">
+<header><h2>2 · Hover in the header</h2><p>The chosen hover. It plays while the pointer is on the brand and eases back when it leaves.</p></header>
+<div class="wb-grid" id="hovers" style="grid-template-columns:minmax(0,1fr)"></div>
+</section>
+</main>
+<script>
+const G='#4CC38A',O='#D66847',EASE='cubic-bezier(.16,1,.3,1)';
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FR='<b class="fl"></b><b class="fb"></b><b class="ft"></b><b class="fr"></b>',FS='<svg class="fsvg" viewBox="0 0 120 120" width="120" height="120" style="position:absolute;left:0;top:0;overflow:visible"><path d="M113.5 60V113.5H6.5V6.5H113.5Z" fill="none" stroke="#4CC38A" stroke-width="5" stroke-linejoin="miter" stroke-dasharray="0 12 297 119"/></svg>';
+const mk=(px,cls='',svg)=>`<span class="mk" style="width:${px}px;height:${px}px"><span class="mk-in ${cls}" style="transform:scale(${px/120})">${svg?FS:FR}<i class="tl"></i><i class="br"></i><i class="bl"></i><i class="tr"></i></span></span>`;
+const SQ={background:G,borderRadius:'0%',transform:'translate(0px,0px) scale(1)'};
+const BALL=(x,y,s=1)=>({background:O,borderRadius:'50%',transform:`translate(${x}px,${y}px) scale(${s})`});
+const BS=1.1875,OUTB=BALL(21,-21,BS);
+const REST={m:{transform:'rotate(0deg) scale(1)'},tl:SQ,br:SQ,bl:SQ,tr:OUTB,ft:{transform:'scale(1,1)'},fr:{transform:'scale(1,1)'}};
+const W21='<span class="wm wm-pre"><span class="g">Game</span><span class="u">Unbound</span></span>';
+const tag=o=>`<div class="wb-tag"><span class="wb-num">${o.id}</span><h3 class="wb-name">${o.name}</h3>${o.ctx?`<span class="wb-ctx">${o.ctx}</span>`:''}</div>`;
+const text=o=>`<p class="wb-claim">${o.claim}</p><p class="wb-cost"><b>Cost:</b> ${o.cost}</p>`;
+
+const LOADERS=[
+{id:'L5',name:'Soft lap, travelling break',svg:true,claim:'Today\'s loader and L3 combined. The ball travels clockwise round the four slots as it does today, each square it leaves fading to 35% and recovering. The break in the frame travels round with it, so at every corner the ball comes out through the opening. 1.2s a lap.',cost:'the ball is bigger out at the corners than today\'s, and the break never rests at the top right for long.',run:el=>{
+ const pose={tl:BALL(-21,-21,BS),tr:OUTB,br:BALL(21,21,BS),bl:BALL(-21,21,BS)},dl={tl:-.375,tr:-.125,br:-.875,bl:-.625};
+ for(const k in pose){const s={...SQ,opacity:1},b={...pose[k],opacity:1};el.querySelector('.'+k).animate([{...s,offset:0,easing:EASE},{...b,offset:.1,easing:EASE},{...b,offset:.2,easing:EASE},{...SQ,opacity:.35,offset:.45,easing:EASE},{...s,offset:.75},{...s,offset:1}],{duration:1200,iterations:Infinity,delay:dl[k]*1200});}
+ const F=[[0,0],[.1,0],[.25,-107],[.35,-107],[.5,-214],[.6,-214],[.75,-321],[.85,-321],[1,-428]];
+ el.querySelector('path').animate(F.map(([o,v])=>({offset:o,strokeDashoffset:v,easing:EASE})),{duration:1200,iterations:Infinity,delay:-30});}},
+{id:'L3',name:'Travelling break',svg:true,slide:true,claim:'The slide puzzle with the frame joining in. Each step, a square slides into the empty cell, and the break in the frame and the ball move round to the new empty corner together, counter-clockwise. The ball goes out through the break as it travels. 1.2s a lap.',cost:'three things move at once (a square, the break and the ball), so it is the busiest loader yet.',run:el=>{
+ const C=[[20,20],[68,20],[68,68],[20,68]],BC=[[15,15],[105,15],[105,105],[15,105]],MID={'1>0':[60,-4],'0>3':[-4,60],'3>2':[60,124],'2>1':[124,60]};
+ const [tl,tr,br,bl]=['tl','tr','br','bl'].map(k=>el.querySelector('.'+k));const path=el.querySelector('path');
+ tr.style.cssText='left:86px;top:-4px;width:38px;height:38px;transform:none;transition:none';
+ const at=[tl,null,br,bl];let gap=1,off=0;
+ setInterval(()=>{const from=(gap+3)%4;const s=at[from];s.style.left=C[gap][0]+'px';s.style.top=C[gap][1]+'px';at[gap]=s;at[from]=null;
+  const a=BC[gap],m=MID[gap+'>'+from],b=BC[from];
+  tr.animate([{left:a[0]-19+'px',top:a[1]-19+'px'},{left:m[0]-19+'px',top:m[1]-19+'px'},{left:b[0]-19+'px',top:b[1]-19+'px'}],{duration:260,easing:EASE,fill:'forwards'});
+  path.animate([{strokeDashoffset:off},{strokeDashoffset:off+107}],{duration:260,easing:EASE,fill:'forwards'});off=(off+107)%428;gap=from;},300);}},
+{id:'L4',name:'Escape each lap',claim:'Today\'s loader on M24, with the frame closed while the ball goes round inside it. When the ball reaches the top right, the frame opens as in H5 and the ball comes out through the break, then the frame closes again behind it. 1.2s a lap.',cost:'for most of the lap the frame is a closed box, which is not the mark at rest.',run:el=>{const pose={tl:BALL(10,-10),tr:OUTB,br:BALL(10,-10),bl:BALL(10,-10)},dl={tl:-.375,tr:-.125,br:-.875,bl:-.625};
+ for(const k in pose){const s={...SQ,opacity:1},b={...pose[k],opacity:1};el.querySelector('.'+k).animate([{...s,offset:0,easing:EASE},{...b,offset:.1,easing:EASE},{...b,offset:.2,easing:EASE},{...SQ,opacity:.35,offset:.45,easing:EASE},{...s,offset:.75},{...s,offset:1}],{duration:1200,iterations:Infinity,delay:dl[k]*1200});}
+ const Z=112/44,o={duration:1200,iterations:Infinity,delay:-.125*1200};
+ el.querySelector('.ft').animate([{transform:`scale(${Z},1)`,offset:0,easing:EASE},{transform:'scale(1,1)',offset:.1,easing:EASE},{transform:'scale(1,1)',offset:.22,easing:EASE},{transform:`scale(${Z},1)`,offset:.4},{transform:`scale(${Z},1)`,offset:1}],o);
+ el.querySelector('.fr').animate([{transform:`scale(1,${Z})`,offset:0,easing:EASE},{transform:'scale(1,1)',offset:.1,easing:EASE},{transform:'scale(1,1)',offset:.22,easing:EASE},{transform:`scale(1,${Z})`,offset:.4},{transform:`scale(1,${Z})`,offset:1}],o);}}
+];
+
+const HOVERS=[
+{id:'H5',name:'Lift out, break opens',ctx:'Decided',dur:440,claim:'H1, and the two open ends of the frame pull back as the ball leaves, so the gap it goes through gets wider. The box gives way rather than just being left behind.',cost:'the frame changes shape, so the mark no longer matches the favicon while hovered.',
+ kf:{tr:[OUTB,BALL(39,-39,BS)],tl:[SQ,{...SQ,transform:'translate(0px,6px) scale(1)'}],br:[SQ,{...SQ,transform:'translate(-6px,0px) scale(1)'}],ft:[REST.ft,{transform:'scale(.5,1)'}],fr:[REST.fr,{transform:'scale(1,.5)'}]}},
+];
+
+const KEYS=['m','tl','tr','br','bl','ft','fr'];
+const els=(root)=>{const r={m:root.querySelector('.mk')};KEYS.slice(1).forEach(k=>r[k]=root.querySelector('.'+k));return r;};
+function hoverer(h,root){const e=els(root);let live=[];
+ const clear=()=>{live.forEach(a=>a.cancel());live=[];};
+ const enter=()=>{if(RM)return;clear();for(const k in h.kf)live.push(e[k].animate(h.kf[k],{duration:h.dur,easing:h.ease||EASE,fill:'both',delay:(h.delay&&h.delay[k])||0}));};
+ const leave=()=>{if(RM)return;const back=[];for(const k in h.kf){const el=e[k];const cs=getComputedStyle(el);const now=['m','ft','fr'].includes(k)?{transform:cs.transform}:{transform:cs.transform,background:cs.backgroundColor,borderRadius:cs.borderRadius};back.push([el,[now,REST[k]]]);}clear();live=back.map(([el,f])=>el.animate(f,{duration:Math.round(h.dur*.75),easing:h.ease||EASE}));};
+ return{enter,leave};}
+
+document.getElementById('loaders').innerHTML=LOADERS.map(l=>`<article class="wb-cell" data-l="${l.id}">${tag(l)}<div class="wb-sizes">${[96,64,32].map(px=>`<div class="wb-size">${mk(px,l.slide?'is-slide':'',l.svg)}<small>${px}</small></div>`).join('')}</div>${text(l)}</article>`).join('');
+if(!RM)LOADERS.forEach(l=>document.querySelectorAll(`[data-l="${l.id}"] .mk`).forEach(m=>l.run(m)));
+
+document.getElementById('hovers').innerHTML=HOVERS.map(h=>`<article class="wb-cell${h.ctx==='Shipped'?' is-ctx':''}" data-h="${h.id}">${tag(h)}${text(h)}
+<div class="wb-hov"><div class="wb-pad" data-t>${mk(96)}</div><button type="button" class="mcp-btn mcp-btn-secondary" data-play>Play</button></div>
+<div class="wb-cap">Desktop bar · 1024</div><div class="wb-scroll"><div class="wb-frame"><div class="bar"><button type="button" class="bar-brand" data-t aria-label="Game Unbound, home">${mk(32)}${W21}</button><nav class="bar-nav"><span>Discover</span><span>How it works</span></nav><div class="bar-end"><span class="mcp-btn mcp-btn-secondary">Sign in</span><span class="mcp-btn mcp-btn-main">Start free</span></div></div></div></div></article>`).join('');
+HOVERS.forEach(h=>{const cell=document.querySelector(`[data-h="${h.id}"]`);const hs=[...cell.querySelectorAll('[data-t]')].map(t=>{const x=hoverer(h,t);if(matchMedia('(hover:hover)').matches){t.addEventListener('mouseenter',x.enter);t.addEventListener('mouseleave',x.leave);}return x;});
+ cell.querySelector('[data-play]').onclick=()=>{hs.forEach(x=>x.enter());setTimeout(()=>hs.forEach(x=>x.leave()),h.dur+700);};});
+</script>
+</body></html>

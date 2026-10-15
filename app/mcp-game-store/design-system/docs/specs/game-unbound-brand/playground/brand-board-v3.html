@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><base href="../../../../"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Whiteboard - Game Unbound brand v3</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&family=Geist:wght@500..700&family=Geist+Mono:wght@500..600&family=JetBrains+Mono:wght@700&display=swap">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
+p,h1,h2,h3{margin:0}
+a{color:var(--off-white)}a:hover{color:#fff}
+.wb{max-width:1180px;margin:0 auto;padding:32px 16px calc(64px + env(safe-area-inset-bottom));display:grid;gap:56px}
+.wb-lede{display:grid;gap:12px;max-width:72ch}.wb-lede h1{font:700 30px/1.1 var(--font-heading);letter-spacing:-.01em}.wb-lede p{color:var(--muted);text-wrap:pretty}.wb-lede b{color:var(--text);font-weight:600}
+.wb-rules{display:grid;gap:4px;margin:0;padding-left:20px;color:var(--muted);font-size:14px}
+.wb-sec{display:grid;gap:20px}
+.wb-sec>header{display:grid;gap:6px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.wb-sec>header h2{font:700 24px/1.15 var(--font-heading);letter-spacing:-.01em}
+.wb-sec>header p{color:var(--muted);font-size:14px;max-width:72ch;text-wrap:pretty}
+.wb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px}
+.wb-cell{background:var(--card);border:1px solid var(--line);padding:20px;display:grid;gap:16px;align-content:start}
+.wb-cell.is-ctx{background:transparent}
+.wb-tag{display:flex;gap:10px;align-items:baseline}
+.wb-num{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.wb-name{font:700 20px/1.2 var(--font-heading);letter-spacing:-.01em}
+.wb-ctx{font:600 12px/1.3 var(--font-text);color:var(--muted);margin-left:auto;letter-spacing:.04em;text-transform:uppercase}
+.wb-claim,.wb-cost{font-size:14px;line-height:1.45;color:var(--muted);text-wrap:pretty}.wb-claim b,.wb-cost b{color:var(--text);font-weight:600}
+.wb-sizes{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.wb-size{display:grid;gap:6px;justify-items:start}
+.wb-size small{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.wb-size svg{display:block}
+.wb-px{width:64px;height:64px;image-rendering:pixelated;display:block}
+.wb-px.is-light{background:#fff}
+.wb-tabs{display:grid;gap:6px}
+.wb-tab{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;width:220px;max-width:100%;font:400 13px/1 system-ui,sans-serif;border-radius:8px 8px 0 0}
+.wb-tab.is-dark{background:#35363a;color:#e8eaed}.wb-tab.is-light{background:#fff;color:#202124;box-shadow:0 0 0 1px #dadce0 inset}
+.wb-tab svg{flex:none;display:block}
+.wb-cws{display:flex;gap:8px;flex-wrap:wrap}
+.wb-cw{display:grid;place-items:center;width:56px;height:56px;padding:0;background:transparent;border:1.5px solid var(--line);cursor:pointer}
+.wb-cw[aria-pressed="true"]{border-color:var(--off-white)}
+.wb-cw svg{display:block}
+.wb-cwname{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.wb-glance{display:grid;gap:12px}
+.wb-glance-row{display:flex;gap:28px;align-items:center;flex-wrap:wrap;padding:20px;border:1px solid var(--line)}
+.wb-glance-row.is-light{background:#F4F2EE;border-color:#F4F2EE}
+.wb-glance-row figure{margin:0;display:grid;gap:8px;justify-items:center}
+.wb-glance-row figcaption{font:600 12px/1 var(--font-text);color:var(--muted)}.is-light figcaption{color:#5c5850}
+.wb-seg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.wb-seg span{font:600 14px/1.2 var(--font-text);color:var(--muted);margin-right:8px}
+.wb-seg button{min-height:44px;min-width:44px;padding:0 12px;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);font:600 15px/1 var(--font-text);cursor:pointer}
+.wb-seg button[aria-pressed="true"]{background:var(--off-white);border-color:var(--off-white);color:var(--page)}
+.wb-bars{display:grid;gap:12px}
+.wb-bar-cap{font:600 12px/1.3 var(--font-text);color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.wb-bar-cap .ok{color:var(--success)}.wb-bar-cap .bad{color:var(--error)}
+.wb-frame{border:1px solid var(--line);background:var(--page);overflow:hidden;max-width:100%}
+.wb-frame.is-desk{width:1024px}
+.wb-scroll{overflow-x:auto;max-width:100%}
+.bar{display:flex;align-items:center;gap:24px;min-height:64px;padding-inline:16px;border-bottom:1px solid var(--line)}
+.bar-brand{display:inline-flex;align-items:center;gap:12px;min-height:44px;flex:none;color:var(--text)}
+.bar-brand>svg{width:32px;height:32px;display:block;flex:none}
+.bar-nav{display:flex;gap:24px;font:600 16px/1.2 var(--font-text)}
+.bar-end{display:flex;align-items:center;gap:12px;margin-left:auto;flex:none}
+.bar-icon{width:48px;height:48px;display:inline-grid;place-items:center;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);padding:0}
+.bar .mcp-btn{min-height:44px}
+.wm{white-space:nowrap;font:700 22px/1 var(--font-heading);letter-spacing:-.015em;color:var(--text);display:inline-flex;align-items:baseline}
+.wm-mono .g{font:700 .62em/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.08em;color:var(--cover-green);margin-right:.4em;transform:translateY(-.08em)}
+.wm-pre{display:inline-grid;line-height:.82}.wm-pre .g{font:600 .42em/1 var(--font-text);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:.1em}.wm-pre .u{font-size:1.18em;letter-spacing:-.03em}
+.wm-tagd{align-items:center;gap:.28em}.wm-tagd .g{font:600 .5em/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.1em;background:var(--off-white);color:var(--page);padding:.42em .5em .38em}
+.wm-two{gap:.24em}.wm-two .g{font:400 1em/1 var(--font-text);letter-spacing:-.01em;color:var(--muted)}
+.wm-geist{font:700 22px/1 "Geist",system-ui,sans-serif;letter-spacing:-.045em;gap:.22em}.wm-geist .g{color:var(--muted);font-weight:500}
+.wm-wide{font:700 21px/1 "Archivo",system-ui,sans-serif;letter-spacing:-.01em;gap:.24em}.wm-wide .g{font-variation-settings:"wdth" 100}.wm-wide .u{font-variation-settings:"wdth" 125;letter-spacing:-.005em}
+.wm-label{display:inline-grid;line-height:.86;gap:.12em}.wm-label .g{font:500 .4em/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.32em;color:var(--muted);margin-left:.08em}.wm-label .u{font-size:1.16em;letter-spacing:-.03em}
+.wb-splash{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.wb-splash{grid-template-columns:minmax(0,1fr)}}
+.sp{background:var(--page);border:1px solid var(--line);display:grid;place-items:center;align-content:center;gap:28px;padding:32px;min-height:360px;overflow:hidden}
+.sp>svg{width:112px;height:112px;display:block}
+.sp .wm{font-size:52px;max-width:100%}
+.sp.is-phone{aspect-ratio:9/16;min-height:0;max-height:560px}
+.sp.is-phone>svg{width:80px;height:80px}.sp.is-phone .wm{font-size:30px}
+.sp.is-lock{display:flex;justify-content:center;align-items:center;gap:20px}.sp.is-lock>svg{width:64px;height:64px}.sp.is-lock .wm{font-size:42px}
+.wb-pair{display:grid;gap:12px}
+</style></head>
+<body>
+<main class="wb">
+<section class="wb-lede">
+<h1>Game Unbound: marks and wordmarks, round 3</h1>
+<p>Game Unbound is about what happens when an agent runs the game: play that isn't fixed in advance and goes wherever you take it. Round 3 tries to say that, in the system's whole set of shapes and cover colours rather than only today's green and orange.</p>
+<ul class="wb-rules"><li>Two or three bold masses, the way M0 is built. No thin points, no hairline gaps: each mark has to read from across a room and as a 16px favicon.</li><li>Each mark carries one idea about the name (released, opened, played by an agent), stated on its card.</li><li>Every mark has colourways from the cover palette. Tap one to use it across the whole board.</li><li>Wordmarks are type, not effects: crisp, set straight, and the split between "Game" and "Unbound" is where the idea lives.</li></ul>
+<p><b>Held fixed:</b> the dark page, the 64px top bar and its 32px mark slot. <b>Cut from round 2:</b> M1 to M8 and W2, W3, W5 and W7. W4 and W6 stay as they were, so the new ones can be judged against them.</p>
+</section>
+
+<section class="wb-sec">
+<header><h2>At a glance</h2><p>Every mark in its current colourway at 24 and 48px, on dark and on light. This is the distance test.</p></header>
+<div class="wb-glance"><div class="wb-glance-row" id="glance-d"></div><div class="wb-glance-row is-light" id="glance-l"></div></div>
+</section>
+
+<section class="wb-sec">
+<header><h2>1 · Marks</h2><p>M0 is today's mark, kept as the bar to clear. The 16px squares are the real favicon raster blown up 4×.</p></header>
+<div class="wb-grid" id="marks"></div>
+</section>
+
+<section class="wb-sec">
+<header><h2>2 · Wordmarks</h2><p>W8 to W12 build on what worked in W4 and W6: "Unbound" is the word that matters, and "Game" is set apart from it. W10 and W11 try new faces; the rest stay in the system's two. Each sits in the desktop bar at 1024 and the signed-out phone bar at 360 and 320.</p></header>
+<div class="wb-seg" id="markpick"><span>Mark in the bars</span></div>
+<div class="wb-grid" id="wms" style="grid-template-columns:minmax(0,1fr)"></div>
+</section>
+
+<section class="wb-sec">
+<header><h2>3 · Splash</h2><p>The mark picked above with any wordmark, at splash size, on a phone and as a horizontal lockup.</p></header>
+<div class="wb-seg" id="wmpick"><span>Wordmark</span></div>
+<div class="wb-splash"><div class="wb-pair"><div class="sp" id="sp-wide"></div><div class="sp is-lock" id="sp-lock"></div></div><div class="sp is-phone" id="sp-phone"></div></div>
+</section>
+</main>
+<script>
+const C={G:'#4CC38A',O:'#D66847',A:'#E5A63B',T:'#328A88',L:'#A390B2',K:'#F2EBE0',I:'#1D1B3A',W:'#421A28',F:'#163328'};
+const NM={G:'green',O:'orange',A:'amber',T:'teal',L:'lilac',K:'cream',I:'indigo',W:'wine',F:'forest'};
+const ring=(cx,cy,R,r,a0,a1)=>{const p=(rad,a)=>[(cx+rad*Math.cos(a*Math.PI/180)).toFixed(2),(cy+rad*Math.sin(a*Math.PI/180)).toFixed(2)];const big=(a1-a0)>180?1:0;const[o0,o1,i1,i0]=[p(R,a0),p(R,a1),p(r,a1),p(r,a0)];return `M${o0}A${R} ${R} 0 ${big} 1 ${o1}L${i1}A${r} ${r} 0 ${big} 0 ${i0}Z`;};
+const MARKS=[
+{id:'M0',name:'Missing piece',ctx:true,cws:['GO','TA','KO','LA'],draw:(a,b)=>`<rect x="20" y="20" width="32" height="32" fill="${a}"/><rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="68" y="68" width="32" height="32" fill="${a}"/><circle cx="94" cy="26" r="16" fill="${b}"/>`,
+ claim:'Today\'s mark, kept as the standard: four masses, nothing thin, clear at any size.',cost:'<b>Cost:</b> it was made for the name Missing Piece. It says "complete the set", which is closer to bound than unbound.',motion:'Ball drops in, lifts out.'},
+{id:'M9',name:'Open ring',cws:['KO','GO','LA','KOW'],draw:(a,b)=>`<path fill="${a}" d="${ring(60,60,56,32,40,320)}"/><circle cx="104" cy="60" r="18" fill="${b}"/>`,
+ claim:'A ring is the plainest picture of being bound. This one is broken open, and the ball sits in the gap on its way out. The shape also reads as a G.',cost:'<b>Cost:</b> a broken ring is a known shape (power icons, some loading marks); the G only works if people see it.',motion:'The ball rolls out through the gap and the ring turns after it. A ready-made loader.'},
+{id:'M10',name:'Swing',cws:['TA','GO','KO','LKI'],draw:(a,b)=>`<rect x="0" y="0" width="54" height="54" fill="${a}"/><rect x="0" y="66" width="54" height="54" fill="${a}"/><rect x="66" y="66" width="54" height="54" fill="${a}"/><path fill="${b}" d="M66 54V0A54 54 0 0 1 120 54Z"/>`,
+ claim:'Today\'s grid, with one cell that has stopped being a square. It hinges on the centre of the grid and swings free. It keeps M0\'s build and gives it the new name.',cost:'<b>Cost:</b> the idea only lands when it moves; static, it is a grid with a rounded corner.',motion:'The quarter swings open on its hinge, a quarter turn out, and back.'},
+{id:'M11',name:'Past the edge',cws:['TA','GK','OK','LA'],draw:(a,b)=>`<rect x="0" y="12" width="96" height="96" fill="${a}"/><path fill="${b}" d="M30 18V102L120 60Z"/>`,
+ claim:'A play button that doesn\'t fit its tile: the tip runs out past the edge. Play that carries on past where it was meant to stop.',cost:'<b>Cost:</b> a play triangle reads as video first; it needs the name beside it to read as games.',motion:'The triangle slides out of the tile, one step at a time.'},
+{id:'M12',name:'Nudge',cws:['KO','LA','GO','KAF'],draw:(a,b)=>`<circle cx="30" cy="30" r="30" fill="${b}"/><path fill="${a}" d="M48 48L120 78L86 86L78 120Z"/>`,
+ claim:'A pointer touching the ball: something else is making the move. The most direct picture of an agent playing.',cost:'<b>Cost:</b> a cursor says "computer" more than "imagination"; it ties the brand to how the product works today.',motion:'The pointer taps, the ball rolls off, the pointer follows it.'},
+{id:'M13',name:'Prompt',cws:['LG','KO','AT','GKI'],draw:(a,b)=>`<path fill="${a}" d="M0 14H32L78 60L32 106H0L46 60Z"/><rect x="84" y="84" width="36" height="22" fill="${b}"/>`,
+ claim:'A command prompt: the chevron and the cursor. You say what happens next, and the game does it. Pairs with W4 and W12.',cost:'<b>Cost:</b> reads as a developer tool to someone who has never seen a terminal.',motion:'The cursor blinks while the agent thinks. A loader with no extra drawing.'},
+{id:'M14',name:'Spark',cws:['A','K','G','LLW'],draw:(a)=>`<path fill="${a}" d="M42 0H78A42 42 0 0 0 120 42V78A42 42 0 0 0 78 120H42A42 42 0 0 0 0 78V42A42 42 0 0 0 42 0Z"/>`,
+ claim:'One square with its corners taken out by four quarter circles, which leaves a spark of an idea. One mass, flat-ended points, nothing to lose at 16px.',cost:'<b>Cost:</b> four-point sparks are the stock symbol for AI. It would be the easy read, and the least ownable mark here.',motion:'It turns a quarter and flares. A spinner made from one piece.'}
+];
+const WMS=[
+{id:'W1',name:'Plain',ctx:'Control',html:'<span class="wm">Game Unbound</span>',claim:'The name set straight in the heading face.',cost:'<b>Cost:</b> carries no idea, so the mark does all the work.'},
+{id:'W4',name:'Code and word',ctx:'Round 2',html:'<span class="wm wm-mono"><span class="g">GAME</span>Unbound</span>',claim:'"GAME" in a monospace, fixed to its grid; "Unbound" in the free heading face.',cost:'<b>Cost:</b> a third typeface; the green ties it to the old palette.'},
+{id:'W6',name:'Small game',ctx:'Round 2',html:'<span class="wm wm-pre"><span class="g">Game</span><span class="u">Unbound</span></span>',claim:'"Unbound" is the name; "game" sits above it as a small label.',cost:'<b>Cost:</b> people will start calling it "Unbound".'},
+{id:'W8',name:'Tagged',html:'<span class="wm wm-tagd"><span class="g">GAME</span>Unbound</span>',claim:'"Game" is held in a square tag, the same shape as the system\'s tags and buttons. "Unbound" stands outside it. Bound and unbound, side by side.',cost:'<b>Cost:</b> the tag is a second solid shape in the bar next to the mark; on a phone the two compete.'},
+{id:'W9',name:'Two voices',html:'<span class="wm wm-two"><span class="g">Game</span>Unbound</span>',claim:'Both of the system\'s faces at one size: "Game" in the light text face, "Unbound" in the heading face. The split is quiet, and nothing new is added.',cost:'<b>Cost:</b> the most restrained here; at a glance it can read as two styles by accident.'},
+{id:'W10',name:'Geist',html:'<span class="wm wm-geist"><span class="g">Game</span>Unbound</span>',claim:'A new face: Geist, a tight engineered sans from the current wave of AI and developer tools. "Game" drops back in weight and colour.',cost:'<b>Cost:</b> a third typeface, and a very common one in that world; it trades Bricolage\'s character for crispness.'},
+{id:'W11',name:'Wider',html:'<span class="wm wm-wide"><span class="g">Game</span><span class="u">Unbound</span></span>',claim:'A new face: Archivo, whose letters can widen. "Game" is set at normal width, "Unbound" at full width: the word takes more room because it has it.',cost:'<b>Cost:</b> a third typeface and the widest line here; the difference in width is subtle until it is large.',motion:'"Unbound" opens from normal width to wide on load.'},
+{id:'W12',name:'Label and name',html:'<span class="wm wm-label"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'W4 and W6 together: "GAME" as a small spaced monospace label over "Unbound" in the heading face. The shortest line in the bar.',cost:'<b>Cost:</b> adds Geist Mono; like W6, "Unbound" becomes what people call it.'}
+];
+const KEY='pg_game-unbound-brand_v3';
+const st=Object.assign({mark:'M9',wm:'W12',cw:{}},JSON.parse(localStorage.getItem(KEY)||'{}'));
+const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
+const VB={};
+const meas=document.createElementNS('http://www.w3.org/2000/svg','svg');meas.setAttribute('style','position:absolute;left:-9999px;width:120px;height:120px');document.body.appendChild(meas);
+MARKS.forEach(m=>{meas.innerHTML=`<g>${m.draw('#000','#000')}</g>`;const b=meas.firstChild.getBBox();VB[m.id]={cx:b.x+b.width/2,cy:b.y+b.height/2,s:Math.max(b.width,b.height)};});
+meas.remove();
+const cwOf=(m,i)=>{const k=m.cws[i??(st.cw[m.id]||0)];return{a:C[k[0]],b:C[k[1]]||C[k[0]],g:k.length===3?C[k[2]]:null,k};};
+const cwName=k=>{const a=[...k];const s=[NM[a[0]]];if(a[1]&&a[1]!==a[0])s.push(NM[a[1]]);return s.join(' and ')+(a[2]?' on '+NM[a[2]]:'');};
+const inner=(m,cw)=>{const v=VB[m.id];const s=v.s*(cw.g?1.36:1.04);const x=v.cx-s/2,y=v.cy-s/2;return{vb:`${x.toFixed(2)} ${y.toFixed(2)} ${s.toFixed(2)} ${s.toFixed(2)}`,body:(cw.g?`<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${cw.g}"/>`:'')+m.draw(cw.a,cw.b)};};
+const svg=(m,px,i)=>{const r=inner(m,cwOf(m,i));return `<svg viewBox="${r.vb}" width="${px}" height="${px}" aria-hidden="true">${r.body}</svg>`;};
+const mark=()=>MARKS.find(m=>m.id===st.mark);
+const tag=(o)=>`<div class="wb-tag"><span class="wb-num">${o.id}</span><h3 class="wb-name">${o.name}</h3>${o.ctx?`<span class="wb-ctx">${o.ctx===true?'Today':o.ctx}</span>`:''}</div>`;
+function raster(c,m){const r=inner(m,cwOf(m));const img=new Image();img.onload=()=>{const x=c.getContext('2d');x.clearRect(0,0,16,16);if(!c.classList.contains('is-light')){x.fillStyle='#1B1917';x.fillRect(0,0,16,16);}x.drawImage(img,0,0,16,16);};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${r.vb}" width="16" height="16">${r.body}</svg>`);}
+function markCard(m){const cw=cwOf(m);return `${tag(m)}
+<div class="wb-sizes"><div class="wb-size">${svg(m,96)}<small>96</small></div><div class="wb-size">${svg(m,32)}<small>32</small></div><div class="wb-size"><canvas class="wb-px" width="16" height="16"></canvas><small>16 · dark</small></div><div class="wb-size"><canvas class="wb-px is-light" width="16" height="16"></canvas><small>16 · light</small></div></div>
+<div class="wb-tabs"><div class="wb-tab is-dark">${svg(m,16)}<span>Game Unbound</span></div><div class="wb-tab is-light">${svg(m,16)}<span>Game Unbound</span></div></div>
+<div class="wb-cws">${m.cws.map((k,i)=>`<button type="button" class="wb-cw" data-i="${i}" aria-pressed="${(st.cw[m.id]||0)===i}" title="${cwName(k)}">${svg(m,36,i)}</button>`).join('')}</div><span class="wb-cwname">Colourway: ${cwName(cw.k)}</span>
+<p class="wb-claim">${m.claim}</p><p class="wb-cost">${m.cost}</p><p class="wb-cost"><b>Motion:</b> ${m.motion}</p>`;}
+function renderMarks(){const host=document.getElementById('marks');if(!host.children.length)host.innerHTML=MARKS.map(m=>`<article class="wb-cell${m.ctx?' is-ctx':''}" data-m="${m.id}"></article>`).join('');
+ host.querySelectorAll('[data-m]').forEach(el=>{const m=MARKS.find(x=>x.id===el.dataset.m);el.innerHTML=markCard(m);el.querySelectorAll('canvas').forEach(c=>raster(c,m));el.querySelectorAll('.wb-cw').forEach(b=>b.onclick=()=>{st.cw[m.id]=+b.dataset.i;save();renderAll();});});
+ const g=MARKS.map(m=>`<figure>${svg(m,48)}<figcaption>${m.id}</figcaption></figure><figure>${svg(m,24)}<figcaption>&nbsp;</figcaption></figure>`).join('');
+ document.getElementById('glance-d').innerHTML=g;document.getElementById('glance-l').innerHTML=g;}
+const menu='<span class="bar-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>';
+const desk=(w)=>`<div class="bar"><span class="bar-brand">${svg(mark(),32)}${w.html}</span><nav class="bar-nav"><span>Discover</span><span>How it works</span></nav><div class="bar-end"><span class="mcp-btn mcp-btn-secondary">Sign in</span><span class="mcp-btn mcp-btn-main">Start free</span></div></div>`;
+const phone=(w)=>`<div class="bar"><span class="bar-brand">${svg(mark(),32)}${w.html}</span><div class="bar-end">${menu}</div></div>`;
+function renderWms(){
+ document.getElementById('wms').innerHTML=WMS.map(w=>`<article class="wb-cell${w.ctx?' is-ctx':''}">${tag(w)}<p class="wb-claim">${w.claim}</p><p class="wb-cost">${w.cost}</p>${w.motion?`<p class="wb-cost"><b>Motion:</b> ${w.motion}</p>`:''}
+ <div class="wb-bars"><div class="wb-bar-cap">Desktop · 1024</div><div class="wb-scroll"><div class="wb-frame is-desk">${desk(w)}</div></div>
+ <div style="display:flex;gap:16px;flex-wrap:wrap">${[360,320].map(px=>`<div class="wb-bars"><div class="wb-bar-cap"><span>Phone · ${px}</span><span class="fit"></span></div><div class="wb-frame" style="width:${px}px" data-phone>${phone(w)}</div></div>`).join('')}</div></div></article>`).join('');
+ document.querySelectorAll('[data-phone]').forEach(f=>{const b=f.querySelector('.bar-brand');const left=f.getBoundingClientRect().right-16-48-24-b.getBoundingClientRect().right;const cap=f.previousElementSibling.querySelector('.fit');cap.textContent=left<16?`${Math.round(left)}px left, too tight`:`${Math.round(left)}px to spare`;cap.className='fit '+(left<16?'bad':'ok');});
+}
+function renderSplash(){const m=mark(),w=WMS.find(x=>x.id===st.wm);
+ document.getElementById('sp-wide').innerHTML=svg(m,112)+w.html;document.getElementById('sp-phone').innerHTML=svg(m,80)+w.html;document.getElementById('sp-lock').innerHTML=svg(m,64)+w.html;}
+function seg(id,list,k){const el=document.getElementById(id);list.forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.id;b.title=o.name;b.onclick=()=>{st[k]=o.id;save();renderAll();};el.appendChild(b);});}
+function sync(){document.querySelectorAll('#markpick button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===st.mark));document.querySelectorAll('#wmpick button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===st.wm));}
+function renderAll(){sync();renderMarks();renderWms();renderSplash();}
+seg('markpick',MARKS,'mark');seg('wmpick',WMS,'wm');
+renderAll();
+document.fonts.ready.then(renderWms);
+</script>
+</body></html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><base href="../../../../"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Whiteboard - Game Unbound brand v5</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500..600&display=swap">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
+p,h1,h2,h3{margin:0}
+a{color:var(--off-white)}a:hover{color:#fff}
+.wb{max-width:1180px;margin:0 auto;padding:32px 16px calc(64px + env(safe-area-inset-bottom));display:grid;gap:56px}
+.wb-lede{display:grid;gap:12px;max-width:72ch}.wb-lede h1{font:700 30px/1.1 var(--font-heading);letter-spacing:-.01em}.wb-lede p{color:var(--muted);text-wrap:pretty}.wb-lede b{color:var(--text);font-weight:600}
+.wb-rules{display:grid;gap:4px;margin:0;padding-left:20px;color:var(--muted);font-size:14px}
+.wb-sec{display:grid;gap:20px}
+.wb-sec>header{display:grid;gap:6px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.wb-sec>header h2{font:700 24px/1.15 var(--font-heading);letter-spacing:-.01em}
+.wb-sec>header p{color:var(--muted);font-size:14px;max-width:72ch;text-wrap:pretty}
+.wb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px}
+.wb-cell{background:var(--card);border:1px solid var(--line);padding:20px;display:grid;gap:16px;align-content:start}
+.wb-cell.is-ctx{background:transparent}
+.wb-tag{display:flex;gap:10px;align-items:baseline}
+.wb-num{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white)}
+.wb-name{font:700 20px/1.2 var(--font-heading);letter-spacing:-.01em}
+.wb-ctx{font:600 12px/1.3 var(--font-text);color:var(--muted);margin-left:auto;letter-spacing:.04em;text-transform:uppercase}
+.wb-claim,.wb-cost{font-size:14px;line-height:1.45;color:var(--muted);text-wrap:pretty}.wb-claim b,.wb-cost b{color:var(--text);font-weight:600}
+.wb-sizes{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.wb-size{display:grid;gap:6px;justify-items:start}
+.wb-size small{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.wb-size svg{display:block}
+.wb-px{width:64px;height:64px;image-rendering:pixelated;display:block}
+.wb-px.is-light{background:#fff}
+.wb-tabs{display:grid;gap:6px}
+.wb-tab{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;width:220px;max-width:100%;font:400 13px/1 system-ui,sans-serif;border-radius:8px 8px 0 0}
+.wb-tab.is-dark{background:#35363a;color:#e8eaed}.wb-tab.is-light{background:#fff;color:#202124;box-shadow:0 0 0 1px #dadce0 inset}
+.wb-tab svg{flex:none;display:block}
+.wb-cws{display:flex;gap:8px;flex-wrap:wrap}
+.wb-cw{display:grid;place-items:center;width:56px;height:56px;padding:0;background:transparent;border:1.5px solid var(--line);cursor:pointer}
+.wb-cw[aria-pressed="true"]{border-color:var(--off-white)}
+.wb-cw svg{display:block}
+.wb-cwname{font:600 12px/1.3 var(--font-text);color:var(--muted)}
+.wb-glance{display:grid;gap:12px}
+.wb-glance-row{display:flex;gap:28px;align-items:center;flex-wrap:wrap;padding:20px;border:1px solid var(--line)}
+.wb-glance-row.is-light{background:#F4F2EE;border-color:#F4F2EE}
+.wb-glance-row figure{margin:0;display:grid;gap:8px;justify-items:center}
+.wb-glance-row figcaption{font:600 12px/1 var(--font-text);color:var(--muted)}.is-light figcaption{color:#5c5850}
+.wb-seg{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.wb-seg span{font:600 14px/1.2 var(--font-text);color:var(--muted);margin-right:8px}
+.wb-seg button{min-height:44px;min-width:44px;padding:0 12px;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);font:600 15px/1 var(--font-text);cursor:pointer}
+.wb-seg button[aria-pressed="true"]{background:var(--off-white);border-color:var(--off-white);color:var(--page)}
+.wb-bars{display:grid;gap:12px}
+.wb-bar-cap{font:600 12px/1.3 var(--font-text);color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.wb-bar-cap .ok{color:var(--success)}.wb-bar-cap .bad{color:var(--error)}
+.wb-frame{border:1px solid var(--line);background:var(--page);overflow:hidden;max-width:100%}
+.wb-frame.is-desk{width:1024px}
+.wb-scroll{overflow-x:auto;max-width:100%}
+.bar{display:flex;align-items:center;gap:24px;min-height:64px;padding-inline:16px;border-bottom:1px solid var(--line)}
+.bar-brand{display:inline-flex;align-items:center;gap:12px;min-height:44px;flex:none;color:var(--text)}
+.bar-brand>svg{width:32px;height:32px;display:block;flex:none}
+.bar-nav{display:flex;gap:24px;font:600 16px/1.2 var(--font-text)}
+.bar-end{display:flex;align-items:center;gap:12px;margin-left:auto;flex:none}
+.bar-icon{width:48px;height:48px;display:inline-grid;place-items:center;background:transparent;border:1.5px solid var(--control-edge);color:var(--text);padding:0}
+.bar .mcp-btn{min-height:44px}
+.wm{white-space:nowrap;font:700 22px/1 var(--font-heading);letter-spacing:-.015em;color:var(--text);display:inline-flex;align-items:baseline}
+.wm-pre{display:inline-grid;line-height:.82}.wm-pre .g{font:600 .42em/1 var(--font-text);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:.1em}.wm-pre .u{font-size:1.18em;letter-spacing:-.03em}
+.wm-pre.is-g .g{color:#4CC38A}.wm-pre.is-w .g{color:var(--text)}
+.wm-two.is-one .g{color:var(--text)}
+.wm-two{gap:.24em}.wm-two .g{font:400 1em/1 var(--font-text);letter-spacing:-.01em;color:var(--muted)}
+.wm-label{display:inline-grid;line-height:.86;gap:.12em}.wm-label .g{font:500 .4em/1 "Geist Mono",ui-monospace,monospace;letter-spacing:.32em;color:var(--muted);margin-left:.08em}.wm-label .u{font-size:1.16em;letter-spacing:-.03em}.wm-label.is-sys .g{font:600 .4em/1 var(--font-text);letter-spacing:.3em}.wm-label.is-g .g{color:#4CC38A}.wm-label.is-span .g{display:flex;justify-content:space-between;letter-spacing:0;margin:0 .03em 0 .05em}.wm-label.is-big{gap:.16em}.wm-label.is-big .g{font:700 .46em/1 var(--font-text);letter-spacing:.26em;color:var(--text)}.wm-label.is-air{gap:.3em;line-height:.8}
+</style></head>
+<body>
+<main class="wb">
+<section class="wb-lede">
+<h1>Game Unbound: marks and wordmarks, round 5</h1>
+<p>Round 5 stays with <b>M0</b>. Each new mark keeps its three squares and ball and makes one move so the set looks like it is growing past its edges: the pieces get bigger, spread apart, break their frame, or the ball leaves a trail.</p>
+<ul class="wb-rules"><li>M19 to M22 are new. All are filled shapes.</li><li>Labels that were orange are now green (#4CC38A, about 8:1 on the page). Orange stays in the marks only.</li><li>The bars show M0 by default. Use the picker to try another mark.</li></ul>
+<p><b>Cut:</b> M10, M15, M16, W4, W8, W10, W13, W15, W16, W17. <b>Kept:</b> every colourway.</p>
+</section>
+<section class="wb-sec">
+<header><h2>At a glance</h2><p>Every mark in its current colourway at 24 and 48px, on dark and on light. This is the distance test.</p></header>
+<div class="wb-glance"><div class="wb-glance-row" id="glance-d"></div><div class="wb-glance-row is-light" id="glance-l"></div></div>
+</section>
+
+<section class="wb-sec">
+<header><h2>1 · Marks</h2><p>M0 is today's mark, kept as the bar to clear. The 16px squares are the real favicon raster blown up 4×.</p></header>
+<div class="wb-grid" id="marks"></div>
+</section>
+
+<section class="wb-sec">
+<header><h2>2 · Wordmarks</h2><p>Grouped by idea: plain, small game, two voices, label. W21 to W25 are new; W14 and W20 are now green. Each sits in the desktop bar at 1024 and the signed-out phone bar at 360 and 320.</p></header>
+<div class="wb-seg" id="markpick"><span>Mark in the bars</span></div>
+<div class="wb-grid" id="wms" style="grid-template-columns:minmax(0,1fr)"></div>
+</section>
+
+</main>
+<script>
+const C={G:'#4CC38A',O:'#D66847',A:'#E5A63B',T:'#328A88',L:'#A390B2',K:'#F2EBE0',I:'#1D1B3A',W:'#421A28',F:'#163328'};
+const NM={G:'green',O:'orange',A:'amber',T:'teal',L:'lilac',K:'cream',I:'indigo',W:'wine',F:'forest'};
+const ring=(cx,cy,R,r,a0,a1)=>{const p=(rad,a)=>[(cx+rad*Math.cos(a*Math.PI/180)).toFixed(2),(cy+rad*Math.sin(a*Math.PI/180)).toFixed(2)];const big=(a1-a0)>180?1:0;const[o0,o1,i1,i0]=[p(R,a0),p(R,a1),p(r,a1),p(r,a0)];return `M${o0}A${R} ${R} 0 ${big} 1 ${o1}L${i1}A${r} ${r} 0 ${big} 0 ${i0}Z`;};
+const mix=(x,y,p)=>{const n=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));const A=n(x),B=n(y);return '#'+A.map((v,i)=>Math.round(v*p+B[i]*(1-p)).toString(16).padStart(2,'0')).join('');};
+const MARKS=[
+{id:'M0',name:'Missing piece',ctx:true,cws:['GO','TA','KO','LA'],draw:(a,b)=>`<rect x="20" y="20" width="32" height="32" fill="${a}"/><rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="68" y="68" width="32" height="32" fill="${a}"/><circle cx="94" cy="26" r="16" fill="${b}"/>`,
+ claim:'Today\'s mark. The ball is already nudged up and out of its cell, which is where its sense of being unbound comes from.',cost:'<b>Cost:</b> made for the name Missing Piece; the idea is "complete the set".',motion:'Ball drops in, lifts out.'},
+{id:'M19',name:'Growing',cws:['GO','TA','KO','LA'],draw:(a,b)=>`<rect x="20" y="76" width="24" height="24" fill="${a}"/><rect x="20" y="28" width="32" height="32" fill="${a}"/><rect x="60" y="68" width="32" height="32" fill="${a}"/><circle cx="96" cy="28" r="22" fill="${b}"/>`,
+ claim:'Each piece is bigger than the one before it, from the small square at the bottom left to the ball. The set gets larger as it goes, and the ball ends up past where the grid would stop.',cost:'<b>Cost:</b> the grid is no longer even, so the "missing piece" reading is weaker.',motion:'The pieces grow in turn, ending with the ball.'},
+{id:'M20',name:'Drifting apart',cws:['GO','TA','KO','LA'],draw:(a,b)=>`<rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="20" y="12" width="32" height="32" fill="${a}"/><rect x="76" y="68" width="32" height="32" fill="${a}"/><circle cx="106" cy="14" r="16" fill="${b}"/>`,
+ claim:'M0 with the gaps widening away from the bottom-left square. The set is opening out, and the ball has gone furthest.',cost:'<b>Cost:</b> at 16px the wider gaps can read as a loose, badly spaced M0.',motion:'The pieces ease apart from the corner.'},
+{id:'M21',name:'Broken corner',cws:['GO','TA','KO','LA'],draw:(a,b)=>`<path fill="${a}" d="M4 4H80V11H11V109H109V40H116V116H4Z"/><rect x="20" y="20" width="32" height="32" fill="${a}"/><rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="68" y="68" width="32" height="32" fill="${a}"/><circle cx="106" cy="14" r="16" fill="${b}"/>`,
+ claim:'M0 inside a frame that has lost its top-right corner. The ball is in the gap, on its way out. The frame is the bound; the corner is where it gave.',cost:'<b>Cost:</b> the frame is thin, so at 16px it can merge into a plain square.',motion:'The ball pushes the corner open and leaves.'},
+{id:'M22',name:'Trail',cws:['GO','TA','KO','LA'],draw:(a,b)=>`<rect x="20" y="20" width="32" height="32" fill="${a}"/><rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="68" y="68" width="32" height="32" fill="${a}"/><circle cx="74" cy="46" r="4" fill="${b}"/><circle cx="86" cy="34" r="8" fill="${b}"/><circle cx="106" cy="14" r="16" fill="${b}"/>`,
+ claim:'The ball leaves its cell and gets bigger as it goes: two smaller balls mark the way out. It reads as moving and growing at once.',cost:'<b>Cost:</b> the two small balls disappear at 16px, leaving M0 with the ball further out.',motion:'The ball grows as it rises out of its cell.'},
+{id:'M17',name:'Play piece',cws:['GO','TA','KO','LKI'],draw:(a,b)=>`<rect x="20" y="20" width="32" height="32" fill="${a}"/><rect x="20" y="68" width="32" height="32" fill="${a}"/><rect x="68" y="68" width="32" height="32" fill="${a}"/><path fill="${b}" d="M68 8V56L116 32Z"/>`,
+ claim:'M0 and M11 together. The fourth piece is a play triangle, and it overruns the grid top and right. Gaming and going further in one shape.',cost:'<b>Cost:</b> a triangle among squares has less weight than the ball; at 16px it is the smallest piece here.',motion:'The triangle slides out of its cell, past the edge.'},
+{id:'M11',name:'Past the edge',ctx:'Round 3',cws:['TA','GK','OK','LA'],draw:(a,b)=>`<rect x="0" y="12" width="96" height="96" fill="${a}"/><path fill="${b}" d="M30 18V102L120 60Z"/>`,
+ claim:'A play button that doesn\'t fit its tile: the tip runs out past the edge.',cost:'<b>Cost:</b> a play triangle reads as video first; it needs the name beside it.',motion:'The triangle slides out of the tile.'},
+{id:'M18',name:'Too big for the tile',cws:['TA','GK','OK','AKI'],draw:(a,b)=>`<rect x="0" y="16" width="88" height="88" fill="${a}"/><path fill="${b}" d="M28 0V120L120 60Z"/>`,
+ claim:'M11 pushed further: the triangle overruns the tile at the top, the bottom and the right. Nothing holds it.',cost:'<b>Cost:</b> the tile shows only as a strip and two corners; the triangle carries the mark, so it reads more strongly as "play".',motion:'The triangle grows out of the tile from its base.'}
+];
+const WMS=[
+{id:'W1',name:'Plain',ctx:'Control',html:'<span class="wm">Game Unbound</span>',claim:'The name set straight in the heading face.',cost:'<b>Cost:</b> carries no idea, so the mark does all the work.'},
+{id:'W6',name:'Small game',ctx:'Round 2',html:'<span class="wm wm-pre"><span class="g">Game</span><span class="u">Unbound</span></span>',claim:'"Unbound" is the name; "game" sits above it as a small label.',cost:'<b>Cost:</b> people will start calling it "Unbound".'},
+{id:'W14',name:'Small game, green',html:'<span class="wm wm-pre is-g"><span class="g">Game</span><span class="u">Unbound</span></span>',claim:'W6 with the label in green, the mark\'s piece colour in the M0 colourway.',cost:'<b>Cost:</b> on another colourway the green no longer ties to the mark.'},
+{id:'W21',name:'Small game, white',html:'<span class="wm wm-pre is-w"><span class="g">Game</span><span class="u">Unbound</span></span>',claim:'W6 with the label in full text colour. The size difference carries the split on its own.',cost:'<b>Cost:</b> the small label is brighter, so it competes a little more with "Unbound".'},
+{id:'W9',name:'Two voices',ctx:'Round 3',html:'<span class="wm wm-two"><span class="g">Game</span>Unbound</span>',claim:'"Game" in the text face, light and muted; "Unbound" in the heading face.',cost:'<b>Cost:</b> at a glance it can read as two styles by accident.'},
+{id:'W18',name:'Two voices, one tone',html:'<span class="wm wm-two is-one"><span class="g">Game</span>Unbound</span>',claim:'W9 with both words in full text colour. The split is in the faces alone.',cost:'<b>Cost:</b> "Unbound" is stressed less.'},
+{id:'W12',name:'Label and name',ctx:'Round 3',html:'<span class="wm wm-label"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'"GAME" as a small spaced monospace label over "Unbound".',cost:'<b>Cost:</b> adds Geist Mono.'},
+{id:'W19',name:'Label, system face',html:'<span class="wm wm-label is-sys"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'W12 with the label in Hanken 600, the face the system uses for small labels. No new font.',cost:'<b>Cost:</b> loses the monospace\'s hint of code and agents.'},
+{id:'W20',name:'Label, green',html:'<span class="wm wm-label is-g"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'W12 with the label in green.',cost:'<b>Cost:</b> adds Geist Mono.'},
+{id:'W22',name:'Label spans the word',html:'<span class="wm wm-label is-span is-sys"><span class="g"><span>G</span><span>A</span><span>M</span><span>E</span></span><span class="u">Unbound</span></span>',claim:'"GAME" spaced so it runs exactly the width of "Unbound", in Hanken 600. The two lines make one block.',cost:'<b>Cost:</b> very wide letter spacing; it can read as four separate letters.'},
+{id:'W23',name:'Label spans, green',html:'<span class="wm wm-label is-span is-sys is-g"><span class="g"><span>G</span><span>A</span><span>M</span><span>E</span></span><span class="u">Unbound</span></span>',claim:'W22 with the label in green.',cost:'<b>Cost:</b> as W22.'},
+{id:'W24',name:'Label, larger',html:'<span class="wm wm-label is-big"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'A larger, bolder label in full text colour, Hanken 700. "Game" is easier to read, and the block is less top-light.',cost:'<b>Cost:</b> the block is taller; check it against the 44px brand height.'},
+{id:'W25',name:'Label, more air',html:'<span class="wm wm-label is-sys is-air"><span class="g">GAME</span><span class="u">Unbound</span></span>',claim:'W19 with more space between the two lines, to push the spacious feel further.',cost:'<b>Cost:</b> the lines can start to read as separate items.'}
+];
+const KEY='pg_game-unbound-brand_v5';
+const st=Object.assign({mark:'M0',cw:{}},JSON.parse(localStorage.getItem(KEY)||'{}'));
+const save=()=>localStorage.setItem(KEY,JSON.stringify(st));
+const VB={};
+const meas=document.createElementNS('http://www.w3.org/2000/svg','svg');meas.setAttribute('style','position:absolute;left:-9999px;width:120px;height:120px');document.body.appendChild(meas);
+MARKS.forEach(m=>{meas.innerHTML=`<g>${m.draw('#000','#000')}</g>`;const b=meas.firstChild.getBBox();VB[m.id]={cx:b.x+b.width/2,cy:b.y+b.height/2,s:Math.max(b.width,b.height)};});
+meas.remove();
+const cwOf=(m,i)=>{const k=m.cws[i??(st.cw[m.id]||0)];return{a:C[k[0]],b:C[k[1]]||C[k[0]],g:k.length===3?C[k[2]]:null,k};};
+const cwName=k=>{const a=[...k];const s=[NM[a[0]]];if(a[1]&&a[1]!==a[0])s.push(NM[a[1]]);return s.join(' and ')+(a[2]?' on '+NM[a[2]]:'');};
+const inner=(m,cw)=>{const v=VB[m.id];const s=v.s*(cw.g?1.36:1.04);const x=v.cx-s/2,y=v.cy-s/2;return{vb:`${x.toFixed(2)} ${y.toFixed(2)} ${s.toFixed(2)} ${s.toFixed(2)}`,body:(cw.g?`<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${cw.g}"/>`:'')+m.draw(cw.a,cw.b)};};
+const svg=(m,px,i)=>{const r=inner(m,cwOf(m,i));return `<svg viewBox="${r.vb}" width="${px}" height="${px}" aria-hidden="true">${r.body}</svg>`;};
+const mark=()=>MARKS.find(m=>m.id===st.mark);
+const tag=(o)=>`<div class="wb-tag"><span class="wb-num">${o.id}</span><h3 class="wb-name">${o.name}</h3>${o.ctx?`<span class="wb-ctx">${o.ctx===true?'Today':o.ctx}</span>`:''}</div>`;
+function raster(c,m){const r=inner(m,cwOf(m));const img=new Image();img.onload=()=>{const x=c.getContext('2d');x.clearRect(0,0,16,16);if(!c.classList.contains('is-light')){x.fillStyle='#1B1917';x.fillRect(0,0,16,16);}x.drawImage(img,0,0,16,16);};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${r.vb}" width="16" height="16">${r.body}</svg>`);}
+function markCard(m){const cw=cwOf(m);return `${tag(m)}
+<div class="wb-sizes"><div class="wb-size">${svg(m,96)}<small>96</small></div><div class="wb-size">${svg(m,32)}<small>32</small></div><div class="wb-size"><canvas class="wb-px" width="16" height="16"></canvas><small>16 · dark</small></div><div class="wb-size"><canvas class="wb-px is-light" width="16" height="16"></canvas><small>16 · light</small></div></div>
+<div class="wb-tabs"><div class="wb-tab is-dark">${svg(m,16)}<span>Game Unbound</span></div><div class="wb-tab is-light">${svg(m,16)}<span>Game Unbound</span></div></div>
+<div class="wb-cws">${m.cws.map((k,i)=>`<button type="button" class="wb-cw" data-i="${i}" aria-pressed="${(st.cw[m.id]||0)===i}" title="${cwName(k)}">${svg(m,36,i)}</button>`).join('')}</div><span class="wb-cwname">Colourway: ${cwName(cw.k)}</span>
+<p class="wb-claim">${m.claim}</p><p class="wb-cost">${m.cost}</p><p class="wb-cost"><b>Motion:</b> ${m.motion}</p>`;}
+function renderMarks(){const host=document.getElementById('marks');if(!host.children.length)host.innerHTML=MARKS.map(m=>`<article class="wb-cell${m.ctx?' is-ctx':''}" data-m="${m.id}"></article>`).join('');
+ host.querySelectorAll('[data-m]').forEach(el=>{const m=MARKS.find(x=>x.id===el.dataset.m);el.innerHTML=markCard(m);el.querySelectorAll('canvas').forEach(c=>raster(c,m));el.querySelectorAll('.wb-cw').forEach(b=>b.onclick=()=>{st.cw[m.id]=+b.dataset.i;save();renderAll();});});
+ const g=MARKS.map(m=>`<figure>${svg(m,48)}<figcaption>${m.id}</figcaption></figure><figure>${svg(m,24)}<figcaption>&nbsp;</figcaption></figure>`).join('');
+ document.getElementById('glance-d').innerHTML=g;document.getElementById('glance-l').innerHTML=g;}
+const menu='<span class="bar-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>';
+const bv=()=>{const c=cwOf(mark());return `--wm-a:${c.a};--wm-b:${c.b===C.K&&c.a!==C.K?c.a:c.b}`;};
+const desk=(w)=>`<div class="bar"><span class="bar-brand" style="${bv()}">${svg(mark(),32)}${w.html}</span><nav class="bar-nav"><span>Discover</span><span>How it works</span></nav><div class="bar-end"><span class="mcp-btn mcp-btn-secondary">Sign in</span><span class="mcp-btn mcp-btn-main">Start free</span></div></div>`;
+const phone=(w)=>`<div class="bar"><span class="bar-brand" style="${bv()}">${svg(mark(),32)}${w.html}</span><div class="bar-end">${menu}</div></div>`;
+function renderWms(){
+ document.getElementById('wms').innerHTML=WMS.map(w=>`<article class="wb-cell${w.ctx?' is-ctx':''}">${tag(w)}<p class="wb-claim">${w.claim}</p><p class="wb-cost">${w.cost}</p>${w.motion?`<p class="wb-cost"><b>Motion:</b> ${w.motion}</p>`:''}
+ <div class="wb-bars"><div class="wb-bar-cap">Desktop · 1024</div><div class="wb-scroll"><div class="wb-frame is-desk">${desk(w)}</div></div>
+ <div style="display:flex;gap:16px;flex-wrap:wrap">${[360,320].map(px=>`<div class="wb-bars"><div class="wb-bar-cap"><span>Phone · ${px}</span><span class="fit"></span></div><div class="wb-frame" style="width:${px}px" data-phone>${phone(w)}</div></div>`).join('')}</div></div></article>`).join('');
+ document.querySelectorAll('[data-phone]').forEach(f=>{const b=f.querySelector('.bar-brand');const left=f.getBoundingClientRect().right-16-48-24-b.getBoundingClientRect().right;const cap=f.previousElementSibling.querySelector('.fit');cap.textContent=left<16?`${Math.round(left)}px left, too tight`:`${Math.round(left)}px to spare`;cap.className='fit '+(left<16?'bad':'ok');});
+}
+function seg(id,list,k){const el=document.getElementById(id);list.forEach(o=>{const b=document.createElement('button');b.type='button';b.textContent=o.id;b.title=o.name;b.onclick=()=>{st[k]=o.id;save();renderAll();};el.appendChild(b);});}
+function sync(){document.querySelectorAll('#markpick button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===st.mark));}
+function renderAll(){sync();renderMarks();renderWms();}
+seg('markpick',MARKS,'mark');
+renderAll();
+document.fonts.ready.then(renderWms);
+</script>
+</body></html>

@@ -1,0 +1,23 @@
+<!-- @dsCard group="Patterns" viewport="700x1000" name="Overlays: dialog, menu, panel" subtitle="ui-design.md: only a panel changes shape on a phone. Phone (left) and desktop (right). Components: Popup, Menu" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page)}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted)}.cell{display:grid;gap:8px;align-content:start}.row{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px}.k{font:600 13px/1.3 var(--font-text);color:var(--off-white);margin:0 0 6px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS=window.MCPGameStoreDesignSystem_ef1abd;
+const {Button,Heading,Popup,Menu,TextLink}=NS;
+const EDS=['Monday 5 October','Sunday 4 October','Saturday 3 October','Friday 2 October','Thursday 1 October','Wednesday 30 September','Tuesday 29 September'];
+function Screen({w,children,menu}){return <div style={{position:'relative',overflow:'hidden',height:250,width:w,background:'var(--page)',border:'1px solid var(--line)'}}>
+<div style={{padding:12,display:'grid',gap:10,justifyItems:'start'}}><Heading level="card">Daily Puzzles</Heading>{menu}</div>{children}</div>;}
+const dialog=<Popup contained open={true} title="Delete this save?" actions={<><Button variant="secondary">Keep it</Button><Button variant="danger">Delete save</Button></>}><p style={{fontSize:15}}>Your progress in Daily Puzzles is removed.</p></Popup>;
+const panel=p=><Popup contained kind="panel" posture={p} open={true} title="Earlier editions">{EDS.map(d=><div key={d} style={{display:'flex',justifyContent:'space-between',alignItems:'center',minHeight:44,borderBottom:'1px solid var(--line)',gap:12}}><span>{d}</span><TextLink>Play</TextLink></div>)}</Popup>;
+const menu=<Menu defaultOpen label="Save options" trigger={<Button variant="secondary" icon="settings">Options</Button>} items={[{label:'Start again'},{label:'Copy the prompt'},{label:'Delete save',danger:true}]}/>;
+function Row({kind,rule,phone,desk}){return <div><p className="k">{kind}</p><div className="row">{phone}{desk}</div><p className="cap" style={{marginTop:6}}>{rule}</p></div>;}
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{display:'grid',gap:20}}>
+<Row kind="Dialog · one question or one short edit" rule="Centred window at every width, 380px max. Content never scrolls. Popup, the default kind." phone={<Screen w={240}>{dialog}</Screen>} desk={<Screen>{dialog}</Screen>}/>
+<Row kind="Menu · a short list of commands from a control" rule="Opens at its control at every width. No dim. Menu." phone={<Screen w={240} menu={menu}/>} desk={<Screen menu={menu}/>}/>
+<Row kind="Panel · anything the user stays in and works with" rule="Under 640px a bottom sheet, max 85% high. At 640px and up a centred 480px window. The body scrolls. Popup kind=&quot;panel&quot;." phone={<Screen w={240}>{panel('sheet')}</Screen>} desk={<Screen>{panel('window')}</Screen>}/>
+</div>);
+</script></body></html>
