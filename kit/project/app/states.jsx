@@ -48,7 +48,8 @@ function kitStateContext(api) {
 }
 
 // ---- THE REGISTER ----------------------------------------------------------
-// Order here is the order the palette and the index read in. Group titles are
+// Order here does not matter: the palette and the index read alphabetically,
+// groups by title and states by label (see buildStates). Group titles are
 // plain strings; a new group is simply a new title.
 const KIT_STATE_REGISTER = [
   { group: 'Placeholder', id: 'empty', label: 'Nothing on the screen', stage: (c) => c.setItems([]) },
@@ -110,6 +111,12 @@ function buildStates(api) {
     if (!g) { g = { title: s.group, notes: KIT_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
     g.items.push(s);
   });
+  // Alphabetical, always, so a state can be found by name. A leading "App: "
+  // is skipped, so an app-only state sorts beside its web twin.
+  const kitSortKey = (t) => t.replace(/^App:\s*/i, '');
+  const kitCompare = (a, b) => kitSortKey(a).localeCompare(kitSortKey(b), undefined, { sensitivity: 'base', numeric: true });
+  groups.sort((a, b) => kitCompare(a.title, b.title));
+  groups.forEach((g) => g.items.sort((a, b) => kitCompare(a.label, b.label)));
   return { states, byId, groups, reset: ctx.reset };
 }
 

@@ -77,6 +77,7 @@ Differences from canon:
 - Below 640px the Config, States and QA aids are bottom sheets, because they are panels under the three kinds of overlay in `CLAUDE.md`. Carried back from the MCP Game Store project on 2026-10-08 (its `docs/specs/overlay-kinds/handoff.md`).
 - Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
 - The playground `<base href>` is four `../`, not canon's three (below).
+- The States palette and index sort alphabetically (2026-10-15, owner's rule: "or I can't find stuff"): groups by title, states by label, in `buildStates`, ignoring a leading `App: ` so twins stay together. Canon listed them in register order.
 - Config → Platform (Web / Mobile) came back from canon on 2026-10-15, as the kit's app posture: `isApp` in `main.jsx`, the register's `platform` field, and the Postures section of `ARCHITECTURE.md`. The app posture draws a status bar and home indicator in the phone frame and sets `--safe-area-inset-top` / `--safe-area-inset-bottom`; mobile web (Viewport: Mobile) draws neither. Canon has the switch but no bars. Added after the Circlists store-launch research found the app had no top inset handling and no prototype showed one (business-ops `mobile-readiness/_resources/research/2026-10-15_status-bar-overlap.md`).
 
 Known limits are listed in `project/app/README.md`.
