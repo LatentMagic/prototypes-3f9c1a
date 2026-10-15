@@ -8,7 +8,8 @@ Desktop web, mobile web and **app** (native mobile) are three presentation postu
 
 - `isApp` comes from one switch, **Config → Platform (Web / Mobile)**. Session-only, not persisted. `main.jsx` holds it and hands it to the screen and to a candidate build.
 - The app posture always implies the phone frame, whatever the Viewport says. Only the app posture draws the status bar and home indicator and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (on `.kit-phone-clip[data-app]`, `index.html`). Viewport: Mobile is mobile web: the same frame with no bars and no insets.
-- A product with an app posture gives it its own chrome the way Circlists does: one shell for web, one for the app, the same children inside both. The placeholder only pads by the insets.
+- A product with an app posture gives it its own chrome: one shell for web, one for the app, the same children inside both. The placeholder only pads by the insets.
+- A product whose `CLAUDE.md` Platform line is web leaves Platform on Web.
 
 ## Deletable aids and droppable modules
 
