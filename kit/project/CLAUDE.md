@@ -101,6 +101,13 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **When layout rules collide, a role never changes.** Overhang, space economy and an even vertical rhythm can pull against each other. Resolve them with the levers in order: size within the element's role, then spacing within its step, then layout (width, stacking), then rewording. Rewording is the last lever, not one to avoid, because copy is designed for each width. An H1 may scale with the page, but it stays the H1 and reads as the largest thing on the page at every width. Never demote a role, or break the rhythm, to make something fit. The role's size range belongs to the design system, not to this file.
 </important>
 
+<important if="you are building or changing the app posture (Config → Platform: Mobile), or anything at a screen's top or bottom edge in it: a top bar, a bottom bar, a floating button, a bottom sheet, a full-height page">
+- **One app, three postures.** Desktop web, mobile web and app (native mobile) are one product in three presentations; every screen inside the chrome is the same component in all three. Config → Viewport switches the two web postures. Config → Platform (Web / Mobile) switches the app posture on (`isApp` in code; the mechanism is in `ARCHITECTURE.md`).
+- **In the app posture the phone draws over the app's edges, so content stays clear of them.** The frame draws a status bar at the top and a home indicator at the bottom, and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` to their heights. Pad top chrome by `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))` and anything pinned to the bottom (a bottom bar, a floating button, a sheet's last row) by `var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))`; never a bare `env(safe-area-inset-*)` and never a fixed number. On a real phone nothing sets the variables and `env()` answers, so the same code holds in the native build. Mobile web draws no bars and sets nothing: there the browser owns the top of the screen.
+- **The status bar strip takes the app's surface colour.** The top chrome's background runs up under the status bar, with no gap and no separate band. The bar's icons take `--kit-status-fg` (the main text colour unless set); set it wherever the top chrome is dark.
+- Check both edges with Config → Platform: Mobile before calling it done.
+</important>
+
 <important if="you are writing or editing product copy (any UI text, empty state, dialog, error or label)">
 - Read the product's voice doc live, as the product block names it, **before** writing any UI string — not after it is challenged.
 </important>

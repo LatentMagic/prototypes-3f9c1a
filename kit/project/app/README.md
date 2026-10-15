@@ -13,13 +13,13 @@ A no-build page: `index.html` loads React and Babel from the CDN, then each file
 | `config.jsx` | The Config pill and the Config modal shell | leaves alone |
 | `qa.jsx` | The QA list | replaces the entries |
 | `config-extra.example.jsx` | Example of adding a Config section | deletes, or replaces with its own |
-| `main.jsx` | Root: state, the Viewport setting, placeholder screen, mounts the aids | replaces the seed and the screen; keeps the wiring |
+| `main.jsx` | Root: state, the Viewport and Platform settings, the app posture's system bars, placeholder screen, mounts the aids | replaces the seed and the screen; keeps the wiring |
 
 Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: remove the file and its script tag in `../index.html`, nothing else, and the page still works. Each can go on its own. `main.jsx` loads last.
 
 ## Adding things
 
-- **A state:** add `{ group, id, label, stage: (c) => ... }` to `KIT_STATE_REGISTER` in `states.jsx`. `c` holds the setters `main.jsx` passes to `buildStates`; if the state needs a new one, add it to that `buildStates({ ... })` call in `main.jsx`. The id becomes `?state=<id>` and is public once linked. An id is lowercase letters, digits and single hyphens (`sign-in`), unique, and not `index` or `states`; any other id is refused at load with a console error naming it, and the state appears nowhere.
+- **A state:** add `{ group, id, label, platform?, stage: (c) => ... }` to `KIT_STATE_REGISTER` in `states.jsx`. `c` holds the setters `main.jsx` passes to `buildStates`; if the state needs a new one, add it to that `buildStates({ ... })` call in `main.jsx`. The id becomes `?state=<id>` and is public once linked. An id is lowercase letters, digits and single hyphens (`sign-in`), unique, and not `index` or `states`; any other id is refused at load with a console error naming it, and the state appears nowhere.
 - **A QA entry:** add `{ key, title, note?, only?, steps: ['state-id', ...] }` to `KIT_QA` in `qa.jsx`. Steps are state ids only; one that is not in the register shows as "Not in the register". `only` names a `window` property, and the entry shows only when it is set. Delete the entry when the work is signed off.
 - **A Config row:**
   1. Create a file in `app/`, for example `app/config-extra.jsx`. In it build one component from `kit-config-row` / `window.ConfigSeg`, as `config-extra.example.jsx` does, and end the file with `Object.assign(window, { ConfigExtra: YourComponent });`. That one component holds every product row.
@@ -34,7 +34,7 @@ Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: r
 
 ## Known limits
 
-- The Viewport setting is held in `main.jsx` for the page's life only: a reload returns it to auto.
+- The Viewport and Platform settings are held in `main.jsx` for the page's life only: a reload returns them to Auto and Web.
 - With `config.jsx` removed, the Config pill goes, and the States palette and QA with it; only `?state=` and the index remain.
 - QA depends on the States palette: with `states-ui.jsx` (or `states.jsx`) removed, the QA half of the Config pill goes too.
 - The dialogs do not contain focus: Tab can leave an open dialog for the Config pill behind it.

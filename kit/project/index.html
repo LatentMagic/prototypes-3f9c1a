@@ -21,7 +21,7 @@
   }
 
   /* ---- placeholder screen (app/main.jsx) — the product's screens replace it ---- */
-  .kit-placeholder { max-width: 720px; margin: 0 auto; padding: var(--space-6) var(--space-5) 96px; }
+  .kit-placeholder { max-width: 720px; margin: 0 auto; padding: calc(var(--space-6) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) var(--space-5) calc(96px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
   .kit-placeholder-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
   .kit-placeholder-title { font: 600 28px/1.15 var(--font-sans); letter-spacing: -0.02em; margin: 10px 0 0; }
   .kit-placeholder-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 var(--space-5); }
@@ -203,6 +203,23 @@
     overflow-y: auto; -webkit-overflow-scrolling: touch;
   }
   .kit-phone-screen::-webkit-scrollbar { width: 0; height: 0; }
+  /* ---- app posture (Config → Platform: Mobile) only: the system bars ----
+     Drawn over the screen, as a phone draws them over an app that fills it. The
+     clip sets the space they take; content reads it as
+     var(--safe-area-inset-top, env(safe-area-inset-top, 0px)), so on a real phone,
+     where nothing sets the variables, env() answers (viewport-fit=cover above).
+     Mobile web (Viewport: Mobile) sets nothing and draws nothing. Icons take
+     --kit-status-fg, which a product sets wherever its top chrome is dark. */
+  .kit-phone-clip[data-app] { --safe-area-inset-top: 59px; --safe-area-inset-bottom: 34px; }
+  .kit-phone-status, .kit-phone-home { position: absolute; left: 0; right: 0; z-index: 2147483000; pointer-events: none; color: var(--kit-status-fg, var(--color-fg-1)); }
+  .kit-phone-status {
+    top: 0; height: var(--safe-area-inset-top); padding: 0 30px 0 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    font: 600 16px/1 var(--font-sans); letter-spacing: -0.01em;
+  }
+  .kit-phone-island { position: absolute; top: 11px; left: 50%; width: 120px; height: 35px; margin-left: -60px; border-radius: 20px; background: #000; }
+  .kit-phone-home { bottom: 0; height: var(--safe-area-inset-bottom); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
+  .kit-phone-home::after { content: ''; width: 134px; height: 5px; border-radius: 3px; background: currentColor; }
 </style>
 </head>
 <body>

@@ -22,9 +22,9 @@ const { useState, useEffect, useRef } = React;
 const KIT_SEED_ITEMS = ['First item', 'Second item'];
 
 // ---- The placeholder screen --------------------------------------------------
-const PlaceholderScreen = ({ items, isMobile }) => (
+const PlaceholderScreen = ({ items, isMobile, isApp }) => (
   <main className="kit-placeholder">
-    <div className="kit-placeholder-eyebrow">Placeholder screen</div>
+    <div className="kit-placeholder-eyebrow">Placeholder screen{isApp ? ' · app' : ''}</div>
     <h1 className="kit-placeholder-title">{items.length === 0 ? 'Nothing here yet' : items.length + ' items'}</h1>
     <p className="kit-placeholder-lede">
       The product's first screen replaces this one. The pill at the bottom right holds the prototype
@@ -38,6 +38,26 @@ const PlaceholderScreen = ({ items, isMobile }) => (
   </main>
 );
 
+// ---- The app posture's system bars ---------------------------------------------
+// Platform: Mobile only. Drawn over the screen inside the phone clip, as a phone
+// draws them over an app that fills it. The space they take is
+// --safe-area-inset-top / --safe-area-inset-bottom (index.html). Mobile web
+// (Viewport: Mobile) draws neither: there a browser owns the top of the screen.
+const KitPhoneBars = () => (
+  <>
+    <div className="kit-phone-status" aria-hidden="true">
+      <span>9:41</span>
+      <span className="kit-phone-island" />
+      <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+        <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="currentColor" opacity="0.4" />
+        <rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor" />
+        <path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity="0.4" />
+      </svg>
+    </div>
+    <div className="kit-phone-home" aria-hidden="true" />
+  </>
+);
+
 // ---- App -------------------------------------------------------------------
 const KitApp = () => {
   // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
@@ -49,8 +69,14 @@ const KitApp = () => {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-  const forcedMobile = layout === 'mobile';
-  const isMobile = layout === 'mobile' ? true : layout === 'desktop' ? false : winW < 1024;
+  // Platform posture: 'web' | 'app', set from Config. Session-only like the
+  // Viewport. 'web' = the two web postures (desktop web, mobile web); 'app' = the
+  // native app posture. The app posture always uses the phone frame, whatever
+  // the Viewport says, and only it draws the system bars.
+  const [platform, setPlatform] = useState('web');
+  const isApp = platform === 'app';
+  const forcedMobile = layout === 'mobile' || isApp;
+  const isMobile = isApp ? true : layout === 'mobile' ? true : layout === 'desktop' ? false : winW < 1024;
 
   const ConfigLauncher = window.ConfigLauncher;
 
@@ -72,7 +98,7 @@ const KitApp = () => {
   // half of the Config pill, the index and the address reading all vanish together,
   // leaving the product core clean.
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
-    ? window.buildStates({ seedItems: KIT_SEED_ITEMS, setItems })
+    ? window.buildStates({ seedItems: KIT_SEED_ITEMS, setItems, setPlatform })
     : { byId: {}, groups: [], reset: null });
   // Going to a state, or resetting, leaves the states index: on it the staged
   // app is not showing, so the act would otherwise be invisible.
@@ -100,12 +126,12 @@ const KitApp = () => {
   // hold bind(api), handed the app's state and setters, and Screen, rendered in place
   // of the app's screen. Absent -> the shipped screen, unchanged.
   const Cand = window.KitCandidate || null;
-  const candApi = Cand ? { items, setItems, isMobile } : null;
+  const candApi = Cand ? { items, setItems, isMobile, isApp } : null;
   if (Cand && Cand.bind) Cand.bind(candApi);
 
   const appTree = Cand && Cand.Screen
     ? <Cand.Screen api={candApi} />
-    : <PlaceholderScreen items={items} isMobile={isMobile} />;
+    : <PlaceholderScreen items={items} isMobile={isMobile} isApp={isApp} />;
 
   return (
     <>
@@ -115,7 +141,10 @@ const KitApp = () => {
           onDismiss={() => setLanding(null)} />
       ) : forcedMobile ? (
         <div className="kit-stage">
-          <div className="kit-phone"><div className="kit-phone-clip"><div className="kit-phone-screen">{appTree}</div></div></div>
+          <div className="kit-phone"><div className="kit-phone-clip" data-app={isApp ? '1' : undefined}>
+            <div className="kit-phone-screen">{appTree}</div>
+            {isApp && <KitPhoneBars />}
+          </div></div>
         </div>
       ) : appTree}
 
@@ -126,7 +155,8 @@ const KitApp = () => {
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
         onReset={resetAndShow}
-        layout={layout} onLayoutChange={setLayout} />}
+        layout={layout} onLayoutChange={setLayout}
+        platform={platform} onPlatformChange={setPlatform} />}
     </>
   );
 };
