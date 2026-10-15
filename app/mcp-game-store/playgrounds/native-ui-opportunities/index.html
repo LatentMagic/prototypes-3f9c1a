@@ -45,7 +45,6 @@ a{color:var(--link)}
 .pg-tcard .mcp-cb-status{justify-self:start}
 .pg-tcard .pg-tgo{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--font-text);margin-top:2px}
 .pg-tcard::before{content:"";position:absolute;inset:-3px 0}
-.pg-tcard.is-live{border-color:var(--cb-ink)}
 
 /* Streak squares */
 .pg-streak{display:flex;align-items:center;gap:10px;font:600 13px/1.3 var(--font-text);color:var(--cb-ink)}
@@ -148,14 +147,14 @@ function Chips({items, initial}) {
   return <Part><div className="pg-chips" role="group" aria-label="Filter the games">{items.map(t =>
     <button type="button" key={t} className="pg-chip" aria-pressed={sel===t} onClick={() => setSel(t)}>{t}</button>)}</div></Part>;
 }
-function ObjectButtons({items}) {
+function ObjectButtons({items, icon='search'}) {
   return <Part><div className="pg-objs" role="group" aria-label="Things to examine">{items.map(t =>
-    <button type="button" key={t} className="pg-obj"><Icon name="search" size={16}/>{t}</button>)}</div></Part>;
+    <button type="button" key={t} className="pg-obj"><Icon name={icon} size={16}/>{t}</button>)}</div></Part>;
 }
-function HintLadder({used, label, note}) {
-  return <Part><div className="pg-ladder" role="img" aria-label={label+': '+used+' of 3 used'}>
+function HintLadder({used, label, names}) {
+  return <Part><div className="pg-ladder" role="img" aria-label={label+': '+used+' of 3 used. '+names.map((n,i)=>n+(i<used?', used':', not used')).join('. ')}>
     <span className="pg-rungs" aria-hidden="true">{[0,1,2].map(i => <i key={i} className={i<used?'is-on':''}/>)}</span>
-    <span className="pg-ladder-t"><b>{label}: {used} of 3 used</b><small>{note}</small></span>
+    <span className="pg-ladder-t"><b>{label}: {used} of 3 used</b><small>{names.map((n,i) => i<used ? n+' ✓' : n).join(' · ')}</small></span>
   </div></Part>;
 }
 function Blocked({children}) {
@@ -176,21 +175,21 @@ function RevealTable({rows}) {
 /* ---------- the six screens ---------- */
 function Screen1() {
   const rows = [
-    {name:'Daily Groups', line:'Sixteen words hide four groups.', art:ART.groups, meta:'Daily · 5 min', action:{label:'Play',icon:'play'}},
-    {name:'Escape', line:'Find the way out of a locked room.', art:ART.escape, meta:'Weekly · 10 min', action:{label:'Play',icon:'play'}},
-    {name:'Casebook', line:'Question the suspects.', art:ART.casebook, meta:'Weekly · Part of the Pass', action:{label:'Play',icon:'play'}},
-    {name:'Delve', line:'Get her out before the drums stop.', art:ART.delve, meta:'Weekly · 25–40 min · Part of the Pass', action:{label:'Play',icon:'play'}},
-    {name:'The Barrow of Hollowmere', line:'Go down into the barrow.', art:ART.barrow, meta:'Episodic · Part of the Pass', action:{label:'Play',icon:'play'}},
-    {name:'36,000 Summers Ago', line:'Grey dawn below Chauvet cave.', art:ART.hunter, meta:'2 hours · Part of the Pass', action:{label:'Play',icon:'play'}},
+    {name:'Escape', line:'Find the way out of a locked room.', art:ART.escape, meta:'Weekly · 10 min · Pass', action:{label:'Play',icon:'play'}},
+    {name:'Casebook', line:'Question the suspects.', art:ART.casebook, meta:'Episodic · 25–40 min · Pass', action:{label:'Play',icon:'play'}},
+    {name:'Delve', line:'Get her out before the drums stop.', art:ART.delve, meta:'Weekly · 25–40 min · Pass', action:{label:'Play',icon:'play'}},
+    {name:'The Barrow of Hollowmere', line:'Go down into the barrow.', art:ART.barrow, meta:'Episodic · Several sessions', action:{label:'Play',icon:'play'}},
+    {name:'The Drowned Light', line:'A sea adventure.', art:ART.derelict, meta:'Episodic · Several sessions · Pass', action:{label:'Play',icon:'play'}},
+    {name:'The Lantern Keepers', line:'Choices the story remembers.', art:ART.hunter, meta:'Episodic · 20–30 min · Pass', action:{label:'Play',icon:'play'}},
   ];
   return <Chat label="The games list, opening with today">
     <Me>What can I play?</Me>
     <Ai tool="games_library">
       <p className="pg-plain">Two dailies are waiting.</p>
       <TodayShelf cards={[
-        {name:'Daily Word', no:'No. 213', status:'Not started', tone:'idle', go:'Play'},
+        {name:'Daily Word', no:'No. 11', status:'Not started', tone:'idle', go:'Play'},
         {name:'Daily Mystery', no:'No. 8', status:'In progress', tone:'live', go:'Continue'}]}/>
-      <Streak days={4} on={[true,true,false,true,true,false,false]}/>
+      <Streak days={4} on={[false,true,true,true,true,false,false]}/>
       <MenuRows search="Find a game" items={[]} label="Search the games"/>
       <Chips items={['All','In progress','Daily','Weekly','Episodic']} initial="All"/>
       <MenuRows items={rows} label="More games"/>
@@ -202,17 +201,17 @@ function Screen1() {
 function Screen2() {
   return <Chat label="Daily Mystery mid-game, with notes on request">
     <Me>Was Delphine Rooke in the dining room?</Me>
-    <Ai tool="mystery">
+    <Ai tool="games_move">
       <p className="pg-plain">The inspector says no.</p>
       <StatRow grid items={[{label:'Questions',value:1},{label:'Hints',value:2},{label:'Accusation',value:1}]}/>
-      <NavButtons items={[{label:'My notes', icon:'list'},{label:'Make the accusation', icon:'next'}]}/>
+      <NavButtons items={[{label:'My notes', icon:'next'},{label:'Make the accusation', icon:'next'}]}/>
     </Ai>
     <Me>My notes</Me>
     <Ai tool="games_read">
       <ClueCards groups={[
-        {kind:'Objects', facts:['Delphine Rooke had the iron poker.','Colonel Rufus Hale did not have the marble bust.']},
-        {kind:'Rooms', facts:['The iron poker was in the library.','The vial of foxglove was in the morning room.']},
-        {kind:'Inspector’s answers', facts:[{text:'Was Delphine Rooke in the dining room? **No.**', new:true}]}]}/>
+        {kind:'Who was where', facts:[{text:'Was Delphine Rooke in the dining room? **No.**', new:true}]},
+        {kind:'Who had what', facts:['Delphine Rooke had the iron poker.','Colonel Rufus Hale did not have the marble bust.']},
+        {kind:'Which weapon was where', facts:['The iron poker was in the library.','The vial of foxglove was in the morning room.']}]}/>
       <p className="pg-plain">In short: Delphine has the poker, the poker was in the library, Hale didn’t have the bust, and Delphine wasn’t in the dining room.</p>
     </Ai>
   </Chat>;
@@ -226,7 +225,8 @@ function Screen3() {
       <p className="pg-plain">The Clockmaker’s Study. A safe sits behind the portrait. Three things here are still untouched.</p>
       <ObjectButtons items={['Examine the mantel clock','Examine the writing desk','Examine the portrait']}/>
       <p className="pg-line">Examined: bookcase, rug</p>
-      <HintLadder used={1} label="Hints for the safe" note="Ask for a hint, or keep looking."/>
+      <HintLadder used={1} label="Hints for the safe" names={['Nudge','Clue','Answer']}/>
+      <ObjectButtons items={['Take the next hint']} icon="next"/>
     </Ai>
   </Chat>;
 }
@@ -249,19 +249,19 @@ function Screen4() {
   </Chat>;
 }
 
-const SHARE = 'Daily Word No. 213  4/6\n⬛🟨⬛⬛⬛\n⬛⬛🟨🟩⬛\n🟩⬛🟩🟩⬛\n🟩🟩🟩🟩🟩';
+const SHARE = 'Daily Word No. 11  4/6\n⬛🟨⬛⬛⬛\n⬛⬛🟨🟩⬛\n🟩⬛🟩🟩⬛\n🟩🟩🟩🟩🟩';
 function Screen5() {
   return <Chat label="The end of a daily, with what comes next">
     <Me>Flare.</Me>
-    <Ai tool="daily-word">
+    <Ai tool="games_move">
       <p className="pg-plain">That’s it. Solved on guess four.</p>
-      <ResultCard title="Daily Word No. 213" status="Solved" stats={[
+      <ResultCard title="Daily Word No. 11" status="Solved" stats={[
         {label:'Guesses',value:'4/6'},{label:'Hints',value:0},{label:'Streak',value:5},{label:'Next word in',value:'9 h'}]}/>
       <div className="pg-share mcp-cb">
         <pre aria-label="Spoiler-free result">{SHARE}</pre>
         <div className="pg-sharebar"><span className="pg-line">Spoiler-free. Safe to post anywhere.</span><button type="button" className="pg-copy">Copy</button></div>
       </div>
-      <NavButtons items={[{label:'Back to the games', icon:'list'},{label:'Game page', icon:'out', out:true}]}/>
+      <NavButtons items={[{label:'Back to the games', icon:'list'},{label:'Game page', out:true}]}/>
       <p className="pg-foot">Missed Tuesday’s Mystery? <button type="button" className="pg-link">Play No. 6</button></p>
     </Ai>
   </Chat>;
@@ -269,17 +269,17 @@ function Screen5() {
 
 function Screen6() {
   return <Chat label="Mystery solved: the reveal grid">
-    <Me>Accuse Delphine Rooke, with the iron poker, in the library.</Me>
-    <Ai tool="mystery">
+    <Me>Accuse Delphine Rooke, with the marble bust, in the study.</Me>
+    <Ai tool="games_move">
       <StatusTag tone="lost">Not this time</StatusTag>
-      <p className="pg-plain">It was Ivy Marchbank, in the study. Delphine was in the library, but she never held the poker.</p>
+      <p className="pg-plain">It was Ivy Marchbank, in the study, with the marble bust. Delphine was in the library with the iron poker.</p>
       <RevealTable rows={[
-        {who:'Delphine Rooke', room:'Library', weapon:'Letter opener', mark:{who:false, room:false}},
-        {who:'Ivy Marchbank', room:'Study', weapon:'Iron poker', culprit:true, mark:{weapon:true}},
+        {who:'Delphine Rooke', room:'Library', weapon:'Iron poker', mark:{who:false}},
+        {who:'Ivy Marchbank', room:'Study', weapon:'Marble bust', culprit:true, mark:{room:true, weapon:true}},
         {who:'Dr Helena Strand', room:'Morning room', weapon:'Foxglove vial', mark:{}},
-        {who:'Colonel Rufus Hale', room:'Dining room', weapon:'Marble bust', mark:{}}]}/>
+        {who:'Colonel Rufus Hale', room:'Dining room', weapon:'Letter opener', mark:{}}]}/>
       <p className="pg-legend"><span><span className="pg-mark is-right"><Icon name="check" size={12}/></span>You named it, right</span><span><span className="pg-mark is-wrong"><Icon name="close" size={12}/></span>You named it, wrong</span></p>
-      <NavButtons items={[{label:'Back to the games', icon:'list'},{label:'Game page', icon:'out', out:true}]}/>
+      <NavButtons items={[{label:'Back to the games', icon:'list'},{label:'Game page', out:true}]}/>
       <p className="pg-foot">Missed Tuesday’s Mystery? <button type="button" className="pg-link">Play No. 6</button></p>
     </Ai>
   </Chat>;
