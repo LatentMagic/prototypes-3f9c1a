@@ -45,6 +45,12 @@ The kit is the source for every rule, aid and skill the prototypes share.
 1. Make the change in `kit/project/`, check it in a browser where it renders, and push.
 2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief states the changed rule word for word. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
 
+3. Raise the kit version by one in `project/CLAUDE.md` (the line beside "The kit"), add it to the list below, and have the brief set the same line in each project. A project's line then says which update it has.
+
+Versions:
+
+- **1** (2026-10-16): chat replies (tour not a log, never ask cold, list then walk), several candidates per ticket, comments never cite `docs/` paths and archive only when the owner asks.
+
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and "What was taken, what was left" records where it came from.
 
 ## What was taken, what was left
