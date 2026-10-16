@@ -2,5 +2,27 @@
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "Prototype",
   "generated": "",
-  "tickets": []
+  "tickets": [
+    {
+      "id": "example",
+      "slug": "example",
+      "name": "Example",
+      "state": "active",
+      "touched": "2026-10-16",
+      "entries": [
+        {
+          "kind": "candidate",
+          "name": "Remove button",
+          "path": "docs/specs/example/candidate/remove-button.html",
+          "note": "The skeleton app with a Remove button on each item. Not accepted."
+        },
+        {
+          "name": "Item list layout",
+          "path": "docs/specs/example/playground/example.html",
+          "note": "Three layouts for the skeleton app's item list, on a bottom strip."
+        }
+      ],
+      "archive": []
+    }
+  ]
 }

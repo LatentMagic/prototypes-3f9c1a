@@ -72,7 +72,7 @@ let DATA=null;
 function counts(t){
   const l=live(t.entries), a=live(t.archive);
   const c=l.filter(e=>e.kind==='candidate').length, r=l.length-c+a.length;
-  const bits=[]; if(c)bits.push(c+' candidate'); if(r)bits.push(r+' rig'+(r>1?'s':''));
+  const bits=[]; if(c)bits.push(c+' candidate'+(c>1?'s':'')); if(r)bits.push(r+' rig'+(r>1?'s':''));
   return {c,r,bits};
 }
 function tkRow(t){
@@ -124,7 +124,7 @@ function ticket(t){
     (t.touched?' · touched '+esc(shortDate(t.touched)):'')+'</p>'));
   const l=live(t.entries);
   const cands=l.filter(e=>e.kind==='candidate'), rigs=l.filter(e=>e.kind!=='candidate');
-  if(cands.length)out.appendChild(group('Candidate build',cands));
+  if(cands.length)out.appendChild(group(cands.length>1?'Candidate builds':'Candidate build',cands));
   if(rigs.length)out.appendChild(group('Playgrounds',rigs));
   if(!l.length)out.appendChild(el('<p class="empty">No playable entry. The record for this ticket is documents — handoffs, prompts and modules in the folder above.</p>'));
   const arch=live(t.archive);
