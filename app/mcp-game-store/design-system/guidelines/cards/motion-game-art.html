@@ -3,8 +3,9 @@
 body{padding:20px;background:var(--page);margin:0;display:grid;gap:16px}
 .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 a.t{display:grid;gap:10px;color:var(--text);text-decoration:none;align-content:start;cursor:pointer}
-.n{justify-self:start;font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;text-decoration:underline 2px transparent;text-underline-offset:5px;transition:text-decoration-color var(--time-press) var(--ease)}
-a.t:is(:hover,:focus-visible,:active) .n{text-decoration-color:currentColor}
+.n{justify-self:start;font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
+a.t:is(:focus-visible,:active) .n{text-decoration-color:currentColor;text-underline-offset:6px;color:#fff}
+@media (hover:hover){a.t:hover .n{text-decoration-color:currentColor;text-underline-offset:6px;color:#fff}}
 a.t:focus-visible{outline:2px solid var(--off-white);outline-offset:4px}
 .w a.t{background:var(--card);border:1px solid var(--line);padding:16px}
 ul{margin:0;padding-left:18px;display:grid;gap:4px;font:400 14px/1.4 var(--font-text);color:var(--muted)}

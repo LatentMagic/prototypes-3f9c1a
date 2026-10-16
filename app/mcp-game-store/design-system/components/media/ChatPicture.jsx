@@ -50,23 +50,47 @@ function useChatScroll(body,turns){
   const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
   return [up,toStart];
 }
+// Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.
+// With fx (ChatPlayback): fx.piece(turn, key) gives null (not drawn yet) or the piece's entering style; fx.words(turn, key, text) draws a paragraph's words.
+// Piece keys: 'u' user line; 'c' tool call; 'b0'.. blocks; 'p0'.. paragraphs; 'a0'.. blocks after the text.
+export function chatTurn(t,i,{mark,toolBy,fx}){
+  if(t.from==='user'){
+    if(!fx) return <p key={i} className="mcp-chat-me">{paras(t.text)}</p>;
+    const st=fx.piece(i,'u'); return st&&<p key={i} className="mcp-chat-me" style={st}>{paras(t.text)}</p>;
+  }
+  if(!fx) return <div key={i} className="mcp-chat-ai">
+    {t.tool&&<span className="mcp-chat-call">{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>}
+    {(t.blocks||[]).map((b,k)=><Block key={k} b={b}/>)}
+    {paras(t.text).map((p,k)=><p key={k}>{p}</p>)}
+    {(t.after||[]).map((b,k)=><Block key={'a'+k} b={b}/>)}
+  </div>;
+  const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><Block b={b}/></div>;});
+  const call=t.tool&&fx.piece(i,'c');
+  const kids=[
+    call&&<span key="c" className="mcp-chat-call" style={call}>{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>,
+    ...blk(t.blocks,'b'),
+    ...paras(t.text).map((p,k)=>{const st=fx.piece(i,'p'+k); return st&&<p key={'p'+k} style={st}>{fx.words(i,'p'+k,p)}</p>;}),
+    ...blk(t.after,'a')].filter(Boolean);
+  return kids.length?<div key={i} className="mcp-chat-ai">{kids}</div>:null;
+}
+// The window around the turns: header, scrolling body, the back-to-the-start pill, the reply box, and an optional control (ChatPlayback's pause).
+export function chatShell({body,bodyRef,up,toStart,title,height,width,fill,label,more,className,comp,control,extraClass}){
+  const name=label||'A game being played in a chat';
+  return <div className={('mcp-chat'+(fill?' is-fill':'')+(extraClass?' '+extraClass:'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
+    {title&&<div className="mcp-chat-head">{title}</div>}
+    <div ref={bodyRef} className={'mcp-chat-body'+(height==='auto'&&!fill?' is-auto':'')} style={fill||height==='auto'?undefined:{height}} tabIndex={0} role="region" aria-label={name+', scrolls'}>
+      {body}
+    </div>
+    <button type="button" className="mcp-chat-up" hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={{transform:'rotate(180deg)'}}/></button>
+    {control}
+    {comp}
+  </div>;
+}
+export const chatParas=paras;
 export function ChatPicture({turns,title,toolBy,mark,height=290,width=360,fill=false,composer=true,placeholder='Reply',label,more='Back to the start',className=''}){
   const body=React.useRef(null);
   const [up,toStart]=useChatScroll(body,turns);
-  const name=label||'A game being played in a chat';
-  return <div className={('mcp-chat'+(fill?' is-fill':'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
-    {title&&<div className="mcp-chat-head">{title}</div>}
-    <div ref={body} className={'mcp-chat-body'+(height==='auto'&&!fill?' is-auto':'')} style={fill||height==='auto'?undefined:{height}} tabIndex={0} role="region" aria-label={name+', scrolls'}>
-      {turns.map((t,i)=>t.from==='user'
-        ? <p key={i} className="mcp-chat-me">{paras(t.text)}</p>
-        : <div key={i} className="mcp-chat-ai">
-            {t.tool&&<span className="mcp-chat-call">{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>}
-            {(t.blocks||[]).map((b,k)=><Block key={k} b={b}/>)}
-            {paras(t.text).map((p,k)=><p key={k}>{p}</p>)}
-            {(t.after||[]).map((b,k)=><Block key={'a'+k} b={b}/>)}
-          </div>)}
-    </div>
-    <button type="button" className="mcp-chat-up" hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={{transform:'rotate(180deg)'}}/></button>
-    {composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>}
-  </div>;
+  return chatShell({bodyRef:body,up,toStart,title,height,width,fill,label,more,className,
+    body:turns.map((t,i)=>chatTurn(t,i,{mark,toolBy})),
+    comp:composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>});
 }

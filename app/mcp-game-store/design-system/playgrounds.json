@@ -3,6 +3,19 @@
   "product": "MCP Game Store",
   "tickets": [
     {
+      "slug": "underline-hover",
+      "name": "Underline hover",
+      "state": "active",
+      "touched": "2026-10-16",
+      "entries": [
+        {
+          "name": "Underline hover",
+          "note": "The three underline behaviours today, and one underline for links and GameTile.",
+          "path": "docs/specs/underline-hover/playground/underline-hover.html"
+        }
+      ]
+    },
+    {
       "slug": "chat-blocks",
       "name": "Chat parts",
       "state": "active",

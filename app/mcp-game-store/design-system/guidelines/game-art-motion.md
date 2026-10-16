@@ -46,7 +46,7 @@ Anywhere else `mcp-art-host` does nothing on an element that isn't pressable, an
 
 ## Hover surface
 
-The whole card is the hover surface: art, title and the space around them. Hover, keyboard focus (`:focus-visible`) and press all play the pose. The title underline appears at the same moment, on every layout (tile, wide featured card, list row).
+The whole card is the hover surface: art, title and the space around them. Hover, keyboard focus (`:focus-visible`) and press all play the pose. Where the title is underlined (GameTile's name), the underline is there at rest and takes its hover look at the same moment (visual-foundations.md, Underlines).
 
 ## Touch
 

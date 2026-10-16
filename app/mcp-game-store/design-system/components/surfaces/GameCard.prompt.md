@@ -20,3 +20,4 @@ GameCard is the one game card. It works anywhere; inside a CardRow every card is
 - Write names to two lines at most, blurbs to two lines and tags to one line at the narrowest card (220px). Longer copy still lines up, but it makes every card in the row taller.
 - Blurbs wrap normally. Never `text-wrap: balance` on a blurb: it narrows every line and leaves the right side empty.
 - When the whole card opens something, put that one link or button in `title` and stretch it over the card (`mcp-art-host` on the card via `className`, `mcp-art-link` on the button).
+- A game that needs the Pass gets `pass` (a player without the Pass sees the mark on the picture; a Pass holder and every free game don't). The Pass is never a tag in the tag row, and the mark never carries a price.

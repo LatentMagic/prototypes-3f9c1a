@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"f80c773e4eb3","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"88b9d9bbb339","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"061ed89c27ff","components/surfaces/GamePick.jsx":"5a1ada649278","components/surfaces/GameTile.jsx":"4ba7f7a3efd4","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"248177b53049","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"c22de55edee6","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"71789f1698f0","components/surfaces/GamePick.jsx":"966a702bb953","components/surfaces/GameTile.jsx":"3d41c3a4d95d","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -589,6 +589,7 @@ const LINE = {
   close: '<g ' + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
   lock: '<g ' + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
   play: '<g ' + A + '><path d="M7 4L19 12L7 20Z"/></g>',
+  pause: '<g ' + A + '><path d="M8 5V19M16 5V19"/></g>',
   settings: '<g ' + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
   mail: '<g ' + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
   logout: '<g ' + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
@@ -1156,45 +1157,27 @@ function useChatScroll(body, turns) {
   };
   return [up, toStart];
 }
-function ChatPicture({
-  turns,
-  title,
-  toolBy,
+// Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.
+// With fx (ChatPlayback): fx.piece(turn, key) gives null (not drawn yet) or the piece's entering style; fx.words(turn, key, text) draws a paragraph's words.
+// Piece keys: 'u' user line; 'c' tool call; 'b0'.. blocks; 'p0'.. paragraphs; 'a0'.. blocks after the text.
+function chatTurn(t, i, {
   mark,
-  height = 290,
-  width = 360,
-  fill = false,
-  composer = true,
-  placeholder = 'Reply',
-  label,
-  more = 'Back to the start',
-  className = ''
+  toolBy,
+  fx
 }) {
-  const body = React.useRef(null);
-  const [up, toStart] = useChatScroll(body, turns);
-  const name = label || 'A game being played in a chat';
-  return /*#__PURE__*/React.createElement("div", {
-    className: ('mcp-chat' + (fill ? ' is-fill' : '') + ' ' + className).trim(),
-    style: fill ? undefined : {
-      width: 'min(100%,' + width + 'px)'
-    },
-    role: "group",
-    "aria-label": name
-  }, title && /*#__PURE__*/React.createElement("div", {
-    className: "mcp-chat-head"
-  }, title), /*#__PURE__*/React.createElement("div", {
-    ref: body,
-    className: 'mcp-chat-body' + (height === 'auto' && !fill ? ' is-auto' : ''),
-    style: fill || height === 'auto' ? undefined : {
-      height
-    },
-    tabIndex: 0,
-    role: "region",
-    "aria-label": name + ', scrolls'
-  }, turns.map((t, i) => t.from === 'user' ? /*#__PURE__*/React.createElement("p", {
-    key: i,
-    className: "mcp-chat-me"
-  }, paras(t.text)) : /*#__PURE__*/React.createElement("div", {
+  if (t.from === 'user') {
+    if (!fx) return /*#__PURE__*/React.createElement("p", {
+      key: i,
+      className: "mcp-chat-me"
+    }, paras(t.text));
+    const st = fx.piece(i, 'u');
+    return st && /*#__PURE__*/React.createElement("p", {
+      key: i,
+      className: "mcp-chat-me",
+      style: st
+    }, paras(t.text));
+  }
+  if (!fx) return /*#__PURE__*/React.createElement("div", {
     key: i,
     className: "mcp-chat-ai"
   }, t.tool && /*#__PURE__*/React.createElement("span", {
@@ -1212,7 +1195,76 @@ function ChatPicture({
   }, p)), (t.after || []).map((b, k) => /*#__PURE__*/React.createElement(Block, {
     key: 'a' + k,
     b: b
-  }))))), /*#__PURE__*/React.createElement("button", {
+  })));
+  const blk = (list, pre) => (list || []).map((b, k) => {
+    const st = fx.piece(i, pre + k);
+    return st && /*#__PURE__*/React.createElement("div", {
+      key: pre + k,
+      className: "mcp-chat-fx",
+      style: st
+    }, /*#__PURE__*/React.createElement(Block, {
+      b: b
+    }));
+  });
+  const call = t.tool && fx.piece(i, 'c');
+  const kids = [call && /*#__PURE__*/React.createElement("span", {
+    key: "c",
+    className: "mcp-chat-call",
+    style: call
+  }, mark && /*#__PURE__*/React.createElement("img", {
+    src: mark,
+    alt: "",
+    width: "16",
+    height: "16"
+  }), "Called ", t.tool, toolBy && /*#__PURE__*/React.createElement("em", null, toolBy)), ...blk(t.blocks, 'b'), ...paras(t.text).map((p, k) => {
+    const st = fx.piece(i, 'p' + k);
+    return st && /*#__PURE__*/React.createElement("p", {
+      key: 'p' + k,
+      style: st
+    }, fx.words(i, 'p' + k, p));
+  }), ...blk(t.after, 'a')].filter(Boolean);
+  return kids.length ? /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "mcp-chat-ai"
+  }, kids) : null;
+}
+// The window around the turns: header, scrolling body, the back-to-the-start pill, the reply box, and an optional control (ChatPlayback's pause).
+function chatShell({
+  body,
+  bodyRef,
+  up,
+  toStart,
+  title,
+  height,
+  width,
+  fill,
+  label,
+  more,
+  className,
+  comp,
+  control,
+  extraClass
+}) {
+  const name = label || 'A game being played in a chat';
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-chat' + (fill ? ' is-fill' : '') + (extraClass ? ' ' + extraClass : '') + ' ' + className).trim(),
+    style: fill ? undefined : {
+      width: 'min(100%,' + width + 'px)'
+    },
+    role: "group",
+    "aria-label": name
+  }, title && /*#__PURE__*/React.createElement("div", {
+    className: "mcp-chat-head"
+  }, title), /*#__PURE__*/React.createElement("div", {
+    ref: bodyRef,
+    className: 'mcp-chat-body' + (height === 'auto' && !fill ? ' is-auto' : ''),
+    style: fill || height === 'auto' ? undefined : {
+      height
+    },
+    tabIndex: 0,
+    role: "region",
+    "aria-label": name + ', scrolls'
+  }, body), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "mcp-chat-up",
     hidden: !up,
@@ -1224,16 +1276,421 @@ function ChatPicture({
     style: {
       transform: 'rotate(180deg)'
     }
-  })), composer && /*#__PURE__*/React.createElement("div", {
-    className: "mcp-chat-comp",
-    "aria-hidden": "true"
-  }, /*#__PURE__*/React.createElement("span", null, placeholder), /*#__PURE__*/React.createElement("i", null, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
-    name: "send",
-    size: 16
-  }))));
+  })), control, comp);
 }
-Object.assign(__ds_scope, { ChatPicture });
+const chatParas = paras;
+function ChatPicture({
+  turns,
+  title,
+  toolBy,
+  mark,
+  height = 290,
+  width = 360,
+  fill = false,
+  composer = true,
+  placeholder = 'Reply',
+  label,
+  more = 'Back to the start',
+  className = ''
+}) {
+  const body = React.useRef(null);
+  const [up, toStart] = useChatScroll(body, turns);
+  return chatShell({
+    bodyRef: body,
+    up,
+    toStart,
+    title,
+    height,
+    width,
+    fill,
+    label,
+    more,
+    className,
+    body: turns.map((t, i) => chatTurn(t, i, {
+      mark,
+      toolBy
+    })),
+    comp: composer && /*#__PURE__*/React.createElement("div", {
+      className: "mcp-chat-comp",
+      "aria-hidden": "true"
+    }, /*#__PURE__*/React.createElement("span", null, placeholder), /*#__PURE__*/React.createElement("i", null, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: "send",
+      size: 16
+    })))
+  });
+}
+Object.assign(__ds_scope, { chatTurn, chatShell, chatParas, ChatPicture });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/media/ChatPicture.jsx", error: String((e && e.message) || e) }); }
+
+// components/media/playback/ChatPlayback.jsx
+try { (() => {
+// Default pacing, in ms at speed 1 (type is characters per second). Entering pieces use --time-popup (260ms) on --ease.
+const PACE = {
+  lead: 500,
+  type: 32,
+  typeMin: 450,
+  typeMax: 1600,
+  send: 300,
+  enter: 260,
+  think: 700,
+  call: 450,
+  word: 55,
+  wordIn: 140,
+  gap: 300,
+  user: 450,
+  read: 1400,
+  end: 4000
+};
+// cubic-bezier(.16,1,.3,1): the system's --ease, solved here so a time gives the same value everywhere.
+function ease(x) {
+  const cx = .48,
+    bx = 3 * (.3 - .16) - cx,
+    ax = 1 - cx - bx,
+    cy = 3,
+    by = -3,
+    ay = 1;
+  let t = x;
+  for (let n = 0; n < 8; n++) {
+    const e = ((ax * t + bx) * t + cx) * t - x,
+      d = (3 * ax * t + 2 * bx) * t + cx;
+    if (Math.abs(e) < 1e-5 || Math.abs(d) < 1e-6) break;
+    t = Math.min(1, Math.max(0, t - e / d));
+  }
+  return ((ay * t + by) * t + cy) * t;
+}
+const c01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+const nWords = s => String(s).split(/\s+/).filter(Boolean).length;
+// Turns -> when every piece starts. Pure: the same turns and pace always give the same times.
+function timeline(turns, pace, composer) {
+  const p = {
+    ...PACE,
+    ...pace
+  };
+  const sp = p.speed > 0 ? p.speed : 1;
+  const d = x => x / sp;
+  let t = d(p.lead),
+    last = 0;
+  const out = [];
+  const put = (pieces, k, dur) => {
+    pieces[k] = {
+      at: t
+    };
+    last = Math.max(last, t + d(p.enter));
+    t += d(p.enter) + dur;
+  };
+  turns.forEach(tu => {
+    const pieces = {};
+    let type = null;
+    if (tu.from === 'user') {
+      if (composer) {
+        const text = __ds_scope.chatParas(tu.text).join(' ');
+        const dur = d(Math.min(p.typeMax, Math.max(p.typeMin, text.length / p.type * 1000)));
+        type = {
+          start: t,
+          end: t + dur,
+          text
+        };
+        t += dur + d(p.send);
+      }
+      put(pieces, 'u', d(tu.hold ?? p.user));
+    } else {
+      t += d(p.think);
+      if (tu.tool) put(pieces, 'c', d(p.call));
+      (tu.blocks || []).forEach((b, k) => put(pieces, 'b' + k, d(p.gap)));
+      __ds_scope.chatParas(tu.text).forEach((s, k) => {
+        const n = nWords(s);
+        pieces['p' + k] = {
+          at: t,
+          n,
+          word: d(p.word)
+        };
+        const end = t + Math.max(0, n - 1) * d(p.word) + d(p.wordIn);
+        last = Math.max(last, end);
+        t = end + d(p.gap);
+      });
+      (tu.after || []).forEach((b, k) => put(pieces, 'a' + k, d(p.gap)));
+      t += d(tu.hold ?? p.read) - d(p.gap);
+    }
+    out.push({
+      pieces,
+      type
+    });
+  });
+  return {
+    turns: out,
+    total: last,
+    end: d(p.end),
+    enter: d(p.enter),
+    wordIn: d(p.wordIn)
+  };
+}
+function enter(T, at, dur) {
+  if (T < at) return null;
+  const q = c01((T - at) / dur);
+  const e = q >= 1 ? 1 : ease(q);
+  // Same keys at every time, so a seek leaves the same markup as playing there.
+  return {
+    opacity: +e.toFixed(4),
+    transform: 'translateY(' + ((1 - e) * 4).toFixed(2) + 'px)'
+  };
+}
+// Everything drawn at time T, from the timeline and T alone.
+function frame(tl, T) {
+  const fx = {
+    piece: (i, k) => {
+      const p = tl.turns[i] && tl.turns[i].pieces[k];
+      return p ? enter(T, p.at, tl.enter) : {};
+    },
+    words: (i, k, text) => {
+      const p = tl.turns[i] && tl.turns[i].pieces[k];
+      if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return text;
+      let j = 0;
+      return String(text).split(/(\s+)/).map((w, x) => {
+        if (!w || /^\s+$/.test(w)) return w;
+        const o = c01((T - (p.at + j++ * p.word)) / tl.wordIn);
+        return /*#__PURE__*/React.createElement("span", {
+          key: x,
+          style: {
+            opacity: +o.toFixed(4)
+          }
+        }, w);
+      });
+    }
+  };
+  let typed = null,
+    sent = false;
+  tl.turns.forEach(({
+    type,
+    pieces
+  }) => {
+    if (!type) return;
+    const at = pieces.u.at;
+    if (T >= type.start && T < at) {
+      const n = Math.min(type.text.length, Math.floor(c01((T - type.start) / (type.end - type.start)) * type.text.length));
+      typed = {
+        text: type.text.slice(0, n),
+        caret: T < type.end || Math.floor((T - type.end) / 150) % 2 === 1
+      };
+    }
+    if (T >= at && T < at + 120) sent = true;
+  });
+  return {
+    fx,
+    typed,
+    sent
+  };
+}
+function useReducedMotion() {
+  const q = '(prefers-reduced-motion: reduce)';
+  const [r, setR] = React.useState(() => typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(q).matches);
+  React.useEffect(() => {
+    if (!window.matchMedia) return undefined;
+    const m = window.matchMedia(q),
+      f = () => setR(m.matches);
+    if (m.addEventListener) m.addEventListener('change', f);else m.addListener(f);
+    return () => {
+      if (m.removeEventListener) m.removeEventListener('change', f);else m.removeListener(f);
+    };
+  }, []);
+  return r;
+}
+// Follows the newest piece; a reader who scrolls takes over until they scroll back to the bottom. Under a given time it always follows.
+function usePlaybackScroll(body, pinned) {
+  const follow = React.useRef(true),
+    touched = React.useRef(false);
+  const [up, setUp] = React.useState(false);
+  React.useLayoutEffect(() => {
+    const b = body.current;
+    if (!b) return;
+    if (pinned || follow.current) b.scrollTop = b.scrollHeight;
+    const u = b.scrollTop > 4;
+    b.dataset.more = u ? 'up' : '';
+    setUp(u);
+  });
+  React.useEffect(() => {
+    const b = body.current;
+    if (!b) return undefined;
+    const take = () => {
+      touched.current = true;
+    };
+    const mark = () => {
+      if (touched.current) follow.current = b.scrollHeight - b.scrollTop - b.clientHeight < 8;
+      const u = b.scrollTop > 4;
+      b.dataset.more = u ? 'up' : '';
+      setUp(u);
+    };
+    b.addEventListener('scroll', mark, {
+      passive: true
+    });
+    ['wheel', 'touchstart', 'keydown'].forEach(t => b.addEventListener(t, take, {
+      passive: true
+    }));
+    return () => {
+      b.removeEventListener('scroll', mark);
+      ['wheel', 'touchstart', 'keydown'].forEach(t => b.removeEventListener(t, take));
+    };
+  }, []);
+  const toStart = () => {
+    const b = body.current;
+    if (!b) return;
+    touched.current = true;
+    follow.current = false;
+    b.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+  const rejoin = () => {
+    follow.current = true;
+    touched.current = false;
+  };
+  return [up, toStart, rejoin];
+}
+function ChatPlayback({
+  turns,
+  time,
+  autoplay = true,
+  loop = false,
+  speed = 1,
+  pace,
+  title,
+  toolBy,
+  mark,
+  height = 290,
+  width = 360,
+  fill = false,
+  composer = true,
+  placeholder = 'Reply',
+  label,
+  more = 'Back to the start',
+  pauseLabel = 'Pause',
+  playLabel = 'Play',
+  replayLabel = 'Play again',
+  className = ''
+}) {
+  const reduced = useReducedMotion();
+  const tl = React.useMemo(() => timeline(turns, {
+    ...pace,
+    speed
+  }, composer), [turns, JSON.stringify(pace || {}), speed, composer]);
+  const given = typeof time === 'number' && isFinite(time);
+  const cycle = tl.total + tl.end;
+  const [own, setOwn] = React.useState(0);
+  const [playing, setPlaying] = React.useState(autoplay);
+  const body = React.useRef(null);
+  const [up, toStart, rejoin] = usePlaybackScroll(body, given);
+  React.useEffect(() => {
+    if (given || reduced || !playing) return undefined;
+    let raf,
+      last = null;
+    const step = now => {
+      const dt = last == null ? 0 : Math.min(250, now - last);
+      last = now;
+      setOwn(t => {
+        const n = t + dt;
+        if (loop) {
+          if (n >= cycle) {
+            rejoin();
+            return n - cycle;
+          }
+          return n;
+        }
+        return Math.min(n, tl.total);
+      });
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [given, reduced, playing, loop, tl]);
+  const T = given ? loop ? (time % cycle + cycle) % cycle : Math.max(0, Math.min(time, tl.total)) : own;
+  const done = !loop && T >= tl.total;
+  React.useEffect(() => {
+    if (!given && done && playing) setPlaying(false);
+  }, [done]);
+  if (reduced) return /*#__PURE__*/React.createElement(__ds_scope.ChatPicture, {
+    turns: turns,
+    title: title,
+    toolBy: toolBy,
+    mark: mark,
+    height: height,
+    width: width,
+    fill: fill,
+    composer: composer,
+    placeholder: placeholder,
+    label: label,
+    more: more,
+    className: className
+  });
+  const {
+    fx,
+    typed,
+    sent
+  } = frame(tl, T);
+  const press = () => {
+    if (playing) setPlaying(false);else {
+      if (done) {
+        setOwn(0);
+        rejoin();
+      }
+      setPlaying(true);
+    }
+  };
+  const ctl = given ? null : /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "mcp-chat-pause",
+    onClick: press,
+    "aria-label": playing ? pauseLabel : done ? replayLabel : playLabel
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: playing ? 'pause' : 'play',
+    size: 16
+  }));
+  return __ds_scope.chatShell({
+    bodyRef: body,
+    up,
+    toStart,
+    title,
+    height,
+    width,
+    fill,
+    label,
+    more,
+    className,
+    extraClass: 'is-playback',
+    control: ctl,
+    body: turns.map((t, i) => __ds_scope.chatTurn(t, i, {
+      mark,
+      toolBy,
+      fx
+    })),
+    comp: composer && /*#__PURE__*/React.createElement("div", {
+      className: "mcp-chat-comp",
+      "aria-hidden": "true"
+    }, typed ? /*#__PURE__*/React.createElement("span", {
+      className: "mcp-chat-typed"
+    }, typed.text, /*#__PURE__*/React.createElement("span", {
+      className: "mcp-chat-caret",
+      style: {
+        opacity: typed.caret ? 1 : 0
+      }
+    })) : /*#__PURE__*/React.createElement("span", null, placeholder), /*#__PURE__*/React.createElement("i", {
+      className: sent ? 'is-sent' : undefined
+    }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: "send",
+      size: 16
+    })))
+  });
+}
+// How long the chat takes to play to its finished picture, in ms, for a recorder or a scrubber.
+ChatPlayback.duration = (turns, {
+  pace,
+  speed = 1,
+  composer = true
+} = {}) => timeline(turns, {
+  ...pace,
+  speed
+}, composer).total;
+Object.assign(__ds_scope, { ChatPlayback });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/media/playback/ChatPlayback.jsx", error: String((e && e.message) || e) }); }
 
 // components/press.js
 try { (() => {
@@ -1671,6 +2128,7 @@ try { (() => {
 // Inside a CardRow the row shares the three lines; each card's chips are centred in the shared chip line (docs/specs/card-chip-alignment/).
 function GameCard({
   art,
+  pass,
   title,
   mark,
   blurb,
@@ -1683,7 +2141,12 @@ function GameCard({
     style: style
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-gcard-art"
-  }, art), /*#__PURE__*/React.createElement("div", {
+  }, art, pass && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-passmark"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "lock",
+    size: 14
+  }), "Pass")), /*#__PURE__*/React.createElement("div", {
     className: "mcp-gcard-text"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-gcard-name"
@@ -1703,6 +2166,7 @@ try { (() => {
 // One of Discover's two picks: a featured game. A 3:1 picture, a label, the name and blurb, tags. Two side by side in .mcp-gpicks line up.
 function GamePick({
   art,
+  pass,
   label,
   title,
   blurb,
@@ -1715,7 +2179,12 @@ function GamePick({
     style: style
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-gpick-art"
-  }, art), /*#__PURE__*/React.createElement("div", {
+  }, art, pass && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-passmark"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "lock",
+    size: 14
+  }), "Pass")), /*#__PURE__*/React.createElement("div", {
     className: "mcp-gpick-text"
   }, /*#__PURE__*/React.createElement("span", {
     className: "mcp-gpick-label"
@@ -1735,6 +2204,7 @@ try { (() => {
 // A game tile for the all-games wall: square picture, name and kind. Smaller and plainer than a GameCard, for scanning and searching the whole catalogue.
 function GameTile({
   art,
+  pass,
   title,
   kind,
   className = '',
@@ -1745,7 +2215,12 @@ function GameTile({
     style: style
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-gtile-art"
-  }, art), /*#__PURE__*/React.createElement("span", {
+  }, art, pass && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-passmark"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "lock",
+    size: 14
+  }), "Pass")), /*#__PURE__*/React.createElement("span", {
     className: "mcp-gtile-name"
   }, title), kind && /*#__PURE__*/React.createElement("span", {
     className: "mcp-gtile-kind"
@@ -7169,6 +7644,8 @@ __ds_ns.GameArt = __ds_scope.GameArt;
 __ds_ns.ICON_NAMES = __ds_scope.ICON_NAMES;
 
 __ds_ns.Icon = __ds_scope.Icon;
+
+__ds_ns.ChatPlayback = __ds_scope.ChatPlayback;
 
 __ds_ns.Card = __ds_scope.Card;
 

@@ -2,6 +2,8 @@
 export interface GamePickProps{
   /** The picture. Usually GameArt shape="wide"; it is shown at 3:1. */
   art:React.ReactNode;
+  /** Set on a game that needs the Pass, for a player without it. Draws the Pass mark (lock and "Pass", solid, square) in the picture's top-right corner. Leave it off for Pass holders and free games: the card is then unchanged. It shows the Pass, never a price, and it isn't a control: the card's one link opens the game. */
+  pass?:boolean;
   /** Why it's picked, in caps, e.g. "FREE EVERY DAY". Both picks have one. */
   label:React.ReactNode;
   /** The game's name. Pass the card's one link or button here. */

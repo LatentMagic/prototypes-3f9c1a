@@ -12,3 +12,4 @@ GamePick is one of Discover's two picks: a game featured by hand, above the rows
 - Always two, in `.mcp-gpicks`, so they line up. Both have a label.
 - The label says why it's picked, not what the game is.
 - The picture is 3:1. Don't resize it to fill.
+- A game that needs the Pass gets `pass` (a player without the Pass sees the mark on the picture; a Pass holder and every free game don't). The Pass is never a tag in the tag row, and the mark never carries a price.

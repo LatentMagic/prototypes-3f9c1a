@@ -8,5 +8,5 @@
 <script type="text/babel">
 const {GameTile,GameArt}=window.MCPGameStoreDesignSystem_ef1abd;
 const G=[['word','Daily Word','Puzzle'],['groups','Daily Groups','Puzzle'],['mystery','Daily Mystery','Puzzle'],['casebook','Casebook','Mystery'],['hunter','36,000 Summers Ago','Learning']];
-ReactDOM.createRoot(document.getElementById('root')).render(<div><p className="cap">ALL GAMES WALL</p><div className="mcp-gwall">{G.map(([a,n,k])=><GameTile key={n} className="mcp-art-host" art={<GameArt art={a} shape="square"/>} title={<button type="button" className="mcp-gtile-open mcp-art-link">{n}</button>} kind={k}/>)}</div></div>);
+ReactDOM.createRoot(document.getElementById('root')).render(<div><p className="cap">ALL GAMES WALL. THE MARK SHOWS ON GAMES THAT NEED THE PASS</p><div className="mcp-gwall">{G.map(([a,n,k])=><GameTile key={n} pass={a==='hunter'} className="mcp-art-host" art={<GameArt art={a} shape="square"/>} title={<button type="button" className="mcp-gtile-open mcp-art-link">{n}</button>} kind={k}/>)}</div></div>);
 </script></body></html>

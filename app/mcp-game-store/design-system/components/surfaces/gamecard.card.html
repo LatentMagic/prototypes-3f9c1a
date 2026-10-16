@@ -7,9 +7,9 @@
 <style>body{margin:0;padding:20px;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text)}.cap{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--muted);margin:0 0 12px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,280px));gap:24px}</style></head><body><div id="root"></div>
 <script type="text/babel">
 const {GameCard,GameArt,CardRow,Tag}=window.MCPGameStoreDesignSystem_ef1abd;
-const T=(xs)=>xs.map(x=>x==='Pass'?<button key={x} type="button" style={{background:'none',border:0,padding:0,minHeight:44,display:'inline-flex',alignItems:'center'}}><Tag kind="locked">Pass</Tag></button>:<Tag key={x} kind={/free/i.test(x)?'free':'daily'}>{x}</Tag>);
-const row=[['hunter','36,000 Summers Ago','Grey dawn below Chauvet cave. Go where you like.',['Pass','2 hours']],['casebook','Casebook','Ask the question they haven’t prepared for.',['First case free','Weekly','25–40 min']],['word','Daily Word','You already know today’s answer. Start guessing.',['Free','Daily','10 min']]];
+const T=(xs)=>xs.map(x=><Tag key={x} kind={/free/i.test(x)?'free':'daily'}>{x}</Tag>);
+const row=[['hunter','36,000 Summers Ago','Grey dawn below Chauvet cave. Go where you like.',['2 hours']],['casebook','Casebook','Ask the question they haven’t prepared for.',['First case free','Weekly','25–40 min']],['word','Daily Word','You already know today’s answer. Start guessing.',['Free','Daily','10 min']]];
 ReactDOM.createRoot(document.getElementById('root')).render(<div style={{display:'grid',gap:32}}>
-<div><p className="cap">IN A CARDROW: REAL COPY. ONE LINE OF TAGS SITS CENTRED BESIDE TWO</p><CardRow title="More games">{row.map(([a,n,b,t])=><GameCard key={n} art={<GameArt art={a} shape="wide"/>} title={n} blurb={b} tags={T(t)}/>)}</CardRow></div>
+<div><p className="cap">IN A CARDROW: REAL COPY. ONE LINE OF TAGS SITS CENTRED BESIDE TWO. 36,000 SUMMERS AGO NEEDS THE PASS</p><CardRow title="More games">{row.map(([a,n,b,t])=><GameCard key={n} pass={a==='hunter'} art={<GameArt art={a} shape="wide"/>} title={n} blurb={b} tags={T(t)}/>)}</CardRow></div>
 </div>);
 </script></body></html>
