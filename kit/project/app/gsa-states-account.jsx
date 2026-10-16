@@ -53,6 +53,12 @@ function gsaStageDelete(status, review, params) {
 const GSA_STATES_ACCOUNT_ONLY = [
   { group: 'Account', id: 'account', label: 'Account page, password account', platform: 'web',
     stage: (c) => { c.go('account'); } },
+  { group: 'Account', id: 'account-google', label: 'Account page, Google account (managed by Google)', platform: 'web',
+    stage: (c) => { c.as('casey'); c.go('account'); } },
+  { group: 'Account', id: 'account-apple', label: 'Account page, Apple account with a hidden email (relay address)', platform: 'web',
+    stage: (c) => { c.as('robin'); c.go('account'); } },
+  { group: 'Account', id: 'reverify-code', label: 'Prove it’s you: emailed code (Google account, before export)', platform: 'web',
+    stage: (c) => { c.as('casey'); c.go('account', { dialog: 'reverify', for: 'export' }); } },
   { group: 'Account', id: 'account-direct', label: 'Account page opened directly (Back goes Home)', platform: 'web',
     stage: (c) => { c.store.replace('account'); } },
   { group: 'Account', id: 'account-no-notifications', label: 'Account page on a device that cannot get Notifications', platform: 'web',

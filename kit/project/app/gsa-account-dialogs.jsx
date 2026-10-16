@@ -61,12 +61,22 @@ const GSA_ACCOUNT_REVERIFY_WHY = {
   delete: 'Before you delete your account, prove it is you.',
 };
 
+// Password account: a password. Provider-managed account (no password): a code emailed
+// to its address, a relay address included. "Send a new code" remounts the form (key),
+// which clears the typed code and its old error. Both are picks (GSA-013 Additional).
 function GsaReverifyDialog({ route }) {
   const g = useGsa();
+  const [n, setN] = React.useState(0);
+  return <GsaReverifyForm key={n} route={route} g={g} sent={n > 0} onNewCode={() => setN(n + 1)} />;
+}
+
+function GsaReverifyForm({ route, g, sent, onNewCode }) {
+  const usesPassword = g.person.method === 'password';
   const slowDelete = route.for === 'delete' && gsaAccountSubActive(g) && g.review.payProvider === 'slow';
   const [busy, run] = useGsaBusy(slowDelete ? 2500 : 900);
   const form = useGsaForm({
     proof: (v) => {
+      if (!usesPassword) return gsaAccountCodeError(v);
       if (!v) return 'Enter your password.';
       return v === 'wrong-password' ? 'That password is not correct.' : null;
     },
@@ -91,7 +101,16 @@ function GsaReverifyDialog({ route }) {
       <form onSubmit={submit} noValidate>
         <p className="gsa-account-dialog-text">{GSA_ACCOUNT_REVERIFY_WHY[route.for] || GSA_ACCOUNT_REVERIFY_WHY.export}</p>
         <p className="gsa-account-dialog-text"><GsaPick>Each app selects the proof</GsaPick></p>
-        <GsaField label="Password" type="password" autoComplete="current-password" {...form.bind('proof')} />
+        {usesPassword ? (
+          <GsaField label="Password" type="password" autoComplete="current-password" {...form.bind('proof')} />
+        ) : (
+          <>
+            <p className="gsa-account-dialog-text">We emailed a code to {g.person.email}.</p>
+            <GsaCodeField label="Code" {...form.bind('proof')} />
+            {sent ? <div className="gsa-account-dialog-status"><GsaStatusLine>A new code was sent.</GsaStatusLine></div> : null}
+            <GsaButton kind="link" onClick={onNewCode}>Send a new code</GsaButton>
+          </>
+        )}
       </form>
     </GsaDialog>
   );

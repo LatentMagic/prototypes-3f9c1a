@@ -67,6 +67,20 @@ function GsaAccountEmailCard({ g, notice }) {
   );
 }
 
+// GSA-017.AF-01: one card in place of change password and change email; no form for either.
+const GSA_ACCOUNT_PROVIDER = { google: 'Google', apple: 'Apple' };
+
+function GsaAccountProviderCard({ g }) {
+  const provider = GSA_ACCOUNT_PROVIDER[g.person.method] || 'your sign-in provider';
+  return (
+    <GsaCard title="Email and sign-in">
+      <p className="gsa-account-text">
+        You sign in with {provider}. Change your email address and sign-in details with {provider}.
+      </p>
+    </GsaCard>
+  );
+}
+
 function GsaAccountExportCard({ notice }) {
   const g = useGsa();
   const [limited, setLimited] = React.useState(false);
@@ -103,9 +117,14 @@ function GsaAccount() {
   const g = useGsa();
   const route = g.route;
   const notice = route.notice;
+  const managed = g.person.method !== 'password';
+  const emailDialog = route.dialog === 'email-code' || (route.dialog === 'reverify' && route.for === 'email');
+  const blocked = managed && emailDialog;
+  // GSA-012.AF-01: a Provider-managed account never reaches the email-change dialogs.
+  React.useEffect(() => { if (blocked) GsaStore.replace('account', {}); }, [blocked]);
   const Subscription = window.GsaSubscriptionCard;
   const Notifications = window.GsaNotificationsCard;
-  const Dialog = route.dialog && window.GSA_DIALOGS ? window[window.GSA_DIALOGS[route.dialog]] : null;
+  const Dialog = route.dialog && !blocked && window.GSA_DIALOGS ? window[window.GSA_DIALOGS[route.dialog]] : null;
   return (
     <main className="gsa-page-wide">
       <div className="gsa-account-top">
@@ -120,8 +139,14 @@ function GsaAccount() {
       <div className="gsa-account-grid">
         {g.tiers.payment && Subscription ? <GsaAccountSlot><Subscription notice={notice} /></GsaAccountSlot> : null}
         {!g.isApp && g.push.channel !== 'none' && Notifications ? <GsaAccountSlot><Notifications /></GsaAccountSlot> : null}
-        <GsaAccountSlot><GsaAccountPasswordCard notice={notice} /></GsaAccountSlot>
-        <GsaAccountSlot><GsaAccountEmailCard g={g} notice={notice} /></GsaAccountSlot>
+        {managed ? (
+          <GsaAccountSlot><GsaAccountProviderCard g={g} /></GsaAccountSlot>
+        ) : (
+          <>
+            <GsaAccountSlot><GsaAccountPasswordCard notice={notice} /></GsaAccountSlot>
+            <GsaAccountSlot><GsaAccountEmailCard g={g} notice={notice} /></GsaAccountSlot>
+          </>
+        )}
         <GsaAccountSlot><GsaAccountExportCard notice={notice} /></GsaAccountSlot>
         <GsaAccountSlot danger><GsaAccountDeleteCard /></GsaAccountSlot>
       </div>

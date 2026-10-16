@@ -6,7 +6,7 @@
 // ============================================================================
 const GSA_SCREENS = {
   'home': 'GsaHome', 'sign-in': 'GsaSignIn', 'sign-up': 'GsaSignUp', 'sign-up-code': 'GsaSignUpCode',
-  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'provider': 'GsaProvider', // GSA-008 'account': 'GsaAccount',
+  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'provider': 'GsaProvider', 'account': 'GsaAccount', // provider: GSA-008
   'plans': 'GsaPlans', 'subscribe': 'GsaSubscribe', 'hosted-payment': 'GsaHostedPayment', 'invite': 'GsaInvite',
   'invite-link': 'GsaInviteLink', 'invite-invalid': 'GsaInviteInvalid', 'invite-full': 'GsaInviteFull',
   'shared-space': 'GsaSharedSpace', 'connect': 'GsaConnect',

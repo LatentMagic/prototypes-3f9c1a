@@ -52,7 +52,11 @@ const GsaConfigExtra = () => {
 
       <div className="kit-config-group-title">Who</div>
       {row('Signed in', g.session, (v) => (v === 'signed-in' ? S.signInAvailable() : S.set({ session: v })), [['signed-in', 'Signed in'], ['visitor', 'Visitor']])}
-      {row('Device', r.device, (v) => setReview({ device: v }), [['known', 'Known'], ['new', 'New']])}
+      {row('Device', r.device, (v) => setReview({ device: v }), [['known', 'Known'], ['new', 'New']], 'Google and Apple too.')}
+      {row('Google and Apple', r.provider, (v) => setReview({ provider: v }), [['works', 'Works'], ['fails', 'Fails']],
+        'Fails: a line under the buttons (GSA-008.EF-02). Cancel on the provider’s page returns with nothing shown (EF-03).')}
+      {row('Google or Apple account', r.providerAccount, (v) => setReview({ providerAccount: v }), [['existing', 'Has an account'], ['first-visit', 'A new person']],
+        'Has an account: Google is Casey Morgan, Apple is Robin Park (hidden email). A new person gets an account on Continue (GSA-008.AF-02); Apple then asks to share or hide the email. Once made, it is an account the next time.')}
       {row('Authenticator app', person.enrolled ? 'yes' : 'no', (v) => S.set({ person: { enrolled: yn(v) } }), [['no', 'Not enrolled'], ['yes', 'Enrolled']])}
       {row('Email change asks to prove it’s you', r.emailReverify, (v) => setReview({ emailReverify: v }), [['asks', 'Asks'], ['recent', 'Recent sign-in']],
         'Recent sign-in: no check, the code goes straight to the new address (GSA-012.AF-03).')}
@@ -103,7 +107,6 @@ const GsaConfigExtra = () => {
       {row('Room', space.full ? 'full' : 'room', (v) => S.set({ space: { full: v === 'full' } }), [['room', 'Room'], ['full', 'Full']])}
       {row('Copy', r.clipboard, (v) => setReview({ clipboard: v }), [['ok', 'Works'], ['refused', 'Refused']])}
       {row('Invite link', r.inviteValid ? 'valid' : 'invalid', (v) => setReview({ inviteValid: v === 'valid' }), [['valid', 'Valid'], ['invalid', 'Not valid']])}
-      {row('Invited email', r.inviteMatch, (v) => setReview({ inviteMatch: v }), [['match', 'This account'], ['alias', 'gmail-googlemail alias'], ['other', 'Another account']])}
 
       <div className="kit-config-group-title">Notifications</div>
       {isApp ? (

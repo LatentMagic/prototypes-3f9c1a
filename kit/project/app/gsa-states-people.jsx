@@ -31,18 +31,14 @@ const GSA_STATES_INVITES = [
     } },
   { group: 'Invitations', id: 'accept-already-member', label: 'Invite link, already a member', platform: 'web',
     stage: (c) => { c.go('invite-link'); } },
-  { group: 'Invitations', id: 'accept-gmail-alias', label: 'Invite link to a googlemail address, signed in on the gmail one: joins', platform: 'web',
-    stage: (c) => {
-      gsaStageNonMember(c);
-      c.set({ person: { email: 'alex.chen@gmail.com' }, invite: { email: 'alex.chen@googlemail.com' }, review: { inviteMatch: 'alias' } });
-      c.go('invite-link');
-    } },
+  { group: 'Invitations', id: 'accept-other-address', label: 'Invite link made for another address, signed in as Alex: joins', platform: 'web',
+    stage: (c) => { c.as('alex'); c.set({ invite: { email: 'jo.new@example.com' } }); c.go('invite-link'); } },
+  { group: 'Invitations', id: 'accept-hidden-email', label: 'Invite link, signed in with a hidden Apple email: joins', platform: 'web',
+    stage: (c) => { c.as('robin'); c.go('invite-link'); } },
   { group: 'Invitations', id: 'invite-invalid', label: 'Invite link invalid, expired or revoked', platform: 'web',
     stage: (c) => { c.set({ review: { inviteValid: false } }); c.go('invite-link'); } },
   { group: 'Invitations', id: 'invite-full', label: 'Invite link, the shared space is full', platform: 'web',
     stage: (c) => { gsaStageNonMember(c); c.set({ space: { full: true } }); c.go('invite-link'); } },
-  { group: 'Invitations', id: 'invite-other-account', label: 'Invite link for another account', platform: 'web',
-    stage: (c) => { gsaStageNonMember(c); c.set({ review: { inviteMatch: 'other' } }); c.go('invite-link'); } },
 ];
 
 const GSA_STATES_AI = [

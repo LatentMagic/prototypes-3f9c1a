@@ -1,6 +1,7 @@
 // ============================================================================
 // Golden Sample App - invitations: Invite page (S15), Invite link landing (S16),
-// Invalid / Full / Other-account pages (S17-S19), Shared space (S20).
+// Invalid / Full pages (S17-S18), Shared space (S20). GSA-025 compares no address:
+// whoever follows the Invite link and signs in joins (AF-04: a hidden Apple email joins too).
 // Styles: gsa-people.css. Outcomes come from gsaInviteOutcome in the store.
 // ============================================================================
 
@@ -125,33 +126,6 @@ function GsaInviteFull() {
   return <GsaInviteEnd title="This shared space is full">There is no room for another member right now.</GsaInviteEnd>;
 }
 
-// ---- S19: the invitation is for another account ------------------------------
-function GsaInviteOtherAccount() {
-  // GSA-025.EF-03: the refused account is never added. It is remembered so that, after the sign-out,
-  // only a different account signing in counts as the invited person and joins.
-  React.useEffect(() => {
-    const s = GsaStore.get();
-    const refused = s.pending && s.pending.refusedWho;
-    if (refused && s.who && s.who !== refused) {
-      GsaStore.set({ review: { inviteMatch: 'match' }, pending: { refusedWho: null } });
-      const landed = window.gsaInviteOutcome(GsaStore.get());
-      GsaStore.replace(landed.name, gsaParams(landed));
-    }
-  }, []);
-  const continueAs = () => {
-    const s = GsaStore.get();
-    GsaStore.set({ pending: { invite: s.invite.id, refusedWho: s.who } });
-    GsaStore.signOut({ keepPending: true });
-  };
-  return (
-    <main className="gsa-page gsa-people-page">
-      <h1 className="gsa-heading">This invitation is for another person</h1>
-      <p className="gsa-text">You are signed in as someone else. To accept it, sign in as the person it was sent to.</p>
-      <GsaButton onClick={continueAs}>Continue as the invited person</GsaButton>
-    </main>
-  );
-}
-
 // ---- Shared space (S20): a Slot and the Owner's way to Invite (no member list, D4) -
 function GsaSharedSpace({ route }) {
   const g = useGsa();
@@ -174,5 +148,5 @@ function GsaSharedSpace({ route }) {
 }
 
 Object.assign(window, {
-  GsaInvite, GsaInviteLink, GsaInviteInvalid, GsaInviteFull, GsaInviteOtherAccount, GsaSharedSpace,
+  GsaInvite, GsaInviteLink, GsaInviteInvalid, GsaInviteFull, GsaSharedSpace,
 });

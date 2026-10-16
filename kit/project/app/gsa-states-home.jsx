@@ -48,6 +48,27 @@ const GSA_STATES_HOME = [
       c.store.replace('sign-in-code', { kind: 'authenticator', method: 'password', via: 'sign-in' });
     } },
 
+  { group: 'Sign in', id: 'provider-fails', label: 'Sign-in view: Google or Apple sign-in failed', platform: 'web',
+    stage: (c) => { gsaStageVisitor(c); c.set({ review: { provider: 'fails' } }); c.store.replace('sign-in', { failed: 'google' }); } },
+  { group: 'Sign in', id: 'provider-first-visit', label: 'Google, first visit: account made, then the device code', platform: 'web',
+    stage: (c) => {
+      gsaStageVisitor(c);
+      c.set({ review: { providerAccount: 'first-visit' } });
+      const g = window.GSA_PROVIDER_PEOPLE.google.firstVisit;
+      const key = c.store.addAccount({ first: g.first, last: g.last, email: g.email, method: 'google', providerId: g.id });
+      window.gsaAuthProceed(key, 'sign-up', true);
+    } },
+  { group: 'Sign in', id: 'apple-hide-email', label: 'Apple, first visit, Hide My Email: the code goes to the relay address', platform: 'web',
+    stage: (c) => {
+      gsaStageVisitor(c);
+      c.set({ review: { providerAccount: 'first-visit' } });
+      const a = window.GSA_PROVIDER_PEOPLE.apple.firstVisit;
+      const key = c.store.addAccount({ first: a.first, last: a.last, email: a.relay, method: 'apple', providerId: a.id });
+      window.gsaAuthProceed(key, 'sign-up', true);
+    } },
+  { group: 'Sign in', id: 'store-app-google', label: 'App: Google sign-in opens the system browser', platform: 'app',
+    stage: (c) => { gsaStageVisitor(c); c.store.replace('provider', { provider: 'google', from: 'sign-in' }); } },
+
   { group: 'Sign up', id: 'sign-up-free-app', label: 'Sign-up page in an app that takes no payment (no Refund Policy)', platform: 'web',
     stage: (c) => { gsaStageVisitor(c); c.set({ tiers: { payment: false } }); c.store.replace('sign-up'); } },
 
