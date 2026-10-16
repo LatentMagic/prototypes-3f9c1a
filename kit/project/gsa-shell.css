@@ -1,20 +1,31 @@
 /* Golden Sample App - frame and site pages. Tokens only. */
 .gsa-shell { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; background: var(--color-surface); color: var(--color-fg-1); font-family: var(--font-sans); }
 .kit-phone-screen .gsa-shell { min-height: 100%; }
-.gsa-shell-main { flex: 1 0 auto; display: block; }
+/* The main region is a container the screens query for their width (GOTCHA 6). It never holds a
+   dialog: GsaDialog portals into #gsa-overlay-root, a sibling of main, because a container
+   captures position: fixed children (GOTCHA 3). */
+.gsa-shell-main { flex: 1 0 auto; display: block; container: gsa-main / inline-size; }
+.gsa-overlay-root:empty { display: none; }
 
-.gsa-shell-header { border-bottom: 1px solid var(--color-border-2); background: var(--color-surface); padding-top: var(--safe-area-inset-top, 0px); }
-.gsa-shell-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); max-width: var(--width-page); margin: 0 auto; padding: var(--space-2) var(--space-4); }
-.gsa-shell-name { font-size: var(--text-lg); font-weight: 600; }
-.gsa-shell-nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); }
+/* Header: one row for the name and the person's menu; the pick links take their own row at narrow widths. */
+.gsa-shell-header { container: gsa-header / inline-size; border-bottom: 1px solid var(--color-border-2); background: var(--color-surface); padding-top: var(--safe-area-inset-top, 0px); }
+.gsa-shell-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); max-width: var(--width-page); margin: 0 auto; padding: var(--space-2) var(--space-4); }
+.gsa-shell-name { flex: 1 1 auto; font-size: var(--text-lg); font-weight: 600; }
+.gsa-shell-nav { order: 3; flex: 1 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin-left: calc(var(--space-2) * -1); }
+.gsa-shell-end { order: 2; display: flex; align-items: center; }
+@container gsa-header (min-width: 520px) {
+  .gsa-shell-nav { order: 1; flex: 0 1 auto; margin-left: 0; }
+  .gsa-shell-end { order: 2; }
+  .gsa-shell-name { order: 0; }
+}
+@container gsa-header (min-width: 640px) { .gsa-shell-bar { padding-left: var(--space-6); padding-right: var(--space-6); } }
 
-.gsa-shell-footer { flex-shrink: 0; border-top: 1px solid var(--color-border-2); padding: var(--space-4) var(--space-4) calc(var(--space-4) + var(--safe-area-inset-bottom, 0px)); }
+.gsa-shell-footer { container: gsa-footer / inline-size; flex-shrink: 0; border-top: 1px solid var(--color-border-2); padding-bottom: var(--safe-area-inset-bottom, 0px); }
+.gsa-shell-footer-in { padding: var(--space-4); }
+@container gsa-footer (min-width: 640px) { .gsa-shell-footer-in { padding-left: var(--space-6); padding-right: var(--space-6); } }
 .gsa-shell-footer-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-3); max-width: var(--width-page); margin: 0 auto; }
+.gsa-shell-nav > span, .gsa-shell-footer-nav > span { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-3); }
 .gsa-shell-support { max-width: var(--width-page); margin: var(--space-2) auto 0; font-size: var(--text-sm); color: var(--color-fg-3); }
 .gsa-shell-support a { color: var(--color-accent); }
 
 .gsa-shell-list { margin: 0 0 var(--space-4); padding-left: var(--space-5); font-size: var(--text-base); color: var(--color-fg-2); }
-
-@media (min-width: 640px) {
-  .gsa-shell-bar, .gsa-shell-footer { padding-left: var(--space-6); padding-right: var(--space-6); }
-}

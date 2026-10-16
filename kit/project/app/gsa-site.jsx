@@ -6,13 +6,16 @@
 const GSA_SITE_PAID_VIEWS = ['subscribed', 'ending', 'payment-failed'];
 
 // GSA-030: one link, no reason, no detail. Home when signed in, Sign-in for a Visitor.
+// What a Visitor sees at a Dead address that is not a Signed-in address is each app's pick (D18).
 function GsaNotFound() {
   const g = useGsa();
   const signedIn = g.session === 'signed-in';
   return (
     <div className="gsa-page">
       <h1 className="gsa-heading">Page not found</h1>
-      <p className="gsa-text">There is no page at this address.</p>
+      <p className="gsa-text">
+        {signedIn ? 'There is no page at this address.' : <GsaPick>There is no page at this address.</GsaPick>}
+      </p>
       <GsaButton onClick={() => window.GsaStore.go(signedIn ? 'home' : 'sign-in')}>
         {signedIn ? 'Go to Home' : 'Go to Sign in'}
       </GsaButton>

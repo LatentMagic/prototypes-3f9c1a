@@ -6,7 +6,7 @@
 
 .gsa-queue-form { margin-bottom: var(--space-5); padding: var(--space-5); background: var(--color-surface); border: 1px solid var(--color-border-2); border-radius: var(--radius-lg); }
 .gsa-queue-form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); }
-@media (max-width: 479px) { .gsa-queue-form-actions { flex-direction: column-reverse; } .gsa-queue-form-actions .gsa-btn { width: 100%; } }
+@container gsa-main (max-width: 479px) { .gsa-queue-form-actions { flex-direction: column-reverse; } .gsa-queue-form-actions .gsa-btn { width: 100%; } }
 
 .gsa-queue-error { margin: 0 0 var(--space-4); font-size: var(--text-sm); color: var(--color-danger); }
 .gsa-queue-form .gsa-queue-error { font-size: var(--text-base); }
@@ -16,7 +16,8 @@
 .gsa-queue-tab:hover { color: var(--color-fg-1); }
 .gsa-queue-tab[aria-selected="true"] { color: var(--color-fg-1); border-bottom-color: var(--color-accent); }
 .gsa-queue-tab:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: calc(var(--ring-offset) * -1); }
-.gsa-queue-panel:focus { outline: none; }
+.gsa-queue-panel:focus, .gsa-queue .gsa-heading:focus { outline: none; }
+.gsa-queue-card:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); }
 
 .gsa-queue-refreshing { margin-bottom: var(--space-3); font-size: var(--text-sm); color: var(--color-fg-3); }
 

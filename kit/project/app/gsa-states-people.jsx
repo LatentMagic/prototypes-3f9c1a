@@ -4,7 +4,7 @@
 
 // Sign in as a person who is not in the shared space yet, so the link joins.
 function gsaStageNonMember(c) {
-  c.as('google');
+  c.as('alex');
 }
 
 const GSA_STATES_INVITES = [
@@ -18,8 +18,7 @@ const GSA_STATES_INVITES = [
     stage: (c) => { gsaStageNonMember(c); c.go('invite-link'); } },
   { group: 'Invitations', id: 'accept-signed-out', label: 'Invite link, signed out: sign in first', platform: 'web',
     stage: (c) => {
-      // Sam is the Owner but not yet on the member list, so signing in joins.
-      c.set({ space: { members: [{ name: 'Jo Rivera', email: 'member@example.com' }, { name: 'Kim Lee', email: 'kim@example.com' }] } });
+      // Sam stays the Owner and a member. Sign in as alex@example.com (not yet a member) to join.
       c.store.signOut();
       c.go('invite-link');
     } },
@@ -44,15 +43,15 @@ const GSA_STATES_AI = [
   ['ai-no-account', 'AI app: you need an account', 'no-account'],
   ['ai-refused-call', 'AI app: a refused call, with its reason', 'refused-call'],
   ['ai-no-sale', 'AI app: needs a Subscription (links to Plans)', 'no-sale'],
-].map((d) => ({ group: 'AI app', id: d[0], label: d[1], platform: 'web', stage: (c) => { c.go('ai-app', { reply: d[2] }); } }));
+].map((d) => ({ group: 'AI app', id: d[0], label: d[1], platform: 'web', stage: (c) => { if (d[0] === 'ai-no-account') c.store.signOut(); c.go('ai-app', { reply: d[2] }); } }));
 
 // Push states: the patch each one writes, then the screen it opens on.
 // [id, label, push patch, route]
 const GSA_PUSH_DEFS = [
   ['notify-ask', 'Notifications: the ask on Home', {}, 'home'],
   ['notify-os-prompt', 'Notifications: the device’s permission prompt open', { asked: true, prompt: true }, 'account'],
-  ['notify-on', 'Notifications: on, one control per event', { perm: 'granted', on: true, registered: true, asked: true }, 'account'],
-  ['notify-off', 'Notifications: off on this device', { perm: 'granted', on: false, asked: true }, 'account'],
+  ['notify-on', 'Account card: Notifications on for this device', { perm: 'granted', on: true, registered: true, asked: true }, 'account'],
+  ['notify-off', 'Account card: Notifications off, this device only', { perm: 'granted', on: false, asked: true }, 'account'],
   ['notify-refused', 'Notifications: permission refused on the device', { perm: 'denied', on: false, asked: true }, 'account'],
   ['notify-ios-tab', 'Notifications: iPhone browser tab (add to home screen)', { channel: 'ios-tab' }, 'account'],
   ['notify-turn-on-fails', 'Notifications: turning on failed', { perm: 'granted', on: false, asked: true }, 'account'],
@@ -83,7 +82,7 @@ const GSA_STATES_PUSH = GSA_PUSH_DEFS.map((d) => ({
     stage: (c) => {
       c.set({ push: { perm: 'granted', on: true, registered: true, asked: true } });
       // The next person on the device: registration is the last person's, the switch is theirs.
-      c.as('google');
+      c.as('alex');
       c.set({ push: { on: false } });
       c.go('account');
     } },

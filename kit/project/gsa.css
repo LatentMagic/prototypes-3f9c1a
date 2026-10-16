@@ -6,15 +6,15 @@
 /* ---- base ---- */
 .gsa-page, .gsa-page-wide, .gsa-card, .gsa-field, .gsa-btn, .gsa-dialog, .gsa-menu-list { font-family: var(--font-sans); color: var(--color-fg-1); line-height: var(--leading-body); }
 .gsa-page a, .gsa-page-wide a, .gsa-dialog a { color: var(--color-accent); cursor: pointer; }
-.gsa-heading { font-size: var(--text-2xl); line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.01em; margin: 0 0 var(--space-4); text-wrap: balance; }
-@media (max-width: 639px) { .gsa-heading { font-size: 22px; } }
+.gsa-heading { font-size: 22px; line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.01em; margin: 0 0 var(--space-4); text-wrap: balance; }
+@container gsa-main (min-width: 640px) { .gsa-heading { font-size: var(--text-2xl); } }
 .gsa-text { font-size: var(--text-base); color: var(--color-fg-2); margin: 0 0 var(--space-4); text-wrap: pretty; }
 
 /* ---- page containers ---- */
 .gsa-page, .gsa-page-wide { width: 100%; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-12); }
 .gsa-page { max-width: var(--width-read); }
 .gsa-page-wide { max-width: var(--width-page); }
-@media (min-width: 640px) { .gsa-page, .gsa-page-wide { padding-left: var(--space-6); padding-right: var(--space-6); } }
+@container gsa-main (min-width: 640px) { .gsa-page, .gsa-page-wide { padding-left: var(--space-6); padding-right: var(--space-6); } }
 
 /* ---- button ---- */
 .gsa-btn {
@@ -79,11 +79,12 @@
 
 /* ---- dialog: centred at every width, never scrolls ---- */
 .gsa-dialog-scrim { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: var(--space-4); background: var(--color-scrim); }
-.gsa-dialog { width: 100%; max-width: 440px; max-height: 100%; overflow: hidden; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); padding: var(--space-6); }
+.gsa-dialog { container: gsa-dialog / inline-size; width: 100%; max-width: 440px; max-height: 100%; overflow: hidden; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); padding: var(--space-6); }
 .gsa-dialog-title { font-size: var(--text-xl); line-height: var(--leading-tight); font-weight: 600; margin: 0 0 var(--space-3); }
 .gsa-dialog-body { font-size: var(--text-base); color: var(--color-fg-2); }
 .gsa-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-6); }
-@media (max-width: 479px) { .gsa-dialog-actions { flex-direction: column-reverse; } .gsa-dialog-actions .gsa-btn { width: 100%; } }
+/* The dialog is its own container: its content box is 392px at full width, so below that the actions stack. */
+@container gsa-dialog (max-width: 391px) { .gsa-dialog-actions { flex-direction: column-reverse; } .gsa-dialog-actions .gsa-btn { width: 100%; } }
 
 /* ---- menu: opens at its control ---- */
 .gsa-menu { position: relative; display: inline-block; }

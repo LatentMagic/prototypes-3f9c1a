@@ -1,11 +1,10 @@
 /* ============================================================================
-   GSA auth: Sign-in view, Sign-up page, code steps, recovery, provider sheet.
+   GSA auth: Sign-in view, Sign-up page, code steps, recovery.
    Tokens only. Every class starts .gsa-auth-.
    ============================================================================ */
-.gsa-auth-bar { display: flex; align-items: center; justify-content: space-between; min-height: var(--target-min); margin-bottom: var(--space-6); }
+.gsa-auth { padding-top: calc(var(--space-6) + var(--safe-area-inset-top, 0px)); }
+.gsa-auth-bar { display: flex; align-items: center; justify-content: flex-start; gap: var(--space-4); min-height: var(--target-min); margin-bottom: var(--space-6); }
 .gsa-auth-name { font-size: var(--text-lg); font-weight: 600; color: var(--color-fg-1); }
-.gsa-auth-providers { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-5); }
-.gsa-auth-or { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--color-fg-3); }
 .gsa-auth-form { display: flex; flex-direction: column; }
 .gsa-auth-form .gsa-status { margin-bottom: var(--space-4); }
 .gsa-auth-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
@@ -14,15 +13,3 @@
 .gsa-auth-switch { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
 .gsa-auth .gsa-code-field { max-width: 320px; }
 
-/* ---- the provider's own page, pictured: a cool neutral look, not the product's ---- */
-.gsa-auth-stage { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); width: 100%; min-height: 100vh; box-sizing: border-box; padding: var(--space-8) var(--space-4); background: var(--color-surface-sunken); font-family: var(--font-sans); color: var(--color-fg-1); }
-.gsa-auth-pictured { margin: 0; font-size: var(--text-sm); color: var(--color-fg-3); text-align: center; }
-.gsa-auth-sheet { width: 100%; max-width: 400px; overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border-strong); border-radius: var(--radius-lg); }
-.gsa-auth-sheet-body { padding: var(--space-6); }
-.gsa-auth-sheet-title { margin: 0 0 var(--space-1); font-size: var(--text-xl); line-height: var(--leading-tight); font-weight: 600; }
-.gsa-auth-sheet-text { margin: 0 0 var(--space-5); font-size: var(--text-base); color: var(--color-fg-2); }
-.gsa-auth-sheet-account { display: flex; flex-direction: column; margin-bottom: var(--space-5); padding: var(--space-3) var(--space-4); background: var(--color-surface-sunken); border: 1px solid var(--color-border-2); border-radius: var(--radius-md); }
-.gsa-auth-sheet-name { font-weight: 600; font-size: var(--text-base); }
-.gsa-auth-sheet-mail { font-size: var(--text-sm); color: var(--color-fg-2); overflow-wrap: anywhere; }
-.gsa-auth-browserbar { padding: var(--space-3) var(--space-4); background: var(--color-surface-sunken); border-bottom: 1px solid var(--color-border-2); text-align: center; }
-.gsa-auth-address { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-fg-2); }

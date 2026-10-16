@@ -11,7 +11,9 @@
 .gsa-billing-fact dd { margin: 0; color: var(--color-fg-1); overflow-wrap: anywhere; }
 .gsa-billing-card .gsa-slot { margin-bottom: var(--space-4); }
 .gsa-billing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-@media (max-width: 480px) {
+/* Layout follows the phone frame, not the window: container queries. */
+.gsa-billing-card, .gsa-billing-dialog { container-type: inline-size; }
+@container (max-width: 480px) {
   .gsa-billing-fact { grid-template-columns: 1fr; gap: 0; }
   .gsa-billing-actions .gsa-btn { flex: 1 1 100%; }
 }

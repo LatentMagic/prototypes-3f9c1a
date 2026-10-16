@@ -101,6 +101,11 @@ function GsaSubscribe() {
         <h1 className="gsa-heading">Subscribe</h1>
         {!visitor ? <window.GsaButton kind="link" onClick={() => window.GsaStore.go('home')}>Close</window.GsaButton> : null}
       </div>
+      {route.notice === 'payment-failed' ? (
+        <div className="gsa-checkout-stack-sm" role="alert">
+          <window.GsaStatusLine tone="danger">The payment failed. You have paid nothing. Your Plan is still selected.</window.GsaStatusLine>
+        </div>
+      ) : null}
       {route.notice === 'not-completed' ? (
         <div className="gsa-checkout-stack-sm">
           <window.GsaStatusLine tone="warning">The payment was not completed. You have paid nothing.</window.GsaStatusLine>
@@ -161,16 +166,20 @@ function GsaHostedPayment() {
     if (mode === 'update-card') store.replace('account', {});
     else store.replace('subscribe', { plan, notice: 'not-completed' });
   };
+  const fails = mode === 'subscribe' && g.review.hosted === 'fails';
   const refused = g.review.hosted === 'abandons' || (mode === 'subscribe' && g.review.payProvider === 'refuses');
   const pay = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     run(() => {
       finished.current = true;
+      if (fails) { store.replace('subscribe', { plan, notice: 'payment-failed' }); return; }
       if (refused) { leave(); return; }
       if (mode === 'update-card') {
         const form = document.querySelector('.gsa-checkout-form');
         const digits = form ? String(form.elements['gsa-checkout-number'].value).replace(/\D/g, '') : '';
-        store.set({ sub: { last4: digits.length >= 4 ? digits.slice(-4) : g.sub.last4 } });
+        // Empty fields save a pictured placeholder card: a new last four.
+        const placeholder = ['1881', '0005', '4242'].find((d) => d !== g.sub.last4);
+        store.set({ sub: { last4: digits.length >= 4 ? digits.slice(-4) : placeholder } });
         store.replace('account', {});
         return;
       }

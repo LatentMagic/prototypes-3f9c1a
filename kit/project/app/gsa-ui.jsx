@@ -121,18 +121,24 @@ function useGsaForm(rules) {
 
 // ---- Dialog ----------------------------------------------------------------
 // Centred at every width, fixed content that never scrolls. Focus goes to the
-// dialog on open and back to the opener on close.
+// dialog on open and back to the opener on close. It renders into the Frame's
+// overlay root, a sibling of the container the screens are laid out in, so no
+// container ancestor captures its position: fixed (GOTCHA 3). Without a Frame
+// (bare routes) it renders in place.
 function GsaDialog({ title, onClose, children, actions }) {
   const ref = React.useRef(null);
+  const [host, setHost] = React.useState(null);
+  React.useLayoutEffect(() => { setHost(document.getElementById('gsa-overlay-root') || false); }, []);
   const titleId = 'gsa-dialog-title-' + React.useId().replace(/:/g, '');
   React.useEffect(kitLockScroll, []);
   React.useEffect(() => {
+    if (host === null) return undefined;
     const opener = document.activeElement;
     if (ref.current) ref.current.focus({ preventScroll: true });
     return () => {
       if (opener && opener.isConnected && opener.focus) opener.focus({ preventScroll: true });
     };
-  }, []);
+  }, [host]);
   const keys = (e) => {
     if (e.key === 'Escape') { e.stopPropagation(); if (onClose) onClose(); return; }
     if (e.key !== 'Tab' || !ref.current) return;
@@ -143,7 +149,8 @@ function GsaDialog({ title, onClose, children, actions }) {
     if (e.shiftKey && (document.activeElement === first || document.activeElement === ref.current)) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   };
-  return (
+  if (host === null) return null;
+  const scrim = (
     <div className="gsa-dialog-scrim" onMouseDown={(e) => { if (e.target === e.currentTarget && onClose) onClose(); }}>
       <div ref={ref} className="gsa-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onKeyDown={keys}>
         <h2 className="gsa-dialog-title" id={titleId}>{title}</h2>
@@ -152,6 +159,7 @@ function GsaDialog({ title, onClose, children, actions }) {
       </div>
     </div>
   );
+  return host ? ReactDOM.createPortal(scrim, host) : scrim;
 }
 
 // ---- Menu: opens at its control; choosing an item runs it and closes -------

@@ -1,12 +1,10 @@
 // ============================================================================
 // Golden Sample App - the Account page (GSA-017) and its cards: change password
-// (GSA-010), change email (GSA-012), provider-managed (GSA-017.AF-01), export
-// (GSA-016), delete (GSA-014). Subscription and Notifications cards are other
+// (GSA-010), change email (GSA-012), export (GSA-016), delete (GSA-014). Card
+// order GSA-017 (BF-03/BF-04 for the re-check). Subscription and Notifications cards are other
 // tasks' components, mounted by name. Dialogs live in gsa-account-dialogs.jsx.
 // Styles: gsa-account.css.
 // ============================================================================
-
-const GSA_ACCOUNT_PROVIDER = { google: 'Google', apple: 'Apple' };
 
 function GsaAccountPasswordForm({ onDone }) {
   const form = useGsaForm({
@@ -66,17 +64,6 @@ function GsaAccountEmailCard({ g, notice }) {
   );
 }
 
-function GsaAccountProviderCard({ g }) {
-  const provider = GSA_ACCOUNT_PROVIDER[g.person.method] || 'your provider';
-  return (
-    <GsaCard title="Email and password">
-      <p className="gsa-account-text">
-        You sign in with {provider}. Change your email address and password with {provider}.
-      </p>
-    </GsaCard>
-  );
-}
-
 function GsaAccountExportCard({ notice }) {
   const g = useGsa();
   const [limited, setLimited] = React.useState(false);
@@ -87,6 +74,7 @@ function GsaAccountExportCard({ notice }) {
   };
   return (
     <GsaCard title="Export your data">
+      <p className="gsa-account-text"><GsaPick>Card position: each app places it, always before Delete</GsaPick></p>
       <p className="gsa-account-text">Get a copy of your account details and your queue as a file.</p>
       {limited ? <div className="gsa-account-status"><GsaStatusLine tone="warning">You have asked for too many copies. You can ask again later.</GsaStatusLine></div> : null}
       {!limited && notice === 'export-ready' ? <div className="gsa-account-status"><GsaStatusLine tone="success">Your file has downloaded.</GsaStatusLine></div> : null}
@@ -112,7 +100,6 @@ function GsaAccount() {
   const g = useGsa();
   const route = g.route;
   const notice = route.notice;
-  const managed = g.person.method !== 'password';
   const Subscription = window.GsaSubscriptionCard;
   const Notifications = window.GsaNotificationsCard;
   const Dialog = route.dialog && window.GSA_DIALOGS ? window[window.GSA_DIALOGS[route.dialog]] : null;
@@ -126,19 +113,15 @@ function GsaAccount() {
           {g.person.email}
         </p>
       </div>
+      <div className="gsa-account-cards">
       <div className="gsa-account-grid">
         {g.tiers.payment && Subscription ? <GsaAccountSlot><Subscription notice={notice} /></GsaAccountSlot> : null}
         {!g.isApp && g.push.channel !== 'none' && Notifications ? <GsaAccountSlot><Notifications /></GsaAccountSlot> : null}
-        {managed ? (
-          <GsaAccountSlot><GsaAccountProviderCard g={g} /></GsaAccountSlot>
-        ) : (
-          <>
-            <GsaAccountSlot><GsaAccountPasswordCard notice={notice} /></GsaAccountSlot>
-            <GsaAccountSlot><GsaAccountEmailCard g={g} notice={notice} /></GsaAccountSlot>
-          </>
-        )}
+        <GsaAccountSlot><GsaAccountPasswordCard notice={notice} /></GsaAccountSlot>
+        <GsaAccountSlot><GsaAccountEmailCard g={g} notice={notice} /></GsaAccountSlot>
         <GsaAccountSlot><GsaAccountExportCard notice={notice} /></GsaAccountSlot>
         <GsaAccountSlot danger><GsaAccountDeleteCard /></GsaAccountSlot>
+      </div>
       </div>
       <div className="gsa-account-support">
         <GsaSlot>Support address: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a></GsaSlot>

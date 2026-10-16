@@ -1,6 +1,6 @@
 // ============================================================================
-// Golden Sample App - Account dialogs: Reverification (GSA-013), email-change
-// code (GSA-012), delete account (GSA-014, 015), and the data export file
+// Golden Sample App - Account dialogs: Reverification (GSA-013.BF-03/BF-04),
+// email-change code (GSA-012), delete account (GSA-014, 015), and the data export file
 // (GSA-016). Each closes with GsaStore.replace('account', {}).
 // Styles: gsa-account.css.
 // ============================================================================
@@ -24,7 +24,11 @@ function gsaAccountDownload() {
     items: s.items.map((i) => ({ title: i.title, url: i.url, state: i.status, createdAt: iso(i.createdAt) })),
   };
   if (s.tiers.payment) {
-    file.subscription = { plan: s.sub.plan, state: s.sub.status, nextDate: iso(s.sub.nextDate), endDate: iso(s.sub.endDate), endedOn: iso(s.sub.endedOn) };
+    const sub = s.sub;
+    file.subscription = sub.status === 'none'
+      ? { state: 'none' }
+      : { plan: sub.plan, state: sub.status, nextDate: iso(sub.nextDate), endDate: iso(sub.endDate), endedOn: iso(sub.endedOn) };
+    if (sub.pending) file.subscription.pendingSwitch = { plan: sub.pending, from: iso(sub.nextDate) };
   }
   const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -60,13 +64,10 @@ const GSA_ACCOUNT_REVERIFY_WHY = {
 
 function GsaReverifyDialog({ route }) {
   const g = useGsa();
-  const usesPassword = g.person.method === 'password';
   const slowDelete = route.for === 'delete' && gsaAccountSubActive(g) && g.review.payProvider === 'slow';
   const [busy, run] = useGsaBusy(slowDelete ? 2500 : 900);
-  const [sent, setSent] = React.useState(false);
   const form = useGsaForm({
     proof: (v) => {
-      if (!usesPassword) return gsaAccountCodeError(v);
       if (!v) return 'Enter your password.';
       return v === 'wrong-password' ? 'That password is not correct.' : null;
     },
@@ -77,9 +78,6 @@ function GsaReverifyDialog({ route }) {
     else gsaAccountDelete();
   };
   const submit = form.submit(() => run(proceed));
-  const field = usesPassword
-    ? <GsaField label="Password" type="password" autoComplete="current-password" {...form.bind('proof')} />
-    : <GsaCodeField label="Code" {...form.bind('proof')} />;
   return (
     <GsaDialog
       title="Prove it's you"
@@ -93,25 +91,25 @@ function GsaReverifyDialog({ route }) {
     >
       <form onSubmit={submit} noValidate>
         <p className="gsa-account-dialog-text">{GSA_ACCOUNT_REVERIFY_WHY[route.for] || GSA_ACCOUNT_REVERIFY_WHY.export}</p>
-        {usesPassword ? null : <p className="gsa-account-dialog-text">We emailed a code to {g.person.email}.</p>}
-        {field}
-        {usesPassword ? null : (
-          <>
-            {sent ? <div className="gsa-account-dialog-status"><GsaStatusLine>A new code was sent.</GsaStatusLine></div> : null}
-            <GsaButton kind="link" className="gsa-account-newcode" onClick={() => setSent(true)}>Send a new code</GsaButton>
-          </>
-        )}
+        <p className="gsa-account-dialog-text"><GsaPick>Each app selects the proof</GsaPick></p>
+        <GsaField label="Password" type="password" autoComplete="current-password" {...form.bind('proof')} />
       </form>
     </GsaDialog>
   );
 }
 
 // ---- D2 Email-change code ----------------------------------------------------
+// A new code remounts the form (key), which clears the typed code and its old error.
 function GsaEmailCodeDialog({ route }) {
+  const [n, setN] = React.useState(0);
+  return <GsaEmailCodeForm key={n} route={route} sent={n > 0} onNewCode={() => setN(n + 1)} />;
+}
+
+function GsaEmailCodeForm({ route, sent, onNewCode }) {
   const email = route.email || '';
   const [busy, run] = useGsaBusy();
-  const [sent, setSent] = React.useState(false);
   const form = useGsaForm({ code: (v) => gsaAccountCodeError(v) });
+  const sendNew = onNewCode;
   const confirm = () => {
     GsaStore.set({ person: { email } });
     const after = GsaStore.get();
@@ -135,7 +133,7 @@ function GsaEmailCodeDialog({ route }) {
         <p className="gsa-account-dialog-text">We sent a code to {email}. Enter it to finish the change.</p>
         <GsaCodeField label="Code" {...form.bind('code')} />
         {sent ? <div className="gsa-account-dialog-status"><GsaStatusLine>A new code was sent.</GsaStatusLine></div> : null}
-        <GsaButton kind="link" className="gsa-account-newcode" onClick={() => setSent(true)}>Send a new code</GsaButton>
+        <GsaButton kind="link" onClick={sendNew}>Send a new code</GsaButton>
       </form>
     </GsaDialog>
   );
@@ -146,6 +144,7 @@ function GsaDeleteDialog({ route }) {
   const g = useGsa();
   const status = g.sub.status;
   const pays = g.tiers.payment;
+  const record = pays && (status === 'subscribed' || status === 'payment-failed');
   const lines = [];
   if (pays && status === 'subscribed') {
     lines.push('Deleting your account cancels your subscription.');
@@ -180,7 +179,7 @@ function GsaDeleteDialog({ route }) {
         <li>Your sign-ins on every device</li>
         <li>The connections of your AI apps</li>
         {!g.isApp && g.push.channel !== 'none' ? <li>Notifications to your devices</li> : null}
-        {pays ? <li>Our record of your subscription</li> : null}
+        {record ? <li>Our record of your subscription</li> : null}
       </ul>
       {lines.map((t) => <p key={t} className="gsa-account-dialog-text">{t}</p>)}
       {pays && status === 'ending' ? <p className="gsa-account-dialog-text"><GsaPick>Your subscription is already set to end.</GsaPick></p> : null}

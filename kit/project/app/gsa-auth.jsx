@@ -1,15 +1,14 @@
 // ============================================================================
-// GSA auth: Sign-in view, Sign-up page, external provider round trip.
+// GSA auth: Sign-in view, Sign-up page.
 // Codes (sign-up, device, authenticator, recovery) live in gsa-auth-codes.jsx.
 // Auth routes are bare (no site frame), so GsaAuthFrame draws the page here.
 // A code step runs before the session starts: the route carries who is signing
-// in (method, via) and the step calls gsaAuthComplete when the code passes.
+// in (who, via) and the step calls gsaAuthComplete when the code passes.
 // ============================================================================
 const GSA_AUTH_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const GSA_AUTH_PASSWORD_MIN = 8;
 const GSA_AUTH_TAKEN = 'taken@example.com';
 const GSA_AUTH_WRONG_PASSWORD = 'wrong-password';
-const GSA_AUTH_PROVIDER_NAMES = { google: 'Google', apple: 'Apple' };
 
 function gsaAuthEmailError(v) {
   return GSA_AUTH_EMAIL.test(String(v || '').trim()) ? null : 'Enter a valid email address.';
@@ -19,19 +18,25 @@ function gsaAuthPasswordError(v) {
   return String(v || '').length >= GSA_AUTH_PASSWORD_MIN ? null : 'Use at least ' + GSA_AUTH_PASSWORD_MIN + ' characters (placeholder rule).';
 }
 
-// The account on file for a sign-in method: the store's person when it is that
-// method's, else the seed person for it.
-function gsaAuthOnFile(method) {
+// Who signs in for a typed address: alex@example.com is Alex, any other is Sam.
+function gsaAuthWho(email) {
+  return String(email || '').trim().toLowerCase() === window.GSA_PEOPLE.alex.email ? 'alex' : 'sam';
+}
+
+// The account on file for a seed person: the store's person when it is that
+// person's, else the seed person.
+function gsaAuthOnFile(who) {
   const s = window.GsaStore.get();
-  return s.person.method === method ? s.person : window.GSA_PEOPLE[method];
+  const seed = window.GSA_PEOPLE[who] || window.GSA_PEOPLE.sam;
+  return s.person.email === seed.email ? s.person : seed;
 }
 
 // Complete a sign-in: start the session, keep the account's enrolled flag,
 // apply any names a new account carries, then route on through finishAuth.
-function gsaAuthComplete(method, via, account) {
+function gsaAuthComplete(who, via, account) {
   const store = window.GsaStore;
-  const enrolled = gsaAuthOnFile(method).enrolled;
-  store.signIn(method);
+  const enrolled = gsaAuthOnFile(who).enrolled;
+  store.signIn(who);
   const patch = { ...(account || {}) };
   if (enrolled) patch.enrolled = true;
   if (Object.keys(patch).length) store.set({ person: patch });
@@ -40,15 +45,15 @@ function gsaAuthComplete(method, via, account) {
 
 // After the first step of a sign-in: a code is due when the account is enrolled
 // (Authenticator code) or the device is new (Device verification code).
-function gsaAuthProceed(method, via, forceDevice) {
+function gsaAuthProceed(who, via, forceDevice) {
   const store = window.GsaStore;
   const s = store.get();
-  if (gsaAuthOnFile(method).enrolled) {
-    store.replace('sign-in-code', { kind: 'authenticator', method, via });
+  if (gsaAuthOnFile(who).enrolled) {
+    store.replace('sign-in-code', { kind: 'authenticator', who, via });
   } else if (forceDevice || s.review.device === 'new') {
-    store.replace('sign-in-code', { kind: 'device', method, via });
+    store.replace('sign-in-code', { kind: 'device', who, via });
   } else {
-    gsaAuthComplete(method, via);
+    gsaAuthComplete(who, via);
   }
 }
 
@@ -56,8 +61,8 @@ function GsaAuthFrame({ title, lead, onBack, backLabel = 'Back', foot, children 
   return (
     <main className="gsa-page gsa-auth">
       <div className="gsa-auth-bar">
-        {onBack ? <GsaButton kind="link" onClick={onBack}>{backLabel}</GsaButton> : <span />}
         <span className="gsa-auth-name">{window.GSA_APP_NAME}</span>
+        {onBack ? <GsaButton kind="link" onClick={onBack}>{backLabel}</GsaButton> : null}
       </div>
       <h1 className="gsa-heading">{title}</h1>
       {lead ? <p className="gsa-text">{lead}</p> : null}
@@ -75,25 +80,13 @@ function GsaAuthConsent({ lead }) {
       {lead} <a href="#" onClick={open('terms')}>Terms</a>
       {g.tiers.payment ? ', ' : ' and '}
       <a href="#" onClick={open('privacy')}>Privacy policy</a>
-      {g.tiers.payment ? <>{' and '}<a href="#" onClick={open('refund')}>Refund Policy</a></> : null}.
+      {g.tiers.payment ? <>{' and '}<GsaPick><a href="#" onClick={open('refund')}>Refund Policy</a></GsaPick></> : null}.
     </p>
   );
 }
 
-function GsaAuthProviders({ from, failed }) {
-  const pick = (provider) => window.GsaStore.replace('provider', { provider, from });
-  return (
-    <div className="gsa-auth-providers">
-      <GsaButton kind="secondary" onClick={() => pick('google')}>Continue with Google</GsaButton>
-      <GsaButton kind="secondary" onClick={() => pick('apple')}>Continue with Apple</GsaButton>
-      {failed ? <GsaStatusLine tone="danger">Signing in with {GSA_AUTH_PROVIDER_NAMES[failed] || 'that account'} did not work. You can use your email address instead.</GsaStatusLine> : null}
-      <p className="gsa-auth-or">Or use your email address</p>
-    </div>
-  );
-}
-
 // ---- S1 Sign-in view ---------------------------------------------------------
-function GsaSignIn({ route }) {
+function GsaSignIn() {
   const [busy, run] = useGsaBusy();
   const [refused, setRefused] = React.useState(false);
   const form = useGsaForm({
@@ -105,15 +98,18 @@ function GsaSignIn({ route }) {
     return { ...b, onChange: (e) => { setRefused(false); b.onChange(e); } };
   };
   const submit = form.submit((values) => run(() => {
-    if (values.password === GSA_AUTH_WRONG_PASSWORD) { setRefused(true); return; }
-    gsaAuthProceed('password', 'sign-in');
+    if (values.password === GSA_AUTH_WRONG_PASSWORD) {
+      setRefused(true);
+      setTimeout(() => { const el = document.getElementById('gsa-form-password'); if (el) el.focus(); }, 0);
+      return;
+    }
+    gsaAuthProceed(gsaAuthWho(values.email), 'sign-in');
   }));
   return (
     <GsaAuthFrame title="Sign in" foot={<>
       <GsaAuthConsent lead="By signing in you accept our" />
       <p className="gsa-auth-switch">New here? <GsaButton kind="link" onClick={() => window.GsaStore.replace('sign-up')}>Create an account</GsaButton></p>
     </>}>
-      <GsaAuthProviders from="sign-in" failed={route && route.failed} />
       <form className="gsa-auth-form" noValidate onSubmit={submit}>
         <GsaField label="Email address" type="email" autoComplete="email" {...bind('email')} />
         <GsaField label="Password" type="password" autoComplete="current-password" {...bind('password')} />
@@ -128,7 +124,7 @@ function GsaSignIn({ route }) {
 }
 
 // ---- S2 Sign-up page ---------------------------------------------------------
-function GsaSignUp({ route }) {
+function GsaSignUp() {
   const [busy, run] = useGsaBusy();
   const form = useGsaForm({
     first: (v) => (String(v).trim() ? null : 'Enter your first name.'),
@@ -144,7 +140,6 @@ function GsaSignUp({ route }) {
       <GsaAuthConsent lead="By creating an account you accept our" />
       <p className="gsa-auth-switch">Already have an account? <GsaButton kind="link" onClick={() => window.GsaStore.replace('sign-in')}>Sign in</GsaButton></p>
     </>}>
-      <GsaAuthProviders from="sign-up" failed={route && route.failed} />
       <form className="gsa-auth-form" noValidate onSubmit={submit}>
         <GsaField label="First name" autoComplete="given-name" {...form.bind('first')} />
         <GsaField label="Last name" autoComplete="family-name" {...form.bind('last')} />
@@ -158,49 +153,7 @@ function GsaSignUp({ route }) {
   );
 }
 
-// ---- S6 External provider round trip ----------------------------------------
-// A pictured provider sheet in the provider's own neutral look. In the Store app
-// it is drawn as the system browser. Continue follows Config "Google and Apple"
-// (review.provider) and "Google or Apple account" (review.providerAccount).
-function GsaProvider({ route }) {
-  const g = useGsa();
-  const [busy, run] = useGsaBusy(600);
-  const provider = route && route.provider === 'apple' ? 'apple' : 'google';
-  const from = route && route.from === 'sign-up' ? 'sign-up' : 'sign-in';
-  const name = GSA_AUTH_PROVIDER_NAMES[provider];
-  const who = window.GSA_PEOPLE[provider];
-  const leave = (extra) => window.GsaStore.replace(from, extra || {});
-  const cont = () => run(() => {
-    const outcome = window.GsaStore.get().review;
-    if (outcome.provider === 'cancelled') { leave(); return; }
-    if (outcome.provider === 'fails') { leave({ failed: provider }); return; }
-    if (outcome.providerAccount === 'first-visit') gsaAuthProceed(provider, 'sign-up', true);
-    else gsaAuthProceed(provider, 'sign-in');
-  });
-  const address = provider === 'google' ? 'accounts.google.example' : 'appleid.apple.example';
-  return (
-    <main className="gsa-auth-stage" data-chrome={g.isApp ? 'browser' : 'sheet'}>
-      <p className="gsa-auth-pictured">Pictured: {name}&rsquo;s own page, outside the app</p>
-      <section className="gsa-auth-sheet" aria-label={name + ' sign-in'}>
-        {g.isApp ? <div className="gsa-auth-browserbar"><span className="gsa-auth-address">{address}</span></div> : null}
-        <div className="gsa-auth-sheet-body">
-          <h1 className="gsa-auth-sheet-title">Sign in with {name}</h1>
-          <p className="gsa-auth-sheet-text">to continue to {window.GSA_APP_NAME}</p>
-          <div className="gsa-auth-sheet-account">
-            <span className="gsa-auth-sheet-name">{who.first} {who.last}</span>
-            <span className="gsa-auth-sheet-mail">{who.email}</span>
-          </div>
-          <div className="gsa-auth-actions">
-            <GsaButton busy={busy} onClick={cont}>Continue</GsaButton>
-            <GsaButton kind="link" onClick={() => leave()}>Cancel</GsaButton>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
-}
-
 Object.assign(window, {
-  GsaAuthFrame, GsaAuthConsent, GsaSignIn, GsaSignUp, GsaProvider,
-  gsaAuthComplete, gsaAuthProceed, gsaAuthOnFile, gsaAuthEmailError, gsaAuthPasswordError,
+  GsaAuthFrame, GsaAuthConsent, GsaSignIn, GsaSignUp,
+  gsaAuthComplete, gsaAuthProceed, gsaAuthOnFile, gsaAuthWho, gsaAuthEmailError, gsaAuthPasswordError,
 });

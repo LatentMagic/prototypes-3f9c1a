@@ -27,7 +27,6 @@ const GSA_SUB_DEFS = [
   ['sub-awaiting-provider', 'Subscription card: waiting for the payment provider (held)', { sub: 'subscribed', review: { payProvider: 'slow' } }],
   ['store-app-nothing-to-buy', 'App: Subscription card, nothing to buy', { sub: 'none', platform: 'app' }],
   ['store-app-one-link', 'App: Subscription card, the one allowed link', { sub: 'none', review: { storeLink: true }, platform: 'app' }],
-  ['store-app-subscriber', 'App: Subscription card, Subscribed (cancel only)', { sub: 'subscribed', platform: 'app' }],
 ];
 
 function gsaStageSubDef(def) {
@@ -54,16 +53,10 @@ function gsaStageDelete(status, review, params) {
 const GSA_STATES_ACCOUNT_ONLY = [
   { group: 'Account', id: 'account', label: 'Account page, password account', platform: 'web',
     stage: (c) => { c.go('account'); } },
-  { group: 'Account', id: 'account-google', label: 'Account page, Google account (managed by Google)', platform: 'web',
-    stage: (c) => { c.as('google'); c.go('account'); } },
-  { group: 'Account', id: 'account-apple', label: 'Account page, Apple account with a private relay address', platform: 'web',
-    stage: (c) => { c.as('apple'); c.go('account'); } },
   { group: 'Account', id: 'account-direct', label: 'Account page opened directly (Back goes Home)', platform: 'web',
     stage: (c) => { c.store.replace('account'); } },
   { group: 'Account', id: 'account-no-notifications', label: 'Account page on a device that cannot get Notifications', platform: 'web',
     stage: (c) => { c.set({ push: { channel: 'none' } }); c.go('account'); } },
-  { group: 'Account', id: 'reverify-code', label: 'Prove it’s you: emailed code (Google account, before export)', platform: 'web',
-    stage: (c) => { c.as('google'); c.go('account', { dialog: 'reverify', for: 'export' }); } },
   { group: 'Account', id: 'email-change-code', label: 'Change email: code sent to the new address', platform: 'web',
     stage: (c) => { c.go('account', { dialog: 'email-code', email: 'new@example.com' }); } },
   { group: 'Account', id: 'email-change-ends-session', label: 'Change email ends the session: confirm the code to reach the Sign-in view', platform: 'web',
@@ -91,6 +84,8 @@ const GSA_STATES_PLANS = [
     stage: (c) => { c.set({ sub: gsaStageSub('subscribed') }); c.store.signOut(); c.go('subscribe'); } },
   { group: 'Plans and paying', id: 'subscribe-not-completed', label: 'Subscribe page after the payment was not completed', platform: 'web',
     stage: (c) => { c.go('subscribe', { plan: 'yearly', notice: 'not-completed' }); } },
+  { group: 'Plans and paying', id: 'subscribe-payment-fails', label: 'Subscribe page after the payment failed (press Pay through the store)', platform: 'web',
+    stage: (c) => { c.set({ review: { hosted: 'fails' } }); c.go('hosted-payment', { mode: 'subscribe', plan: 'yearly' }); } },
   { group: 'Plans and paying', id: 'update-card-refused', label: 'Update-card address opened with no Subscription', platform: 'web',
     stage: (c) => { c.go('hosted-payment', { mode: 'update-card' }); } },
 ];

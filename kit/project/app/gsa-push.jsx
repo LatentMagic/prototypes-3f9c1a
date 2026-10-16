@@ -41,6 +41,7 @@ function gsaPushTurnOn() {
     if (answer === 'grant') gsaPushSet({ asked: true, perm: 'granted', turning: true, failed: false });
     else if (answer === 'refuse') gsaPushSet({ asked: true, perm: 'denied', on: false, failed: false });
     else if (answer === 'close') gsaPushSet({ asked: true, failed: false });
+    else if (answer === 'none') gsaPushSet({ asked: true, on: false, failed: false });
     else gsaPushSet({ asked: true, prompt: true, failed: false });
     return;
   }
@@ -105,13 +106,13 @@ function GsaPushAsk() {
     gsaPushFocusPage();
   };
   return (
-    <section className="gsa-push-ask" aria-label="Notifications">
+    <div className="gsa-push-ask-wrap"><section className="gsa-push-ask" aria-label="Notifications">
       <p className="gsa-push-ask-text">Get a notification on this device when something happens. You choose what in Account.</p>
       <div className="gsa-push-ask-actions">
         <window.GsaButton onClick={gsaPushTurnOn}>Turn on notifications</window.GsaButton>
         <window.GsaButton kind="secondary" onClick={snooze}>Not now</window.GsaButton>
       </div>
-    </section>
+    </section></div>
   );
 }
 
@@ -146,22 +147,6 @@ function GsaNotificationsCard() {
       </div>
       <p className="gsa-push-hint">This switch covers this device only.{waiting ? ' Waiting for your device to answer.' : ''}</p>
       {p.failed ? <div className="gsa-push-failed"><window.GsaStatusLine tone="danger">Notifications did not turn on. Try again.</window.GsaStatusLine></div> : null}
-      {allOn ? (
-        <ul className="gsa-push-events" role="list">
-          {window.GSA_EVENTS.map((k) => (
-            <li key={k} className="gsa-push-row">
-              <span id={'gsa-push-ev-' + k} className="gsa-push-label">{GSA_PUSH_LABELS[k]}</span>
-              <GsaPushSwitch
-                on={!!p.events[k]}
-                onChange={(v) => gsaPushSet({ events: { ...p.events, [k]: v } })}
-                labelledBy={'gsa-push-ev-' + k}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="gsa-push-line">Turn on notifications on this device to choose what you hear about.</p>
-      )}
     </Card>
   );
 }
@@ -202,8 +187,10 @@ function GsaPushHost() {
     else if (v === false) gsaPushSet({ prompt: false, perm: 'denied', on: false });
     else gsaPushSet({ prompt: false });
     const back = opener.current;
-    if (back && document.contains(back)) setTimeout(() => back.focus({ preventScroll: true }), 0);
-    else gsaPushFocusPage();
+    setTimeout(() => {
+      if (back && back !== document.body && document.contains(back)) back.focus({ preventScroll: true });
+      else gsaPushFocusPage();
+    }, 60);
   };
 
   React.useEffect(() => {

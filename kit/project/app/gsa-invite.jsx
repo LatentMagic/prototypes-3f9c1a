@@ -136,7 +136,7 @@ function GsaInviteOtherAccount() {
   );
 }
 
-// ---- Shared space (S20): a Slot, a plain member list, the Owner's way to Invite -
+// ---- Shared space (S20): a Slot and the Owner's way to Invite (no member list, D4) -
 function GsaSharedSpace({ route }) {
   const g = useGsa();
   const notice = route && route.notice;
@@ -148,16 +148,6 @@ function GsaSharedSpace({ route }) {
       <div className="gsa-people-block">
         <GsaSlot>each app fills this. What a member sees first goes here.</GsaSlot>
       </div>
-      <GsaCard title="Members">
-        <ul className="gsa-people-members">
-          {g.space.members.map((m) => (
-            <li key={m.email} className="gsa-people-member">
-              <span className="gsa-people-member-name">{m.name}</span>
-              <span className="gsa-people-member-email">{m.email}</span>
-            </li>
-          ))}
-        </ul>
-      </GsaCard>
       {g.space.role === 'owner' ? (
         <div className="gsa-people-block">
           <GsaButton kind="secondary" onClick={() => GsaStore.go('invite')}>Invite someone</GsaButton>

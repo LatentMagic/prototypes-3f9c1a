@@ -8,8 +8,9 @@
 .gsa-account-email { margin: 0; font-size: var(--text-md); color: var(--color-fg-2); overflow-wrap: anywhere; }
 .gsa-account-email-label { display: block; font-size: var(--text-sm); color: var(--color-fg-3); }
 
+.gsa-account-cards { container: gsa-account-cards / inline-size; }
 .gsa-account-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
-@media (min-width: 1024px) { .gsa-account-grid { grid-template-columns: 1fr 1fr; } }
+@container gsa-account-cards (min-width: 640px) { .gsa-account-grid { grid-template-columns: 1fr 1fr; } }
 
 .gsa-account-slot { display: flex; flex-direction: column; min-width: 0; }
 .gsa-account-slot > .gsa-card { flex: 1; }
@@ -23,8 +24,7 @@
 .gsa-account-support { margin-top: var(--space-6); }
 .gsa-account-support a { color: var(--color-accent); }
 
-.gsa-account-list { margin: 0 0 var(--space-3); padding-left: var(--space-5); }
-.gsa-account-list li { margin-bottom: var(--space-1); }
-.gsa-account-dialog-text { margin: 0 0 var(--space-3); }
+.gsa-account-list { margin: 0 0 var(--space-2); padding-left: var(--space-5); font-size: var(--text-sm); }
+.gsa-account-list li { margin-bottom: 0; }
+.gsa-account-dialog-text { margin: 0 0 var(--space-2); }
 .gsa-account-dialog-status { margin-bottom: var(--space-3); }
-.gsa-account-newcode { margin-left: calc(var(--space-2) * -1); }

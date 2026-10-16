@@ -28,7 +28,7 @@ const GSA_STATES_HOME = [
     stage: (c) => { c.set({ items: [] }); c.store.replace('home'); } },
   { group: 'Home', id: 'queue-loading', label: 'Home: the queue’s first load, held', platform: 'web',
     stage: (c) => gsaStageHomeFresh(c, 'hold') },
-  { group: 'Home', id: 'queue-load-fails', label: 'Home: the queue fails to load (Try again works)', platform: 'web',
+  { group: 'Home', id: 'queue-load-fails', label: 'Home: the queue fails to load (Try again fails until Config Loading is Normal)', platform: 'web',
     stage: (c) => gsaStageHomeFresh(c, 'fail') },
   { group: 'Home', id: 'queue-save-fails', label: 'Home: adding or marking done fails', platform: 'web',
     stage: (c) => { c.set({ queue: { save: 'fail' } }); c.store.replace('home'); } },
@@ -47,16 +47,6 @@ const GSA_STATES_HOME = [
       c.set({ person: { enrolled: true } });
       c.store.replace('sign-in-code', { kind: 'authenticator', method: 'password', via: 'sign-in' });
     } },
-  { group: 'Sign in', id: 'provider-fails', label: 'Sign-in view: Google or Apple sign-in failed', platform: 'web',
-    stage: (c) => { gsaStageVisitor(c); c.set({ review: { provider: 'fails' } }); c.store.replace('sign-in', { failed: 'google' }); } },
-  { group: 'Sign in', id: 'provider-first-visit', label: 'Google, first visit: account made, then the device code', platform: 'web',
-    stage: (c) => {
-      gsaStageVisitor(c);
-      c.set({ review: { providerAccount: 'first-visit' } });
-      if (window.gsaAuthProceed) window.gsaAuthProceed('google', 'sign-up', true);
-    } },
-  { group: 'Sign in', id: 'store-app-google', label: 'App: Google sign-in opens the system browser', platform: 'app',
-    stage: (c) => { gsaStageVisitor(c); c.store.replace('provider', { provider: 'google', from: 'sign-in' }); } },
 
   { group: 'Sign up', id: 'sign-up-free-app', label: 'Sign-up page in an app that takes no payment (no Refund Policy)', platform: 'web',
     stage: (c) => { gsaStageVisitor(c); c.set({ tiers: { payment: false } }); c.store.replace('sign-up'); } },

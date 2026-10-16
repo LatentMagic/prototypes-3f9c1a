@@ -59,9 +59,11 @@ function useGsaProviderCall() {
   const [job, setJob] = React.useState(null);
   const [waited, setWaited] = React.useState(false);
   const timer = React.useRef(null);
-  React.useEffect(() => () => clearTimeout(timer.current), []);
+  const live = React.useRef(true);
+  // Unmounting (a leave, a reseed) drops the wait and the pending job.
+  React.useEffect(() => { live.current = true; return () => { live.current = false; clearTimeout(timer.current); }; }, []);
   React.useEffect(() => {
-    if (!job || !waited || provider === 'slow') return;
+    if (!live.current || !job || !waited || provider === 'slow') return;
     setJob(null);
     setWaited(false);
     if (provider === 'refuses') job.fail(); else job.apply();
@@ -70,7 +72,7 @@ function useGsaProviderCall() {
     if (job) return;
     setJob({ apply, fail });
     setWaited(false);
-    timer.current = setTimeout(() => setWaited(true), 600);
+    timer.current = setTimeout(() => { if (live.current) setWaited(true); }, 600);
   };
   return [Boolean(job), call];
 }
@@ -149,6 +151,7 @@ function GsaSubscriptionCard({ notice }) {
   const resume = () => {
     setBusyOf('resume');
     call(() => {
+      if (GsaStore.get().sub.status !== 'ending') { gone(); return; }
       gsaBillingWrite({ status: 'subscribed', endDate: null });
       gsaBillingSay('success', 'Resumed. Your Subscription continues and you paid nothing. The date of the next payment is the same.');
       gone();
@@ -160,8 +163,10 @@ function GsaSubscriptionCard({ notice }) {
   const keep = () => {
     setBusyOf('keep');
     call(() => {
+      const now = GsaStore.get().sub;
+      if (now.status !== 'subscribed' || !now.pending) { gone(); return; }
       gsaBillingWrite({ pending: null });
-      gsaBillingSay('success', 'Kept the ' + sub.plan + ' Plan. You pay nothing.');
+      gsaBillingSay('success', 'Kept the ' + now.plan + ' Plan. You pay nothing.');
       gone();
     }, () => {
       gsaBillingSay('danger', 'The Pending switch is still on your Subscription. Try again.');
@@ -180,7 +185,10 @@ function GsaSubscriptionCard({ notice }) {
   const oneLink = s.isApp && s.review.storeLink ? <GsaSlot>the one link the app store allows. Each app decides where it points.</GsaSlot> : null;
 
   let body = null;
-  if (status === 'subscribed') {
+  if (s.isApp && live) {
+    // D15: what the Store app shows a person with a Subscription is out of scope.
+    body = <GsaSlot>Not specced: what the Store app shows a person who has a Subscription</GsaSlot>;
+  } else if (status === 'subscribed') {
     body = (
       <>
         <GsaBillingFacts rows={[['State', 'Subscribed'], ...base, ['Next payment', gsaLong(gsaBillingNext(sub))], ...pendingRow, ...cardRows]} />
@@ -196,7 +204,7 @@ function GsaSubscriptionCard({ notice }) {
     body = (
       <>
         <GsaStatusLine tone="warning">Your Subscription ends on {gsaLong(sub.endDate || gsaBillingNext(sub))}. You can resume before then.</GsaStatusLine>
-        <GsaBillingFacts rows={[['State', 'Ending'], ['Ends on', gsaLong(sub.endDate || gsaBillingNext(sub))], ...base, ...cardRows]} />
+        <GsaBillingFacts rows={[['State', 'Ending'], ...base, ...cardRows]} />
         <GsaBillingKeeps />
         <div className="gsa-billing-actions">
           {!s.isApp ? <GsaButton kind="secondary" onClick={updateCard} disabled={busy}>Update payment card</GsaButton> : null}
@@ -252,7 +260,7 @@ function GsaCancelDialog() {
   const s = useGsa();
   const sub = s.sub;
   const failed = sub.status === 'payment-failed';
-  const allowed = sub.status === 'subscribed' || failed;
+  const allowed = (sub.status === 'subscribed' || failed) && s.tiers.payment && !s.isApp;
   const [busy, call] = useGsaProviderCall();
   const [error, setError] = React.useState(false);
   React.useEffect(() => { if (!allowed && !busy) gsaBillingClose(); }, [allowed, busy]);
@@ -261,12 +269,16 @@ function GsaCancelDialog() {
   const confirm = () => {
     setError(false);
     call(() => {
-      gsaBillingWrite(failed
-        ? gsaBillingEnd(sub)
-        : { status: 'ending', pending: null, endDate: gsaBillingNext(sub) });
-      gsaBillingSay('success', failed
+      // Settle against the Subscription as it is now, not as it was when asked.
+      const now = GsaStore.get().sub;
+      if (now.status !== 'subscribed' && now.status !== 'payment-failed') { gsaBillingClose(); return; }
+      const endsNow = now.status === 'payment-failed';
+      gsaBillingWrite(endsNow
+        ? gsaBillingEnd(now)
+        : { status: 'ending', pending: null, endDate: gsaBillingNext(now) });
+      gsaBillingSay('success', endsNow
         ? 'Canceled. Your Subscription ended.'
-        : 'Canceled. Your Subscription ends on ' + endsOn + '. You can resume before then.');
+        : 'Canceled.');
       gsaBillingClose();
     }, () => setError(true));
   };
@@ -295,7 +307,7 @@ function GsaCancelDialog() {
 function GsaPlanDialog() {
   const s = useGsa();
   const sub = s.sub;
-  const allowed = sub.status === 'subscribed';
+  const allowed = sub.status === 'subscribed' && s.tiers.payment && !s.isApp;
   const [busy, call] = useGsaProviderCall();
   const [error, setError] = React.useState(false);
   React.useEffect(() => { if (!allowed && !busy) gsaBillingClose(); }, [allowed, busy]);
@@ -305,6 +317,7 @@ function GsaPlanDialog() {
   const confirm = () => {
     setError(false);
     call(() => {
+      if (GsaStore.get().sub.status !== 'subscribed') { gsaBillingClose(); return; }
       gsaBillingWrite({ pending: to });
       gsaBillingSay('success', 'Plan change confirmed. You pay nothing now. The ' + to + ' Plan applies from ' + from + '.');
       gsaBillingClose();
@@ -322,10 +335,10 @@ function GsaPlanDialog() {
       )}
     >
       <p className="gsa-text">You pay nothing now and get no credit. The {to} Plan applies from {from}. Until then you can keep the {sub.plan} Plan.</p>
-      <dl className="gsa-billing-facts">
+      <div className="gsa-billing-dialog"><dl className="gsa-billing-facts">
         <div className="gsa-billing-fact"><dt>Current Plan</dt><dd><GsaPick>{GSA_BILLING_PLANS[sub.plan]}, {GSA_PLANS[sub.plan].price}</GsaPick></dd></div>
         <div className="gsa-billing-fact"><dt>New Plan</dt><dd><GsaPick>{GSA_BILLING_PLANS[to]}, {GSA_PLANS[to].price}</GsaPick></dd></div>
-      </dl>
+      </dl></div>
       {error ? <GsaStatusLine tone="danger">The Plan was not changed. You paid nothing. Try again.</GsaStatusLine> : null}
     </GsaDialog>
   );

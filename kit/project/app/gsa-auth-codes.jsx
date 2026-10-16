@@ -54,14 +54,14 @@ function GsaAuthCodeForm({ email, canResend, submitLabel = 'Continue', onVerifie
 
 // ---- S3 Sign-up code step ------------------------------------------------------
 function GsaSignUpCode({ route }) {
-  const email = (route && route.email) || window.GSA_PEOPLE.password.email;
-  const first = (route && route.first) || window.GSA_PEOPLE.password.first;
-  const last = (route && route.last) || window.GSA_PEOPLE.password.last;
+  const email = (route && route.email) || window.GSA_PEOPLE.sam.email;
+  const first = (route && route.first) || window.GSA_PEOPLE.sam.first;
+  const last = (route && route.last) || window.GSA_PEOPLE.sam.last;
   return (
     <window.GsaAuthFrame title="Check your email" onBack={() => window.GsaStore.replace('sign-up')}
       lead={'We sent a six-digit code to ' + email + '. Enter it to finish creating your account.'}>
       <GsaAuthCodeForm email={email} canResend submitLabel="Create account"
-        onVerified={() => window.gsaAuthComplete('password', 'sign-up', { first, last, email, method: 'password' })} />
+        onVerified={() => window.gsaAuthComplete('sam', 'sign-up', { first, last, email, method: 'password' })} />
     </window.GsaAuthFrame>
   );
 }
@@ -69,16 +69,16 @@ function GsaSignUpCode({ route }) {
 // ---- S4 Sign-in code page ------------------------------------------------------
 function GsaSignInCode({ route }) {
   const kind = route && route.kind === 'authenticator' ? 'authenticator' : 'device';
-  const method = (route && route.method) || 'password';
+  const who = (route && route.who) === 'alex' ? 'alex' : 'sam';
   const via = (route && route.via) || 'sign-in';
-  const email = window.gsaAuthOnFile(method).email;
+  const email = window.gsaAuthOnFile(who).email;
   const device = kind === 'device';
   const lead = device
     ? 'This looks like a new device. We sent a code to ' + email + '.'
     : 'Open your authenticator app and enter the six-digit code it shows for this account.';
   const done = () => {
     if (device) window.GsaStore.set({ review: { device: 'known' } });
-    window.gsaAuthComplete(method, via);
+    window.gsaAuthComplete(who, via);
   };
   return (
     <window.GsaAuthFrame title="Enter your sign-in code" lead={lead}>
@@ -120,9 +120,9 @@ function GsaRecover({ route }) {
       </window.GsaAuthFrame>
     );
   }
-  const submit = pwForm.submit(() => run(() => window.gsaAuthProceed('password', 'sign-in')));
+  const submit = pwForm.submit(() => run(() => window.gsaAuthProceed(window.gsaAuthWho(email), 'sign-in')));
   return (
-    <window.GsaAuthFrame title="Choose a new password" onBack={() => go('code')} lead="Pick a password you have not used here before.">
+    <window.GsaAuthFrame title="Choose a new password" onBack={() => go('code')}>
       <form className="gsa-auth-form" noValidate onSubmit={submit}>
         <GsaField label="New password" type="password" autoComplete="new-password"
           hint={'At least ' + GSA_AUTH_PASSWORD_MIN + ' characters (placeholder rule)'} {...pwForm.bind('password')} />

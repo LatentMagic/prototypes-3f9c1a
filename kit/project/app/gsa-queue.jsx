@@ -15,12 +15,16 @@ function gsaQueueTitleRule(value) {
   return null;
 }
 
+// Matches monorepo main (item-validators.ts, content-item.schema.ts): trimmed; must parse as a URL
+// (an empty host does not); then the case-sensitive scheme check; at most 2048.
 function gsaQueueUrlRule(value) {
   const u = (value || '').trim();
-  if (!/^https?:\/\/./i.test(u)) return 'URL must use http or https protocol';
+  let parses = true;
+  try { new URL(u); } catch (e) { parses = false; }
+  if (/\s/.test(u)) parses = false; // main's server (Node) refuses a space in the host; browsers encode it
+  if (!parses && /^https?:\/\//.test(u)) return 'Enter a valid URL, like https://example.com';
+  if (!parses || !/^https?:\/\//.test(u)) return 'URL must use http or https protocol';
   if (u.length > 2048) return 'URL must be 2048 characters or fewer';
-  if (/\s/.test(u)) return 'Enter a valid URL, like https://example.com';
-  try { new URL(u); } catch (e) { return 'Enter a valid URL, like https://example.com'; }
   return null;
 }
 
@@ -34,7 +38,7 @@ function gsaQueueNewest(items, status) {
 function GsaQueueCard({ item, onDone }) {
   const done = item.status === 'done';
   return (
-    <li className="gsa-queue-card" data-status={item.status}>
+    <li className="gsa-queue-card" id={'gsa-queue-item-' + item.id} tabIndex={-1} data-status={item.status}>
       <div className="gsa-queue-card-title">{item.title}</div>
       <div className="gsa-queue-card-url">{item.url}</div>
       {done ? null : (
@@ -50,6 +54,11 @@ function GsaQueueForm({ onCancel, onAdded }) {
   const [busy, run] = useGsaBusy(900);
   const [failed, setFailed] = React.useState(false);
   const form = useGsaForm({ title: gsaQueueTitleRule, url: gsaQueueUrlRule });
+  // "+ Add item" opens the form with focus on Title.
+  React.useEffect(() => {
+    const el = document.getElementById('gsa-form-title');
+    if (el) el.focus({ preventScroll: true });
+  }, []);
   const send = form.submit((values) => {
     setFailed(false);
     run(() => {
@@ -62,7 +71,7 @@ function GsaQueueForm({ onCancel, onAdded }) {
         createdAt: new Date(),
       };
       window.GsaStore.set((s) => ({ items: [item].concat(s.items) }));
-      onAdded();
+      onAdded(item);
     });
   });
   return (
@@ -118,6 +127,11 @@ function GsaHome() {
   const inflight = React.useRef(false);
   const alive = React.useRef(true);
   const panel = React.useRef(null);
+  const heading = React.useRef(null);
+  const addBtn = React.useRef(null);
+  const retryBtn = React.useRef(null);
+  // Focus the form's exit or the next thing, once the screen has re-rendered (ui-design: focus restoration).
+  const focusNext = React.useRef(null);
   const flag = g.queue.load;
 
   React.useEffect(() => () => { alive.current = false; }, []);
@@ -133,7 +147,31 @@ function GsaHome() {
     return () => clearTimeout(t);
   }, [phase, flag]);
 
+  React.useEffect(() => {
+    const want = focusNext.current;
+    if (!want) return;
+    const opts = { preventScroll: false };
+    if (want.kind === 'add') { if (addBtn.current) { addBtn.current.focus(opts); focusNext.current = null; } return; }
+    if (want.kind === 'item') {
+      if (phase === 'pending' && !loaded) return;
+      const card = document.getElementById('gsa-queue-item-' + want.id);
+      const el = card || heading.current;
+      if (el) el.focus(opts);
+      focusNext.current = null;
+      return;
+    }
+    if (want.kind === 'retry') {
+      if (phase === 'pending') return;
+      const el = phase === 'failed' ? retryBtn.current : panel.current;
+      if (el) el.focus(opts);
+      focusNext.current = null;
+    }
+  });
+
   const refetch = () => setPhase('pending');
+  const retry = () => { focusNext.current = { kind: 'retry' }; refetch(); };
+  const closeForm = () => { focusNext.current = { kind: 'add' }; setAdding(false); };
+  const added = (item) => { focusNext.current = { kind: 'item', id: item.id }; setAdding(false); };
   const pickTab = (id) => { if (id === tab) return; setTab(id); refetch(); };
 
   const markDone = (item) => {
@@ -157,7 +195,7 @@ function GsaHome() {
       <div className="gsa-load-failed" role="alert">
         <h2 className="gsa-queue-failed-title">Couldn't load your queue</h2>
         <p>Something went wrong. Please try again.</p>
-        <GsaButton kind="secondary" onClick={refetch}>Try again</GsaButton>
+        <GsaButton ref={retryBtn} kind="secondary" onClick={retry}>Try again</GsaButton>
       </div>
     );
   } else if (phase === 'pending' && !loaded) {
@@ -185,10 +223,10 @@ function GsaHome() {
     <div className="gsa-page gsa-queue">
       {Ask ? <Ask /> : null}
       <div className="gsa-queue-head">
-        <h1 className="gsa-heading">Content Queue</h1>
-        {adding ? null : <GsaButton onClick={() => setAdding(true)}>+ Add item</GsaButton>}
+        <h1 className="gsa-heading" tabIndex={-1} ref={heading}>Content Queue</h1>
+        {adding ? null : <GsaButton ref={addBtn} onClick={() => setAdding(true)}>+ Add item</GsaButton>}
       </div>
-      {adding ? <GsaQueueForm onCancel={() => setAdding(false)} onAdded={() => setAdding(false)} /> : null}
+      {adding ? <GsaQueueForm onCancel={closeForm} onAdded={added} /> : null}
       {markError ? <div className="gsa-queue-error" role="alert">Couldn't mark that as done. Please try again.</div> : null}
       <GsaQueueTabs tab={tab} onTab={pickTab} />
       <div id="gsa-queue-panel" className="gsa-queue-panel" role="tabpanel" aria-labelledby={'gsa-queue-tab-' + tab} tabIndex={-1} ref={panel}>

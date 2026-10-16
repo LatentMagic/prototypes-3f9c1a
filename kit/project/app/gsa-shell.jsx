@@ -17,11 +17,16 @@ function GsaShellHeader({ g }) {
     <header className="gsa-shell-header" data-posture={g.isApp ? 'app' : 'web'}>
       <div className="gsa-shell-bar">
         <span className="gsa-shell-name">{window.GSA_APP_NAME}</span>
-        <nav className="gsa-shell-nav" aria-label="Main">
-          {signedIn ? (
-            <>
-              <GsaPick><GsaShellLink to="shared-space">Shared space</GsaShellLink></GsaPick>
-              <GsaPick><GsaShellLink to="paid-feature">Paid feature</GsaShellLink></GsaPick>
+        {signedIn ? (
+          <>
+            <nav className="gsa-shell-nav" aria-label="Main">
+              {/* One tag for both links (G39): how they are reached is each app's pick. */}
+              <GsaPick>
+                <GsaShellLink to="shared-space">Shared space</GsaShellLink>
+                <GsaShellLink to="paid-feature">Paid feature</GsaShellLink>
+              </GsaPick>
+            </nav>
+            <div className="gsa-shell-end">
               <GsaMenu
                 label={name}
                 items={[
@@ -29,32 +34,40 @@ function GsaShellHeader({ g }) {
                   { label: 'Sign out', onSelect: () => window.GsaStore.signOut() },
                 ]}
               />
-            </>
-          ) : (
+            </div>
+          </>
+        ) : (
+          <nav className="gsa-shell-end" aria-label="Main">
             <GsaShellLink to="sign-in">Sign in</GsaShellLink>
-          )}
-        </nav>
+          </nav>
+        )}
       </div>
     </header>
   );
 }
 
 function GsaShellFooter({ g }) {
-  const takesPayment = g.tiers.payment && !g.isApp;
-  const showPlans = takesPayment && g.tiers.plans;
+  // GSA-029.AF-01: the Refund Policy is reachable wherever the app takes payment, in both postures.
+  const takesPayment = g.tiers.payment;
+  const showPlans = takesPayment && !g.isApp && g.tiers.plans;
   return (
     <footer className="gsa-shell-footer">
-      <nav className="gsa-shell-footer-nav" aria-label="Footer">
-        <GsaShellLink to="legal" params={{ page: 'terms' }}>Terms</GsaShellLink>
-        <GsaShellLink to="legal" params={{ page: 'privacy' }}>Privacy policy</GsaShellLink>
-        {takesPayment ? <GsaShellLink to="legal" params={{ page: 'refund' }}>Refund Policy</GsaShellLink> : null}
-        <GsaShellLink to="connect">Connect your AI app</GsaShellLink>
-        <GsaShellLink to="deletion-request">Deletion request</GsaShellLink>
-        {showPlans ? <GsaPick><GsaShellLink to="plans">Plans</GsaShellLink></GsaPick> : null}
-      </nav>
-      <p className="gsa-shell-support">
-        Support: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a>
-      </p>
+      <div className="gsa-shell-footer-in">
+        <nav className="gsa-shell-footer-nav" aria-label="Footer">
+          {/* Pick (G8): GSA-029 Additional leaves where the legal links sit to each app. */}
+          <GsaPick>
+            <GsaShellLink to="legal" params={{ page: 'terms' }}>Terms</GsaShellLink>
+            <GsaShellLink to="legal" params={{ page: 'privacy' }}>Privacy policy</GsaShellLink>
+            {takesPayment ? <GsaShellLink to="legal" params={{ page: 'refund' }}>Refund Policy</GsaShellLink> : null}
+            <GsaShellLink to="connect">Connect your AI app</GsaShellLink>
+            <GsaShellLink to="deletion-request">Deletion request</GsaShellLink>
+          </GsaPick>
+          {showPlans ? <GsaPick><GsaShellLink to="plans">Plans</GsaShellLink></GsaPick> : null}
+        </nav>
+        <p className="gsa-shell-support">
+          Support: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a>
+        </p>
+      </div>
     </footer>
   );
 }
@@ -65,6 +78,7 @@ function GsaFrame({ children }) {
     <div className="gsa-shell">
       <GsaShellHeader g={g} />
       <main className="gsa-shell-main">{children}</main>
+      <div id="gsa-overlay-root" className="gsa-overlay-root" />
       <GsaShellFooter g={g} />
     </div>
   );
