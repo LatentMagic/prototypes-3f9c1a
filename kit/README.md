@@ -10,6 +10,10 @@ Nothing in `project/` names a product (this README names Circlists, where the ki
 - Cut from: the Circlists prototype at `app/circlists/canon/`, repo commit `dddbb6c`. Canon's working tree was dirty at the cut (`app/qa.jsx`, `app/states.jsx`, `app/spaces.jsx`); those changes landed later as `67eeb67`, so whether the cut took the commit or the dirty tree is not recorded. The difference is about 35 lines of Circlists content.
 - Impeccable: 4.5.0 (the version is the pin; no commit id was available).
 
+## Viewing it
+
+Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
+
 ## Starting a new prototype from it
 
 1. Drag the `kit/project/` folder into the new Claude Design project yourself. The Circlists project's files show dropped files landing in an `uploads/` folder, so check where they landed: if they sit under `uploads/` instead of the project root, the first instruction to the agent is to move them to the root with paths preserved. Connect GitHub to the project: the agent reads the product's specs from there. Then tell the agent to read `SETUP.md` and do what it says: it moves the files to the root if they landed under `uploads/`, clears the upload, puts "Hello world" on the placeholder screen, checks the config button, states and QA work, reports what it found (including whether `CLAUDE.md` was read without being told), and deletes itself. It builds no prototype.
