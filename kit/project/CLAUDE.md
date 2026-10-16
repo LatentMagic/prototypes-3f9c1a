@@ -21,7 +21,7 @@ Everything outside the block above is shared: identical in every project built f
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
-**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 1.** Each kit update raises it by one.
+**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 2.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
@@ -135,6 +135,10 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 
 <important if="you are building or changing any action that changes state, or any content that loads: a submit, save, send, delete, confirm, pay, a list, a panel, a page">
 - **Every wait shows it is working, where the wait is.** A press that changes state shows a loading indication on the control that was pressed, which cannot be pressed again until the result. A page whose content is arriving shows it loading as a page. A part of a page that loads on its own, such as a panel, a list or the top bar, shows it there and leaves the rest usable. A prototype has no real wait, so stage one long enough to see.
+</important>
+
+<important if="you are reviewing, testing or fixing what happens on a browser reload, or anything else only the real build has: a stored session, saved data, state kept in the URL">
+- **A prototype has no real persistence.** A tab reload restarts it at Home, signed out. That is how the prototype works, not a defect: never build reload survival, a stored session or state kept in the URL to fix it, and never raise it as a finding. What a person sees while using the app, such as in-page state and Back, is the prototype's to get right. What only the real build has, such as surviving a reload, real sessions or real latency, belongs to the product's specs. Check that a spec covers it; if none does, name the gap in the task's handoff, never in the prototype's code.
 </important>
 
 ## Code

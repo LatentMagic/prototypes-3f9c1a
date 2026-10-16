@@ -3,7 +3,7 @@ name: impeccable-local
 description: Read before `skills/impeccable/SKILL.md`, every time it is used. The adapter for running Impeccable inside this project, where nothing can be executed: what replaces its Setup step, what it does with its own PRODUCT.md and DESIGN.md (nothing is created here), what to do by hand in place of its hooks, and which commands are unavailable. Opt-in: read it only on `$impeccable`, or when work genuinely needs critique depth beyond the standing pair named in `CLAUDE.md`; routine build work and a bare polish request do not fire it.
 metadata:
   author: LatentMagic
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Impeccable, in this project
@@ -29,6 +29,8 @@ Then continue with upstream's steps 2 and 3 as written: load the one playbook th
 ## 3. Our visual law wins
 
 `tokens.css` and the design law the product block names are binding. Impeccable supplies process and vocabulary, never a palette, a typeface, a "visual world", a new aesthetic direction, a blocks library or a rewrite of any project file from its own init flow. If a playbook says to choose or replace a visual language, that does not apply to this product's surfaces. "Redesign" here means information architecture and layout, not identity. Upstream's "refinement preserves; redesign replaces" holds for everything else.
+
+Upstream's checks on refreshing mid-flow and losing state on a reload (in `critique`, `harden` and elsewhere) assume a real build. A prototype has none: `CLAUDE.md`'s rule on persistence governs, so a reload that restarts the prototype is never a finding. Back and in-page state still are.
 
 `CLAUDE.md`'s ratification rule governs: upstream's "go all out, no hedging" is about craft, not authority. Present options, recommend one, stop and wait. Upstream's "verify in bounded passes" is compatible with ours: build, inspect once, fix in a batch, stop.
 
