@@ -6,8 +6,23 @@
 const GSA_DAY0 = new Date(2026, 9, 16, 9, 0, 0);
 
 const GSA_PEOPLE = {
-  sam: { first: 'Sam', last: 'Taylor', email: 'sam@example.com', method: 'password', enrolled: false },
-  alex: { first: 'Alex', last: 'Chen', email: 'alex@example.com', method: 'password', enrolled: false },
+  sam: { first: 'Sam', last: 'Taylor', email: 'sam@example.com', method: 'password', providerId: null, enrolled: false },
+  alex: { first: 'Alex', last: 'Chen', email: 'alex@example.com', method: 'password', providerId: null, enrolled: false },
+  // Provider-managed accounts (GSA-008): no password; Robin's email is a Relay address (AF-04).
+  casey: { first: 'Casey', last: 'Morgan', email: 'casey.morgan@gmail.com', method: 'google', providerId: 'google:casey', enrolled: false },
+  robin: { first: 'Robin', last: 'Park', email: 'k3v9q2@privaterelay.appleid.com', method: 'apple', providerId: 'apple:robin', enrolled: false },
+};
+
+// What the pictured provider page offers (GSA-008): a person with an account, and a first visit.
+const GSA_PROVIDER_PEOPLE = {
+  google: {
+    existing: { id: 'google:casey', first: 'Casey', last: 'Morgan', email: 'casey.morgan@gmail.com' },
+    firstVisit: { id: 'google:drew', first: 'Drew', last: 'Patel', email: 'drew.patel@gmail.com' },
+  },
+  apple: {
+    existing: { id: 'apple:robin', first: 'Robin', last: 'Park', email: 'robin.park@icloud.com', relay: 'k3v9q2@privaterelay.appleid.com' },
+    firstVisit: { id: 'apple:lee', first: 'Lee', last: 'Quinn', email: 'lee.quinn@icloud.com', relay: 'lq7m2x@privaterelay.appleid.com' },
+  },
 };
 
 const GSA_PLANS = {
@@ -43,7 +58,8 @@ function gsaSeedItems() {
 }
 
 // One account's own data: person, queue, Subscription, Owner/member role, Notifications switch.
-// key: 'sam', 'alex', or 'new:<n>' (an account made by sign-up; account = { first, last, email }).
+// key: 'sam', 'alex', 'casey', 'robin', or 'new:<n>' (an account made by sign-up or a first provider visit;
+// account = { first, last, email, method?, providerId? }).
 function gsaSeedAccount(key, account) {
   if (key === 'sam') {
     return {
@@ -54,11 +70,13 @@ function gsaSeedAccount(key, account) {
       },
     };
   }
-  const person = key === 'alex'
-    ? { ...GSA_PEOPLE.alex }
+  const person = GSA_PEOPLE[key]
+    ? { ...GSA_PEOPLE[key] }
     : {
       first: (account && account.first) || '', last: (account && account.last) || '',
-      email: (account && account.email) || String(key).replace(/^new:/, ''), method: 'password', enrolled: false,
+      email: (account && account.email) || String(key).replace(/^new:/, ''),
+      method: (account && account.method) || 'password', providerId: (account && account.providerId) || null,
+      enrolled: false,
     };
   return {
     person, items: [], role: 'none', pushOn: false,
@@ -73,7 +91,7 @@ function gsaSeed() {
   const sam = gsaSeedAccount('sam');
   return {
     who: 'sam',
-    accounts: { alex: gsaSeedAccount('alex') },
+    accounts: { alex: gsaSeedAccount('alex'), casey: gsaSeedAccount('casey'), robin: gsaSeedAccount('robin') },
     env: { platform: 'web', isMobile: false },
     route: { name: 'home' },
     returnTo: null,
@@ -101,13 +119,13 @@ function gsaSeed() {
       device: 'known',
       emailReverify: 'asks', emailEndsSession: false, storeLink: false,
       payProvider: 'works', hosted: 'pays', clipboard: 'ok',
-      inviteValid: true, inviteMatch: 'match',
+      inviteValid: true, provider: 'works', providerAccount: 'existing',
       promptAnswer: 'prompt', pushFail: false, exportLimit: false, deletedElsewhere: false,
     },
   };
 }
 
 Object.assign(window, {
-  GSA_DAY0, GSA_PEOPLE, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
+  GSA_DAY0, GSA_PEOPLE, GSA_PROVIDER_PEOPLE, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
   GSA_EVENTS, GSA_AI_APPS, GSA_TAKEN_EMAIL, gsaSeed, gsaSeedAccount,
 });

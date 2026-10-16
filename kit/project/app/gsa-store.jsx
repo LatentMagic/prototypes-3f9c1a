@@ -6,10 +6,10 @@
 // ============================================================================
 const GSA_SCREENS = {
   'home': 'GsaHome', 'sign-in': 'GsaSignIn', 'sign-up': 'GsaSignUp', 'sign-up-code': 'GsaSignUpCode',
-  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'account': 'GsaAccount',
+  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'provider': 'GsaProvider', // GSA-008 'account': 'GsaAccount',
   'plans': 'GsaPlans', 'subscribe': 'GsaSubscribe', 'hosted-payment': 'GsaHostedPayment', 'invite': 'GsaInvite',
   'invite-link': 'GsaInviteLink', 'invite-invalid': 'GsaInviteInvalid', 'invite-full': 'GsaInviteFull',
-  'invite-other-account': 'GsaInviteOtherAccount', 'shared-space': 'GsaSharedSpace', 'connect': 'GsaConnect',
+  'shared-space': 'GsaSharedSpace', 'connect': 'GsaConnect',
   'ai-app': 'GsaAiApp', 'paid-feature': 'GsaPaidFeature', 'legal': 'GsaLegal',
   'deletion-request': 'GsaDeletionRequest', 'not-found': 'GsaNotFound', 'cant-connect': 'GsaCantConnect',
 };
@@ -17,11 +17,11 @@ const GSA_DIALOGS = {
   'reverify': 'GsaReverifyDialog', 'email-code': 'GsaEmailCodeDialog', 'delete': 'GsaDeleteDialog',
   'cancel': 'GsaCancelDialog', 'plan': 'GsaPlanDialog',
 };
-const GSA_AUTH_ONLY = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover'];
+const GSA_AUTH_ONLY = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'provider'];
 const GSA_SIGNED_IN_ONLY = ['home', 'account', 'hosted-payment', 'invite', 'shared-space', 'paid-feature'];
-const GSA_PUBLIC = ['plans', 'invite-invalid', 'invite-full', 'invite-other-account', 'connect', 'ai-app', 'legal',
+const GSA_PUBLIC = ['plans', 'invite-invalid', 'invite-full', 'connect', 'ai-app', 'legal',
   'deletion-request', 'not-found', 'cant-connect'];
-const GSA_BARE = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'hosted-payment', 'ai-app'];
+const GSA_BARE = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'provider', 'hosted-payment', 'ai-app'];
 const GSA_BUYING = ['plans', 'subscribe', 'hosted-payment'];
 const GSA_ACTIVE_SUB = ['subscribed', 'ending', 'payment-failed'];
 
@@ -46,7 +46,6 @@ function gsaInviteOutcome(s) {
   if (!s.review.inviteValid) return { name: 'invite-invalid' };
   if (gsaIsMember(s)) return { name: 'shared-space', notice: 'already-member' };
   if (s.space.full) return { name: 'invite-full' };
-  if (s.review.inviteMatch === 'other') return { name: 'invite-other-account' };
   return { name: 'shared-space', notice: 'joined' };
 }
 
@@ -226,6 +225,25 @@ const GsaStore = {
       patch.push = { on: acct.pushOn, registered: false };
     }
     GsaStore.set(patch, { keepRoute: true });
+  },
+  // Makes a stashed account under a fresh 'new:<n>' key (the sign-up counter) and returns the key;
+  // it does not sign in. account = { first, last, email, method, providerId } (GSA-008.AF-02).
+  addAccount(account) {
+    gsaNewSeq += 1;
+    const key = 'new:' + gsaNewSeq;
+    GsaStore.set({ accounts: { [key]: gsaSeedAccount(key, account) } }, { keepRoute: true });
+    return key;
+  },
+  // The who whose person.providerId is `providerId`, or null. The live account answers for itself.
+  accountByProvider(providerId) {
+    const s = gsaState;
+    if (!providerId) return null;
+    if (s.who && s.person.providerId === providerId) return s.who;
+    const keys = Object.keys(s.accounts);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (keys[i] !== s.who && s.accounts[keys[i]].person.providerId === providerId) return keys[i];
+    }
+    return null;
   },
   // The person on file for 'sam' or 'alex': live when signed in as them, else stashed, else the seed.
   personOf(who) {
