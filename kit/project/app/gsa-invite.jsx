@@ -98,8 +98,7 @@ function GsaInviteLink() {
   React.useEffect(() => {
     const s = GsaStore.get();
     const out = window.gsaInviteOutcome ? window.gsaInviteOutcome(s) : { name: 'invite-invalid' };
-    const { name, ...params } = out;
-    GsaStore.replace(name, params);
+    GsaStore.replace(out.name, gsaParams(out));
   }, []);
   return <main className="gsa-page gsa-people-page"><GsaSpin /></main>;
 }

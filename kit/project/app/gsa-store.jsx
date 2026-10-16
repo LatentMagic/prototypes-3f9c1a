@@ -18,7 +18,7 @@ const GSA_DIALOGS = {
   'cancel': 'GsaCancelDialog', 'plan': 'GsaPlanDialog',
 };
 const GSA_AUTH_ONLY = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover'];
-const GSA_SIGNED_IN_ONLY = ['home', 'account', 'subscribe', 'hosted-payment', 'invite', 'shared-space', 'paid-feature'];
+const GSA_SIGNED_IN_ONLY = ['home', 'account', 'hosted-payment', 'invite', 'shared-space', 'paid-feature'];
 const GSA_PUBLIC = ['plans', 'invite-invalid', 'invite-full', 'invite-other-account', 'connect', 'ai-app', 'legal',
   'deletion-request', 'not-found', 'cant-connect', 'provider'];
 const GSA_BARE = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'provider', 'hosted-payment', 'ai-app'];
@@ -123,9 +123,15 @@ function gsaEraseIfDeleted() {
   return true;
 }
 
+// Copy of obj without the named keys (no object-rest: Babel's shared _excluded global collides across kit files).
+function gsaOmit(obj, keys) {
+  const out = Object.assign({}, obj);
+  keys.forEach((k) => { delete out[k]; });
+  return out;
+}
+
 function gsaParams(route) {
-  const { name, ...params } = route;
-  return params;
+  return gsaOmit(route, ['name']);
 }
 
 const GSA_WRITE_KEYS = ['items', 'person', 'sub', 'space', 'push', 'invite'];
@@ -180,7 +186,11 @@ const GsaStore = {
   },
   signIn(method) {
     const person = GSA_PEOPLE[method] || GSA_PEOPLE.password;
-    GsaStore.set({ session: 'signed-in', person: { ...person } }, { keepRoute: true });
+    const prev = gsaState.person;
+    const patch = { session: 'signed-in', person: { ...person } };
+    // A different person on this device: the registration was the last person's.
+    if (prev && prev.email !== person.email) patch.push = { registered: false };
+    GsaStore.set(patch, { keepRoute: true });
   },
   signOut({ keepPending } = {}) {
     const s = gsaState;
@@ -189,7 +199,8 @@ const GsaStore = {
   },
   finishAuth(via) {
     const s = gsaState;
-    const { invite, plan, ...rest } = s.pending;
+    const { invite, plan } = s.pending;
+    const rest = gsaOmit(s.pending, ['invite', 'plan']);
     if (invite) {
       gsaCommit({ ...s, pending: rest });
       const landed = gsaInviteOutcome(gsaState);
@@ -219,6 +230,6 @@ function gsaDeletedElsewhere() {
 }
 
 Object.assign(window, {
-  GsaStore, useGsa, gsaLand, gsaInviteOutcome, gsaDeletedElsewhere,
+  gsaOmit, gsaParams, GsaStore, useGsa, gsaLand, gsaInviteOutcome, gsaDeletedElsewhere,
   GSA_SCREENS, GSA_DIALOGS, GSA_AUTH_ONLY, GSA_SIGNED_IN_ONLY, GSA_PUBLIC, GSA_BARE,
 });

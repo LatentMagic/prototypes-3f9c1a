@@ -8,7 +8,9 @@ const gsaCx = (...parts) => parts.filter(Boolean).join(' ');
 
 // ---- Button ----------------------------------------------------------------
 // busy shows a working state and drops presses; the target is 44px (gsa.css).
-const GsaButton = React.forwardRef(function GsaButton({ kind = 'primary', busy = false, disabled = false, onClick, children, type = 'button', className, ...rest }, ref) {
+const GsaButton = React.forwardRef(function GsaButton(props, ref) {
+  const { kind = 'primary', busy = false, disabled = false, onClick, children, type = 'button', className } = props;
+  const rest = gsaOmit(props, ['kind', 'busy', 'disabled', 'onClick', 'children', 'type', 'className']);
   const press = (e) => {
     if (busy || disabled) { e.preventDefault(); return; }
     if (onClick) onClick(e);
@@ -32,7 +34,9 @@ const GsaButton = React.forwardRef(function GsaButton({ kind = 'primary', busy =
 });
 
 // ---- Field -----------------------------------------------------------------
-function GsaField({ label, error, hint, id, className, ...input }) {
+function GsaField(props) {
+  const { label, error, hint, id, className } = props;
+  const input = gsaOmit(props, ['label', 'error', 'hint', 'id', 'className']);
   const auto = React.useId();
   const fieldId = id || 'gsa-field-' + auto.replace(/:/g, '');
   const describedBy = [error ? fieldId + '-error' : null, hint ? fieldId + '-hint' : null].filter(Boolean).join(' ') || undefined;
@@ -53,7 +57,9 @@ function GsaField({ label, error, hint, id, className, ...input }) {
 }
 
 // ---- Code field: one six-digit field. onChange receives the digits string. --
-function GsaCodeField({ value = '', onChange, error, label, id, ...rest }) {
+function GsaCodeField(props) {
+  const { value = '', onChange, error, label, id } = props;
+  const rest = gsaOmit(props, ['value', 'onChange', 'error', 'label', 'id']);
   const handle = (e) => {
     const raw = e && e.target ? e.target.value : e;
     if (onChange) onChange(String(raw || '').replace(/\D/g, '').slice(0, 6));
