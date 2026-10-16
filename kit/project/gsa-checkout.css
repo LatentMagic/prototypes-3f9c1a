@@ -27,7 +27,7 @@
 .gsa-checkout-due .gsa-text { margin: 0; }
 
 /* hosted payment: the provider's page, cool and neutral, not the product's look */
-.gsa-checkout-host { min-height: 100%; background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface-sunken)); font-family: var(--font-sans); color: var(--color-fg-1); }
+.gsa-checkout-host { min-height: 100vh; min-height: 100dvh; background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface-sunken)); font-family: var(--font-sans); color: var(--color-fg-1); }
 .gsa-checkout-host-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-surface); border-bottom: 1px solid var(--color-border-2); }
 .gsa-checkout-host-name { font-weight: 600; font-size: var(--text-base); }
 .gsa-checkout-host-label { font-size: var(--text-sm); color: var(--color-fg-3); }
@@ -39,3 +39,4 @@
 .gsa-checkout-card-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .gsa-checkout-block { width: 100%; }
 .gsa-checkout-host-cancel { display: flex; justify-content: center; margin-top: var(--space-3); }
+.kit-phone-screen .gsa-checkout-host { min-height: 100%; }

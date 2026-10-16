@@ -94,3 +94,6 @@
 .gsa-menu-list[data-align="end"] { left: auto; right: 0; }
 .gsa-menu-item { display: flex; align-items: center; width: 100%; min-height: var(--target-min); padding: 0 var(--space-3); font: 400 var(--text-base) var(--font-sans); color: var(--color-fg-1); text-align: left; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; }
 .gsa-menu-item:hover { background: var(--color-surface-sunken); }
+
+/* status and statement lines never close on one word (pictured AI-app bubbles are excluded) */
+.gsa-status, .gsa-push-line, .gsa-people-page .gsa-text { text-wrap: balance; }

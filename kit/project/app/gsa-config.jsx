@@ -51,7 +51,7 @@ const GsaConfigExtra = () => {
       <div className="kit-config-eyebrow">Golden Sample</div>
 
       <div className="kit-config-group-title">Who</div>
-      {row('Signed in', g.session, (v) => S.set({ session: v }), [['signed-in', 'Signed in'], ['visitor', 'Visitor']])}
+      {row('Signed in', g.session, (v) => (v === 'signed-in' ? S.signInAvailable() : S.set({ session: v })), [['signed-in', 'Signed in'], ['visitor', 'Visitor']])}
       {row('Device', r.device, (v) => setReview({ device: v }), [['known', 'Known'], ['new', 'New']])}
       {row('Authenticator app', person.enrolled ? 'yes' : 'no', (v) => S.set({ person: { enrolled: yn(v) } }), [['no', 'Not enrolled'], ['yes', 'Enrolled']])}
       {row('Email change asks to prove it’s you', r.emailReverify, (v) => setReview({ emailReverify: v }), [['asks', 'Asks'], ['recent', 'Recent sign-in']],
@@ -67,7 +67,7 @@ const GsaConfigExtra = () => {
         : <div className="kit-config-hint">Plans page does not apply while Takes payment is No.</div>}
       {isApp
         ? row('Store allows one link', r.storeLink ? 'yes' : 'no', (v) => setReview({ storeLink: yn(v) }), [['no', 'No'], ['yes', 'Yes']])
-        : <div className="kit-config-hint">Store allows one link shows in Platform: Mobile is the Store app.</div>}
+        : <div className="kit-config-hint">Store allows one link: set Platform to Mobile (the Store app) to use this.</div>}
 
       <div className="kit-config-group-title">Queue</div>
       {row('Loading', queue.load, (v) => S.set({ queue: { load: v } }), [['ok', 'Normal'], ['hold', 'Held'], ['fail', 'Fails']],

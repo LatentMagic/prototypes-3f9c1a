@@ -62,7 +62,7 @@ function GsaAccountEmailCard({ g, notice }) {
   return (
     <GsaCard title="Change email">
       {notice === 'email-changed' ? <div className="gsa-account-status"><GsaStatusLine tone="success">Your email address has changed.</GsaStatusLine></div> : null}
-      <GsaAccountEmailForm g={g} onDone={start} />
+      <GsaAccountEmailForm key={g.person.email} g={g} onDone={start} />
     </GsaCard>
   );
 }

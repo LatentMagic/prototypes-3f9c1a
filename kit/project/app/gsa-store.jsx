@@ -30,9 +30,21 @@ function gsaView(s) {
 }
 
 // ---- the invitation rules (S16) ---------------------------------------------
+// Membership is by account (who), never by email: an email change keeps the seat.
+function gsaIsMember(s) {
+  return Boolean(s.who) && s.space.members.some((m) => m.who === s.who);
+}
+
+// The address a member holds now: the live or stashed account's, else the one on the list.
+function gsaMemberEmail(s, m) {
+  if (m.who && m.who === s.who) return s.person.email;
+  if (m.who && s.accounts[m.who]) return s.accounts[m.who].person.email;
+  return m.email;
+}
+
 function gsaInviteOutcome(s) {
   if (!s.review.inviteValid) return { name: 'invite-invalid' };
-  if (s.space.members.some((m) => m.email === s.person.email)) return { name: 'shared-space', notice: 'already-member' };
+  if (gsaIsMember(s)) return { name: 'shared-space', notice: 'already-member' };
   if (s.space.full) return { name: 'invite-full' };
   if (s.review.inviteMatch === 'other') return { name: 'invite-other-account' };
   return { name: 'shared-space', notice: 'joined' };
@@ -61,6 +73,7 @@ function gsaLand(route, s) {
 // ---- store internals --------------------------------------------------------
 let gsaState = gsaSeed();
 let gsaStack = [];
+let gsaNewSeq = 0; // numbers the accounts made by sign-up
 let gsaSnap = null;
 let gsaEpoch = 0; // bumped by every reseed; GsaRoot keys the screen on it so no local state outlives one
 const gsaListeners = new Set();
@@ -85,8 +98,8 @@ function gsaCommit(next) {
 
 function gsaJoin(s, route) {
   if (route.name !== 'shared-space' || route.notice !== 'joined') return s;
-  if (s.space.members.some((m) => m.email === s.person.email)) return s;
-  const member = { name: s.person.first + ' ' + s.person.last, email: s.person.email };
+  if (gsaIsMember(s)) return s;
+  const member = { who: s.who, name: s.person.first + ' ' + s.person.last, email: s.person.email };
   return { ...s, space: { ...s.space, role: 'member', members: s.space.members.concat([member]) } };
 }
 
@@ -112,7 +125,7 @@ function gsaResolve(s, requested) {
 // Erase only the signed-in person's account and slice; every other account keeps its data.
 function gsaEraseAccount(s) {
   const accounts = gsaOmit(s.accounts, [s.who]);
-  const members = s.space.members.filter((m) => m.email !== s.person.email);
+  const members = s.space.members.filter((m) => m.who !== s.who);
   return { ...s, who: null, accounts, space: { ...s.space, members, role: 'none' } };
 }
 
@@ -198,7 +211,9 @@ const GsaStore = {
   // Each person's queue, Subscription, role and Notifications switch is their own.
   signIn(who = 'sam', account) {
     const s = gsaState;
-    const key = who === 'new' ? 'new:' + ((account && account.email) || '') : who;
+    // A sign-up always makes a new account under a fresh key; the key never stands for an address.
+    if (who === 'new') gsaNewSeq += 1;
+    const key = who === 'new' ? 'new:' + gsaNewSeq : who;
     const patch = { session: 'signed-in' };
     if (key !== s.who) {
       const acct = s.accounts[key] || gsaSeedAccount(key, account);
@@ -218,7 +233,8 @@ const GsaStore = {
     if (s.who === who) return s.person;
     return (s.accounts[who] && s.accounts[who].person) || GSA_PEOPLE[who] || GSA_PEOPLE.sam;
   },
-  // The registry: the who ('sam', 'alex', 'new:<email>') whose address is `email`, or null. Live account first.
+  // The registry: the who ('sam', 'alex', 'new:<n>') whose CURRENT address is `email`, or null.
+  // The live account answers for itself; its stash is stale and skipped. An address given up is free.
   accountByEmail(email) {
     const s = gsaState;
     const want = String(email || '').trim().toLowerCase();
@@ -226,7 +242,7 @@ const GsaStore = {
     if (s.who && s.person.email.toLowerCase() === want) return s.who;
     const keys = Object.keys(s.accounts);
     for (let i = 0; i < keys.length; i += 1) {
-      if (s.accounts[keys[i]].person.email.toLowerCase() === want) return keys[i];
+      if (keys[i] !== s.who && s.accounts[keys[i]].person.email.toLowerCase() === want) return keys[i];
     }
     return null;
   },
@@ -236,6 +252,14 @@ const GsaStore = {
     if (want === GSA_TAKEN_EMAIL) return true;
     const who = GsaStore.accountByEmail(want);
     return who !== null && who !== exceptWho;
+  },
+  // Config "Signed in": the live account, or after a deletion the first account on file
+  // (Sam afresh when none is left). Never an erased account.
+  signInAvailable() {
+    const s = gsaState;
+    if (s.who) return GsaStore.set({ session: 'signed-in' });
+    const keys = Object.keys(s.accounts);
+    return GsaStore.signIn(keys.length ? keys[0] : 'sam');
   },
   // Erase the signed-in person's own account and data (GSA-014), then sign out. Others are untouched.
   eraseAccount() {
@@ -281,6 +305,6 @@ function gsaDeletedElsewhere() {
 }
 
 Object.assign(window, {
-  gsaOmit, gsaParams, GsaStore, useGsa, gsaLand, gsaInviteOutcome, gsaDeletedElsewhere,
+  gsaOmit, gsaParams, GsaStore, useGsa, gsaLand, gsaInviteOutcome, gsaIsMember, gsaMemberEmail, gsaDeletedElsewhere,
   GSA_SCREENS, GSA_DIALOGS, GSA_AUTH_ONLY, GSA_SIGNED_IN_ONLY, GSA_PUBLIC, GSA_BARE,
 });

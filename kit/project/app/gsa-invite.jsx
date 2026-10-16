@@ -24,7 +24,7 @@ function GsaInvite() {
       const email = String(v || '').trim();
       if (!email) return 'Enter an email address.';
       if (!GSA_INVITE_EMAIL.test(email)) return 'Enter a valid email address.';
-      if (members.some((m) => m.email.toLowerCase() === email.toLowerCase())) return 'This person is already a member.';
+      if (members.some((m) => window.gsaMemberEmail(g, m).toLowerCase() === email.toLowerCase())) return 'This person is already a member.';
       return null;
     },
   });

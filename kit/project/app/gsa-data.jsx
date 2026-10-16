@@ -43,7 +43,7 @@ function gsaSeedItems() {
 }
 
 // One account's own data: person, queue, Subscription, Owner/member role, Notifications switch.
-// key: 'sam', 'alex', or 'new:<email>' (an account made by sign-up; account = { first, last, email }).
+// key: 'sam', 'alex', or 'new:<n>' (an account made by sign-up; account = { first, last, email }).
 function gsaSeedAccount(key, account) {
   if (key === 'sam') {
     return {
@@ -87,9 +87,9 @@ function gsaSeed() {
     space: {
       role: sam.role, full: false,
       members: [
-        { name: 'Sam Taylor', email: 'sam@example.com' },
-        { name: 'Jo Rivera', email: 'member@example.com' },
-        { name: 'Kim Lee', email: 'kim@example.com' },
+        { who: 'sam', name: 'Sam Taylor', email: 'sam@example.com' },
+        { who: 'member', name: 'Jo Rivera', email: 'member@example.com' },
+        { who: 'kim', name: 'Kim Lee', email: 'kim@example.com' },
       ],
     },
     invite: { id: 'a1b2c3', email: '' },
