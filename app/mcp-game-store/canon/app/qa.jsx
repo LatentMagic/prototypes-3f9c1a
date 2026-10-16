@@ -95,6 +95,9 @@ KIT_QA.unshift({ key: 'final-audit-snags', title: 'Final audit snags',
 KIT_QA.unshift({ key: 'directory-listings', title: 'Directory listings',
   note: 'The copy on both pages awaits the owner’s review. Check each page at desktop and phone width (Config, Viewport).',
   steps: ['directory-listing-claude', 'directory-listing-chatgpt'] });
+KIT_QA.unshift({ key: 'pass-ended-every-case', title: 'Pass ended: every case',
+  note: 'Library as a player whose Pass ended. Escape: free first-room card with Play. Casebook: “You stopped here.” The Barrow: “You stopped here.”, CHAPTER 2. Delve: free first-scene card, done. Daily Groups: “You stopped here.”, no Play. No Library row for Escape, Casebook, the Barrow or Delve reads “Pass only”.',
+  steps: ['pur-pass-ended-every'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

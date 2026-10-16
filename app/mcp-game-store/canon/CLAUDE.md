@@ -32,6 +32,7 @@ A map of what the product is. This is a prototype and things change, so the map 
 - Play record: `session`, `history` (`gs-session.jsx`).
 - Billing: `checkout`, `update-card` (`gs-billing.jsx`).
 - System: `loading`, `offline`, not-found (`gs-site.jsx`).
+- How the site mentions the Pass (1153), laid over Home, the play box, Pricing, Library, the library game pages and Discover, with its staging and review aids: `gs-pass-*.jsx`, loaded after the files they extend.
 - Shared parts (top bar, footer, covers, tags, Pass comparison, play pop-up, demo bar): `gs-parts.jsx`, `gs-site.jsx`. Seed data and names: `gs-data.jsx`. Routing, views (signed out / free / Pass) and which screens get the bar and footer: `main.jsx`.
 <!-- product:end -->
 

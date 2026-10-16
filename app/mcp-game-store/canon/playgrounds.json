@@ -13,8 +13,10 @@
         {
           "kind": "candidate",
           "name": "How the site mentions the Pass, ratified",
-          "path": "docs/specs/1153-pass-upsell/candidate/pass-upsell-ratified.html",
-          "note": "The whole app with every 1153 decision from 2026-10-16 in it, and Discover tidied brought up to date. The Discover proposals are marked in its handoff."
+          "path": "docs/archive/1153-pass-upsell/candidate/pass-upsell-ratified.html",
+          "note": "The whole app with every 1153 decision from 2026-10-16 in it, and Discover tidied brought up to date. The Discover proposals are marked in its handoff.",
+          "on": false,
+          "off": "Merged into the main build, 2026-10-16. Archived to docs/archive/1153-pass-upsell/candidate/."
         },
         {
           "kind": "candidate",

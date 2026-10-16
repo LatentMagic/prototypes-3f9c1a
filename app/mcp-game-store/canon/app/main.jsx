@@ -220,11 +220,12 @@ const KitApp = () => {
     startFree: () => (view === 'out' ? go('signup') : go('games')),
     signOut: () => { setSignedIn(false); go('home', null, 'out'); },
     // Each view has its own home: signed out is `home`, signed in is `games`. Switching views swaps one for the other.
+    // After signing in, and from Home or an auth screen on the demo bar, every player lands on Library (owner, 2026-10-16).
     setDemoView: (v) => {
       setView(v);
       if (v === 'out' && GS_GUARDED.includes(route.name)) go('signin', gsSignInFor(route), 'out');
       else if (v === 'out' && (GS_SIGNED_IN_ONLY.includes(route.name) || (route.name === 'games' && view !== 'out'))) go('home', null, 'out');
-      else if (v !== 'out' && (route.name === 'home' || GS_AUTH_ONLY.includes(route.name))) go('games', null, v);
+      else if (v !== 'out' && (route.name === 'home' || GS_AUTH_ONLY.includes(route.name))) go('library', null, v);
     },
     // Every play control opens the play dialog with its prompt (gs-connect.jsx). The store can't know whether the AI is connected.
     play: (name) => setPlaying(gsPlayReq(gs, name)),
@@ -247,7 +248,7 @@ const KitApp = () => {
     // next: where sign-in returns: a route name (the subscribe page, when sign-in started from its sign-up route), or the guarded page asked for.
     signedIn: (how, next) => {
       setSignedIn(true); setProvider(how || 'email'); setConnected(true); setUser({ fresh: false });
-      const n = next && typeof next === 'object' ? next : { name: next || 'games' }; go(n.name, n, 'free');
+      const n = next && typeof next === 'object' ? next : { name: next || 'library' }; go(n.name, n, 'free');
     },
     paid: () => {
       const months = GS_PLAN[choice].months;

@@ -1,6 +1,6 @@
 // Candidate (pass-upsell-ratified): Discover (route `games`), from "Discover, tidied", brought up to the 2026-10-16 decisions.
-// Re-publishes window.GsGames. Cards and picks are the re-published GsCard and GsPick (the Pass pill top right, no Free or First
-// chips); the wall is CprTile, canon's GsTile with the same pill (2026-10-16, owner asked for it). Proposals the owner made on 2026-10-16, not yet ratified: search and filters
+// Re-publishes window.GsGames. Cards and picks are the re-published GsCard and GsPick (the Pass mark top right, no Free or First
+// chips); the wall is CprTile, canon's GsTile with the same mark (2026-10-16, owner asked for it). Proposals the owner made on 2026-10-16, not yet ratified: search and filters
 // as History's (one search field and a Filters panel), and the selection below. Discover doesn't sell the Pass (owner, 2026-10-16):
 // only a game's product page and its Library page do, so it has no Pass line.
 
@@ -19,7 +19,7 @@ const CprTile = ({ id, kind }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
   return (
     <DS.GameTile className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="square" />}
+      art={<CprArt host={host} id={id} shape="square" />} pass={cprLocked(gs, id)}
       title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
       kind={kind} />
   );

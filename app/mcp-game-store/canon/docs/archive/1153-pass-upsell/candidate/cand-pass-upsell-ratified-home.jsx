@@ -1,23 +1,17 @@
-// Candidate (pass-upsell-ratified): Home, and the Pass pill on the game cards.
+// Candidate (pass-upsell-ratified): Home, and the Pass mark on the game cards.
 // Re-publishes GsHome, GsCard / GsGameCard and GsPick. GsHome is canon's (app/gs-home.jsx) with the Pass section changed;
 // the hero, Available games, Coming soon and What's new are canon's. GsTile (Discover's wall) stays canon: no pill there.
 
-// The Pass pill (owner, 2026-10-16): a square "Pass" pill with a padlock, top right of the art, on Pass-only games only.
-// Not pressable (the card's own press opens the game). Accessible name "Pass only". Pass holders don't see it.
-const CprLock = () => (
-  <span className="cpr-lock" role="img" aria-label="Pass only"><DS.Icon name="lock" size={14} /><span aria-hidden="true">Pass</span></span>
-);
-// The Free and "First … free" chips come off the cards; the Pass tag too (the pill replaces it).
+// The Pass mark (owner, 2026-10-16) is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
+// is set. Set for Pass-only games, for a player without the Pass.
+// The Free and "First … free" chips come off the cards; the Pass is never a tag.
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
-const CprArt = ({ host, id, shape }) => {
-  const gs = useGs();
-  return <div ref={host} className="cpr-art"><GsArt art={GS_GAMES[id].art} shape={shape} />{cprLocked(gs, id) && <CprLock />}</div>;
-};
+const CprArt = ({ host, id, shape }) => <div ref={host}><GsArt art={GS_GAMES[id].art} shape={shape} /></div>;
 const CprCard = ({ id, mark }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GameCard className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="wide" />}
+      art={<CprArt host={host} id={id} shape="wide" />} pass={cprLocked(gs, id)}
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
       mark={mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
       blurb={gsKeepLast(g.blurb)}
@@ -28,7 +22,7 @@ const CprPick = ({ id, label }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GamePick className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="wide" />}
+      art={<CprArt host={host} id={id} shape="wide" />} pass={cprLocked(gs, id)}
       label={label}
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
       blurb={gsKeepLast(g.blurb)}
@@ -97,4 +91,4 @@ const CprHome = () => {
   );
 };
 
-Object.assign(window, { GsHome: CprHome, GsCard: CprCard, GsGameCard: CprCard, GsPick: CprPick, CprLock, cprTags });
+Object.assign(window, { GsHome: CprHome, GsCard: CprCard, GsGameCard: CprCard, GsPick: CprPick, CprArt, cprTags });

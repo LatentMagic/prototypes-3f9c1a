@@ -52,6 +52,7 @@ function kitStateContext(api) {
 // Order here does not matter: the palette and the index read alphabetically
 // (sorted in buildStates). Group titles are plain strings; a new group is
 // simply a new title.
+const gsPassSet = (p) => window.GsPassStage && window.GsPassStage.set(p);
 const KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'home', label: '1. Home, signed out', stage: (c) => c.go('home') },
   { group: 'Screens', id: 'sign-up', label: '2. Sign up', stage: (c) => c.go('signup') },
@@ -112,6 +113,17 @@ const KIT_STATE_REGISTER = [
   { group: 'Library', id: 'library-word-free', label: 'Daily Word in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups', label: 'Daily Groups in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('groups', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups-in-progress', label: 'Daily Groups in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('groups', { page: 'record' }); } },
+  // The Pass upsell (1153, merged 2026-10-16). Its review store (app/gs-pass-store.jsx) resets before every state.
+  { group: 'Pass upsell', id: 'pur-new-account', label: '1. Library, free account, nothing played', stage: (c) => { c.setView('free'); c.setConnected(true); c.setUser({ fresh: true }); c.go('library'); } },
+  { group: 'Pass upsell', id: 'pur-new-for-you', label: '2. Library, New for you full', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('library'); gsPassSet({ newEds: 'most' }); } },
+  { group: 'Pass upsell', id: 'pur-first-in-progress', label: '3. Casebook, free first case in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-first-done', label: '4. Casebook, free first case done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-barrow-done', label: '5. The Barrow, free chapter 1 done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('barrow', { page: 'record' }); gsPassSet({ bwDone: true }); } },
+  { group: 'Pass upsell', id: 'pur-word-done', label: '6. Daily Word, today’s word done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-pass-ended', label: '7. Casebook, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-pass-holder', label: '8. Library, Pass holder', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('library'); } },
+  { group: 'Pass upsell', id: 'pur-discover-free', label: '9. Discover, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
+  { group: 'Pass upsell', id: 'pur-pass-ended-every', label: 'Pass ended: every case', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('library'); gsPassSet({ lapsed: 'every' }); } },
   { group: 'Library', id: 'library-groups-free', label: 'Daily Groups in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('groups', { page: 'record' }); } },
   { group: 'Library', id: 'library-mystery', label: 'Daily Mystery in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery', { page: 'record' }); } },
   { group: 'Library', id: 'library-mystery-in-progress', label: 'Daily Mystery in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('mystery', { page: 'record' }); } },

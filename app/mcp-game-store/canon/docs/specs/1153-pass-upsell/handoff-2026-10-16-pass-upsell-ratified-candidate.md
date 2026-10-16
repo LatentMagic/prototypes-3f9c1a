@@ -2,13 +2,13 @@
 date: '2026-10-16'
 ticket: '1153'
 topic: 'pass-upsell-ratified-candidate'
-status: 'in-review'
+status: 'merged'
 type: 'candidate build'
 ---
 
 # Handoff: 1153 the ratified candidate build
 
-The whole app with every decision in `decisions-2026-10-16-pass-upsell.md`, plus Discover tidied brought up to date. The main build at `index.html` is unchanged. Nothing here is accepted.
+The whole app with every decision in `decisions-2026-10-16-pass-upsell.md`, plus Discover tidied brought up to date. **Merged into the main build on 2026-10-16** (see "Merged" at the end); the paths below are the candidate's, now in `docs/archive/1153-pass-upsell/candidate/`.
 
 ## Where it lives
 
@@ -156,5 +156,27 @@ The main agent's calls, not ratified:
    - Config → The Barrow, chapter 1 → Finished works for a Pass holder: Pass view → Library → the Barrow. Its row reads "Finished".
    - At phone width, Library card headings and lines wrap balanced, so none ends on one or two words alone. Checked by rule, not by eye at 390 px.
 
-Left alone: a Pass-ended player who opens Daily Groups from Library still sees the canon page with Play, as before. Should the Pass-only change reach that page?
+## Recheck fixes, 2026-10-16
+
+Both follow from rules the owner ratified. In `cand-pass-upsell-ratified-library.jsx` only.
+
+1. **Daily Groups offers a Pass-ended player no Play.** States → "Pass ended: every case" → Library → Daily Groups. The now card is "You stopped here. Everything you earned is still yours." with "Get the Pass again", labelled with the game's last edition. A Pass-ended player who never played it with the Pass gets the free player's closed card ("Only with the Pass", Get the Pass), drawn as 36,000 Summers Ago's. No staged state reaches that second case: `CPR_LAPSED` has no Groups entry, so it counts as played with the Pass.
+2. **New for you holds only what the player can play now, under any Config setting.** Pill → Config → New editions → Most not played, then Free view → Library. Most not played now only marks dailies as unplayed; the playable-now rule decides after it. The free row holds Daily Mystery (and the Barrow while unplayed). Escape, Delve and Casebook (free part used) and Daily Groups (Pass only) stay out. A Pass holder's row is unchanged.
+
+4. **The Pass mark is the design system's** (owner, 2026-10-16). GameCard, GamePick and GameTile draw it on the picture when `pass` is set; the candidate sets it for Pass-only games for a player without the Pass. Its own `CprLock` and `.cpr-lock` / `.cpr-art` styles are gone; the Pass was already off the tag row. Signed out → Home (36,000 Summers Ago), then Discover's picks and wall. The project's `_ds/` copy was refreshed from the design system to get it, which also reaches the main build; canon's cards don't set `pass`, so the main build looks as before.
+3. **A free player's Daily Groups Library page offers no Play** (owner, 2026-10-16). Pill → States → "Daily Groups in your library, free account". The now card is "Only with the Pass" with Get the Pass, the card 36,000 Summers Ago shows. A Pass-ended player who never played it with the Pass gets the same card.
 - The seed has no Pass-ended plays per game, so the streak and recent plays on these pages are still the shared seed's. For example, Delve still lists Pass-era scenes.
+
+## Merged, 2026-10-16
+
+The owner accepted the candidate entire on 2026-10-16 ("integrate this candidate build into the real canon"). That acceptance covers everything the candidate showed, including the items above that were marked as proposals or builder calls: the Pass-ended rule, the Word pick label "A NEW WORD EVERY DAY", and the calls listed under "Calls I made without the owner".
+
+- **Modules**, in `app/` and loaded in this order after `gs-editions.jsx`, before `main.jsx`: `gs-pass-store.jsx`, `gs-pass-home.jsx`, `gs-pass-game.jsx`, `gs-pass-pricing.jsx`, `gs-pass-library.jsx`, `gs-pass-discover.jsx`, `gs-pass-aids.jsx`. Each still re-publishes over the canon component it changes, as the candidate did. CSS classes renamed `cpr-*` → `gs-pu-*`; the review store is `window.GsPassStage`.
+- **CSS**: the candidate's block is at the end of `index.html`'s head, titled "The Pass upsell (1153)". The rest of the head kept `index.html`'s, which was newer (the underline rules).
+- **Sign-in lands on Library**: now in `app/main.jsx` (`signedIn` and `setDemoView`). The bridge isn't carried over.
+- **States**: the ten candidate states are in `app/states.jsx`, group "Pass upsell", same ids. **QA**: the "Pass ended: every case" entry is in `app/qa.jsx`. **Config**: New editions and The Barrow, chapter 1, from `gs-pass-aids.jsx`.
+- **Removed, as the handoff required**: the ten demo games and their hooks. Their file stays in the archive.
+- **Archived** to `docs/archive/1153-pass-upsell/candidate/`: the page, the bridge, the demo file and the candidate's original overlays. The launcher entry is off.
+- **Not touched**: the two Discover candidates and the playground. They load the shared `app/`, so they now inherit sign-in landing on Library.
+
+Still open on `app/`, from "Needs the owner's decision" above: `GS_SOON` and `gs-barrow-library.jsx` still say chapter 2 under the overlay; Discover's page shell is still a copy of `DcBody`; New for you still needs a played flag per edition.

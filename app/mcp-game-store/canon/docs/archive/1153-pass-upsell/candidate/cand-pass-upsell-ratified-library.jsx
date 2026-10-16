@@ -71,6 +71,7 @@ const CprFirst = ({ id }) => {
 const cprReturnLabel = (gs, id) => {
   if (cprLapsedOf(id).at) return cprLapsedOf(id).at;
   if (id === 'barrow') return 'CHAPTER 1';
+  if (id !== 'casebook' && id !== 'delve') return 'YOUR LAST ' + GS_GAMES[id].ed[0].toUpperCase();
   const h = id === 'casebook' ? cbHist(gs)[0] : dvHist(gs)[0];
   return h ? 'WEEK OF ' + (id === 'casebook' ? h.week : h.date).toUpperCase() : 'YOUR LAST ' + GS_GAMES[id].ed[0].toUpperCase();
 };
@@ -80,6 +81,16 @@ const CprReturn = ({ id }) => {
     <section className="lb-card cpr-return" style={id === 'barrow' ? { gridColumn: '1 / -1' } : undefined}>
       <div className="gs-stack-xs"><span className="gs-label">{cprReturnLabel(gs, id)}</span><h2 className="mcp-t-sec cpr-wrap">You stopped here. Everything you earned is still yours.</h2></div>
       <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass again</DS.TextLink></div>
+    </section>
+  );
+};
+// A Pass-only game for a player without the Pass who never played it with one: the free player's closed card, as 36,000 Summers Ago's.
+const CprClosed = ({ id }) => {
+  const gs = useGs(); const n = GS_NAME[id] || GS_GAMES[id].name;
+  return (
+    <section className="lb-card is-closed">
+      <div className="gs-stack-xs"><h2 className="mcp-t-sec">Only with the Pass</h2><p>{n + ' comes only with the Pass. A free account can’t play it.'}</p></div>
+      <DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
     </section>
   );
 };
@@ -194,7 +205,7 @@ const cprPzLibrary = (id) => () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id={id} />
       <div className="lb-lay">
-        <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
+        {cprLocked(gs, id) ? (gsLapsed(gs) && cprLapsedOf(id).pass ? <CprReturn id={id} /> : <CprClosed id={id} />) : <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />}
         <LbRun n={n} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
         <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
@@ -235,8 +246,8 @@ const cprLibRow = (gs, k) => {
 const cprNewFor = (gs, k) => {
   if (!cprEditions(k) || cprLocked(gs, k)) return false;
   if (gs.view === 'pass') return !cprPlayed(gs, k);
-  if (cprStore.get().newEds === 'most' && !gsFresh(gs)) return k !== 'word';
-  if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || !gsTodayPlayed(gs)[k];
+  // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides (owner's rule, 2026-10-16).
+  if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !gsTodayPlayed(gs)[k]);
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
   return false;
 };
