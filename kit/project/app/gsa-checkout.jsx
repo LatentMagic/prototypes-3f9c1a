@@ -99,7 +99,7 @@ function GsaSubscribe() {
     <div className="gsa-page gsa-checkout-subscribe">
       <div className="gsa-checkout-head">
         <h1 className="gsa-heading">Subscribe</h1>
-        {!visitor ? <window.GsaButton kind="link" onClick={() => window.GsaStore.go('home')}>Close</window.GsaButton> : null}
+        <window.GsaButton kind="link" onClick={() => window.GsaStore.go('home')}>Close</window.GsaButton>
       </div>
       {route.notice === 'payment-failed' ? (
         <div className="gsa-checkout-stack-sm" role="alert">
@@ -134,10 +134,17 @@ function GsaSubscribe() {
 }
 
 // ---- S14 Hosted payment page (the payment provider's page, pictured) -------
-function GsaCheckoutCardFields() {
+// Update-card mode pictures a different card than the one on file, so a plain
+// Save shows a new last four; subscribe mode pictures the test card.
+function gsaCheckoutNewLast4(last4) {
+  return ['1881', '0005', '4242'].find((d) => d !== last4);
+}
+
+function GsaCheckoutCardFields({ mode, last4 }) {
+  const number = mode === 'update-card' ? '5555 5555 5555 ' + gsaCheckoutNewLast4(last4) : '4242 4242 4242 4242';
   return (
     <div className="gsa-checkout-card-fields">
-      <window.GsaField label="Card number" defaultValue="4242 4242 4242 4242" inputMode="numeric" autoComplete="off" name="gsa-checkout-number" />
+      <window.GsaField label="Card number" defaultValue={number} inputMode="numeric" autoComplete="off" name="gsa-checkout-number" />
       <div className="gsa-checkout-card-row">
         <window.GsaField label="Expiry" defaultValue="12 / 29" autoComplete="off" name="gsa-checkout-expiry" />
         <window.GsaField label="Security code" defaultValue="123" inputMode="numeric" autoComplete="off" name="gsa-checkout-cvc" />
@@ -178,7 +185,7 @@ function GsaHostedPayment() {
         const form = document.querySelector('.gsa-checkout-form');
         const digits = form ? String(form.elements['gsa-checkout-number'].value).replace(/\D/g, '') : '';
         // Empty fields save a pictured placeholder card: a new last four.
-        const placeholder = ['1881', '0005', '4242'].find((d) => d !== g.sub.last4);
+        const placeholder = gsaCheckoutNewLast4(g.sub.last4);
         store.set({ sub: { last4: digits.length >= 4 ? digits.slice(-4) : placeholder } });
         store.replace('account', {});
         return;
@@ -210,7 +217,7 @@ function GsaHostedPayment() {
           )}
           <form className="gsa-checkout-form" noValidate onSubmit={pay}>
             {mode === 'subscribe' ? <window.GsaField label="Email" value={g.person.email} readOnly name="gsa-checkout-email" /> : null}
-            <GsaCheckoutCardFields />
+            <GsaCheckoutCardFields mode={mode} last4={g.sub.last4} />
             <window.GsaButton type="submit" busy={busy} className="gsa-checkout-block">
               {mode === 'subscribe' ? 'Pay and subscribe' : 'Save card'}
             </window.GsaButton>

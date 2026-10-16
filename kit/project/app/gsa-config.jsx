@@ -99,7 +99,7 @@ const GsaConfigExtra = () => {
       )}
 
       <div className="kit-config-group-title">Shared space</div>
-      {row('Your role', space.role, (v) => S.set({ space: { role: v } }), [['owner', 'Owner'], ['member', 'Member']])}
+      {row('Your role (the signed-in person\'s)', space.role, (v) => S.set({ space: { role: v } }), [['owner', 'Owner'], ['member', 'Member'], ['none', 'Not a member']])}
       {row('Room', space.full ? 'full' : 'room', (v) => S.set({ space: { full: v === 'full' } }), [['room', 'Room'], ['full', 'Full']])}
       {row('Copy', r.clipboard, (v) => setReview({ clipboard: v }), [['ok', 'Works'], ['refused', 'Refused']])}
       {row('Invite link', r.inviteValid ? 'valid' : 'invalid', (v) => setReview({ inviteValid: v === 'valid' }), [['valid', 'Valid'], ['invalid', 'Not valid']])}
@@ -117,7 +117,8 @@ const GsaConfigExtra = () => {
               {row('Prompt answer', r.promptAnswer, (v) => setReview({ promptAnswer: v }), [['prompt', 'Answer in the prompt'], ['grant', 'Grant'], ['refuse', 'Refuse'], ['close', 'Close'], ['none', 'No prompt']],
                 'Close is GSA-028.AF-06. No prompt is GSA-028.AF-13: no request shows, no answer, the switch is back off.')}
               {row('Turning on', r.pushFail ? 'fails' : 'works', (v) => setReview({ pushFail: v === 'fails' }), [['works', 'Works'], ['fails', 'Fails']])}
-              {snoozed && btn('Move on (to the next snooze)', () => window.gsaPushMoveOn())}
+              <div className="kit-config-hint">Move on shows after Not now. Send a notification and Device loses its registration show while Notifications are on.</div>
+          {snoozed && btn('Move on (to the next snooze)', () => window.gsaPushMoveOn())}
               {push.on && push.perm === 'granted' && btn('Send a notification', () => window.gsaPushSend())}
               {push.on && btn('Device loses its registration', () => window.gsaPushLoseRegistration())}
             </React.Fragment>

@@ -13,3 +13,4 @@
 .gsa-auth-switch { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
 .gsa-auth .gsa-code-field { max-width: 320px; }
 
+.gsa-auth .gsa-text { overflow-wrap: anywhere; }

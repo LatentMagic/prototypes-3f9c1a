@@ -26,11 +26,24 @@ function GsaNotFound() {
 // ui-design standard (not a story): a designed can't-connect state that can be tried again.
 function GsaCantConnect() {
   const [busy, run] = useGsaBusy();
+  // Once Home has loaded in place, focus goes to its heading, not the page root (ui-design: focus restoration).
+  const retry = () => run(() => {
+    window.GsaStore.back();
+    let tries = 0;
+    const land = () => {
+      const h = document.querySelector('.gsa-shell-main h1');
+      if (h && h.textContent !== "Can't connect") {
+        if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1');
+        h.focus({ preventScroll: true });
+      } else if (tries++ < 30) requestAnimationFrame(land);
+    };
+    requestAnimationFrame(land);
+  });
   return (
     <div className="gsa-page">
       <h1 className="gsa-heading">Can't connect</h1>
       <p className="gsa-text">Check your connection, then try again.</p>
-      <GsaButton busy={busy} onClick={() => run(() => window.GsaStore.back())}>Try again</GsaButton>
+      <GsaButton busy={busy} onClick={retry}>Try again</GsaButton>
     </div>
   );
 }

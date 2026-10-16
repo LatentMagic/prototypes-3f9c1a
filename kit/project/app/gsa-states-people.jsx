@@ -9,7 +9,14 @@ function gsaStageNonMember(c) {
 
 const GSA_STATES_INVITES = [
   { group: 'Invitations', id: 'invite-not-owner', label: 'Invite page, not the Owner', platform: 'web',
-    stage: (c) => { c.set({ space: { role: 'member' } }); c.go('invite'); } },
+    stage: (c) => {
+      // Alex has joined; Sam stays the Owner. Alex sees the not-Owner statement.
+      c.as('alex');
+      const st = c.store.get();
+      const me = { name: st.person.first + ' ' + st.person.last, email: st.person.email };
+      c.set({ space: { role: 'member', members: st.space.members.concat([me]) } });
+      c.go('invite');
+    } },
   { group: 'Invitations', id: 'invite-space-full', label: 'Invite page, the shared space is full', platform: 'web',
     stage: (c) => { c.set({ space: { full: true } }); c.go('invite'); } },
   { group: 'Invitations', id: 'invite-copy-refused', label: 'Invite page, the device refuses to copy (make a link, press Copy)', platform: 'web',
@@ -33,7 +40,7 @@ const GSA_STATES_INVITES = [
   { group: 'Invitations', id: 'invite-invalid', label: 'Invite link invalid, expired or revoked', platform: 'web',
     stage: (c) => { c.set({ review: { inviteValid: false } }); c.go('invite-link'); } },
   { group: 'Invitations', id: 'invite-full', label: 'Invite link, the shared space is full', platform: 'web',
-    stage: (c) => { c.set({ space: { full: true } }); c.go('invite-link'); } },
+    stage: (c) => { gsaStageNonMember(c); c.set({ space: { full: true } }); c.go('invite-link'); } },
   { group: 'Invitations', id: 'invite-other-account', label: 'Invite link for another account', platform: 'web',
     stage: (c) => { gsaStageNonMember(c); c.set({ review: { inviteMatch: 'other' } }); c.go('invite-link'); } },
 ];
@@ -83,7 +90,6 @@ const GSA_STATES_PUSH = GSA_PUSH_DEFS.map((d) => ({
       c.set({ push: { perm: 'granted', on: true, registered: true, asked: true } });
       // The next person on the device: registration is the last person's, the switch is theirs.
       c.as('alex');
-      c.set({ push: { on: false } });
       c.go('account');
     } },
 ]);

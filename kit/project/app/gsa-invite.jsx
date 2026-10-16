@@ -16,6 +16,7 @@ function GsaInvite() {
   const [copy, setCopy] = React.useState(null);
   const [busy, run] = useGsaBusy();
   const linkRef = React.useRef(null);
+  const copyRef = React.useRef(null);
   const members = g.space.members;
 
   const form = useGsaForm({
@@ -42,6 +43,10 @@ function GsaInvite() {
       setCopy(null);
     });
   });
+
+  // "Get a link" is replaced by the link: focus goes to Copy link.
+  const hasLink = !!link;
+  React.useEffect(() => { if (hasLink && copyRef.current) copyRef.current.focus({ preventScroll: true }); }, [hasLink]);
 
   const select = () => { if (linkRef.current) { linkRef.current.focus({ preventScroll: true }); linkRef.current.select(); } };
   const copyLink = () => {
@@ -73,7 +78,7 @@ function GsaInvite() {
             <label className="gsa-people-link-label" htmlFor="gsa-people-link-url">Invite link for {link.email}</label>
             <div className="gsa-people-link-row">
               <input id="gsa-people-link-url" ref={linkRef} className="gsa-field-input gsa-people-link-url" readOnly value={link.url} onFocus={(e) => e.target.select()} />
-              <GsaButton kind="secondary" onClick={copyLink}>Copy link</GsaButton>
+              <GsaButton kind="secondary" ref={copyRef} onClick={copyLink}>Copy link</GsaButton>
             </div>
             {copy === 'copied' ? <GsaStatusLine tone="success">Copied. The link is on your clipboard.</GsaStatusLine> : null}
             {copy === 'refused' ? <GsaStatusLine tone="warning">This device would not copy it. The link is selected: copy it by hand.</GsaStatusLine> : null}

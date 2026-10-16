@@ -23,23 +23,16 @@ function gsaAuthWho(email) {
   return String(email || '').trim().toLowerCase() === window.GSA_PEOPLE.alex.email ? 'alex' : 'sam';
 }
 
-// The account on file for a seed person: the store's person when it is that
-// person's, else the seed person.
+// The account on file for a seed person, from the store.
 function gsaAuthOnFile(who) {
-  const s = window.GsaStore.get();
-  const seed = window.GSA_PEOPLE[who] || window.GSA_PEOPLE.sam;
-  return s.person.email === seed.email ? s.person : seed;
+  return window.GsaStore.personOf(who);
 }
 
-// Complete a sign-in: start the session, keep the account's enrolled flag,
-// apply any names a new account carries, then route on through finishAuth.
+// Complete a sign-in: start the session (a new account carries its typed
+// names and email), then route on through finishAuth.
 function gsaAuthComplete(who, via, account) {
   const store = window.GsaStore;
-  const enrolled = gsaAuthOnFile(who).enrolled;
-  store.signIn(who);
-  const patch = { ...(account || {}) };
-  if (enrolled) patch.enrolled = true;
-  if (Object.keys(patch).length) store.set({ person: patch });
+  store.signIn(who, account);
   store.finishAuth(via);
 }
 

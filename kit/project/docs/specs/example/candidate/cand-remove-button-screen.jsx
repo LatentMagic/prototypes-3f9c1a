@@ -6,17 +6,18 @@ const CandEgOriginalHome = window.GsaHome;
 const CandEgHome = (props) => {
   const g = useGsa();
   const items = g.items;
+  const active = items.filter((it) => it.status === 'active');
   const api = window.KitCandidateApi;
   return (
     <>
       <CandEgOriginalHome {...props} />
       <section className="cand-remove-button-panel" aria-label="Remove items (candidate)">
-        <p className="cand-remove-button-count">{items.length === 0 ? 'Nothing left to remove' : items.length + ' left'}</p>
+        <p className="cand-remove-button-count">{active.length === 0 ? 'Nothing left to remove' : active.length + ' left'}</p>
         <ul className="cand-remove-button-list">
-          {items.map((it) => (
+          {active.map((it) => (
             <li key={it.id} className="cand-remove-button-row">
               <span>{it.title}</span>
-              <button className="cand-remove-button-remove" aria-label={'Remove ' + it.title} onClick={() => api.setItems(items.filter((x) => x.id !== it.id))}>Remove</button>
+              <window.GsaButton kind="secondary" className="cand-remove-button-remove" aria-label={'Remove ' + it.title} onClick={() => api.setItems(items.filter((x) => x.id !== it.id))}>Remove</window.GsaButton>
             </li>
           ))}
         </ul>

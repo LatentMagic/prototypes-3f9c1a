@@ -61,7 +61,7 @@ function GsaSignUpCode({ route }) {
     <window.GsaAuthFrame title="Check your email" onBack={() => window.GsaStore.replace('sign-up')}
       lead={'We sent a six-digit code to ' + email + '. Enter it to finish creating your account.'}>
       <GsaAuthCodeForm email={email} canResend submitLabel="Create account"
-        onVerified={() => window.gsaAuthComplete('sam', 'sign-up', { first, last, email, method: 'password' })} />
+        onVerified={() => window.gsaAuthComplete('new', 'sign-up', { first, last, email })} />
     </window.GsaAuthFrame>
   );
 }

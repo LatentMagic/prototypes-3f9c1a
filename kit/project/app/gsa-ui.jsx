@@ -203,7 +203,7 @@ function GsaMenu({ label, items = [] }) {
   return (
     <div className="gsa-menu" ref={wrap} onKeyDown={open ? keys : undefined}>
       <GsaButton kind="secondary" ref={trigger} onClick={toggle} aria-haspopup="menu" aria-expanded={open ? 'true' : 'false'} aria-controls={open ? listId : undefined}>
-        {label}
+        <span className="gsa-menu-label">{label}</span>
       </GsaButton>
       {open ? (
         <ul className="gsa-menu-list" id={listId} role="menu" data-align={align}>

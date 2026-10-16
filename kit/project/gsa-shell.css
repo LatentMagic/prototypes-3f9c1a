@@ -10,9 +10,10 @@
 /* Header: one row for the name and the person's menu; the pick links take their own row at narrow widths. */
 .gsa-shell-header { container: gsa-header / inline-size; border-bottom: 1px solid var(--color-border-2); background: var(--color-surface); padding-top: var(--safe-area-inset-top, 0px); }
 .gsa-shell-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); max-width: var(--width-page); margin: 0 auto; padding: var(--space-2) var(--space-4); }
-.gsa-shell-name { flex: 1 1 auto; font-size: var(--text-lg); font-weight: 600; }
+.gsa-shell-name { flex: 1 1 auto; min-width: 0; font-size: var(--text-lg); font-weight: 600; }
 .gsa-shell-nav { order: 3; flex: 1 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin-left: calc(var(--space-2) * -1); }
-.gsa-shell-end { order: 2; display: flex; align-items: center; }
+.gsa-shell-end { order: 2; display: flex; align-items: center; min-width: 0; max-width: 100%; }
+.gsa-shell-end .gsa-menu { min-width: 0; max-width: 100%; }
 @container gsa-header (min-width: 520px) {
   .gsa-shell-nav { order: 1; flex: 0 1 auto; margin-left: 0; }
   .gsa-shell-end { order: 2; }

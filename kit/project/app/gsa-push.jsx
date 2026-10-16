@@ -77,6 +77,17 @@ const gsaPushFocusPage = () => setTimeout(() => {
   if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
 }, 0);
 
+// True when `selector` holds focus at render time. After the commit, if the element is
+// gone (`present` false), focus goes to the page heading rather than the page root.
+function useGsaFocusHeld(selector, present) {
+  const held = React.useRef(false);
+  const el = document.querySelector(selector);
+  held.current = !!(el && el.contains(document.activeElement));
+  const was = held.current;
+  React.useEffect(() => { if (was && !present) gsaPushFocusPage(); });
+  return was;
+}
+
 // ---- The on/off control --------------------------------------------------------
 function GsaPushSwitch({ on, busy, onChange, labelledBy }) {
   return (
@@ -100,14 +111,17 @@ function GsaPushSwitch({ on, busy, onChange, labelledBy }) {
 // ---- The ask --------------------------------------------------------------------
 function GsaPushAsk() {
   const g = window.useGsa();
-  if (!gsaPushAskDue(g)) return null;
+  const due = gsaPushAskDue(g);
+  // Read before the commit removes it: does the ask, or a control in it, hold focus?
+  useGsaFocusHeld('.gsa-push-ask', due);
+  if (!due) return null;
   const snooze = () => {
     gsaPushSet({ snoozes: Math.min((g.push.snoozes || 0) + 1, 3), snoozeAt: Date.now() });
     gsaPushFocusPage();
   };
   return (
     <div className="gsa-push-ask-wrap"><section className="gsa-push-ask" aria-label="Notifications">
-      <p className="gsa-push-ask-text">Get a notification on this device when something happens. You choose what in Account.</p>
+      <p className="gsa-push-ask-text">Get a notification on this device when something happens.</p>
       <div className="gsa-push-ask-actions">
         <window.GsaButton onClick={gsaPushTurnOn}>Turn on notifications</window.GsaButton>
         <window.GsaButton kind="secondary" onClick={snooze}>Not now</window.GsaButton>
@@ -120,6 +134,8 @@ function GsaPushAsk() {
 function GsaNotificationsCard() {
   const g = window.useGsa();
   const p = g.push;
+  const statementNow = !!p && (p.channel === 'ios-tab' || p.perm === 'denied');
+  useGsaFocusHeld('.gsa-push-switch', !statementNow);
   // EF-01: the line stays until the person tries again or leaves the page.
   React.useEffect(() => () => {
     const live = window.GsaStore.get().push;
