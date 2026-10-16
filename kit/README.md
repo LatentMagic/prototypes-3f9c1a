@@ -67,7 +67,7 @@ There is no `PRODUCT.md`, by the owner's ruling: "GitHub should describe the pro
 
 `GOTCHA.md` took canon's 1, 2, 5 to 13, reworded to drop episode names, files and first-person confessions, and added the SVG-stripping platform fact. Canon's 3 and 4 are Circlists-only and left. The kit's entries are renumbered 1 to 12 (canon's 13 is the kit's 11); the intro's code/judgement split was recounted, and `build-playground/references/fidelity-and-wiring.md` cites "GOTCHA #3".
 
-`docs/` ships `specs/README.md`, `specs/_handoffs/README.md` and `archive/README.md`, the last two new, so the paths the rules name exist. `docs/specs/CLAUDE.md` ships (2026-10-13): what happens to a ticket folder, the candidate-build merge steps from canon's file, product-neutral. Not shipped: `docs/ABOUT.md` (its skeleton fed an earlier `PRODUCT.md`).
+`docs/` ships `specs/README.md`, `specs/_handoffs/README.md` and `archive/README.md`, the last two new, so the paths the rules name exist, and `specs/example/`, the worked example (2026-10-16). `docs/specs/CLAUDE.md` ships (2026-10-13): what happens to a ticket folder, the candidate-build merge steps from canon's file, product-neutral. Not shipped: `docs/ABOUT.md` (its skeleton fed an earlier `PRODUCT.md`).
 
 ### App machinery (`app/`, `index.html`, `tokens.css`)
 
