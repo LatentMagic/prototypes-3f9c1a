@@ -352,4 +352,4 @@ const CprCbNow = ({ c }) => {
   );
 };
 
-Object.assign(window, { GsLibrary: CprLibrary, gsLibRow: cprLibRow, PzNow: CprPzNow, CbNow: CprCbNow });
+Object.assign(window, { GsLibrary: CprLibrary, gsLibRow: cprLibRow, PzNow: CprPzNow, CbNow: CprCbNow, GsNextLink: CprNextLink });

@@ -64,7 +64,7 @@ const CprHome = () => {
             <span className="gs-label">A NEW CASE EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          <GsChatPic turns={GS_HERO_CHAT} height={340} width={480} label="A Casebook case being played in a chat" />
+          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Casebook case being played in a chat" />
         </div>
       </section>
 

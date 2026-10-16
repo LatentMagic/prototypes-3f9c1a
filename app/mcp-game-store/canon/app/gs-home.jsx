@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — Home (screen 1) and Games (screen 6). The Pass page is in gs-billing.jsx.
 // ============================================================================
-// The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPicture) set inside it
+// The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPlayback, played turn by turn) set inside it
 // and scrollable (home-product-hero option 4, ratified 2026-10-11). The field is from
 // home-hero option 9.
 const GsFeature = ({ id }) => <GsCard id={id} />;
@@ -80,8 +80,8 @@ const GsHome = () => {
             <span className="gs-label">A NEW CASE EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          {/* The design system's ChatPicture scrolls itself, opens on the latest turn and has its own "Back to the start" pill. */}
-          <GsChatPic turns={GS_HERO_CHAT} height={340} width={480} label="A Casebook case being played in a chat" />
+          {/* The design system's ChatPlayback plays the case turn by turn and stops on the finished chat; its own control pauses and plays again. Under reduced motion it draws the finished chat still. */}
+          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Casebook case being played in a chat" />
         </div>
       </section>
 

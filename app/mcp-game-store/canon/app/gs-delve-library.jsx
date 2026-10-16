@@ -70,6 +70,7 @@ const DvNow = ({ s }) => {
         </div>
         <span className="gs-muted">{'Next scene: ' + DV_NEXT}</span>
       </div>
+      {s.end && window.GsNextLink && <window.GsNextLink />}
     </section>
   );
 };

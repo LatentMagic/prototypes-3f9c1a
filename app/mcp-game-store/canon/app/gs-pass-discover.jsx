@@ -25,14 +25,16 @@ const CprTile = ({ id, kind }) => {
   );
 };
 
-const CprDiscoverBody = () => {
+// Search and filters live in the page shell, not the body, so they survive the body reloading in place; the shell writes them
+// into the history entry (gs.keep), so Back returns them too.
+const CprDiscoverBody = ({ f, setF }) => {
+  const { q, cat, rhy } = f;
+  const setQ = (v) => setF((p) => ({ ...p, q: v })); const setCat = (v) => setF((p) => ({ ...p, cat: v })); const setRhy = (v) => setF((p) => ({ ...p, rhy: v }));
   const gs = useGs();
-  const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
-  React.useEffect(() => { setCat(gs.route.kind || 'all'); setRhy(gs.route.rhythm || 'all'); }, [gs.route]);
   const wait = useGsPart([q, cat, rhy]);
   const tools = React.useRef(null);
   const filtering = cat !== 'all' || rhy !== 'all' || !!q.trim();
-  const clearAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = tools.current && tools.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
+  const clearAll = () => { setF({ q: '', cat: 'all', rhy: 'all' }); setTimeout(() => { const i = tools.current && tools.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const ids = CPR_SHOWN.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k));
   const sel = cprSelection(gs);
   const cardRow = (title, ks) => (ks.length ? <section className="dc-sec"><DS.CardRow title={title} className="gs-row4">{ks.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow></section> : null);
@@ -64,7 +66,10 @@ const CprDiscoverBody = () => {
 const CprDiscover = () => {
   const gs = useGs();
   const [load, setLoad] = React.useState(gs.route.load || null);
-  React.useEffect(() => { setLoad(gs.route.load || null); }, [gs.route]);
+  const fOf = (r, prevQ) => { const k = r.dcKeep || {}; return { q: k.q != null ? k.q : prevQ, cat: k.cat || r.kind || 'all', rhy: k.rhy || r.rhythm || 'all' }; };
+  const [f, setF] = React.useState(() => fOf(gs.route, ''));
+  React.useEffect(() => { setLoad(gs.route.load || null); setF((p) => fOf(gs.route, p.q)); }, [gs.route]);
+  React.useEffect(() => { gs.keep({ dcKeep: f }); }, [f]);
   React.useEffect(() => {
     if (load !== 'loading') return undefined;
     const t = setTimeout(() => setLoad(null), 1200);
@@ -76,7 +81,7 @@ const CprDiscover = () => {
       <h1 className="gs-h1">Discover</h1>
       {load === 'hold' || load === 'loading' ? <div className="gs-inplace"><GsSpin /></div>
         : load === 'failed' ? <GsLoadFailed onRetry={() => setLoad(null)} />
-        : <CprDiscoverBody />}
+        : <CprDiscoverBody f={f} setF={setF} />}
     </main>
   </>);
 };

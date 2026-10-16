@@ -313,6 +313,19 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
 .mcp-chat-body.is-auto{overflow:visible;-webkit-mask-image:none;mask-image:none}
 .mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
+/* ChatPlayback: a piece entering is wrapped so it can fade; the wrapper keeps the part's own width rules */
+.mcp-chat-fx{display:grid;justify-items:start;justify-self:stretch;min-width:0}.mcp-chat-fx>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
+.mcp-chat-typed{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--c-fg);padding:10px 8px 10px 0;line-height:1.35}
+.mcp-chat-caret{display:inline-block;width:1.5px;height:1.15em;vertical-align:-.2em;margin-left:1px;background:var(--c-fg)}
+.mcp-chat-comp>i{flex:none}
+.mcp-chat-comp>i.is-sent{transform:scale(var(--press-scale))}
+/* The pause control: the system's own square, in the chat's send colours; 32px seen, 44px to press */
+.mcp-chat-pause{position:absolute;z-index:3;top:8px;left:8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:0;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
+.mcp-chat-pause::before{content:"";position:absolute;inset:-6px}
+@media (hover:hover){.mcp-chat-pause:hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg))}}
+.mcp-chat-pause:active{transform:scale(var(--press-scale))}
+.mcp-chat-pause:focus-visible{outline:2px solid var(--c-send);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.mcp-chat-pause{transition:none}}
 
 /* Chat parts (components/chat/): what a game draws inside an AI turn. They sit on the chat's light ground in the system's own language:
    square corners, Hanken and Bricolage (the host chat around them keeps its round bubbles and system type), ink and tone, status and cover colours.
