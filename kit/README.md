@@ -4,11 +4,9 @@ A product-neutral starting pack for Claude Design prototypes. `project/` is exac
 
 Nothing in `project/` names a product (this README names Circlists, where the kit was cut from). This repo is public, so nothing private goes in.
 
-## Last cut
+## History
 
-- Date: 2026-10-06.
-- Cut from: the Circlists prototype at `app/circlists/canon/`, repo commit `dddbb6c`. Canon's working tree was dirty at the cut (`app/qa.jsx`, `app/states.jsx`, `app/spaces.jsx`); those changes landed later as `67eeb67`, so whether the cut took the commit or the dirty tree is not recorded. The difference is about 35 lines of Circlists content.
-- Impeccable: 4.5.0 (the version is the pin; no commit id was available).
+Cut from the Circlists prototype (`app/circlists/canon/`, commit `dddbb6c`) on 2026-10-06. Everything since is in git: `git log -p -- kit/`. Rely on it rather than keeping a record here. The Versions list below names what each kit update carried.
 
 ## Viewing it
 
@@ -27,104 +25,19 @@ Not yet verified. Each takes about a minute:
 - Whether `CLAUDE.md` at the project root is read automatically. Check: after the files are in, ask the agent in a fresh chat what the first rule in `CLAUDE.md` is.
 - Whether `AskUserQuestion` is gone from the picture and the built-in Frontend design skill exists: the rules assume the second.
 
-## Before using it again
-
-This is the refresh from Circlists canon into the kit, a separate job from carrying a kit change out to projects (below). It will be stale. First, run `git log` and `git diff dddbb6c..HEAD` on `app/circlists/canon/`. Look at what changed in the shared files and carry over what improved:
-
-- `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`
-- `app/` (the machinery files, not the Circlists screens)
-- `skills/`: `bro`, `build-playground`, `candidate-build`, `create-handoff`, `edit-before-it-leaves`, `frontend-ui-engineering`, `future-fragility`, `idea-refine`, `must-read`, `noise`, `show-me`, `unslop`
-- `skills/impeccable-local/` and `skills/impeccable/` (see Refreshing Impeccable)
-
-Then update "Last cut" above.
-
 ## Carrying a change between prototypes
 
 The kit is the source for every rule, aid and skill the prototypes share.
 
 1. Make the change in `kit/project/`, check it in a browser where it renders, and push.
 2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief states the changed rule word for word. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
-
 3. Raise the kit version by one in `project/CLAUDE.md` (the line beside "The kit"), add it to the list below, and have the brief set the same line in each project. A project's line then says which update it has.
 
 Versions:
 
 - **1** (2026-10-16): chat replies (tour not a log, never ask cold, list then walk), several candidates per ticket, comments never cite `docs/` paths and archive only when the owner asks.
 
-A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and "What was taken, what was left" records where it came from.
-
-## What was taken, what was left
-
-### Rules (`CLAUDE.md`)
-
-Taken from canon in canon's order and wording: Ratification (all five bullets), Replying in chat (without the emoji parenthetical's product reference), Project map, Reference docs, the custom-skills mechanism and its groupings, Design range, Before building, Designing, Files, playground placement, state-is-a-scenario, Wrapping up.
-
-Changed only where canon named Circlists: file names, ids, and "read `ui-design.md`" became "read the product block at the top of `CLAUDE.md`, and the design law it names".
-
-Added: the product block; the config, states and QA pointer in the Code section, plus its "keep them current" rule (not in canon); "a product's own skills list their triggers in the product block"; "and whatever the product block lists as extra root files"; the `<important>` block recording a decision no spec holds in the task's handoff; "before writing any UI string" in the copy rule; the playground module path `docs/specs/<ticket>/playground/pg-foo.jsx`; "cite by path and id" kept in Upstream first; build-playground and `GOTCHA.md` changes noted in the handoff so they come back to the kit; in Replying in chat, the tour-not-a-log, never-ask-cold and list-then-walk rules, each with a ❌/✅ example pair; comments never cite a `docs/` path (`ARCHITECTURE.md` § Conventions, and the decision block), and archive only when the owner asks (2026-10-16, from a product prototype's finding).
-
-Left in Circlists as its law: Name, accent green and danger red, calm is the floor, communal library, the three-postures block, copy-voice contents, the stable-specs row, `MOBILE.md`, `brand/` rows, `github.md`, the `uploads/` exception, the mark's motion.
-
-There is no `PRODUCT.md`, by the owner's ruling: "GitHub should describe the product." The kit's only product-specific text is the fenced block at the top of `CLAUDE.md`: the name and the GitHub paths the agent reads live. A rule a spec already holds is pointed at, never restated.
-
-### Architecture and gotchas
-
-`ARCHITECTURE.md` took the deletable-aids table (rows are the kit's files), Addressable states (neutral ids, `kitResolveState`, `KIT_STATES`), the note that the resolver looks inert, and Conventions. Left: the three postures, the swap, web-only payments, the `platform` field and "Mobile app: where it differs", the paragraph naming a monorepo process doc, and a stale `canon/`, `next/` sentence. The postures and the `platform` field came back on 2026-10-15 (below).
-
-`GOTCHA.md` took canon's 1, 2, 5 to 13, reworded to drop episode names, files and first-person confessions, and added the SVG-stripping platform fact. Canon's 3 and 4 are Circlists-only and left. The kit's entries are renumbered 1 to 12 (canon's 13 is the kit's 11); the intro's code/judgement split was recounted, and `build-playground/references/fidelity-and-wiring.md` cites "GOTCHA #3".
-
-`docs/` ships `specs/README.md`, `specs/_handoffs/README.md` and `archive/README.md`, the last two new, so the paths the rules name exist, and `specs/example/`, the worked example (2026-10-16). `docs/specs/CLAUDE.md` ships (2026-10-13): what happens to a ticket folder, the candidate-build merge steps from canon's file, product-neutral. Not shipped: `docs/ABOUT.md` (its skeleton fed an earlier `PRODUCT.md`).
-
-### App machinery (`app/`, `index.html`, `tokens.css`)
-
-Prefix `kit` / `KIT`. Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid. The Circlists screens and states stayed behind; a placeholder screen and a neutral state register replace them.
-
-Differences from canon:
-
-- State ids are validated: lowercase letters, digits, single hyphens, unique, not `index` or `states`. Others are refused at load with a console error.
-- The dialogs' scroll lock is counted (`kitLockScroll`), so stacked dialogs release it only when the last closes.
-- A `kit-config-btn-secondary` button in the Config modal runs its handler, then closes the modal.
-- Below 640px the Config, States and QA aids are bottom sheets, because they are panels under the three kinds of overlay in `CLAUDE.md`. Carried back from the MCP Game Store project on 2026-10-08 (its `docs/specs/overlay-kinds/handoff.md`).
-- Tweaks was left out (`tweaks-panel.jsx`, `app-tweaks.jsx`): the owner does not use the panel, and Claude Design supplies its own when a project wants one. The Viewport setting is plain state in `main.jsx`, the config button always shows, and `tokens.css` alone decides the accent.
-- The playground `<base href>` is four `../`, not canon's three (below).
-- The States palette and index sort alphabetically (2026-10-15, owner's rule: "or I can't find stuff"): groups by title, states by label, in `buildStates`, ignoring a leading `App: ` so twins stay together. Canon listed them in register order.
-- Config → Platform (Web / Mobile) came back from canon on 2026-10-15, as the kit's app posture: `isApp` in `main.jsx`, the register's `platform` field, and the Postures section of `ARCHITECTURE.md`. The app posture draws a status bar and home indicator in the phone frame and sets `--safe-area-inset-top` / `--safe-area-inset-bottom`; mobile web (Viewport: Mobile) draws neither. Canon has the switch but no bars. Added after the Circlists store-launch research found the app had no top inset handling and no prototype showed one (business-ops `mobile-readiness/_resources/research/2026-10-15_status-bar-overlap.md`).
-
-Known limits are listed in `project/app/README.md`.
-
-### Skills
-
-Byte-identical to canon: `bro`, `must-read`, `noise` (copied from `biz-standards:noise`, v1.0.2), `unslop` (copied from this workspace's `.agents/skills/unslop`), `frontend-ui-engineering`'s reference. Written for the kit: `edit-before-it-leaves`, one skill consolidating intent-mode's `principle-cut-before-it-leaves` with `biz-editorial` structure, prose, debloat and proofreading, with the workspace-only references (subagent dispatch, other principles) removed. Edited from canon: `future-fragility` (the `$ARGUMENTS` token and `argument-hint` removed: nothing substitutes them here); `idea-refine` (`AskUserQuestion` replaced by asking in chat, the knowledge-store line pointed at the product block, `/ideate` in examples replaced by `$idea-refine`, `author: LatentMagic` replaced by a `source` line); `frontend-ui-engineering` (`source` line). `idea-refine` and `frontend-ui-engineering` come from `addyosmani/agent-skills` (MIT, Copyright (c) 2025 Addy Osmani; both paths exist upstream); the licence text sits beside each as `LICENSE-addyosmani-agent-skills-MIT`. `show-me` adds a `LICENSE` and one sentence about Mermaid. `show-me` is identical, plus a `LICENSE` (MIT, HumanLayer, fetched from its repo; canon had no licence text).
-
-`validate-ui` (2026-10-10, written for the kit, not cut from canon): adapted from the workspace's `biz-standards:validate-ui` for a fresh Claude Design session checking a build it did not make. Dropped: subagent and model-tier rules, Playwright commands, plugin and wiki pointers, the vent route. 2026-10-10 rework on the owner's correction: a UI check, not a requirements audit; it fixes what is broken (smallest change, looked at again rendered), leaves differences from the brief alone, and reports taste calls unfixed. Rendering is whatever the environment offers; the skill says to report a check it could not run. Used with a Validate brief from `biz-authoring:build-design-prompt`. Carried to live projects by a kit-carry brief that inlines the skill, since it is a new file.
-
-`create-handoff`: the "adapted for Circlists" author and version and the `BIZ-80` examples removed; the filename is now `handoff-{YYYY-MM-DD}-{topic}.md` (no underscore, as `CLAUDE.md` § Files requires), in the task's folder or `docs/specs/_handoffs/`. `build-playground`: Circlists specifics replaced with product-neutral nouns; rule 4 (the config rail replacing the app's rail) keeps canon's shape with a "Product slot" bullet for a separate native posture. `i-have-adhd` removed from the groupings and the `$name` examples, by decision.
-
-`candidate-build` (2026-10-13, on the owner's ruling): cut from canon's skill and made product-neutral. `CircCandidate` became `KitCandidate` and `CIRC_STATE_KEY` became `KIT_STATE_KEY`; `circlists-<ticket>.html` became `docs/specs/<ticket>/candidate/index.html` (four-deep, `<base href>` four `../`, the same rule as a playground, so it sits beside `playground/`); "ratified" became "accepted"; the `SwellDoor` example is generic. Kept: the ten invariants, merge by archive-and-switch-off, one `CHANGELOG.md` entry at merge. Added: a section on throwing one away. Fitted to the kit: `app/main.jsx` carries the bridge hook (`bind(api)` and `Screen`, read per render, absent means unchanged); `playgrounds.html` shows `kind: "candidate"` entries first, marked, and counts them; the skill's "Making the entry" steps (new, not canon's) have the agent copy the root `index.html` into the candidate folder and write a stub bridge, by writing files; `CLAUDE.md` carries the trigger, the placement rule, the launcher lines and a "Candidate builds" section. Review fixes (2026-10-13): the main build shows exactly what it showed before until the owner accepts, so a candidate keeps its screens, modules, styles, states and QA walk-through in its own folder and leaves only the standing hook in `app/`; merge and throw-away both archive the folder and switch the launcher entry off, nothing deleted, with the merge steps stated once in the skill; archived script lines are left as they are, per `CLAUDE.md` § Files; the hook's `api` is the product's call; the launcher header pluralises its counts.
-
-`candidate-build` (2026-10-16, on the owner's ruling): a ticket's `candidate/` folder now holds several candidates, as `playground/` holds rigs: `<name>.html`, `cand-<name>-*.jsx`, storage key `kit_<ticket>_<name>`; merge and throw-away act on one candidate; an old `candidate/index.html` keeps working. `docs/specs/example/` ships one playground and one candidate as the kit's worked example, deletable.
-
-### Impeccable
-
-Version 4.5.0. `SKILL.md` and `reference/` are byte-identical to upstream, under upstream's names. Omitted because they need execution: `scripts/`; and in `reference/` `init`, `document`, `doctor`, `hooks`, `live`, `live-setup`, `generate`, `routing`, `component-review`, `region-map`, `visualize`, and `degraded/` (four files). 30 reference files shipped. Added: `LICENSE`, `NOTICE.md`, `LICENSE-ehmo-platform-design-skills-MIT` (from `ehmo/platform-design-skills`, whose copyright line reads only "2026"), `UPSTREAM.md`. Links in upstream's text to omitted files dangle by design.
-
-### Rules dropped because their machinery did not ship
-
-- "No config surface": it was about the launcher page, and as worded it collides with the shipped Config aid.
-- `github.md` and the rules sending the agent to it; its job moved to the product block's sources.
-- Canon's motion-SVG rule, kept as a platform fact in `GOTCHA.md` 12.
-
-### Calls made without a decision
-
-1. Playground `<base href>`: canon says three `../` but the folder it names is four deep, and canon's own gotcha records the failure. The kit says four, and qualifies the "false positive" sentence as `GOTCHA.md` 11 does. This changes a rule's content, not only its names.
-2. `CHANGELOG.md` does not exist in the kit. The rules name it as created by the product when its first entry is earned.
-3. Third-party origin of `future-fragility` and `must-read` is unverified; shipped without added attribution. (`idea-refine` and `frontend-ui-engineering` are verified as `addyosmani/agent-skills`, MIT, credited.)
-4. Rules kept as canon words them, though they read oddly in a fresh project:
-   - `shape` / `new-work` "only inside a playground, never straight into `app/`" reads as forbidding the first build.
-   - The standing pair assumes the platform's built-in Frontend design skill exists in every project; unverified.
-   - "Hierarchy via size and weight, never colour. 4px grid. Readable from 320px" is a house rule with no source found.
-   - The `uploads/` sweep and "never leave a standalone bundle" assume platform behaviour not confirmed for a new project.
-   - The emoji-led last line of a chat reply is a LatentMagic working-style choice.
+A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 
 ## Refreshing Impeccable
 
