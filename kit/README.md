@@ -1,8 +1,8 @@
 # Prototype kit
 
-A product-neutral starting pack for Claude Design prototypes. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `playgrounds.html`, `playgrounds.json`, `tokens.css`, `app/`, `docs/`.
+A starting pack for Claude Design prototypes. Its harness (rules, aids, skills) is product-neutral; its app content is the Golden Sample App. `project/` is exactly what sits at the root of a new Claude Design project: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `playgrounds.html`, `playgrounds.json`, `tokens.css`, `app/`, `docs/`.
 
-Nothing in `project/` names a product (this README names Circlists, where the kit was cut from). This repo is public, so nothing private goes in.
+Nothing in `project/` names a real product: the app is the Golden Sample App, a worked baseline, and `CLAUDE.md`'s product block stays placeholders (this README names Circlists, where the kit was cut from). This repo is public, so nothing private goes in.
 
 ## History
 
@@ -10,15 +10,15 @@ Cut from the Circlists prototype (`app/circlists/canon/`, commit `dddbb6c`) on 2
 
 ## Viewing it
 
-Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
+Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build, both on the Golden Sample App's queue. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
 
 ## Starting a new prototype from it
 
-1. Drag the `kit/project/` folder into the new Claude Design project yourself. The Circlists project's files show dropped files landing in an `uploads/` folder, so check where they landed: if they sit under `uploads/` instead of the project root, the first instruction to the agent is to move them to the root with paths preserved. Connect GitHub to the project: the agent reads the product's specs from there. Then tell the agent to read `SETUP.md` and do what it says: it moves the files to the root if they landed under `uploads/`, clears the upload, puts "Hello world" on the placeholder screen, checks the config button, states and QA work, reports what it found (including whether `CLAUDE.md` was read without being told), and deletes itself. It builds no prototype.
+1. Drag the `kit/project/` folder into the new Claude Design project yourself. The Circlists project's files show dropped files landing in an `uploads/` folder, so check where they landed: if they sit under `uploads/` instead of the project root, the first instruction to the agent is to move them to the root with paths preserved. Connect GitHub to the project: the agent reads the product's specs from there. Then tell the agent to read `SETUP.md` and do what it says: it moves the files to the root if they landed under `uploads/`, clears the upload, opens the Golden Sample App's Home as it is, checks the config button, states and QA work, reports what it found (including whether `CLAUDE.md` was read without being told), and deletes itself. It builds no prototype.
 2. Fill the product block at the top of `CLAUDE.md` (between `<!-- product:start -->` and `<!-- product:end -->`): the product's name, the GitHub paths its truth lives at, platform, where it is published, product skills, extra root files. `CLAUDE.md` differs between projects only inside that block; everything else in it is shared and never edited per product. There is no `PRODUCT.md`: GitHub describes the product, and nothing is kept locally to maintain.
 3. Replace `tokens.css` with the product's tokens, keeping the property names.
 4. Publish it: a prototype reaches the hosted console through the `APPS` table in this repo's `index.html` (entry file defaults to `latentpulse.html`; set `html` to `index.html`). State links only work at a published address.
-5. Replace the placeholder screen and the states. `project/app/README.md` says which file to replace, which to keep, and how to add a state, a QA entry or a Config row.
+5. Replace the Golden Sample App's screens, seed and states. `project/app/README.md` says which file to replace, which to keep, and how to add a state, a QA entry or a Config row.
 
 Not yet verified. Each takes about a minute:
 

@@ -6,6 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Example (playground)</title>
 <link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="gsa.css" />
+<link rel="stylesheet" href="gsa-shell.css" />
+<link rel="stylesheet" href="gsa-queue.css" />
+<link rel="stylesheet" href="gsa-auth.css" />
+<link rel="stylesheet" href="gsa-account.css" />
+<link rel="stylesheet" href="gsa-billing.css" />
+<link rel="stylesheet" href="gsa-checkout.css" />
+<link rel="stylesheet" href="gsa-people.css" />
+<link rel="stylesheet" href="gsa-push.css" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -20,18 +29,6 @@
   input:focus-visible {
     outline-offset: 0; border-color: var(--color-accent) !important;
   }
-
-  /* ---- placeholder screen (app/main.jsx) — the product's screens replace it ---- */
-  .kit-placeholder { max-width: 720px; margin: 0 auto; padding: calc(var(--space-6) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) var(--space-5) calc(96px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
-  .kit-placeholder-eyebrow { font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg-3); }
-  .kit-placeholder-title { font: 600 28px/1.15 var(--font-sans); letter-spacing: -0.02em; margin: 10px 0 0; }
-  .kit-placeholder-lede { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-2); margin: 12px 0 var(--space-5); }
-  .kit-placeholder-empty { font: 400 15px/1.6 var(--font-sans); color: var(--color-fg-3); border: 1px dashed var(--color-border-1); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; }
-  .kit-placeholder-items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-  .kit-placeholder-items[data-mobile] { grid-template-columns: 1fr; }
-  .kit-placeholder-items li { font: 500 15px/1.4 var(--font-sans); background: var(--color-surface); border: 1px solid var(--color-border-1); border-left: 3px solid var(--color-accent); border-radius: var(--radius-md); padding: var(--space-4); }
-  :root[data-kit-density="compact"] .kit-placeholder-items { gap: 4px; }
-  :root[data-kit-density="compact"] .kit-placeholder-items li { padding: var(--space-2) var(--space-3); }
 
   /* ---- config launcher (prototype aid) ---- */
   .kit-config-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 300; }
@@ -223,11 +220,12 @@
   .kit-phone-home::after { content: ''; width: 134px; height: 5px; border-radius: 3px; background: currentColor; }
 
   /* ---- playground-only (example): the three layouts, and the bottom strip ---- */
-  :root[data-pg-example="one"] .kit-placeholder-items { grid-template-columns: 1fr; }
-  :root[data-pg-example="rows"] .kit-placeholder-items { grid-template-columns: 1fr; gap: 0; }
-  :root[data-pg-example="rows"] .kit-placeholder-items li { border-radius: 0; border-left-width: 1px; border-top-width: 0; }
-  :root[data-pg-example="rows"] .kit-placeholder-items li:first-child { border-top-width: 1px; border-radius: var(--radius-md) var(--radius-md) 0 0; }
-  :root[data-pg-example="rows"] .kit-placeholder-items li:last-child { border-radius: 0 0 var(--radius-md) var(--radius-md); }
+  :root[data-pg-example="grid"] .gsa-queue-list { display: grid; grid-template-columns: 1fr 1fr; }
+  :root[data-pg-example="rows"] .gsa-queue-list { gap: 0; }
+  :root[data-pg-example="rows"] .gsa-queue-card { border-radius: 0; border-top-width: 0; }
+  :root[data-pg-example="rows"] .gsa-queue-card:first-child { border-top-width: 1px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  :root[data-pg-example="rows"] .gsa-queue-card:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  @media (max-width: 640px) { :root[data-pg-example="grid"] .gsa-queue-list { grid-template-columns: 1fr; } }
   .pg-strip { position: fixed; left: 0; right: 0; bottom: 0; z-index: 250; background: var(--color-fg-1); color: #fff; padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: var(--space-2); font: 400 13px/1.4 var(--font-sans); }
   .pg-strip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
   .pg-strip button { font: 500 13px var(--font-sans); min-height: 44px; padding: 0 var(--space-4); border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.3); background: transparent; color: #fff; cursor: pointer; }
@@ -253,18 +251,36 @@
          nothing         the app as it opens
      ============================================================================ -->
 <div id="root"></div>
+<script>if (!location.search) history.replaceState(null, "", "?state=queue");</script>
 
-<script>if (!location.search) history.replaceState(null, "", "?state=with-items");</script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="app/primitives.jsx"></script>
+<script type="text/babel" src="app/gsa-data.jsx"></script>
+<script type="text/babel" src="app/gsa-store.jsx"></script>
+<script type="text/babel" src="app/gsa-ui.jsx"></script>
+<script type="text/babel" src="app/gsa-shell.jsx"></script>
+<script type="text/babel" src="app/gsa-site.jsx"></script>
+<script type="text/babel" src="app/gsa-queue.jsx"></script>
+<script type="text/babel" src="app/gsa-auth.jsx"></script>
+<script type="text/babel" src="app/gsa-auth-codes.jsx"></script>
+<script type="text/babel" src="app/gsa-account.jsx"></script>
+<script type="text/babel" src="app/gsa-account-dialogs.jsx"></script>
+<script type="text/babel" src="app/gsa-billing.jsx"></script>
+<script type="text/babel" src="app/gsa-checkout.jsx"></script>
+<script type="text/babel" src="app/gsa-invite.jsx"></script>
+<script type="text/babel" src="app/gsa-connect.jsx"></script>
+<script type="text/babel" src="app/gsa-push.jsx"></script>
+<script type="text/babel" src="app/gsa-states-home.jsx"></script>
+<script type="text/babel" src="app/gsa-states-account.jsx"></script>
+<script type="text/babel" src="app/gsa-states-people.jsx"></script>
 <script type="text/babel" src="app/states.jsx"></script>
 <script type="text/babel" src="app/states-ui.jsx"></script>
 <script type="text/babel" src="app/config.jsx"></script>
 <script type="text/babel" src="app/qa.jsx"></script>
-<script type="text/babel" src="app/config-extra.example.jsx"></script>
+<script type="text/babel" src="app/gsa-config.jsx"></script>
 <script type="text/babel" src="docs/specs/example/playground/pg-example-strip.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>

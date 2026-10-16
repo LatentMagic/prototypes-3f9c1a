@@ -8,7 +8,7 @@ Desktop web, mobile web and **app** (native mobile) are three presentation postu
 
 - `isApp` comes from one switch, **Config → Platform (Web / Mobile)**. Session-only, not persisted. `main.jsx` holds it and hands it to the screen and to a candidate build.
 - The app posture always implies the phone frame, whatever the Viewport says. Only the app posture draws the status bar and home indicator and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (on `.kit-phone-clip[data-app]`, `index.html`). Viewport: Mobile is mobile web: the same frame with no bars and no insets.
-- A product with an app posture gives it its own chrome: one shell for web, one for the app, the same children inside both. The placeholder only pads by the insets.
+- A product with an app posture gives it its own chrome: one shell for web, one for the app, the same children inside both. The Golden Sample App's shell pads by the insets.
 - A product whose `CLAUDE.md` Platform line is web leaves Platform on Web.
 
 ## Deletable aids and droppable modules
@@ -20,7 +20,8 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/config.jsx` | deletable aid | Config pill gone: review settings, the states palette and QA with it. `?state=` and the index survive |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
-| `app/config-extra.example.jsx` | deletable example | no product rows in Config |
+| `app/gsa-config.jsx` | deletable aid | no GSA rows in Config (review flags, session, tiers); the Config shell stays |
+| `app/gsa-states-home.jsx`, `app/gsa-states-account.jsx`, `app/gsa-states-people.jsx` | deletable aids | the GSA's entries drop out of the register; the interim `queue` and `queue-empty` entries stay |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
 

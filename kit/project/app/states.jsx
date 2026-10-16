@@ -54,10 +54,8 @@ function kitStateContext(api) {
 // ---- THE REGISTER ----------------------------------------------------------
 // Order here does not matter: the palette and the index read alphabetically,
 // groups by title and states by label (see buildStates). The three family files
-// each publish their entries; the two below are the interim pair until they land.
+// (gsa-states-home, -account, -people) each publish their entries.
 const KIT_STATE_REGISTER = [
-  { group: 'Home', id: 'queue', label: 'Home: the queue with Active and Done items', platform: 'web', stage: (c) => c.go('home') },
-  { group: 'Home', id: 'queue-empty', label: 'Home: the queue with nothing in it', platform: 'web', stage: (c) => { c.set({ items: [] }); c.go('home'); } },
   ...(window.GSA_STATES_HOME || []),
   ...(window.GSA_STATES_ACCOUNT || []),
   ...(window.GSA_STATES_PEOPLE || []),
@@ -67,7 +65,13 @@ const KIT_STATE_REGISTER = [
 // can't hold still — a search term, a sequence of taps. Each line names the
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
-const KIT_STATE_GROUP_NOTES = {};
+const KIT_STATE_GROUP_NOTES = {
+  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused.'],
+  'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
+  'Invitations': ['member@example.com is already a member.'],
+  'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons.'],
+  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Codes in Prove it\'s you and Change email: 000000 is expired, 111111 is wrong.'],
+};
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 
 // The catalogue's own address. Not a state, so it is not in the register.

@@ -1,16 +1,16 @@
-// Playground "example": how should the skeleton app lay out its item list?
-// The real app runs unchanged (app/main.jsx); this strip only sets which layout CSS
+// Playground "example": how should the queue lay out its item list?
+// The real app runs unchanged (app/main.jsx and the queue); this strip only sets which layout CSS
 // applies, via data-pg-example on <html>. The CSS is in the entry's style block.
 // Selection persists under pg_example_v1.
 const PG_EG_OPTIONS = [
-  { id: 'grid', name: 'Two columns', stance: 'Today. Fits a long list on one screen.', cost: 'On a phone it is one column anyway, so this option only differs on desktop.' },
-  { id: 'one', name: 'One column', stance: 'Same cards, stacked. One reading order.', cost: 'A long list needs a lot of scrolling on desktop.' },
+  { id: 'one', name: 'One column', stance: 'Today. Cards stacked, one reading order.', cost: 'A long list needs a lot of scrolling on desktop.' },
+  { id: 'grid', name: 'Two columns', stance: 'Fits a long list on one screen.', cost: 'On a phone it is one column anyway, so this option only differs on desktop.' },
   { id: 'rows', name: 'Joined rows', stance: 'The cards fused into one list. The densest read.', cost: 'Items stop reading as separate things.' },
 ];
 
 const PgExampleStrip = () => {
   const [pick, setPick] = React.useState(() => {
-    try { return localStorage.getItem('pg_example_v1') || 'grid'; } catch (e) { return 'grid'; }
+    try { return localStorage.getItem('pg_example_v1') || 'one'; } catch (e) { return 'one'; }
   });
   const [open, setOpen] = React.useState(true);
   React.useEffect(() => {
@@ -25,7 +25,7 @@ const PgExampleStrip = () => {
   const cur = PG_EG_OPTIONS.find((o) => o.id === pick);
   if (!open) return <button className="pg-strip-tab" onClick={() => setOpen(true)}>Layouts</button>;
   return (
-    <div ref={ref} className="pg-strip" role="region" aria-label="Playground: item list layout">
+    <div ref={ref} className="pg-strip" role="region" aria-label="Playground: queue layout">
       <div className="pg-strip-row">
         {PG_EG_OPTIONS.map((o, i) => (
           <button key={o.id} data-active={o.id === pick ? '1' : undefined} onClick={() => setPick(o.id)}>{i + 1} · {o.name}</button>

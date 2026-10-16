@@ -5,13 +5,13 @@ A starting kit has just been dropped into this project. This is scaffolding only
 1. **Put the kit at the project root.** If its files landed under `uploads/` (or any other folder), move them to the root with their paths kept exactly: `CLAUDE.md`, `ARCHITECTURE.md`, `GOTCHA.md`, `index.html`, `tokens.css`, `app/`, `docs/`, `skills/`. Overwrite nothing that was already at the root without saying so first.
 2. **Clear the upload.** Once everything is at the root, delete what is left of the dropped copy under `uploads/`, so there is one copy of each file.
 3. **Read `CLAUDE.md`** in full, then `app/README.md`.
-4. **Open `index.html`** as it is. It already holds a placeholder screen. Change one thing only: in `app/main.jsx`, the small line above the heading that reads "Placeholder screen" becomes "Hello world".
+4. **Open `index.html`** as it is. It opens on the Golden Sample App's Home (the queue). Change nothing in the app: this step only proves the files load.
 5. **Check it works, and say what you saw for each:**
    - the page renders with no console errors;
    - the config button is there, and Config, States and QA each open and close;
    - switching state in States changes the screen;
    - Viewport: Mobile in Config shows the phone frame with no status bar, and Desktop removes it;
-   - Platform: Mobile in Config shows the phone frame with a status bar at the top and a home indicator at the bottom, and the placeholder's text clears both.
+   - Platform: Mobile in Config shows the phone frame with a status bar at the top and a home indicator at the bottom, and the app's content clears both.
 6. **Report, briefly:**
    - where the files landed and what you moved or deleted;
    - whether `CLAUDE.md` was already in your instructions before step 3 told you to read it, or only after;

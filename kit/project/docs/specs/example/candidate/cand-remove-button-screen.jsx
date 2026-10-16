@@ -1,28 +1,27 @@
-// Candidate "remove-button": the placeholder screen with a Remove button on each item
-// and a count line. Reads and writes the app's items only through the api.
-const CandEgScreen = ({ api }) => {
-  const { items, setItems, isMobile } = api;
+// Candidate "remove-button": Home with a Remove button for each item and a count line.
+// Wraps the queue's own GsaHome (app/gsa-queue.jsx) rather than replacing it, so the
+// shell, tabs and add form stay as they are. It reads the items from the store and
+// writes them only through the candidate api (setItems).
+const CandEgOriginalHome = window.GsaHome;
+const CandEgHome = (props) => {
+  const g = useGsa();
+  const items = g.items;
+  const api = window.KitCandidateApi;
   return (
-    <main className="kit-placeholder">
-      <div className="kit-placeholder-eyebrow">Candidate · remove-button</div>
-      <h1 className="kit-placeholder-title">{items.length === 0 ? 'All cleared' : 'Your items'}</h1>
-      <p className="kit-placeholder-lede">Each item can now be removed. This change is not accepted.</p>
-      {items.length === 0
-        ? <div className="kit-placeholder-empty">Nothing left. Open States and pick “The screen with items”.</div>
-        : <>
-            <p className="cand-remove-button-count">{items.length} left</p>
-            <ul className="kit-placeholder-items" data-mobile={isMobile ? '1' : undefined}>
-              {items.map((it) => (
-                <li key={it}>
-                  <span className="cand-remove-button-row">
-                    <span>{it}</span>
-                    <button className="cand-remove-button-remove" onClick={() => setItems(items.filter((x) => x !== it))}>Remove</button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </>}
-    </main>
+    <>
+      <CandEgOriginalHome {...props} />
+      <section className="cand-remove-button-panel" aria-label="Remove items (candidate)">
+        <p className="cand-remove-button-count">{items.length === 0 ? 'Nothing left to remove' : items.length + ' left'}</p>
+        <ul className="cand-remove-button-list">
+          {items.map((it) => (
+            <li key={it.id} className="cand-remove-button-row">
+              <span>{it.title}</span>
+              <button className="cand-remove-button-remove" aria-label={'Remove ' + it.title} onClick={() => api.setItems(items.filter((x) => x.id !== it.id))}>Remove</button>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 };
-Object.assign(window, { CandEgScreen });
+Object.assign(window, { GsaHome: CandEgHome });
