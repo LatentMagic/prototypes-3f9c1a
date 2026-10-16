@@ -1,14 +1,13 @@
 // ============================================================================
-// GSA seed: the fiction every screen opens on. Fixed "today", three people,
+// GSA seed: the fiction every screen opens on. Fixed "today", two people,
 // the queue, the shared space, the placeholder plans. Nothing here is a spec rule.
 // gsaSeed() hands out a fresh copy each call, so a reseed never shares objects.
 // ============================================================================
 const GSA_DAY0 = new Date(2026, 9, 16, 9, 0, 0);
 
 const GSA_PEOPLE = {
-  password: { first: 'Sam', last: 'Taylor', email: 'sam@example.com', method: 'password', enrolled: false },
-  google: { first: 'Alex', last: 'Chen', email: 'alex@example.com', method: 'google', enrolled: false },
-  apple: { first: 'Robin', last: 'Park', email: 'k3v9q2@privaterelay.example', method: 'apple', enrolled: false },
+  sam: { first: 'Sam', last: 'Taylor', email: 'sam@example.com', method: 'password', enrolled: false },
+  alex: { first: 'Alex', last: 'Chen', email: 'alex@example.com', method: 'password', enrolled: false },
 };
 
 const GSA_PLANS = {
@@ -49,13 +48,13 @@ function gsaSeed() {
     returnTo: null,
     pending: {},
     session: 'signed-in',
-    person: { ...GSA_PEOPLE.password },
+    person: { ...GSA_PEOPLE.sam },
     items: gsaSeedItems(),
     queue: { load: 'ok', save: 'ok' },
     tiers: { payment: true, plans: true },
     sub: {
       status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
-      last4: '4242', billingEmail: GSA_PEOPLE.password.email,
+      last4: '4242', billingEmail: GSA_PEOPLE.sam.email,
     },
     space: {
       role: 'owner', full: false,
@@ -71,11 +70,11 @@ function gsaSeed() {
       events: { 'event-one': true, 'event-two': true }, prompt: false, turning: false, failed: false,
     },
     review: {
-      device: 'known', provider: 'completes', providerAccount: 'existing',
+      device: 'known',
       emailReverify: 'asks', emailEndsSession: false, storeLink: false,
       payProvider: 'works', hosted: 'pays', clipboard: 'ok',
       inviteValid: true, inviteMatch: 'match',
-      promptAnswer: 'none', pushFail: false, exportLimit: false, deletedElsewhere: false,
+      promptAnswer: 'prompt', pushFail: false, exportLimit: false, deletedElsewhere: false,
     },
   };
 }

@@ -27,10 +27,10 @@ const GsaRoot = () => {
   const Screen = window[window.GSA_SCREENS[name]];
   const Frame = window.GsaFrame;
   const Host = window.GsaPushHost;
-  const screen = Screen ? <Screen route={g.route} /> : <GsaNotBuilt name={name} />;
+  const screen = Screen ? <Screen key={g.epoch} route={g.route} /> : <GsaNotBuilt name={name} />;
   return (
     <>
-      {window.GSA_BARE.includes(name) || !Frame ? screen : <Frame>{screen}</Frame>}
+      {window.GSA_BARE.includes(name) || !Frame ? screen : <Frame key={g.epoch}>{screen}</Frame>}
       {Host && <Host />}
     </>
   );

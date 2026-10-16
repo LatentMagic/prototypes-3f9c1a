@@ -6,7 +6,7 @@
 // ============================================================================
 const GSA_SCREENS = {
   'home': 'GsaHome', 'sign-in': 'GsaSignIn', 'sign-up': 'GsaSignUp', 'sign-up-code': 'GsaSignUpCode',
-  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'provider': 'GsaProvider', 'account': 'GsaAccount',
+  'sign-in-code': 'GsaSignInCode', 'recover': 'GsaRecover', 'account': 'GsaAccount',
   'plans': 'GsaPlans', 'subscribe': 'GsaSubscribe', 'hosted-payment': 'GsaHostedPayment', 'invite': 'GsaInvite',
   'invite-link': 'GsaInviteLink', 'invite-invalid': 'GsaInviteInvalid', 'invite-full': 'GsaInviteFull',
   'invite-other-account': 'GsaInviteOtherAccount', 'shared-space': 'GsaSharedSpace', 'connect': 'GsaConnect',
@@ -20,8 +20,8 @@ const GSA_DIALOGS = {
 const GSA_AUTH_ONLY = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover'];
 const GSA_SIGNED_IN_ONLY = ['home', 'account', 'hosted-payment', 'invite', 'shared-space', 'paid-feature'];
 const GSA_PUBLIC = ['plans', 'invite-invalid', 'invite-full', 'invite-other-account', 'connect', 'ai-app', 'legal',
-  'deletion-request', 'not-found', 'cant-connect', 'provider'];
-const GSA_BARE = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'provider', 'hosted-payment', 'ai-app'];
+  'deletion-request', 'not-found', 'cant-connect'];
+const GSA_BARE = ['sign-in', 'sign-up', 'sign-up-code', 'sign-in-code', 'recover', 'hosted-payment', 'ai-app'];
 const GSA_BUYING = ['plans', 'subscribe', 'hosted-payment'];
 const GSA_ACTIVE_SUB = ['subscribed', 'ending', 'payment-failed'];
 
@@ -62,6 +62,7 @@ function gsaLand(route, s) {
 let gsaState = gsaSeed();
 let gsaStack = [];
 let gsaSnap = null;
+let gsaEpoch = 0; // bumped by every reseed; GsaRoot keys the screen on it so no local state outlives one
 const gsaListeners = new Set();
 
 function gsaIsPlain(v) {
@@ -86,7 +87,7 @@ function gsaJoin(s, route) {
   if (route.name !== 'shared-space' || route.notice !== 'joined') return s;
   if (s.space.members.some((m) => m.email === s.person.email)) return s;
   const member = { name: s.person.first + ' ' + s.person.last, email: s.person.email };
-  return { ...s, space: { ...s.space, members: s.space.members.concat([member]) } };
+  return { ...s, space: { ...s.space, role: 'member', members: s.space.members.concat([member]) } };
 }
 
 // Land a requested route: the guard to a fixed point, then the side effects the
@@ -114,6 +115,7 @@ function gsaWipe() {
   fresh.session = 'visitor';
   fresh.route = { name: 'sign-in' };
   gsaStack = [];
+  gsaEpoch += 1;
   gsaCommit(fresh);
 }
 
@@ -137,7 +139,7 @@ function gsaParams(route) {
 const GSA_WRITE_KEYS = ['items', 'person', 'sub', 'space', 'push', 'invite'];
 const GsaStore = {
   get() {
-    if (!gsaSnap) gsaSnap = { ...gsaState, view: gsaView(gsaState), isApp: gsaState.env.platform === 'app' };
+    if (!gsaSnap) gsaSnap = { ...gsaState, epoch: gsaEpoch, view: gsaView(gsaState), isApp: gsaState.env.platform === 'app' };
     return gsaSnap;
   },
   set(patch, opts) {
@@ -159,6 +161,7 @@ const GsaStore = {
     const fresh = gsaSeed();
     fresh.env = { ...gsaState.env };
     gsaStack = [];
+    gsaEpoch += 1;
     gsaCommit(fresh);
   },
   subscribe(fn) {
@@ -184,8 +187,8 @@ const GsaStore = {
     const landed = gsaLand(prev || { name: 'home' }, s);
     gsaCommit({ ...gsaJoin(s, landed), route: landed });
   },
-  signIn(method) {
-    const person = GSA_PEOPLE[method] || GSA_PEOPLE.password;
+  signIn(who = 'sam') {
+    const person = GSA_PEOPLE[who] || GSA_PEOPLE.sam;
     const prev = gsaState.person;
     const patch = { session: 'signed-in', person: { ...person } };
     // A different person on this device: the registration was the last person's.

@@ -44,7 +44,7 @@ function kitStateContext(api) {
   const reset = () => store.reset();
   const set = (patch) => store.set(patch);
   const go = (name, params) => store.go(name, params);
-  const as = (method) => store.signIn(method);
+  const as = (who) => store.signIn(who);
   const visitor = () => store.set({ session: 'visitor' });
   const sub = (status, extra) => store.set({ sub: { status, ...(extra || {}) } });
   const setPlatform = (p) => api.setPlatform(p);
@@ -66,11 +66,11 @@ const KIT_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
-  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused.'],
+  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. alex@example.com signs in as Alex Chen.'],
   'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
   'Invitations': ['member@example.com is already a member.'],
-  'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons.'],
-  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Codes in Prove it\'s you and Change email: 000000 is expired, 111111 is wrong.'],
+  'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons. Late payment arrives is the Payment provider taking the failed payment (GSA-020.AF-01).'],
+  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account re-seeds the prototype, so signing in again brings back the seed account (not modelled).'],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 
