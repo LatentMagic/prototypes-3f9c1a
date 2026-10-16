@@ -127,9 +127,20 @@ function GsaInviteFull() {
 
 // ---- S19: the invitation is for another account ------------------------------
 function GsaInviteOtherAccount() {
+  // GSA-025.EF-03: the refused account is never added. It is remembered so that, after the sign-out,
+  // only a different account signing in counts as the invited person and joins.
+  React.useEffect(() => {
+    const s = GsaStore.get();
+    const refused = s.pending && s.pending.refusedWho;
+    if (refused && s.who && s.who !== refused) {
+      GsaStore.set({ review: { inviteMatch: 'match' }, pending: { refusedWho: null } });
+      const landed = window.gsaInviteOutcome(GsaStore.get());
+      GsaStore.replace(landed.name, gsaParams(landed));
+    }
+  }, []);
   const continueAs = () => {
-    const id = GsaStore.get().invite.id;
-    GsaStore.set({ review: { inviteMatch: 'match' }, pending: { invite: id } });
+    const s = GsaStore.get();
+    GsaStore.set({ pending: { invite: s.invite.id, refusedWho: s.who } });
     GsaStore.signOut({ keepPending: true });
   };
   return (

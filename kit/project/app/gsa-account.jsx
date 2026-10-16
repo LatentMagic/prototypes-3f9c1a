@@ -24,9 +24,12 @@ function GsaAccountPasswordForm({ onDone }) {
 function GsaAccountPasswordCard({ notice }) {
   const [n, setN] = React.useState(0);
   const done = () => { setN(n + 1); GsaStore.replace('account', { notice: 'password-changed' }); };
+  const statusRef = React.useRef(null);
+  const changed = notice === 'password-changed';
+  React.useEffect(() => { if (changed && n > 0 && statusRef.current) statusRef.current.focus(); }, [changed, n]);
   return (
     <GsaCard title="Change password">
-      {notice === 'password-changed' ? <div className="gsa-account-status"><GsaStatusLine tone="success">Your password has changed.</GsaStatusLine></div> : null}
+      {changed ? <div className="gsa-account-status" ref={statusRef} tabIndex={-1}><GsaStatusLine tone="success">Your password has changed.</GsaStatusLine></div> : null}
       <GsaAccountPasswordForm key={n} onDone={done} />
     </GsaCard>
   );
@@ -39,7 +42,7 @@ function GsaAccountEmailForm({ g, onDone }) {
       if (!val) return 'Enter a new email address.';
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) return 'Enter a valid email address.';
       if (val === g.person.email.toLowerCase()) return 'This account already has this email address.';
-      if (val === 'taken@example.com') return 'Another account holds this email address.';
+      if (GsaStore.emailTaken(val, g.who)) return 'Another account holds this email address.';
       return null;
     },
   });

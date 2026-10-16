@@ -51,8 +51,7 @@ function gsaAccountDelete() {
     GsaStore.replace('account', { dialog: 'delete', failed: true });
     return;
   }
-  GsaStore.reset();
-  GsaStore.signOut();
+  GsaStore.eraseAccount();
 }
 
 // ---- D1 Reverification -------------------------------------------------------

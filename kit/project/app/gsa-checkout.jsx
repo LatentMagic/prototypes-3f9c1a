@@ -190,7 +190,10 @@ function GsaHostedPayment() {
         store.replace('account', {});
         return;
       }
-      store.set({ sub: { status: 'subscribed', plan, pending: null, nextDate: gsaCheckoutRenews(plan), endDate: null, endedOn: null, last4: '4242', billingEmail: g.person.email } });
+      const typed = document.querySelector('.gsa-checkout-form');
+      const typedDigits = typed ? String(typed.elements['gsa-checkout-number'].value).replace(/\D/g, '') : '';
+      // Empty fields keep the pictured card, ending 4242.
+      store.set({ sub: { status: 'subscribed', plan, pending: null, nextDate: gsaCheckoutRenews(plan), endDate: null, endedOn: null, last4: typedDigits.length >= 4 ? typedDigits.slice(-4) : '4242', billingEmail: g.person.email } });
       store.replace('home', {});
     });
   };

@@ -69,7 +69,7 @@ function GsaSignUpCode({ route }) {
 // ---- S4 Sign-in code page ------------------------------------------------------
 function GsaSignInCode({ route }) {
   const kind = route && route.kind === 'authenticator' ? 'authenticator' : 'device';
-  const who = (route && route.who) === 'alex' ? 'alex' : 'sam';
+  const who = (route && route.who) || 'sam';
   const via = (route && route.via) || 'sign-in';
   const email = window.gsaAuthOnFile(who).email;
   const device = kind === 'device';
@@ -120,7 +120,11 @@ function GsaRecover({ route }) {
       </window.GsaAuthFrame>
     );
   }
-  const submit = pwForm.submit(() => run(() => window.gsaAuthProceed(window.gsaAuthWho(email), 'sign-in')));
+  const submit = pwForm.submit(() => run(() => {
+    const who = window.gsaAuthWho(email);
+    if (who) window.gsaAuthProceed(who, 'sign-in');
+    else window.GsaStore.replace('sign-in');
+  }));
   return (
     <window.GsaAuthFrame title="Choose a new password" onBack={() => go('code')}>
       <form className="gsa-auth-form" noValidate onSubmit={submit}>

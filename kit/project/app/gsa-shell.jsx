@@ -65,7 +65,7 @@ function GsaShellFooter({ g }) {
           {showPlans ? <GsaPick><GsaShellLink to="plans">Plans</GsaShellLink></GsaPick> : null}
         </nav>
         <p className="gsa-shell-support">
-          Support: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a>
+          <span className="gsa-slot-prefix">Slot: </span>Support address: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a>
         </p>
       </div>
     </footer>

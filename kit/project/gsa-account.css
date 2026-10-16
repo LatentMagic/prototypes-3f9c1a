@@ -28,3 +28,4 @@
 .gsa-account-list li { margin-bottom: 0; }
 .gsa-account-dialog-text { margin: 0 0 var(--space-2); }
 .gsa-account-dialog-status { margin-bottom: var(--space-3); }
+.gsa-account-status:focus { outline: none; }

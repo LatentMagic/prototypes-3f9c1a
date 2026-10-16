@@ -39,3 +39,4 @@
 .gsa-people-turn[data-from="user"] .gsa-people-bubble { background: var(--color-border-2); border-color: var(--color-border-2); }
 .gsa-people-turn-slot { width: 100%; }
 .gsa-people-chat-link { align-self: flex-start; }
+.gsa-people-ai-pick select { cursor: pointer; }

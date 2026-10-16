@@ -7,7 +7,6 @@
 // ============================================================================
 const GSA_AUTH_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const GSA_AUTH_PASSWORD_MIN = 8;
-const GSA_AUTH_TAKEN = 'taken@example.com';
 const GSA_AUTH_WRONG_PASSWORD = 'wrong-password';
 
 function gsaAuthEmailError(v) {
@@ -18,9 +17,9 @@ function gsaAuthPasswordError(v) {
   return String(v || '').length >= GSA_AUTH_PASSWORD_MIN ? null : 'Use at least ' + GSA_AUTH_PASSWORD_MIN + ' characters (placeholder rule).';
 }
 
-// Who signs in for a typed address: alex@example.com is Alex, any other is Sam.
+// Who signs in for a typed address: the account on file for it, or null (GSA-004.EF-01).
 function gsaAuthWho(email) {
-  return String(email || '').trim().toLowerCase() === window.GSA_PEOPLE.alex.email ? 'alex' : 'sam';
+  return window.GsaStore.accountByEmail(email);
 }
 
 // The account on file for a seed person, from the store.
@@ -91,12 +90,13 @@ function GsaSignIn() {
     return { ...b, onChange: (e) => { setRefused(false); b.onChange(e); } };
   };
   const submit = form.submit((values) => run(() => {
-    if (values.password === GSA_AUTH_WRONG_PASSWORD) {
+    const who = gsaAuthWho(values.email);
+    if (!who || values.password === GSA_AUTH_WRONG_PASSWORD) {
       setRefused(true);
       setTimeout(() => { const el = document.getElementById('gsa-form-password'); if (el) el.focus(); }, 0);
       return;
     }
-    gsaAuthProceed(gsaAuthWho(values.email), 'sign-in');
+    gsaAuthProceed(who, 'sign-in');
   }));
   return (
     <GsaAuthFrame title="Sign in" foot={<>
@@ -122,7 +122,7 @@ function GsaSignUp() {
   const form = useGsaForm({
     first: (v) => (String(v).trim() ? null : 'Enter your first name.'),
     last: (v) => (String(v).trim() ? null : 'Enter your last name.'),
-    email: (v) => gsaAuthEmailError(v) || (String(v).trim().toLowerCase() === GSA_AUTH_TAKEN ? 'An account already uses this email address.' : null),
+    email: (v) => gsaAuthEmailError(v) || (window.GsaStore.emailTaken(v) ? 'An account already uses this email address.' : null),
     password: gsaAuthPasswordError,
   });
   const submit = form.submit((values) => run(() => {

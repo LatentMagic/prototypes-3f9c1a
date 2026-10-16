@@ -70,7 +70,7 @@ const KIT_STATE_GROUP_NOTES = {
   'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
   'Invitations': ['Sam is the Owner. alex@example.com is not yet a member. member@example.com is already a member.'],
   'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons. Late payment arrives is the Payment provider taking the failed payment (GSA-020.AF-01).'],
-  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account re-seeds the prototype, so signing in again brings back the seed account (not modelled).'],
+  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account erases only the signed-in person\'s account; the other accounts stay as they were.'],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 

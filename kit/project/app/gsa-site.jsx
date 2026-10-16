@@ -88,9 +88,10 @@ function GsaDeletionRequest() {
     <div className="gsa-page">
       <h1 className="gsa-heading">Ask for your account to be deleted</h1>
       <p className="gsa-text">
-        Write to <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a> from the email address of the account.
+        Write to the Support address from the email address of the account.
         You do not need the Store app.
       </p>
+      <GsaSlot>Support address: <a href={'mailto:' + window.GSA_SUPPORT}>{window.GSA_SUPPORT}</a></GsaSlot>
       <p className="gsa-text">We erase:</p>
       <ul className="gsa-shell-list">
         <li>the account and its sign-in details</li>
