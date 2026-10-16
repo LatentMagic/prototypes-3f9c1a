@@ -1,0 +1,40 @@
+/* ============================================================================
+   Golden Sample App - plans and paying (app/gsa-checkout.jsx). Tokens only.
+   ============================================================================ */
+.gsa-checkout-stack { display: flex; flex-direction: column; gap: var(--space-6); }
+.gsa-checkout-stack-sm { margin-bottom: var(--space-4); }
+.gsa-checkout-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+.gsa-checkout-sub { font-size: var(--text-lg); line-height: var(--leading-tight); font-weight: 600; margin: 0 0 var(--space-3); padding: 0; }
+.gsa-checkout-note { margin: 0 0 var(--space-4); font-size: var(--text-sm); color: var(--color-fg-3); }
+
+.gsa-checkout-covers { display: grid; grid-template-columns: 1fr; gap: var(--space-5); }
+@media (min-width: 800px) { .gsa-checkout-covers { grid-template-columns: 1fr 1fr; } }
+.gsa-checkout-plan-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+@media (min-width: 640px) { .gsa-checkout-plan-list { grid-template-columns: 1fr 1fr; } }
+.gsa-checkout-price { margin: 0 0 var(--space-2); font-size: var(--text-xl); font-weight: 600; }
+
+.gsa-checkout-choices { border: 0; margin: 0 0 var(--space-4); padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.gsa-checkout-choice { display: flex; align-items: center; gap: var(--space-3); min-height: var(--target-min); padding: var(--space-3) var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md); cursor: pointer; }
+.gsa-checkout-choice[data-selected="true"] { border-color: var(--color-border-strong); }
+.gsa-checkout-choice input { width: 20px; height: 20px; margin: 0; accent-color: var(--color-primary); flex-shrink: 0; }
+.gsa-checkout-choice input:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); }
+.gsa-checkout-choice-text { display: flex; justify-content: space-between; gap: var(--space-4); flex: 1; font-size: var(--text-base); }
+.gsa-checkout-choice-name { font-weight: 500; }
+.gsa-checkout-choice-price { color: var(--color-fg-2); }
+.gsa-checkout-due { margin-bottom: var(--space-5); }
+.gsa-checkout-due-line { margin: 0 0 var(--space-1); font-size: var(--text-lg); }
+.gsa-checkout-due .gsa-text { margin: 0; }
+
+/* hosted payment: the provider's page, cool and neutral, not the product's look */
+.gsa-checkout-host { min-height: 100%; background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface-sunken)); font-family: var(--font-sans); color: var(--color-fg-1); }
+.gsa-checkout-host-bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-surface); border-bottom: 1px solid var(--color-border-2); }
+.gsa-checkout-host-name { font-weight: 600; font-size: var(--text-base); }
+.gsa-checkout-host-label { font-size: var(--text-sm); color: var(--color-fg-3); }
+.gsa-checkout-host-body { display: flex; justify-content: center; padding: var(--space-6) var(--space-4) var(--space-12); }
+.gsa-checkout-host-panel { width: 100%; max-width: 440px; padding: var(--space-6); background: var(--color-surface); border: 1px solid var(--color-border-2); border-radius: var(--radius-lg); }
+.gsa-checkout-host-summary { margin-bottom: var(--space-5); }
+.gsa-checkout-host-due { margin: 0 0 var(--space-2); font-size: var(--text-xl); }
+.gsa-checkout-host-summary .gsa-text { margin: 0; }
+.gsa-checkout-card-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.gsa-checkout-block { width: 100%; }
+.gsa-checkout-host-cancel { display: flex; justify-content: center; margin-top: var(--space-3); }

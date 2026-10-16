@@ -1,0 +1,17 @@
+/* Subscription card and its dialogs. Tokens only. */
+.gsa-billing-card .gsa-status { margin-bottom: var(--space-4); }
+.gsa-billing-note { margin-bottom: var(--space-3); font-size: var(--text-base); color: var(--color-fg-1); }
+.gsa-billing-note:empty { display: none; }
+.gsa-billing-note:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 2px; }
+.gsa-billing-note[data-tone="success"] { color: var(--color-success); }
+.gsa-billing-note[data-tone="danger"] { color: var(--color-danger); }
+.gsa-billing-facts { margin: 0 0 var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+.gsa-billing-fact { display: grid; grid-template-columns: minmax(110px, 30%) 1fr; gap: var(--space-3); font-size: var(--text-base); }
+.gsa-billing-fact dt { color: var(--color-fg-3); }
+.gsa-billing-fact dd { margin: 0; color: var(--color-fg-1); overflow-wrap: anywhere; }
+.gsa-billing-card .gsa-slot { margin-bottom: var(--space-4); }
+.gsa-billing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+@media (max-width: 480px) {
+  .gsa-billing-fact { grid-template-columns: 1fr; gap: 0; }
+  .gsa-billing-actions .gsa-btn { flex: 1 1 100%; }
+}

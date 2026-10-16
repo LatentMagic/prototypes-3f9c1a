@@ -1,0 +1,41 @@
+/* Notifications (T7). Every class starts .gsa-push-. */
+
+/* ---- the ask ---- */
+.gsa-push-ask { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin: 0 0 var(--space-6); padding: var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border-2); border-radius: var(--radius-lg); }
+.gsa-push-ask-text { flex: 1 1 260px; margin: 0; font-size: var(--text-base); line-height: var(--leading-body); color: var(--color-fg-1); }
+.gsa-push-ask-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+@media (max-width: 479px) { .gsa-push-ask-actions { flex-direction: column; width: 100%; } .gsa-push-ask-actions .gsa-btn { width: 100%; } }
+
+/* ---- the card ---- */
+.gsa-push-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: var(--target-min); }
+.gsa-push-label { font-size: var(--text-base); font-weight: 500; color: var(--color-fg-1); overflow-wrap: anywhere; }
+.gsa-push-hint { margin: 0 0 var(--space-3); font-size: var(--text-sm); color: var(--color-fg-3); }
+.gsa-push-line { margin: 0; font-size: var(--text-base); line-height: var(--leading-body); color: var(--color-fg-2); }
+.gsa-push-events { list-style: none; margin: var(--space-3) 0 0; padding: var(--space-2) 0 0; border-top: 1px solid var(--color-border-2); }
+.gsa-push-failed { margin-bottom: var(--space-3); }
+
+/* ---- the switch ---- */
+.gsa-push-switch-slot { display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; color: var(--color-fg-3); }
+.gsa-push-switch { display: inline-flex; align-items: center; justify-content: center; min-width: var(--target-min); min-height: var(--target-min); padding: 0; background: none; border: 0; cursor: pointer; border-radius: var(--radius-md); }
+.gsa-push-switch:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); }
+.gsa-push-switch[aria-busy="true"] { cursor: progress; }
+.gsa-push-switch-track { display: block; box-sizing: border-box; width: var(--space-12); height: calc(var(--space-6) + var(--space-1)); padding: var(--space-1); background: var(--color-border-1); border-radius: var(--radius-pill); transition: background var(--duration-base) var(--ease-quiet); }
+.gsa-push-switch-thumb { display: block; width: var(--space-5); height: var(--space-5); background: var(--color-surface); border-radius: var(--radius-pill); transition: transform var(--duration-base) var(--ease-quiet); }
+.gsa-push-switch[aria-checked="true"] .gsa-push-switch-track { background: var(--color-primary); }
+.gsa-push-switch[aria-checked="true"] .gsa-push-switch-thumb { transform: translateX(calc(var(--space-12) - var(--space-5) - var(--space-2))); }
+@media (prefers-reduced-motion: reduce) { .gsa-push-switch-track, .gsa-push-switch-thumb { transition: none; } }
+
+/* ---- the device's own prompt and a notification: the device speaking, not the
+   product, so system font and plain light colours rather than tokens ---- */
+.gsa-push-os, .gsa-push-note { position: fixed; z-index: 300; top: 12px; left: 12px; width: 320px; max-width: calc(100% - 24px); box-sizing: border-box; padding: 14px 16px; font: 14px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1f1f1f; background: #ffffff; border: 1px solid #c7c7c7; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
+.gsa-push-note { left: auto; right: 12px; }
+.gsa-push-os-head, .gsa-push-note-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #5f5f5f; font-size: 13px; }
+.gsa-push-os-x { width: 28px; height: 28px; padding: 0; font: inherit; font-size: 20px; line-height: 1; color: #5f5f5f; background: none; border: 0; border-radius: 14px; cursor: pointer; }
+.gsa-push-os-x:hover { background: #ececec; }
+.gsa-push-os-x:focus-visible, .gsa-push-os-acts button:focus-visible { outline: 2px solid #0b57d0; outline-offset: 2px; }
+.gsa-push-os-what { display: flex; align-items: center; gap: 8px; margin: 10px 0 14px; font-size: 14px; color: #1f1f1f; }
+.gsa-push-os-acts { display: flex; justify-content: flex-end; gap: 8px; }
+.gsa-push-os-acts button { min-height: 32px; padding: 0 16px; font: inherit; font-weight: 500; color: #0b57d0; background: #ffffff; border: 1px solid #c7c7c7; border-radius: 16px; cursor: pointer; }
+.gsa-push-os-acts button.is-main { color: #ffffff; background: #0b57d0; border-color: #0b57d0; }
+.gsa-push-note-body { margin: 6px 0 0; font-size: 14px; font-weight: 600; }
+@media (max-width: 479px) { .gsa-push-os, .gsa-push-note { left: 12px; right: 12px; width: auto; max-width: none; } }
