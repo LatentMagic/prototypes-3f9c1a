@@ -101,3 +101,60 @@ The rest are builder calls that follow from ratified rules, or merge mechanics. 
 The owner asked for Daily Groups back as a free daily game. It's in `CPR_STAGE`, so it now appears on Discover (Free to play, All games), in Library, and everywhere else the staging reaches. What follows from that:
 - Home's Pass paragraph, built from the data, now opens "Three daily puzzles…", as the ratified rule says it should.
 - The Groups play box keeps canon's label and line, because the "A new … every day" pattern gives "A new groups every day". The wording is still to come.
+
+## Ten demo games, 2026-10-16: demo fill, not product intent
+
+The owner asked for the store at a believable size. These ten games are invented filler, unrelated to any real or planned game. **Remove them before merging.** All are Pass-only, with the pill wherever Pass-only games show it.
+
+| Name | Rhythm | Genre |
+|---|---|---|
+| Daily Cipher | Daily | Puzzle |
+| Daily Pin | Daily | Learning |
+| The Night Train | Weekly | Mystery |
+| Saltmarsh | Weekly | Adventure |
+| Heist | Weekly | Puzzle |
+| The Long Winter | In chapters | Adventure |
+| Far Side | In chapters | Learning |
+| The Court of Ash | Standalone | Mystery |
+| Low Tide | Standalone | Learning |
+| Clockwork | Standalone | Puzzle |
+
+- Data, covers, product pages, one chat each: `candidate/cand-pass-upsell-ratified-demo.jsx`. Covers are static `GS_ART` SVGs, like the Barrow's.
+- Hooks to remove with it: the script tag in `pass-upsell-ratified.html`; `Screen` and the route push in the bridge (main.jsx's screen switch can't name new routes); every line marked "demo" in the store and library overlays. Two small generic changes stay correct without them: `cprEditions` counts any game with chapters, and Library hides any Pass-only game from a free player, not only 36,000 Summers Ago.
+- Nobody has played them, so a Pass holder sees the edition games in New for you. A free player sees them on Discover only. Their Library page is canon's generic player page, with empty counts.
+- They also get a switch in Account → Notifications, which lists every game.
+
+## A Pass-ended player's games, 2026-10-16: proposed by the owner, not ratified
+
+The owner wants to see this working before he decides. The rule: once a Pass ends, each game's free first part is open again. On the Library page of a game they played with the Pass, an unplayed free first part shows the free card with Play; a used one shows "You stopped here. Everything you earned is still yours." with "Get the Pass again". A game they only played for free shows the free card, done. In Library, a game with a free first part never reads "Pass only" for them.
+
+Clicks: pill → States → "Pass ended: every case" opens Library. Then open:
+1. **Escape**: the free first-room card with Play. Row: "Your free room is ready".
+2. **Casebook**: "You stopped here…". Row: "Free case done".
+3. **The Barrow**: "You stopped here…", labelled CHAPTER 2. Row: "Free chapter done".
+4. **Delve**: the free first-scene card, done. Row: "Free scene done".
+
+- Staged in the store as `CPR_LAPSED` (`lapsed: 'every'`). The default Pass-ended player (state 7) keeps its cards. Its Library rows changed, because the "no Pass only" rule applies to every Pass-ended player: Escape now reads "Free room done", Casebook "Free case done", Delve "Free scene done". The owner accepted the rows applying to every Pass-ended player (2026-10-16); the rule itself is still his proposal.
+
+## Audit fixes, 2026-10-16
+
+Ratified by the owner:
+1. **A Pass holder's play box has no Pass line.** Open any product page in the Pass view (demo bar → Pass). The line under the button is gone.
+2. **Daily Groups needs the Pass.** Signed out or free: the Pass pill on its cards and tiles (Discover, Library), and the Pass-only box on its product page. Home's Pass paragraph now reads "Two daily puzzles…". In Library, a free or Pass-ended player's row reads "Pass only".
+3. **New for you holds only what the player can play.** Free view → Library: today's free dailies not yet played, and any free first part not started. Each one leaves once played; the row hides when empty. With the seed, a free player sees only the Barrow. Config → New editions → Most not played fills it. A Pass holder's row is unchanged.
+4. **"The Pass" is the only Pass link** on Daily Word, Daily Groups and Daily Mystery's Library pages: "Playing earlier words comes with the Pass." Free view → Library → Daily Word. About the Pass is gone.
+5. **"Your streak comes with the Pass." is off** every Library page: Free view → Library → Casebook, Delve or Escape. The frozen weeks stay.
+
+The main agent's calls, not ratified:
+
+6. Item 1 also holds under Config → Subscription → Payment failed and Ending. Both count as holding the Pass.
+7. A Pass holder's play box shows no label: no "FIRST CASE FREE", no "ONLY WITH THE PASS".
+8. The Pass-only box for a free or signed-out player keeps its label and Get the Pass, with no line under the button. Free view → 36,000 Summers Ago or Daily Groups.
+9. Errors fixed:
+   - "Everything else comes with the Pass." no longer shows under "No game matches": state 1, then search "zzz".
+   - "Your chapters" lists chapter 1 once it's finished: state 5, and the Pass-ended Barrow page.
+   - Config → The Barrow, chapter 1 → Finished works for a Pass holder: Pass view → Library → the Barrow. Its row reads "Finished".
+   - At phone width, Library card headings and lines wrap balanced, so none ends on one or two words alone. Checked by rule, not by eye at 390 px.
+
+Left alone: a Pass-ended player who opens Daily Groups from Library still sees the canon page with Play, as before. Should the Pass-only change reach that page?
+- The seed has no Pass-ended plays per game, so the streak and recent plays on these pages are still the shared seed's. For example, Delve still lists Pass-era scenes.

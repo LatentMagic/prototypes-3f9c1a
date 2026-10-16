@@ -61,7 +61,7 @@ const CprFirst = ({ id }) => {
         </div>
         {soon}
       </div>
-      {done && <CprPassEnd className="gs-muted cpr-wrap" text="Keep playing with the Pass." />}
+      {done && gs.view !== 'pass' && <CprPassEnd className="gs-muted cpr-wrap" text="Keep playing with the Pass." />}
       {done && f.weekly && !gsLapsed(gs) && <CprNextLink />}
     </section>
   );
@@ -69,6 +69,7 @@ const CprFirst = ({ id }) => {
 
 // ---- A player whose Pass has ended: one card on the game they last played, every visit (owner, 2026-10-16). ----
 const cprReturnLabel = (gs, id) => {
+  if (cprLapsedOf(id).at) return cprLapsedOf(id).at;
   if (id === 'barrow') return 'CHAPTER 1';
   const h = id === 'casebook' ? cbHist(gs)[0] : dvHist(gs)[0];
   return h ? 'WEEK OF ' + (id === 'casebook' ? h.week : h.date).toUpperCase() : 'YOUR LAST ' + GS_GAMES[id].ed[0].toUpperCase();
@@ -82,8 +83,8 @@ const CprReturn = ({ id }) => {
     </section>
   );
 };
-const cprNowCard = (gs, id) => (gsLapsed(gs) && id !== 'escape' ? <CprReturn id={id} /> : <CprFirst id={id} />);
-const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '');
+const cprNowCard = (gs, id) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <CprReturn id={id} /> : <CprFirst id={id} />; };
+const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '') + cprStore.get().lapsed;
 
 // ---- The library game pages for a free or Pass-ended player (canon's composition). ----
 const CprCbLibrary = () => {
@@ -154,30 +155,91 @@ const CprBwLibrary = () => {
       <div className="lb-lay">
         {gs.view === 'pass' ? <CprFirst id="barrow" /> : cprNowCard(gs, 'barrow')}
         <LbAch items={ach} badges={BW_BADGES} access={lbAccess(gs, 'barrow')} ed={GS_GAMES.barrow.ed} />
-        <LbRecent title="Your chapters" allLabel="See in History" empty="Your chapters appear here once you have played one." />
+        {st === 'done' ? <CprBwRecent /> : <LbRecent title="Your chapters" allLabel="See in History" empty="Your chapters appear here once you have played one." />}
       </div>
     </main>
   );
 };
 Object.assign(window.GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
 
+// The Barrow's chapters card once chapter 1 is finished: History holds no Barrow play, so the one row is drawn here.
+const CprBwRecent = () => {
+  const gs = useGs();
+  return (
+    <section className="lb-card lb-recentcard">
+      <div className="lb-sechead"><h2 className="mcp-t-card">Your chapters</h2></div>
+      <div className="lb-box"><DS.RowList label="Your chapters">
+        {rpRow({ key: 'bw1', title: BW_CH1.title, status: { kind: 'ok', label: 'Finished' }, when: '14 Oct', onOpen: () => gs.go('session', { id: 'cpr-barrow-ch1' }) })}
+      </DS.RowList></div>
+    </section>
+  );
+};
+
+// ---- The daily games' Library pages: canon's (app/gs-puzzles-library.jsx pzLibrary), with "the Pass" as the line's only link
+// (owner, 2026-10-16) in place of the separate About the Pass. The editions list stays where gs-editions.jsx puts it. ----
+const cprPzLibrary = (id) => () => {
+  const gs = useGs(); const r = gs.route;
+  if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
+  const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
+  const [recent] = c.plays;
+  const never = gs.review.never === id || gsFresh(gs);
+  const now = never ? null : lbNow(gs, id); const broken = id === 'word' && gs.review.broken; const none = !now || broken;
+  let run = [{ ...c.all[0], played: !none, done: !none && now.status.kind === 'ok' }, ...c.all.slice(1)];
+  if (never) run = run.map((x) => ({ ...x, played: false, ok: false, done: false }));
+  if (broken) run[1] = { ...run[1], played: true, ok: false, done: false, line: c.bad, sid: 'word-broken-first' };
+  run = run.map((x, i) => ({ ...x, failed: i === 0 ? !none && !never && now.status.kind === 'bad' : !!x.played && !x.done }));
+  const n = lbStreak(run);
+  const ach = (never ? c.ach.map((a) => ({ ...a, got: undefined })) : c.ach).map((a) => (a.of ? { ...a, have: Math.min(n, a.of) } : a));
+  return (
+    <main key={k} className="gs-wrap gs-main">
+      <LbHead id={id} />
+      <div className="lb-lay">
+        <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
+        <LbRun n={n} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
+        <LbAch items={ach} badges={c.badges} access="all" />
+        <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
+      </div>
+      {gs.view !== 'pass' && <CprPassEnd className="gs-muted cpr-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
+    </main>
+  );
+};
+['word', 'groups', 'mystery'].forEach((id) => { window.GS_LIBRARY[id] = cprPzLibrary(id); });
+
 // ---- Library rows: Escape and the Barrow as staged for a free player. ----
 const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
+// A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (owner's proposal, 2026-10-16).
+const CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', casebook: 'Your free case is ready', delve: 'Your free scene is ready' };
 const cprLibRow = (gs, k) => {
+  if (gsLapsed(gs) && (k === 'casebook' || k === 'delve')) {
+    if (cprFirstState(gs, k) === 'none') return cprRow(CPR_FREE_READY[k], null, '', 0);
+    const r = cprShipLibRow(gs, k); return { ...r, result: k === 'casebook' ? 'Free case done' : 'Free scene done', tone: 'ok' };
+  }
   if (gs.view !== 'pass' && (k === 'escape' || k === 'barrow')) {
     const st = cprFirstState(gs, k); const u = k === 'escape' ? 'room' : 'chapter';
-    if (gsLapsed(gs) && k === 'escape') return cprRow('Pass only', null, '28 Sep', new Date(2026, 8, 28).getTime());
-    if (st === 'none') return cprRow(k === 'escape' ? 'Your free room is ready' : 'Chapter 1 is ready', null, '', 0);
+    if (st === 'none') return cprRow(CPR_FREE_READY[k], null, '', 0);
     if (st === 'live') return cprRow('In progress', null, 'Today', 9e15);
     const d = k === 'escape' ? cprEscFirst().d : new Date(2026, 9, 14);
     return cprRow('Free ' + u + ' done', 'ok', d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }), d.getTime());
   }
+  if (GS_GAMES[k].demo) return cprRow(gs.view === 'pass' ? GS_LIB_READY[k] : 'Pass only', null, '', 0); // demo fill
+  if (k === 'groups' && gs.view !== 'pass') return cprRow('Pass only', null, '', 0);
+  if (k === 'barrow' && gs.view === 'pass' && cprFirstState(gs, k) === 'done') return cprRow('Finished', 'ok', '14 Oct', new Date(2026, 9, 14).getTime());
   return cprShipLibRow(gs, k);
 };
 
 // ---- Library (route `library`): canon's search, filters and rows, with New for you on top and Your games under it.
 // New for you: games with editions whose current edition you haven't played, as tiles in one sideways row. A standalone never
 // goes in it. Not shown when there is nothing new. A free account that has played nothing gets one Pass line under the list. ----
+// New for you (owner, 2026-10-16): only what the player can play now. A free player: today's free dailies not yet played and any
+// free first part not yet started. A Pass holder: as before.
+const cprNewFor = (gs, k) => {
+  if (!cprEditions(k) || cprLocked(gs, k)) return false;
+  if (gs.view === 'pass') return !cprPlayed(gs, k);
+  if (cprStore.get().newEds === 'most' && !gsFresh(gs)) return k !== 'word';
+  if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || !gsTodayPlayed(gs)[k];
+  if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
+  return false;
+};
 const CprLibrary = () => {
   const gs = useGs(); useCpr();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
@@ -188,10 +250,10 @@ const CprLibrary = () => {
   const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const rows = {}; CPR_SHOWN.forEach((k) => { rows[k] = cprLibRow(gs, k); });
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
-  const listed = CPR_SHOWN.filter((k) => lbAccess(gs, k) !== 'none' || lbPast(gs));
+  const listed = CPR_SHOWN.filter((k) => (lbAccess(gs, k) !== 'none' && !cprLocked(gs, k)) || lbPast(gs));
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || CPR_SHOWN.indexOf(a) - CPR_SHOWN.indexOf(b)));
-  const fresh = ids.filter((k) => cprEditions(k) && !cprPlayed(gs, k)); const mine = ids.filter((k) => !fresh.includes(k));
+  const fresh = ids.filter((k) => cprNewFor(gs, k)); const mine = ids.filter((k) => !fresh.includes(k));
   const row = (k) => { const g = GS_GAMES[k]; const me = rows[k]; return <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />; };
   const list = (ks) => <div className="lb-box"><DS.RowList label="Library">{ks.map(row)}</DS.RowList></div>;
   const tile = (k) => { const g = GS_GAMES[k]; return (
@@ -217,7 +279,7 @@ const CprLibrary = () => {
             {mine.length > 0 && <section className="cpr-libgrp"><h2 className="mcp-t-sec">Your games</h2>{list(mine)}</section>}
           </> : list(ids)}
         </div>
-        {newFree && <CprPassEnd className="gs-muted cpr-wrap" text="Everything else comes with the Pass." />}
+        {newFree && !wait && ids.length > 0 && <CprPassEnd className="gs-muted cpr-wrap" text="Everything else comes with the Pass." />}
       </div>
     </main>
   </>);

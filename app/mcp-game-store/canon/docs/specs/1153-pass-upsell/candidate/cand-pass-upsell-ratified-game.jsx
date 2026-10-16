@@ -7,10 +7,11 @@ const CprPlayBox = ({ id }) => {
   const mine = !paying ? cprBoxCopy(id) : null;
   const passOnly = CPR_STAGE[id] === 'pass' && !paying;
   const label = b.first && !paying ? b.button : 'Play';
-  const small = mine ? mine[1] : b.small;
+  // A Pass holder's box has no Pass line (owner, 2026-10-16) and no label; a Pass-only box keeps its label and Get the Pass, no line.
+  const small = paying || passOnly ? null : mine ? mine[1] : b.small;
   return (
     <DS.Card className="cpr-box" style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
-      <span className="gs-label">{mine ? mine[0] : b.label}</span>
+      {!paying && <span className="gs-label">{mine ? mine[0] : b.label}</span>}
       <h2 className="mcp-t-card">{b.heading}</h2>
       <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
       {passOnly

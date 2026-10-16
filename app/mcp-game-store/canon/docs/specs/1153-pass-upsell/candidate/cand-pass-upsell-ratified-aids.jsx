@@ -35,6 +35,9 @@ const CPR_STATES = [
   { id: 'pur-pass-ended', label: '7. Casebook, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
   { id: 'pur-pass-holder', label: '8. Library, Pass holder', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('library'); } },
   { id: 'pur-discover-free', label: '9. Discover, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
+  // Proposed by the owner 2026-10-16, not ratified: Escape (Pass weeks, room 1 unplayed), Casebook (first and later cases),
+  // the Barrow (chapter 1 done, chapter 2 begun), Delve (only the free first scene).
+  { id: 'pur-pass-ended-every', label: 'Pass ended: every case', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('library'); CandPUR.set({ lapsed: 'every' }); } },
 ];
 const cprShippedBuild = window.buildStates;
 const cprShippedResolve = window.kitResolveState;
@@ -58,11 +61,15 @@ const cprResolve = () => {
 };
 if (window.KIT_STATES) CPR_STATES.forEach(({ id, label }) => window.KIT_STATES.push({ id, label, group: CPR_GROUP }));
 
-// ---- QA walk-through.
-(window.KIT_QA || []).unshift({ key: 'pass-upsell-ratified', title: 'How the site mentions the Pass (candidate)',
+// ---- QA walk-through: this page's list holds one check only (owner, 2026-10-16). app/qa.jsx is untouched.
+if (window.KIT_QA) window.KIT_QA.length = 0;
+(window.KIT_QA || []).push({ key: 'pass-ended-every-case', title: 'Pass ended: every case (candidate)',
+  note: 'Library as a player whose Pass ended. Escape: free first-room card with Play. Casebook: “You stopped here.” The Barrow: “You stopped here.”, CHAPTER 2. Delve: free first-scene card, done. No Library row for these four reads “Pass only”.',
+  steps: ['pur-pass-ended-every'] });
+const CPR_OLD_QA = { key: 'pass-upsell-ratified', title: 'How the site mentions the Pass (candidate)',
   note: 'At 390px and desktop width. Home signed out: only 36,000 Summers Ago has the Pass pill, top right; no Free or First chips; Barrow card says CHAPTER 3; the Pass section is one paragraph, “the Pass” its only link. '
     + 'Pricing: the pay line under the price, right-aligned beside the button, left-aligned when it is full width. Product pages signed out and free: Daily Word, Casebook, the Barrow, 36,000 Summers Ago; no pay line in any box. '
     + 'Sign in: lands on Library. Then each state below. Discover: search and Filters as History; Free to play holds every free game, Daily Word included; no Play any time row; the Pass pill on 36,000 Summers Ago in All games; no Pass line.',
-  steps: CPR_STATES.map((s) => s.id) });
+  steps: CPR_STATES.map((s) => s.id) };
 
 Object.assign(window, { ConfigExtra: CprConfigExtra, buildStates: cprBuildStates, kitResolveState: cprResolve });

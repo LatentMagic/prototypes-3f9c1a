@@ -1280,6 +1280,13 @@
     .cpr-first.is-done .lb-acts { flex-wrap: wrap; gap: 4px 16px; }
     .cpr-first.is-done .lb-acts > .mcp-btn { flex: 1 1 100%; }
   }
+  /* "Your streak comes with the Pass." comes off every Library page (owner, 2026-10-16); the card keeps its frozen weeks. */
+  .lb-runcard.is-pass .lb-runbody > p.gs-small { display: none; }
+  /* At phone width no Library heading or line ends on one or two words alone. */
+  @container gs (max-width: 559px) {
+    .lb-lay .lb-card :is(h2, .lb-big), .cpr-return h2 { text-wrap: balance; }
+    .lb-lay .lb-card > p, .lb-lay .lb-card .gs-stack-xs > p { text-wrap: balance; }
+  }
 </style>
 </head>
 <body>
@@ -1338,6 +1345,7 @@
 <script type="text/babel" src="app/gs-editions.jsx"></script>
 <script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-bridge.jsx"></script>
 <script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-store.jsx"></script>
+<script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-demo.jsx"></script>
 <script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-home.jsx"></script>
 <script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-game.jsx"></script>
 <script type="text/babel" src="docs/specs/1153-pass-upsell/candidate/cand-pass-upsell-ratified-pass.jsx"></script>
