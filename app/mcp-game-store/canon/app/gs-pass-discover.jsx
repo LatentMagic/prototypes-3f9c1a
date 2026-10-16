@@ -1,6 +1,6 @@
 // [Platform] — Discover (route `games`), from "Discover, tidied", brought up to the 2026-10-16 decisions.
 // Re-publishes window.GsGames. Cards and picks are the re-published GsCard and GsPick (the Pass mark top right, no Free or First
-// chips); the wall is CprTile, canon's GsTile with the same mark (2026-10-16, owner asked for it). Proposals the owner made on 2026-10-16, not yet ratified: search and filters
+// chips); the wall is the shared GsTile with the same mark (2026-10-16, owner asked for it). Proposals the owner made on 2026-10-16, not yet ratified: search and filters
 // as History's (one search field and a Filters panel), and the selection below. Discover doesn't sell the Pass (owner, 2026-10-16):
 // only a game's product page and its Library page do, so it has no Pass line.
 
@@ -14,15 +14,6 @@ const cprSelection = (gs) => {
   const added = take(GS_ADDED.filter(cprEditions));
   const free = gs.view === 'pass' ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== 'pass');
   return { added, free };
-};
-const CprTile = ({ id, kind }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
-  return (
-    <DS.GameTile className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="square" />} pass={cprLocked(gs, id)}
-      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
-      kind={kind} />
-  );
 };
 
 // Search and filters live in the page shell, not the body, so they survive the body reloading in place; the shell writes them
@@ -53,7 +44,7 @@ const CprDiscoverBody = ({ f, setF }) => {
     </>}
     <section className="dc-sec">
       <h2 className="mcp-t-sec">All games</h2>
-      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <CprTile key={k} id={k} kind={gsKind(GS_GAMES[k].category)} />)}</div>
+      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} />)}</div>
         : <div className="lb-empty lb-empty-clear">
             <p className="gs-muted">{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p>
             <DS.Button variant="secondary" onClick={clearAll}>Clear all</DS.Button>

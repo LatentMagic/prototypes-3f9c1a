@@ -135,7 +135,7 @@ const GsSoonCard = ({ g }) => {
   );
 };
 // ---- A game in three forms, all from the design system (2026-10-13): GsCard (GameCard) in every card row,
-// GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall. Coming soon is GsSoonCard.
+// GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall and every tile row. Coming soon is GsSoonCard.
 // The whole card is the target and the hover surface: hover, focus and press play the art's motion (phone-snags-second-pass).
 // A blurb's last two words stay together, so its last line is never one word (LM-1110 product copy, 2026-10-13).
 const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
@@ -161,13 +161,15 @@ const GsPick = ({ id, label }) => {
       tags={<GsTagList tags={g.tags} ed={g.ed} />} />
   );
 };
-const GsTile = ({ id, kind }) => {
+// The one tile part (design system GameTile, 2026-10-16): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
+// the same way everywhere. `pass` draws the Pass mark; `page` opens that page of the game (Library opens 'record').
+const GsTile = ({ id, pass, page }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
   return (
     <DS.GameTile className="mcp-art-host gs-host"
-      art={<div ref={host}><GsArt art={g.art} shape="square" /></div>}
-      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
-      kind={kind} />
+      art={<div ref={host}><GsArt art={g.art} shape="square" /></div>} pass={!!pass}
+      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route, page ? { page } : undefined)}>{g.name}</button>}
+      kind={gsKind(g.category)} />
   );
 };
 // "More games" on a product page.

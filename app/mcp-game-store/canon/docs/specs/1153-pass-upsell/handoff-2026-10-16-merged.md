@@ -27,6 +27,12 @@ Done this session, in order:
 
 ## Recent changes
 
+- Seed (owner, 2026-10-16): a free player hasn't played today's Daily Word or Escape's first room, so New for you holds both by default. `freeNew` in `gs-pass-store.jsx`; Config → Free: Word and Escape → Played restores the old seed. States `word-free`, `games-free`, `free-puzzle-result` and `pur-word-done` set Played, since their labels say played today.
+
+- `app/gs-more-games.jsx`: the ten Pass-only games (Daily Cipher, Daily Pin, The Night Train, Saltmarsh, Heist, The Long Winter, Far Side, The Court of Ash, Low Tide, Clockwork). `main.jsx` routes them; `gs-pass-store.jsx` and `gs-pass-library.jsx` read their `added` flag.
+- `app/gs-pass-library.jsx`: New for you is GameTiles in a sideways CardRow (owner, 2026-10-16), square pictures with the Pass mark, as Discover's wall. The design system now has `CardRow kind="tiles"` at the wall's size; `_ds/` was refreshed to get it. Every tile is the one `GsTile` in `app/gs-parts.jsx` (props `pass`, `page`); Discover's `CprTile` and Library's own tile were folded into it.
+- `app/gs-pass-library.jsx`: Library rows' lead is the game's cover drawn as History's (`PhLead`), not `GpMini`. Canon's `GsLibrary` in `app/gs-discover.jsx` still has `GpMini`; the merged Library replaces it.
+
 - `app/gs-pass-store.jsx`, `-home.jsx`, `-game.jsx`, `-pricing.jsx`, `-library.jsx`, `-discover.jsx`, `-aids.jsx`: the candidate's overlays, renamed off `cand-*`. `cpr-*` classes became `gs-pu-*`; `CandPUR` became `window.GsPassStage`. Demo-game lines removed.
 - `index.html`: the "The Pass upsell (1153)" CSS block at the end of the head. The seven `gs-pass-*` scripts load after `gs-editions.jsx`, before `main.jsx`.
 - `app/main.jsx`: `signedIn` and `setDemoView` land on `library`, not `games` (this was the bridge's job).
@@ -60,6 +66,6 @@ Done this session, in order:
 
 ## Other Notes
 
-- The ten demo games are gone from the main build, as the candidate handoff required. They survive only in the archived `cand-pass-upsell-ratified-demo.jsx`.
+- **The ten games are in the main build** (owner, 2026-10-16), in `app/gs-more-games.jsx`. I first left them out on a builder's note calling them demo fill; that note was never ratified. Don't remove them again.
 - The owner accepted the candidate entire. That settles the items it held as proposals or builder calls: the Pass-ended rule, "A NEW WORD EVERY DAY", and the calls listed in the candidate handoff.
 - The states' ids kept their `pur-` prefix so any link handed out still opens them.

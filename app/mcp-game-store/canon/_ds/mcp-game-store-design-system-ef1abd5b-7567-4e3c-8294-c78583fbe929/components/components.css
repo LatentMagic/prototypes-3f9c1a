@@ -472,6 +472,10 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-crow.is-chat .mcp-crow-track{grid-auto-columns:min(340px,86%)}
 @container mcp-crow (min-width:560px){.mcp-crow.is-chat .mcp-crow-track{grid-auto-columns:clamp(300px,calc((100% - (var(--n,3) - 1) * var(--space-5)) / var(--n,3)),380px)}}
 .mcp-crow.is-chat .mcp-crow-track>*{scroll-snap-align:start}
+/* CardRow kind="tiles": GameTiles at the wall's size, so a tile looks the same in a row and in the wall. */
+.mcp-crow.is-tiles .mcp-crow-track{gap:var(--space-4);grid-auto-columns:clamp(140px,calc((100% - 2 * var(--space-4)) / 2.4),180px)}
+@container mcp-crow (min-width:560px){.mcp-crow.is-tiles .mcp-crow-track{grid-auto-columns:180px;gap:var(--space-5)}}
+.mcp-crow.is-tiles .mcp-crow-track>*{scroll-snap-align:start}
 .mcp-chatfig{margin:0;min-width:0;display:grid;gap:12px;align-content:start}
 .mcp-chatfig>.mcp-chat{width:100%!important}
 .mcp-chatfig>figcaption{font:400 13px/1.4 var(--font-text);color:var(--muted);text-wrap:pretty}

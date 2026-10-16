@@ -175,7 +175,7 @@ The owner accepted the candidate entire on 2026-10-16 ("integrate this candidate
 - **CSS**: the candidate's block is at the end of `index.html`'s head, titled "The Pass upsell (1153)". The rest of the head kept `index.html`'s, which was newer (the underline rules).
 - **Sign-in lands on Library**: now in `app/main.jsx` (`signedIn` and `setDemoView`). The bridge isn't carried over.
 - **States**: the ten candidate states are in `app/states.jsx`, group "Pass upsell", same ids. **QA**: the "Pass ended: every case" entry is in `app/qa.jsx`. **Config**: New editions and The Barrow, chapter 1, from `gs-pass-aids.jsx`.
-- **Removed, as the handoff required**: the ten demo games and their hooks. Their file stays in the archive.
+- **The ten games** went in later the same day (owner, 2026-10-16): `app/gs-more-games.jsx`, loaded after `gs-pass-store.jsx`; `main.jsx` adds `GS_MORE_IDS` to its route lists and `GsScreen` renders their pages. They were first left out because an earlier handoff called them demo fill; the owner never ratified that.
 - **Archived** to `docs/archive/1153-pass-upsell/candidate/`: the page, the bridge, the demo file and the candidate's original overlays. The launcher entry is off.
 - **Not touched**: the two Discover candidates and the playground. They load the shared `app/`, so they now inherit sign-in landing on Library.
 

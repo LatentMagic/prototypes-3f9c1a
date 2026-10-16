@@ -24,13 +24,14 @@ const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', 
 // status: none | active | failed | ending. hadPass: has had the Pass before.
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
 // Screens with their own frame (no shared top bar).
-const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt'];
+const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 // The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar, play pop-up or push host over them.
-const GS_LISTING = ['directory-claude', 'directory-chatgpt'];
+const GS_LISTING = ['directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
 const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
+GS_FOOTER.push(...(window.GS_MORE_IDS || []));
 const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
 // Of those, the pages that belong to the player: a signed-out visitor gets Sign in, then the page asked for.
 const GS_GUARDED = ['library', 'history', 'account', 'session'];
@@ -40,9 +41,11 @@ const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'retu
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
 const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow',
-  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt'];
+  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 
 const GsScreen = ({ name }) => {
+  const More = window.GS_MORE_SCREENS && window.GS_MORE_SCREENS[name]; // the ten games in app/gs-more-games.jsx
+  if (More) return <More />;
   switch (name) {
     case 'home': return <GsHome />;
     case 'signup': return <GsSignUp />;
@@ -80,7 +83,7 @@ const GsScreen = ({ name }) => {
 
 // A page loads as a page on arrival: the top bar and footer stand, the content waits.
 // Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
-const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow'];
+const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', ...(window.GS_MORE_IDS || [])];
 const GsArrival = ({ name, quick }) => {
   const gs = useGs(); const r = gs.route;
   const held = r.hold === 'page';

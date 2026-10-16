@@ -1187,6 +1187,8 @@
   .gs-pushask-x { margin-right: -12px; color: var(--muted); }
   .gs-pushask-in .gs-inlink { font-weight: 600; white-space: nowrap; }
   @media (hover: hover) { .gs-pushask-x:hover { color: var(--text); } }
+  /* phone width: the line is centred on the bar; the left pad matches the dismiss button and gap, so the centre is the bar's */
+  @container gs (max-width: 719px) { .gs-pushask-in > p { text-align: center; text-wrap: balance; padding-left: 44px; } }
   .gs-nt { display: grid; gap: 8px; }
   .gs-nt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; min-height: 48px; }
   .gs-nt-sep { border-top: 1px solid var(--line); padding-top: 12px; }
@@ -1342,6 +1344,7 @@
 <script type="text/babel" src="app/gs-history.jsx"></script>
 <script type="text/babel" src="app/gs-editions.jsx"></script>
 <script type="text/babel" src="app/gs-pass-store.jsx"></script>
+<script type="text/babel" src="app/gs-more-games.jsx"></script>
 <script type="text/babel" src="app/gs-pass-home.jsx"></script>
 <script type="text/babel" src="app/gs-pass-game.jsx"></script>
 <script type="text/babel" src="app/gs-pass-pricing.jsx"></script>

@@ -5,6 +5,7 @@
 - Pass-only games carry a Pass mark on their picture; Free and First chips are gone.
 - Signing in lands on Library; New for you holds only what you can play now.
 - A game's Library page has its own card for a free first part and for a player whose Pass has ended.
+- Ten more games, all Pass-only.
 
 Landed as a candidate build first; the candidate stays on the record, switched off.
 

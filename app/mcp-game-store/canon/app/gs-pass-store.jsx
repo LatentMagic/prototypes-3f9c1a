@@ -5,12 +5,17 @@
 // bwDone: the Barrow's chapter 1 is finished (canon has nobody playing it). newEds: 'seed' reads the seed's played data;
 // 'most' treats every game but Daily Word as having an unplayed current edition, so New for you can be seen full.
 // lapsed: which Pass-ended player is staged. 'seed' as before; 'every' covers the four cases of the owner's proposal (state "Pass ended: every case").
-const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed' };
+// freeNew (owner, 2026-10-16): the seeded free player hasn't played today's Daily Word or Escape's first room, so their New for you
+// holds two games. false: both played, as the seed had them.
+const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed', freeNew: true };
+const CPR_WORD_PLAY = GS_TODAY_PLAYED.free.word;
+const cprSyncSeed = (v) => { if (v.freeNew) delete GS_TODAY_PLAYED.free.word; else GS_TODAY_PLAYED.free.word = CPR_WORD_PLAY; };
 const cprStore = {
   v: { ...CPR_DEFAULTS }, subs: new Set(),
   get() { return this.v; },
-  set(p) { this.v = { ...this.v, ...p }; this.subs.forEach((f) => f()); },
+  set(p) { this.v = { ...this.v, ...p }; cprSyncSeed(this.v); this.subs.forEach((f) => f()); },
 };
+cprSyncSeed(cprStore.v);
 const useCpr = () => {
   const [, bump] = React.useState(0);
   React.useEffect(() => { const f = () => bump((n) => n + 1); cprStore.subs.add(f); return () => cprStore.subs.delete(f); }, []);
@@ -54,11 +59,13 @@ const cprFirstState = (gs, id) => {
   if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
   if (gsFresh(gs)) return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
+  if (id === 'escape' && cprStore.get().freeNew) return 'none';
   if (!lbWeekDone(gs)) return 'live';
   return 'done';
 };
 // Has this player played the game at all. The seed has no played flag per edition, so New for you reads this.
 const cprPlayed = (gs, k) => {
+  if (GS_GAMES[k].added) return false; // the ten games in gs-more-games.jsx: nobody has played them
   if (cprStore.get().newEds === 'most' && !gsFresh(gs)) return k === 'word';
   if (gsFresh(gs)) return false;
   if (k === 'barrow') { const s = cprFirstState(gs, 'barrow'); return s === 'live' || s === 'done'; }

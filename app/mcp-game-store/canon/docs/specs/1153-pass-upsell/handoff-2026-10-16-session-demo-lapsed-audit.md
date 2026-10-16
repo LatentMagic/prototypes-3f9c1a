@@ -18,7 +18,7 @@ Everything before this session is background. The build's running record is `han
 
 ## Task(s)
 
-- **Ten demo games** (done). All Pass-only. They are demo fill, not product intent, and must be removed before merging. The list and the removal hooks are in the build handoff, under "Ten demo games".
+- **Ten demo games** (done). All Pass-only. Superseded 2026-10-16: the owner wants them in the main build (`app/gs-more-games.jsx`); the earlier note calling them demo fill to remove was never his. The list and the removal hooks are in the build handoff, under "Ten demo games".
 - **Pass-ended player's games** (done). The owner proposed it; it is not ratified. State "Pass ended: every case" stages four cases. The owner accepted in words that "never Pass only" applies to the rows of every Pass-ended player, state 7 included.
 - **Audit fixes, items 1 to 9** (done, unchecked by eye). Items 1 to 5 are ratified. Items 6 to 9 are the main agent's calls.
 - **QA list** (done, owner's ask). This page's QA list was cleared to one check, "Pass ended: every case". `app/qa.jsx` is untouched.
@@ -72,7 +72,6 @@ All in `docs/specs/1153-pass-upsell/candidate/`. Nothing in `app/` changed.
 1. Check each audit item with the clicks in the build handoff: Pass view, free view, Config → Subscription → Payment failed and Ending. Then check 390 px wrapping on the Pass-ended Casebook and Barrow pages.
 2. Open item for the owner's main agent, not the owner: a Pass-ended player who opens Daily Groups from Library still sees canon's page with Play.
 3. Before merging:
-   - Remove the demo fill: the file, its script tag, `Screen`, the route push and the lines marked "demo".
    - Decide whether the cleared QA list returns.
    - Archive both Discover candidates, per `skills/candidate-build`.
 

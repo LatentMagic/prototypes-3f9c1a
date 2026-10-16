@@ -1,6 +1,6 @@
 // [Platform] — Home, and the Pass mark on the game cards.
 // Re-publishes GsHome, GsCard / GsGameCard and GsPick. GsHome is canon's (app/gs-home.jsx) with the Pass section changed;
-// the hero, Available games, Coming soon and What's new are canon's. GsTile (Discover's wall) stays canon: no pill there.
+// the hero, Available games, Coming soon and What's new are canon's. GsTile (gs-parts.jsx) is the one tile, for the wall and tile rows.
 
 // The Pass mark (owner, 2026-10-16) is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
 // is set. Set for Pass-only games, for a player without the Pass.

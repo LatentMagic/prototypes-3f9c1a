@@ -13,6 +13,11 @@ const GsPassConfigRows = () => {
       </div>
       <div className="kit-config-hint">Most not played treats every daily but Daily Word as unplayed today. New for you still holds only what the player can play now.</div>
       <div className="kit-config-row">
+        <div className="kit-config-row-label">Free: Word and Escape</div>
+        <window.ConfigSeg value={v.freeNew ? 'new' : 'played'} onChange={(x) => GsPassStage.set({ freeNew: x === 'new' })} options={[{ value: 'new', label: 'Not played' }, { value: 'played', label: 'Played' }]} />
+      </div>
+      <div className="kit-config-hint">A free account's today's Daily Word and Escape's first room. Not played puts both in New for you.</div>
+      <div className="kit-config-row">
         <div className="kit-config-row-label">The Barrow, chapter 1</div>
         <window.ConfigSeg value={v.bwDone ? 'done' : 'none'} onChange={(x) => GsPassStage.set({ bwDone: x === 'done' })} options={[{ value: 'none', label: 'Not played' }, { value: 'done', label: 'Finished' }]} />
       </div>

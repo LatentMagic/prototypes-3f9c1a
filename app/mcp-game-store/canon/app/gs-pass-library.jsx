@@ -232,6 +232,7 @@ const cprLibRow = (gs, k) => {
     const d = k === 'escape' ? cprEscFirst().d : new Date(2026, 9, 14);
     return cprRow('Free ' + u + ' done', 'ok', d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }), d.getTime());
   }
+  if (GS_GAMES[k].added) return cprRow(gs.view === 'pass' ? GS_LIB_READY[k] : 'Pass only', null, '', 0);
   if (k === 'groups' && gs.view !== 'pass') return cprRow('Pass only', null, '', 0);
   if (k === 'barrow' && gs.view === 'pass' && cprFirstState(gs, k) === 'done') return cprRow('Finished', 'ok', '14 Oct', new Date(2026, 9, 14).getTime());
   return cprShipLibRow(gs, k);
@@ -264,12 +265,9 @@ const CprLibrary = () => {
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || CPR_SHOWN.indexOf(a) - CPR_SHOWN.indexOf(b)));
   const fresh = ids.filter((k) => cprNewFor(gs, k)); const mine = ids.filter((k) => !fresh.includes(k));
-  const row = (k) => { const g = GS_GAMES[k]; const me = rows[k]; return <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />; };
+  const row = (k) => { const g = GS_GAMES[k]; const me = rows[k]; return <DS.ListRow key={k} lead={<PhLead gid={k} />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />; };
   const list = (ks) => <div className="lb-box"><DS.RowList label="Library">{ks.map(row)}</DS.RowList></div>;
-  const tile = (k) => { const g = GS_GAMES[k]; return (
-    <DS.GameTile key={k} className="mcp-art-host" art={<GsArt art={g.art} shape="landscape" />}
-      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route, { page: 'record' })}>{g.name}</button>} kind={gsKind(g.category)} />
-  ); };
+  const tile = (k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} page="record" />;
   const empty = <div className="dc-empty" style={{ minWidth: 0 }}><p style={{ overflowWrap: 'anywhere' }}>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>;
   const newFree = gsFresh(gs) && gs.view === 'free';
   return (<>
