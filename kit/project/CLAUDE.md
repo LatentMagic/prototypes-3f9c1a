@@ -152,7 +152,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **Root** holds only what must be there: `index.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `skills/`, the durable docs, and whatever the product block lists as extra root files.
 - **`docs/`** holds durable docs only.
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the product's tracker, as the product block names it. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
-- **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
+- **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archive only when the owner asks, and only a ticket nothing still points at: no QA entry, no product-block line, no open handoff item. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
 </important>
 
 <important if="you are building, moving or archiving a playground, rig or candidate build, or editing playgrounds.html / playgrounds.json">
@@ -191,7 +191,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 </important>
 
 <important if="you or the user settle a decision that no upstream spec holds yet">
-- Record it in the task's handoff under `docs/specs/` (a decision, with the date and who ratified it), so it travels back to the repo. Do not keep it in a local rule list.
+- Record it in the task's handoff under `docs/specs/` (a decision, with the date and who ratified it), so it travels back to the repo. Do not keep it in a local rule list. A code comment may state a rule or decision the code keeps, reason included, but the handoff still records it, and the comment never cites the handoff's path (`ARCHITECTURE.md` § Conventions).
 </important>
 
 <important if="a way of working is worth reusing across sessions, or the user asks for a new skill">

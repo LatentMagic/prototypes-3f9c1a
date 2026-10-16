@@ -54,4 +54,5 @@ An entry may carry **`platform: 'app' | 'web'`**. An app-only state sets Config 
 - **No `const styles = {}`.** Name style objects after their component — collisions across files are silent and fatal.
 - **Container / presentation split**, focused components, split past ~200 lines. See `skills/frontend-ui-engineering/SKILL.md`.
 - **State** lives in `main.jsx` unless it is purely local chrome state (a drawer, a transition).
+- **Comments never cite a `docs/` path.** A comment may state what the code does and any rule or decision it keeps, reason included ("required before Terms ship"). It never points at a task folder or a handoff: those move when work is archived, and the pointer then leads nowhere.
 - **Prefix.** Everything the kit names carries `kit` / `KIT` (`KIT_STATES`, `kitResolveState`, `.kit-config-*`). `app/README.md` says the same.
