@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — Casebook's seed for its library page: 45 weeks of cases, newest first, plus its badges.
-// Titles, suspects and records are invented. From the option 16 playground (docs/specs/library-game-page/).
+// Titles, suspects and records are invented. From the option 16 playground.
 // Turn codes: F search found evidence · N search, nothing new · Q question · H evidence shown, story held · B lie exposed
 // ============================================================================
 const CB_POOL = {

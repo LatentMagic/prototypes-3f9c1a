@@ -2,7 +2,7 @@
 // [Platform] — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
 // A session in progress (s.live) has no Share and no Play again: one button carries it on in your AI.
 // A replay (s.again) has Share like a first play; its text carries the replay mark (gsReplayMark). It never changes the streak.
-// A session page is one play: it lists no other plays (docs/specs/replay-share/).
+// A session page is one play: it lists no other plays.
 // A 36,000 Summers Ago day has no result to share: Share carries the product page link only.
 // gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
 // ============================================================================
@@ -103,7 +103,7 @@ const GsSessionRecord = () => {
   const delve = s.kind === 'delve';
   // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
   // A game whose finished editions can't be played again (gsCanReplay) has no Play again, and so no Pass line in its place.
-  // Play until an edition is finished once, Play again after (ratified 2026-10-11, docs/specs/replay-share/).
+  // Play until an edition is finished once, Play again after (ratified 2026-10-11).
   const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null; const g = s.gid && GS_GAMES[s.gid];
   const needsPass = !!g && (ed ? edNeedsPass(gs, ed) : gs.view !== 'pass' && !g.free);
   const held = !!ed && !s.live && needsPass && gsCanReplay(s.gid); // an edition that needs the Pass: the line and button replace Play and Play again

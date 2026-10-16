@@ -2,7 +2,7 @@
 // Directory listings (PROTOTYPE REVIEW AID, not product UI). Droppable module.
 // Two full-screen mocks: MCP Games on the Claude connector directory and on the
 // ChatGPT plugins page, in each directory's own look (an exception to the design
-// law for these two routes only). Brief: docs/specs/directory-listings/.
+// law for these two routes only).
 // Absent ⇒ the two routes render nothing and the register group is not there.
 // ============================================================================
 const DL_ROUTES = ['directory-claude', 'directory-chatgpt'];

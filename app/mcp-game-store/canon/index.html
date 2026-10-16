@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/motion.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
-<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=row19e" />
+<link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=chat15" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -272,9 +272,14 @@
   .gs-foot { padding-top: 16px; border-top: 1px solid var(--line); }
   .gs-inlink { background: none; border: 0; padding: 0; font: inherit; color: var(--off-white); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; cursor: pointer; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
   .gs-small a { text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
-  .gs-inlink:active, .gs-legal-col a:active { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; }
-  .gs-ft-link:active, .gs-ft-mail:active, .gs-support:active, .gs-small a:active { text-decoration-color: currentColor; text-underline-offset: 6px; color: var(--text); }
-  @media (hover: hover) { .gs-inlink:hover, .gs-ft-mail:hover, .gs-support:hover, .gs-small a:hover, .gs-legal-col a:hover { text-decoration-color: currentColor; text-underline-offset: 6px; } .gs-inlink:hover { color: #fff; } }
+  /* One underline everywhere (design system, visual foundations: Underlines). Hover, focus and press: full strength, 6px below, text to white; a danger link stays red. */
+  .mcp-gtile-open { transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+  .gs-root a:is(:focus-visible, :active), .gs-inlink:is(:focus-visible, :active), .gs-ft-mail:is(:focus-visible, :active), .gs-support:is(:focus-visible, :active), .mcp-lnk:focus-visible, .mcp-gtile-open:is(:focus-visible, :active) { text-decoration-color: currentColor; text-underline-offset: 6px; }
+  .gs-root a:is(:focus-visible, :active), .gs-inlink:is(:focus-visible, :active), .gs-ft-mail:is(:focus-visible, :active), .gs-support:is(:focus-visible, :active), .mcp-lnk:not(.is-danger):focus-visible, .mcp-gtile-open:is(:focus-visible, :active) { color: #fff; }
+  @media (hover: hover) { .gs-root a:hover, .gs-inlink:hover, .gs-ft-mail:hover, .gs-support:hover, .mcp-gtile-open:hover { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; } }
+  .gs-ft-link:is(:focus-visible, :active) { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; }
+  @media (hover: hover) { .gs-ft-link:hover { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; } }
+  @media (prefers-reduced-motion: reduce) { a, .gs-ft-link, .gs-ft-mail, .gs-support, .mcp-lnk, .mcp-gtile-open { transition: none; } }
   .gs-pz-item, .gs-hrow, .lb-tile, .lb-achbtn, .dc-chips > button, .lb-choice > button, .gs-plan { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   .gs-plain { list-style: none; padding: 0; display: grid; }
   .gs-plain > li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--line); }
@@ -539,10 +544,8 @@
   /* footer */
   .gs-ft { padding: 0 0 24px; color: var(--muted); font: 500 13px/1.4 var(--font-text); }
   .gs-ft-h { margin: 0; font: 500 12px/1.2 var(--gs-mono); color: var(--text); text-transform: lowercase; }
-  .gs-ft-link { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; font: 500 13px/1.4 var(--font-text); color: var(--muted); cursor: pointer; text-align: left; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1px; transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
-  @media (hover: hover) { .gs-ft-link:hover { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; } }
-  .gs-ft-mail { color: var(--muted); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); text-underline-offset: 3px; font: 500 13px/1.4 var(--font-text); min-height: 44px; display: inline-flex; align-items: center; }
-  @media (hover: hover) { .gs-ft-mail:hover { color: var(--text); } }
+  .gs-ft-link { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; font: 500 13px/1.4 var(--font-text); color: var(--muted); cursor: pointer; text-align: left; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1.5px; transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+  .gs-ft-mail { color: var(--muted); text-decoration: underline; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); text-underline-offset: 4px; font: 500 13px/1.4 var(--font-text); min-height: 44px; display: inline-flex; align-items: center; }
   .gs-ft-copy { margin: 0; white-space: nowrap; color: var(--muted); }
   .gs-ft-wide { display: none; }
   .gs-ft-narrow { display: grid; gap: 12px; }
@@ -579,7 +582,7 @@
   .gs-legal-h2 { margin: 0; font: 700 20px/1.2 var(--font-heading); }
   .gs-legal-h3 { margin: 0; font: 600 16px/1.3 var(--font-text); }
   .gs-legal-col p { line-height: 1.65; }
-  .gs-legal-col a { color: var(--text); text-decoration-color: var(--off-white); text-decoration-color: color-mix(in srgb, var(--off-white) 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+  .gs-legal-col a { color: var(--text); text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
 
   /* not found */
   .gs-nf { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 72px; background: var(--page); }
@@ -619,7 +622,7 @@
   .gs-card-acts > .mcp-btn { width: 100%; }
   .gs-card-acts-pair { flex-direction: column-reverse; align-items: stretch; }
   .gs-done { font: 600 14px/1.3 var(--font-text); color: var(--text); }
-  .gs-support { font: 400 13px/1.4 var(--font-text); color: var(--muted); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+  .gs-support { font: 400 13px/1.4 var(--font-text); color: var(--muted); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
   .gs-root .gs-btn-danger-outline { color: var(--error); border-color: var(--error); }
   .gs-marker { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1.2 var(--font-text); }
   .gs-marker.is-bad { color: var(--error); }
@@ -1023,7 +1026,7 @@
   .gs-host .gs-tagbtn { position: relative; z-index: 2; }
   .gs-host .gs-titlebtn:focus-visible { outline: none; }
   .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
-  /* Motion art for Daily Word, Daily Mystery, Escape, Delve (described in docs/specs/game-art-motion-more/). Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
+  /* Motion art for Daily Word, Daily Mystery, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
   .mcp-art.is-wine { background: var(--cover-bg-wine); }
   .mcp-art.is-forest { background: var(--cover-bg-forest); }
   .gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }
@@ -1244,7 +1247,7 @@
   /* C1, C2: beside the plays card the achievements are one list, a row each, so no title wraps in a narrow column */
   @container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: minmax(0, 1fr); } }
   /* S10: the pitch heading wraps at the column's width, as the paragraph under it does */
-  /* SoonCard on a phone (owner, 2026-10-13; docs/specs/soon-card-phone/ option 2): below 480px the cover sits full width on top at 4:3, the text under it.
+  /* SoonCard on a phone (owner, 2026-10-13; soon-card-phone option 2): below 480px the cover sits full width on top at 4:3, the text under it.
      Local until SoonCard carries it upstream; then delete this rule. */
   @container gs (max-width: 479px) {
     .mcp-soon { grid-template-columns: minmax(0, 1fr); }
@@ -1278,7 +1281,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=row19e"></script>
+<script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=chat15"></script>
 
 <script type="text/babel" src="app/primitives.jsx"></script>
 <script type="text/babel" src="app/gs-data.jsx"></script>

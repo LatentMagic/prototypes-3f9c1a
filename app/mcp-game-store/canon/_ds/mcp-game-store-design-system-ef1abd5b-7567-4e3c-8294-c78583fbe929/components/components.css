@@ -311,6 +311,134 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;max-width:100%}
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
+.mcp-chat-body.is-auto{overflow:visible;-webkit-mask-image:none;mask-image:none}
+.mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
+
+/* Chat parts (components/chat/): what a game draws inside an AI turn. They sit on the chat's light ground in the system's own language:
+   square corners, Hanken and Bricolage (the host chat around them keeps its round bubbles and system type), ink and tone, status and cover colours.
+   Sized to the chat's text. Fenced parts (panel fill + edge) read as one unit. Buttons are one shape: a full-width row on the panel fill with a 1px edge.
+   A move is its words alone; going somewhere leads with an icon. Tile marks use the cover green and amber players already know. */
+.mcp-cb{--cb-ground:var(--c-bg,var(--off-white));--cb-ink:var(--c-fg,oklch(23% .01 95));--cb-ink2:var(--c-fg2,oklch(50% .01 95));--cb-soft:oklch(from var(--cb-ink) calc(l + .17) c h);--cb-tone:var(--c-me,oklch(from var(--off-white) calc(l - .055) c h));--cb-edge:var(--c-edge,oklch(from var(--off-white) calc(l - .075) c h));--cb-line:oklch(from var(--cb-ground) calc(l - .16) c h);--cb-panel:oklch(from var(--cb-ground) calc(l + .03) c h);--cb-band-ink:#0D0B09;margin:0;font:400 14px/1.4 var(--font-text);color:var(--cb-ink);min-width:0;max-width:100%;box-sizing:border-box;text-align:left}
+.mcp-cb *,.mcp-cb *::before,.mcp-cb *::after{box-sizing:border-box}
+.mcp-cb p,.mcp-cb ul,.mcp-cb dl,.mcp-cb dd{margin:0}
+.mcp-cb-fence{background:var(--cb-panel);border:1px solid var(--cb-edge)}
+.mcp-cb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mcp-cb-kind{font:600 12.5px/1.3 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-title{font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
+.mcp-cb-note{font-size:13px;line-height:1.35;color:var(--cb-ink2);text-wrap:pretty}
+.mcp-cb-card{display:grid;gap:12px;padding:14px 16px 16px;width:100%}
+/* TileGrid: the tile is 32px, smaller when a long row would not fit its turn; the letter is half the tile. Right place green, wrong place amber, not in it a flat tone */
+.mcp-cb-tiles{container-type:inline-size;width:100%}
+.mcp-cb-tiles-in{--t:min(32px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)));display:inline-grid;gap:4px}
+.mcp-cb-tiles-in.mcp-cb-fence{padding:6px}
+.mcp-cb-tiles-row{display:flex;gap:4px}
+.mcp-cb-tile{position:relative;width:var(--t);height:var(--t);display:grid;place-items:center;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:700 calc(var(--t) * .5)/1 var(--font-text);text-transform:uppercase;overflow:hidden}
+.mcp-cb-tile.is-filled{border:1.5px solid var(--cb-ink)}
+.mcp-cb-tile.is-hit{background:var(--cover-green);border-color:var(--cover-green);color:var(--success-on)}
+.mcp-cb-tile.is-near{background:var(--cover-amber);border-color:var(--cover-amber);color:var(--warning-on)}
+.mcp-cb-tile.is-miss{background:var(--cb-tone);border-color:var(--cb-tone);color:var(--cb-soft)}
+/* WordBoard */
+.mcp-cb-board{container-type:inline-size;display:grid;gap:4px;padding:6px;width:100%}
+.mcp-cb-chips{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:4px}
+.mcp-cb-chip{display:grid;place-items:center;min-height:34px;padding:2px;margin:0;border:1px solid var(--cb-edge);background:var(--cb-ground);color:var(--cb-ink);font:600 clamp(10.5px,3.6cqi,13px)/1.1 var(--font-text);text-transform:uppercase;text-align:center;hyphens:auto;overflow-wrap:anywhere;-webkit-tap-highlight-color:transparent}
+.mcp-cb-chip.is-picked{background:var(--cb-ink);border-color:var(--cb-ink);color:var(--cb-panel)}
+button.mcp-cb-chip{cursor:pointer;transition:transform var(--time-press) var(--ease)}button.mcp-cb-chip:active{transform:scale(.97)}
+.mcp-cb-band{display:grid;gap:1px;justify-items:center;text-align:center;padding:6px 8px;color:var(--cb-band-ink);font:600 clamp(10px,3.4cqi,13px)/1.25 var(--font-text)}
+.mcp-cb-band>b{font-weight:700}.mcp-cb-band>span{text-transform:uppercase;font-weight:500}
+.mcp-cb-band.is-amber{background:var(--cover-amber)}.mcp-cb-band.is-teal{background:var(--cover-teal)}.mcp-cb-band.is-orange{background:var(--cover-orange)}.mcp-cb-band.is-lilac{background:var(--cover-lilac)}
+/* ChoiceButtons and NavButtons: a stacked list of full-width rows, 42px tall with 6px between (a 44px+ target), never a ragged wrap.
+   Same shape for both; a move is its words, going somewhere leads with an icon. Picked fills ink; the rest go quiet. */
+.mcp-cb-choices,.mcp-cb-nav{display:grid;gap:6px;width:100%;max-width:26rem}
+.mcp-cb-nav.is-stack{max-width:none}
+.mcp-cb-choice,.mcp-cb-go{position:relative;display:flex;align-items:center;gap:10px;min-height:42px;padding:8px 14px;margin:0;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:600 14px/1.25 var(--font-text);text-align:left;text-decoration:none;text-wrap:pretty;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background-color var(--time-press) var(--ease)}
+.mcp-cb-choice::before,.mcp-cb-go::before{content:"";position:absolute;inset:-3px 0}
+.mcp-cb-choice.is-main,.mcp-cb-choice.is-picked{background:var(--cb-ink);border-color:var(--cb-ink);color:var(--cb-panel)}
+.mcp-cb-choice.is-spent{background:transparent;border-color:var(--cb-edge);color:var(--cb-ink2)}
+.mcp-cb-go-t{display:grid;gap:2px;min-width:0}.mcp-cb-go-t small{font:400 12.5px/1.25 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-go-out{margin-left:auto;flex:none;color:var(--cb-ink2)}
+.mcp-cb-go .mcp-ico,.mcp-cb-choice .mcp-ico{flex:none}
+:is(button,a):is(.mcp-cb-choice,.mcp-cb-go){cursor:pointer}
+:is(button,a):is(.mcp-cb-choice,.mcp-cb-go):active{background:var(--cb-tone);transform:scale(.985)}button.mcp-cb-choice.is-main:active{background:var(--cb-soft)}
+@media (hover:hover){:is(button,a):is(.mcp-cb-choice:not(.is-main),.mcp-cb-go):hover{background:color-mix(in srgb,var(--cb-tone) 60%,var(--cb-panel))}}
+:is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip,.mcp-cb-ent):focus-visible{outline:2px solid var(--cb-ink);outline-offset:2px}
+/* ConfirmCard: Cancel and Confirm side by side; stacked with Confirm on top when the card is narrow */
+.mcp-cb-confirm{container-type:inline-size}
+.mcp-cb-confirm>.mcp-cb-facts{border-block:1px solid var(--cb-edge);padding:10px 0;row-gap:6px}
+.mcp-cb-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px}.mcp-cb-pair>*{justify-content:center;text-align:center}
+@container (max-width:340px){.mcp-cb-pair{grid-template-columns:minmax(0,1fr)}.mcp-cb-pair>:last-child{order:-1}}
+.mcp-cb-q{font-size:15px;line-height:1.4;text-wrap:pretty}.mcp-cb-q b,.mcp-cb-clue b{font-weight:700}
+/* FactRows, StatRow, StatusTag */
+.mcp-cb-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:start;width:100%}
+.mcp-cb-facts.mcp-cb-fence{padding:8px 10px}
+.mcp-cb-facts>div{display:contents}
+.mcp-cb-facts dt{font:600 13px/1.35 var(--font-text);color:var(--cb-ink2)}.mcp-cb-facts dd{font-weight:600}
+.mcp-cb-stats{display:flex;flex-wrap:wrap;gap:6px 20px;width:100%}
+.mcp-cb-stat dt{font:600 12px/1.3 var(--font-text);color:var(--cb-ink2)}
+.mcp-cb-stat dd{font:700 17px/1.2 var(--font-heading);font-variant-numeric:tabular-nums}
+.mcp-cb-stats.is-grid{display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:4px}
+.mcp-cb-stats.is-grid .mcp-cb-stat{background:var(--cb-ground);border:1px solid var(--cb-edge);padding:6px 10px}
+.mcp-cb-status{display:inline-flex;align-items:center;height:22px;padding:0 8px;font:600 12px/1 var(--font-text);white-space:nowrap;border:1.5px solid transparent;flex:none}
+.mcp-cb-status.is-live{border-color:var(--cb-ink)}.mcp-cb-status.is-won{background:var(--success);color:var(--success-on)}.mcp-cb-status.is-lost{background:var(--error);color:var(--error-on)}.mcp-cb-status.is-warn{background:var(--warning);color:var(--warning-on)}.mcp-cb-status.is-idle{background:var(--cb-tone)}
+/* EntityCards */
+.mcp-cb-ents{display:grid;gap:6px;width:100%}
+.mcp-cb-ents-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,156px),1fr));gap:4px}
+.mcp-cb-ent{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;column-gap:8px;width:100%;height:100%;margin:0;padding:5px 8px 5px 5px;background:var(--cb-panel);border:1px solid var(--cb-edge);color:var(--cb-ink);font:inherit;text-align:left}
+.mcp-cb-ent:has(>.mcp-cb-ent-pic){grid-template-columns:28px minmax(0,1fr);padding-left:5px}.mcp-cb-ent:not(:has(>.mcp-cb-ent-pic)){padding:7px 10px}
+button.mcp-cb-ent{cursor:pointer}
+.mcp-cb-ent-pic{width:28px;height:28px;display:grid;place-items:center;overflow:hidden;font:700 11px/1 var(--font-text);color:var(--cb-band-ink);align-self:start}
+.mcp-cb-ent-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.mcp-cb-ent-pic.is-icon{background:var(--cb-tone);color:var(--cb-ink)}
+.mcp-cb-ent-pic.is-amber{background:var(--cover-amber)}.mcp-cb-ent-pic.is-teal{background:var(--cover-teal)}.mcp-cb-ent-pic.is-orange{background:var(--cover-orange)}.mcp-cb-ent-pic.is-lilac{background:var(--cover-lilac)}.mcp-cb-ent-pic.is-green{background:var(--cover-green)}.mcp-cb-ent-pic.is-cream{background:var(--cover-cream);outline:1px solid var(--cb-edge);outline-offset:-1px}
+.mcp-cb-ent-t{display:grid;gap:1px;min-width:0}.mcp-cb-ent-t b{font-weight:600;font-size:13.5px;line-height:1.2}.mcp-cb-ent-t small{font-size:12px;line-height:1.25;color:var(--cb-ink2)}
+.mcp-cb-ent:not(:has(small)) .mcp-cb-ent-pic{align-self:center}
+.mcp-cb-ent.is-out{background:transparent}.mcp-cb-ent.is-out b{text-decoration:line-through;color:var(--cb-ink2)}.mcp-cb-ent.is-out .mcp-cb-ent-pic{opacity:.45}
+.mcp-cb-ent.is-picked{border-color:var(--cb-ink);outline:1px solid var(--cb-ink);outline-offset:-2px}
+/* ClueCards: one notebook card. A section per kind: its name and count, then each fact on its own ruled line. New facts are tinted with a New mark at the end */
+.mcp-cb-clues{display:grid;width:100%;padding:2px 0}
+.mcp-cb-clue{display:grid;padding:10px 14px 6px}
+.mcp-cb-clue+.mcp-cb-clue{border-top:1px solid var(--cb-edge)}
+.mcp-cb-clue-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:4px}
+.mcp-cb-clue-h .mcp-cb-kind{color:var(--cb-ink);font-weight:700}
+.mcp-cb-clue-n{font:600 12px/1 var(--font-text);color:var(--cb-ink2);font-variant-numeric:tabular-nums}
+.mcp-cb-clue ul{list-style:none;padding:0;display:grid}
+.mcp-cb-clue li{display:grid;grid-template-columns:6px minmax(0,1fr) auto;align-items:baseline;column-gap:10px;padding:7px 0;font-size:14px;line-height:1.4;text-wrap:pretty}
+.mcp-cb-clue li::before{content:"";width:6px;height:6px;background:var(--cb-line);transform:translateY(-1px)}
+.mcp-cb-clue li+li{border-top:1px solid color-mix(in srgb,var(--cb-edge) 70%,transparent)}
+.mcp-cb-clue li.is-new{margin:0 -8px;padding-inline:8px;background:color-mix(in srgb,var(--cb-tone) 55%,var(--cb-panel))}
+.mcp-cb-clue li.is-new::before{background:var(--cb-ink)}
+.mcp-cb-new{display:inline-flex;align-items:center;height:18px;padding:0 6px;background:var(--cb-ink);color:var(--cb-panel);font:600 11px/1 var(--font-text);align-self:center}
+/* ResultCard */
+.mcp-cb-result-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
+/* Track */
+.mcp-cb-track{display:grid;gap:6px;width:100%}
+.mcp-cb-track-row{display:grid;grid-template-columns:5.5em minmax(0,max-content) auto;justify-content:start;column-gap:10px;align-items:center;--cb-on:var(--cb-ink)}
+.mcp-cb-track-row.is-threat{--cb-on:oklch(from var(--error) calc(l - .14) c h)}.mcp-cb-track-row.is-health{--cb-on:oklch(from var(--success) calc(l - .22) c h)}
+.mcp-cb-track-l{font:600 13px/1.3 var(--font-text)}.mcp-cb-track-n{font-size:12px;color:var(--cb-ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcp-cb-steps{display:flex;gap:3px;min-width:0}
+.mcp-cb-steps>i{flex:0 1 18px;width:18px;min-width:5px;height:10px;border:1px solid var(--cb-line)}.mcp-cb-steps>i.is-on{background:var(--cb-on);border-color:var(--cb-on)}
+.mcp-cb-bar{display:block;height:8px;background:var(--cb-tone);width:200px;max-width:100%}.mcp-cb-bar>i{display:block;height:100%;background:var(--cb-on)}
+/* RollLine */
+.mcp-cb-roll{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;position:relative}
+.mcp-cb-roll-in{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-variant-numeric:tabular-nums}
+.mcp-cb-roll-in>b{font-weight:600}.mcp-cb-die{font-size:12px;font-weight:600;color:var(--cb-ink2)}
+.mcp-cb-pip{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 4px;border:1.5px solid var(--cb-ink);font-weight:700}
+.mcp-cb-roll-vs{color:var(--cb-ink2)}
+/* MenuRows */
+.mcp-cb-menu{display:grid;width:100%}
+.mcp-cb-menu ul{list-style:none;padding:0}
+.mcp-cb-mrow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 10px}
+.mcp-cb-mrow>.mcp-cb-go{min-height:34px;padding:0 12px;gap:6px}.mcp-cb-mrow>.mcp-cb-go::before{inset:-5px 0}
+.mcp-cb-mrow+.mcp-cb-mrow{border-top:1px solid var(--cb-edge)}
+.mcp-cb-mart{width:40px;height:40px;display:grid;place-items:center;overflow:hidden;align-self:center}
+.mcp-cb-mart>svg,.mcp-cb-mart>img{width:100%;height:100%;display:block;object-fit:cover}
+.mcp-cb-mart.is-icon{background:var(--cb-tone)}
+.mcp-cb-mtext{display:grid;gap:2px;min-width:0}.mcp-cb-mtext>b{font:700 15px/1.2 var(--font-heading);letter-spacing:-.01em}.mcp-cb-mtext>small{font-size:12.5px;line-height:1.3;color:var(--cb-ink2);text-wrap:pretty}
+.mcp-cb-mmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:3px;font-size:12px;color:var(--cb-ink2)}
+.mcp-cb-search{display:flex;align-items:center;gap:8px;margin:8px 10px 2px;padding:0 10px;min-height:40px;border:1px solid var(--cb-line);background:var(--cb-ground);color:var(--cb-ink2)}
+.mcp-cb-search:focus-within{outline:2px solid var(--cb-ink);outline-offset:1px}
+.mcp-cb-search input{flex:1;min-width:0;border:0;background:transparent;font:400 16px/1.2 var(--font-text);color:var(--cb-ink);outline:none;padding:0}
+.mcp-cb-search input::placeholder{color:var(--cb-ink2)}
+@media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
 
 /* CardRow. The heading line is its own row: title left, arrows right, both centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). The sentence runs under both. */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}

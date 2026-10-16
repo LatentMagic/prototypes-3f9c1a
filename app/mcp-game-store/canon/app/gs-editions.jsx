@@ -1,5 +1,5 @@
 // ============================================================================
-// [Platform] — a game's editions (game-editions-list option 2, head 2g; docs/specs/game-editions-list/).
+// [Platform] — a game's editions (game-editions-list option 2, head 2g).
 // Every game that releases editions (gsRhythm): "Every word / room / case / scene" under the library game page's title opens the list
 // (route { page: 'record', list: true }); each row opens the edition in a panel over the list (round 3), its prompt inside.
 // No route leads to one edition. The list is settled (owner, 2026-10-12); the panel is moved over from the playground, unratified.

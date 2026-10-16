@@ -39,10 +39,10 @@ const KIT_QA = [
     note: 'Each page: facts band, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
-KIT_QA.unshift({ key: 'iffy-decisions', title: 'Decisions, 11 October (docs/specs/iffy-decisions-2026-10-11/)',
+KIT_QA.unshift({ key: 'iffy-decisions', title: 'Decisions, 11 October',
   note: 'Casebook and Delve product pages: signed out and free read "Play the first case/scene", Pass reads "Play"; signed in drops "The first ... is free with an account." A played session page names its edition above the result. Sign up by Google or Apple: no code, straight to Your username (Config Device = New still gives Verify this device on sign-in). Share from a session page and a library game page: the same pop-up, a bottom sheet on a phone.',
   steps: ['sign-up', 'username-new-account', 'verify-email', 'sign-in-new-device-provider', 'reset-password-code', 'session-delve', 'history', 'library-casebook', 'library-delve'] });
-KIT_QA.unshift({ key: 'fixes', title: 'Fixes, 10 October (docs/specs/fixes/)',
+KIT_QA.unshift({ key: 'fixes', title: 'Fixes, 10 October',
   note: 'From History, open a row and press its back link: it returns to History, as left. Pass card: cancel, resume, switch and undo each move focus to the control that undoes them and are announced. Tab stays inside every open pop-up.',
   steps: ['history', 'session-delve-past', 'library-delve', 'library-casebook', 'library-mystery-never-played', 'sign-up', 'verify-email', 'not-found', 'pass-card-monthly', 'pass-card-failed-pending-switch', 'switch-sheet-yearly', 'delete-account-confirm', 'cancel-sheet', 'session-hunter', 'library-delve-no-pass', 'library', 'games-free', 'home', 'load-failed'] });
 KIT_QA.unshift({ key: 'free-and-pass', title: 'Free and the Pass (proposed, not ratified)',
@@ -71,23 +71,23 @@ KIT_QA.unshift({ key: 'walk-sweep', title: 'Walk sweep 2026-10-10 (not ratified)
     'library-word', 'library-word-in-progress', 'library-word-streak-broken', 'library-mystery-never-played', 'library-casebook-free-in-progress', 'library-delve-free-in-progress', 'library-list-free-in-progress', 'games-free',
     'library-casebook-pass-ended', 'library-delve-pass-ended', 'library-hunter-pass-ended',
     'free-puzzle-result', 'session-delve-past', 'session-hunter', 'session-casebook', 'history', 'home', 'not-found', 'not-found-signed-in'] });
-KIT_QA.unshift({ key: 'every-edition-playable', title: 'Every edition can be played (docs/specs/fixes/handoff-2026-10-12-every-edition-playable.md)',
+KIT_QA.unshift({ key: 'every-edition-playable', title: 'Every edition can be played',
   note: 'Each daily puzzle has "Every …" beside its name and the same list. An earlier word not played shows its prompt. A played word or case shows its result, says it was played once, and has no prompt, Copy or Play again. Check at 390 and 1280px.',
   steps: ['library-word-editions', 'edition-word-earlier', 'edition-word-done', 'edition-casebook-done', 'session-word-earlier', 'session-casebook', 'history'] });
-KIT_QA.unshift({ key: 'replay-share', title: 'A replay can be shared (docs/specs/replay-share/)',
+KIT_QA.unshift({ key: 'replay-share', title: 'A replay can be shared',
   note: 'A finished play of a game that can be replayed (Escape, Delve), first or replay, has Play again and Share; Casebook and the daily puzzles have Share only; a replay keeps its Replay chip. Copy ends the first line with "🔁 Replay" and keeps the product page link. A first play shares as before. No session page lists other plays; History still lists replays. Check at 390 and 1280px.',
   steps: ['session-replay', 'session-puzzle', 'session-escape', 'session-casebook', 'history'] });
-KIT_QA.unshift({ key: 'failed-on-strip', title: 'Failed on the streak strip (docs/specs/failed-vs-missed-strip/)',
+KIT_QA.unshift({ key: 'failed-on-strip', title: 'Failed on the streak strip',
   note: 'A failed day: the Not played outline with a cross; legend Completed / Failed / Not played. 36,000 Summers Ago keeps Played / Not played.',
   steps: ['library-word', 'library-word-streak-broken', 'library-word-in-progress', 'library-mystery-never-played', 'library-casebook', 'library-delve', 'library-casebook-pass-ended', 'library-delve-pass-ended'] });
-KIT_QA.unshift({ key: 'notifications', title: 'Notifications (docs/specs/notifications-2026-10-11/, not ratified)',
+KIT_QA.unshift({ key: 'notifications', title: 'Notifications (not ratified)',
   note: 'Card: second on Account, after the Pass card. With the all switch off nothing else changes. Undecided: the all switch raises the browser dialog, even after the banner was dismissed; allowed: it turns on with no dialog. Banner: Discover, Library, History only, signed in, permission undecided. Turn on notifications raises the dialog and the banner never returns, whatever the answer. × hides it on all three pages; Config Notifications moves the clock on (3, 7, then 30 days). Check at 320px and 1280px.',
   steps: ['notifications-undecided', 'notifications-on', 'notifications-off', 'notifications-turn-on-fails', 'notifications-blocked', 'notifications-ios-tab', 'notifications-unsupported',
     'push-banner-discover', 'push-banner-library', 'push-banner-history', 'push-permission-dialog', 'push-banner-dismissed', 'push-banner-back', 'games-signed-out'] });
-KIT_QA.unshift({ key: 'phone-snags-second-pass', title: 'Phone snags, second pass (docs/specs/phone-snags-second-pass/)',
+KIT_QA.unshift({ key: 'phone-snags-second-pass', title: 'Phone snags, second pass',
   note: 'On a phone: product pages have no edition card and show the cover small beside the title; a session page shows Replay or Play without scrolling; More games cards move on press and their art is 2:1; press and hold the home hero, a card, a button: nothing selects. The phone top bar shows Menu and a person icon. Account: Pass, Notifications, then Username. Check at 320, 390 and 1280px.',
   steps: ['home', 'word-signed-out', 'word-free', 'casebook-pass', 'session-puzzle', 'session-delve', 'account-email'] });
-KIT_QA.unshift({ key: 'final-audit-snags', title: 'Final audit snags (docs/specs/final-audit-snags/)',
+KIT_QA.unshift({ key: 'final-audit-snags', title: 'Final audit snags',
   note: 'By hand: from Cancel sheet: payment failed, press Cancel subscription, then Library, 36,000 Summers Ago, then History: the Account card, the library page and History all say 6 October, the last day is 5 October, and History keeps every Pass-game play. Sign up by email (first and last name asked) as a new account: Library never played, History empty, Username changeable on 5 November. On Account, type the current username and press Update: it answers. Signed out (demo bar) on Library, History, Account or a session: Sign in, then that page. Notifications on: Games has Done; off: no count. Type a 70-letter word in each search; type 36000. Check at 390 and 1280px.',
   steps: ['pass-cancel-sheet-payment-failed', 'pass-ended-today', 'library-hunter-pass-ended-today', 'history-pass-ended-today', 'library-hunter-pass-ended', 'new-account-library', 'new-account-history', 'new-account-casebook-pass',
     'sign-up', 'account-email', 'account-username-wait', 'session-groups-unfinished', 'session-delve-unfinished', 'history-unfinished',

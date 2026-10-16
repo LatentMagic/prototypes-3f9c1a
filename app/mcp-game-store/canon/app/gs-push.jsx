@@ -1,5 +1,5 @@
 // ============================================================================
-// [Platform] — push notifications (docs/specs/notifications-2026-10-11/). A droppable module:
+// [Platform] — push notifications. A droppable module:
 // main.jsx, gs-account.jsx, gs-discover.jsx and gs-history.jsx read every export off `window`,
 // so deleting this file and its script tag removes the banner, the card and the browser dialog.
 //

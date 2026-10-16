@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"33f766ec48bc","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"dc8ca13c049f","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"061ed89c27ff","components/surfaces/GamePick.jsx":"5a1ada649278","components/surfaces/GameTile.jsx":"4ba7f7a3efd4","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"f80c773e4eb3","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"88b9d9bbb339","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"061ed89c27ff","components/surfaces/GamePick.jsx":"5a1ada649278","components/surfaces/GameTile.jsx":"4ba7f7a3efd4","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -7,6 +7,315 @@ const __ds_ns = (window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDes
 const __ds_scope = {};
 
 (__ds_ns.__errors = __ds_ns.__errors || []);
+
+// components/chat/StatRow.jsx
+try { (() => {
+// Small labelled counters. grid lays them out as boxed cells: two across, three when there are three (the Result card uses it).
+function StatRow({
+  items = [],
+  grid = false,
+  label,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("dl", {
+    className: ('mcp-cb mcp-cb-stats' + (grid ? ' is-grid' : '') + ' ' + className).trim(),
+    "aria-label": label,
+    style: grid ? {
+      '--cols': items.length === 3 ? 3 : Math.min(items.length, 2)
+    } : undefined
+  }, items.map((s, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "mcp-cb-stat"
+  }, /*#__PURE__*/React.createElement("dt", null, s.label), /*#__PURE__*/React.createElement("dd", null, s.value))));
+}
+Object.assign(__ds_scope, { StatRow });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/StatRow.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/StatusTag.jsx
+try { (() => {
+// One game status, one or two words. live: in progress. won: solved, escaped. lost: out of guesses. warn: a partial outcome. idle: not started.
+function StatusTag({
+  tone = 'live',
+  label,
+  children,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("span", {
+    className: ('mcp-cb mcp-cb-status is-' + tone + ' ' + className).trim()
+  }, label ?? children);
+}
+Object.assign(__ds_scope, { StatusTag });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/StatusTag.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/RollLine.jsx
+try { (() => {
+const TONE = {
+  hit: 'won',
+  weak: 'warn',
+  miss: 'lost'
+};
+const WORD = {
+  hit: 'Hit',
+  weak: 'Weak hit',
+  miss: 'Miss'
+};
+// One roll on one line: what was tried, the die, the bonus, the total against the number needed, and what happened.
+function RollLine({
+  label,
+  die = 'd20',
+  roll,
+  mod = 0,
+  total,
+  target,
+  result = 'hit',
+  outcome,
+  className = ''
+}) {
+  const sum = total ?? roll + mod;
+  const text = outcome || WORD[result] || '';
+  const say = (label ? label + ': ' : '') + die + ' rolled ' + roll + (mod ? (mod > 0 ? ' plus ' : ' minus ') + Math.abs(mod) : '') + ', ' + sum + (target != null ? ' against ' + target : '') + '. ' + text + '.';
+  return /*#__PURE__*/React.createElement("p", {
+    className: ('mcp-cb mcp-cb-roll ' + className).trim()
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-sr"
+  }, say), /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-roll-in",
+    "aria-hidden": "true"
+  }, label && /*#__PURE__*/React.createElement("b", null, label), /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-die"
+  }, die), /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-pip"
+  }, roll), mod !== 0 && /*#__PURE__*/React.createElement("span", null, mod > 0 ? '+ ' + mod : '− ' + Math.abs(mod)), /*#__PURE__*/React.createElement("span", null, "= ", /*#__PURE__*/React.createElement("b", null, sum)), target != null && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-roll-vs"
+  }, "vs ", target)), /*#__PURE__*/React.createElement(__ds_scope.StatusTag, {
+    tone: TONE[result] || 'idle',
+    className: "mcp-cb-roll-out"
+  }, text));
+}
+Object.assign(__ds_scope, { RollLine });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/RollLine.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/TileGrid.jsx
+try { (() => {
+const MARK = {
+  h: 'hit',
+  n: 'near',
+  x: 'miss'
+};
+const SAY = {
+  hit: 'right place',
+  near: 'in it, wrong place',
+  miss: 'not in it',
+  filled: ''
+};
+// Squares that hold a letter or nothing. Any length, any number of rows. Two or more rows are fenced as one unit.
+function TileGrid({
+  rows = [],
+  length,
+  count,
+  label,
+  className = ''
+}) {
+  const n = Math.max(1, length || Math.max(0, ...rows.map(r => (r.letters || '').length)));
+  const all = [...rows];
+  while (count && all.length < count) all.push({
+    letters: ''
+  });
+  const grid = all.map(r => Array.from({
+    length: n
+  }, (_, i) => {
+    const c = ((r.letters || '')[i] || ' ').trim();
+    const s = c ? MARK[(r.marks || '')[i]] || 'filled' : 'empty';
+    return {
+      c,
+      s
+    };
+  }));
+  const say = label || grid.map((row, i) => 'Row ' + (i + 1) + (row.every(x => x.s === 'empty') ? ' empty' : ': ' + row.map(x => x.c ? x.c + (SAY[x.s] ? ' ' + SAY[x.s] : '') : 'blank').join(', '))).join('. ');
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-tiles ' + className).trim(),
+    role: "img",
+    "aria-label": say
+  }, /*#__PURE__*/React.createElement("div", {
+    className: 'mcp-cb-tiles-in' + (all.length > 1 ? ' mcp-cb-fence' : ''),
+    style: {
+      '--n': n
+    }
+  }, grid.map((row, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "mcp-cb-tiles-row"
+  }, row.map((x, k) => /*#__PURE__*/React.createElement("span", {
+    key: k,
+    className: 'mcp-cb-tile is-' + x.s
+  }, x.c))))));
+}
+Object.assign(__ds_scope, { TileGrid });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/TileGrid.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/Track.jsx
+try { (() => {
+// Progress, danger or health as a row of steps (12 or fewer) or a short bar, with the count beside it. Several tracks line up.
+function Track({
+  items = [],
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-track ' + className).trim()
+  }, items.map((t, i) => {
+    const max = t.max || 6;
+    const v = Math.max(0, Math.min(max, t.value || 0));
+    const steps = t.steps ?? max <= 12;
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: 'mcp-cb-track-row is-' + (t.tone || 'progress'),
+      role: "meter",
+      "aria-label": t.label,
+      "aria-valuemin": 0,
+      "aria-valuemax": max,
+      "aria-valuenow": v,
+      "aria-valuetext": v + ' of ' + max
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-track-l"
+    }, t.label), steps ? /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-steps",
+      "aria-hidden": "true"
+    }, Array.from({
+      length: max
+    }, (_, k) => /*#__PURE__*/React.createElement("i", {
+      key: k,
+      className: k < v ? 'is-on' : undefined
+    }))) : /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-bar",
+      "aria-hidden": "true"
+    }, /*#__PURE__*/React.createElement("i", {
+      style: {
+        width: v / max * 100 + '%'
+      }
+    })), /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-track-n"
+    }, v, " of ", max));
+  }));
+}
+Object.assign(__ds_scope, { Track });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/Track.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/chat-press.js
+try { (() => {
+// A chat part's button: a real <button> when the part is live (it was given a handler), an inert span when it is a picture (ChatPicture passes no handlers).
+function cbPress(on, props, children) {
+  if (on) return React.createElement('button', {
+    type: 'button',
+    onClick: on,
+    ...props
+  }, children);
+  const {
+    ['aria-pressed']: _p,
+    disabled: _d,
+    ...rest
+  } = props;
+  return React.createElement('span', rest, children);
+}
+// **bold** in a string becomes <b>, so block data can stay plain JSON.
+function cbRich(t) {
+  if (typeof t !== 'string') return t;
+  return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React.createElement('b', {
+    key: i
+  }, s) : s);
+}
+Object.assign(__ds_scope, { cbPress, cbRich });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/chat-press.js", error: String((e && e.message) || e) }); }
+
+// components/chat/ClueCards.jsx
+try { (() => {
+// What the player knows: one notebook card, a section per kind with its name and count, each fact its own ruled line. A fact learnt this turn is tinted and marked New.
+function ClueCards({
+  groups = [],
+  newLabel = 'New',
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-clues mcp-cb-fence ' + className).trim()
+  }, groups.map((g, i) => /*#__PURE__*/React.createElement("section", {
+    key: i,
+    className: "mcp-cb-clue",
+    "aria-label": g.kind
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-clue-h"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-kind"
+  }, g.kind), /*#__PURE__*/React.createElement("span", {
+    className: "mcp-cb-clue-n"
+  }, g.facts.length)), /*#__PURE__*/React.createElement("ul", null, g.facts.map((f, k) => {
+    const t = typeof f === 'string' ? {
+      text: f
+    } : f;
+    return /*#__PURE__*/React.createElement("li", {
+      key: k,
+      className: t.new ? 'is-new' : undefined
+    }, /*#__PURE__*/React.createElement("span", null, __ds_scope.cbRich(t.text)), t.new && /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-new"
+    }, newLabel));
+  })))));
+}
+Object.assign(__ds_scope, { ClueCards });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/ClueCards.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/FactRows.jsx
+try { (() => {
+// Labelled facts, one per line: what was named, what the player carries, where the game stands.
+function FactRows({
+  items = [],
+  plain = false,
+  label,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("dl", {
+    className: ('mcp-cb mcp-cb-facts' + (plain ? '' : ' mcp-cb-fence') + ' ' + className).trim(),
+    "aria-label": label
+  }, items.map((f, i) => /*#__PURE__*/React.createElement("div", {
+    key: i
+  }, /*#__PURE__*/React.createElement("dt", null, f.label), /*#__PURE__*/React.createElement("dd", null, __ds_scope.cbRich(f.value)))));
+}
+Object.assign(__ds_scope, { FactRows });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/FactRows.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/WordBoard.jsx
+try { (() => {
+const TONES = ['amber', 'teal', 'orange', 'lilac'];
+// A grid of word chips the player picks from; each solved group becomes a band with its label, above the chips still in play.
+function WordBoard({
+  words = [],
+  solved = [],
+  picked = [],
+  cols = 4,
+  onPick,
+  label,
+  className = ''
+}) {
+  const on = new Set(picked.map(w => String(w).toUpperCase()));
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-fence mcp-cb-board ' + className).trim(),
+    style: {
+      '--cols': cols
+    },
+    role: "group",
+    "aria-label": label || 'Word board'
+  }, solved.map((g, i) => /*#__PURE__*/React.createElement("div", {
+    key: 's' + i,
+    className: 'mcp-cb-band is-' + (g.tone || TONES[i % 4])
+  }, /*#__PURE__*/React.createElement("b", null, g.label), /*#__PURE__*/React.createElement("span", null, g.words.join(', ')))), words.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "mcp-cb-chips"
+  }, words.map(w => {
+    const p = on.has(w.toUpperCase());
+    return __ds_scope.cbPress(onPick && (() => onPick(w)), {
+      key: w,
+      className: 'mcp-cb-chip' + (p ? ' is-picked' : ''),
+      'aria-pressed': p
+    }, w);
+  })));
+}
+Object.assign(__ds_scope, { WordBoard });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/WordBoard.jsx", error: String((e && e.message) || e) }); }
 
 // components/feedback/Loader.jsx
 try { (() => {
@@ -291,7 +600,10 @@ const UI = {
   error: '<g ' + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
   down: '<g ' + A + '><path d="M5 9L12 16L19 9"/></g>',
   send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
-  next: '<g ' + A + '><path d="M9 5L16 12L9 19"/></g>'
+  next: '<g ' + A + '><path d="M9 5L16 12L9 19"/></g>',
+  out: '<g ' + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+  share: '<g ' + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+  list: '<g ' + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
 };
 const ICON_NAMES = [...Object.keys(LINE), ...Object.keys(UI)];
 function Icon({
@@ -324,6 +636,288 @@ function Icon({
 }
 Object.assign(__ds_scope, { ICON_NAMES, Icon });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/media/Icon.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/ChoiceButtons.jsx
+try { (() => {
+// Moves offered at the foot of an AI turn. Each sends the move it names. Once one is taken (picked), it shows pressed and the rest are spent.
+function ChoiceButtons({
+  items = [],
+  picked,
+  onChoose,
+  label,
+  className = ''
+}) {
+  const done = picked != null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-choices ' + className).trim(),
+    role: "group",
+    "aria-label": label || 'Moves'
+  }, items.map((it, i) => {
+    const t = typeof it === 'string' ? it : it.label;
+    const p = done && (picked === i || picked === t);
+    return __ds_scope.cbPress(onChoose && !done && (() => onChoose(t, i)), {
+      key: i,
+      className: 'mcp-cb-choice' + (p ? ' is-picked' : done ? ' is-spent' : ''),
+      'aria-pressed': p
+    }, /*#__PURE__*/React.createElement(React.Fragment, null, p && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: "check",
+      size: 14
+    }), t));
+  }));
+}
+Object.assign(__ds_scope, { ChoiceButtons });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/ChoiceButtons.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/ConfirmCard.jsx
+try { (() => {
+// A final move asked back before it lands. Cancel first, Confirm second. answer shows which one the player gave.
+function ConfirmCard({
+  title,
+  question,
+  facts,
+  note,
+  confirm = 'Confirm',
+  cancel = 'Cancel',
+  answer,
+  onConfirm,
+  onCancel,
+  className = ''
+}) {
+  const done = answer === 'confirm' || answer === 'cancel';
+  const btn = (k, text, on, main) => {
+    const p = answer === k;
+    return __ds_scope.cbPress(!done && on, {
+      className: 'mcp-cb-choice' + (main ? ' is-main' : '') + (p ? ' is-picked' : done ? ' is-spent' : ''),
+      'aria-pressed': p
+    }, /*#__PURE__*/React.createElement(React.Fragment, null, p && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: "check",
+      size: 14
+    }), text));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm ' + className).trim(),
+    role: "group",
+    "aria-label": title || 'Confirm'
+  }, title && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-title"
+  }, title), question && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-q"
+  }, __ds_scope.cbRich(question)), facts && facts.length > 0 && /*#__PURE__*/React.createElement(__ds_scope.FactRows, {
+    items: facts,
+    plain: true
+  }), note && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-note"
+  }, note), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-cb-pair"
+  }, btn('cancel', cancel, onCancel, false), btn('confirm', confirm, onConfirm, true)));
+}
+Object.assign(__ds_scope, { ConfirmCard });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/ConfirmCard.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/EntityCards.jsx
+try { (() => {
+// Things in the game (suspects, items, rooms, characters): a name and one line, in a compact grid. A picture only when there is real art or an icon.
+function EntityCards({
+  title,
+  items = [],
+  onPick,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-ents ' + className).trim(),
+    role: "group",
+    "aria-label": title || 'In the game'
+  }, title && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-kind"
+  }, title), /*#__PURE__*/React.createElement("ul", {
+    className: "mcp-cb-ents-list"
+  }, items.map((it, i) => {
+    const pic = it.pic ? /*#__PURE__*/React.createElement("img", {
+      src: it.pic,
+      alt: ""
+    }) : it.icon ? /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: it.icon,
+      size: 16
+    }) : null;
+    return /*#__PURE__*/React.createElement("li", {
+      key: i
+    }, __ds_scope.cbPress(onPick && (() => onPick(it, i)), {
+      className: 'mcp-cb-ent' + (it.state ? ' is-' + it.state : ''),
+      'aria-pressed': it.state === 'picked'
+    }, /*#__PURE__*/React.createElement(React.Fragment, null, pic && /*#__PURE__*/React.createElement("span", {
+      className: 'mcp-cb-ent-pic ' + (it.pic ? 'is-' + (it.tone || 'cream') : 'is-icon'),
+      "aria-hidden": "true"
+    }, pic), /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-ent-t"
+    }, /*#__PURE__*/React.createElement("b", null, it.name), it.line && /*#__PURE__*/React.createElement("small", null, it.line)))));
+  })));
+}
+Object.assign(__ds_scope, { EntityCards });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/EntityCards.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/MenuRows.jsx
+try { (() => {
+const Art = ({
+  art,
+  icon
+}) => typeof art === 'string' ? art.trim().startsWith('<svg') ? /*#__PURE__*/React.createElement("span", {
+  className: "mcp-cb-mart",
+  "aria-hidden": "true",
+  dangerouslySetInnerHTML: {
+    __html: art
+  }
+}) : /*#__PURE__*/React.createElement("span", {
+  className: "mcp-cb-mart",
+  "aria-hidden": "true"
+}, /*#__PURE__*/React.createElement("img", {
+  src: art,
+  alt: ""
+})) : /*#__PURE__*/React.createElement("span", {
+  className: 'mcp-cb-mart' + (art ? '' : ' is-icon'),
+  "aria-hidden": "true"
+}, art || icon && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+  name: icon,
+  size: 18
+}));
+// One row per entry (a game, a saved run): art, name, one line, its status, and an action that goes there. The one part that may hold a text field.
+function MenuRows({
+  items = [],
+  search,
+  onGo,
+  onSearch,
+  label,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-fence mcp-cb-menu ' + className).trim(),
+    role: "group",
+    "aria-label": label || 'Menu'
+  }, search && /*#__PURE__*/React.createElement("label", {
+    className: "mcp-cb-search"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+    name: "search",
+    size: 16
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "search",
+    placeholder: search,
+    "aria-label": search,
+    readOnly: !onSearch,
+    tabIndex: onSearch ? undefined : -1,
+    onChange: onSearch ? e => onSearch(e.target.value) : undefined
+  })), /*#__PURE__*/React.createElement("ul", null, items.map((it, i) => {
+    const act = typeof it.action === 'string' ? {
+      label: it.action
+    } : it.action;
+    const st = typeof it.status === 'string' ? {
+      label: it.status,
+      tone: 'idle'
+    } : it.status;
+    return /*#__PURE__*/React.createElement("li", {
+      key: i,
+      className: "mcp-cb-mrow"
+    }, /*#__PURE__*/React.createElement(Art, {
+      art: it.art,
+      icon: it.icon
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-mtext"
+    }, /*#__PURE__*/React.createElement("b", null, it.name), it.line && /*#__PURE__*/React.createElement("small", null, it.line), (st || it.meta) && /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-mmeta"
+    }, st && /*#__PURE__*/React.createElement(__ds_scope.StatusTag, {
+      tone: st.tone || 'idle'
+    }, st.label), it.meta && /*#__PURE__*/React.createElement("span", null, it.meta))), act && __ds_scope.cbPress(onGo && (() => onGo(it, i)), {
+      className: 'mcp-cb-go'
+    }, /*#__PURE__*/React.createElement(React.Fragment, null, act.icon && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: act.icon,
+      size: 16
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-go-t"
+    }, act.label))));
+  })));
+}
+Object.assign(__ds_scope, { MenuRows });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/MenuRows.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/NavButtons.jsx
+try { (() => {
+// Buttons that go somewhere instead of playing: Show games, Back to games, Play again, Open in browser. out: leaves the chat, and says so.
+function NavButtons({
+  items = [],
+  stack = false,
+  onGo,
+  label,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-nav' + (stack ? ' is-stack' : '') + ' ' + className).trim(),
+    role: "group",
+    "aria-label": label || 'Go to'
+  }, items.map((it, i) => {
+    const cls = 'mcp-cb-go' + (it.out ? ' is-out' : '');
+    const body = /*#__PURE__*/React.createElement(React.Fragment, null, it.icon && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: it.icon,
+      size: 16
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "mcp-cb-go-t"
+    }, it.label, it.out && /*#__PURE__*/React.createElement("small", null, it.note || 'Opens in your browser')), it.out && /*#__PURE__*/React.createElement(__ds_scope.Icon, {
+      name: "out",
+      size: 16,
+      className: "mcp-cb-go-out"
+    }));
+    if (it.href) return /*#__PURE__*/React.createElement("a", {
+      key: i,
+      className: cls,
+      href: it.href,
+      target: it.out ? '_blank' : undefined,
+      rel: it.out ? 'noopener' : undefined
+    }, body);
+    return __ds_scope.cbPress(onGo && (() => onGo(it, i)), {
+      key: i,
+      className: cls
+    }, body);
+  }));
+}
+Object.assign(__ds_scope, { NavButtons });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/NavButtons.jsx", error: String((e && e.message) || e) }); }
+
+// components/chat/ResultCard.jsx
+try { (() => {
+// How a game ended, as one fenced unit you could screenshot: name and status, a line, two to four stats, then Share and Back.
+function ResultCard({
+  title,
+  status,
+  line,
+  stats = [],
+  actions = [],
+  onGo,
+  className = ''
+}) {
+  const st = typeof status === 'string' ? {
+    label: status,
+    tone: 'won'
+  } : status;
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result ' + className).trim(),
+    role: "group",
+    "aria-label": title || 'Result'
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-cb-result-head"
+  }, title && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-title"
+  }, title), st && /*#__PURE__*/React.createElement(__ds_scope.StatusTag, {
+    tone: st.tone || 'won'
+  }, st.label)), line && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-cb-note"
+  }, line), stats.length > 0 && /*#__PURE__*/React.createElement(__ds_scope.StatRow, {
+    items: stats,
+    grid: true
+  }), actions.length > 0 && /*#__PURE__*/React.createElement(__ds_scope.NavButtons, {
+    items: actions,
+    onGo: onGo,
+    stack: true
+  }));
+}
+Object.assign(__ds_scope, { ResultCard });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/chat/ResultCard.jsx", error: String((e && e.message) || e) }); }
 
 // components/feedback/StatusMessage.jsx
 try { (() => {
@@ -450,6 +1044,23 @@ Object.assign(__ds_scope, { TextField, SearchField });
 
 // components/media/ChatPicture.jsx
 try { (() => {
+// Block type -> chat part. A block is the part's props plus its type, so a turn stays plain data.
+const PARTS = {
+  tilegrid: __ds_scope.TileGrid,
+  wordboard: __ds_scope.WordBoard,
+  choices: __ds_scope.ChoiceButtons,
+  confirm: __ds_scope.ConfirmCard,
+  facts: __ds_scope.FactRows,
+  stats: __ds_scope.StatRow,
+  status: __ds_scope.StatusTag,
+  entities: __ds_scope.EntityCards,
+  clues: __ds_scope.ClueCards,
+  result: __ds_scope.ResultCard,
+  track: __ds_scope.Track,
+  roll: __ds_scope.RollLine,
+  nav: __ds_scope.NavButtons,
+  menu: __ds_scope.MenuRows
+};
 const WHO = {
   x: 'not in the word',
   y: 'in the word',
@@ -485,6 +1096,14 @@ function Block({
   if (b.type === 'mono') return /*#__PURE__*/React.createElement("pre", {
     className: "mcp-chat-mono"
   }, b.text);
+  const P = PARTS[b.type];
+  if (P) {
+    const {
+      type,
+      ...p
+    } = b;
+    return /*#__PURE__*/React.createElement(P, p);
+  }
   return null;
 }
 const paras = t => t == null ? [] : Array.isArray(t) ? t : [t];
@@ -565,8 +1184,8 @@ function ChatPicture({
     className: "mcp-chat-head"
   }, title), /*#__PURE__*/React.createElement("div", {
     ref: body,
-    className: "mcp-chat-body",
-    style: fill ? undefined : {
+    className: 'mcp-chat-body' + (height === 'auto' && !fill ? ' is-auto' : ''),
+    style: fill || height === 'auto' ? undefined : {
       height
     },
     tabIndex: 0,
@@ -590,7 +1209,10 @@ function ChatPicture({
     b: b
   })), paras(t.text).map((p, k) => /*#__PURE__*/React.createElement("p", {
     key: k
-  }, p))))), /*#__PURE__*/React.createElement("button", {
+  }, p)), (t.after || []).map((b, k) => /*#__PURE__*/React.createElement(Block, {
+    key: 'a' + k,
+    b: b
+  }))))), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "mcp-chat-up",
     hidden: !up,
@@ -6495,6 +7117,34 @@ __ds_ns.Button = __ds_scope.Button;
 __ds_ns.ButtonPair = __ds_scope.ButtonPair;
 
 __ds_ns.TextLink = __ds_scope.TextLink;
+
+__ds_ns.ChoiceButtons = __ds_scope.ChoiceButtons;
+
+__ds_ns.ClueCards = __ds_scope.ClueCards;
+
+__ds_ns.ConfirmCard = __ds_scope.ConfirmCard;
+
+__ds_ns.EntityCards = __ds_scope.EntityCards;
+
+__ds_ns.FactRows = __ds_scope.FactRows;
+
+__ds_ns.MenuRows = __ds_scope.MenuRows;
+
+__ds_ns.NavButtons = __ds_scope.NavButtons;
+
+__ds_ns.ResultCard = __ds_scope.ResultCard;
+
+__ds_ns.RollLine = __ds_scope.RollLine;
+
+__ds_ns.StatRow = __ds_scope.StatRow;
+
+__ds_ns.StatusTag = __ds_scope.StatusTag;
+
+__ds_ns.TileGrid = __ds_scope.TileGrid;
+
+__ds_ns.Track = __ds_scope.Track;
+
+__ds_ns.WordBoard = __ds_scope.WordBoard;
 
 __ds_ns.Loader = __ds_scope.Loader;
 

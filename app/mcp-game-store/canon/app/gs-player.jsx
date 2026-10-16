@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — each game's player page, its way in from the game
 // page. (The top bar's Library dropdown gave way to the Library page, app/gs-discover.jsx, 2026-10-09.) From delve-two-pages,
-// option 2 refined as A (docs/specs/delve-two-pages/handoff-2026-10-08-route-pick.md).
+// option 2 refined as A.
 // Ratified 2026-10-08: the top-bar item is "Library"; the player page is titled with the game's name alone.
 // The card reads "IN YOUR LIBRARY" and links "Go to your <game>"; its line is not decided yet.
 // ============================================================================

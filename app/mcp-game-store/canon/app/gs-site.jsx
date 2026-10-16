@@ -154,14 +154,14 @@ const GsFooter = () => {
 
 // ---- Legal pages: stand-ins. Real heading structure, no legal text.
 // REQUIRED when Terms are written: "Who we are" must carry Harness Intent Ltd's company number and
-// registered office (UK company website disclosure). Owner's call, 2026-10-15, docs/specs/contact/. Do not ship Terms without them.
+// registered office (UK company website disclosure). Owner's call, 2026-10-15. Do not ship Terms without them.
 const GS_LEGAL = {
   terms: { title: 'Terms and Conditions', sections: ['Who we are', 'What [Platform] is', 'Your account', 'Payments', 'When the Pass ends', 'Support', 'Your content', 'Ending things', 'Our liability', 'Changes to these terms', 'Governing law'] },
   privacy: { title: 'Privacy', opening: 'This page isn’t written yet.', sections: ['On the website', ['In the app', ['Your account', 'Your play history', 'Payments', 'App analytics', 'Server logs']], 'Where your data lives', 'Cookies and storage', 'Children', 'Keeping and deleting your data', 'Contact', 'Updates'] },
   refunds: { title: 'Refund Policy', sections: ['The short version', 'How refunds work', 'Your legal rights', 'Complaints'] },
 };
 const GS_UNWRITTEN = 'This section isn’t written yet.';
-// Contact page, ratified 2026-10-15 (docs/specs/contact/, option 2j).
+// Contact page, ratified 2026-10-15 (option 2j).
 const GsContact = () => (
   <main className="gs-wrap gs-legal">
     <article className="gs-legal-col">

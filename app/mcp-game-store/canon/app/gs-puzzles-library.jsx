@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape
-// (Daily Puzzles split into separate games, 2026-10-09; docs/specs/split-daily-puzzles/).
+// (Daily Puzzles split into separate games, 2026-10-09).
 // Each is the standard option 16 page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements and your plays. "All…" opens History filtered to the game.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.

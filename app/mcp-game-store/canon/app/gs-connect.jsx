@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — How it works (route 'connect'), and the play dialog every play control opens.
-// Ratified 2026-10-09 from docs/specs/connect-and-prompts/ (option 4's page, option 5's play dialog).
+// Ratified 2026-10-09 from connect-and-prompts (option 4's page, option 5's play dialog).
 // The store can't know whether your AI is connected, so nothing here shows it.
 // ============================================================================
 const GS_AI_LOGO = {

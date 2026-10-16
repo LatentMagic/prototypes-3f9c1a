@@ -227,7 +227,7 @@ const KIT_STATE_REGISTER = [
   { group: 'History', id: 'session-mystery-earlier', label: 'Session page, an earlier Daily Mystery played (no Play again)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: PZ.mystery.all[2].sid }); } },
   { group: 'History', id: 'history-hunter', label: 'History, 36,000 Summers Ago (no editions)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history', { game: 'hunter', from: 'hunter' }); } },
   { group: 'History', id: 'history-search-empty', label: 'History, a search that matches nothing', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history', { q: '#9999' }); } },
-  // Final audit snags (docs/specs/final-audit-snags/).
+  // Final audit snags.
   { group: 'Pass ended today', id: 'pass-ended-today', label: 'Account, the Pass ended today', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true, endedOn: GS_DAY0.getTime() }); c.go('account'); } },
   { group: 'Pass ended today', id: 'library-hunter-pass-ended-today', label: '36,000 Summers Ago in your library, the Pass ended today', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true, endedOn: GS_DAY0.getTime() }); c.go('hunter', { page: 'record' }); } },
   { group: 'Pass ended today', id: 'history-pass-ended-today', label: 'History, the Pass ended today (keeps every play)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true, endedOn: GS_DAY0.getTime() }); c.go('history'); } },

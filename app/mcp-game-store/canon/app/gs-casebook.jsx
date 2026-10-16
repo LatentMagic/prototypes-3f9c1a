@@ -1,6 +1,5 @@
 // ============================================================================
-// [Platform] — Casebook's library page, option 16 as ratified 2026-10-08
-// (docs/specs/library-game-page/handoff-2026-10-08-option-16-direction.md).
+// [Platform] — Casebook's library page, option 16 as ratified 2026-10-08.
 // This week beside the streak, then achievements beside your cases. "All cases" opens History filtered to Casebook;
 // a case opens its page, turns grouped by kind. Without the Pass: the first case in this week's place, and the streak card in the Pass holder's place (LbRunPass).
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.

@@ -2,7 +2,7 @@
 // [Platform] — Discover (route `games`) and Library (route `library`).
 // Discover: round 4 option 16 with Joe's changes, 2026-10-09: two picks, Free to play, the Pass band,
 // then All games with search and genre chips (Free last), no Pass tile in the wall, no Free tag on the tiles. Just added sits under the picks (Joe).
-// Library: option 13, rows with covers. Names Discover and Library. (docs/specs/games-and-library/)
+// Library: option 13, rows with covers. Names Discover and Library.
 // Loads after gs-player.jsx; replaces GsGames.
 // ============================================================================
 const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
@@ -128,7 +128,7 @@ const GsLibrary = () => {
   const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const rows = {}; GS_GAME_ORDER.forEach((k) => { rows[k] = gsLibRow(gs, k); });
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
-  // Listed only if the player can play some part of it now, or has held the Pass (owner, 2026-10-15; docs/specs/library-access/).
+  // Listed only if the player can play some part of it now, or has held the Pass (owner, 2026-10-15).
   const listed = GS_GAME_ORDER.filter((k) => lbAccess(gs, k) !== 'none' || lbPast(gs));
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || GS_GAME_ORDER.indexOf(a) - GS_GAME_ORDER.indexOf(b)));

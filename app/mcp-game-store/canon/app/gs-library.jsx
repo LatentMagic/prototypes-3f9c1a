@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — the library game page: the parts every game's page is built from.
-// From option 16, ratified 2026-10-08 (docs/specs/library-game-page/handoff-2026-10-08-option-16-direction.md).
+// From option 16, ratified 2026-10-08.
 // Order at every width: the now card, the run of editions, achievements, your plays. Two columns from 900px.
 // A game's own file holds its seed and its now card, and registers its page on window.GS_LIBRARY.
 // ============================================================================
@@ -163,7 +163,7 @@ const LbChoice = ({ label, value, opts, onPick }) => (
     <div className="lb-choice">{opts.map(([v, l]) => <button key={v} type="button" aria-pressed={value === v} onClick={() => onPick(v)}>{l}</button>)}</div>
   </div>
 );
-// Search and filters above a long list (History, Library), from docs/specs/filters-on-a-phone/ (option 1b, 2026-10-10).
+// Search and filters above a long list (History, Library), from filters-on-a-phone (option 1b, 2026-10-10).
 // Search stays on the page; every LbChoice moves into one Filters panel. The Game choice is a row that opens a search and
 // a list of games narrowed by Genre and Schedule, so the panel keeps its size however many games there are.
 // A seam: a playground may replace window.LbTools.

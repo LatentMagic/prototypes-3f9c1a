@@ -2,8 +2,8 @@
 // [Platform] — Home (screen 1) and Games (screen 6). The Pass page is in gs-billing.jsx.
 // ============================================================================
 // The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPicture) set inside it
-// and scrollable (home-product-hero option 4, ratified 2026-10-11; docs/specs/home-product-hero/). The field is from
-// home-hero option 9 (docs/specs/home-hero/).
+// and scrollable (home-product-hero option 4, ratified 2026-10-11). The field is from
+// home-hero option 9.
 const GsFeature = ({ id }) => <GsCard id={id} />;
 // NOTE (owner, 2026-10-13): Available games is NOT meant to hold every game. It is a small, chosen sample so a visitor gets a sense
 // of what exists; the whole library is on Discover. A game is added here only on the owner's approval: this row is what we highlight.

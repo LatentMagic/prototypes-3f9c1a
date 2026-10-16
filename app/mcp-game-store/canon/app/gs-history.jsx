@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — History (every play under its day; search and filters), the play rows, the edition helpers, and the library game page's plays card (LbRecent).
 // History lists every play under the day it was played. A game's editions are listed on its own page (app/gs-editions.jsx).
-// Ported from docs/specs/history/playground/ (pg-history.jsx, pg-replays.jsx). Loads after every library module.
+// Ported from the History playground (pg-history.jsx, pg-replays.jsx). Loads after every library module.
 // Seed: one play log built from the library pages' own seeds, plus replays. Every play opens a record that agrees with its row.
 // This edition's first play has two forms, finished and in progress (Config: This week, or today); in progress hides its replays.
 // ============================================================================
@@ -166,7 +166,7 @@ PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filte
   const s = id && GS_SESSIONS[id]; if (!s || s.__rp) return;
   s.__rp = true; s.phEd = q.ed; s.phFirst = !q.again; s.date = pzLong(q.at) + ', ' + phTime(q.at); if (q.again && !s.again) { s.again = true; s.figures = [<span className="rp-fig">Replay</span>, ...(s.figures || [])]; }
 }));
-// A session page is one play: it lists no other plays. Replays are found in History (docs/specs/replay-share/).
+// A session page is one play: it lists no other plays. Replays are found in History.
 const phLib = (gs, id) => gs.go(GS_GAMES[id].route, { page: 'record' });
 
 // ---- Parts ----
