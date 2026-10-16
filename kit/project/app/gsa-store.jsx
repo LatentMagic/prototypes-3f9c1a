@@ -259,7 +259,16 @@ const GsaStore = {
     const s = gsaState;
     if (s.who) return GsaStore.set({ session: 'signed-in' });
     const keys = Object.keys(s.accounts);
-    return GsaStore.signIn(keys.length ? keys[0] : 'sam');
+    const key = keys.length ? keys[0] : 'sam';
+    GsaStore.signIn(key);
+    const t = gsaState;
+    // A revived seed Sam is still the Owner and a member: put his row back.
+    if (key === 'sam' && !gsaIsMember(t)) {
+      const row = { who: 'sam', name: t.person.first + ' ' + t.person.last, email: t.person.email };
+      gsaCommit({ ...t, space: { ...t.space, members: t.space.members.concat([row]) } });
+    }
+    // Land off sign-in, as the Visitor-to-Signed-in path does.
+    gsaCommit(gsaResolve(gsaState, gsaState.route));
   },
   // Erase the signed-in person's own account and data (GSA-014), then sign out. Others are untouched.
   eraseAccount() {

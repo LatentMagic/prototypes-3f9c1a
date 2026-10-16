@@ -13,7 +13,7 @@ const GSA_STATES_INVITES = [
       // Alex has joined; Sam stays the Owner. Alex sees the not-Owner statement.
       c.as('alex');
       const st = c.store.get();
-      const me = { name: st.person.first + ' ' + st.person.last, email: st.person.email };
+      const me = { who: st.who, name: st.person.first + ' ' + st.person.last, email: st.person.email };
       c.set({ space: { role: 'member', members: st.space.members.concat([me]) } });
       c.go('invite');
     } },

@@ -172,6 +172,12 @@ function GsaPushHost() {
   const g = window.useGsa();
   const p = g.push || {};
   const [arrived, setArrived] = React.useState(null);
+  // A shown notification does not outlive the person, the session or a reseed.
+  const arrivedFor = React.useRef(g.epoch + '|' + g.session + '|' + g.who);
+  React.useEffect(() => {
+    const k = g.epoch + '|' + g.session + '|' + g.who;
+    if (arrivedFor.current !== k) { arrivedFor.current = k; setArrived(null); }
+  });
   const allow = React.useRef(null);
   const opener = React.useRef(null);
   const answerRef = React.useRef(null);
