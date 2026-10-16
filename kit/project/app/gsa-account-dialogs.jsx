@@ -67,10 +67,11 @@ const GSA_ACCOUNT_REVERIFY_WHY = {
 function GsaReverifyDialog({ route }) {
   const g = useGsa();
   const [n, setN] = React.useState(0);
-  return <GsaReverifyForm key={n} route={route} g={g} sent={n > 0} onNewCode={() => setN(n + 1)} />;
+  const [sent, setSent] = React.useState(false);
+  return <GsaReverifyForm key={n} route={route} g={g} sent={sent} onSubmitted={() => setSent(false)} onNewCode={() => { setN(n + 1); setSent(true); }} />;
 }
 
-function GsaReverifyForm({ route, g, sent, onNewCode }) {
+function GsaReverifyForm({ route, g, sent, onNewCode, onSubmitted }) {
   const usesPassword = g.person.method === 'password';
   const slowDelete = route.for === 'delete' && gsaAccountSubActive(g) && g.review.payProvider === 'slow';
   const [busy, run] = useGsaBusy(slowDelete ? 2500 : 900);
@@ -86,7 +87,8 @@ function GsaReverifyForm({ route, g, sent, onNewCode }) {
     else if (route.for === 'email') GsaStore.replace('account', { dialog: 'email-code', email: route.email });
     else gsaAccountDelete();
   };
-  const submit = form.submit(() => run(proceed));
+  const submitForm = form.submit(() => run(proceed));
+  const submit = (e) => { onSubmitted(); return submitForm(e); };
   return (
     <GsaDialog
       title="Prove it's you"

@@ -97,3 +97,6 @@
 
 /* status and statement lines never close on one word (pictured AI-app bubbles are excluded) */
 .gsa-status, .gsa-push-line, .gsa-people-page .gsa-text { text-wrap: balance; }
+
+/* The kit's Config pill (about 44px high, 16px from the bottom) floats over the end of the scroll; the footer's last line clears it. */
+.gsa-shell-footer > .gsa-shell-footer-in { padding-bottom: calc(var(--space-4) + 44px + var(--space-4)); }
