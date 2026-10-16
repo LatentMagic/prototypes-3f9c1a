@@ -1,0 +1,93 @@
+/* ============================================================================
+   Golden Sample App - base, page containers and the shared components
+   (app/gsa-ui.jsx). Tokens only. Per-area styles live in each area's own sheet.
+   ============================================================================ */
+
+/* ---- base ---- */
+.gsa-page, .gsa-page-wide, .gsa-card, .gsa-field, .gsa-btn, .gsa-dialog, .gsa-menu-list { font-family: var(--font-sans); color: var(--color-fg-1); line-height: var(--leading-body); }
+.gsa-page a, .gsa-page-wide a, .gsa-dialog a { color: var(--color-accent); cursor: pointer; }
+.gsa-heading { font-size: var(--text-2xl); line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.01em; margin: 0 0 var(--space-4); text-wrap: balance; }
+@media (max-width: 639px) { .gsa-heading { font-size: 22px; } }
+.gsa-text { font-size: var(--text-base); color: var(--color-fg-2); margin: 0 0 var(--space-4); text-wrap: pretty; }
+
+/* ---- page containers ---- */
+.gsa-page, .gsa-page-wide { width: 100%; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-12); }
+.gsa-page { max-width: var(--width-read); }
+.gsa-page-wide { max-width: var(--width-page); }
+@media (min-width: 640px) { .gsa-page, .gsa-page-wide { padding-left: var(--space-6); padding-right: var(--space-6); } }
+
+/* ---- button ---- */
+.gsa-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--target-min); min-width: var(--target-min); padding: 0 var(--space-5);
+  font-size: var(--text-base); font-weight: 500; text-decoration: none;
+  border: 1px solid transparent; border-radius: var(--radius-md); cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-quiet), border-color var(--duration-base) var(--ease-quiet);
+}
+.gsa-btn:focus-visible, .gsa-menu-item:focus-visible, .gsa-dialog:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: var(--ring-offset); }
+.gsa-btn[data-kind="primary"] { background: var(--color-primary); color: var(--color-on-primary); }
+.gsa-btn[data-kind="primary"]:hover { background: color-mix(in srgb, var(--color-primary) 85%, var(--color-surface)); }
+.gsa-btn[data-kind="secondary"] { background: var(--color-surface); color: var(--color-fg-1); border-color: var(--color-border-1); }
+.gsa-btn[data-kind="secondary"]:hover { background: var(--color-surface-sunken); }
+.gsa-btn[data-kind="destructive"] { background: var(--color-surface); color: var(--color-danger); border-color: var(--color-danger); }
+.gsa-btn[data-kind="destructive"]:hover { background: var(--color-danger-surface); }
+.gsa-btn[data-kind="link"] { background: transparent; color: var(--color-accent); padding: 0 var(--space-2); text-decoration: underline; }
+.gsa-btn[data-kind="link"]:hover { background: var(--color-surface-sunken); }
+.gsa-btn:disabled { cursor: default; opacity: 0.5; }
+.gsa-btn[aria-busy="true"] { cursor: progress; }
+.gsa-btn[aria-busy="true"]:disabled { opacity: 1; }
+
+/* ---- spinner ---- */
+.gsa-spin { display: inline-block; width: 16px; height: 16px; flex-shrink: 0; border: 2px solid currentColor; border-right-color: transparent; border-radius: var(--radius-pill); animation: gsa-spin 700ms linear infinite; }
+.gsa-spin-wrap { display: flex; justify-content: center; padding: var(--space-6); color: var(--color-fg-3); }
+.gsa-spin-wrap .gsa-spin { width: 24px; height: 24px; }
+@keyframes gsa-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .gsa-spin { animation-duration: 2.4s; } }
+
+/* ---- field ---- */
+.gsa-field { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-4); }
+.gsa-field-label { font-size: var(--text-base); font-weight: 500; color: var(--color-fg-1); }
+.gsa-field-input {
+  width: 100%; min-height: var(--target-min); padding: 0 var(--space-3);
+  font: 400 var(--text-md) var(--font-sans); color: var(--color-fg-1);
+  background: var(--color-surface); border: 1px solid var(--color-border-1); border-radius: var(--radius-md);
+}
+.gsa-field-input:focus-visible { outline: var(--ring-width) solid var(--color-accent); outline-offset: 0; border-color: var(--color-accent); }
+.gsa-field-input[aria-invalid="true"] { border-color: var(--color-danger); }
+.gsa-field-hint { font-size: var(--text-sm); color: var(--color-fg-3); }
+.gsa-field-error { font-size: var(--text-sm); color: var(--color-danger); }
+.gsa-code { font-family: var(--font-mono); font-size: var(--text-xl); letter-spacing: 0.4em; text-align: center; max-width: 240px; }
+
+/* ---- card ---- */
+.gsa-card { background: var(--color-surface); border: 1px solid var(--color-border-2); border-radius: var(--radius-lg); padding: var(--space-5); }
+.gsa-card-title { font-size: var(--text-lg); line-height: var(--leading-tight); font-weight: 600; margin: 0 0 var(--space-3); }
+
+/* ---- status line ---- */
+.gsa-status { font-size: var(--text-base); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border-2); border-radius: var(--radius-md); background: var(--color-surface-sunken); color: var(--color-fg-1); }
+.gsa-status[data-tone="success"] { background: var(--color-success-surface); border-color: var(--color-success); color: var(--color-success); }
+.gsa-status[data-tone="warning"] { background: var(--color-warning-surface); border-color: var(--color-warning); color: var(--color-warning); }
+.gsa-status[data-tone="danger"]  { background: var(--color-danger-surface);  border-color: var(--color-danger);  color: var(--color-danger); }
+
+/* ---- slot and pick ---- */
+.gsa-slot { border: 1px dashed var(--color-border-strong); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-base); color: var(--color-fg-2); }
+.gsa-slot-prefix { font-weight: 600; color: var(--color-fg-1); }
+.gsa-pick-tag { display: inline-block; margin-left: var(--space-2); padding: 1px var(--space-2); font-size: var(--text-xs); line-height: var(--leading-body); color: var(--color-fg-3); border: 1px solid var(--color-border-1); border-radius: var(--radius-pill); vertical-align: middle; }
+
+/* ---- load failed ---- */
+.gsa-load-failed { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); padding: var(--space-5); border: 1px solid var(--color-border-2); border-radius: var(--radius-lg); background: var(--color-surface); }
+.gsa-load-failed p { margin: 0; font-size: var(--text-base); color: var(--color-fg-1); }
+
+/* ---- dialog: centred at every width, never scrolls ---- */
+.gsa-dialog-scrim { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: var(--space-4); background: var(--color-scrim); }
+.gsa-dialog { width: 100%; max-width: 440px; max-height: 100%; overflow: hidden; background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); padding: var(--space-6); }
+.gsa-dialog-title { font-size: var(--text-xl); line-height: var(--leading-tight); font-weight: 600; margin: 0 0 var(--space-3); }
+.gsa-dialog-body { font-size: var(--text-base); color: var(--color-fg-2); }
+.gsa-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-6); }
+@media (max-width: 479px) { .gsa-dialog-actions { flex-direction: column-reverse; } .gsa-dialog-actions .gsa-btn { width: 100%; } }
+
+/* ---- menu: opens at its control ---- */
+.gsa-menu { position: relative; display: inline-block; }
+.gsa-menu-list { position: absolute; top: calc(100% + var(--space-1)); left: 0; z-index: 100; min-width: 200px; margin: 0; padding: var(--space-1); list-style: none; background: var(--color-surface); border: 1px solid var(--color-border-2); border-radius: var(--radius-md); box-shadow: var(--shadow-overlay); }
+.gsa-menu-list[data-align="end"] { left: auto; right: 0; }
+.gsa-menu-item { display: flex; align-items: center; width: 100%; min-height: var(--target-min); padding: 0 var(--space-3); font: 400 var(--text-base) var(--font-sans); color: var(--color-fg-1); text-align: left; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; }
+.gsa-menu-item:hover { background: var(--color-surface-sunken); }

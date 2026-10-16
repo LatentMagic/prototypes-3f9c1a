@@ -36,35 +36,38 @@
 // ============================================================================
 
 // ---- The stager library ------------------------------------------------------
-// What a `stage` function is handed: main.jsx's setters, plus the moves several
-// states share. This is the product's half of the file and grows with it.
-// TODO(product): replace with the product's own stagers, built on its seed.
+// What a `stage` function is handed: the store and the platform setter, plus the
+// moves several states share. Every state is a reseed, a few writes, then `go`.
 function kitStateContext(api) {
-  const reseed = () => api.setItems(api.seedItems.slice());
-  // Config's "Reset to seeded data".
-  // TODO(product): if the app persists state, clear it here too.
-  const reset = () => reseed();
-  return { ...api, reseed, reset };
+  const store = api.store;
+  const reseed = () => store.reset();
+  const reset = () => store.reset();
+  const set = (patch) => store.set(patch);
+  const go = (name, params) => store.go(name, params);
+  const as = (method) => store.signIn(method);
+  const visitor = () => store.set({ session: 'visitor' });
+  const sub = (status, extra) => store.set({ sub: { status, ...(extra || {}) } });
+  const setPlatform = (p) => api.setPlatform(p);
+  return { ...api, reseed, reset, set, go, as, visitor, sub, setPlatform };
 }
 
 // ---- THE REGISTER ----------------------------------------------------------
 // Order here does not matter: the palette and the index read alphabetically,
-// groups by title and states by label (see buildStates). Group titles are
-// plain strings; a new group is simply a new title.
+// groups by title and states by label (see buildStates). The three family files
+// each publish their entries; the two below are the interim pair until they land.
 const KIT_STATE_REGISTER = [
-  { group: 'Placeholder', id: 'empty', label: 'Nothing on the screen', stage: (c) => c.setItems([]) },
-  { group: 'Placeholder', id: 'with-items', label: 'The screen with items', stage: (c) => c.setItems(['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo']) },
+  { group: 'Home', id: 'queue', label: 'Home: the queue with Active and Done items', platform: 'web', stage: (c) => c.go('home') },
+  { group: 'Home', id: 'queue-empty', label: 'Home: the queue with nothing in it', platform: 'web', stage: (c) => { c.set({ items: [] }); c.go('home'); } },
+  ...(window.GSA_STATES_HOME || []),
+  ...(window.GSA_STATES_ACCOUNT || []),
+  ...(window.GSA_STATES_PEOPLE || []),
 ];
 
 // Notes, per group: how to exercise what a staged state
 // can't hold still — a search term, a sequence of taps. Each line names the
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
-const KIT_STATE_GROUP_NOTES = {
-  'Placeholder': [
-    'An example note. Both states restage the seed first, so each opens the same way whatever came before.',
-  ],
-};
+const KIT_STATE_GROUP_NOTES = {};
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 
 // The catalogue's own address. Not a state, so it is not in the register.
