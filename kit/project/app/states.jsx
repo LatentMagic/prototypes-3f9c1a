@@ -66,9 +66,9 @@ const KIT_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
-  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. alex@example.com signs in as Alex Chen.'],
+  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. alex@example.com signs in as Alex Chen. Each person keeps their own queue, Subscription, role and Notifications switch. A new account starts empty.'],
   'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
-  'Invitations': ['member@example.com is already a member.'],
+  'Invitations': ['Sam is the Owner. alex@example.com is not yet a member. member@example.com is already a member.'],
   'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons. Late payment arrives is the Payment provider taking the failed payment (GSA-020.AF-01).'],
   'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account re-seeds the prototype, so signing in again brings back the seed account (not modelled).'],
 };

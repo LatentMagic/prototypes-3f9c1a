@@ -32,8 +32,8 @@ function gsaView(s) {
 // ---- the invitation rules (S16) ---------------------------------------------
 function gsaInviteOutcome(s) {
   if (!s.review.inviteValid) return { name: 'invite-invalid' };
-  if (s.space.full) return { name: 'invite-full' };
   if (s.space.members.some((m) => m.email === s.person.email)) return { name: 'shared-space', notice: 'already-member' };
+  if (s.space.full) return { name: 'invite-full' };
   if (s.review.inviteMatch === 'other') return { name: 'invite-other-account' };
   return { name: 'shared-space', notice: 'joined' };
 }
@@ -103,7 +103,7 @@ function gsaResolve(s, requested) {
   if (requested.name === 'invite-link' && gsaView(s) === 'visitor') {
     next = { ...next, pending: { ...next.pending, invite: requested.invite || next.invite.id } };
   } else if (GSA_SIGNED_IN_ONLY.includes(requested.name) && gsaView(s) === 'visitor') {
-    next = { ...next, returnTo: requested };
+    next = { ...next, returnTo: gsaOmit(requested, ['dialog', 'for']) };
   }
   next = gsaJoin(next, r);
   return { ...next, route: r };
@@ -187,13 +187,30 @@ const GsaStore = {
     const landed = gsaLand(prev || { name: 'home' }, s);
     gsaCommit({ ...gsaJoin(s, landed), route: landed });
   },
-  signIn(who = 'sam') {
-    const person = GSA_PEOPLE[who] || GSA_PEOPLE.sam;
-    const prev = gsaState.person;
-    const patch = { session: 'signed-in', person: { ...person } };
-    // A different person on this device: the registration was the last person's.
-    if (prev && prev.email !== person.email) patch.push = { registered: false };
+  // who: 'sam' | 'alex' | 'new' ('new' takes account = { first, last, email }).
+  // Each person's queue, Subscription, role and Notifications switch is their own.
+  signIn(who = 'sam', account) {
+    const s = gsaState;
+    const key = who === 'new' ? 'new:' + ((account && account.email) || '') : who;
+    const patch = { session: 'signed-in' };
+    if (key !== s.who) {
+      const stash = { person: s.person, items: s.items, sub: s.sub, role: s.space.role, pushOn: s.push.on };
+      const acct = s.accounts[key] || gsaSeedAccount(key, account);
+      patch.accounts = { [s.who]: stash };
+      patch.who = key;
+      patch.person = { ...acct.person };
+      patch.items = acct.items;
+      patch.sub = { ...acct.sub };
+      patch.space = { role: acct.role };
+      patch.push = { on: acct.pushOn, registered: false };
+    }
     GsaStore.set(patch, { keepRoute: true });
+  },
+  // The person on file for 'sam' or 'alex': live when signed in as them, else stashed, else the seed.
+  personOf(who) {
+    const s = gsaState;
+    if (s.who === who) return s.person;
+    return (s.accounts[who] && s.accounts[who].person) || GSA_PEOPLE[who] || GSA_PEOPLE.sam;
   },
   signOut({ keepPending } = {}) {
     const s = gsaState;

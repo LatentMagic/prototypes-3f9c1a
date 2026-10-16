@@ -41,23 +41,50 @@ function gsaSeedItems() {
   return active.concat(done);
 }
 
-function gsaSeed() {
+// One account's own data: person, queue, Subscription, Owner/member role, Notifications switch.
+// key: 'sam', 'alex', or 'new:<email>' (an account made by sign-up; account = { first, last, email }).
+function gsaSeedAccount(key, account) {
+  if (key === 'sam') {
+    return {
+      person: { ...GSA_PEOPLE.sam }, items: gsaSeedItems(), role: 'owner', pushOn: false,
+      sub: {
+        status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
+        last4: '4242', billingEmail: GSA_PEOPLE.sam.email,
+      },
+    };
+  }
+  const person = key === 'alex'
+    ? { ...GSA_PEOPLE.alex }
+    : {
+      first: (account && account.first) || '', last: (account && account.last) || '',
+      email: (account && account.email) || String(key).replace(/^new:/, ''), method: 'password', enrolled: false,
+    };
   return {
+    person, items: [], role: 'none', pushOn: false,
+    sub: {
+      status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
+      last4: '4242', billingEmail: person.email,
+    },
+  };
+}
+
+function gsaSeed() {
+  const sam = gsaSeedAccount('sam');
+  return {
+    who: 'sam',
+    accounts: {},
     env: { platform: 'web', isMobile: false },
     route: { name: 'home' },
     returnTo: null,
     pending: {},
     session: 'signed-in',
-    person: { ...GSA_PEOPLE.sam },
-    items: gsaSeedItems(),
+    person: sam.person,
+    items: sam.items,
     queue: { load: 'ok', save: 'ok' },
     tiers: { payment: true, plans: true },
-    sub: {
-      status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
-      last4: '4242', billingEmail: GSA_PEOPLE.sam.email,
-    },
+    sub: sam.sub,
     space: {
-      role: 'owner', full: false,
+      role: sam.role, full: false,
       members: [
         { name: 'Sam Taylor', email: 'sam@example.com' },
         { name: 'Jo Rivera', email: 'member@example.com' },
@@ -66,7 +93,7 @@ function gsaSeed() {
     },
     invite: { id: 'a1b2c3', email: '' },
     push: {
-      channel: 'ok', perm: 'default', on: false, registered: false, asked: false, snoozes: 0, snoozeAt: null,
+      channel: 'ok', perm: 'default', on: sam.pushOn, registered: false, asked: false, snoozes: 0, snoozeAt: null,
       events: { 'event-one': true, 'event-two': true }, prompt: false, turning: false, failed: false,
     },
     review: {
@@ -81,5 +108,5 @@ function gsaSeed() {
 
 Object.assign(window, {
   GSA_DAY0, GSA_PEOPLE, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
-  GSA_EVENTS, GSA_AI_APPS, gsaSeed,
+  GSA_EVENTS, GSA_AI_APPS, gsaSeed, gsaSeedAccount,
 });
