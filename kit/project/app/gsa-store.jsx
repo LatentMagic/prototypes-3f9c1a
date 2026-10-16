@@ -109,14 +109,21 @@ function gsaResolve(s, requested) {
   return { ...next, route: r };
 }
 
+// Erase only the signed-in person's account and slice; every other account keeps its data.
+function gsaEraseAccount(s) {
+  const accounts = gsaOmit(s.accounts, [s.who]);
+  const members = s.space.members.filter((m) => m.email !== s.person.email);
+  return { ...s, who: null, accounts, space: { ...s.space, members, role: 'none' } };
+}
+
 function gsaWipe() {
-  const fresh = gsaSeed();
-  fresh.env = { ...gsaState.env };
-  fresh.session = 'visitor';
-  fresh.route = { name: 'sign-in' };
+  const erased = gsaEraseAccount(gsaState);
   gsaStack = [];
   gsaEpoch += 1;
-  gsaCommit(fresh);
+  gsaCommit({
+    ...erased, session: 'visitor', route: { name: 'sign-in' }, returnTo: null, pending: {},
+    review: { ...erased.review, deletedElsewhere: false },
+  });
 }
 
 function gsaEraseIfDeleted() {
@@ -194,9 +201,8 @@ const GsaStore = {
     const key = who === 'new' ? 'new:' + ((account && account.email) || '') : who;
     const patch = { session: 'signed-in' };
     if (key !== s.who) {
-      const stash = { person: s.person, items: s.items, sub: s.sub, role: s.space.role, pushOn: s.push.on };
       const acct = s.accounts[key] || gsaSeedAccount(key, account);
-      patch.accounts = { [s.who]: stash };
+      if (s.who) patch.accounts = { [s.who]: { person: s.person, items: s.items, sub: s.sub, role: s.space.role, pushOn: s.push.on } };
       patch.who = key;
       patch.person = { ...acct.person };
       patch.items = acct.items;
@@ -211,6 +217,31 @@ const GsaStore = {
     const s = gsaState;
     if (s.who === who) return s.person;
     return (s.accounts[who] && s.accounts[who].person) || GSA_PEOPLE[who] || GSA_PEOPLE.sam;
+  },
+  // The registry: the who ('sam', 'alex', 'new:<email>') whose address is `email`, or null. Live account first.
+  accountByEmail(email) {
+    const s = gsaState;
+    const want = String(email || '').trim().toLowerCase();
+    if (!want) return null;
+    if (s.who && s.person.email.toLowerCase() === want) return s.who;
+    const keys = Object.keys(s.accounts);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (s.accounts[keys[i]].person.email.toLowerCase() === want) return keys[i];
+    }
+    return null;
+  },
+  // True for any address on file (except the account exceptWho) and the demo address taken@example.com.
+  emailTaken(email, exceptWho) {
+    const want = String(email || '').trim().toLowerCase();
+    if (want === GSA_TAKEN_EMAIL) return true;
+    const who = GsaStore.accountByEmail(want);
+    return who !== null && who !== exceptWho;
+  },
+  // Erase the signed-in person's own account and data (GSA-014), then sign out. Others are untouched.
+  eraseAccount() {
+    if (!gsaState.who) return;
+    gsaCommit(gsaEraseAccount(gsaState));
+    GsaStore.signOut();
   },
   signOut({ keepPending } = {}) {
     const s = gsaState;

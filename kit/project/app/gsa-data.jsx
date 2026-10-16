@@ -18,6 +18,7 @@ const GSA_PLANS = {
 const GSA_SPACE_NAME = 'Slot: shared space';
 const GSA_SUPPORT = 'support@gsa.example';
 const GSA_MCP_ADDRESS = 'https://gsa.example/mcp';
+const GSA_TAKEN_EMAIL = 'taken@example.com';
 const GSA_APP_NAME = 'GSA';
 const GSA_EVENTS = ['event-one', 'event-two'];
 const GSA_AI_APPS = [
@@ -72,7 +73,7 @@ function gsaSeed() {
   const sam = gsaSeedAccount('sam');
   return {
     who: 'sam',
-    accounts: {},
+    accounts: { alex: gsaSeedAccount('alex') },
     env: { platform: 'web', isMobile: false },
     route: { name: 'home' },
     returnTo: null,
@@ -108,5 +109,5 @@ function gsaSeed() {
 
 Object.assign(window, {
   GSA_DAY0, GSA_PEOPLE, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
-  GSA_EVENTS, GSA_AI_APPS, gsaSeed, gsaSeedAccount,
+  GSA_EVENTS, GSA_AI_APPS, GSA_TAKEN_EMAIL, gsaSeed, gsaSeedAccount,
 });
