@@ -1,0 +1,16 @@
+// Playground only: the "Needs the Pass" block, action chosen by ?action=link|button (default link).
+const peAction = () => { try { return new URLSearchParams(window.location.search).get('action') === 'button' ? 'button' : 'link'; } catch (e) { return 'link'; } };
+const PeBlock = ({ label, heading, line, action, style }) => {
+  const gs = useGs(); const go = () => gs.go('pass');
+  return (
+    <section className="lb-card gs-pu-return pe-block" style={style}>
+      <div className="gs-stack-xs">
+        <span className="gs-label">{label}</span>
+        {heading && <h2 className="mcp-t-sec gs-pu-wrap">{heading}</h2>}
+        {line && <p>{line}</p>}
+      </div>
+      <div className="pe-act">{peAction() === 'button' ? <DS.Button variant="secondary" onClick={go}>{action}</DS.Button> : <DS.TextLink onClick={go}>{action}</DS.TextLink>}</div>
+    </section>
+  );
+};
+Object.assign(window, { PeBlock, peAction });

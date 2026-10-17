@@ -1,0 +1,9 @@
+:root{
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:36px;
+--radius:0;
+--touch-min:44px;--control-height:48px;
+--border-control-width:1.5px;
+/* Adaptive pop-up: below this width a pop-up is a bottom sheet, at and above a centred window */
+--bp-popup:640px;
+--popup-window-width:380px;
+}
