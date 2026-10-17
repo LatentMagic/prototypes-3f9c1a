@@ -29,7 +29,7 @@ A product's own droppable modules join this table as it adds them: a file the ap
 
 A ticket in the real build links to this prototype, so a reviewer has to be able to arrive at the state the ticket is about — a dormant account, a payment retrying — without knowing a click path.
 
-`app/states.jsx` is the **register**: one entry per staged state, `{ group, id, label, stage }`. The `id` is the state's address (`dormant-account`, `payment-retrying`); `stage` is the staging function. Everything else is derived from that one list and cannot drift from it (group notes are the one exception: `KIT_STATE_GROUP_NOTES`, keyed by group title, is a second list kept by hand, shown at a group's foot on the index and palette):
+`app/states.jsx` is the **register** (it gathers the app's own states lists, `app/gsa-states-*.jsx` in the kit): one entry per staged state, `{ group, id, label, stage }`. The `id` is the state's address (`dormant-account`, `payment-retrying`); `stage` is the staging function. Everything else is derived from that one list and cannot drift from it (group notes are the one exception: `KIT_STATE_GROUP_NOTES`, keyed by group title, is a second list kept by hand, shown at a group's foot on the index and palette):
 
 - **`?state=<id>`** on the entry. `main.jsx` reads it once at mount (`kitResolveState`) and stages the named state in an effect, so a named state **overrides any restored route**. Nothing in the address ⇒ the app opens where the real app does.
 - **`?state=index`, or a name the register does not hold** ⇒ the states index (`StatesIndex`, `app/states-ui.jsx`) renders instead of the app. That is how a stale ticket link shows itself: the reader sees a catalogue that does not contain the name they came for, rather than the wrong screen.
