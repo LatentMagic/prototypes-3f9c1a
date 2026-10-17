@@ -36,24 +36,29 @@
 // ============================================================================
 
 // ---- The stager library ------------------------------------------------------
-// What a `stage` function is handed: main.jsx's setters, plus the moves several
-// states share. This is the product's half of the file and grows with it.
-// TODO(product): replace with the product's own stagers, built on its seed.
+// What a `stage` function is handed: the store and the platform setter, plus the
+// moves several states share. Every state is a reseed, a few writes, then `go`.
 function kitStateContext(api) {
-  const reseed = () => api.setItems(api.seedItems.slice());
-  // Config's "Reset to seeded data".
-  // TODO(product): if the app persists state, clear it here too.
-  const reset = () => reseed();
-  return { ...api, reseed, reset };
+  const store = api.store;
+  const reseed = () => store.reset();
+  const reset = () => store.reset();
+  const set = (patch) => store.set(patch);
+  const go = (name, params) => store.go(name, params);
+  const as = (who) => store.signIn(who);
+  const visitor = () => store.set({ session: 'visitor' });
+  const sub = (status, extra) => store.set({ sub: { status, ...(extra || {}) } });
+  const setPlatform = (p) => api.setPlatform(p);
+  return { ...api, reseed, reset, set, go, as, visitor, sub, setPlatform };
 }
 
 // ---- THE REGISTER ----------------------------------------------------------
 // Order here does not matter: the palette and the index read alphabetically,
-// groups by title and states by label (see buildStates). Group titles are
-// plain strings; a new group is simply a new title.
+// groups by title and states by label (see buildStates). The three family files
+// (gsa-states-home, -account, -people) each publish their entries.
 const KIT_STATE_REGISTER = [
-  { group: 'Placeholder', id: 'empty', label: 'Nothing on the screen', stage: (c) => c.setItems([]) },
-  { group: 'Placeholder', id: 'with-items', label: 'The screen with items', stage: (c) => c.setItems(['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo']) },
+  ...(window.GSA_STATES_HOME || []),
+  ...(window.GSA_STATES_ACCOUNT || []),
+  ...(window.GSA_STATES_PEOPLE || []),
 ];
 
 // Notes, per group: how to exercise what a staged state
@@ -61,9 +66,11 @@ const KIT_STATE_REGISTER = [
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
-  'Placeholder': [
-    'An example note. Both states restage the seed first, so each opens the same way whatever came before.',
-  ],
+  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. alex@example.com signs in as Alex Chen. Continue with Google signs in Casey Morgan; Continue with Apple signs in Robin Park, whose email is hidden (a relay address). Config Google or Apple account = A new person makes a new account, and Apple then asks to share or hide the email. A Google or Apple address never signs in with a password. Each person keeps their own queue, Subscription, role and Notifications switch. A new account starts empty.'],
+  'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
+  'Invitations': ['member@example.com is already a member. Whoever follows the link and signs in joins: the app compares no address (GSA-025).'],
+  'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons. Late payment arrives is the Payment provider taking the failed payment (GSA-020.AF-01).'],
+  'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account erases only the signed-in person\'s account; the other accounts stay as they were. A Google or Apple account has no password or email cards; one card says to change both with the provider, and Prove it\'s you emails a code.'],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 

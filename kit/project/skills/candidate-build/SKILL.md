@@ -71,7 +71,7 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    overlay reads or writes app state. Not a scatter of globals poked into the root
    component. `main.jsx` carries this hook already; a product that replaces the
    root keeps it. The kit's hook passes what the kit's own root holds (`items`,
-   `setItems`, `isMobile`). A product passes whatever its own root holds for
+   `setItems`, `isMobile`, `isApp`, and the store as `gsa`). A product passes whatever its own root holds for
    state, under its own names; deciding what goes in `api` is the builder's call
    in that project. The candidate's staged states and QA walk-through are added
    from its own folder, not from `app/`: wrap `window.buildStates` and
@@ -90,8 +90,8 @@ a playground. If you find yourself defending a fork of `app/`, you wanted neithe
    load, one key per candidate (`kit_<ticket>_<name>`). The read may not be in
    the root: find where the product reads its stored state and put the line
    there. This one-line read is part of the standing hook. Otherwise the entries
-   cross-hydrate and each corrupts the other's review. (The kit's placeholder
-   persists nothing; the rule starts to bite when the product's does.)
+   cross-hydrate and each corrupts the other's review. (The kit's Golden Sample
+   App persists nothing; the rule starts to bite when the product's does.)
 
 7. **Seeds extend, never replace.** Wrap the shipped seed builder and lay the
    delta over its output. Replacing it forks the fixtures and the candidate stops
@@ -179,7 +179,7 @@ display name `<Name>`:
   Check the other call sites before choosing that lever.
 - **A candidate's states exist only on its page.** Say so in the handoff, so
   nobody looks for them from the main entry. After a merge they are registered in
-  `app/states.jsx` like any other state.
+  the states register (`app/states.jsx` and the app's states lists) like any other state.
 - **Verification clicks share the user's `localStorage`.** Leave the candidate's
   key in a clean state so the owner lands on the demo path, not on your probing.
 - Mount transitions and sheet motion can only be judged live — see `GOTCHA.md`
@@ -204,7 +204,7 @@ This is the one statement of the steps, in order; `CLAUDE.md` and
    live entry that loads a changed module), retitled for the feature, and its
    modules load there in the order they did in the candidate entry: after the
    files they extend, before `app/main.jsx`. Its staged states go into
-   `app/states.jsx` and its QA walk-through into `app/qa.jsx`, with the `only`
+   the states register (`app/states.jsx`, or the app's states list it gathers) and its QA walk-through into `app/qa.jsx`, with the `only`
    filter dropped or kept as the owner says.
 3. **Archive the candidate** to `docs/archive/<ticket>/candidate/`: its page, bridge
    and any `cand-<name>-*` files left, a move and never a rewrite. They are the

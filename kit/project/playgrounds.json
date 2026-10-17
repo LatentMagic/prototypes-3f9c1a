@@ -14,12 +14,12 @@
           "kind": "candidate",
           "name": "Remove button",
           "path": "docs/specs/example/candidate/remove-button.html",
-          "note": "The skeleton app with a Remove button on each item. Not accepted."
+          "note": "The Golden Sample App's queue with a Remove button for each item. Not accepted."
         },
         {
           "name": "Item list layout",
           "path": "docs/specs/example/playground/example.html",
-          "note": "Three layouts for the skeleton app's item list, on a bottom strip."
+          "note": "Three layouts for the Golden Sample App's queue list, on a bottom strip."
         }
       ],
       "archive": []

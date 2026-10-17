@@ -18,11 +18,8 @@
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
 const KIT_QA = [
-  {
-    key: 'placeholder-walk-through', title: 'Placeholder walk-through',
-    note: 'An example entry. 1. The screen with nothing on it. 2. The screen with items. Replace it with the states a piece of work in flight needs checking against.',
-    steps: ['empty', 'with-items'],
-  },
+  { key: 'gsa-rebuild-walk', title: 'GSA rebuild: review walk', note: 'One state from each group, in order.',
+    steps: ['queue', 'sign-in', 'account', 'sub-subscribed', 'plans-visitor', 'accept-signed-in', 'ai-no-sale', 'notify-ask', 'not-found', 'shared-space'] },
 ];
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 

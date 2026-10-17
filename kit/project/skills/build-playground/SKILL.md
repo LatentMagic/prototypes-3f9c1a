@@ -81,8 +81,8 @@ stay in the docs, not in the reviewer's path.
      `children`), don't re-implement its geometry, scrim or easing.
    - **Product slot:** if the product has a separate native-app posture, its
      own Home destination is where the rail stands in; a spec the product block in
-     `CLAUDE.md` names, or `ARCHITECTURE.md`, says so. The kit's placeholder app has no rail, shell or
-     drawer; the product's own shell supplies them.
+     `CLAUDE.md` names, or `ARCHITECTURE.md`, says so. The kit's Golden Sample App has a header shell but no
+     rail or drawer; the product's own shell supplies them.
    Read the breakpoint from `main.jsx` (`winW < 1024`) — do not invent one, and
    never pick a value that disables one of the branches. Both
    failure modes have shipped: chrome that could not be dismissed at all, and

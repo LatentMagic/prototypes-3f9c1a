@@ -8,7 +8,7 @@ Desktop web, mobile web and **app** (native mobile) are three presentation postu
 
 - `isApp` comes from one switch, **Config → Platform (Web / Mobile)**. Session-only, not persisted. `main.jsx` holds it and hands it to the screen and to a candidate build.
 - The app posture always implies the phone frame, whatever the Viewport says. Only the app posture draws the status bar and home indicator and sets `--safe-area-inset-top` / `--safe-area-inset-bottom` (on `.kit-phone-clip[data-app]`, `index.html`). Viewport: Mobile is mobile web: the same frame with no bars and no insets.
-- A product with an app posture gives it its own chrome: one shell for web, one for the app, the same children inside both. The placeholder only pads by the insets.
+- A product with an app posture gives it its own chrome: one shell for web, one for the app, the same children inside both. The Golden Sample App's shell pads by the insets.
 - A product whose `CLAUDE.md` Platform line is web leaves Platform on Web.
 
 ## Deletable aids and droppable modules
@@ -20,7 +20,8 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/config.jsx` | deletable aid | Config pill gone: review settings, the states palette and QA with it. `?state=` and the index survive |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
-| `app/config-extra.example.jsx` | deletable example | no product rows in Config |
+| `app/gsa-config.jsx` | deletable aid | no GSA rows in Config (review flags, session, tiers); the Config shell stays |
+| `app/gsa-states-home.jsx`, `app/gsa-states-account.jsx`, `app/gsa-states-people.jsx` | deletable aids | the GSA's entries drop out of the register; the interim `queue` and `queue-empty` entries stay |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
 
@@ -28,7 +29,7 @@ A product's own droppable modules join this table as it adds them: a file the ap
 
 A ticket in the real build links to this prototype, so a reviewer has to be able to arrive at the state the ticket is about — a dormant account, a payment retrying — without knowing a click path.
 
-`app/states.jsx` is the **register**: one entry per staged state, `{ group, id, label, stage }`. The `id` is the state's address (`dormant-account`, `payment-retrying`); `stage` is the staging function. Everything else is derived from that one list and cannot drift from it (group notes are the one exception: `KIT_STATE_GROUP_NOTES`, keyed by group title, is a second list kept by hand, shown at a group's foot on the index and palette):
+`app/states.jsx` is the **register** (it gathers the app's own states lists, `app/gsa-states-*.jsx` in the kit): one entry per staged state, `{ group, id, label, stage }`. The `id` is the state's address (`dormant-account`, `payment-retrying`); `stage` is the staging function. Everything else is derived from that one list and cannot drift from it (group notes are the one exception: `KIT_STATE_GROUP_NOTES`, keyed by group title, is a second list kept by hand, shown at a group's foot on the index and palette):
 
 - **`?state=<id>`** on the entry. `main.jsx` reads it once at mount (`kitResolveState`) and stages the named state in an effect, so a named state **overrides any restored route**. Nothing in the address ⇒ the app opens where the real app does.
 - **`?state=index`, or a name the register does not hold** ⇒ the states index (`StatesIndex`, `app/states-ui.jsx`) renders instead of the app. That is how a stale ticket link shows itself: the reader sees a catalogue that does not contain the name they came for, rather than the wrong screen.

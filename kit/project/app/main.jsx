@@ -11,32 +11,30 @@
 // persists state, its root reads the storage key as `window.KIT_STATE_KEY || '<default>'`
 // so a candidate entry can set its own.
 //
-// PlaceholderScreen and KIT_SEED_ITEMS stand in for the product. Replace them;
-// keep the wiring below them.
+// GsaRoot picks the screen from the store's route; GsaNotBuilt stands in for any
+// screen whose file has not landed yet. The wiring below them is the kit's.
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-// ---- Seed --------------------------------------------------------------------
-// What the app opens on, and what every state restages before it stages.
-// TODO(product): the product's own seed data, in its own file loaded before this one.
-const KIT_SEED_ITEMS = ['First item', 'Second item'];
-
-// ---- The placeholder screen --------------------------------------------------
-const PlaceholderScreen = ({ items, isMobile, isApp }) => (
-  <main className="kit-placeholder">
-    <div className="kit-placeholder-eyebrow">Placeholder screen{isApp ? ' · app' : ''}</div>
-    <h1 className="kit-placeholder-title">{items.length === 0 ? 'Nothing here yet' : items.length + ' items'}</h1>
-    <p className="kit-placeholder-lede">
-      The product's first screen replaces this one. The pill at the bottom right holds the prototype
-      aids: Config, States and QA.
-    </p>
-    {items.length === 0
-      ? <div className="kit-placeholder-empty">No items. Open States and pick “The screen with items”.</div>
-      : <ul className="kit-placeholder-items" data-mobile={isMobile ? '1' : undefined}>
-          {items.map((it) => <li key={it}>{it}</li>)}
-        </ul>}
-  </main>
+// ---- The screen --------------------------------------------------------------
+const GsaNotBuilt = ({ name }) => (
+  <main role="main" style={{ padding: '48px 20px', textAlign: 'center' }}>Not built yet: {name}</main>
 );
+
+const GsaRoot = () => {
+  const g = useGsa();
+  const name = g.route.name;
+  const Screen = window[window.GSA_SCREENS[name]];
+  const Frame = window.GsaFrame;
+  const Host = window.GsaPushHost;
+  const screen = Screen ? <Screen key={g.epoch} route={g.route} /> : <GsaNotBuilt name={name} />;
+  return (
+    <>
+      {window.GSA_BARE.includes(name) || !Frame ? screen : <Frame key={g.epoch}>{screen}</Frame>}
+      {Host && <Host />}
+    </>
+  );
+};
 
 // ---- The app posture's system bars ---------------------------------------------
 // Platform: Mobile only. Drawn over the screen inside the phone clip, as a phone
@@ -80,7 +78,11 @@ const KitApp = () => {
 
   const ConfigLauncher = window.ConfigLauncher;
 
-  const [items, setItems] = useState(() => KIT_SEED_ITEMS.slice());
+  // The store holds the app's state; mirror the harness posture into it.
+  const gsa = useGsa();
+  useEffect(() => { window.GsaStore.set({ env: { platform, isMobile } }); }, [platform, isMobile]);
+  // Wrapped so a stager's `go` sees the new posture in the same tick.
+  const setPlatformSync = (p) => { window.GsaStore.set({ env: { platform: p } }); setPlatform(p); };
 
   // The address this page was opened at. `?state=<id>` stages that state;
   // `?state=index` or a name the register does not hold renders the catalogue
@@ -98,7 +100,7 @@ const KitApp = () => {
   // half of the Config pill, the index and the address reading all vanish together,
   // leaving the product core clean.
   const { byId: STATE_BY_ID, groups: STATE_GROUPS, reset } = (window.buildStates
-    ? window.buildStates({ seedItems: KIT_SEED_ITEMS, setItems, setPlatform })
+    ? window.buildStates({ store: window.GsaStore, setPlatform: setPlatformSync })
     : { byId: {}, groups: [], reset: null });
   // Going to a state, or resetting, leaves the states index: on it the staged
   // app is not showing, so the act would otherwise be invisible.
@@ -126,12 +128,12 @@ const KitApp = () => {
   // hold bind(api), handed the app's state and setters, and Screen, rendered in place
   // of the app's screen. Absent -> the shipped screen, unchanged.
   const Cand = window.KitCandidate || null;
-  const candApi = Cand ? { items, setItems, isMobile, isApp } : null;
+  const candApi = Cand ? { items: gsa.items, setItems: (items) => window.GsaStore.set({ items }), isMobile, isApp, gsa: window.GsaStore } : null;
   if (Cand && Cand.bind) Cand.bind(candApi);
 
   const appTree = Cand && Cand.Screen
     ? <Cand.Screen api={candApi} />
-    : <PlaceholderScreen items={items} isMobile={isMobile} isApp={isApp} />;
+    : <GsaRoot />;
 
   return (
     <>
