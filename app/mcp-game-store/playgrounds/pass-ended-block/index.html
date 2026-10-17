@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pass-ended block: link or button</title>
+<link rel="stylesheet" href="../../design-system/styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../design-system/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--page);color:var(--text);font:var(--type-body);padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3,p{margin:0}
+.pg-wrap{max-width:1040px;margin:0 auto;padding:0 16px 48px}
+.pg-sw{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--line);padding:12px 0}
+.pg-sw-in{max-width:1040px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.pg-sw-in>span{font:var(--type-label);color:var(--muted)}
+.pg-seg{display:flex;gap:0}
+.pg-seg button{font:var(--type-button);min-height:44px;padding:0 16px;background:transparent;color:var(--text);border:1.5px solid var(--control-edge);cursor:pointer;margin:0 0 0 -1.5px}
+.pg-seg button:first-child{margin-left:0}
+.pg-seg button[aria-pressed=true]{background:var(--off-white);color:var(--page);border-color:var(--off-white);position:relative}
+.pg-sit{margin-top:32px}
+.pg-sit>.pg-cap{font:var(--type-label);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+.pg-page{border:1px solid var(--line)}
+.pg-top{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 16px;border-bottom:1px solid var(--line);font:var(--type-card-title)}
+.pg-top span:last-child{font:var(--type-label);color:var(--muted)}
+.pg-body{padding:24px 16px 32px;display:grid;gap:24px;max-width:960px}
+.pg-head{display:grid;gap:16px;grid-template-columns:1fr}
+.pg-cover{max-width:240px}
+.pg-head h1{font:var(--type-page-title)}
+.pg-head p{color:var(--muted)}
+.pg-block{display:grid;gap:12px;justify-items:start;max-width:560px}
+.pg-block .pg-label{font:var(--type-label);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.pg-block h2{font:var(--type-section-title);text-wrap:balance}
+.pg-block p.pg-line{font:var(--type-body)}
+.pg-act{margin-top:4px}
+.pg-record{display:grid;gap:16px;max-width:560px}
+.pg-record h3{font:var(--type-card-title)}
+.pg-streak{display:flex;gap:6px}
+.pg-streak i{width:20px;height:20px;background:var(--off-white);display:block}
+.pg-streak i.o{background:var(--line)}
+.pg-rows{display:grid;gap:0;border-top:1px solid var(--line)}
+.pg-rows div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.pg-rows span:last-child{color:var(--muted)}
+.pg-empty{color:var(--muted);font:var(--type-caption);max-width:560px}
+@media (min-width:700px){.pg-body{padding:32px 32px 48px}.pg-wrap,.pg-sw-in{padding-left:24px;padding-right:24px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const DS = window.MCPGameStoreDesignSystem_ef1abd;
+const { Button, TextLink, Cover, Tag } = DS;
+const q = new URLSearchParams(location.search);
+
+function useNarrow(){
+  const [n,setN] = React.useState(()=>matchMedia('(max-width:640px)').matches);
+  React.useEffect(()=>{const m=matchMedia('(max-width:640px)');const f=()=>setN(m.matches);m.addEventListener('change',f);return()=>m.removeEventListener('change',f)},[]);
+  return n;
+}
+
+function Action({kind, children}){
+  const narrow = useNarrow();
+  const go = e => e && e.preventDefault && e.preventDefault();
+  return <div className="pg-act" style={narrow && kind==='button' ? {width:'100%'} : undefined}>
+    {kind==='link'
+      ? <TextLink onClick={go}>{children}</TextLink>
+      : <Button variant="secondary" block={narrow} onClick={go}>{children}</Button>}
+  </div>;
+}
+
+function Block({label, heading, line, action, kind}){
+  return <section className="pg-block" aria-label="Needs the Pass">
+    <span className="pg-label">{label}</span>
+    {heading && <h2>{heading}</h2>}
+    {line && <p className="pg-line">{line}</p>}
+    <Action kind={kind}>{action}</Action>
+  </section>;
+}
+
+function Record(){
+  return <div className="pg-record">
+    <h3>Your record</h3>
+    <div className="pg-streak" aria-label="Streak: 9 of 12 days">{[1,1,1,1,1,1,1,1,1,0,0,0].map((v,i)=><i key={i} className={v?'':'o'}/>)}</div>
+    <div className="pg-rows">
+      <div><span>Best streak</span><span>9 days</span></div>
+      <div><span>Achievements</span><span>4 of 11</span></div>
+      <div><span>Plays</span><span>23</span></div>
+    </div>
+  </div>;
+}
+
+function Frame({game, art, children}){
+  return <div className="pg-page">
+    <div className="pg-top"><span>MCP Game Store</span><span>Menu</span></div>
+    <div className="pg-body">
+      <div className="pg-head">
+        <div className="pg-cover"><Cover name={game} art={art}/></div>
+      </div>
+      {children}
+    </div>
+  </div>;
+}
+
+function App(){
+  const [kind,setKind] = React.useState(q.get('o')==='button'?'button':'link');
+  const [sit,setSit] = React.useState(['had','never'].includes(q.get('s'))?q.get('s'):'both');
+  const set = (k,v) => { const u=new URL(location.href); u.searchParams.set(k,v); history.replaceState(null,'',u); };
+  return <>
+    <div className="pg-sw"><div className="pg-sw-in">
+      <span>Action</span>
+      <div className="pg-seg">
+        {[['link','Text link'],['button','Secondary button']].map(([k,l])=>
+          <button key={k} aria-pressed={kind===k} onClick={()=>{setKind(k);set('o',k)}}>{l}</button>)}
+      </div>
+      <span>Show</span>
+      <div className="pg-seg">
+        {[['both','Both'],['had','Had the Pass'],['never','Never had it']].map(([k,l])=>
+          <button key={k} aria-pressed={sit===k} onClick={()=>{setSit(k);set('s',k)}}>{l}</button>)}
+      </div>
+    </div></div>
+    <div className="pg-wrap">
+      {sit!=='never' && <div className="pg-sit" id="had">
+        <div className="pg-cap">Had the Pass</div>
+        <Frame game="36,000 Summers Ago" art="weekly-interrogation">
+          <Block kind={kind} label="YOUR LAST DAY · 12 Oct" heading="You stopped here. Everything you earned is still yours." action="Get the Pass again"/>
+          <Record/>
+        </Frame>
+      </div>}
+      {sit!=='had' && <div className="pg-sit" id="never">
+        <div className="pg-cap">Never had the Pass</div>
+        <Frame game="The Barrow" art="dungeon-quest">
+          <Block kind={kind} label="Only with the Pass" line="The Barrow comes only with the Pass." action="Get the Pass"/>
+          <p className="pg-empty">Nothing below the block: this player has no record here. The block is the page's only content.</p>
+        </Frame>
+      </div>}
+    </div>
+  </>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
