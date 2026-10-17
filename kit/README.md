@@ -10,7 +10,7 @@ Cut from the Circlists prototype (`app/circlists/canon/`, commit `dddbb6c`) on 2
 
 ## Viewing it
 
-Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build, both on the Golden Sample App's queue. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
+Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build, both on the Golden Sample App's queue. In the console it is the Golden Sample App at https://latentmagic.github.io/prototypes-3f9c1a/#gsa/canon. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
 
 ## Starting a new prototype from it
 

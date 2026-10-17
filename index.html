@@ -1739,6 +1739,33 @@
           desc: 'Commentate MVP — a pitchside media engine for grassroots football. Voice a match event and it becomes a postable social graphic in seconds: matchday dashboard, live match workspace with a mic-driven capture overlay, event review & share sheet, and slot-filling for missing detail (Squad and Brand kit alongside). Voice is simulated; football only. Bespoke floodlit-green palette and Barlow / Barlow Condensed type — a brand-open build, no lockup locked yet.'
         }
       ]
+    },
+    // The Golden Sample App: the worked baseline every prototype starts from.
+    // Served from kit/project/ via the node's `path`, not from app/ (no Claude Design export).
+    gsa: {
+      label: 'Golden Sample App',
+      logo: '<span style="font-weight:700;font-size:15px;letter-spacing:.2px;line-height:1.1;">Golden Sample App</span>',
+      prototypes: [
+        {
+          slug: 'canon',
+          version: 'kit v2',
+          ticket: '—',
+          html: 'index.html',
+          path: 'kit/project',
+          desc: 'The Golden Sample App: the worked baseline every prototype starts from. Its harness is the kit.',
+          changelog: [
+            {
+              date: '2026-10-17',
+              title: 'Rebuilt as the shared baseline',
+              items: [
+                'The Golden Sample App is rebuilt as a full worked app: sign-in with Google, Apple and email code, invites, account, billing and checkout, people, push and connect screens.',
+                'Its states live in the gsa-states-* files and take the store; the kit harness (Config, States, QA) wraps it.',
+                'Now listed in the console at #gsa/canon; any state opens at #gsa/canon?state=<id>.'
+              ]
+            }
+          ]
+        }
+      ]
     }
   };
 
@@ -1749,8 +1776,8 @@
   // A prototype may address a state of its own (canon reads `?state=<id>` against
   // its states register). The console never interprets that query — it only hands
   // it through to the iframe, so a state the console has never heard of still works.
-  function srcFor(app, slug, html, query) {
-    return 'app/' + app + '/' + slug + '/' + (html || 'latentpulse.html') + (query ? '?' + query : '');
+  function srcFor(app, slug, html, query, path) {
+    return (path ? path + '/' : 'app/' + app + '/' + slug + '/') + (html || 'latentpulse.html') + (query ? '?' + query : '');
   }
 
   var tablist = document.querySelector('.prototypes');
@@ -1839,7 +1866,7 @@
         // Each frame remembers its own query, so a tab keeps the state it was
         // opened at and switching tabs shows each prototype at its own address.
         if (query) frames[j].query = query;
-        var want = srcFor(ACTIVE_APP, spec.slug, spec.html, frames[j].query);
+        var want = srcFor(ACTIVE_APP, spec.slug, spec.html, frames[j].query, spec.path);
         // lazy: set src on first activation. Already loaded and a *different*
         // address asked for → reload it, so pasting a new state into the hash of
         // an open console works as it does on a cold load.

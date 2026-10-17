@@ -21,7 +21,7 @@ Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natur
 </important>
 
 <important if="you are adding or changing a rule, aid or skill that every prototype shares, or anything under kit/">
-**The kit** — `kit/project/` holds the rules (`CLAUDE.md`), aids (Config, States, QA) and skills every prototype shares; `kit/README.md` is its runbook. A shared change is made there and pushed, then carried into each Claude Design project by one Kit carry brief composed in the business-ops workspace (`biz-authoring:build-design-prompt`). Never make it by editing a `canon/` copy.
+**The kit** — `kit/project/` holds the rules (`CLAUDE.md`), aids (Config, States, QA) and skills every prototype shares; `kit/README.md` is its runbook. A shared change is made there and pushed, then carried into each Claude Design project by one Kit carry brief composed in the business-ops workspace (`biz-authoring:build-design-prompt`). Never make it by editing a `canon/` copy. The kit's app is the Golden Sample App, listed in the console at `#gsa/canon`; an edit there is a hand change under the commit gate, not an export sync.
 </important>
 
 ## How the console works
@@ -31,6 +31,7 @@ Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natur
 - Each prototype's `changelog` array renders in a per-slug "recent changes" drawer. `README.md`'s one-liner is documentation, not the changelog — don't confuse the two.
 - Deep-linkable at `#<app>/<slug>` (e.g. `#circlists/canon`; a bare `#<slug>` still resolves as a legacy form); an unknown or empty hash lands on the working line (the last node without a `kind`), never on a reference or candidate node.
 - Anything after `?` in the hash is handed to the iframe `src` untouched — that is how canon's `?state=<id>` addressing works, and canon's `ARCHITECTURE.md` depends on it. Keep `parseHash`/`srcFor` forwarding the query.
+- A node may set `path` to serve from outside `app/`. The Golden Sample App (`#gsa/canon`) is served this way from `kit/project/`.
 - Responsive shell (rail collapses to an off-canvas drawer at ≤640px) lives in `index.html` only, never in a prototype's own layout handling.
 
 ## Why a server (not `file://`)
