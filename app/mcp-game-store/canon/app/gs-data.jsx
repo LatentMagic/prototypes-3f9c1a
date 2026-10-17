@@ -37,7 +37,7 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
 // category: one per game, printed before the rhythm in the product page's label (proposed values, split-daily-puzzles).
 // free: free to play (the current edition, a streak, its achievements). first: a free player gets the game's one first edition. Neither: only with the Pass.
-// once: an edition has one answer, so a finished edition is never played again (every-edition-playable, 2026-10-12). Read it through gsCanReplay only.
+// once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
 // eds: the game has editions but no schedule (the Barrow's chapters), so it has an editions list without a Daily or Weekly filter.
@@ -58,8 +58,11 @@ const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve
 const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
 // Every earlier edition of every game that releases them can be played (every-edition-playable, 2026-10-12); the Pass decides who.
-// Whether a finished edition can be played again: the game's own fact (once), read everywhere through this.
-const gsCanReplay = (k) => !!k && !!GS_GAMES[k] && !GS_GAMES[k].once;
+// Two kinds of game (owner, 2026-10-17). A daily or weekly edition, and a game with a fixed answer, is played once: a finished one
+// shows GS_ONCE_LINE and nothing that starts it. A story or adventure chapter (no schedule, no fixed answer) can be started over
+// as a new session, which counts for nothing new. Read everywhere through this.
+const gsStartsOver = (k) => !!k && !!GS_GAMES[k] && !gsRhythm(k) && !GS_GAMES[k].once;
+const GS_ONCE_LINE = 'You’ve played this one. It can’t be played again.';
 const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
 // This edition's play of each free game, by plan: today's for a daily, this week's for Escape.
 // Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).
@@ -235,7 +238,7 @@ const gsForms = (s) => {
 };
 
 Object.assign(window, {
-  GS_RESULT, gsMis, gsForms,
+  GS_RESULT, gsMis, gsForms, gsStartsOver, GS_ONCE_LINE,
   DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
   GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop, gsScrollToId,
 });

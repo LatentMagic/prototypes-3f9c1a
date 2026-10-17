@@ -103,13 +103,13 @@ const GS_PAGES = {
     box: { label: 'ONLY WITH THE PASS', heading: 'A different day every time', session: 'hunter',
       steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
       small: '36,000 Summers Ago comes only with the [Platform] Pass.' },
-    facts: { long: '2 hours', often: 'Play it again, a different day each time' }, tags: [],
+    facts: { long: '2 hours', often: 'A different day every time you start' }, tags: [],
     pitch: { h: 'The day goes on whether you join it or not.', ps: [
       'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
       'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
       'Your AI tells the day and speaks for everyone in it. The game engine rolls the dice and keeps the record. Say what you do first.'] },
     who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
-    week: { title: 'The day', line: 'One day, dawn to firelight. Play it again and it goes differently.', session: 'hunter', unmarked: true },
+    week: { title: 'The day', line: 'One day, dawn to firelight. Start it over and it goes differently.', session: 'hunter', unmarked: true },
   },
 };
 const GS_FACT_LABELS = [['long', 'How long'], ['often', 'How often']];
@@ -166,7 +166,7 @@ const GsGamePage = ({ id, top }) => {
 
       <section className="gs-head-split">
         <div className="gs-hero-cover">
-          <GsCover art={g.art} />
+          <GsCover art={g.art} fit />
           <div className="gs-cover-over">
             <span className="gs-label">{g.category + ' · ' + p.rhythm}</span>
             <h1 className="gs-cover-title">{g.name}</h1>

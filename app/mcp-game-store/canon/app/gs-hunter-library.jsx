@@ -54,7 +54,8 @@ const HgLatest = ({ last }) => {
         <div className="gs-stack-xs"><span className="gs-label">{(last ? 'YOUR LAST DAY · ' : 'YOUR LATEST DAY · ') + day.date.toUpperCase()}</span><h2 className="mcp-t-sec">{day.end || day.title}</h2></div>
         <DS.TextLink onClick={() => gs.go('session', { id: hgSid(day) })}>See the whole day</DS.TextLink>
       </div>
-      <p>{last ? 'That was the last day you played before your Pass ended.' : 'You left off at ' + HG_LEFT.when.toLowerCase() + ', ' + HG_LEFT.where + '. Carry on in any chat.'}</p>
+      {/* After the Pass ended, the Needs the Pass card above already says this was where the player stopped. */}
+      {!last && <p>{'You left off at ' + HG_LEFT.when.toLowerCase() + ', ' + HG_LEFT.where + '. Carry on in any chat.'}</p>}
       <dl className="lb-facts">{facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
     </section>
   );
@@ -81,23 +82,10 @@ const HgNone = () => {
     </section>
   );
 };
-// Without the Pass: the game is closed. A player whose Pass ended keeps their last day, their days and what they earned, locked.
-const HgClosed = ({ again }) => {
-  const gs = useGs();
-  return (
-    <section className="lb-card is-closed">
-      <div className="gs-stack-xs">
-        <h2 className="mcp-t-sec">{again ? 'Your Pass has ended' : 'Only with the Pass'}</h2>
-        <p>{again ? GS_NAME.hunter + ' comes only with the Pass, so you can’t play it now. Your days and what you earned stay here.' : GS_NAME.hunter + ' comes only with the Pass. A free account can’t play it.'}</p>
-      </div>
-      <DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
-    </section>
-  );
-};
 const HgLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'hunter'); const pass = access === 'all'; const past = lbPast(gs); const k = gs.view + (gs.sub.hadPass ? 'u' : '');
   if (!pass && !past) return (
-    <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><HgClosed /></div></main>
+    <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><window.LbNeedsPass id="hunter" ach={HG_ACH} access={access} /></div></main>
   );
   const fresh = gsFresh(gs); const old = hgOld(gs);
   const days = fresh ? [] : pass ? HG_DAYS : old;
@@ -105,7 +93,7 @@ const HgLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="hunter" />
       <div className="lb-lay">
-        {!pass && <HgClosed again />}
+        {!pass && <window.LbNeedsPass id="hunter" had ach={HG_ACH} access={access} />}
         {fresh ? <HgNone /> : <HgLatest last={pass ? null : old[0]} />}
         {pass && <HgLeft fresh={fresh} />}
         <LbAch items={fresh ? lbNoAch(HG_ACH) : HG_ACH} badges={HG_BADGES} access={access} />

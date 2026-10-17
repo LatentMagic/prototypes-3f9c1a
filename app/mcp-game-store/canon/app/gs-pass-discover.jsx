@@ -45,10 +45,7 @@ const CprDiscoverBody = ({ f, setF }) => {
     <section className="dc-sec">
       <h2 className="mcp-t-sec">All games</h2>
       {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} />)}</div>
-        : <div className="lb-empty lb-empty-clear">
-            <p className="gs-muted">{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p>
-            <DS.Button variant="secondary" onClick={clearAll}>Clear all</DS.Button>
-          </div>}
+        : <div className="gs-nomatch"><p>Nothing matches that.</p><DS.TextLink onClick={clearAll}>Clear all</DS.TextLink></div>}
     </section>
   </>;
 };

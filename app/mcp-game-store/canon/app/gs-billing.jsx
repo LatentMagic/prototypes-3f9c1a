@@ -73,7 +73,7 @@ const GsPassCard = () => {
       {sub.hadPass
         ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} locked="are frozen until you get the Pass again" />
         : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
-      <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button></div>
+      <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>{sub.hadPass ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );
   const marker = sub.status === 'failed' ? <span className="gs-marker is-bad">Payment failed</span>

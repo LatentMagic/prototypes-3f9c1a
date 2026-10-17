@@ -5,9 +5,12 @@
 // ============================================================================
 
 // ---- Covers and tags ---------------------------------------------------------
-const GsCover = ({ art }) => (
-  <DS.Cover><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: (GS_ART[art] || {}).svg || '' }} /></DS.Cover>
-);
+// fit: the art is drawn to whatever frame it is given, the whole picture showing on its ground and placed by its declared extend.
+const GsCover = ({ art, fit }) => {
+  const a = GS_ART[art] || {}; let svg = a.svg || '';
+  if (fit) svg = svg.replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet');
+  return <DS.Cover className={fit ? 'gs-cover-fit is-' + (a.ground || 'indigo') : ''}><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
+};
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
 const GS_ART_MOTION = ['groups', 'casebook', 'hunter', 'word'];
@@ -272,7 +275,8 @@ const GsTopBar = () => {
         <nav className="gs-nav" aria-label="Main">
           {links.map(([id, l, fn]) => <button key={id} type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>)}
         </nav>
-        <div className="gs-top-end">
+        {/* The top bar's buttons are menu triggers, which keep their own width (design system Layout); mcp-menu-wrap is the system's hook for that. */}
+        <div className="gs-top-end mcp-menu-wrap">
           {out ? (
             <div className="gs-wide-only">
               <DS.Button variant="secondary" onClick={() => gs.go('signin')}>Sign in</DS.Button>

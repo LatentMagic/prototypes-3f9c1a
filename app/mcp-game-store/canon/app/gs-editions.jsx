@@ -55,15 +55,16 @@ const pgeInfo = (e) => {
   return { line, len: PGE_LEN[e.gid], who: cb && cb.cast ? 'You question ' + pgeAnd(cb.cast) + '.' : null };
 };
 
-// ---- One game's editions, newest first, each once. No result, no replays: those are History's. ----
+// ---- One game's editions, newest first, each once. No result: those are History's. ----
 // Played: a finished play. Not played, in progress and not finished carry no mark (round 2).
 const pgePlayed = (e) => !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live';
 const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({ ...e, name: edName(e), when: lbShort(e.date), played: pgePlayed(e), live: !!e.status && e.status.kind === 'live', held: edNeedsPass(gs, e), info: pgeInfo(e),
   hay: phHay(gid, e.key, e.title, phParse(e.date)) + ' ' + edName(e).toLowerCase() }));
-const pgePlayedText = (e) => (e.live ? 'You’re partway through this ' + pgeW(e.gid) + '.' : 'You’ve played this ' + pgeW(e.gid) + '.');
-// A finished edition of a game that can't be replayed: what it was, and that it was played once (wording: every-edition-playable).
+// A finished chapter (gsStartsOver) says it was played and can be started over from the prompt below.
+const pgePlayedText = (e) => (e.live ? 'You’re partway through this ' + pgeW(e.gid) + '.' : 'You’ve played this ' + pgeW(e.gid) + '.' + (gsStartsOver(e.gid) ? ' To start it over, paste this into your AI.' : ''));
+// A finished edition of a game played once: what it was, and the played-once line (GS_ONCE_LINE).
 // No game word here: Daily Groups' word ("groups") has no singular that reads in a sentence.
-const pgeOnceText = 'You’ve played this one. It can’t be played again.';
+const pgeOnceText = GS_ONCE_LINE;
 
 // The list's own state, kept in the history entry (route.pgeList) so browser Back returns it as it was left.
 const pgeScroll = (el) => { for (let n = el && el.parentElement; n; n = n.parentElement) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight) { n.scrollTop = 0; return; } } gsScrollTop(); };
@@ -123,8 +124,9 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
   const e0 = k ? pgeEds(gs, gid).find((x) => x.key === k) : null; if (e0) last.current = e0; const e = last.current;
   if (!e) return null;
   const text = gsPromptText({ kind: 'edition', e });
-  // A finished edition of a game that can't be replayed (gsCanReplay) has nothing left to play: its result and the played-once line, no prompt, no Copy, no Pass line.
-  const done = e.played && !gsCanReplay(gid); const prompt = !e.held && !done;
+  // A finished edition of a game played once has nothing left to play: its result and the played-once line, no prompt, no Copy, no Pass line.
+  // A finished chapter keeps its prompt as the start-over, with no Pass line whether or not the player has the Pass.
+  const done = e.played && !gsStartsOver(gid); const over = e.played && !done; const prompt = (over || !e.held) && !done;
   const when = gsRhythm(gid) === 'weekly' ? 'week of ' + e.date : e.date;
   return (
     <DS.Popup kind="panel" open={!!e0} onClose={onClose} title={e.title || edLabel(e)} actions={prompt ? <GsCopyPrompt text={text} block /> : undefined}>
@@ -136,10 +138,10 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
           <div className="pge-done">
             <LbResult s={e.status} />
             <p style={{ margin: 0 }}>{pgeOnceText}</p>
-            <DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink>
+            <DS.Button variant="secondary" block onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.Button>
           </div>
         ) : e.played && <div className="gs-stack-xs" style={{ justifyItems: 'start' }}><p className="gs-muted" style={{ margin: 0 }}>{pgePlayedText(e)}</p><DS.TextLink onClick={() => pgeHistory(gs, gid, e)}>See in History</DS.TextLink></div>}
-        {done ? null : e.held ? <div style={{ marginTop: -8 }}><GsNeedsPass gid={gid} /></div> : prompt && (
+        {done ? null : e.held && !over ? <div style={{ marginTop: -8 }}><GsNeedsPass gid={gid} /></div> : prompt && (
           <div className="gs-stack-sm">
             <p className="hw-need gs-small" style={{ margin: 0 }}><b>Connect your AI first.</b> <GsHowLink label="How to connect" /></p>
             <GsPrompt text={text} />

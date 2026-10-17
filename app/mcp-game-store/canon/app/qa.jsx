@@ -72,11 +72,11 @@ KIT_QA.unshift({ key: 'walk-sweep', title: 'Walk sweep 2026-10-10 (not ratified)
     'library-casebook-pass-ended', 'library-delve-pass-ended', 'library-hunter-pass-ended',
     'free-puzzle-result', 'session-delve-past', 'session-hunter', 'session-casebook', 'history', 'home', 'not-found', 'not-found-signed-in'] });
 KIT_QA.unshift({ key: 'every-edition-playable', title: 'Every edition can be played',
-  note: 'Each daily puzzle has "Every …" beside its name and the same list. An earlier word not played shows its prompt. A played word or case shows its result, says it was played once, and has no prompt, Copy or Play again. Check at 390 and 1280px.',
+  note: 'Each daily puzzle has "Every …" beside its name and the same list. An earlier word not played shows its prompt. A played word or case shows its result, says it was played once, and has no prompt or Copy. Check at 390 and 1280px.',
   steps: ['library-word-editions', 'edition-word-earlier', 'edition-word-done', 'edition-casebook-done', 'session-word-earlier', 'session-casebook', 'history'] });
-KIT_QA.unshift({ key: 'replay-share', title: 'A replay can be shared',
-  note: 'A finished play of a game that can be replayed (Escape, Delve), first or replay, has Play again and Share; Casebook and the daily puzzles have Share only; a replay keeps its Replay chip. Copy ends the first line with "🔁 Replay" and keeps the product page link. A first play shares as before. No session page lists other plays; History still lists replays. Check at 390 and 1280px.',
-  steps: ['session-replay', 'session-puzzle', 'session-escape', 'session-casebook', 'history'] });
+KIT_QA.unshift({ key: 'no-replay', title: 'Only chapters start over, 17 October',
+  note: 'A finished daily, weekly or fixed-answer play (Word, Escape, Delve, a case) has Share and the line "You’ve played this one. It can’t be played again.", no Play again and no Pass line. A finished chapter or day (the Barrow, 36,000 Summers Ago) has Start over and Share, no Pass tag. History has no Replay chip and no Replays filter. Check at 320 and 1280px.',
+  steps: ['session-puzzle', 'session-escape', 'session-delve-past', 'session-casebook', 'session-word-earlier', 'edition-word-done', 'session-hunter', 'session-barrow', 'library-barrow', 'history'] });
 KIT_QA.unshift({ key: 'failed-on-strip', title: 'Failed on the streak strip',
   note: 'A failed day: the Not played outline with a cross; legend Completed / Failed / Not played. 36,000 Summers Ago keeps Played / Not played.',
   steps: ['library-word', 'library-word-streak-broken', 'library-word-in-progress', 'library-mystery-never-played', 'library-casebook', 'library-delve', 'library-casebook-pass-ended', 'library-delve-pass-ended'] });
@@ -85,7 +85,7 @@ KIT_QA.unshift({ key: 'notifications', title: 'Notifications (not ratified)',
   steps: ['notifications-undecided', 'notifications-on', 'notifications-off', 'notifications-turn-on-fails', 'notifications-blocked', 'notifications-ios-tab', 'notifications-unsupported',
     'push-banner-discover', 'push-banner-library', 'push-banner-history', 'push-permission-dialog', 'push-banner-dismissed', 'push-banner-back', 'games-signed-out'] });
 KIT_QA.unshift({ key: 'phone-snags-second-pass', title: 'Phone snags, second pass',
-  note: 'On a phone: product pages have no edition card and show the cover small beside the title; a session page shows Replay or Play without scrolling; More games cards move on press and their art is 2:1; press and hold the home hero, a card, a button: nothing selects. The phone top bar shows Menu and a person icon. Account: Pass, Notifications, then Username. Check at 320, 390 and 1280px.',
+  note: 'On a phone: product pages have no edition card and show the cover small beside the title; a session page shows its buttons without scrolling; More games cards move on press and their art is 2:1; press and hold the home hero, a card, a button: nothing selects. The phone top bar shows Menu and a person icon. Account: Pass, Notifications, then Username. Check at 320, 390 and 1280px.',
   steps: ['home', 'word-signed-out', 'word-free', 'casebook-pass', 'session-puzzle', 'session-delve', 'account-email'] });
 KIT_QA.unshift({ key: 'final-audit-snags', title: 'Final audit snags',
   note: 'By hand: from Cancel sheet: payment failed, press Cancel subscription, then Library, 36,000 Summers Ago, then History: the Account card, the library page and History all say 6 October, the last day is 5 October, and History keeps every Pass-game play. Sign up by email (first and last name asked) as a new account: Library never played, History empty, Username changeable on 5 November. On Account, type the current username and press Update: it answers. Signed out (demo bar) on Library, History, Account or a session: Sign in, then that page. Notifications on: Games has Done; off: no count. Type a 70-letter word in each search; type 36000. Check at 390 and 1280px.',
@@ -98,6 +98,11 @@ KIT_QA.unshift({ key: 'directory-listings', title: 'Directory listings',
 KIT_QA.unshift({ key: 'pass-ended-every-case', title: 'Pass ended: every case',
   note: 'Library as a player whose Pass ended. Escape: free first-room card with Play. Casebook: “You stopped here.” The Barrow: “You stopped here.”, CHAPTER 2. Delve: free first-scene card, done. Daily Groups: “You stopped here.”, no Play. No Library row for Escape, Casebook, the Barrow or Delve reads “Pass only”.',
   steps: ['pur-pass-ended-every'] });
+KIT_QA.unshift({ key: 'elegance-fixes', title: 'Elegance fixes, 17 October (not signed off)',
+  note: 'Check each at phone and desktop width. Free first edition in progress: head card, Your cases or scenes, Every case, the case page and the Library row all say In progress with the play date; Config This week finished ends it everywhere. Pass-ended and never-had Game pages show the Needs the Pass card in the now card’s place. Empty filters: “Nothing matches that.” and Clear all, no box. Under 640px every button is full width.',
+  steps: ['pur-first-in-progress', 'library-casebook-free-in-progress', 'library-delve-free-in-progress', 'library-list-free-in-progress', 'pur-first-done', 'edition-word-done', 'edition-mystery-done', 'edition-casebook-done',
+    'session-groups-unfinished', 'session-delve-unfinished', 'library-hunter-pass-ended', 'library-hunter-pass-ended-today', 'fp-hunter-library-lapsed', 'library-casebook-pass-ended', 'library-delve-pass-ended', 'pur-pass-ended', 'pur-pass-ended-every', 'library-groups-free', 'pass-card-lapsed',
+    'filter-empty-discover', 'filter-empty-library', 'filter-empty-history', 'history-search-empty', 'casebook-pass', 'casebook-free', 'session-groups', 'library-word', 'library-word-free', 'pur-new-account'] });
 const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;

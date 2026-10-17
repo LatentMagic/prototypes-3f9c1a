@@ -1718,6 +1718,16 @@
                 'On a phone the notification ask line is centred on its bar. Discover and the Pass upsell aids are tidied to match.',
               ],
             },
+            {
+              date: '2026-10-17',
+              title: 'Played once: a finished daily, weekly or fixed-answer play cannot be started again',
+              items: [
+                'New rule, read everywhere through gsStartsOver (gs-data.jsx): a daily or weekly edition, and any game with a fixed answer (a new once flag on its card), is played once. A finished one shows "You\u2019ve played this one. It can\u2019t be played again." (GS_ONCE_LINE) and nothing that starts it: no prompt, no Copy, no Pass line, and the play dialog says it instead of giving a prompt. A story or adventure chapter can still be started over from its prompt, and counts for nothing new.',
+                'History (gs-history.jsx) is rebuilt on one play log: each edition holds its one play, and every row opens a record that agrees with it. A day started over is a new day. The Casebook free first case now reads its single play record, in progress (its first six turns) or finished, with Play or Share as the session page carries them.',
+                'Each game\u2019s edition list and Library rows read the day the play happened, not the edition date. The Delve family\u2019s "The day" week card says a day started over goes differently.',
+                'Account\u2019s copy of your data lists your sessions with result and played time. The billing button for a lapsed player reads "Get the Pass again". Ten-more-games data, Discover, Connect and Config copy are tidied to match. New spec folder docs/specs/elegance-audit/.',
+              ],
+            },
           ],
         }
       ]

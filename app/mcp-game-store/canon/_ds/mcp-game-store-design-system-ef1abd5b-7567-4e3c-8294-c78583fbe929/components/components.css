@@ -25,6 +25,9 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn.is-done .mcp-swap .b{opacity:1;transform:none}
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
+/* One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
+@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
+@media (min-width:640px){.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){display:inline-grid;grid-template-columns:repeat(2,1fr);justify-self:start}}
 
 .mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
 @media (hover:hover){.mcp-lnk:hover{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):hover{color:#fff}}
@@ -103,6 +106,16 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-soon-tags .mcp-tag{white-space:normal;height:auto;min-height:26px;padding-top:4px;padding-bottom:4px;line-height:1.3}
 .mcp-soon-play{background:none;border:0;padding:0;min-height:44px;margin-block:-9px;display:inline-flex;align-items:center;cursor:pointer;color:inherit;font:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 .mcp-soon-play:focus-visible{outline:none}.mcp-soon-play:focus-visible>.mcp-tag{outline:2px solid var(--off-white);outline-offset:2px}
+/* Needs the Pass: two halves split by one ruled line (the line token), side by side from 640px, stacked under it. Label and foot slots are always laid out so both variants keep one size. */
+.mcp-npass{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);min-height:320px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);color:var(--text)}
+.mcp-npass-half{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);padding:var(--space-5);min-width:0}
+.mcp-npass-half+.mcp-npass-half{border-left:1px solid var(--line)}
+.mcp-npass-label{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--off-white);min-height:1.3em}
+.mcp-npass-half>.mcp-t-sec{margin:0}
+.mcp-npass-line{margin:0}
+.mcp-npass-foot{margin-top:auto;padding-top:var(--space-4);min-height:calc(1.4em + var(--space-4))}
+.mcp-npass-note{margin:0;font:400 14px/1.4 var(--font-text);color:var(--muted)}
+@media (max-width:639.98px){.mcp-npass{grid-template-columns:minmax(0,1fr);min-height:0}.mcp-npass-half{padding:var(--space-4)}.mcp-npass-half+.mcp-npass-half{border-left:0;border-top:1px solid var(--line)}}
 .mcp-card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--space-4);justify-self:stretch;min-width:0}
 .mcp-card-head>.mcp-lnk,.mcp-card-head>a{min-height:44px}
 

@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
-// A session in progress (s.live) has no Share and no Play again: one button carries it on in your AI.
-// A replay (s.again) has Share like a first play; its text carries the replay mark (gsReplayMark). It never changes the streak.
+// A session in progress (s.live) has no Share: one button carries it on in your AI.
+// A finished daily, weekly or fixed-answer play shows GS_ONCE_LINE and nothing that starts it; a finished chapter has Start over (gsStartsOver).
 // A session page is one play: it lists no other plays.
 // A 36,000 Summers Ago day has no result to share: Share carries the product page link only.
 // gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
@@ -38,12 +38,9 @@ const gsWordRow = (guess, answer) => {
   g.forEach((ch, i) => { if (res[i] !== '🟩' && left[ch]) { res[i] = '🟨'; left[ch] -= 1; } });
   return res.join('');
 };
-// The replay mark: one short tag at the end of the share text's first line.
-const gsReplayMark = (lines) => lines && [lines[0] + '  🔁 Replay', ...lines.slice(1)];
 // The session's date box is one button wide, so its weekday is shortened: Tuesday → Tue.
 const gsShortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
-const gsShareText = (s) => { const t = gsShareBase(s); return s.again ? gsReplayMark(t) : t; };
-const gsShareBase = (s) => {
+const gsShareText = (s) => {
   if (s.share == null) return null;
   const link = 'https://platform.example/' + GS_GAMES[s.gid].route;
   if (s.gid === 'word' && s.number) {
@@ -97,18 +94,15 @@ const GsSessionRecord = () => {
   const s = GS_SESSIONS[gs.route.id];
   const [share, setShare] = React.useState(false);
   // A game with no result block (36,000 Summers Ago) shares its product page link only (MCPG-030 AF-04).
-  const linkOnly = s.share == null && s.kind === 'day' && !s.live && !s.again;
+  const linkOnly = s.share == null && s.kind === 'day' && !s.live;
   const text = linkOnly ? ['https://platform.example/' + GS_GAMES[s.gid].route] : gsShareText(s);
   const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
-  // Play again carries the Pass mark when a player without the Pass would need it for this edition. It still opens the prompt.
-  // A game whose finished editions can't be played again (gsCanReplay) has no Play again, and so no Pass line in its place.
-  // Play until an edition is finished once, Play again after (ratified 2026-10-11).
-  const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null; const g = s.gid && GS_GAMES[s.gid];
-  const needsPass = !!g && (ed ? edNeedsPass(gs, ed) : gs.view !== 'pass' && !g.free);
-  const held = !!ed && !s.live && needsPass && gsCanReplay(s.gid); // an edition that needs the Pass: the line and button replace Play and Play again
-  const again = !gsCanReplay(s.gid) || held ? null : <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again{needsPass && <DS.Tag kind="locked">Pass</DS.Tag>}</DS.Button>;
-  const holdBlock = held && <GsNeedsPass gid={s.gid} />;
+  // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once (owner, 2026-10-17).
+  const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null;
+  const over = !!s.gid && gsStartsOver(s.gid);
+  const again = over ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Start over</DS.Button> : null;
+  const onceLine = !!s.gid && !over && <p>{GS_ONCE_LINE}</p>;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   const list = (
     <section className="gs-stack-md">
@@ -125,8 +119,9 @@ const GsSessionRecord = () => {
       <section className="gs-sess-head">
         <GsCover art={s.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <h1 className="gs-h1">{ed ? edLabel(ed) : s.game}</h1>
-          <div className="gs-figs"><span className="gs-fig">Not finished</span><span className="gs-fig gs-fig-quiet">{s.date}</span></div>
+          <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
+          <h1 className="gs-h1">Not finished</h1>
+          <div className="gs-figs"><span className="gs-fig gs-fig-quiet">{gsShortDay(gsSessDate(s, gs))}</span></div>
           <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
         </div>
       </section>
@@ -153,7 +148,7 @@ const GsSessionRecord = () => {
               </DS.ButtonPair> : <DS.Button onClick={() => setShare(true)}>Share</DS.Button>)
               : again}
           </div>
-          {holdBlock}
+          {!s.live && onceLine}
         </div>
       </section>
 
@@ -187,4 +182,4 @@ const GsSessionRecord = () => {
 
 const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
-Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText, gsReplayMark });
+Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText });

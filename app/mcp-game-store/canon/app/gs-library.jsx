@@ -152,8 +152,8 @@ const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p
 // A player whose Pass ended: weeks dated after it are frozen (not playable), and the streak counts only the weeks before.
 // get(x) gives an edition's date text; returns the run's weeks (oldest first, with frozen set) and the frozen streak.
 const lbFrozen = (weeks, list, get) => ({ weeks: weeks.map((w) => { const frozen = !lbOld(w.day + ' ' + w.month + ' 2026'); return { ...w, frozen, now: frozen ? false : w.now }; }), n: lbStreak(list.filter((x) => lbOld(get(x)))) });
-// The streak, newest first: editions completed in their first finished play, each in its own day or week.
-// This edition adds only once completed; until its day or week ends it breaks nothing. A replay never counts.
+// The streak, newest first: editions completed, each in its own day or week. Each edition is played once.
+// This edition adds only once completed; until its day or week ends it breaks nothing.
 const lbStreak = (list) => { let n = 0; const l = list[0] && !list[0].done ? list.slice(1) : list; for (const x of l) { if (!x.done) break; n += 1; } return n; };
 
 // ---- A row of choices (History's side column) ----

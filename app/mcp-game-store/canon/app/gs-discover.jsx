@@ -101,11 +101,12 @@ const gsLibRow = (gs, k) => {
     const today = c.weekly ? gsLibShort(GS_SESSIONS[c.today] && GS_SESSIONS[c.today].date) : 'Today';
     if (now) return now.status.kind === 'live' ? row('In progress', null, today) : row(c.weekly ? 'Done this week' : 'Done today', 'ok', today);
     const last = gs.review.never === k || gsFresh(gs) ? null : c.all.slice(1).find((x) => x.played);
-    return row(GS_LIB_READY[k], null, last ? last.date : '');
+    return row(GS_LIB_READY[k], null, last ? (window.phPlayedOn && phPlayedOn(last.id)) || last.date : '');
   }
   if (k === 'casebook' || k === 'delve') {
     const live = k === 'casebook' ? CB_LIVE : DV_ALL[0]; const hist = k === 'casebook' ? cbHist(gs) : dvHist(gs);
-    const date = (x) => (x ? (k === 'casebook' ? x.week : x.date) : '');
+    // The day the case or scene was played (its play record), never its edition date.
+    const date = (x) => (x ? (window.phPlayedOn && phPlayedOn(x.id)) || (k === 'casebook' ? x.week : x.date) : '');
     if (pass) { const now = lbNow(gs, k); return now.status.kind === 'live' ? row('In progress', null, date(live)) : row('Done this week', 'ok', date(live)); }
     if (lapsed) return row('Pass only', null, date(hist[0]));
     if (!done) return row('In progress', null, date(hist[0]));

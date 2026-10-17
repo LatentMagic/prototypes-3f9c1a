@@ -24,14 +24,13 @@ const gsPromptText = (r) => r.kind === 'games' ? 'Load the [Platform] games tool
 const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
 // What a play control starts: on a session's page, the edition that session belongs to; elsewhere the game.
 const gsSessEd = (gs, sid) => {
-  const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
+  const s = GS_SESSIONS[sid]; const gid = s && s.gid;
+  if (gid === 'barrow' && window.bwEds) return bwEds(gs)[0];
+  if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
   const list = edList(gs, gid);
   if (s.edKey) return list.find((e) => e.key === s.edKey) || list[0];
-  // A replay's record is its edition's record with -r<n> on the end.
-  const base = sid.replace(/-r\d+$/, '');
-  if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === base); if (x) return list.find((e) => e.key === x.id) || list[0]; }
-  if (gid === 'delve' && window.DV_ALL) { const x = DV_ALL.find((y) => dvSid(y) === base); if (x) return list.find((e) => e.key === x.id) || list[0]; }
-  // A replay is not in the edition's record; it belongs to the edition of its number.
+  if (window.PZ && PZ[gid]) { const x = PZ[gid].all.find((y) => y.sid === sid); if (x) return list.find((e) => e.key === x.id) || list[0]; }
+  if (gid === 'delve' && window.DV_ALL) { const x = DV_ALL.find((y) => dvSid(y) === sid); if (x) return list.find((e) => e.key === x.id) || list[0]; }
   if (s.number != null) { const m = list.find((e) => e.n === s.number); if (m) return m; }
   return list[0];
 };
@@ -61,9 +60,17 @@ const GsAddress = () => {
 const GsOtherSteps = ({ id }) => { const o = GS_AI_OTHERS.find((x) => x[0] === id); return <GsSteps items={[<div className="gs-stack-sm"><span>Copy the [Platform] address.</span><GsAddress /></div>, ...o[2]]} />; };
 
 // ---- The play dialog: one line about connecting, the prompt, Copy ----
+// A finished edition of a game played once starts nothing, by any route: the dialog says so, with no prompt and no Copy.
+const gsReqEd = (gs, r) => r.e || (r.kind === 'game' && gs.view !== 'out' && window.ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
+const gsReqDone = (gs, r) => { const e = gsReqEd(gs, r); return !!e && !gsStartsOver(e.gid) && !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live'; };
 const GsPlayDialog = () => {
   const gs = useGs(); const last = React.useRef(null); if (gs.playing) last.current = gs.playing; const r = last.current;
   if (!r) return null;
+  if (r.kind !== 'games' && gsReqDone(gs, r)) return (
+    <DS.Popup open={!!gs.playing} onClose={gs.closePlay} title={gsPromptTitle(r)}>
+      <p>{GS_ONCE_LINE}</p>
+    </DS.Popup>
+  );
   return (
     <DS.Popup open={!!gs.playing} onClose={gs.closePlay} title={'Start ' + gsPromptTitle(r)} actions={<GsCopyPrompt text={gsPromptText(r)} />}>
       <div className="gs-stack-md">

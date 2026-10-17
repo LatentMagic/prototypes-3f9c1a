@@ -7,6 +7,14 @@
 const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
 const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
 const CB_FIRST = CB_ALL[CB_ALL.length - 1];
+// The free first case as its one play record stands (phFirstRec): in progress, the case so far (its first six turns); ended, as played; not started, null.
+const cbFirstOf = (gs) => {
+  const st = window.phFirstSt ? phFirstSt(gs, 'casebook') : 'done';
+  if (st === 'none') return null;
+  if (st !== 'live') return CB_FIRST;
+  const rec = CB_FIRST.rec.filter((r) => r.c !== 'A').slice(0, 6); const seq = rec.map((r) => r.c).join('');
+  return { ...CB_FIRST, live: true, verdict: null, seq, rec, turns: rec.length, lies: rec.filter((r) => r.c === 'B').length };
+};
 // A free player has the first case; a player whose Pass ended has every case they played before it ended, this week's included when it ended today; the Pass has all.
 // A new account has none. This week's case is CB_LIVE in the seed; its finished form is cbWeek.
 const cbHist = (gs) => (gsFresh(gs) ? [] : CB_ALL.filter((c) => (gs.view === 'pass' ? c.id !== CB_LIVE.id : gsLapsed(gs) ? c.played && lbOld(c.week, gs) : c === CB_FIRST))
@@ -59,15 +67,10 @@ const CbCase = ({ c }) => {
   const gs = useGs();
   const rec = c.rec.map((r, i) => ({ ...r, n: i + 1 }));
   const acc = rec.find((r) => r.c === 'A');
-  // Controls as the shared session page carries them: Play in progress; Share when finished, and Play again only if the game can be replayed (gsCanReplay);
-  // a player without the Pass on a case that needs it gets the line and "Get the Pass" instead of Play again.
-  const ed = edList(gs, 'casebook').find((x) => x.key === String(c.id).split('-r')[0]);
-  const again = gsCanReplay('casebook');
-  const held = !!ed && !c.live && again && edNeedsPass(gs, ed);
-  const replay = again && <DS.Button variant="secondary" onClick={() => gs.playReq({ kind: 'edition', e: ed })}>Play again</DS.Button>;
+  // Controls as the shared session page carries them: Play in progress; Share when finished, with the played-once line. A case has a fixed answer, so nothing starts it again.
+  const ed = edList(gs, 'casebook').find((x) => x.key === String(c.id));
   const share = !c.live && <LbShare lines={cbShareLines(c)} />;
-  const acts = held ? null : c.live ? <DS.Button onClick={() => gs.playReq({ kind: 'edition', e: ed })}>Play</DS.Button>
-    : share && replay ? <DS.ButtonPair>{replay}{share}</DS.ButtonPair> : share || replay || null;
+  const acts = c.live ? <DS.Button onClick={() => gs.playReq({ kind: 'edition', e: ed })}>Play</DS.Button> : share || null;
   return (
     <main className="gs-wrap gs-main">
       <LbBackTo gid="casebook" />
@@ -75,7 +78,7 @@ const CbCase = ({ c }) => {
         <div className="gs-stack-xs"><span className="gs-label">{(c.id === CB_LIVE.id ? 'THIS WEEK' : 'WEEK OF ' + c.week.toUpperCase())}</span><h1 className="gs-h1">{c.title}</h1></div>
         {acts && <div className="gs-pairwrap">{acts}</div>}
       </div>
-      {held && <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>{share}<GsNeedsPass gid="casebook" /></div>}
+      {!c.live && <p style={{ margin: 0 }}>{GS_ONCE_LINE}</p>}
       <section className="lb-card">
         <dl className="lb-figs">
           <div><dt>Result</dt><dd><LbResult s={cbStatus(c)} /></dd></div>
@@ -104,7 +107,7 @@ const CbCase = ({ c }) => {
 const CbFirst = () => {
   const gs = useGs(); const again = gsLapsed(gs); const fresh = gsFresh(gs);
   // A free account's first case half-done (Config: This week, or today: In progress). A new account hasn't played it.
-  const c = fresh ? { ...CB_FIRST, played: false } : !again && !lbWeekDone(gs) ? { ...CB_FIRST, live: true, verdict: null, turns: 6 } : CB_FIRST;
+  const c = fresh ? { ...CB_FIRST, played: false } : cbFirstOf(gs) || { ...CB_FIRST, played: false };
   if (c.live) return (
     <section className="lb-card">
       <div className="lb-top">
@@ -143,7 +146,7 @@ const CbLibrary = () => {
   // A free account's first case half-done: not solved yet, so its row and its achievements say so.
   const firstLive = !pass && !gsLapsed(gs) && !lbWeekDone(gs) && !gsFresh(gs);
   const ach = gsFresh(gs) ? lbNoAch(CB_ACH) : firstLive ? CB_ACH.map((a) => ({ ...a, gotFree: undefined })) : CB_ACH;
-  const c = sid && (sid === CB_LIVE.id ? (pass || (gsLapsed(gs) && lbOld(CB_LIVE.week, gs)) ? cbWeek(gs) : null) : CB_ALL.find((x) => x.id === sid && x.played));
+  const c = sid && (sid === CB_LIVE.id ? (pass || (gsLapsed(gs) && lbOld(CB_LIVE.week, gs)) ? cbWeek(gs) : null) : (sid === CB_FIRST.id && !pass ? cbFirstOf(gs) : CB_ALL.find((x) => x.id === sid && x.played)));
   if (c) return <CbCase key={k + sid} c={c} />;
   return (
     <main key={k} className="gs-wrap gs-main">
@@ -161,4 +164,4 @@ const CbLibrary = () => {
 };
 
 window.GS_LIBRARY.casebook = CbLibrary;
-Object.assign(window, { cbGo, cbWeek, cbStatus });
+Object.assign(window, { cbGo, cbWeek, cbStatus, cbFirstOf });

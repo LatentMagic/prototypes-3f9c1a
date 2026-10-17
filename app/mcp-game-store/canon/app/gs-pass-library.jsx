@@ -2,7 +2,7 @@
 // Re-publishes: GsLibrary (canon's, app/gs-discover.jsx, plus New for you, Your games and the free account's Pass line), gsLibRow
 // (Escape and the Barrow as staged), PzNow and CbNow (canon's, plus the link once finished), and GS_LIBRARY.casebook / delve /
 // escape / barrow for a free or Pass-ended player. Each page body is canon's composition with the first-part card (CprFirst)
-// or the returning card (CprReturn) in the now card's place. A Pass holder gets canon's page, except the Barrow.
+// or the design system's Needs the Pass card (LbNeedsPass) in the now card's place. A Pass holder gets canon's page, except the Barrow.
 const CPR_SHIP_LIB = { ...window.GS_LIBRARY };
 const cprShipLibRow = window.gsLibRow;
 
@@ -19,7 +19,7 @@ const CPR_FIRST = {
   casebook: (gs) => { const c = CB_FIRST; return {
     label: 'THE FIRST CASE · FREE', title: c.title, weekly: true,
     none: 'The game’s very first case, the same for everyone. Play it free.',
-    live: 'You’ve used 6 of 16 turns. Carry on in your AI.', liveBar: ['6 of 16 turns used', 6, 16],
+    live: 'You’ve used ' + (cbFirstOf(gs) || c).turns + ' of 16 turns. Carry on in your AI.', liveBar: [(cbFirstOf(gs) || c).turns + ' of 16 turns used', (cbFirstOf(gs) || c).turns, 16],
     done: 'You used ' + c.turns + ' of 16 turns and exposed ' + c.lies + ' of ' + c.total + ' lies.', doneBar: [c.turns + ' of 16 turns used', c.turns, 16],
     result: cbStatus(c), share: cbShareLines(c), rec: 'See every turn', open: () => cbGo(gs, c.id), play: () => gs.play(GS_NAME.casebook) }; },
   delve: (gs) => { const s = DV_FIRST; return {
@@ -39,7 +39,7 @@ const CPR_FIRST = {
     none: BW_CH1.line,
     done: 'Your hero reached level 4 and came back with a bronze ring and 6 pieces of loot.', doneBar: ['Level 4 of 5', 4, 5],
     result: { kind: 'ok', label: 'Finished' }, share: gsShareText(GS_SESSIONS['gs-pu-barrow-ch1']), rec: 'See the run', open: () => gs.go('session', { id: 'gs-pu-barrow-ch1' }),
-    play: () => gs.playReq({ kind: 'edition', e: bwEds(gs)[0] }) }),
+    play: () => gs.playReq({ kind: 'edition', e: bwEds(gs)[0] }), over: true }),
 };
 const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
@@ -57,7 +57,7 @@ const CprFirst = ({ id }) => {
       {bar && <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />}
       <div className="lb-foot">
         <div className="lb-acts">
-          {done ? <><LbShare lines={f.share} /><DS.TextLink onClick={f.open}>{f.rec}</DS.TextLink></> : <DS.Button onClick={f.play}>Play</DS.Button>}
+          {done ? <>{f.over && <DS.Button variant="secondary" onClick={f.play}>Start over</DS.Button>}<LbShare lines={f.share} /><DS.TextLink onClick={f.open}>{f.rec}</DS.TextLink></> : <DS.Button onClick={f.play}>Play</DS.Button>}
         </div>
         {soon}
       </div>
@@ -67,34 +67,24 @@ const CprFirst = ({ id }) => {
   );
 };
 
-// ---- A player whose Pass has ended: one card on the game they last played, every visit (owner, 2026-10-16). ----
-const cprReturnLabel = (gs, id) => {
-  if (cprLapsedOf(id).at) return cprLapsedOf(id).at;
-  if (id === 'barrow') return 'CHAPTER 1';
-  if (id !== 'casebook' && id !== 'delve') return 'YOUR LAST ' + GS_GAMES[id].ed[0].toUpperCase();
-  const h = id === 'casebook' ? cbHist(gs)[0] : dvHist(gs)[0];
-  return h ? 'WEEK OF ' + (id === 'casebook' ? h.week : h.date).toUpperCase() : 'YOUR LAST ' + GS_GAMES[id].ed[0].toUpperCase();
+// ---- Needs the Pass: the design system's card wherever the play control would be and this player can't play without the Pass.
+// had: the player played this game with a Pass that has ended; otherwise the never-had form. Every slot is filled by the system's
+// rule (NeedsPass.prompt.md) from the game's facts and the player's own record: the play record (phVisible), never typed text.
+// A game with editions passes its edition word; a standalone (36,000 Summers Ago) passes none, so the card reads "Last played"
+// and "Play the whole game." The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
+const cprIso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const LbNeedsPass = ({ id, had, ach, access }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const items = ach || [];
+  const word = cprEditions(id) && g.ed ? g.ed[0] : undefined; const words = word ? g.ed[1] : undefined;
+  let record = null;
+  if (had) {
+    const earned = lbAchView(items, access || lbAccess(gs, id), gs).filter((x) => x.got).length;
+    if (id === 'barrow') { const at = cprLapsedOf('barrow').at; const ch = at ? +at.replace(/\D/g, '') || 1 : 1; record = { chapter: ch, played: ch, earned }; }
+    else { const plays = phVisible(gs).filter((p) => p.gid === id); record = { last: plays[0] ? cprIso(plays[0].at) : '', played: new Set(plays.map((p) => p.ed)).size, earned }; }
+  }
+  return <DS.NeedsPass game={GS_NAME[id] || g.name} word={word} words={words} record={record} total={items.length} onGet={() => gs.go('pass')} style={id === 'barrow' ? { gridColumn: '1 / -1' } : undefined} />;
 };
-const CprReturn = ({ id }) => {
-  const gs = useGs();
-  return (
-    <section className="lb-card gs-pu-return" style={id === 'barrow' ? { gridColumn: '1 / -1' } : undefined}>
-      <div className="gs-stack-xs"><span className="gs-label">{cprReturnLabel(gs, id)}</span><h2 className="mcp-t-sec gs-pu-wrap">You stopped here. Everything you earned is still yours.</h2></div>
-      <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass again</DS.TextLink></div>
-    </section>
-  );
-};
-// A Pass-only game for a player without the Pass who never played it with one: the free player's closed card, as 36,000 Summers Ago's.
-const CprClosed = ({ id }) => {
-  const gs = useGs(); const n = GS_NAME[id] || GS_GAMES[id].name;
-  return (
-    <section className="lb-card is-closed">
-      <div className="gs-stack-xs"><h2 className="mcp-t-sec">Only with the Pass</h2><p>{n + ' comes only with the Pass. A free account can’t play it.'}</p></div>
-      <DS.Button onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
-    </section>
-  );
-};
-const cprNowCard = (gs, id) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <CprReturn id={id} /> : <CprFirst id={id} />; };
+const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
 const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '') + cprStore.get().lapsed;
 
 // ---- The library game pages for a free or Pass-ended player (canon's composition). ----
@@ -102,13 +92,12 @@ const CprCbLibrary = () => {
   const gs = useGs();
   if (gs.view === 'pass' || gs.route.sid) return <CPR_SHIP_LIB.casebook />;
   const access = lbAccess(gs, 'casebook'); const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
-  const firstLive = !lapsed && !lbWeekDone(gs) && !fresh;
-  const ach = fresh ? lbNoAch(CB_ACH) : firstLive ? CB_ACH.map((a) => ({ ...a, gotFree: undefined })) : CB_ACH;
+  const ach = fresh ? lbNoAch(CB_ACH) : phFirstAch(gs, 'casebook', CB_ACH);
   return (
     <main key={cprKey(gs)} className="gs-wrap gs-main">
       <LbHead id="casebook" />
       <div className="lb-lay">
-        {cprNowCard(gs, 'casebook')}
+        {cprNowCard(gs, 'casebook', ach)}
         {!lapsed && <LbRunPass unit="weeks" weeks={cbWeeks(gs)} />}
         {lapsed && (() => { const f = lbFrozen(cbWeeks(gs), cbRunList(gs), (c) => c.week); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
@@ -121,13 +110,12 @@ const CprDvLibrary = () => {
   const gs = useGs();
   if (gs.view === 'pass') return <CPR_SHIP_LIB.delve />;
   const access = lbAccess(gs, 'delve'); const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
-  const firstLive = !lapsed && !lbWeekDone(gs) && !fresh;
-  const ach = fresh ? lbNoAch(DV_ACH) : firstLive ? DV_ACH.map((a) => ({ ...a, gotFree: undefined })) : DV_ACH;
+  const ach = fresh ? lbNoAch(DV_ACH) : phFirstAch(gs, 'delve', DV_ACH);
   return (
     <main key={cprKey(gs)} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        {cprNowCard(gs, 'delve')}
+        {cprNowCard(gs, 'delve', ach)}
         {!lapsed && <LbRunPass unit="weeks" weeks={lbRunOf(DV_ALL)} />}
         {lapsed && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won', failed: i > 0 && s.played && s.end !== 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
@@ -141,12 +129,13 @@ const CprEsLibrary = () => {
   const gs = useGs();
   if (gs.view === 'pass') return <CPR_SHIP_LIB.escape />;
   const c = PZ.escape; const x = cprEscFirst(); const lapsed = gsLapsed(gs); const fresh = gsFresh(gs); const st = cprFirstState(gs, 'escape');
-  const items = c.ach.map((a) => ({ ...a, first: a.k !== 'e4', gotFree: a.k === 'e1' && st === 'done' ? x.date : undefined }));
+  const rec = phFirstRec(gs, 'escape');
+  const items = c.ach.map((a) => ({ ...a, first: a.k !== 'e4', gotFree: a.k === 'e1' && st === 'done' && rec ? rec.date : undefined }));
   return (
     <main key={cprKey(gs)} className="gs-wrap gs-main">
       <LbHead id="escape" />
       <div className="lb-lay">
-        {cprNowCard(gs, 'escape')}
+        {cprNowCard(gs, 'escape', fresh ? lbNoAch(items) : items)}
         {!lapsed && <LbRunPass unit="weeks" weeks={lbRunOf(c.all)} />}
         {lapsed && (() => { const f = lbFrozen(lbRunOf(c.all), c.all, (y) => y.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={fresh ? lbNoAch(items) : items} badges={c.badges} access={lbAccess(gs, 'escape')} ed={GS_GAMES.escape.ed} />
@@ -164,7 +153,7 @@ const CprBwLibrary = () => {
     <main key={cprKey(gs) + st} className="gs-wrap gs-main">
       <LbHead id="barrow" />
       <div className="lb-lay">
-        {gs.view === 'pass' ? <CprFirst id="barrow" /> : cprNowCard(gs, 'barrow')}
+        {gs.view === 'pass' ? <CprFirst id="barrow" /> : cprNowCard(gs, 'barrow', ach)}
         <LbAch items={ach} badges={BW_BADGES} access={lbAccess(gs, 'barrow')} ed={GS_GAMES.barrow.ed} />
         {st === 'done' ? <CprBwRecent /> : <LbRecent title="Your chapters" allLabel="See in History" empty="Your chapters appear here once you have played one." />}
       </div>
@@ -205,7 +194,7 @@ const cprPzLibrary = (id) => () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id={id} />
       <div className="lb-lay">
-        {cprLocked(gs, id) ? (gsLapsed(gs) && cprLapsedOf(id).pass ? <CprReturn id={id} /> : <CprClosed id={id} />) : <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />}
+        {cprLocked(gs, id) ? <LbNeedsPass id={id} had={gsLapsed(gs) && cprLapsedOf(id).pass} ach={ach} access="all" /> : <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />}
         <LbRun n={n} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
         <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
@@ -228,8 +217,8 @@ const cprLibRow = (gs, k) => {
   if (gs.view !== 'pass' && (k === 'escape' || k === 'barrow')) {
     const st = cprFirstState(gs, k); const u = k === 'escape' ? 'room' : 'chapter';
     if (st === 'none') return cprRow(CPR_FREE_READY[k], null, '', 0);
-    if (st === 'live') return cprRow('In progress', null, 'Today', 9e15);
-    const d = k === 'escape' ? cprEscFirst().d : new Date(2026, 9, 14);
+    const d = k === 'escape' ? phFirstRec(gs, 'escape').at : new Date(2026, 9, 14);
+    if (st === 'live') return cprRow('In progress', null, d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }), d.getTime());
     return cprRow('Free ' + u + ' done', 'ok', d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }), d.getTime());
   }
   if (GS_GAMES[k].added) return cprRow(gs.view === 'pass' ? GS_LIB_READY[k] : 'Pass only', null, '', 0);
@@ -268,7 +257,8 @@ const CprLibrary = () => {
   const row = (k) => { const g = GS_GAMES[k]; const me = rows[k]; return <DS.ListRow key={k} lead={<PhLead gid={k} />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />; };
   const list = (ks) => <div className="lb-box"><DS.RowList label="Library">{ks.map(row)}</DS.RowList></div>;
   const tile = (k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} page="record" />;
-  const empty = <div className="dc-empty" style={{ minWidth: 0 }}><p style={{ overflowWrap: 'anywhere' }}>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>;
+  // A filter or search that finds nothing: the design system's line and Clear all (ui-standard.md, Designed empty states).
+  const empty = <div className="gs-nomatch"><p>Nothing matches that.</p><DS.TextLink onClick={showAll}>Clear all</DS.TextLink></div>;
   const newFree = gsFresh(gs) && gs.view === 'free';
   return (<>
     {window.GsPushAsk && <window.GsPushAsk />}
@@ -350,4 +340,4 @@ const CprCbNow = ({ c }) => {
   );
 };
 
-Object.assign(window, { GsLibrary: CprLibrary, gsLibRow: cprLibRow, PzNow: CprPzNow, CbNow: CprCbNow, GsNextLink: CprNextLink });
+Object.assign(window, { LbNeedsPass, GsLibrary: CprLibrary, gsLibRow: cprLibRow, PzNow: CprPzNow, CbNow: CprCbNow, GsNextLink: CprNextLink });

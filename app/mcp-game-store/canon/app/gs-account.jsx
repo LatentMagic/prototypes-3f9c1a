@@ -154,7 +154,7 @@ const GsDataCopy = () => {
     const plays = window.phVisible ? phVisible(gs) : [];
     const out = { account: { firstName: gs.user.first, lastName: gs.user.last, username: gs.user.username, email: gs.user.email, signIn: gs.provider } };
     if (plays.length) {
-      out.sessions = plays.map((p) => ({ game: GS_GAMES[p.gid].name, edition: p.edTitle, played: p.at.toISOString(), result: p.status.label, replay: !!p.again }));
+      out.sessions = plays.map((p) => ({ game: GS_GAMES[p.gid].name, edition: p.edTitle, played: p.at.toISOString(), result: p.status.label }));
       out.streaks = 'one per game that has one';
       out.achievements = 'earned in the games played';
     }
