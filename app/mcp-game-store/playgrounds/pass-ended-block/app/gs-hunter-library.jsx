@@ -85,8 +85,13 @@ const HgNone = () => {
 const HgClosed = ({ again }) => {
   const gs = useGs(); const last = hgOld(gs)[0];
   return again
-    ? <PeBlock label={'YOUR LAST DAY · ' + (last ? last.date : lbDate(gsEndedOn(gs))).toUpperCase()} heading="You stopped here. Everything you earned is still yours." action="Get the Pass again" />
-    : <PeBlock label="Only with the Pass" line={GS_NAME.hunter + ' comes only with the Pass.'} action="Get the Pass" />;
+    ? <PeBlock game="hunter" label={'YOUR LAST DAY · ' + (last ? last.date : lbDate(gsEndedOn(gs))).toUpperCase()} heading="You stopped here. Everything you earned is still yours." action="Get the Pass again"
+        facts={[['Played', hgOld(gs).length + ' days'], ['Earned', HG_ACH.filter((a) => a.got).length + ' achievements'], ['Kept', 'Every day, in History']]}
+        kept={hgOld(gs).length + ' days played · ' + HG_ACH.filter((a) => a.got).length + ' achievements, frozen'}
+        gainsLabel="WITH THE PASS AGAIN" gains={['Play a new day at camp.', 'Frozen achievements carry on.']} />
+    : <PeBlock game="hunter" heading="Only with the Pass" line={GS_NAME.hunter + ' comes only with the Pass.'} action="Get the Pass"
+        facts={[['Play', 'A day at camp, in any chat'], ['Earn', HG_ACH.length + ' achievements'], ['Keep', 'Every day, in History']]}
+        gains={['Play a day at camp, in any chat.', 'Earn ' + HG_ACH.length + ' achievements.']} />;
 };
 const HgLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'hunter'); const pass = access === 'all'; const past = lbPast(gs); const k = gs.view + (gs.sub.hadPass ? 'u' : '');

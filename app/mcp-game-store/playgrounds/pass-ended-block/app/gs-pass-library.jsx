@@ -77,7 +77,11 @@ const cprReturnLabel = (gs, id) => {
 };
 const CprReturn = ({ id }) => {
   const gs = useGs();
-  return <PeBlock label={cprReturnLabel(gs, id)} heading="You stopped here. Everything you earned is still yours." action="Get the Pass again" style={id === 'barrow' ? { gridColumn: '1 / -1' } : undefined} />;
+  const rec = { casebook: () => [cbHist(gs), CB_ACH], delve: () => [dvHist(gs), typeof DV_ACH !== 'undefined' ? DV_ACH : []] }[id];
+  const [hist, ach] = rec ? rec() : [[], []]; const ed = GS_GAMES[id].ed;
+  const facts = rec ? [['Played', hist.length + ' ' + ed[hist.length === 1 ? 0 : 1]], ['Earned', ach.filter((a) => a.got).length + ' achievements'], ['Kept', 'Every ' + ed[0] + ', in History']] : null;
+  return <PeBlock game={GS_GAMES[id].art} label={cprReturnLabel(gs, id)} heading="You stopped here. Everything you earned is still yours." action="Get the Pass again" style={id === 'barrow' ? { gridColumn: '1 / -1' } : undefined}
+    facts={facts} kept={rec ? hist.length + ' ' + ed[hist.length === 1 ? 0 : 1] + ' played · ' + ach.filter((a) => a.got).length + ' achievements, frozen' : null} gainsLabel="WITH THE PASS AGAIN" gains={['A new ' + ed[0] + ' every week.', 'Frozen achievements carry on.']} />;
 };
 // A Pass-only game for a player without the Pass who never played it with one: the free player's closed card, as 36,000 Summers Ago's.
 const CprClosed = ({ id }) => {

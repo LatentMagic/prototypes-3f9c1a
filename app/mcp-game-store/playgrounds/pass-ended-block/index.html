@@ -1285,7 +1285,6 @@
   .lb-runcard.is-pass .lb-runbody > p.gs-small { display: none; }
   /* Playground: the secondary-button action is full width at phone width (Button block), natural width above. */
   @container gs (max-width: 559px) { .pe-act .mcp-btn { display: flex; width: 100%; } }
-  .pe-opts { position: fixed; right: 8px; bottom: 8px; z-index: 50; font: 13px/1 system-ui, sans-serif; background: #fff; color: #333; border: 1px solid #bbb; border-radius: 999px; padding: 8px 12px; text-decoration: none; opacity: .75; }
   /* At phone width no Library heading or line ends on one or two words alone. */
   @container gs (max-width: 559px) {
     .lb-lay .lb-card :is(h2, .lb-big), .gs-pu-return h2 { text-wrap: balance; }
@@ -1301,6 +1300,30 @@
   .lb-lay > .pe-centred { align-content: center; justify-items: center; text-align: center; gap: 24px; }
   .lb-lay > .pe-centred p { max-width: 48ch; text-wrap: pretty; }
   @container gs (max-width: 559px) { .lb-lay > .pe-centred .pe-act { justify-self: stretch; } }
+  /* The three options (playground). record: a ruled strip of the kept record at the card's foot. */
+  @container gs (min-width: 900px) { .lb-lay > .pe-record { align-content: space-between; } }
+  /* art: the game's art fills the card's left side on desktop, on its own ground; phone keeps words and action only. */
+  .pe-pic { display: none; }
+  .pe-pic.is-forest { background: var(--cover-bg-forest); } .pe-pic.is-indigo { background: var(--cover-bg-indigo); } .pe-pic.is-wine { background: var(--cover-bg-wine); }
+  .pe-art > .pe-text { display: grid; gap: 16px; align-content: start; min-width: 0; }
+  @container gs (min-width: 900px) {
+    .lb-lay > .pe-art { grid-template-columns: minmax(200px, 38%) minmax(0, 1fr); gap: 0; padding: 0; align-content: stretch; }
+    .pe-art > .pe-pic { display: block; min-height: 160px; }
+    .pe-art > .pe-text { padding: var(--lb-pad); align-content: space-between; gap: 24px; }
+  }
+  /* split: what stays yours | what comes back with the Pass, two compartments. */
+  .pe-kept { font-size: 14px; }
+  @container gs (max-width: 559px) { .pe-record .lb-top > .pe-act { flex: 1 1 100%; } }
+  .pe-split > .pe-half { display: grid; gap: 16px; align-content: start; min-width: 0; }
+  @container gs (min-width: 900px) {
+    .lb-lay > .pe-split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 0; padding: 0; align-content: stretch; }
+    .pe-split > .pe-half { padding: var(--lb-pad); align-content: space-between; }
+    .pe-split > .pe-gains { border-left: 1px solid var(--line); }
+  }
+  @container gs (max-width: 899px) { .pe-split > .pe-gains { border-top: 1px solid var(--line); margin: 0 calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); padding: var(--lb-pad); } }
+  /* The playground switcher: fixed, small, above the demo bar; hidden with &bare=1. */
+  .pe-sw { position: fixed; left: 8px; bottom: 104px; z-index: 60; display: flex; gap: 4px; padding: 4px; background: #fff; border: 1px solid #bbb; font: 13px/1.2 system-ui, sans-serif; color: #222; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .pe-sw select { font: inherit; color: inherit; background: #f4f4f4; border: 1px solid #ccc; padding: 6px 4px; max-width: 46vw; min-height: 36px; }
 </style>
 </head>
 <body>
@@ -1366,6 +1389,27 @@
 <script type="text/babel" src="app/gs-pass-discover.jsx"></script>
 <script type="text/babel" src="app/gs-pass-aids.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
-<script>if(!/[?&]bare=1/.test(location.search)){var a=document.createElement("a");a.className="pe-opts";a.href="choose.html";a.textContent="Options";document.body.appendChild(a);}</script>
+<script>
+// Playground switcher: option and state, re-rendered in place; the URL keeps both so it stays linkable. &bare=1 hides it.
+(function () {
+  if (/[?&]bare=1/.test(location.search)) return;
+  var opts = [['record', 'Record strip below'], ['art', 'Art beside the words'], ['split', 'What stays, what returns']];
+  var states = [['library-hunter-pass-ended', 'Had the Pass'], ['library-casebook-pass-ended', 'Casebook'], ['library-hunter-never', 'Never had it']];
+  var q = new URLSearchParams(location.search);
+  if (!q.get('state') || !states.some(function (s) { return s[0] === q.get('state'); })) q.set('state', states[0][0]);
+  if (!opts.some(function (o) { return o[0] === q.get('layout'); })) q.set('layout', opts[0][0]);
+  history.replaceState(history.state, '', '?' + q.toString());
+  var bar = document.createElement('div'); bar.className = 'pe-sw';
+  function sel(name, list, key) {
+    var s = document.createElement('select'); s.setAttribute('aria-label', name);
+    list.forEach(function (o) { var e = document.createElement('option'); e.value = o[0]; e.textContent = o[1]; s.appendChild(e); });
+    s.value = q.get(key);
+    s.onchange = function () { q.set(key, s.value); history.replaceState(history.state, '', '?' + q.toString()); if (key === 'state' && window.kitGoState) window.kitGoState(q.get('state')); else window.dispatchEvent(new Event('pe-switch')); };
+    bar.appendChild(s);
+  }
+  sel('Option', opts, 'layout'); sel('State', states, 'state');
+  document.body.appendChild(bar);
+})();
+</script>
 </body>
 </html>
