@@ -2,7 +2,9 @@
 // GSA store: the one source every screen, stager and Config row reads.
 // Route, session, queue, subscription, space, push and the held review flags
 // live here, plus the guard (gsaLand) and the verbs that move between screens.
-// In memory only; a reload is the default open.
+// Data is in memory only; a reload is the default open. The route is also written to the
+// browser history (the bottom of this file), so browser back walks the app's pages and a
+// reload or a pasted address opens on the page named in the address (#/page).
 // ============================================================================
 const GSA_SCREENS = {
   'home': 'GsaHome', 'sign-in': 'GsaSignIn', 'sign-up': 'GsaSignUp', 'sign-up-code': 'GsaSignUpCode',
@@ -89,9 +91,56 @@ function gsaMerge(base, patch) {
   return out;
 }
 
+// ---- browser history: one entry per page the person moves to ---------------
+// Each entry holds the route and the in-app back stack, so a browser back restores both.
+// gsaHistMode is set to 'push' by a move forward; any other commit only keeps the current
+// entry in step with the route (replace).
+let gsaHistMode = 'sync';
+const GSA_RESTORABLE = ['home', 'shared-space', 'paid-feature', 'account', 'legal', 'connect',
+  'deletion-request', 'plans', 'sign-in', 'not-found'];
+
+function gsaRouteKey(route) {
+  try { return JSON.stringify(route); } catch (e) { return String(route && route.name); }
+}
+
+function gsaClone(v) {
+  try { return JSON.parse(JSON.stringify(v)); } catch (e) { return null; }
+}
+
+function gsaHistUrl(route) {
+  const page = route.name === 'legal' && route.page ? '/' + route.page : '';
+  return window.location.pathname + window.location.search + '#/' + route.name + page;
+}
+
+function gsaRouteFromHash() {
+  const parts = String(window.location.hash || '').replace(/^#\/?/, '').split('/');
+  if (!GSA_RESTORABLE.includes(parts[0])) return null;
+  if (parts[0] === 'legal') return { name: 'legal', page: parts[1] || 'terms' };
+  return { name: parts[0] };
+}
+
+function gsaHistSync() {
+  const mode = gsaHistMode;
+  gsaHistMode = 'sync';
+  try {
+    const route = gsaClone(gsaState.route);
+    const stack = gsaClone(gsaStack);
+    if (!route || !stack) return;
+    const key = gsaRouteKey(route);
+    const entry = { gsa: 1, key, route, stack };
+    const cur = window.history.state;
+    if (mode === 'push') {
+      window.history.pushState(entry, '', gsaHistUrl(route));
+    } else if (!cur || !cur.gsa || cur.key !== key || JSON.stringify(cur.stack) !== JSON.stringify(stack)) {
+      window.history.replaceState(entry, '', cur && cur.gsa && cur.key === key ? undefined : gsaHistUrl(route));
+    }
+  } catch (e) { /* a sandboxed frame may refuse the history API; the app still works */ }
+}
+
 function gsaCommit(next) {
   gsaState = next;
   gsaSnap = null;
+  gsaHistSync();
   gsaListeners.forEach((fn) => fn());
 }
 
@@ -191,7 +240,10 @@ const GsaStore = {
     if (gsaEraseIfDeleted()) return;
     const cur = gsaState.route;
     const next = gsaResolve(gsaState, { name, ...params });
-    gsaStack = gsaStack.concat([cur]);
+    if (gsaRouteKey(next.route) !== gsaRouteKey(cur)) {
+      gsaStack = gsaStack.concat([cur]);
+      gsaHistMode = 'push';
+    }
     gsaCommit(next);
   },
   replace(name, params = {}) {
@@ -201,6 +253,11 @@ const GsaStore = {
   back() {
     if (gsaEraseIfDeleted()) return;
     const prev = gsaStack[gsaStack.length - 1];
+    // A page the app pushed: the browser's own back does it, and popstate restores the page.
+    const held = window.history.state;
+    if (prev && held && held.gsa) {
+      try { window.history.back(); return; } catch (e) { /* fall through to the in-memory back */ }
+    }
     gsaStack = gsaStack.slice(0, -1);
     const s = { ...gsaState, returnTo: gsaState.returnTo };
     const landed = gsaLand(prev || { name: 'home' }, s);
@@ -322,6 +379,43 @@ const GsaStore = {
     return GsaStore.replace('home');
   },
 };
+
+// ---- history wiring (runs once, when the store loads) ------------------------
+function gsaOnPop(e) {
+  if (gsaEraseIfDeleted()) return;
+  const st = e.state;
+  let route = null;
+  let stack = [];
+  if (st && st.gsa) { route = st.route; stack = st.stack || []; } else { route = gsaRouteFromHash(); }
+  const s = gsaState;
+  const landed = gsaLand(route || { name: 'home' }, s);
+  gsaStack = stack;
+  gsaCommit({ ...gsaJoin(s, landed), route: landed });
+}
+
+// Picking a state from the States index or the Config palette names it in the address.
+function gsaOnPick(e) {
+  const btn = e.target && e.target.closest ? e.target.closest('.kit-states-jump') : null;
+  const tag = btn ? btn.querySelector('.kit-states-id') : null;
+  const m = tag ? /^\?state=(.+)$/.exec(tag.textContent.trim()) : null;
+  if (!m) return;
+  try {
+    const url = window.location.pathname + '?state=' + encodeURIComponent(m[1]) + window.location.hash;
+    window.history.replaceState(window.history.state, '', url);
+  } catch (err) { /* address not writable here */ }
+}
+
+(function gsaHistBoot() {
+  try {
+    // A ?state= address stages that state (the harness); the page address only applies without one.
+    const staged = /(^|[?&])state=/.test(window.location.search);
+    const asked = staged ? null : gsaRouteFromHash();
+    if (asked) gsaState = { ...gsaState, route: gsaResolve(gsaState, asked).route };
+    window.history.replaceState({ gsa: 1, key: gsaRouteKey(gsaState.route), route: gsaClone(gsaState.route), stack: [] }, '');
+    window.addEventListener('popstate', gsaOnPop);
+    document.addEventListener('click', gsaOnPick, true);
+  } catch (e) { /* no history API: the app runs as before */ }
+})();
 
 function useGsa() {
   return React.useSyncExternalStore(GsaStore.subscribe, GsaStore.get);

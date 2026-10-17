@@ -30,3 +30,7 @@
 .gsa-shell-support a { color: var(--color-accent); }
 
 .gsa-shell-list { margin: 0 0 var(--space-4); padding-left: var(--space-5); font-size: var(--text-base); color: var(--color-fg-2); }
+
+/* The app name opens Home; the nav marks the page it is on. */
+.gsa-shell-name.gsa-btn[data-kind="link"] { justify-content: flex-start; height: auto; min-height: 44px; padding: 0; background: transparent; color: var(--color-fg-1); text-decoration: none; font-size: var(--text-lg); font-weight: 600; text-align: left; }
+.gsa-shell-nav .gsa-btn[data-kind="link"][aria-current="page"] { color: var(--color-fg-1); font-weight: 600; text-decoration: none; }

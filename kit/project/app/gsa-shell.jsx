@@ -10,20 +10,34 @@ function GsaShellLink({ to, params, children }) {
   );
 }
 
+// The current page is marked in the nav (aria-current) for the link that opens it.
+function GsaNavLink({ to, route, children }) {
+  const here = route.name === to;
+  return (
+    <GsaButton kind="link" aria-current={here ? 'page' : undefined} onClick={() => window.GsaStore.go(to)}>{children}</GsaButton>
+  );
+}
+
 function GsaShellHeader({ g }) {
   const signedIn = g.session === 'signed-in';
   const name = [g.person.first, g.person.last].filter(Boolean).join(' ');
   return (
     <header className="gsa-shell-header" data-posture={g.isApp ? 'app' : 'web'}>
       <div className="gsa-shell-bar">
-        <span className="gsa-shell-name">{window.GSA_APP_NAME}</span>
+        {signedIn ? (
+          <GsaButton kind="link" className="gsa-shell-name" onClick={() => window.GsaStore.go('home')}>{window.GSA_APP_NAME}</GsaButton>
+        ) : (
+          <span className="gsa-shell-name">{window.GSA_APP_NAME}</span>
+        )}
         {signedIn ? (
           <>
             <nav className="gsa-shell-nav" aria-label="Main">
+              {/* Home is the frame's own (ui-design: the persistent frame carries movement between areas). */}
+              <GsaNavLink to="home" route={g.route}>Home</GsaNavLink>
               {/* One tag for both links (G39): how they are reached is each app's pick. */}
               <GsaPick>
-                <GsaShellLink to="shared-space">Shared space</GsaShellLink>
-                <GsaShellLink to="paid-feature">Paid feature</GsaShellLink>
+                <GsaNavLink to="shared-space" route={g.route}>Shared space</GsaNavLink>
+                <GsaNavLink to="paid-feature" route={g.route}>Paid feature</GsaNavLink>
               </GsaPick>
             </nav>
             <div className="gsa-shell-end">
