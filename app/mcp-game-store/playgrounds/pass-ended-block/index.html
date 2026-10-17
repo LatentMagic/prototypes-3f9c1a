@@ -1291,6 +1291,16 @@
     .lb-lay .lb-card :is(h2, .lb-big), .gs-pu-return h2 { text-wrap: balance; }
     .lb-lay .lb-card > p, .lb-lay .lb-card .gs-stack-xs > p { text-wrap: balance; }
   }
+
+  /* Pass-ended block layouts (playground), desktop only: foot | middle | centred */
+  @container gs (min-width: 900px) {
+    .lb-lay > .pe-foot { align-content: space-between; }
+    .lb-lay > .pe-middle { align-content: center; }
+  }
+  /* centred: as canon's old closed card (.lb-card.is-closed), both ways, every width */
+  .lb-lay > .pe-centred { align-content: center; justify-items: center; text-align: center; gap: 24px; }
+  .lb-lay > .pe-centred p { max-width: 48ch; text-wrap: pretty; }
+  @container gs (max-width: 559px) { .lb-lay > .pe-centred .pe-act { justify-self: stretch; } }
 </style>
 </head>
 <body>
