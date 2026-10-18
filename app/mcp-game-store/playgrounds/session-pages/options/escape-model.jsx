@@ -178,7 +178,8 @@
       const mx = (prev[0] + p[0]) / 2, my = (prev[1] + p[1]) / 2, dx = p[0] - prev[0], dy = p[1] - prev[1];
       const vx = c[0] - mx, vy = c[1] - my, vl = Math.hypot(vx, vy) || 1;
       let ctl = [mx, my];
-      for (const push of [0, 36, 56, 76, 96, 120, 150]) {
+      // Toward the middle first (as far as 150); only when every such bow still grazes a slot, try the other side of the chord and then wider bows.
+      for (const push of [0, 36, 56, 76, 96, 120, 150, -36, -56, -76, -96, -120, -150, 190, 230, -190, -230]) {
         ctl = [mx + (vx / vl) * push, my + (vy / vl) * push];
         const pts = []; for (let k = 0; k <= 30; k++) pts.push(quad(prev, ctl, p, k / 30));
         if (!hits(pts, prevSlot, s)) break;
