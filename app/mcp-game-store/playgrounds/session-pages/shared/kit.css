@@ -10,7 +10,7 @@
 /* Two columns only where the side column can hold the longest share line (27 characters) unwrapped; below that the Share card sits under the Hero. */
 @container ss (min-width: 960px) { .ss-body { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
 
-/* ---- Head: cover beside the label line, h1, one-line stat row ---- */
+/* ---- Head: cover beside the label line, status glyph + h1, optional canon-style fact strip. Cover 96px on a phone, 144px above (the library's). ---- */
 .ss-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 16px; row-gap: 12px; align-items: center; }
 .ss-head > .mcp-cover { grid-row: 1; }
 .ss-head-label { display: grid; gap: 4px; justify-items: start; min-width: 0; }
@@ -18,17 +18,19 @@
 .ss-head-name a, .ss-head-name button { font: inherit; }
 .ss-head-date { font: var(--type-caption); color: var(--muted); }
 .ss-h1 { grid-column: 1 / -1; margin: 0; font: var(--type-page-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
-.ss-stats { grid-column: 1 / -1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 0; border: 1px solid var(--ss-line); }
-.ss-stat { padding: 8px 12px; display: grid; gap: 2px; min-width: 0; }
-.ss-stat + .ss-stat { border-left: 1px solid var(--ss-line); }
-.ss-stat dt { font: var(--type-label); color: var(--muted); font-size: 13px; }
-.ss-stat dd { margin: 0; font: var(--type-card-title); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ss-mark { display: inline-flex; vertical-align: -3px; margin-right: 10px; }
+.ss-mark.is-ok { color: var(--success); }
+.ss-mark.is-bad { color: var(--error); }
+/* Canon's product-page fact strip (.gs-facts / .gs-fact / .gs-label): label over value, no border, no cells, left-aligned, one line. */
+.ss-stats { grid-column: 1 / -1; flex-wrap: nowrap; gap: 0 28px; }
+.ss-stat { padding: 0; min-width: 0; }
+.ss-stat dd { font-variant-numeric: tabular-nums; white-space: nowrap; }
 @container ss (min-width: 640px) {
-  .ss-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: 24px; row-gap: 12px; align-items: stretch; }
-  .ss-head > .mcp-cover { grid-row: 1 / span 3; width: auto; max-width: 260px; }
+  .ss-head { grid-template-columns: 144px minmax(0, 1fr); column-gap: 24px; row-gap: 12px; align-items: stretch; }
+  .ss-head > .mcp-cover { grid-row: 1 / span 3; width: 144px; }
   .ss-head-label { grid-column: 2; grid-auto-flow: column; justify-content: space-between; align-items: baseline; gap: 16px; }
   .ss-h1 { grid-column: 2; }
-  .ss-stats { grid-column: 2; max-width: 520px; }
+  .ss-stats { grid-column: 2; }
 }
 
 /* ---- Hero card, the one card kind ---- */

@@ -30,12 +30,14 @@
     const out = Ss.useOutcome('word', session);
     const status = session.unfinished ? 'ended' : session.live ? 'live' : 'done';
     const played = out.play.guesses.length, hints = out.play.hints;
-    const stats = [{ label: 'Guesses', value: played + ' of 6' }, { label: 'Hints', value: hints ? String(hints) : 'None' }];
+    // The h1 already says guesses and hints on a finished day, so a stat only appears for a day still open.
+    const stats = status === 'done' ? null : [{ label: 'Guesses', value: played + ' of 6' }, { label: 'Hints', value: hints ? String(hints) : 'None' }];
+    const left = 6 - played, say = left + (left === 1 ? ' guess left' : ' guesses left');
     const spare = Array.from({ length: Math.max(0, 6 - played) });
     // A lost day shows no answer: nothing in the engine's record holds it. The board is the whole story.
     return (
       <Ss.Page gid={gid}>
-        <Ss.Head gid={gid} art="word" label={out.label} date={session.date} h1={out.h1} stats={stats} />
+        <Ss.Head gid={gid} art="word" label={out.label} date={session.date} h1={out.h1} mark={out.mark} stats={stats} />
         <div className="ss-body">
           <section className="ss-hero ss-surface" aria-label="Your board">
             <div className="w1-board">
@@ -44,7 +46,7 @@
             </div>
           </section>
           <aside className="ss-side">
-            <Ss.ShareCard status={status} lines={share.lines} gid={gid} session={session} sid={sid} api={api} />
+            <Ss.ShareCard status={status} say={say} lines={share.lines} gid={gid} session={session} sid={sid} api={api} />
           </aside>
         </div>
         <Ss.Record title={session.listTitle} lines={session.lines} />

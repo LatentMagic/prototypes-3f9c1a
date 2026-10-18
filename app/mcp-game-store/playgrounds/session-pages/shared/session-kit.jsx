@@ -12,6 +12,8 @@
   // The distance (near | middle | far) from the rail's switch. Pages never read it directly: they read the tokens it sets on .ss-page.
   const useDist = () => (window.usePgSel().dist || 'near');
   const shortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
+  // A daily game's date has no clock time ("Tue 6 October", as Earlier shows it); a weekly or chapter game keeps whatever it has.
+  const dayOnly = (gid, d) => (typeof d === 'string' && window.gsRhythm && window.gsRhythm(gid) === 'daily' ? d.replace(/,?\s+\d{1,2}:\d{2}.*$/, '') : d);
 
   // Copy as canon's lbCopy does: the textarea path first (inside the click), the Clipboard API as the fallback.
   function copyText(text) {
@@ -37,23 +39,26 @@
       h('main', { className: 'ss-main' }, h('div', null, h(window.LbBackTo, { gid })), children));
   }
 
-  // ---- Head: cover beside the label line (game name links to the game page, date beside it), the h1 (the outcome line), one-line stat row. ----
-  // props: gid, art, label ("Daily Word No. 212"), date, h1, stats [{label, value}] (2 to 4; one line, never a second row), sub (optional caption under the h1)
-  function Head({ gid, art, label, date, h1, stats, sub }) {
-    const gs = window.useGs(); const g = window.GS_GAMES[gid];
-    const starts = label.indexOf(g.name) === 0;
-    const rest = starts ? label.slice(g.name.length).trim() : label;
+  // ---- Head: cover beside the label line (plain text, date beside it), the status glyph + h1 (the outcome line), an optional stat strip. ----
+  // props: gid, art, label ("Daily Word No. 212"), date, h1, mark (out.mark: the glyph before the h1), stats [{label, value}] (0 to 4),
+  //        sub (optional caption under the h1)
+  // stats: only what the h1 does not say. When nothing is left, pass none and no strip renders. Styled as canon's product-page fact strip (gs-facts).
+  // The label is not a link: the back link above the head already goes to the game page.
+  function Head({ gid, art, label, date, h1, mark, stats, sub }) {
+    const g = window.GS_GAMES[gid];
+    const kind = mark === '✅' ? 'ok' : mark === '❌' ? 'bad' : null;   // the library's result glyphs (LbResult): check / error, in the status colour
+    const day = date ? shortDay(dayOnly(gid, date)) : null;
     return h('section', { className: 'ss-head' },
       h(window.GsCover, { art: art || g.art }),
       h('div', { className: 'ss-head-label' },
-        h('span', { className: 'ss-head-name' }, h(D().TextLink, { onClick: () => gs.go(g.route, { page: 'record' }) }, g.name), rest ? (starts ? ' ' : ' · ') + rest : null),
-        date ? h('span', { className: 'ss-head-date' }, shortDay(date)) : null),
-      h('h1', { className: 'ss-h1' }, h1),
+        h('span', { className: 'ss-head-name' }, label),
+        day ? h('span', { className: 'ss-head-date' }, day) : null),
+      h('h1', { className: 'ss-h1' }, kind ? h('span', { className: 'ss-mark is-' + kind }, h(D().Icon, { name: kind === 'ok' ? 'check' : 'error', size: 28 })) : null, h('span', null, h1)),
       sub ? h('p', { className: 'ss-caption', style: { gridColumn: '1 / -1', margin: 0 } }, sub) : null,
       stats && stats.length ? h(Stats, { items: stats.slice(0, 4) }) : null);
   }
   function Stats({ items }) {
-    return h('dl', { className: 'ss-stats' }, items.map((s, i) => h('div', { className: 'ss-stat', key: i }, h('dt', null, s.label), h('dd', null, s.value))));
+    return h('dl', { className: 'ss-stats gs-facts' }, items.map((s, i) => h('div', { className: 'ss-stat gs-fact', key: i }, h('dt', { className: 'gs-label' }, String(s.label).toUpperCase()), h('dd', null, s.value))));
   }
 
   // ---- Cells: the one square-cell component (MarkStrip and TileGrid as one family). ----
@@ -90,13 +95,14 @@
 
   // ---- ShareCard: the action card (shortlist 2.2). One card, one place; its content changes with the state, its shape does not. ----
   // props: status 'done' | 'live' | 'ended' | 'kept';  lines (the exact share text, from the outcome function; null unless done);
+  //        say (live only: the option's one line about the game in progress, e.g. "4 guesses left"),
   //        gid, session, sid, api (for Play / Start over). The share text is shown as it will paste, with Copy inside it. No pop-up, never floats.
-  function ShareCard({ status, lines, gid, session, sid, api }) {
+  function ShareCard({ status, lines, say, gid, session, sid, api }) {
     const [copied, setCopied] = React.useState(false);
     React.useEffect(() => { if (!copied) return undefined; const t = setTimeout(() => setCopied(false), 2400); return () => clearTimeout(t); }, [copied]);
     const B = D().Button;
     if (status === 'live') return h('section', { className: 'ss-card ss-side-card', 'aria-label': 'In progress' },
-      h('h3', { className: 'ss-card-title' }, 'In progress'), h('p', { className: 'ss-say' }, 'No result yet.'),
+      h('h3', { className: 'ss-card-title' }, 'In progress'), h('p', { className: 'ss-say' }, say || 'No result yet.'),
       h(B, { onClick: () => api.play(session.game, sid) }, 'Play'));
     if (status === 'kept') return h('section', { className: 'ss-card ss-side-card', 'aria-label': 'In progress' },
       h('h3', { className: 'ss-card-title' }, 'In progress'),
@@ -112,16 +118,14 @@
       startOver ? h(B, { variant: 'secondary', onClick: () => api.play(session.game, sid) }, 'Start over') : h(OnceLine));
   }
 
-  // ---- Record: the ruled list as deployed (list title, lines "label · parts"). A Disclosure titled with the count on a phone, open on desktop. 200-line paging. ----
-  function Record({ title, lines }) {
-    const wide = React.useState(() => window.matchMedia('(min-width: 1024px)').matches)[0];
+  // ---- Record: the ruled list as deployed (list title, lines "label · parts"). A Disclosure titled with the count, closed at every width. ----
+  // `open`: an option passes it only when its hero does not already show the play. 200-line paging.
+  function Record({ title, lines, open }) {
     const [limit, setLimit] = React.useState(200);
     if (!lines || !lines.length) return null;
     const list = h('ol', { className: 'ss-lines' }, lines.slice(0, limit).map((l, i) => h('li', { key: i }, h('span', { className: 'gs-strong' }, l[0]), ' · ' + l.slice(1).join(' · '))));
     const more = lines.length > limit ? h(D().TextLink, { onClick: () => setLimit(limit + 200) }, 'Show more') : null;
-    return h('section', { className: 'ss-record' },
-      wide ? h(React.Fragment, null, h('h2', { className: 'ss-record-title' }, title), list, more)
-        : h(D().Disclosure, { title: title + ' (' + lines.length + ')' }, h(React.Fragment, null, list, more)));
+    return h('section', { className: 'ss-record' }, h(D().Disclosure, { title: title + ' (' + lines.length + ')', defaultOpen: !!open }, h(React.Fragment, null, list, more)));
   }
 
   window.Ss = { Page, Head, Stats, Cells, Strip, Card, ShareCard, Record, GameLink, OnceLine, useOutcome, useDist, copyText, shortDay };

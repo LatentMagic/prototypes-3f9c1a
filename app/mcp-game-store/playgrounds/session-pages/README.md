@@ -115,12 +115,12 @@ Loaded for every option. An option mounts these; it does not re-draw them. Globa
 | Part | Props | Notes |
 |---|---|---|
 | `Ss.Page` | `gid` | Ground wrapper (`data-game`, `data-dist`), container, back link (`LbBackTo`). Children: Head, `.ss-body`, Record. |
-| `Ss.Head` | `gid, art, label, date, h1, stats, sub` | Cover 96px beside the label line (game name is a link to the game page, date beside it), the h1, one-line stat row (2 to 4 cells `{label, value}`). Capped so the hero starts above the fold at 390x844. |
+| `Ss.Head` | `gid, art, label, date, h1, mark, stats, sub` | Cover 96px on a phone, 144px above (the library's); Far dissolves it into the ground. Label is plain text (the back link above already goes to the game page); a daily game's date has no clock time. `mark` (`out.mark`) puts canon's check or error glyph, in the status colour, before the h1 (text stays white). `stats` (`{label, value}`, 0 to 4) only for what the h1 does not say; none, no strip. Styled as canon's product-page fact strip (`gs-facts`): label over value, no border, one line. Capped so the hero starts above the fold at 390x844. |
 | `Ss.Cells` | `rows, cols, size, label` | The one square-cell component. A cell is `{ t, k, sub }`; kinds `hit near miss filled empty hint mark1 mark2 mark3 plain`. Size `md` 52px, `lg` 64px, `fit`. |
 | `Ss.Strip` | `cells, perRow, size, label` | One run of cells, wrapped. |
 | `Ss.Card` | `kicker, title, facts, tag{text,tone}` | The one card kind: kicker, title, up to three facts, optional status tag (status colour for status only). |
-| `Ss.ShareCard` | `status, lines, gid, session, sid, api` | The action card: share text in a monospace block exactly as it will paste, Copy inside it (copies, then "Copied"), the played-once line or Start over. `status` is `done`, `live` (Play), `kept` (Needs the Pass), `ended` (Not finished). Never floats; no pop-up. |
-| `Ss.Record` | `title, lines` | The ruled list; a Disclosure titled with the count on a phone, open at 1024 and up; 200-line paging. |
+| `Ss.ShareCard` | `status, lines, gid, session, sid, api` | The action card: share text in a monospace block exactly as it will paste, Copy inside it (copies, then "Copied"), the played-once line or Start over. `say` (live only) is the option's one line about the game in progress ("4 guesses left"). `status` is `done`, `live` (Play), `kept` (Needs the Pass), `ended` (Not finished). Never floats; no pop-up. |
+| `Ss.Record` | `title, lines, open` | The ruled list as a Disclosure titled with the count, closed at every width. An option passes `open` only when its hero does not show the play. 200-line paging. |
 | `Ss.GameLink`, `Ss.OnceLine` | `gid` | The link back to the game page; the played-once line. |
 
 The design system's `TileGrid` is chat-only (light ground, 32px cap), so `Ss.Cells` is the web member of that family and is the proposed promotion. Everything else is canon's: `DS.Button`, `DS.TextLink`, `DS.Disclosure`, `GsCover`, `LbBackTo`, `GsNeedsPass`.
