@@ -16,14 +16,17 @@ const GSA_PEOPLE = {
 // What the pictured provider page offers (GSA-008): a person with an account, and a first visit.
 const GSA_PROVIDER_PEOPLE = {
   google: {
-    existing: { id: 'google:casey', first: 'Casey', last: 'Morgan', email: 'casey.morgan@gmail.com' },
+    existing: { id: GSA_PEOPLE.casey.providerId, first: GSA_PEOPLE.casey.first, last: GSA_PEOPLE.casey.last, email: GSA_PEOPLE.casey.email },
     firstVisit: { id: 'google:drew', first: 'Drew', last: 'Patel', email: 'drew.patel@gmail.com' },
   },
   apple: {
-    existing: { id: 'apple:robin', first: 'Robin', last: 'Park', email: 'robin.park@icloud.com', relay: 'k3v9q2@privaterelay.appleid.com' },
+    existing: { id: GSA_PEOPLE.robin.providerId, first: GSA_PEOPLE.robin.first, last: GSA_PEOPLE.robin.last, email: 'robin.park@icloud.com', relay: GSA_PEOPLE.robin.email },
     firstVisit: { id: 'apple:lee', first: 'Lee', last: 'Quinn', email: 'lee.quinn@icloud.com', relay: 'lq7m2x@privaterelay.appleid.com' },
   },
 };
+
+// The pictured card on file (and the provider's test card): its last four.
+const GSA_CARD_LAST4 = '4242';
 
 const GSA_PLANS = {
   monthly: { id: 'monthly', price: '£3 a month' },
@@ -66,7 +69,7 @@ function gsaSeedAccount(key, account) {
       person: { ...GSA_PEOPLE.sam }, items: gsaSeedItems(), role: 'owner', pushOn: false,
       sub: {
         status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
-        last4: '4242', billingEmail: GSA_PEOPLE.sam.email,
+        last4: GSA_CARD_LAST4, billingEmail: GSA_PEOPLE.sam.email,
       },
     };
   }
@@ -82,7 +85,7 @@ function gsaSeedAccount(key, account) {
     person, items: [], role: 'none', pushOn: false,
     sub: {
       status: 'none', plan: 'monthly', pending: null, nextDate: null, endDate: null, endedOn: null,
-      last4: '4242', billingEmail: person.email,
+      last4: GSA_CARD_LAST4, billingEmail: person.email,
     },
   };
 }
@@ -105,7 +108,7 @@ function gsaSeed() {
     space: {
       role: sam.role, full: false,
       members: [
-        { who: 'sam', name: 'Sam Taylor', email: 'sam@example.com' },
+        { who: 'sam', name: `${GSA_PEOPLE.sam.first} ${GSA_PEOPLE.sam.last}`, email: GSA_PEOPLE.sam.email },
         { who: 'member', name: 'Jo Rivera', email: 'member@example.com' },
         { who: 'kim', name: 'Kim Lee', email: 'kim@example.com' },
       ],
@@ -126,6 +129,6 @@ function gsaSeed() {
 }
 
 Object.assign(window, {
-  GSA_DAY0, GSA_PEOPLE, GSA_PROVIDER_PEOPLE, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
+  GSA_DAY0, GSA_PEOPLE, GSA_PROVIDER_PEOPLE, GSA_CARD_LAST4, GSA_PLANS, GSA_SPACE_NAME, GSA_SUPPORT, GSA_MCP_ADDRESS, GSA_APP_NAME,
   GSA_EVENTS, GSA_AI_APPS, GSA_TAKEN_EMAIL, gsaSeed, gsaSeedAccount,
 });

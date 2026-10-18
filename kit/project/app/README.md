@@ -9,7 +9,7 @@ A no-build page: `index.html` loads React and Babel from the CDN, then each file
 | `../tokens.css` | The custom properties the aids and the app read | replaces it with its own tokens, same property names |
 | `../gsa.css`, `../gsa-<area>.css` | The Golden Sample App's base, shared-component and per-area styles (shell, queue, auth, account, billing, checkout, people, push) | replaces them with its own |
 | `primitives.jsx` | `Icon`, the six glyphs the aids draw, and the dialogs' shared scroll lock (`kitLockScroll`) | adds its own primitives; keeps those |
-| `gsa-data.jsx` | The Golden Sample App's seed: the fiction every screen opens on | replaces it with its own seed |
+| `gsa-data.jsx` | The Golden Sample App's seed: the fiction every screen opens on; the only place a demo fact lives, and every screen, state and rig reads it | replaces it with its own seed |
 | `gsa-store.jsx` | The store (`window.GsaStore`, `useGsa`): route, session, queue, subscription, space, push, review flags, and the verbs that move between screens | replaces it with its own state |
 | `gsa-ui.jsx` | Shared UI: buttons, fields, form and busy hooks, dialog, menu, card, status line | replaces or reuses |
 | `gsa-shell.jsx`, `gsa-site.jsx` | The frame (header, top bar, user menu, footer) and the site pages (not found, can't connect, legal, paid feature) | replaces them |

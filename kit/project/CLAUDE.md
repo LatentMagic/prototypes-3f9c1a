@@ -21,7 +21,7 @@ Everything outside the block above is shared: identical in every project built f
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
-**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 3.** Each kit update raises it by one.
+**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 4.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
@@ -148,6 +148,12 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **The pill at the bottom right is the prototype's own aid, not the product:** Config (review settings you hold while looking), States (an address you open: `?state=<id>`, and a link to hand someone), and QA (the states a piece of work in flight needs checking against). `app/README.md` says how to add a state (to the app's states list, which `KIT_STATE_REGISTER` in `app/states.jsx` gathers), a QA entry (`KIT_QA` in `app/qa.jsx`) and a Config row (`window.ConfigExtra`); `ARCHITECTURE.md` § Addressable states says what earns a state an entry.
 - **Keep them current (a rule added by this kit).** Work that adds a hard-to-reach situation adds its state to the register in the same change; a QA entry is deleted once the work is signed off.
 - **JSX over `window`, load order fixed in `index.html`**, and the aids are deletable: see `ARCHITECTURE.md` § Deletable aids and § Conventions.
+</important>
+
+<important if="you are adding or changing demo data, or anything a screen shows about it: a person, a plan, a payment, a date, a count, an item">
+- **Every fact the demo shows is held once, in the seed, and every surface reads it from there.** A plan, a date, a count, an item: no screen, state or rig types its own copy, not even one that agrees today. The seed file `app/README.md` names, and the store, are the pattern (in the kit: `app/gsa-data.jsx`, `gsaSeed()`).
+- **A surface that needs a variant derives it from the seed or stages it through the store.** Dates are set relative to the seed's day zero (the seed's day-zero constant, `GSA_DAY0` in the kit), never as literals.
+- **Two copies drift.** The reviewer then meets one account telling two stories.
 </important>
 
 ## Files

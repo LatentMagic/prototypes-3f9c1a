@@ -65,13 +65,13 @@ const KIT_STATE_REGISTER = [
 // can't hold still — a search term, a sequence of taps. Each line names the
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
-const KIT_STATE_GROUP_NOTES = {
-  'Sign in': ['Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. alex@example.com signs in as Alex Chen. Continue with Google signs in Casey Morgan; Continue with Apple signs in Robin Park, whose email is hidden (a relay address). Config Google or Apple account = A new person makes a new account, and Apple then asks to share or hide the email. A Google or Apple address never signs in with a password. Each person keeps their own queue, Subscription, role and Notifications switch. A new account starts empty.'],
+const KIT_STATE_GROUP_NOTES = (() => { const P = window.GSA_PEOPLE; return {
+  'Sign in': [`Codes: 000000 is expired, 111111 is wrong, any other six digits pass. Password wrong-password is refused. ${P.alex.email} signs in as ${P.alex.first} ${P.alex.last}. Continue with Google signs in ${P.casey.first} ${P.casey.last}; Continue with Apple signs in ${P.robin.first} ${P.robin.last}, whose email is hidden (a relay address). Config Google or Apple account = A new person makes a new account, and Apple then asks to share or hide the email. A Google or Apple address never signs in with a password. Each person keeps their own queue, Subscription, role and Notifications switch. A new account starts empty.`],
   'Sign up': ['taken@example.com already has an account. A password under 8 characters is refused (placeholder rule).'],
   'Invitations': ['member@example.com is already a member. Whoever follows the link and signs in joins: the app compares no address (GSA-025).'],
   'Subscription': ['Provider events (renewal paid, renewal fails, retry window ends, late payment, Operator pause and resume) are Config buttons. Late payment arrives is the Payment provider taking the failed payment (GSA-020.AF-01).'],
   'Account': ['Change email: your own address or taken@example.com is refused. Change password: current password wrong-password is refused. Change-email codes: 000000 is expired, 111111 is wrong. Deleting the account erases only the signed-in person\'s account; the other accounts stay as they were. A Google or Apple account has no password or email cards; one card says to change both with the provider, and Prove it\'s you emails a code.'],
-};
+}; })();
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
 
 // The catalogue's own address. Not a state, so it is not in the register.
