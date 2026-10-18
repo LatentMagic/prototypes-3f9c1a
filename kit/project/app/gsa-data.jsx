@@ -105,7 +105,7 @@ function gsaSeed() {
     space: {
       role: sam.role, full: false,
       members: [
-        { who: 'sam', name: 'Sam Taylor', email: 'sam@example.com' },
+        { who: 'sam', name: `${GSA_PEOPLE.sam.first} ${GSA_PEOPLE.sam.last}`, email: GSA_PEOPLE.sam.email },
         { who: 'member', name: 'Jo Rivera', email: 'member@example.com' },
         { who: 'kim', name: 'Kim Lee', email: 'kim@example.com' },
       ],
