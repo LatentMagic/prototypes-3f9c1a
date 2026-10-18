@@ -11,7 +11,8 @@
 // The page's h1 and the Share card both read this, so they cannot drift. Texts: share-shortlist.md B plus fable-steer.md section 4.
 // Data not on today's record (marked S in shortlist.md) is derived from the seed; an option's cost line says "needs the engine to send X".
 (function () {
-  var LINK = 'mcpgames.example/';
+  // The product-page form: deployed builds <webUrl>/discover/<id> (share-shortlist row 8). The domain is a placeholder; the path is not.
+  var LINK = 'mcpgames.example/discover/';
   var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
   var done = function (s) { return !(s.live || s.unfinished); };
   var count = function (lines, re) { return (lines || []).filter(function (l) { return re.test(l[0]); }).length; };
@@ -35,13 +36,18 @@
   // The play as the board needs it: guesses with marks and captions, hints in their place between guesses.
   function wordPlay(s) {
     var rows = [], guesses = [];
-    var answer = s.answer || ((s.lines.filter(function (l) { return /^Guess/.test(l[0]); }).pop() || [])[1] || '');
+    // The last guess stands in for the answer only on a solve (it is the answer). A loss with no answer on the record has no letter marks to compute:
+    // the engine's guess-scored marks are not on the session, so the grid is left unknown (marks all x, noMarks true), never faked as solved.
+    var answer = s.answer || (s.loss ? '' : ((s.lines.filter(function (l) { return /^Guess/.test(l[0]); }).pop() || [])[1] || ''));
+    var noMarks = !answer;
     s.lines.forEach(function (l) {
       if (/^Guess/.test(l[0])) {
-        var marks = wordMarks(l[1], answer), h = (marks.match(/h/g) || []).length, n = (marks.match(/n/g) || []).length;
+        var marks = noMarks ? 'xxxxx' : wordMarks(l[1], answer), h = (marks.match(/h/g) || []).length, n = (marks.match(/n/g) || []).length;
+        if (noMarks) h = Number((/(\d+) in place/.exec(l[2] || '') || [])[1]) || 0;
         // At most four words, so a row stays one line on a phone.
         var cap = h === 5 ? 'Solved' : (h ? h + ' in place' : '') + (h && n ? ', ' : '') + (n ? n + ' near' : '') || 'No letters';
-        var row = { kind: 'guess', word: l[1].toUpperCase(), marks: marks, caption: cap, n: guesses.length + 1 };
+        if (noMarks) cap = h ? h + ' in place' : 'No letters';
+        var row = { kind: 'guess', word: l[1].toUpperCase(), marks: marks, caption: cap, n: guesses.length + 1, markless: noMarks };
         rows.push(row); guesses.push(row);
       } else if (/^Hint/.test(l[0])) {
         var m = /letter ([A-Z])\b/i.exec(l[1] || ''); var pos = /Letter (\d) is ([A-Z])/i.exec(l[1] || '');
@@ -50,7 +56,7 @@
       }
     });
     var hints = rows.filter(function (r) { return r.kind === 'hint'; }).length;
-    return { rows: rows, guesses: guesses, hints: hints };
+    return { rows: rows, guesses: guesses, hints: hints, noMarks: noMarks };
   }
   function word(s) {
     var p = wordPlay(s), n = p.guesses.length, hint = p.hints ? ' · ' + plural(p.hints, 'hint', 'hints') : '';
@@ -59,7 +65,7 @@
       var open = [stat('Guesses', n + ' of 6'), stat('Hints', p.hints ? p.hints : 'None')];
       return notDone(s, label, { play: p, stats: open });
     }
-    var won = !s.loss, last = p.guesses[n - 1], off = !won && last && (last.marks.match(/h/g) || []).length === 4;
+    var won = !s.loss, last = p.guesses[n - 1], off = !won && last && (last.markless ? /^4 in place/.test(last.caption) : (last.marks.match(/h/g) || []).length === 4);
     var line = won ? (n === 1 ? 'One shot' : n === 6 ? 'Just in time' : 'Solved in ' + n) + hint
       : off ? 'One letter off' : 'Out of guesses';
     var mark = won ? '✅' : '❌';
@@ -67,7 +73,7 @@
     var grid = p.guesses.map(function (g) { return g.marks.split('').map(function (c) { return emoji[c]; }).join(''); });
     // The h1 already says guesses and hints on a finished day: no stats.
     return { h1: line, mark: mark, label: label, play: p, link: LINK + 'daily-word', status: 'done', stats: [],
-      lines: [label, mark + ' ' + line].concat(grid, ['Six guesses. Your go:', LINK + 'daily-word']) };
+      lines: [label, mark + ' ' + line].concat(p.noMarks ? [] : grid, ['Six guesses. Your go:', LINK + 'daily-word']) };
   }
 
   // ---- Daily Mystery ---- (S: which accusation parts were wrong: seed field s.wrong = ['room'] etc.; the victim's short role comes from s.victim)
@@ -113,6 +119,7 @@
     var right = c.verdict === 'right', dawn = turns >= 16;
     var line = right ? (dawn ? 'Solved at dawn' : 'Solved before dawn') : (dawn ? 'Wrong, at dawn' : 'Wrong accusation');
     var mark = right ? '✅' : '❌';
+    // "broken" in the share, "exposed" on the page: ruled wording (share-shortlist B, fable-steer 4), kept on purpose. "4 lies exposed" would be 25 characters, over the 24-character budget.
     // Three marks (fable-steer 4): 💥 a lie broken, ⬛ any other turn, ⬜ a turn not used.
     var turnsRec = (c.rec || []).filter(function (x) { return x.c !== 'A'; });   // the accusation is not a turn
     var cells = []; for (var i = 0; i < 16; i++) { var r = i < turns ? turnsRec[i] || { c: 'Q' } : null; cells.push(!r ? 'unused' : r.c === 'B' ? 'break' : 'turn'); }
@@ -158,6 +165,17 @@
       lines: ['Escape', label, line].concat(counts, ['Beat par. Your go:', LINK + 'escape']) };
   }
 
+  // Greedy word wrap at `max` characters (the emoji counts as two); a word longer than max stays whole.
+  function wrap(text, max) {
+    var out = [], cur = '';
+    text.split(' ').forEach(function (w) {
+      var next = cur ? cur + ' ' + w : w;
+      if (cur && next.length + 1 > max) { out.push(cur); cur = w; } else cur = next;
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+
   // ---- Delve ---- (all deployed: the tape and its marks come from the record's own share lines)
   // A record without share lines (live, or abandoned) has no outcome: ended, never a throw.
   function delve(s) {
@@ -173,10 +191,14 @@
     var head = sl[1].split(' · '), hero = head[0], tape = Array.from(sl[2]);
     var rolls = Number((/(\d+) rolls?/.exec(sl[1]) || [])[1]) || tape.length, streak = /longest streak (\d+)/.exec(sl[1]);
     var mark = s.loss ? '❌' : '✅', line = s.result || 'Finished';
-    var half = Math.ceil(tape.length / 2), rows = [tape.slice(0, half).join(''), tape.slice(half).join('')].filter(Boolean);
+    // Rows of at most 8, balanced (share-shortlist strip rule); two rows from four rolls up, more for a long run.
+    var nrows = tape.length < 4 ? 1 : Math.max(2, Math.ceil(tape.length / 8)), per = Math.ceil(tape.length / nrows), rows = [];
+    for (var i = 0; i < tape.length; i += per) rows.push(tape.slice(i, i + per).join(''));
+    // The outcome line is essential: 24 characters or fewer (share-text-pass2). The ending is the setting's own words, so it is wrapped at a word, never cut.
+    var outLines = wrap(mark + ' ' + line, 24);
     // The hero's name sits in the head's sub-caption and share line 3, and nowhere else (hero.name is for the option to place).
     return { h1: line, mark: mark, label: setting, hero: hero, tape: tape, link: LINK + 'delve', status: 'done', stats: stats,
-      lines: ['Delve', setting, hero, mark + ' ' + line, plural(rolls, 'roll', 'rolls') + (streak ? ' · streak of ' + streak[1] : '')].concat(rows, ['A d20 decides. Your go:', LINK + 'delve']) };
+      lines: ['Delve', setting, hero].concat(outLines, [plural(rolls, 'roll', 'rolls') + (streak ? ' · streak of ' + streak[1] : '')], rows, ['A d20 decides. Your go:', LINK + 'delve']) };
   }
 
   window.SsOutcome = { word: word, mystery: mystery, casebook: casebook, escape: escape, delve: delve, wordPlay: wordPlay, wordMarks: wordMarks, plural: plural };

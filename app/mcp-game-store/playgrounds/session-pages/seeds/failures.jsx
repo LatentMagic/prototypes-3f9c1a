@@ -35,14 +35,13 @@
   };
 
   // ---- Escape: the engine has one outcome, escaped, and no clock, so the worst finish is a long one: 74 minutes against a par of 30, ----
-  // all three hints on the way (nudge, bigger nudge, the answer), 11 wrong tries. The Clockmaker's Study has no forceable lock in its content, so none is shown.
+  // three hints, all on the oak door lock in the engine's order (nudge, bigger nudge, the answer; rung 3 never comes first), 13 wrong tries. The Clockmaker's Study has no forceable lock in its content, so none is shown.
   const E = window.GS_ES1;
   const ES_LOST = [
     ['Move 1', 'Examine the workbench', E.bench],
     ['Move 2', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
     ['Move 3', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
     ['Move 4', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
-    ['Hint', 'The workbench drawer', 'Count the gears’ teeth, and read each count as a letter.'],
     ['Move 5', 'Try an answer (4 letters) on the workbench drawer', E.drawer],
     ['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.'],
     ['Move 6', 'Examine the case clock', E.clock],
@@ -53,7 +52,6 @@
     ['Move 11', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
     ['Move 12', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
     ['Move 13', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
-    ['Hint', 'The cabinet lock', 'The brass plate gives the code: the hours of the watches, Monday to Thursday.'],
     ['Move 14', 'Try an answer (4 digits) on the cabinet lock', E.diary],
     ['Move 15', 'Set the clock hands to an hour and a minute', 'Wrong'],
     ['Move 16', 'Set the clock hands to an hour and a minute', E.hands],
@@ -62,12 +60,16 @@
     ['Move 19', 'Examine the oak door', E.door],
     ['Move 20', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
     ['Move 21', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
+    ['Hint', 'The oak door lock', 'Something you have already examined spells it out.'],
+    ['Move 22', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
+    ['Hint', 'The oak door lock', 'Read the portrait’s inscription again, line by line.'],
+    ['Move 23', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
     ['Hint', 'The oak door lock', 'The answer, given outright.'],
-    ['Move 22', 'Try an answer (4 letters) on the oak door lock', 'Out'],
+    ['Move 24', 'Try an answer (4 letters) on the oak door lock', 'Out'],
   ];
   S['escape-lost'] = {
     ...S['escape-week'], result: 'Escaped in 74 min, over par', loss: true,
-    figures: ['74 min, over par', '3 hints', '11 wrong tries'],
+    figures: ['74 min, over par', '3 hints', '13 wrong tries'],
     share: 'Escaped in 74 min, over par',
     shareLines: ['Escape No. 1 · escaped in 74 min, over par · 3 hints 💡💡💡 · 11 wrong tries'],
     lines: ES_LOST,

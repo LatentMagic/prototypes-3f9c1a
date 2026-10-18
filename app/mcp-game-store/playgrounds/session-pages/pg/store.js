@@ -25,7 +25,7 @@
 
   function valid(g, o, s) {
     if (!B[g]) return null;
-    var oo = Number(o); if (!(oo >= 0 && oo <= window.PG_SHARE_OPT) || o === null || o === undefined || o === '') oo = 0;
+    var oo = Number(o); if (!(oo >= 0 && oo <= window.PG_SHARE_OPT) || Math.floor(oo) !== oo || o === null || o === undefined || o === '') oo = 0;
     var st = B[g].states.some(function (x) { return x.id === s; }) ? s : null;
     return { game: g, opt: oo, state: st };
   }
