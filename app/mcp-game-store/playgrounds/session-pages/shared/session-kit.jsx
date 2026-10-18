@@ -97,6 +97,15 @@
   // props: status 'done' | 'live' | 'ended' | 'kept';  lines (the exact share text, from the outcome function; null unless done);
   //        say (live only: the option's one line about the game in progress, e.g. "4 guesses left"),
   //        gid, session, sid, api (for Play / Start over). The share text is shown as it will paste, with Copy inside it. No pop-up, never floats.
+  // Display only: a line may break after a "/" (a <wbr>), never mid-word; <wbr> adds no character, so the text still copies byte-identical.
+  function shareNodes(lines) {
+    var out = [];
+    lines.forEach(function (ln, i) {
+      if (i) out.push('\n');
+      String(ln).split(/(?<=\/)/).forEach(function (p, j) { if (j) out.push(h('wbr', { key: i + '-' + j })); out.push(p); });
+    });
+    return out;
+  }
   function ShareCard({ status, lines, say, gid, session, sid, api }) {
     const [copied, setCopied] = React.useState(false);
     React.useEffect(() => { if (!copied) return undefined; const t = setTimeout(() => setCopied(false), 2400); return () => clearTimeout(t); }, [copied]);
@@ -115,7 +124,7 @@
     const startOver = window.gsStartsOver && window.gsStartsOver(gid);
     return h('section', { className: 'ss-card ss-side-card', 'aria-label': 'Share this result' },
       h('h3', { className: 'ss-card-title' }, 'Share this result'),
-      h('pre', { className: 'ss-sharetext', 'data-testid': 'share-text' }, lines.join('\n')),
+      h('pre', { className: 'ss-sharetext', 'data-testid': 'share-text' }, shareNodes(lines)),
       h(B, { done: copied, doneLabel: 'Copied', onClick: () => { copyText(lines.join('\n')); setCopied(true); } }, 'Copy'),
       startOver ? h(B, { variant: 'secondary', onClick: () => api.play(session.game, sid) }, 'Start over') : h(OnceLine));
   }

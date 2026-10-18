@@ -68,7 +68,7 @@
 .ss-legend { font: var(--type-caption); color: var(--muted); }
 
 /* ---- Share card ---- */
-.ss-sharetext { margin: 0; padding: 12px; background: color-mix(in srgb, var(--text) 6%, var(--page)); border: 1px solid var(--ss-line); font: 400 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, "Apple Color Emoji", "Segoe UI Emoji", monospace; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); user-select: all; }
+.ss-sharetext { margin: 0; padding: 12px; background: color-mix(in srgb, var(--text) 6%, var(--page)); border: 1px solid var(--ss-line); font: 400 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, "Apple Color Emoji", "Segoe UI Emoji", monospace; white-space: pre-wrap; overflow-wrap: break-word; color: var(--text); user-select: all; }
 .ss-caption { margin: 0; font: var(--type-caption); color: var(--muted); }
 .ss-card .mcp-btn:not(.is-block) { justify-self: start; }
 @media (max-width: 639px) { .ss-card .mcp-btn { width: 100%; } }

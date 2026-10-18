@@ -108,7 +108,11 @@
       ['Guess 4', 'MIGHT', '4 in place'], ['Guess 5', 'NIGHT', '4 in place'], ['Guess 6', 'SIGHT', '4 in place']],
   };
   // ---- Daily Mystery: the seeded loss, with which part of the accusation missed (S: needs the engine to send it). Accusation: Sebastian Wyle, iron poker, dining room. ----
-  if (S['mystery-today']) S['mystery-today'].wrong = ['room'];
+  if (S['mystery-today']) {
+    S['mystery-today'].wrong = ['room'];
+    // The inspector answers No to the paper knife: the accusation names the iron poker, so a No on another weapon fits this edition and gives a "Yes and No" page a No.
+    S['mystery-today'].lines = S['mystery-today'].lines.map((l) => (l[0] === 'Question 2' ? [l[0], l[1], 'No'] : l));
+  }
   if (typeof cbMake === 'function') {
     window.PG_CB_LOST = { ...cbMake('gull', '5 October', 'October', window.CB_DONE.title, true, 'wrong', 4, CB_REC_LOST), cast: window.CB_DONE.cast, places: 4 };
   }

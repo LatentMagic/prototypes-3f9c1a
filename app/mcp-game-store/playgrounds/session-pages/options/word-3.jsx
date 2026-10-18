@@ -69,6 +69,8 @@
       :scope .w3-msg { background: color-mix(in srgb, var(--text) 6%, var(--ss-card)); }
       :scope .w3-head { display: grid; gap: 2px; align-content: start; min-width: 0; }
       :scope .w3-mono { font: 400 11.5px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, "Apple Color Emoji", "Segoe UI Emoji", monospace; color: var(--text); overflow-wrap: break-word; }
+      :scope .w3-msg { --w3-muted: color-mix(in srgb, var(--muted) 60%, var(--text)); }
+      :scope .w3-msg .ss-caption, :scope .w3-msg .w3-dim { color: var(--w3-muted); }
       :scope .w3-dim { color: var(--muted); }
       :scope .w3-foot { display: grid; gap: 8px; align-content: start; min-width: 0; }
       :scope .w3-cells { --c: min(52px, calc((100cqi - 32px - 32px - 4 * 4px) / 5)); gap: 4px; justify-content: center; }

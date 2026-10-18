@@ -16,7 +16,6 @@
       {state === 'empty' ? <span className="m3-sq is-empty" aria-hidden="true" /> : <Verdict ok={ok} />}
       <span className="ss-kicker">{label}</span>
       <h3 className="m3-name">{name || 'Not named yet'}</h3>
-      {ok == null ? null : <span className="ss-tag" data-tone={ok ? 'success' : 'error'}>{ok ? 'Right' : 'Wrong'}</span>}
     </article>
   );
 
@@ -84,7 +83,6 @@
       :scope .m3-name { margin: 0; font: var(--type-label); font-size: 15px; line-height: 1.25; letter-spacing: var(--tracking-heading); overflow-wrap: anywhere; text-wrap: balance; }
       :scope .m3-part:not(.is-empty) .m3-name { color: var(--text); }
       :scope .m3-part.is-empty .m3-name { color: var(--muted); font-weight: 400; }
-      :scope .m3-part .ss-tag { margin-top: auto; }
       :scope .m3-scene { margin: 0; }
       :scope .ss-page[data-dist="middle"] .m3-hero { padding-top: 12px; }
       :scope .ss-page[data-dist="middle"] .m3-solved { border-top: 0; padding-top: 0; }

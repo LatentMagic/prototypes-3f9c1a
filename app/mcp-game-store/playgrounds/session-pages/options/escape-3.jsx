@@ -43,7 +43,7 @@
             {exit ? (
               <div className="es3-end">
                 <p className="es3-out">You got out.</p>
-                <p className="es3-facts">{exit.name + ' · move ' + exit.openedN + ' · ' + EsModel.lockFacts(exit) + ' · ' + m.min + ' min' + (m.par != null ? ' against par ' + m.par : '')}</p>
+                <p className="es3-facts">{exit.name + ' · move ' + exit.openedN + ' · ' + EsModel.lockFacts(exit)}</p>
               </div>
             ) : m.done ? null : <p className="es3-rule es3-still"><span>{m.ended ? 'You left before the door opened' : 'Still inside'}</span></p>}
           </section>

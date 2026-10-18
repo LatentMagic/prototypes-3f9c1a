@@ -46,7 +46,7 @@
         if (noMarks) h = Number((/(\d+) in place/.exec(l[2] || '') || [])[1]) || 0;
         // At most four words, so a row stays one line on a phone.
         var cap = h === 5 ? 'Solved' : (h ? h + ' in place' : '') + (h && n ? ', ' : '') + (n ? n + ' near' : '') || 'No letters';
-        if (noMarks) cap = h ? h + ' in place' : 'No letters';
+        if (noMarks) cap = h ? h + ' in place' : '';   // no answer on the record: the engine cannot know, so say nothing
         var row = { kind: 'guess', word: l[1].toUpperCase(), marks: marks, caption: cap, n: guesses.length + 1, markless: noMarks };
         rows.push(row); guesses.push(row);
       } else if (/^Hint/.test(l[0])) {

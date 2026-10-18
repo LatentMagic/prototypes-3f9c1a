@@ -1,6 +1,6 @@
 # Session pages playground
 
-A rig that holds three design options for the session page of each of five games: Casebook, Escape, Delve, Daily Word, Daily Mystery. The shared foundation (`shared/`) and Daily Word option 1 are built; every other slot renders Today with a "not built yet" marker.
+A rig that holds three design options for the session page of each of five games: Casebook, Escape, Delve, Daily Word, Daily Mystery. The shared foundation (`shared/`) and all fifteen options (three per game) are built.
 
 Open `index.html` through `server.js` (or the deployed site). It lives outside `canon/`, so a canon export never touches it.
 
@@ -131,7 +131,7 @@ Loaded for every option. An option mounts these; it does not re-draw them. Globa
 
 The design system's `TileGrid` is chat-only (light ground, 32px cap), so `Ss.Cells` is the web member of that family and is the proposed promotion. Everything else is canon's: `DS.Button`, `DS.TextLink`, `DS.Disclosure`, `GsCover`, `LbBackTo`, `GsNeedsPass`.
 
-**Layout.** Head, then `.ss-body` (Hero, then `.ss-side` with the Share card), then Record. Two columns (2fr/1fr) from a 960px page width, because the side column must hold the longest share line (27 characters) unwrapped; below that the Share card sits under the Hero. The page is its own container (`@container ss`), so use `@container ss (min-width: ...)` in an option's css, not viewport media queries.
+**Layout.** Head, then `.ss-body` (Hero, then `.ss-side` with the Share card), then Record. Two columns (2fr/1fr) from a 960px page width, because the side column is the narrowest place the share block sits beside the Hero; below that the Share card sits under the Hero. The page is its own container (`@container ss`), so use `@container ss (min-width: ...)` in an option's css, not viewport media queries.
 
 **How an option uses it.** Copy `options/word-1.jsx`. Shape: `pgOption(...)` with `shareText: (session) => window.SsOutcome.<game>(session).lines`; a component that calls `Ss.useOutcome(gid, session)`, then returns `<Ss.Page>` with `<Ss.Head h1={out.h1} .../>`, `<div className="ss-body"><section className="ss-hero ss-surface">...hero...</section><aside className="ss-side"><Ss.ShareCard status lines={share.lines} .../></aside></div>` and `<Ss.Record/>`. Hero colours come from `--ss-*` tokens so Near / Middle / Far work with no extra code. Prefix your own classes (`dv2-`) and scope css with `:scope`.
 
