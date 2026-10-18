@@ -1,0 +1,93 @@
+// ============================================================================
+// Session-pages playground: puts the selected game, option and state on the real app.
+// Mounts canon's own page (GsSession, or GsCasebook for Casebook's record page) as "Today", and an option's component in its place.
+// Hook used: window.KitCandidate.Screen (main.jsx), which replaces only the routed page; top bar, footer, popups, demo bar stay canon's.
+// ============================================================================
+
+// Stage the app the way canon's states register does (app/states.jsx): view, connection, review flags, then go() with asView false.
+const pgStage = (api, game, st) => {
+  api.setView('pass'); api.setConnected(true);
+  api.setReview({ week: st.week, today: 'played', unfinished: false });
+  if (game.record) api.go('casebook', { page: 'record', sid: window.CB_ID }, false);
+  else api.go('session', { id: st.sid }, false);
+};
+
+// The session record the page is showing, and the share text canon would copy for it.
+const pgSessionOf = (api, game, st) => (game.record ? window.cbWeek(api) : window.GS_SESSIONS[st.sid]);
+const pgCanonShare = (game, s) => {
+  if (!s || s.live) return null;
+  return game.record ? window.cbShareLines(s) : window.gsShareText(s);
+};
+
+const PgToday = ({ game }) => (game.record ? <window.GsCasebook /> : <window.GsSession />);
+
+// A broken option must not take the page down with it.
+class PgBoundary extends React.Component {
+  constructor(p) { super(p); this.state = { err: null }; }
+  static getDerivedStateFromError(err) { return { err }; }
+  render() {
+    if (!this.state.err) return this.props.children;
+    return <main className="gs-wrap gs-main"><p role="alert">This option failed to render: {String(this.state.err.message || this.state.err)}</p></main>;
+  }
+}
+
+// An option's own CSS lives only while that option is on screen. ":scope" is rewritten to the wrapper's class.
+const PgScopedCss = ({ cls, css }) => {
+  React.useEffect(() => {
+    if (!css) return undefined;
+    const el = document.createElement('style'); el.setAttribute('data-pg-option', cls);
+    el.textContent = css.replace(/:scope/g, '.' + cls); document.head.appendChild(el);
+    return () => el.remove();
+  }, [cls, css]);
+  return null;
+};
+
+const PgScreen = ({ api }) => {
+  const sel = window.usePgSel();
+  const game = window.PG_BY_ID[sel.game];
+  const st = game.states.find((s) => s.id === sel.states[sel.game]);
+  const [staged, setStaged] = React.useState(null);
+  React.useEffect(() => { pgStage(api, game, st); setStaged(sel.nonce); }, [sel.nonce]);
+  if (staged === null) return null;
+  const r = api.route;
+  const mine = game.record ? (r.name === 'casebook' && r.page === 'record' && r.sid === window.CB_ID) : (r.name === 'session' && r.id === st.sid);
+  // The player followed a link out of the session page: show the real page they went to. Picking a row brings them back.
+  if (!mine) return typeof GsScreen !== 'undefined' ? <GsScreen name={r.name} /> : null;
+
+  const def = window.pgGetOption(game.id, sel.opt);
+  const session = pgSessionOf(api, game, st);
+  const canonLines = pgCanonShare(game, session);
+  const lines = sel.opt > 0 && def.shareText ? def.shareText(session, canonLines, { game: game.id, state: st.id }) : canonLines;
+  const cls = 'pgo-' + game.id + '-' + sel.opt;
+  const Comp = sel.opt > 0 ? def.Component : null;
+  const label = game.name + ' · ' + (sel.opt === 0 ? '0 Today' : sel.opt + ' ' + def.name) + ' · ' + st.label;
+  return (
+    <>
+      <div className={'pgo ' + cls} data-pg-game={game.id} data-pg-option={sel.opt} data-pg-state={st.id} style={{ display: 'contents' }}>
+        <PgScopedCss cls={cls} css={sel.opt > 0 ? def.css : null} />
+        <PgBoundary key={game.id + sel.opt + st.id + sel.nonce}>
+          {Comp
+            ? <Comp gid={game.id} game={game.name} optionN={sel.opt} stateId={st.id} stateLabel={st.label} sid={st.sid || null}
+                session={session} share={{ lines, canonLines, supported: !!lines }} Today={() => <PgToday game={game} />} api={api} />
+            : <PgToday game={game} />}
+        </PgBoundary>
+      </div>
+      {ReactDOM.createPortal(<div className="pg-now" aria-live="polite">{label}{sel.opt > 0 && !Comp ? ' · not built yet, showing Today' : ''}</div>, document.body)}
+    </>
+  );
+};
+
+window.KitCandidate = { bind: () => {}, Screen: PgScreen };
+
+// Below 1024 the rail lives in the app's own Config modal (config.jsx renders window.ConfigExtra there). At 1024 and up it is docked, so the modal carries none of it.
+const PgConfigExtra = ({ onClose }) => {
+  const ref = React.useRef(null);
+  const docked = window.matchMedia('(min-width: 1024px)').matches;
+  // The modal opens at its top; bring the rail up under the Config title (the nearest scrollable ancestor, never scrollIntoView).
+  React.useEffect(() => {
+    const el = ref.current; const body = el && el.closest('.kit-config-body');
+    if (body) body.scrollTop = Math.max(0, el.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - 8);
+  }, []);
+  return docked ? null : <div ref={ref}><window.PgRail onPick={onClose} /></div>;
+};
+window.ConfigExtra = PgConfigExtra;
