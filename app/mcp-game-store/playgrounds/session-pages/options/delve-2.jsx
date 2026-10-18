@@ -91,12 +91,6 @@
       :scope .dv2-sum2 { display: grid; gap: 8px; }
       :scope .dv2-facts { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font: var(--type-caption); color: var(--muted); }
       @container ss (min-width: 680px) {
-        :scope .dv2-pathlist { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 16px; }
-        :scope .dv2-node { padding: 28px 0 0; }
-        :scope .dv2-node::before { left: 0; right: -16px; top: 13px; bottom: auto; width: auto; height: 2px; }
-        :scope .dv2-nodehead { margin-left: 0; position: absolute; top: 0; left: 0; right: 0; }
-        :scope .dv2-det > summary, :scope .dv2-sum2 { padding-top: 0; }
-        :scope .dv2-sum2 .dv-mini, :scope .dv2-det > summary .dv-mini { margin-top: 36px; }
         :scope .dv2-sum { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; }
         :scope .dv2-sum .dv-mini { justify-self: end; max-width: 280px; }
       }

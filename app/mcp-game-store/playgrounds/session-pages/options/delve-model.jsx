@@ -258,8 +258,9 @@
     :scope .dv-half { fill: none; stroke: var(--cover-orange); stroke-width: 2; vector-effect: non-scaling-stroke; }
     :scope .dv-rim { fill: none; stroke: var(--cover-amber); stroke-width: 3; vector-effect: non-scaling-stroke; }
     :scope .dv-dropped { fill: none; stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-    :scope .dv-face { fill: none; stroke: var(--cover-bg-wine); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    :scope .dv-face { fill: none; stroke: var(--cover-bg-wine); stroke-width: 1; opacity: 0.3; vector-effect: non-scaling-stroke; }
     :scope .dv-num { font-family: var(--font-text); font-weight: 700; fill: var(--cover-bg-wine); }
+    :scope .dv-num.is-strong { stroke: var(--cover-green); stroke-width: 3px; paint-order: stroke; stroke-linejoin: round; }
     :scope .dv-num.is-miss { fill: var(--cover-cream); }
     :scope .dv-tread { fill: color-mix(in srgb, var(--cover-amber) 55%, var(--cover-bg-wine)); }
     :scope .dv-streakbar { fill: var(--cover-amber); }
