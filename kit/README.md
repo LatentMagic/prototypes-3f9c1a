@@ -30,7 +30,7 @@ Not yet verified. Each takes about a minute:
 The kit is the source for every rule, aid and skill the prototypes share.
 
 1. Make the change in `kit/project/`, check it in a browser where it renders, and push.
-2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief states the changed rule word for word. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
+2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief asks each project for its kit version, then carries every version it might lack, each rule word for word, standing alone, skipped if the file already says it and placed by meaning. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
 3. Raise the kit version by one in `project/CLAUDE.md` (the line beside "The kit"), add it to the list below, and have the brief set the same line in each project. A project's line then says which update it has.
 
 Versions:
@@ -39,7 +39,7 @@ Versions:
 - **2** (2026-10-16): a prototype has no real persistence — a reload restarting at Home, signed out, is never a finding; reload survival belongs to the specs. From the MCP Game Store project (MCPG-018).
 - **3** (2026-10-17): a reload reopens the page named in the address (`#/<page>`) and nothing more, and React `createRoot` warnings after a reload that follows an address change are expected and need no fix. From the Golden Sample App.
 - **4** (2026-10-18): every demo fact is held once, in the seed, and every surface reads it; no screen, state or rig types its own copy, and dates are relative to the seed's day zero. From the MCP Game Store project.
-- **5** (2026-10-18): briefs come from another agent with the user passing messages by hand, so every reply ends in two parts, a block for the other agent and a last part for the user (at most one open question, or "Nothing for you"); an answer from the other agent ratifies only if it says where the decision is written down.
+- **5** (2026-10-18): briefs come from another agent with the user passing messages by hand, so every reply ends in two parts, a block for the other agent and a last part for the user (at most one open question, or "Nothing for you"); an answer from the other agent ratifies only if it says where the decision is written down. It also carried the "Ratification - the standing rule" section into the shared rules, which had been in the first cut but in no version, so a project may lack it.
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 
