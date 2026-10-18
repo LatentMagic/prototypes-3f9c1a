@@ -1,0 +1,80 @@
+/* Session pages: the shared foundation. Structure and the five shared parts. Reads surface tokens (--ss-*) from game-tokens.css.
+   Named regions: .ss-head, .ss-hero, .ss-side, .ss-record. Prefix ss-; never restyle canon's classes. */
+.ss-page { container: ss / inline-size; background: var(--ss-ground); color: var(--text); }
+.ss-page .gs-backbar { padding-top: 16px; }
+.ss-main { width: 100%; max-width: 1200px; margin: 0 auto; padding: 16px 16px 36px; display: grid; gap: 24px; min-width: 0; }
+.ss-body { display: grid; gap: 24px; min-width: 0; align-items: start; grid-template-columns: minmax(0, 1fr); }
+.ss-body > * { min-width: 0; }
+.ss-side { display: grid; gap: 16px; align-content: start; }
+@container ss (min-width: 680px) { .ss-main { padding: 24px 24px 36px; gap: 36px; } .ss-body { gap: 36px; } }
+/* Two columns only where the side column can hold the longest share line (27 characters) unwrapped; below that the Share card sits under the Hero. */
+@container ss (min-width: 960px) { .ss-body { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+
+/* ---- Head: cover beside the label line, h1, one-line stat row ---- */
+.ss-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 16px; row-gap: 12px; align-items: center; }
+.ss-head > .mcp-cover { grid-row: 1; }
+.ss-head-label { display: grid; gap: 4px; justify-items: start; min-width: 0; }
+.ss-head-name { font: var(--type-label); color: var(--text); }
+.ss-head-name a, .ss-head-name button { font: inherit; }
+.ss-head-date { font: var(--type-caption); color: var(--muted); }
+.ss-h1 { grid-column: 1 / -1; margin: 0; font: var(--type-page-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
+.ss-stats { grid-column: 1 / -1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 0; border: 1px solid var(--ss-line); }
+.ss-stat { padding: 8px 12px; display: grid; gap: 2px; min-width: 0; }
+.ss-stat + .ss-stat { border-left: 1px solid var(--ss-line); }
+.ss-stat dt { font: var(--type-label); color: var(--muted); font-size: 13px; }
+.ss-stat dd { margin: 0; font: var(--type-card-title); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+@container ss (min-width: 640px) {
+  .ss-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: 24px; row-gap: 12px; align-items: stretch; }
+  .ss-head > .mcp-cover { grid-row: 1 / span 3; width: auto; max-width: 260px; }
+  .ss-head-label { grid-column: 2; grid-auto-flow: column; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .ss-h1 { grid-column: 2; }
+  .ss-stats { grid-column: 2; max-width: 520px; }
+}
+
+/* ---- Hero card, the one card kind ---- */
+.ss-surface, .ss-card { background: var(--ss-card); border: 1px solid var(--ss-line); box-shadow: var(--shadow-card); padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; color: var(--text); }
+.ss-kicker { font: var(--type-label); color: var(--muted); }
+.ss-card-title { margin: 0; font: var(--type-card-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
+.ss-card-facts { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: var(--type-body); }
+.ss-card-facts li { color: var(--text); }
+.ss-card-facts li:first-child:not(:only-child) { color: var(--text); }
+.ss-card-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.ss-tag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; font: var(--type-small); background: color-mix(in srgb, var(--text) 14%, var(--page)); color: var(--text); white-space: nowrap; }
+.ss-tag[data-tone="success"] { background: var(--success); color: var(--success-on); }
+.ss-tag[data-tone="warning"] { background: var(--warning); color: var(--warning-on); }
+.ss-tag[data-tone="error"] { background: var(--error); color: var(--error-on); }
+
+/* ---- The one square-cell component: MarkStrip and TileGrid as one family. Radius 0. ---- */
+.ss-cells { --c: 52px; display: grid; gap: 6px; justify-content: start; min-width: 0; }
+.ss-cells[data-size="lg"] { --c: 64px; }
+.ss-cells[data-size="fit"] { --c: min(66px, calc((100cqi - 32px - (var(--cols) - 1) * 6px) / var(--cols))); }
+.ss-cells-row { display: grid; grid-template-columns: repeat(var(--cols), var(--c)); gap: 6px; }
+.ss-cell { position: relative; box-sizing: border-box; width: var(--c); height: var(--c); display: grid; place-items: center; background: var(--ss-cell); border: 1px solid var(--ss-cell-line); color: var(--muted);
+  font: 700 calc(var(--c) * .46)/1 var(--font-text); text-transform: uppercase; overflow: hidden; }
+.ss-cell[data-k="empty"] { background: transparent; }
+.ss-cell[data-k="hit"]  { background: var(--cover-green); border-color: var(--cover-green); color: var(--success-on); }
+.ss-cell[data-k="near"] { background: var(--cover-amber); border-color: var(--cover-amber); color: var(--warning-on); }
+.ss-cell[data-k="miss"] { background: var(--ss-cell); color: var(--muted); }
+.ss-cell[data-k="filled"] { border: 1.5px solid var(--text); color: var(--text); }
+.ss-cell[data-k="hint"] { background: transparent; border: 1.5px solid var(--off-white); color: var(--off-white); }
+.ss-cell[data-k="mark1"] { background: var(--ss-mark-1); border-color: var(--ss-mark-1); color: var(--page); }
+.ss-cell[data-k="mark2"] { background: var(--ss-mark-2); border-color: var(--ss-mark-2); color: var(--page); }
+.ss-cell[data-k="mark3"] { background: var(--ss-mark-3); border-color: var(--ss-mark-3); color: var(--page); }
+.ss-cell-sub { position: absolute; left: 0; right: 0; bottom: 2px; text-align: center; font: 600 11px/1 var(--font-text); text-transform: none; }
+.ss-legend { font: var(--type-caption); color: var(--muted); }
+
+/* ---- Share card ---- */
+.ss-sharetext { margin: 0; padding: 12px; background: color-mix(in srgb, var(--text) 6%, var(--page)); border: 1px solid var(--ss-line); font: 400 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, "Apple Color Emoji", "Segoe UI Emoji", monospace; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); user-select: all; }
+.ss-caption { margin: 0; font: var(--type-caption); color: var(--muted); }
+.ss-card .mcp-btn:not(.is-block) { justify-self: start; }
+@media (max-width: 639px) { .ss-card .mcp-btn { width: 100%; } }
+.ss-say { margin: 0; font: var(--type-body); }
+
+/* ---- Record ---- */
+.ss-record { display: grid; gap: 12px; min-width: 0; }
+.ss-record-title { margin: 0; font: var(--type-section-title); letter-spacing: var(--tracking-heading); }
+.ss-lines { list-style: none; margin: 0; padding: 0; display: grid; font-variant-numeric: tabular-nums; }
+.ss-lines > li { padding: 12px 0; border-top: 1px solid var(--ss-line); overflow-wrap: anywhere; }
+.ss-record .mcp-disc { background: var(--ss-card); border-color: var(--ss-line); }
+.ss-record .mcp-disc-body > div { padding: 0 16px 8px; }
+.ss-nowrap-scroll { overflow-x: clip; }

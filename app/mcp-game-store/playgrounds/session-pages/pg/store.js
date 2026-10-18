@@ -15,10 +15,11 @@
 
   var G = window.PG_GAMES, B = window.PG_BY_ID, N = window.PG_OPTION_COUNT;
   var fresh = function () {
-    var s = { game: G[0].id, opt: 0, states: {}, open: {}, nonce: 0 };
+    var s = { game: G[0].id, opt: 0, states: {}, open: {}, nonce: 0, dist: 'near' };
     G.forEach(function (g) { s.states[g.id] = g.states[0].id; });
     s.open[s.game] = true; return s;
   };
+  var DISTS = ['near', 'middle', 'far'];
   var sel = fresh();
   var listeners = [];
 
@@ -38,13 +39,20 @@
         if (ok) sel.states[g.id] = raw.states[g.id];
       });
       sel.open = raw.open || {}; sel.open[sel.game] = true;
+      if (DISTS.indexOf(raw.dist) > -1) sel.dist = raw.dist;
     } catch (e) {}
   }
   // Deep link: ?g=delve&o=2&s=finished, or #delve/2/finished. The URL beats storage.
   // Both forms work at any time; a hash, being the newer act, wins over the query. persist() writes the one canonical form back (the query) and drops the hash.
+  // Distance: ?d=near|middle|far, read on every load; it never restages the page.
+  function distFromUrl() {
+    try { var d = (new URLSearchParams(location.search).get('d') || '').toLowerCase(); if (DISTS.indexOf(d) > -1) sel = Object.assign({}, sel, { dist: d }); } catch (e) {}
+  }
   function fromUrl() {
+    distFromUrl();
     var g = null, o = null, s = null;
     try {
+
       if (location.hash.length > 1) { var p = decodeURIComponent(location.hash.slice(1)).split('?')[0].split('/'); g = p[0]; o = p[1]; s = p[2]; }
       if (!g || !B[g.toLowerCase()]) { var q = new URLSearchParams(location.search); g = q.get('g'); o = q.get('o'); s = q.get('s'); }
     } catch (e) {}
@@ -54,9 +62,9 @@
     sel.open = {}; sel.open[v.game] = true; sel.nonce++; return true;
   }
   function persist() {
-    try { localStorage.setItem(KEY, JSON.stringify({ game: sel.game, opt: sel.opt, states: sel.states, open: sel.open })); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ game: sel.game, opt: sel.opt, states: sel.states, open: sel.open, dist: sel.dist })); } catch (e) {}
     try {
-      var url = location.pathname + '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.states[sel.game];
+      var url = location.pathname + '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.states[sel.game] + '&d=' + sel.dist;
       history.replaceState(history.state, '', url);
     } catch (e) {}
   }
@@ -70,9 +78,10 @@
       var st = Object.assign({}, sel.states); st[game] = stateId; var o = {}; o[game] = true;
       set({ game: game, states: st, open: o, nonce: sel.nonce + 1 });
     },
+    setDist: function (d) { if (DISTS.indexOf(d) > -1) set({ dist: d }); },
     toggle: function (game) { var o = Object.assign({}, sel.open); var cur = o[game] === undefined ? game === sel.game : o[game]; o[game] = !cur; set({ open: o }); },
     isOpen: function (game) { var v = sel.open[game]; return v === undefined ? game === sel.game : v; },
-    link: function () { return location.origin + location.pathname + '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.states[sel.game]; },
+    link: function () { return location.origin + location.pathname + '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.states[sel.game] + '&d=' + sel.dist; },
     reset: function () { try { localStorage.removeItem(KEY); } catch (e) {} },
   };
   fromStorage(); fromUrl(); persist();

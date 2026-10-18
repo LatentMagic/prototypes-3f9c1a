@@ -14,6 +14,7 @@
 <script src="../playgrounds/session-pages/pg/games.js"></script>
 <script src="../playgrounds/session-pages/pg/share-data.js"></script>
 <script src="../playgrounds/session-pages/pg/store.js"></script>
+<script src="../playgrounds/session-pages/shared/outcome.js"></script>
 <script>
   // Loader. Synchronous on purpose: the head must carry canon's CSS, and the body must carry canon's script tags, before Babel scans the page.
   (function () {
@@ -21,6 +22,7 @@
     var canon = new DOMParser().parseFromString(x.responseText, 'text/html');
     canon.head.querySelectorAll('link[rel="stylesheet"], style').forEach(function (n) { document.head.appendChild(document.importNode(n, true)); });
     var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = window.PG_BASE + 'pg/pg.css'; document.head.appendChild(l);
+    ['shared/game-tokens.css', 'shared/kit.css'].forEach(function (f) { var c = document.createElement('link'); c.rel = 'stylesheet'; c.href = window.PG_BASE + f; document.head.appendChild(c); });
     window.PG_CANON_SCRIPTS = Array.prototype.slice.call(canon.body.querySelectorAll('script')).map(function (s) { return s.outerHTML; });
   })();
 </script>
@@ -34,7 +36,7 @@
   (function () {
     var B = window.PG_BASE;
     var tag = function (src) { return '<script type="text/babel" src="' + src + '"><\/script>'; };
-    var mine = [tag(B + 'seeds/failures.jsx'), tag(B + 'pg/rail.jsx'), tag(B + 'pg/share.jsx'), tag(B + 'pg/stage.jsx')];
+    var mine = [tag(B + 'seeds/failures.jsx'), tag(B + 'pg/rail.jsx'), tag(B + 'pg/share.jsx'), tag(B + 'pg/stage.jsx'), tag(B + 'shared/session-kit.jsx')];
     window.PG_GAMES.forEach(function (g) { for (var n = 1; n <= window.PG_OPTION_COUNT; n++) mine.push(tag(B + 'options/' + g.id + '-' + n + '.jsx')); });
     // Everything canon loads, in its order; mine go just before its main.jsx (which mounts the app and finds our hooks on window).
     window.PG_CANON_SCRIPTS.forEach(function (s) {

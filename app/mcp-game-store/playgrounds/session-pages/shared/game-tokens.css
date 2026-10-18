@@ -1,0 +1,45 @@
+/* ============================================================================
+   Session pages: the per-game tokens. CANDIDATE DESIGN-SYSTEM ADDITIONS, not in the design system today.
+   Source: work/apps/mcp-game-store/session-pages/_resources/ideation/shortlist.md section 2.3 (grounds from deployed web-game.ts tones; marks from canon GS_ART cover shapes).
+
+   Three token layers over the same named regions (Head, Hero, Side, Record). The switch writes data-dist on .ss-page.
+     near   (default)  today's design-system tokens only. This file adds nothing at Near.
+     middle            the Hero card fills with the game's ground; marks inside it may use the game's own cover colours.
+     far               the whole page body (between top bar and footer) takes the ground; every card on it uses --game-ground-card.
+   No new hues: each token is an existing cover colour or a color-mix of existing tokens.
+
+   Contrast, WCAG ratio, measured 2026-10-18 (flagged = under AA for the use named):
+     --text on grounds 11.8 to 14.3; --muted on grounds 5.7 to 6.9; --muted on --game-ground-card 4.84 (forest) to 5.89 (indigo): all pass 4.5.
+     Teal: 4.04 (indigo), 3.64 (wine), 3.33 (forest) on --game-ground; FAILS 4.5 as text everywhere, so teal is shapes only.
+           On --game-ground-card (Far): 3.45 indigo, 3.11 wine, 2.83 forest. Forest/teal at Far FAILS even the 3:1 graphics floor: never the only signal.
+     Orange: 4.67 indigo, 4.21 wine, 3.86 forest on --game-ground (3.99, 3.60, 3.28 on the card): graphics only; under 4.5 as text on wine and forest.
+     Lilac: 5.66 / 5.10 / 4.67 on ground; on the card 4.84 / 4.36 / 3.97: passes as text on indigo only. Shapes elsewhere.
+     Amber, green, cream pass 4.5 on every ground and card.
+     --game-ground-line on --game-ground: 1.66 to 1.69 (it is an edge, not text; the card also keeps --shadow-card).
+     --game-ground-card against --game-ground: 1.17 to 1.18: the card reads by its edge and shadow, not its fill.
+     Indigo against --page is 1.06:1 (wine 1.18, forest 1.28): at Middle and Far, Casebook and Escape change by hue only.
+   ============================================================================ */
+
+/* ---- Per-game tokens (declared always, used only at Middle and Far) ---- */
+.ss-page[data-game="casebook"] { --game-ground: var(--cover-bg-indigo); --game-mark-1: var(--cover-amber); --game-mark-2: var(--cover-lilac);  --game-mark-3: var(--cover-cream); }
+.ss-page[data-game="escape"]   { --game-ground: var(--cover-bg-indigo); --game-mark-1: var(--cover-teal);   --game-mark-2: var(--cover-amber);  --game-mark-3: var(--cover-cream); }
+.ss-page[data-game="delve"]    { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--cover-amber);  --game-mark-2: var(--cover-lilac);  --game-mark-3: var(--cover-orange); }
+.ss-page[data-game="word"]     { --game-ground: var(--cover-bg-forest); --game-mark-1: var(--cover-green);  --game-mark-2: var(--cover-amber);  --game-mark-3: var(--cover-teal); }
+.ss-page[data-game="mystery"]  { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--cover-orange); --game-mark-2: var(--cover-cream);  --game-mark-3: var(--cover-amber); }
+
+/* Derived. Needed because --line on the grounds measures 1.09:1 (forest) to 1.32:1 (indigo), so a card edge would disappear. */
+.ss-page { --game-ground-line: color-mix(in srgb, var(--text) 18%, var(--game-ground, var(--page))); --game-ground-card: color-mix(in srgb, var(--text) 6%, var(--game-ground, var(--page))); }
+
+/* ---- Near: the surface tokens every shared part reads. Game colour appears only in the cover. ---- */
+.ss-page { --ss-ground: transparent; --ss-card: var(--card); --ss-line: var(--line); --ss-edge: var(--control-edge);
+  --ss-mark-1: var(--off-white); --ss-mark-2: var(--muted); --ss-mark-3: var(--control-edge);
+  --ss-cell: var(--card); --ss-cell-line: var(--line); }
+
+/* ---- Middle: the Hero card takes the ground; marks inside the Hero may use the game's colours. Rest of the page as Near. ---- */
+.ss-page[data-dist="middle"] .ss-hero { --ss-card: var(--game-ground); --ss-line: var(--game-ground-line); --ss-cell: var(--card); --ss-cell-line: var(--game-ground-line);
+  --ss-mark-1: var(--game-mark-1); --ss-mark-2: var(--game-mark-2); --ss-mark-3: var(--game-mark-3); }
+
+/* ---- Far: the body takes the ground, full width; every card on it uses the ground-card. Store chrome stays --page. ---- */
+.ss-page[data-dist="far"] { --ss-ground: var(--game-ground); --ss-card: var(--game-ground-card); --ss-line: var(--game-ground-line); --ss-edge: var(--game-ground-line);
+  --ss-cell: var(--game-ground-card); --ss-cell-line: var(--game-ground-line);
+  --ss-mark-1: var(--game-mark-1); --ss-mark-2: var(--game-mark-2); --ss-mark-3: var(--game-mark-3); }

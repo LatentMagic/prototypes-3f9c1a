@@ -94,6 +94,18 @@
     { c: 'Q', act: 'Question', what: 'Asked Tobias Pike about the will' },
     { c: 'A', act: 'Accusation', what: 'Tobias Pike', out: 'Wrong' },
   ];
+
+  // ---- Daily Word: a lost day. Canon has no lost Word session ('word-e4' was named in pg/games.js with no seed behind it). ----
+  // The -IGHT trap: answer LIGHT, six guesses, the last four each four letters in place. Engine: guess-scored marks, finished {outcome: lost}.
+  // Nothing in the record holds the answer on a loss (grounding/daily-word.md), so a page must not print it; the seed keeps it only to compute marks.
+  S['word-e4'] = {
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'LIGHT', loss: true, hints: 0, result: 'Failed', date: 'Sunday 4 October',
+    listTitle: 'Every guess', share: 'Failed',
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SOLID', '2 in the word'], ['Guess 3', 'FIGHT', '4 in place'],
+      ['Guess 4', 'MIGHT', '4 in place'], ['Guess 5', 'NIGHT', '4 in place'], ['Guess 6', 'SIGHT', '4 in place']],
+  };
+  // ---- Daily Mystery: the seeded loss, with which part of the accusation missed (S: needs the engine to send it). Accusation: Sebastian Wyle, iron poker, dining room. ----
+  if (S['mystery-today']) S['mystery-today'].wrong = ['room'];
   if (typeof cbMake === 'function') {
     window.PG_CB_LOST = { ...cbMake('gull', '5 October', 'October', window.CB_DONE.title, true, 'wrong', 4, CB_REC_LOST), cast: window.CB_DONE.cast, places: 4 };
   }
