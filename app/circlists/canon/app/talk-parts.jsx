@@ -127,7 +127,7 @@ const CandSendArrow = ({ size = 17 }) => (
 );
 
 // The way out of an EDIT (item 4, ratified 2026-08-19; placement chosen from
-// playground/wb-edit-commit.html, option 03, 2026-08-19). Only an edit box needs
+// wb-edit-commit.html, option 03, 2026-08-19). Only an edit box needs
 // one: clearing the field does not give the original words back. It stands in the
 // name row, where the ⋯ that opened the edit was — NOT on the field's edge, which
 // already carries the count and the arrow, so the one committing control keeps

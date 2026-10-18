@@ -1,6 +1,6 @@
 // ============================================================================
 // Playground — restoring the original title from inside the editor
-// (docs/specs/card-title-editing, round two: option 01 of card-title-removal).
+// (round two: option 01 of card-title-removal).
 //
 // Settled by this round: the route back lives in Edit title, and the menu gains
 // nothing. The question left is the control's form. Same rig as round one: the

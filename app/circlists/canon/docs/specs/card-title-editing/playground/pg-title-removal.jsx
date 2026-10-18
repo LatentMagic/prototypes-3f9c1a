@@ -1,5 +1,5 @@
 // ============================================================================
-// Playground — removing a card's custom title (docs/specs/card-title-editing).
+// Playground — removing a card's custom title.
 //
 // Mounts the whole real app (main.jsx) and swaps two handles on THIS page only:
 // window.CardTitleMenuItem and window.CardTitleDialog. Canon's files are not

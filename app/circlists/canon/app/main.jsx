@@ -1340,11 +1340,6 @@ const CircApp = () => {
     // LM-771: recovery from the signed-out share returns to the picker, the
     // link still held — sign-in's own return, via the `postAuthTo` onForgot set.
     screen = <Recovery onDone={() => { if (postAuthTo === 'share-intake' && shareLink) { setRoute('share-intake'); return; } goHome(); }} onBackToSignin={() => setRoute('signin')} />;
-  } else if (route === 'funding') {
-    screen = <FundingPage user={user} spaceName={fundFlow.name} mode={fundFlow.mode}
-      onFund={() => setRoute('checkout')}
-      onBack={() => setRoute('create-space')}
-      onCancel={fundFlow.mode === 'refund' ? returnToSpace : exitToApp} />;
   } else if (route === 'checkout') {
     screen = <Checkout user={user} spaceName={fundFlow.name} refund={fundFlow.mode === 'refund'}
       onSuccess={onCheckoutSuccess} onCancel={() => setRoute('funding')} />;

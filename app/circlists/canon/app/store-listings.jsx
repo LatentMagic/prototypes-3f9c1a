@@ -1,5 +1,5 @@
 // ============================================================================
-// Circlists — store listings (review aid; docs/specs/store-listings/).
+// Circlists — store listings (review aid).
 //
 //   CircStoreAppStore   — a mock of the Apple App Store page (iPhone).
 //   CircStoreGooglePlay — a mock of the Google Play page (Android phone).

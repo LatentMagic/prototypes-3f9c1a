@@ -765,7 +765,7 @@ const DeleteDialog = ({ item, space, onDeleteForMe, onDeleteForEveryone, onClose
   );
 };
 
-// Leave has two variants beyond the member's own (champion-leave, 5 Oct; docs/specs/champion-leave):
+// Leave has two variants beyond the member's own (champion-leave, 5 Oct):
 // the last member (leaving ends the circle), and a champion leaving a circle that
 // has others (it sleeps at once). Read off the circle, so every road to Leave agrees.
 const circLeaveCopy = (space) => {

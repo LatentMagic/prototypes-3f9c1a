@@ -1,5 +1,5 @@
 // ============================================================================
-// Playground header bar — a COPY of docs/specs/lm-652-discourse/playground/pg-clr-topbar.jsx,
+// Playground header bar — a COPY of the clearing-conversations rig's pg-clr-topbar.jsx,
 // taken so this rig is one self-contained folder (archiving is a move). Do not
 // tune it: a copy that drifts from its source stops being the same chrome.
 // One body, used by C2, C3 and C4. Unmistakably not

@@ -4,7 +4,7 @@
 // funded by one member — the champion. Everyone they invite joins free.
 // Creating a space IS funding it.
 //
-// Circlists-authored:  FundingPage (new + re-fund), SettingUp settle, DormantSpace.
+// Circlists-authored:  SettingUp settle, DormantSpace.
 // Provider boundary (cool slate, simulated):  Checkout, ManageFunding deep-link.
 // Currency is £ throughout — never $, never per-seat.
 // ============================================================================
@@ -12,16 +12,6 @@
 const PRICE_PER_SPACE = 3;
 const OPERATOR_EMAIL = 'support@circlists.com';
 
-// ---- Funding page (Circlists-authored, full page) --------------------------
-// One reusable page: fund a NEW space, or fund a DORMANT one back awake. Under
-// succession the payer may never have funded before, so the refund mode does NOT
-// address a returning champion — it states the rule instead: whoever funds it
-// becomes its champion. Never new-customer pricing either way.
-// Tightened layout (design audit, Option 1): no card, back + X both in the top
-// bar, and the body is safe-centred with a scroll fallback so it stays centred
-// on tall screens yet never clips on the smallest phones (natural content
-// ~370px clears a 360×640 screen with headroom; if copy ever grows it
-// top-aligns and scrolls instead of overrunning the viewport).
 const IconBtn = ({ name, label, onClick }) => (
   <button onClick={onClick} aria-label={label} className="circ-iconbtn" style={{
     background: 'transparent', border: 0, padding: 8, cursor: 'pointer',
@@ -29,61 +19,6 @@ const IconBtn = ({ name, label, onClick }) => (
     borderRadius: 'var(--radius-md)', color: 'var(--color-fg-2)',
   }}><Icon name={name} size={20} /></button>
 );
-// ONE screen, two states. The offer is identical either way — same price, same
-// circle, same cap, same champion — so the body does NOT branch. Exactly three
-// things change, and they are all about *where you came from*, never about what
-// you are buying:
-//   1. flow chrome  — mid-flow gets dots + back; standalone gets the circle name
-//                     in the same centre slot the dots vacated
-//   2. copy         — the title names the OUTCOME, the CTA names the ACTION, and
-//                     they never use the same verb twice on one screen
-//   3. exit target  — owned by the caller, not by this file
-// Resist adding a fourth. If a difference wants to live inside the body, that is
-// a signal the two entry points need different *surrounding* screens, not this
-// one forked again.
-const FUND_FEATURES = [
-  'You fund the circle as its champion',
-  'Up to 10 members, all invited free',
-  'Shared list, private read-state',
-];
-const FundingPage = ({ spaceName, mode = 'new', onFund, onCancel, onBack, user }) => {
-  const refund = mode === 'refund';
-  return (
-    <WizardShell flow={refund ? null : { step: 1 }} subject={spaceName} onBack={onBack} onExit={onCancel}>
-          <WizardTitle mb={20}>Fund your circle</WizardTitle>
-          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', columnGap: 10, rowGap: 8, marginBottom: 22 }}>
-            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-semibold)', fontSize: 44, letterSpacing: '-0.03em', color: 'var(--color-accent)', lineHeight: 1 }}>{`\u00a3${PRICE_PER_SPACE}`}</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 'var(--text-sm)', letterSpacing: 'var(--tracking-wide)', color: 'var(--color-fg-2)', lineHeight: 1.35, textAlign: 'left' }}>per circle<br />/ month</span>
-            <span style={{
-              fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 11,
-              letterSpacing: 'var(--tracking-wide)', color: 'var(--color-accent)', background: 'var(--color-accent-soft)',
-              border: '1px solid var(--color-accent)', marginLeft: 6,
-              padding: '2px 8px', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
-            }}>Founding rate</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 14, width: '100%', maxWidth: 290 }}>
-            {FUND_FEATURES.map((f) => (
-              <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-                <span style={{ marginTop: 1, color: 'var(--color-accent)', flex: 'none' }}><Icon name="check" size={18} /></span>
-                <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 'var(--text-base)', lineHeight: 1.4, color: 'var(--color-fg-1)', textAlign: 'left' }}>{f}</span>
-              </div>
-            ))}
-          </div>
-          <p style={{ margin: '0 0 14px', width: '100%', maxWidth: 34 + 'ch', fontFamily: 'var(--font-sans)', fontWeight: 'var(--weight-regular)', fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-2)', textAlign: 'center', textWrap: 'pretty' }}>Stop anytime — the circle sleeps, nothing is lost, and whoever funds it next champions it.</p>
-          <Button variant="primary" full size="lg" onClick={onFund}>Fund this circle</Button>
-          <div style={{
-            margin: '14px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-            fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 12.5, color: 'var(--color-fg-3)', lineHeight: 1.5,
-          }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <Icon name="lock" size={13} style={{ flex: 'none' }} />
-              <span>Billed to {user ? user.email : 'your account'}</span>
-            </span>
-          </div>
-    </WizardShell>
-  );
-};
-
 // ---- Provider-hosted boundary chrome ---------------------------------------
 // A deliberately different register (cool slate) — "you have left Circlists
 // and are on the payment provider."
@@ -184,7 +119,7 @@ const ManageFunding = ({ user, spaceName, intent = 'manage', onReturn, onCancelS
       </div>
       <div style={row}>
         <span style={{ fontWeight: 500, fontSize: 14, color: '#334155' }}>Payment method</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, color: '#0f172a' }}>•••• 4242</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 13, color: '#0f172a' }}>•••• {window.CircSeed.CARD_LAST4}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 24 }}>
         <button onClick={onReturn} style={{
@@ -362,6 +297,6 @@ const WebHandoff = ({ context = 'new', spaceName, onExit }) => {
 };
 
 Object.assign(window, {
-  PRICE_PER_SPACE, OPERATOR_EMAIL, FundingPage, Checkout, ManageFunding, ProviderShell,
+  PRICE_PER_SPACE, OPERATOR_EMAIL, Checkout, ManageFunding, ProviderShell,
   ProviderInterstitial, SettingUp, DormantSpace, WebHandoff,
 });

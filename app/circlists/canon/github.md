@@ -98,6 +98,30 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-18T08:30:14Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Kit update to version 5: reply-relay and agent-ratification rules in `CLAUDE.md`. Handoff in `docs/specs/kit-5-update/`.
+
+## Previous sync
+
+date: 2026-10-18T07:36:07Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- One record: every demo fact held once in the seed; Data rule in `CLAUDE.md`. Handoff in `docs/specs/one-record/`.
+
+## Previous sync
+
+date: 2026-10-16T06:08:48Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Kit update, several candidate builds per ticket: `CLAUDE.md`, `docs/specs/CLAUDE.md`, the archive README, the candidate-build skill, the launcher labels. Handoff in `docs/specs/kit-several-candidates/`.
+
+## Previous sync
+
 date: 2026-10-15T12:44:18Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
 

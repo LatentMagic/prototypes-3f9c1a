@@ -73,7 +73,7 @@ const PppSubscribed = ({ st, user }) => {
   const resume = () => run('subResume');
   const pending = st.pending && st.status !== 'ending';
   // The billing foot: the same line on the web card and the app's status-only card.
-  const pppFoot = <div className="ppp-foot-wrap"><p className="ppp-card-foot ppp-foot"><span>Billed to {user ? user.email : 'your account'}</span><span>Card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span></span></p></div>;
+  const pppFoot = <div className="ppp-foot-wrap"><p className="ppp-card-foot ppp-foot"><span>Billed to {user ? user.email : 'your account'}</span><span>Card ending <span style={{ fontFamily: 'var(--font-mono)' }}>{window.CircSeed.CARD_LAST4}</span></span></p></div>;
   const canSwitch = (st.status === 'active' || st.status === 'trial') && !st.pending;
   // The app, Active or free month (pppAppNoPay): status only. The marker, Plan,
   // the next-payment row, the billing foot, then the line. No buttons.

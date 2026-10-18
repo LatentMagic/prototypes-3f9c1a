@@ -44,7 +44,7 @@ const PPP_STATE_DEFS = [
   ['ppp-app-pending-switch', 'App: Account, switch to yearly pending', { store: { pending: 'yearly' }, route: 'account', platform: 'app' }],
   ['ppp-takeover', 'Take over: sleeping circle, not subscribed', { store: NOT_SUB, spaces: (s) => pppSleep('sp-book')(pppHand(s)), current: 'sp-book', platform: 'web' }],
   ['ppp-app-takeover', 'App: Take over, sleeping circle, not subscribed', { store: NOT_SUB, spaces: (s) => pppSleep('sp-book')(pppHand(s)), current: 'sp-book', platform: 'app' }],
-  ['ppp-takeover-pricing', 'Take over: subscription page, free month', { store: { ...NOT_SUB, ctx: { from: 'takeover', spaceId: 'sp-book', name: 'Tuesday Book Club' } }, spaces: (s) => pppSleep('sp-book')(pppHand(s)), route: 'subscribe' }],
+  ['ppp-takeover-pricing', 'Take over: subscription page, free month', { store: { ...NOT_SUB, ctx: { from: 'takeover', spaceId: 'sp-book' } }, spaces: (s) => pppSleep('sp-book')(pppHand(s)), route: 'subscribe' }],
   ['ppp-takeover-subscribed', 'Take over: sleeping circle, already subscribed', { store: {}, spaces: pppSleep('sp-book'), current: 'sp-book' }],
   ['ppp-takeover-ending', 'Take over while your subscription is ending', { store: { status: 'ending' }, spaces: pppSleep('sp-book'), current: 'sp-book', platform: 'web' }],
   ['ppp-app-takeover-ending', 'App: Take over while your subscription is ending', { store: { status: 'ending' }, spaces: pppSleep('sp-book'), current: 'sp-book', platform: 'app' }],
@@ -58,7 +58,7 @@ const PPP_STATE_DEFS = [
   ['ppp-no-circles', 'Subscribed with no circles: Account', { store: {}, spaces: () => [], route: 'account' }],
   ['ppp-no-circles-ending', 'Ending, with no circles: Account', { store: { status: 'ending' }, spaces: () => [], route: 'account' }],
   ['ppp-no-circles-failed', 'Payment failed, with no circles: Account', { store: { status: 'failed' }, spaces: () => [], route: 'account' }],
-  // As shipped (8 Oct): docs/specs/per-person-pricing-as-shipped/.
+  // As shipped (8 Oct).
   ['ppp-cancel-failed-payment', 'Cancel while a payment has failed: "From today", circles sleep at once', { store: { status: 'failed' }, route: 'account', sheet: 'cancel' }],
   ['ppp-delete-active', 'Delete account, Active', { store: {}, route: 'account', confirm: 'delete-account' }],
   ['ppp-delete-free-month', 'Delete account, free month', { store: { status: 'trial', plan: 'monthly' }, route: 'account', confirm: 'delete-account' }],
@@ -91,7 +91,13 @@ const pppStage = (api, def) => {
   { const a = pppApi(); if (a && a.confirm) a.confirm(null); }
   let list = seedSpaces(DEFAULT_USER.email).filter((s) => !/^TEST\b/i.test(s.name || ''));
   if (def.spaces) list = def.spaces(list);
-  window.CircPPP.reset(def.store);
+  // A take-over context names its circle from the staged list, as the real flow reads space.name.
+  let store = def.store;
+  if (store && store.ctx && store.ctx.spaceId && !store.ctx.name) {
+    const sp = list.find((s) => s.id === store.ctx.spaceId);
+    store = { ...store, ctx: { ...store.ctx, name: sp ? sp.name : '' } };
+  }
+  window.CircPPP.reset(store);
   api.setUser(DEFAULT_USER); api.setSpaces(list);
   api.setLoadingFeed(false); api.setHoldLoading(false);
   if (api.setHomeStripOpen) api.setHomeStripOpen(false);

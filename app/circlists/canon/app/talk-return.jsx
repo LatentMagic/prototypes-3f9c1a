@@ -26,8 +26,7 @@ const CAND_BAR_IN_MS = 560, CAND_BAR_OUT_MS = 400;
 // The bar's rows: watched cards, MARKED READ (ratified 2026-08-19 — hearing about
 // a card starts at the mark), carrying words the member has not seen. Newest
 // first, so the head line's names — taken in row order — read newest first too.
-// Comment reactions reach the bar (docs/specs/comment-reactions/
-// handoff-returns-bar.md): reactions OTHERS placed on YOUR words since your
+// Comment reactions reach the bar: reactions OTHERS placed on YOUR words since your
 // mark. Author-only by construction — only turns by 'You' are read, and your
 // own reaction is never counted. The list is what stands now: a reaction taken
 // back is gone from it, a swap keeps its time and shows its new glyph, so a
@@ -101,9 +100,7 @@ const candBarSnap = (rows) => rows.map(i => {
   return { id: i.id, title: candTitleOf(i), titled: !!(i.customTitle || i.title), who: candBarWho(i), rx: rx.who, glyphs: rx.glyphs };
 });
 
-// ---- clearing the bar (ratified 2026-09-21; the study is
-// docs/specs/lm-652-discourse/playground-clear-in-circle/, the reasoning
-// note-2026-09-21-clear-in-circle.md) -----------------------------------------
+// ---- clearing the bar (ratified 2026-09-21) --------------------------------
 //
 // WHAT CLEARING IS. It moves `talkSeenAt` forward on every card the bar stands
 // for — the same write the conversation surface makes when you leave it

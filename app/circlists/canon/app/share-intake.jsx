@@ -27,8 +27,8 @@
 // Bare text, no box: the rows below are white cards you tap, and a boxed link
 // above them read as one more card. The whole link is reachable by scrolling
 // the line sideways; the right edge fades while more link lies beyond it and
-// clears at the end. No left fade — ratified on the option board
-// (docs/specs/lm-771-share-intake/playground/wb-held-link.html, option 01).
+// clears at the end. No left fade — ratified on the held-link
+// option board, option 01.
 // The fade is a CSS mask, not a native affordance; the scrollbar is hidden.
 const SHARE_LINK_FADE = 48;
 const ShareHeldLink = ({ link }) => {
@@ -61,7 +61,7 @@ const ShareLinkRule = () => (
 // Above the canon sign-in card: the held link, ruled off exactly as on the
 // picker. What signing in is for lives IN the card, as its subtitle
 // (SHARE_SIGNIN_SUBTITLE, passed by main.jsx) — ratified 2026-09-23, option 03
-// of docs/specs/lm-771-share-intake/playground/wb-signed-out-lead.html.
+// of the signed-out-lead option board.
 // No bottom margin: the rule's own 24 is the whole gap to the card, matching
 // the ~22 the link's line box reads above the rule.
 const SHARE_SIGNIN_SUBTITLE = 'To add this link to a circle.';

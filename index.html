@@ -1397,6 +1397,17 @@
                 'Account deletion, and life after it: account settings carries delete, with one confirmation that enumerates no circles. A circle whose champion is gone keeps working to the end of its paid period with no management offered to anybody, and a statement where the crown was.'
               ],
               base: 'Canon\'s first sync — carries forward the agreed line next was holding.'
+            },
+            {
+              date: '2026-10-18',
+              title: 'Staged circles in the seed; one card value; funding page removed; specs paths dropped from comments',
+              items: [
+                'The circles that only a register state shows (empty, solo, one card, full at 10 members, late joiner, oldest-first pile) now live in seed-data.jsx as stagedCircle(id, email), in place of being built inline in states.jsx. Staged dormant and take-over states read their champion off the seed\u2019s own circles instead of hard-coded names.',
+                'Simulated link arrivals now carry only a URL; title, source and image come from the seed\u2019s SEED_META by URL, the same as seeded cards. The card on file is one value, CARD_LAST4, read by every billing foot.',
+                'The yearly plan\u2019s "a month" price is worked out from the yearly price, and a take-over state names its circle from the staged list.',
+                'The standalone Fund page (FundingPage and its route) is gone from the app; subscriptions.jsx is about 70 lines shorter.',
+                'Code comments no longer cite docs/specs paths. Six new spec folders arrive in docs/specs (kit-5-update, kit-catch-up, kit-chat-replies, kit-comment-paths, kit-several-candidates, one-record); candidate-build skill, CLAUDE.md, github.md and playgrounds.json are updated.',
+              ],
             }
           ]
         },

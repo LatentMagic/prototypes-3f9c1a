@@ -15,8 +15,7 @@
 //
 // ONE shape for the card's whole life: the field with its act beside it, then
 // the link's box beneath, always present. No second face, so there is no swap —
-// which is what four treatments of that swap, played as the app, were for
-// (docs/specs/a3-invite-link/playground/circlists-a3-transition.html).
+// which is what four treatments of that swap, played as the app, were for.
 //
 // **The press is the moment.** Deriving the link as the address is typed was
 // tried and cannot work: `a@b.co` is a valid address and so is

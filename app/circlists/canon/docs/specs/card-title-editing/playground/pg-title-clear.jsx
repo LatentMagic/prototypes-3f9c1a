@@ -1,6 +1,6 @@
 // ============================================================================
 // Playground — clearing the field restores the original title
-// (docs/specs/card-title-editing, round three).
+// (round three).
 //
 // No new control. The field is the only thing a member touches: clear it and
 // save, and the card goes back to its fetched title, or its address on a failed

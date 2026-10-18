@@ -60,7 +60,7 @@ const CIRC_SEED_DESC = {
   'https://longreads.com/2026/01/the-long-walk-home/': 'A memoir of walking three hundred miles back to a childhood town.',
 };
 
-// ---- Frontend Guild (docs/specs/frontend-guild/) --------------------------
+// ---- Frontend Guild ------------------------------------------------------
 // The landing circle, matching the store screenshots. Copy is verbatim from the
 // brief. Ages, thoughts and conversations are set by circGuildFinish() AFTER the
 // liveliness pass below, which would otherwise overwrite each card's `at`.
@@ -405,8 +405,49 @@ function seedSpaces(userEmail) {
 }
 
 const DEFAULT_USER = { firstName: 'Sam', lastName: 'Rivera', name: 'You', email: 'sam.rivera@gmail.com' };
+// The last four digits of the card on file. Every billing foot reads this one value.
+const CARD_LAST4 = '4242';
 
-window.CircSeed = { M, IT, seedSpaces, DEFAULT_USER, SEED_DESC: CIRC_SEED_DESC };
+// ---- Staged circles ---------------------------------------------------------
+// Circles only a register state puts on screen (app/states.jsx). Not part of
+// seedSpaces(), so no other state or a saved snapshot meets them; a state takes
+// a fresh one from stagedCircle(id, email) and adds what its scenario needs
+// (timing, the late joiner's and the pile's link lists).
+const READING_ROOM = 'Reading Room';
+const withSam = (e) => [M('You', e), M('Sam R.', 'sam.r@example.com')];
+// One member list, shared by Sunday Reads and Field Notes. Ana R. champions both.
+const ANA_CIRCLE = (e) => [M('You', e), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
+  M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')];
+const anaChampions = (e) => { const ms = ANA_CIRCLE(e); return { champion: ms[1].name, championEmail: ms[1].email, members: ms }; };
+const STAGED_CIRCLES = {
+  // The empty Active feed.
+  'sp-empty': (e) => ({ name: READING_ROOM, champion: 'You', championEmail: e, members: withSam(e), items: [] }),
+  // A champion who is the circle's only member.
+  'sp-solo': (e) => ({ name: READING_ROOM, champion: 'You', championEmail: e, members: [M('You', e)], items: [] }),
+  // One unread card, so the sort control is absent.
+  'sp-one': (e) => ({ name: READING_ROOM, champion: 'You', championEmail: e, members: withSam(e),
+    items: [IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Sam R.')] }),
+  // At the 10-member cap, champion view.
+  'sp-full': (e) => ({ name: 'Design Guild', champion: 'You', championEmail: e,
+    members: [
+      M('You', e), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'),
+      M('Marcus T.', 'marcus.t@example.com'), M('Joe M.', 'joe.m@example.com'), M('Ada L.', 'ada.l@example.com'),
+      M('Ravi P.', 'ravi.p@example.com'), M('Nina K.', 'nina.k@example.com'), M('Tom B.', 'tom.b@example.com'),
+      M('Lena F.', 'lena.f@example.com'),
+    ],
+    items: [
+      IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Ada L.'),
+      IT('https://rauno.me/craft/interaction-design', 'Added by Nina K.'),
+      IT('https://www.figma.com/blog/the-quiet-design-system/', 'Added by Sam R.'),
+    ] }),
+  // The late joiner (LM-786).
+  'sp-late': (e) => ({ name: 'Sunday Reads', ...anaChampions(e), items: [] }),
+  // The oldest-first pile (LM-786 sort).
+  'sp-pile': (e) => ({ name: 'Field Notes', ...anaChampions(e), items: [] }),
+};
+const stagedCircle = (id, e) => (STAGED_CIRCLES[id] ? { id, funded: true, dormancy: null, ...STAGED_CIRCLES[id](e) } : null);
+
+window.CircSeed = { M, IT, seedSpaces, DEFAULT_USER, SEED_META, SEED_DESC: CIRC_SEED_DESC, CARD_LAST4, stagedCircle };
 
 // ---- Baked-in favicons -----------------------------------------------------
 // Real marks fetched from each site and stored locally, so the demo never

@@ -209,7 +209,7 @@ circles-menu button below 1024, and the app posture's Home destination on a phon
   its `src` against `<base>` too, so longhand `../../../app/…` climbs twice and bare
   sibling filenames resolve at the root. Full rule: `CLAUDE.md` § Playgrounds.
 - **Add the rig to the launcher.** `playgrounds.html` at the root renders `playgrounds.json`:
-  a shelf of tickets, then that ticket's candidate build and rigs. Adding, moving or
+  a shelf of tickets, then that ticket's candidate builds and rigs. Adding, moving or
   archiving a rig means adding or moving its manifest entry — a rig the launcher does not
   list is a rig the user cannot find. An entry is hidden with `"on": false`, never deleted.
 - **Never leave a standalone bundle behind.** Generate it, hand it over, delete it in the

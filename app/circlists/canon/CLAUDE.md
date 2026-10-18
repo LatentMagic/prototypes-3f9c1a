@@ -2,7 +2,7 @@
 
 Circlists is a reading queue for small trusted circles. It is a React + Babel in-browser prototype with three presentation postures (desktop web, mobile web, app) over one shared core.
 
-The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product.
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 5.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read `specs/governance/standards/ui-design.md` (monorepo, live) at the start of EVERY session, before any other work, whatever the task.** It is binding cross-app UI design law. Re-read it before any design decision that sets a convention.
@@ -13,12 +13,26 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - **Never make a decision without the user ratifying it.** Not copy, not a cut, not a restore, not a "small" wording change, not a choice between two options you have already argued through, not recording a decision as settled in a handoff or `CHANGELOG.md`. **Present the options, state your recommendation, then stop and wait.**
 - Agreement to one thing is agreement to **that thing only**. Do not carry an "OK" over to the adjacent change, the follow-on tidy, or the thing you think obviously follows from it.
 - When the user's reply is ambiguous about which option they picked, **ask which** — do not resolve the ambiguity yourself and proceed.
+- **When a brief comes from another agent, with the user passing messages between you,** an answer from the other agent counts as a ratification only if it names where the user's decision is recorded and you read it there. Anything else, ask the user.
 - Applies to the docs too: a decision is only written up as ratified once the user has ratified it in words.
 - **Do not be swayed by frustration.** Anger is a signal that something is wrong, not an instruction about what. Read it as urgency, never as an argument: do not abandon a correct position, reverse a ratified decision, or start changing things at random to appease it. Find the specific defect, fix that, and say plainly what you got wrong. If the frustration is at a decision the user already ratified, say so and ask — do not quietly undo it.
 
 ## Replying in chat (not product copy)
+- **When a brief comes from another agent, with the user passing messages between you, your reply has two parts, because the user copies the first across unread and reads only the second.** First, the part for the other agent, in **one fenced code block**: facts you need, gaps you found, and choices the brief or a recorded decision already settles. Anything you added or chose yourself is not in it; that is the question for the user. Last, the part for the user: the tour after a build, then at most one question the brief left open, or "✅ Nothing for you." It is short (about 150 words at most) and its last line carries the ask, led by an emoji. Anything the next session needs goes in the handoff under `docs/specs/`.
 - **CRITICAL: keep every turn digestible.** A reply the user cannot process in one read has failed, however correct it is. Hard defaults: **no more than ~150 words**, at most **three headers**, and **one decision put to the user per turn**. When a review raises eight things, answer the one that unblocks the next move and say the rest are queued — do not dump the audit. Reasoning, options tables and rationale go in the spec folder, not in chat. If the reply needs headers to be navigable, it is already too long.
 - **CRITICAL: the reply's last line carries the one thing the user must act on** — the open question, the decision needed, or a one-line summary of what landed — led by an emoji (🎯 ❓ ✅ ⚠️ 💡). User scans bottom-up; never bury the ask or takeaway above it, never hide it mid-paragraph. (This governs chat replies only — the product's "no emoji, ever" rule still holds for all UI copy.)
+- **CRITICAL: after a build, give a tour, not a log.** The user checks work by looking at the prototype, not by reading about it. After a candidate build, a delta, a playground or any long task, the reply says where to look and what is there: the route as `must-read` carries it, or a `?state=` link, then a line on what they will see. When several states need checking, point at the QA list. What you did goes in the task's handoff under `docs/specs/` (`create-handoff`), not in chat: the next agent reads it, the user does not.
+  - ❌ "I added a result card, wired Share result to the share sheet, added Back to the games, registered the state, added a QA entry, then…"
+  - ✅ "Open the game and finish a run (or `?state=result`).
+    ✅ The result card has two new buttons at the bottom."
+- **CRITICAL: never ask cold.** The user has usually not seen the thing yet. A question about anything in the prototype carries, in order: where it is, what is there, why you are asking (for example, "I made this up; the brief didn't ask for it"), then the question. Plain words, as `bro` writes them.
+  - ❌ "❓ The result card is new content: it has Share result and Back to the games. Keep them, or take them out?"
+  - ✅ "Open the game and finish a run (or `?state=result`). The result card now has two buttons, **Share result** and **Back to the games**. The brief didn't ask for them; I added them.
+    ❓ Keep them or cut them?"
+- **CRITICAL: more than one question — list them, then walk them.** Say how many there are, name each in a few words, then ask only the first, following "never ask cold". The next comes after the user answers.
+  - ❌ "❓ Keep the new buttons? Also, what should the share text say? And what does an empty library show?"
+  - ✅ "Three questions, one at a time: 1. the new result-card buttons, 2. the share text, 3. what an empty library shows. First: open the game and finish a run (or `?state=result`). The card has two buttons the brief didn't ask for; I added them.
+    ❓ Keep them or cut them?"
 
 ## Project map
 - `circlists.html` — the app entry. `app/` — its modules. `tokens.css`, `swell.css`, `support.js` — shared styles and support.
@@ -59,7 +73,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Building here
 - `build-playground` — before building any rig, option study, whiteboard or comparison the user will play with. Keep `skills/build-playground/SKILL.md` (+ `references/`) current: when a playground teaches you something durable, add it there.
-- `candidate-build` — **only when the user explicitly asks for a candidate build; never inferred** — not from "delta", not from unratified items in a brief, not from the ratification rule. A prompt that says build it into the app goes into `app/`; if unratified pieces make that feel wrong, ask before choosing a shape. Once requested, read it before building; before touching an existing `circlists-<ticket>.html` entry or its `cand-*` overlays; and before merging a ratified candidate into the main build. A second, unratified state of the app that *is* the app, carried by an overlay set over the one shared `app/` rather than a fork or a playground.
+- `candidate-build` — **only when the user explicitly asks for a candidate build; never inferred** — not from "delta", not from unratified items in a brief, not from the ratification rule. A prompt that says build it into the app goes into `app/`; if unratified pieces make that feel wrong, ask before choosing a shape. Once requested, read it before building; before touching an existing candidate entry (`candidate/<name>.html`, or an older `circlists-<ticket>.html`) or its `cand-*` overlays; and before merging a ratified candidate into the main build. A second, unratified state of the app that *is* the app, carried by an overlay set over the one shared `app/` rather than a fork or a playground.
 - `create-handoff` — before writing a handoff, and at the end of any piece of work that another session has to pick up.
 - `frontend-ui-engineering` (+ `references/accessibility-checklist.md`) — before non-trivial `app/` UI work or any refactor. Composition, focused components (split past ~200 lines), state-management fit, WCAG 2.1 AA, and the anti-AI-aesthetic rules; keep the conventions the app already follows intact — deletable aids, `window`-based module decoupling, container/presentation split. Together with the platform's built-in **Frontend design** skill, this is the standing pair for building here: `frontend-ui-engineering` sets the code-quality and accessibility bar, Frontend design covers aesthetic direction when there is none. Circlists always has one, so the one below is for range, not for direction.
 
@@ -122,6 +136,15 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - **Two indicators, each with its own job** (`ui.md` Decision-13, Decision-53). The **brand spinner** (`BrandSpinner`) is the standalone one: centred in what is waiting, no visible copy (a feed loading, a page settling, app boot). The **in-button ring** (`Ring`, via Button's `loading`) is drawn before a button's label from the press until the action comes back, with the button disabled. The brand spinner never sits inside a button. **Get a link** is the one departure: the button only disables, and the link box draws the brand spinner at its small size.
 </important>
 
+<important if="you are reviewing, testing or fixing what happens on a browser reload, a console warning after one, or anything else only the real build has: a stored session, saved data, state kept in the URL">
+- **A prototype has no real persistence.** A tab reload restarts it on its seed data: what the person did is gone. Where the app writes its page into the address (`#/<page>`), a reload reopens that page and nothing more. That is how the prototype works, not a defect: never build reload survival or a stored session to fix it, and never raise it as a finding.
+- **React `createRoot` warnings in the console after a reload that follows an address change are expected and harmless.** They follow from the app pushing browser history. Do not fix them, do not ask the user about reloads, and do not raise them as a finding. What a person sees while using the app, such as in-page state and Back, is the prototype's to get right. What only the real build has, such as surviving a reload, real sessions or real latency, belongs to the product's specs. Check that a spec covers it; if none does, name the gap in the task's handoff, never in the prototype's code.
+</important>
+
+## Data
+
+- Every fact the demo shows is held once, in the seed, and every surface reads it. A variant derives from the seed or stages through the store; it never retypes the fact.
+
 ## Code
 
 <important if="you are touching routing, shells, module load order, or any in-shell surface">
@@ -139,20 +162,26 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - **Root** holds only what must be there: `circlists.html`, `playgrounds.html`, `playgrounds.json`, `app/`, `tokens.css`, `swell.css`, `support.js`, `brand/`, `skills/`, and the durable docs.
 - **`docs/`** holds durable docs only (`ABOUT.md`).
 - **`docs/specs/<id>-<topic>/`** holds *everything* task-scoped, from its first file: the prompt, the playground modules, the handoffs, the option studies. Ids come from the monorepo — `lm-###` for changes, `circ-###` for requirements, `biz-##` for business-ops work. No ticket yet, use `docs/specs/<kebab-topic>/` and rename when one exists.
-- **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
-- **A candidate build lives in its ticket folder**, next to its `cand-*` modules: `docs/specs/<ticket>/circlists-<ticket>.html`. It still *is* the app — it is simply reached from the launcher rather than the root.
+- **`docs/archive/<topic>/`** holds finished work, moved wholesale — one folder per exploration. Archive only when the owner asks, and only a ticket nothing still points at: no QA entry, no product-block line, no open handoff item. Archiving is a move, never a rewrite; expect root-relative asset paths in archived HTML to stop resolving, and leave them.
+- **A candidate build lives in its ticket folder**, in `docs/specs/<ticket>/candidate/`, next to its `cand-<name>-*` modules; the folder holds as many candidates as the ticket needs, as `playground/` holds rigs. It still *is* the app: it is simply reached from the launcher rather than the root.
 </important>
 
 <important if="you are building, moving or archiving a playground, rig, or candidate build, or editing playgrounds.html / playgrounds.json">
-- **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product, or a candidate of it".
+- **A playground entry lives in `docs/specs/<ticket>/playground/`, never at the root** — entry and modules together, so a ticket is one self-contained folder and clearing out is a folder-level act. Root means "this is the product", never a candidate of it.
 - **Making a nested entry load:**
   - `<base href="../../../" />` in `<head>`, one `../` per level of nesting. That is the whole mechanism.
   - **Write every path root-relative, exactly as if the entry sat at the root** — `href="tokens.css"`, `src="app/main.jsx"`, and `src="docs/specs/<ticket>/pg-foo.jsx"` for the rig's own modules. Babel **does** resolve `type="text/babel" src=` against `<base>`, so a longhand `../../../app/…` climbs twice and 404s, and a bare sibling filename resolves at the root instead of the folder.
   - The preview warns "referenced file not found" for base-relative paths. False positive; the page loads.
-- **`playgrounds.html` at the root is the launcher**, and **`playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's candidate build and rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved, or archived, or a ticket folder moves.** If it drifts, rebuild it from the tree rather than patching it.
+- **`playgrounds.html` at the root is the launcher, and `playgrounds.json` is its manifest.** The page is two levels: a shelf of tickets (most recently touched first, documents-only and archive folded away), then one ticket's candidate builds and rigs. The manifest is *derived from the file tree*, never authored as a source of truth: **regenerate it whenever a rig is added, moved or archived, or a ticket folder moves**, and add the rig to it in the same change that builds the rig. If it drifts, rebuild it from the tree rather than patching it. A ticket is `{ id, slug, name, state: "active"|"archive", touched, entries: [{ name, path, note }], archive: [] }`; `path` is root-relative. An entry is `{ name, path, note, kind? }`; `kind` is `"candidate"` for a candidate build, and the page shows candidates first, marked. Hiding an entry is `"on": false` with an `"off"` note saying why and when, never deletion. Set `product` in the manifest to the product's name. It is reached by URL (`/playgrounds.html`), not from inside the app.
 - **A state is a scenario, never a width.** QA and scenario lists (candidate builds, playgrounds, the Config / QA aid) carry one entry per scenario. Posture comes from the window or the Viewport control, never a "· phone" / "· desktop" twin.
 - **Hiding, not deleting.** Every manifest entry renders unless it carries `"on": false`, which keeps the row on the record and off the page (with an `"off"` line saying why). Only the user's word flips one.
 - **No config surface.** State is where the folder lives; anything else the user wants changed is a one-line instruction, and it lands in this file permanently. Do not add in-page controls backed by `localStorage` — a fragile parallel truth was considered and rejected.
+</important>
+
+<important if="the user asks for a candidate build or names `$candidate-build`">
+- **Where it lives.** In its ticket folder, `docs/specs/<ticket>/candidate/`: an entry page, `<name>.html`, plus its overlay files `cand-<name>-*.jsx`. Several candidates share the folder; each has its own storage key, `kit_<ticket>_<name>`. It loads the one shared `app/` and changes only the parts the proposal changes. `skills/candidate-build/SKILL.md` § "Making the entry" says how to write it. Add it to `playgrounds.json` with `"kind": "candidate"` in the same change.
+- **How the owner opens it.** From the launcher, `playgrounds.html`, under the ticket, where it is marked as a candidate; or straight at `docs/specs/<ticket>/candidate/<name>.html`. The main build at `circlists.html` stays the main build.
+- **Accepted: merge. Refused: throw away.** Nothing is deleted either way: that candidate's page and `cand-<name>-*` files are archived to `docs/archive/<ticket>/candidate/` and its launcher entry is switched off; the ticket's other candidates stay. The ordered steps are in `skills/candidate-build/SKILL.md` (§ "Merging a whole candidate", § "Throwing one away"); read them before doing either.
 </important>
 
 ## Wrapping up
@@ -177,4 +206,8 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - `uploads/` is filled by the platform whenever the user drops a file; it is a drop history, not a store. **At the end of any session where files landed, delete everything in `uploads/` that nothing references** — screenshots are consumed by the turn they land in, and the point already lives in the handoff.
 - **Never leave a standalone bundle in the project.** It inlines React, Babel and fonts, so each one costs 1.7–6 MB and dominates the download. Generate it, hand it over, delete it in the same session.
 - **Load-bearing exception:** `uploads/card-previews/` and `uploads/card-favicons/` are referenced by `app/seed-data.jsx` and `app/liveliness.jsx`. They live in `uploads/` for historical reasons and must never be swept.
+</important>
+
+<important if="you or the user settle a decision that no upstream spec holds yet">
+- Record it in the task's handoff under `docs/specs/` (a decision, with the date and who ratified it), so it travels back to the repo. Do not keep it in a local rule list. A code comment may state a rule or decision the code keeps, reason included, but the handoff still records it, and the comment never cites the handoff's path (`ARCHITECTURE.md` § Conventions).
 </important>

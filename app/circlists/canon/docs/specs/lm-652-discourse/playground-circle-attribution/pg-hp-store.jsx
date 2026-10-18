@@ -88,8 +88,8 @@ const pghOpt = () => PGH_OPTIONS.find(o => o.id === PGH.opt) || PGH_OPTIONS[0];
 // ---- the seed ------------------------------------------------------------
 // Seeded for the problem: the panel has to sit AT its ceiling or there is no
 // bloat to judge — three circles, six rows and a leftover line. Lifted verbatim
-// from the clear rig's pgcSeed (docs/specs/lm-652-discourse/playground/
-// pg-clr-store.jsx), which lifted its cloning from app/states.jsx stageHome({
+// from the clear rig's pgcSeed
+// (pg-clr-store.jsx), which lifted its cloning from app/states.jsx stageHome({
 // crowd }). A fixture, not a second seed to maintain — do not tune it.
 const pghSeed = (email) => {
   const base = window.PGH_SEED_BASE(email).filter(sp => !/^TEST\b/i.test(sp.name || ''));

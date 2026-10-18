@@ -221,21 +221,23 @@ const CircGlow = ({ glow, rise, style, children }) => {
 };
 
 // ---- Simulated arrivals (the timed check / Config staging) ------------------
-// Real URLs with real extracted metadata, same shape seedSpaces() produces, so
-// an arrival is indistinguishable from a seeded card once it lands.
+// Real URLs. Each arrival takes its title, source and image from the seed's
+// SEED_META by URL, as seedSpaces() folds them onto seed items, so an arrival is
+// indistinguishable from a seeded card once it lands.
 const CIRC_DROPS = [
-  { url: 'https://www.newyorker.com/books/page-turner/the-quiet-novel-revival', title: 'The Quiet Novel Revival', source: 'The New Yorker' },
-  { url: 'https://go.dev/blog/errors-are-values', title: 'Errors Are Values: Handling Failure the Go Way', source: 'The Go Blog', image: 'uploads/card-previews/blog-overreacted.png' },
-  { url: 'https://longreads.com/2026/01/the-long-walk-home/', title: 'The Long Walk Home', source: 'Longreads' },
-  { url: 'https://jvns.ca/blog/2026/02/dns-resolvers/', title: 'How DNS Resolvers Actually Work', source: 'Julia Evans' },
-  { url: 'https://sqlite.org/whentouse.html', title: 'Appropriate Uses For SQLite', source: 'SQLite' },
-  { url: 'https://danluu.com/percentile-latency/', title: 'How to Measure Latency, and Why the Percentiles Matter', source: null, hasImage: false, faviconExists: false },
+  'https://www.newyorker.com/books/page-turner/the-quiet-novel-revival',
+  'https://go.dev/blog/errors-are-values',
+  'https://longreads.com/2026/01/the-long-walk-home/',
+  'https://jvns.ca/blog/2026/02/dns-resolvers/',
+  'https://sqlite.org/whentouse.html',
+  'https://danluu.com/percentile-latency/',
 ];
 let circDropN = 0;
 const circNextDrop = (who) => {
-  const meta = CIRC_DROPS[circDropN % CIRC_DROPS.length];
+  const url = CIRC_DROPS[circDropN % CIRC_DROPS.length];
   circDropN += 1;
-  return { ...window.CircSeed.IT(meta.url, 'Added by ' + (who || 'Sam R.'), false, []), ...meta, at: Date.now() };
+  const meta = (window.CircSeed.SEED_META || {})[url] || {};
+  return { ...window.CircSeed.IT(url, 'Added by ' + (who || 'Sam R.'), false, []), ...meta, at: Date.now() };
 };
 
 Object.assign(window, { circWhen, circDividerIndex, CircleSignal, NewPill, FeedDivider, CircGlow, circNextDrop });

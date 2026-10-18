@@ -36,9 +36,7 @@ const DAY = 864e5;
 // it renders its bare URL as its own headline. `stageSort`'s `bareRead` flag
 // marks this exact URL read so search-bare-url can show the field matching a
 // headline that IS a URL, which is the one case circFilterSearch's index rule
-// most needs proving against. Not edited into the seed itself — a seed change
-// would oblige a parallel demo-seed edit and a state-key bump this slice does
-// not need (see this project's CLAUDE.md, "Seed data — the standing rule").
+// most needs proving against.
 const CIRC_BARE_URL = 'https://analytics-internal-example.com/?trace=8823ff1c9e0a4b12-2026-03-retro-followups-database-migration-incident-action-items-and-owners-final-draft-v3';
 
 // The link a member arrives HOLDING, staged for the share intake (LM-771).
@@ -148,7 +146,11 @@ function circStateContext(api) {
   // a route, and set only where a state asks for it. Guarded because main.jsx
   // only passes it when app/not-found.jsx is present.
   const clearFeedError = () => { if (setFeedError) setFeedError(false); };
-  const { M, IT, seedSpaces, DEFAULT_USER } = window.CircSeed;
+  const { M, IT, seedSpaces, DEFAULT_USER, stagedCircle } = window.CircSeed;
+  // A circle as the seed holds it, for stagers that read a fact (a name, a champion) off it.
+  const seedOf = (id) => seedSpaces(DEFAULT_USER.email).find((s) => s.id === id) || {};
+  // A circle put to sleep takes the champion of the seed's own sleeping circle (Priya N.).
+  const sleepChamp = () => { const w = seedOf('sp-test-weekend'); return { champion: w.champion, championEmail: w.championEmail }; };
 
   const reset = () => {
     try { localStorage.removeItem(STATE_KEY); } catch (e) {}
@@ -204,9 +206,11 @@ function circStateContext(api) {
   // restage the dormant TEST - Weekend Reads to demo a dormancy state, then enter
   // it. There is no role branch on that screen any more, so `champion` here only
   // says who funded it last — the screen names nobody either way.
+  // Without a champion in `cfg`, the circle keeps the one the seed gives it.
   const stageDormant = (cfg) => {
+    const champ = 'champion' in cfg ? cfg : seedOf('sp-test-weekend');
     setSpaces(prev => withSpace(prev, 'sp-test-weekend').map(s => s.id === 'sp-test-weekend'
-      ? { ...s, funded: false, champion: cfg.champion, championEmail: cfg.championEmail, dormancy: cfg.dormancy } : s));
+      ? { ...s, funded: false, champion: champ.champion, championEmail: champ.championEmail, dormancy: cfg.dormancy } : s));
     setCurrentId('sp-test-weekend'); setRoute('space'); setLoadingFeed(false);
   };
 
@@ -280,7 +284,7 @@ function circStateContext(api) {
     }
     if (only) s = s.filter((sp) => sp.id === only);
     if (sleep) s = s.map((sp) => (sp.id === sleep
-      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, ...sleepChamp() }
       : sp));
     if (quiet) s = s.map((sp) => ({
       ...sp, unseen: false,
@@ -312,17 +316,18 @@ function circStateContext(api) {
   // namelessChampion: Joe M. joined without a name (the nameless-member case, 6 Oct).
   const stageHiddenEmail = ({ hideChampion = false, hideYou = false, namelessChampion = false } = {}) => {
     const youEmail = hideYou ? RELAY_EMAIL : DEFAULT_USER.email;
-    const joeEmail = hideChampion ? RELAY_EMAIL : 'joe.m@example.com';
+    const book = seedOf('sp-book');
+    const joeEmail = hideChampion ? RELAY_EMAIL : book.championEmail;
     setUser({ ...DEFAULT_USER, email: youEmail });
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setSpaces(prev => withSpace(prev, 'sp-book').map(s => {
       if (s.id !== 'sp-book') return s;
       // Joe's row is rebuilt every time, so a nameless Joe never outlives its state.
-      const at = s.members.findIndex(m => m.name === 'Joe M.' || !m.name);
-      const rest = s.members.filter(m => m.name !== 'Joe M.' && m.name);
-      const joe = M(namelessChampion ? '' : 'Joe M.', joeEmail);
+      const at = s.members.findIndex(m => m.name === book.champion || !m.name);
+      const rest = s.members.filter(m => m.name !== book.champion && m.name);
+      const joe = M(namelessChampion ? '' : book.champion, joeEmail);
       const members = at < 0 ? [...rest, joe] : [...rest.slice(0, at), joe, ...rest.slice(at)];
-      return { ...s, funded: true, dormancy: null, champion: namelessChampion ? '' : 'Joe M.', championEmail: joeEmail, openUntil: null, funding: null,
+      return { ...s, funded: true, dormancy: null, champion: namelessChampion ? '' : book.champion, championEmail: joeEmail, openUntil: null, funding: null,
         members: members.map(m => m.name === 'You' ? { ...m, email: youEmail } : m) };
     }));
     setCurrentId('sp-book'); setTab('active'); setRoute('members');
@@ -332,11 +337,12 @@ function circStateContext(api) {
   // circle runs to the end of the paid period unmanaged, then goes dormant.
   const stageNoChampion = () => {
     setUser(DEFAULT_USER);
+    const book = seedOf('sp-book');
     if (spaces.length === 0) setSpaces(seedSpaces(DEFAULT_USER.email));
     setSpaces(prev => withSpace(prev, 'sp-book').map(s => s.id === 'sp-book'
       ? { ...s, funded: true, dormancy: null, champion: null, championEmail: null,
           openUntil: Date.now() + 12 * DAY, funding: null,
-          members: s.members.filter(m => m.name !== 'Joe M.') } : s));
+          members: s.members.filter(m => m.name !== book.champion) } : s));
     setCurrentId('sp-book'); setTab('active'); setRoute('members');
   };
 
@@ -365,12 +371,7 @@ function circStateContext(api) {
   // Space with no items — lands on the empty-feed state directly.
   const goEmptyFeed = () => {
     setUser(DEFAULT_USER);
-    const emptySpace = {
-      id: 'sp-empty', name: 'Reading Room', funded: true, dormancy: null,
-      champion: 'You', championEmail: DEFAULT_USER.email,
-      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
-      items: [],
-    };
+    const emptySpace = stagedCircle('sp-empty', DEFAULT_USER.email);
     setSpaces(prev => [emptySpace, ...prev.filter(s => s.id !== 'sp-empty')]);
     setCurrentId('sp-empty'); setTab('active'); setRoute('space'); setLoadingFeed(false);
   };
@@ -378,8 +379,7 @@ function circStateContext(api) {
   // A champion who is the circle's only member: the Members surface where Leave ends the circle.
   const stageSoleChampion = () => {
     setUser(DEFAULT_USER);
-    const solo = { id: 'sp-solo', name: 'Reading Room', funded: true, dormancy: null,
-      champion: 'You', championEmail: DEFAULT_USER.email, members: [M('You', DEFAULT_USER.email)], items: [] };
+    const solo = stagedCircle('sp-solo', DEFAULT_USER.email);
     setSpaces(prev => [solo, ...prev.filter(s => s.id !== 'sp-solo')]);
     setCurrentId('sp-solo'); setTab('active'); setRoute('members'); setLoadingFeed(false);
   };
@@ -387,20 +387,7 @@ function circStateContext(api) {
   // Space at the 10-member cap (champion view → "Space is full" on invite).
   const goFullSpaceManage = () => {
     setUser(DEFAULT_USER);
-    const fullSpace = {
-      id: 'sp-full', name: 'Design Guild', funded: true, dormancy: null, champion: 'You', championEmail: DEFAULT_USER.email,
-      members: [
-        M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com'), M('Priya N.', 'priya.n@example.com'),
-        M('Marcus T.', 'marcus.t@example.com'), M('Joe M.', 'joe.m@example.com'), M('Ada L.', 'ada.l@example.com'),
-        M('Ravi P.', 'ravi.p@example.com'), M('Nina K.', 'nina.k@example.com'), M('Tom B.', 'tom.b@example.com'),
-        M('Lena F.', 'lena.f@example.com'),
-      ],
-      items: [
-        IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Ada L.'),
-        IT('https://rauno.me/craft/interaction-design', 'Added by Nina K.'),
-        IT('https://www.figma.com/blog/the-quiet-design-system/', 'Added by Sam R.'),
-      ],
-    };
+    const fullSpace = stagedCircle('sp-full', DEFAULT_USER.email);
     setSpaces(prev => [fullSpace, ...prev.filter(s => s.id !== 'sp-full')]);
     setCurrentId('sp-full'); setTab('active'); setRoute('members');
   };
@@ -585,12 +572,7 @@ function circStateContext(api) {
   // else about the app is disturbed.
   const stageSingleItem = () => {
     setUser(DEFAULT_USER);
-    const one = {
-      id: 'sp-one', name: 'Reading Room', funded: true, dormancy: null,
-      champion: 'You', championEmail: DEFAULT_USER.email,
-      members: [M('You', DEFAULT_USER.email), M('Sam R.', 'sam.r@example.com')],
-      items: [IT('https://www.nngroup.com/articles/ten-usability-heuristics/', 'Added by Sam R.')],
-    };
+    const one = stagedCircle('sp-one', DEFAULT_USER.email);
     one.items.forEach((it) => { it.at = Date.now() - 3600e3; });
     one.lastSeenAt = Date.now(); one.unseen = false; one.pending = []; one.queued = [];
     setSpaces(prev => [one, ...prev.filter(s => s.id !== 'sp-one')]);
@@ -616,10 +598,7 @@ function circStateContext(api) {
       ...CIRC_LATE.past.map((r, i) => mk(r, n++, false, horizon - (i * 8 + 2) * DAY)),
     ];
     const late = {
-      id: 'sp-late', name: 'Sunday Reads', funded: true, dormancy: null,
-      champion: 'Ana R.', championEmail: 'ana.r@example.com',
-      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
-        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      ...stagedCircle('sp-late', DEFAULT_USER.email),
       items, joinedAt: joined, horizon,
       lastSeenAt: now, unseen: false, pending: [], queued: [],
     };
@@ -653,10 +632,7 @@ function circStateContext(api) {
       reactions: (read === true || (typeof read === 'number' && i >= read)) ? [{ name: 'You', skipped: true }] : [] }));
     const drops = (n) => { const out = []; for (let k = 0; k < n; k += 1) out.push(window.circNextDrop()); return out; };
     const pile = {
-      id: 'sp-pile', name: 'Field Notes', funded: true, dormancy: null,
-      champion: 'Ana R.', championEmail: 'ana.r@example.com',
-      members: [M('You', DEFAULT_USER.email), M('Ana R.', 'ana.r@example.com'), M('Priya S.', 'priya.s@example.com'),
-        M('Dan M.', 'dan.m@example.com'), M('Lena K.', 'lena.k@example.com'), M('Joe M.', 'joe.m@example.com')],
+      ...stagedCircle('sp-pile', DEFAULT_USER.email),
       items, lastSeenAt: now, unseen: false, pending: [], queued: [],
     };
     setSpaces(prev => [pile, ...(prev.length ? prev : seedSpaces(DEFAULT_USER.email)).filter(s => s.id !== 'sp-pile')]);
@@ -790,7 +766,7 @@ function circStateContext(api) {
   };
 
   // Minting refused: the invite card's request comes back with no usable link.
-  // On sp-test-backend, not sp-backend — sp-backend seeds at 11 members, over
+  // On sp-test-backend, not sp-backend — sp-backend seeds at ten members, at
   // the cap, so the invite card is suppressed there.
   // The arming flag is a transient window flag, NOT app state: app state is
   // persisted, so a flag on the circle would leave a normal circle refusing the
@@ -867,7 +843,7 @@ function circStateContext(api) {
     let s = empty ? [] : seedSpaces(DEFAULT_USER.email).filter((sp) => !/^TEST\b/i.test(sp.name || ''));
     if (only) s = s.filter((sp) => sp.id === only);
     if (sleep) s = s.map((sp) => (sp.id === sleep
-      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, champion: 'Priya N.', championEmail: 'priya.n@example.com' }
+      ? { ...sp, funded: false, dormancy: 'terminal', unseen: false, ...sleepChamp() }
       : sp));
     setSpaces(s);
     clearFeedError();
@@ -1045,13 +1021,13 @@ const CIRC_STATE_REGISTER = [
   { group: 'Members & funding', id: 'manage-funding', label: 'Manage funding (champion)', stage: (c) => { c.goSpace('sp-backend'); c.setManageIntent('manage'); c.setRoute('manage-interstitial'); } },
   { group: 'Members & funding', id: 'create-and-fund', label: 'Create + fund a circle', stage: (c) => c.openCreateSpace() },
 
-  { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Dormant circle', id: 'dormant-circle', label: 'Dormant circle', stage: (c) => c.stageDormant({ dormancy: 'terminal' }) },
   { group: 'Dormant circle', id: 'dormant-champion-left', label: 'Dormant circle — its champion left (remaining member)', stage: (c) => c.stageDormant({ champion: null, championEmail: null, dormancy: 'terminal' }) },
-  { group: 'Dormant circle', id: 'dormant-champion-left-retaken', label: 'Dormant circle — taken over after its champion left, then that subscription ended', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
-  { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'suspended' }) },
+  { group: 'Dormant circle', id: 'dormant-champion-left-retaken', label: 'Dormant circle — taken over after its champion left, then that subscription ended', stage: (c) => c.stageDormant({ dormancy: 'terminal' }) },
+  { group: 'Dormant circle', id: 'suspended-by-us', label: 'Suspended by us', stage: (c) => c.stageDormant({ dormancy: 'suspended' }) },
 
   { group: 'Invitations', id: 'invite-funded', label: 'Accept invite — funded', stage: (c) => c.goSpace('sp-book') },
-  { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ champion: 'Priya N.', championEmail: 'priya.n@example.com', dormancy: 'terminal' }) },
+  { group: 'Invitations', id: 'invite-dormant', label: 'Accept invite — dormant', stage: (c) => c.stageDormant({ dormancy: 'terminal' }) },
   { group: 'Invitations', id: 'invite-invalid', label: 'Accept invite — invalid', stage: (c) => c.setRoute('invalid-invite') },
   { group: 'Invitations', id: 'invite-link-refused', label: 'Get a link — creation refused', stage: (c) => c.stageInviteRefusal() },
   { group: 'Invitations', id: 'invite-circle-full', label: 'Accept invite — circle full', stage: (c) => c.setRoute('space-full') },

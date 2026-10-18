@@ -9,9 +9,7 @@
 // this mounts. It renders from the SAME CirclesHome body every posture already
 // shares, so the promotion needs no per-posture fork.
 //
-// COMPOSITION, ratified 2026-09-21 (LM-652; the study is
-// docs/specs/lm-652-discourse/playground-circle-attribution/, the reasoning
-// note-2026-09-21-home-conversations-preview.md). The first build grouped rows
+// COMPOSITION, ratified 2026-09-21 (LM-652). The first build grouped rows
 // under a heading per circle and headed the card with a count. It was judged
 // bloated, and the rework is four decisions:
 //

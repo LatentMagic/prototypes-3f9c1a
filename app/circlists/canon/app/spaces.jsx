@@ -585,7 +585,7 @@ const MembersSurface = ({ space, isChampion, championName, onInvite, onManageFun
               : <Button variant="tertiary" style={{ color: 'var(--color-destructive)' }} onClick={() => onCancelFunding && onCancelFunding()}>Cancel funding</Button>}
           </div>
           <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 12.5, lineHeight: 1.5, color: 'var(--color-fg-3)', margin: 'var(--space-4) 0 0' }}>
-            Billed to {space.championEmail || 'your account'} · card ending <span style={{ fontFamily: 'var(--font-mono)' }}>4242</span>.
+            Billed to {space.championEmail || 'your account'} · card ending <span style={{ fontFamily: 'var(--font-mono)' }}>{window.CircSeed.CARD_LAST4}</span>.
           </p>
         </div>
       )}

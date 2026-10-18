@@ -11,6 +11,8 @@ const PPP_BULLETS = ['Start as many circles as you like', 'Everyone you invite j
 
 const pppKeep = (s) => String(s).replace(/ /g, '\u00a0');
 const PppPill = ({ children }) => <span className="ppp-pill">{children}</span>;
+// The yearly plan's price a month, from its own price, so it follows PPP_PLANS.yearly.
+const pppPerMonth = (p) => '\u00a3' + (Number(String(p.full).replace(/[^\d.]/g, '')) / 12).toFixed(2) + ' a month';
 
 // P2: white card; picked = 2px accent border, green pill stays green.
 // The choice is a native radio input (as shipped), the card its label.
@@ -21,7 +23,7 @@ const PppPlanCard = ({ plan, on, onPick, still }) => {
       {!still && <input type="radio" name="ppp-plan" value={plan} checked={on} onChange={() => onPick(plan)} className="ppp-radio-native" />}
       <span className="ppp-plan-name">
         <span>{p.label}</span>
-        {plan === 'yearly' && <span><PppPill>{'\u00a3'}2.50 a month</PppPill></span>}
+        {plan === 'yearly' && <span><PppPill>{pppPerMonth(PPP_PLANS.yearly)}</PppPill></span>}
       </span>
       <span className="ppp-plan-price">{p.price}<span className="ppp-plan-unit"> / {p.unit}</span></span>
     </>
