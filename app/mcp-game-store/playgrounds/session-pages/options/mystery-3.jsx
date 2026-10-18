@@ -19,7 +19,7 @@
     </article>
   );
 
-  const MysteryThree = ({ gid, session, sid, share, api }) => {
+  const MysteryThree = ({ gid, session, sid, share, api, element = 'store', layout = 'built' }) => {
     const out = Ss.useOutcome('mystery', session);
     const P = window.PgMystery;
     const c = React.useMemo(() => P.read(session), [session]);
@@ -32,7 +32,13 @@
       <Ss.Page gid={gid}>
         <Ss.Head gid={gid} art="murder" label={out.label} date={session.date} h1={out.h1} mark={out.mark} stats={out.stats} />
         <div className="ss-body">
-          {solved ? (
+          {layout === 'ia' ? (
+            <section className="ss-hero m3-hero m3-ia" aria-label="Your accusation">
+              <P.Accusation c={c} status={status} element={element} withQ />
+              {element === 'game' ? null : <P.QChips c={c} />}
+              {c.setting ? <p className="ss-caption m3-scene">{c.setting}</p> : null}
+            </section>
+          ) : (solved && element === 'store') ? (
             <section className="ss-hero m3-hero m3-solved" aria-label="Your accusation">
               <div className="m3-names">
                 {PARTS.map(([k, label]) => (
@@ -47,11 +53,13 @@
           ) : (
           <section className="ss-hero m3-hero" aria-label="Your accusation">
             <p className="m3-count">{count || (acc ? 'You named all three.' : status === 'ended' ? 'No accusation was made.' : 'One accusation to make.')}</p>
+            {element === 'store' ? (
             <div className="m3-row">
               {PARTS.map(([k, label]) => (
                 <Part key={k} label={label} name={acc ? nice(k, acc[k]) : null} ok={acc && v ? v[k] : null} state={acc ? 'named' : 'empty'} />
               ))}
             </div>
+            ) : <P.Accusation c={c} status={status} element={element} withQ />}
             {P.scene(c) ? <p className="ss-caption m3-scene">{P.scene(c)}</p> : null}
           </section>
           )}
@@ -66,11 +74,14 @@
 
   pgOption('mystery', 3, {
     name: 'The accusation',
-    stance: 'The verdict is three choices. On a loss, show each one, suspect, weapon and room, as right or wrong, and say how many you had; on a solve, name the three and stop, because the h1 has said it. Spoiler-safe reading: a missed part says Wrong and the page never prints the true answer; showing it after the case closes is the owner\'s call.',
-    cost: 'Medium. Needs the engine to send which of the three parts were right (the seed carries it as `wrong`) and the setting and victim; the three names are on the record today.',
+    stance: 'The verdict is three choices. On a loss, show each one, suspect, weapon and room, as right or wrong, and say how many you had; on a solve, name the three and stop, because the h1 has said it. Spoiler-safe reading: a missed part says Wrong and the page never prints the true answer; showing it after the case closes is the owner\'s call. IA pass: the same three cards on a solve as on a loss (glyph only, no count sentence), the questions as chips beneath. Between: the cards with the cover\'s coral ring (right) or a closed ring (missed) and a Right or Wrong tag. Game: three evidence tags on one string on the wine cover, a loss showing the missed tag struck on its own pin.',
+    cost: 'Medium. Needs the engine to send which of the three parts were right (the seed carries it as `wrong`) and the setting and victim; the three names are on the record today. Without `wrong` (deployed today) Between and Game cannot say which part missed: Between shows no ring or tag, and Game snaps the string at its centre with no tag struck.',
     Component: MysteryThree,
+    elements: ['store', 'between', 'game'],
+    layouts: ['built', 'ia'],
     shareText: (session) => window.SsOutcome.mystery(session).lines,
     css: `
+      ${window.PgMystery.css}
       :scope .m3-hero { display: grid; gap: 16px; min-width: 0; }
       :scope .m3-count { margin: 0; font: var(--type-section-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
       :scope .m3-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; min-width: 0; }

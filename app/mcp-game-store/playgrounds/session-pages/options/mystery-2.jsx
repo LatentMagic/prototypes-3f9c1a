@@ -2,12 +2,13 @@
 // Reads the session through window.PgMystery (mystery-model.jsx). The cell is the Mystery member of the cell family: Yes is a filled mark, No an outlined one.
 // Neither is hit or miss (green or grey): a Yes is not a good answer, only an answer.
 (function () {
-  const Ans = ({ a }) => (
-    <Ss.Cells className="m2-cell" size="lg" label={'The inspector said ' + a} rows={[[{ t: a, k: a === 'Yes' ? 'mark1' : 'filled' }]]} />
-  );
-  const Row = ({ n, text, answer, none }) => (
+  // Game: the answer is an inked tick or cross on a cream square (the cover's cream, the cover's wine ink).
+  const Ans = ({ a, ink }) => (ink
+    ? <span className="m2-cell m2-ink" role="img" aria-label={'The inspector said ' + a}><window.PgMystery.Ink yes={a === 'Yes'} size={40} /></span>
+    : <Ss.Cells className="m2-cell" size="lg" label={'The inspector said ' + a} rows={[[{ t: a, k: a === 'Yes' ? 'mark1' : 'filled' }]]} />);
+  const Row = ({ n, text, answer, none, ink }) => (
     <li className={'m2-row' + (none ? ' is-empty' : '')}>
-      {none ? <Ss.Cells className="m2-cell" size="lg" label="Not asked" rows={[[{ t: '', k: 'empty' }]]} /> : <Ans a={answer} />}
+      {none ? <Ss.Cells className="m2-cell" size="lg" label="Not asked" rows={[[{ t: '', k: 'empty' }]]} /> : <Ans a={answer} ink={ink} />}
       <div className="m2-body">
         <span className="ss-kicker">Question {n}</span>
         <p className={none ? 'm2-ask is-none' : 'm2-ask'}>{none || text}</p>
@@ -15,7 +16,7 @@
     </li>
   );
 
-  const MysteryTwo = ({ gid, session, sid, share, api }) => {
+  const MysteryTwo = ({ gid, session, sid, share, api, element = 'store', layout = 'built' }) => {
     const out = Ss.useOutcome('mystery', session);
     const P = window.PgMystery;
     const c = React.useMemo(() => P.read(session), [session]);
@@ -24,10 +25,10 @@
     // Walk the play in order: a question is a row with its answer cell; a hint is a muted line where it fell.
     let qn = 0;
     const flow = c.items.map((it, i) => it.kind === 'q'
-      ? <Row key={i} n={++qn} text={it.text} answer={it.answer} />
+      ? <Row key={i} n={++qn} text={it.text} answer={it.answer} ink={element === 'game'} />
       : <li key={i} className="m2-hint"><span className="m2-hint-lab">Hint</span>{it.text}</li>);
     const spare = Array.from({ length: Math.max(0, 2 - c.asked) }).map((_, i) => <Row key={'e' + i} n={c.asked + i + 1} none={status === 'done' ? 'Not asked' : 'Not asked yet'} />);
-    const scene = P.scene(c);
+    const scene = layout === 'ia' ? (c.setting || null) : P.scene(c);
     return (
       <Ss.Page gid={gid}>
         <Ss.Head gid={gid} art="murder" label={out.label} date={session.date} h1={out.h1} mark={out.mark} stats={out.stats} />
@@ -35,6 +36,7 @@
           <section className="ss-hero m2-hero" aria-label="What you asked">
             {scene ? <p className="ss-caption m2-scene">{scene}</p> : null}
             <ol className="m2-flow">{flow}{spare}</ol>
+            {element === 'store' && layout === 'built' ? (
             <p className="m2-acc">
               {acc ? (
                 <>
@@ -43,6 +45,9 @@
                 </>
               ) : <span className="m2-acc-lab">{status === 'ended' ? 'No accusation was made.' : 'No accusation yet.'}</span>}
             </p>
+            ) : (
+            <div className="m2-accel"><span className="ss-kicker">{acc ? 'Then you accused' : 'Accusation'}</span><P.Accusation c={c} status={status} element={element} /></div>
+            )}
           </section>
           <aside className="ss-side">
             <Ss.ShareCard status={status} say={P.say(c)} lines={share.lines} gid={gid} session={session} sid={sid} api={api} />
@@ -55,11 +60,16 @@
 
   pgOption('mystery', 2, {
     name: 'Yes and No',
-    stance: 'Asking is the only reasoning the game records, so each question gets the inspector\'s answer as a square cell beside it (Yes filled, No outlined), the hints where they fell, and the accusation as one closing line.',
-    cost: 'Low. Questions, answers, hints and the accusation are on the record today; the scene line needs the engine to send the setting and victim (the seed carries them).',
+    stance: 'Asking is the only reasoning the game records, so each question gets the inspector\'s answer as a square cell beside it (Yes filled, No outlined), the hints where they fell, and the accusation as one closing line. IA pass: the scene is one line and the accusation sentence becomes the three-part verdict row. Between: that row as three cards with the cover\'s coral ring (right) or a closed ring (missed). Game: three evidence tags on one string on the wine cover, and each answer an inked tick or cross on a cream square.',
+    cost: 'Low. Questions, answers, hints and the accusation are on the record today; the scene line needs the engine to send the setting and victim (the seed carries them). Between and Game draw the accusation from its Accusation line; the missed part is not sent (the seed carries it as `wrong`), so a loss today breaks the string at its centre with no tag struck.',
     Component: MysteryTwo,
+    elements: ['store', 'between', 'game'],
+    layouts: ['built', 'ia'],
     shareText: (session) => window.SsOutcome.mystery(session).lines,
     css: `
+      ${window.PgMystery.css}
+      :scope .m2-accel { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--ss-line); min-width: 0; }
+      :scope .m2-ink { background: var(--cover-cream); color: var(--cover-bg-wine); display: grid; place-items: center; width: var(--c); height: var(--c); }
       :scope .m2-hero { display: grid; gap: 4px; min-width: 0; align-content: start; }
       :scope .m2-scene { margin: 0 0 8px; }
       :scope .ss-page[data-dist="middle"] .m2-hero { padding-top: 12px; }
@@ -77,6 +87,7 @@
       :scope .m2-acc .ss-tag { margin-left: 10px; vertical-align: 3px; }
       @container ss (min-width: 680px) {
         :scope .m2-cell { --c: 96px; }
+        :scope .m2-accel { padding-top: 20px; }
         :scope .m2-row { gap: 24px; padding: 20px 0; }
         :scope .m2-ask { font: var(--type-section-title); letter-spacing: var(--tracking-heading); }
         :scope .m2-acc { font: var(--type-section-title); letter-spacing: var(--tracking-heading); padding-top: 20px; }
