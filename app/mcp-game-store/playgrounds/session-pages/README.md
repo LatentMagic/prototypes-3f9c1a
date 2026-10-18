@@ -18,12 +18,28 @@ Canon's real app, by path. `index.html` sets `<base href="../../canon/">`, reads
 - 1024 and up: the rail is permanently docked left (no toggle). Below 1024: it sits in the app's own Config modal (the pink pill). Canon has no rail, drawer or menu button to stand in for (its top bar Menu button, under about 720px of app width, opens a link popup), so the Config aid is the app's own control for it. Picking a row closes the modal. At 1024 the app column is 704px wide, so the app's own top bar already shows its narrow form there.
 - Viewport Auto / Desktop / Mobile and Platform are canon's own Config rows, with canon's phone frame. Mobile at a desktop width keeps the rail docked beside the framed phone.
 - Rows: number and name on the face; stance and cost behind the `+` on each row. One group is open at a time when you pick; headers toggle freely.
-- State switcher per game (canon's `ConfigSeg`): Casebook Solved / Unfinished; Escape Escaped / Unfinished; Delve Won / Unfinished; Daily Word Solved / Failed / Unfinished / Earlier; Daily Mystery Solved / Failed / Unfinished. Canon has no lost Delve, Escape or Casebook session, so none is offered. States are staged the way canon's states register does it (`app/states.jsx`): Pass view, connected, `review.week`, then `go()`.
+- State switcher per game (canon's `ConfigSeg`): Casebook Solved / Lost / Unfinished; Escape Escaped / Lost / Unfinished; Delve Won / Lost / Unfinished; Daily Word Solved / Failed / Unfinished / Earlier; Daily Mystery Solved / Failed / Unfinished. Canon has no lost Delve, Escape or Casebook session, so those three Lost states are playground seeds (below). States are staged the way canon's states register does it (`app/states.jsx`): Pass view, connected, `review.week`, then `go()`.
 - Share is live: it is canon's Share button and pop-up (`GsSharePopup`) showing the real text; Copy puts it on the clipboard. Unfinished states have no Share, as in canon.
 
 ## Deep links and storage
 
-`?g=<game>&o=<0..3>&s=<state>` or `#<game>/<o>/<state>`, e.g. `index.html?g=delve&o=2&s=finished` or `index.html#delve/2/finished`. Games: `casebook escape delve word mystery`. States: `finished lost unfinished earlier` (per game, see above). `o=0` is Today. The address follows the selection; "Copy link to this view" copies it. The URL beats storage. Selection (game, option, state per game, open groups) persists in `localStorage` key `pg_session-pages_v1`.
+`?g=<game>&o=<0..4>&s=<state>` or `#<game>/<o>/<state>`, e.g. `index.html?g=delve&o=2&s=finished` or `index.html#delve/2/finished`. Both work on load and on an already-open page (`hashchange`); where both are present the hash wins. The address is always written back in one canonical form, the query, and the hash is dropped. Games: `casebook escape delve word mystery`. States: `finished lost unfinished earlier` (per game, see above). `o=0` is Today; `o=4` is the Share text view. "Copy link to this view" copies the canonical form. The URL beats storage. Selection (game, option, state per game, open groups) persists in `localStorage` key `pg_session-pages_v1`.
+
+## Failure seeds
+
+`seeds/failures.jsx` (playground only; canon is untouched) adds a lost play for the three games whose canon has none, shaped like the canon record beside each and limited to what the engine records (`_resources/grounding/<game>.md`, "What the engine can express"). All three are illustrative; no deployed session looks like them.
+
+- **Delve Lost**: `GS_SESSIONS['delve-lost']`. Wren the Rogue, ending "Fell in the warren" (the setting's own words), 10 rolls (marks `🟩🟨🟥🟨🟥🟩🟥🟨🟥💀`), HP 11 to 0 on a natural 1, threat 6 of 12, 3 of 5 rooms reached.
+- **Escape Lost**: `GS_SESSIONS['escape-lost']`. The engine has one outcome (escaped) and no clock, so the worst finish is a long one: 74 min against par 30, 3 hints (nudge, bigger nudge, the answer), 11 wrong tries. No forced lock: The Clockmaker's Study has none in its content. It reads "Escaped in 74 min, over par", not a loss.
+- **Casebook Lost**: `window.PG_CB_LOST`, built with canon's `cbMake` and shown on canon's own `CbCase`. Dawn comes with the case unsolved: all 16 turns used, 1 lie exposed, 5 stories that stood, then the wrong name (Tobias Pike).
+
+Options receive these as `session` like any other state (Casebook's `session` is the case record).
+
+## Share text view
+
+Rail entry **T Share text**, after the options (`o=4`), for every game. A whiteboard, not the app: a full-window sheet over the app with no shell. It shows the three candidates A to C from `_resources/ideation/share-shortlist.md` section 2, each as a Triumph and a Failure, exactly as written there, with the recommended one (B for every game) marked. Each text sits in a chat bubble inside a 393-column and a 360-column phone frame, side by side where the window has room and stacked where it has not (phone, and 1024 with the dock). System font, 16px, bubble at about 80% of the screen width.
+
+The bubble is a **simulation** of a WhatsApp message and the widths are **approximate**: real phones, fonts and text-size settings wrap differently. Where the window is narrower than a frame the whole frame is scaled down, with its width caption saying so; wrapping is unchanged by that. The texts are proposals, none deployed, and the link is a placeholder. The data is generated from the shortlist (`pg/share-data.js`); regenerate it rather than hand-editing it.
 
 ## The option contract
 
@@ -74,7 +90,7 @@ An option that only wraps `<Today />` shows canon's Share with canon's text; to 
 
 ## Files
 
-`index.html` (loader) · `pg/games.js` (games, states) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `options/*.jsx` (15 placeholders).
+`index.html` (loader) · `pg/games.js` (games, states) · `pg/share-data.js` (the shortlist's texts) · `pg/share.jsx` (share-text view) · `seeds/failures.jsx` (lost seeds) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `options/*.jsx` (15 placeholders).
 
 ## Known limits
 

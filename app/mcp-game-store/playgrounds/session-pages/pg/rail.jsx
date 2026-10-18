@@ -14,12 +14,12 @@ const PgRow = ({ game, n, active, onPick }) => {
     <li className="pg-opt" data-active={active ? '1' : undefined}>
       <div className="pg-opt-line">
         <button type="button" className="pg-opt-pick" aria-pressed={active} onClick={() => onPick(game.id, n)}>
-          <span className="pg-opt-n">{n}</span>
+          <span className="pg-opt-n">{n === window.PG_SHARE_OPT ? 'T' : n}</span>
           <span className="pg-opt-name">{def.name}</span>
-          {n > 0 && !def.built && <span className="pg-opt-tag">not built yet</span>}
+          {n > 0 && n < window.PG_SHARE_OPT && !def.built && <span className="pg-opt-tag">not built yet</span>}
         </button>
         <button type="button" className="pg-opt-why" aria-expanded={why} aria-controls={id}
-          aria-label={'Stance and cost of ' + (n === 0 ? 'Today' : 'option ' + n)} onClick={() => setWhy((w) => !w)}>{why ? '−' : '+'}</button>
+          aria-label={'Stance and cost of ' + (n === 0 ? 'Today' : n === window.PG_SHARE_OPT ? 'share text' : 'option ' + n)} onClick={() => setWhy((w) => !w)}>{why ? '−' : '+'}</button>
       </div>
       {why && <dl id={id} className="pg-opt-detail">
         <dt>Stance</dt><dd>{def.stance}</dd>
@@ -41,7 +41,7 @@ const PgGroup = ({ game, sel, onPick }) => {
         <button type="button" aria-expanded={open} aria-controls={body} onClick={() => window.pgStore.toggle(game.id)}>
           <span className="pg-chev" aria-hidden="true">{open ? '▾' : '▸'}</span>
           <span className="pg-grp-name">{game.name}</span>
-          <span className="pg-grp-sum">{cur ? (sel.opt === 0 ? 'Today' : 'Option ' + sel.opt) + ' · ' + stateLabel : ''}</span>
+          <span className="pg-grp-sum">{cur ? (sel.opt === 0 ? 'Today' : sel.opt === window.PG_SHARE_OPT ? 'Share text' : 'Option ' + sel.opt) + ' · ' + stateLabel : ''}</span>
         </button>
       </h2>
       {open && <div id={body} className="pg-grp-body">
@@ -51,7 +51,7 @@ const PgGroup = ({ game, sel, onPick }) => {
             onChange={(v) => { window.pgStore.setState(game.id, v); if (onPick) onPick(); }} />
         </div>
         <ul className="pg-opts">
-          {[0, 1, 2, 3].map((n) => <PgRow key={n} game={game} n={n} active={cur && sel.opt === n} onPick={(g, o) => { window.pgStore.select(g, o); if (onPick) onPick(); }} />)}
+          {[0, 1, 2, 3, window.PG_SHARE_OPT].map((n) => <PgRow key={n} game={game} n={n} active={cur && sel.opt === n} onPick={(g, o) => { window.pgStore.select(g, o); if (onPick) onPick(); }} />)}
         </ul>
       </div>}
     </section>

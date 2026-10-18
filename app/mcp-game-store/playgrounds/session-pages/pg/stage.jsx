@@ -13,13 +13,16 @@ const pgStage = (api, game, st) => {
 };
 
 // The session record the page is showing, and the share text canon would copy for it.
-const pgSessionOf = (api, game, st) => (game.record ? window.cbWeek(api) : window.GS_SESSIONS[st.sid]);
+const pgSessionOf = (api, game, st) => (game.record ? (st.cb === 'lost' && window.PG_CB_LOST ? window.PG_CB_LOST : window.cbWeek(api)) : window.GS_SESSIONS[st.sid]);
 const pgCanonShare = (game, s) => {
   if (!s || s.live) return null;
   return game.record ? window.cbShareLines(s) : window.gsShareText(s);
 };
 
-const PgToday = ({ game }) => (game.record ? <window.GsCasebook /> : <window.GsSession />);
+// Casebook's lost state is a playground seed (seeds/failures.jsx): canon's own case page, given that record.
+const PgToday = ({ game, st }) => (game.record
+  ? (st && st.cb === 'lost' && window.PG_CB_LOST ? <CbCase c={window.PG_CB_LOST} /> : <window.GsCasebook />)
+  : <window.GsSession />);
 
 // A broken option must not take the page down with it.
 class PgBoundary extends React.Component {
@@ -42,6 +45,7 @@ const PgScopedCss = ({ cls, css }) => {
   return null;
 };
 
+const isShareOpt = (o) => o === window.PG_SHARE_OPT;
 const PgScreen = ({ api }) => {
   const sel = window.usePgSel();
   const game = window.PG_BY_ID[sel.game];
@@ -59,8 +63,16 @@ const PgScreen = ({ api }) => {
   const canonLines = pgCanonShare(game, session);
   const lines = sel.opt > 0 && def.shareText ? def.shareText(session, canonLines, { game: game.id, state: st.id }) : canonLines;
   const cls = 'pgo-' + game.id + '-' + sel.opt;
-  const Comp = sel.opt > 0 ? def.Component : null;
-  const label = game.name + ' · ' + (sel.opt === 0 ? '0 Today' : sel.opt + ' ' + def.name) + ' · ' + st.label;
+  const Comp = sel.opt > 0 && !isShareOpt(sel.opt) ? def.Component : null;
+  const isShare = sel.opt === window.PG_SHARE_OPT;
+  const label = game.name + ' · ' + (isShare ? 'Share text' : (sel.opt === 0 ? '0 Today' : sel.opt + ' ' + def.name) + ' · ' + st.label);
+  const text = label + (!isShare && sel.opt > 0 && !Comp ? ' · not built' : '');
+  if (isShare) return (
+    <>
+      {ReactDOM.createPortal(<window.PgShareText game={game} />, document.body)}
+      {ReactDOM.createPortal(<div className="pg-now" aria-live="polite" title={text}>{text}</div>, document.body)}
+    </>
+  );
   return (
     <>
       <div className={'pgo ' + cls} data-pg-game={game.id} data-pg-option={sel.opt} data-pg-state={st.id} style={{ display: 'contents' }}>
@@ -68,11 +80,11 @@ const PgScreen = ({ api }) => {
         <PgBoundary key={game.id + sel.opt + st.id + sel.nonce}>
           {Comp
             ? <Comp gid={game.id} game={game.name} optionN={sel.opt} stateId={st.id} stateLabel={st.label} sid={st.sid || null}
-                session={session} share={{ lines, canonLines, supported: !!lines }} Today={() => <PgToday game={game} />} api={api} />
-            : <PgToday game={game} />}
+                session={session} share={{ lines, canonLines, supported: !!lines }} Today={() => <PgToday game={game} st={st} />} api={api} />
+            : <PgToday game={game} st={st} />}
         </PgBoundary>
       </div>
-      {ReactDOM.createPortal(<div className="pg-now" aria-live="polite">{label}{sel.opt > 0 && !Comp ? ' · not built yet, showing Today' : ''}</div>, document.body)}
+      {ReactDOM.createPortal(<div className="pg-now" aria-live="polite" title={text}>{text}</div>, document.body)}
     </>
   );
 };

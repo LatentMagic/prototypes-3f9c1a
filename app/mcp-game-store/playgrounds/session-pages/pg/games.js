@@ -4,15 +4,19 @@
 // Casebook has no session id: canon gives it its own record page (gs-casebook.jsx), whose record is cbWeek(), picked by `week`.
 window.PG_BASE = '../playgrounds/session-pages/';   // from canon/, which index.html sets as <base>
 window.PG_OPTION_COUNT = 3;
+window.PG_SHARE_OPT = 4;   // the rail entry after the options: the share-text whiteboard (pg/share.jsx). Seeds for the lost states: seeds/failures.jsx.
 window.PG_GAMES = [
   { id: 'casebook', name: 'Casebook', record: true, states: [
     { id: 'finished', label: 'Solved', week: 'done' },
+    { id: 'lost', label: 'Lost', week: 'done', cb: 'lost' },
     { id: 'unfinished', label: 'Unfinished', week: 'live' } ] },
   { id: 'escape', name: 'Escape', states: [
     { id: 'finished', label: 'Escaped', sid: 'escape-week', week: 'done' },
+    { id: 'lost', label: 'Lost', sid: 'escape-lost', week: 'done' },
     { id: 'unfinished', label: 'Unfinished', sid: 'escape-live', week: 'live' } ] },
   { id: 'delve', name: 'Delve', states: [
     { id: 'finished', label: 'Won', sid: 'delve', week: 'done' },
+    { id: 'lost', label: 'Lost', sid: 'delve-lost', week: 'done' },
     { id: 'unfinished', label: 'Unfinished', sid: 'delve-live', week: 'live' } ] },
   { id: 'word', name: 'Daily Word', states: [
     { id: 'finished', label: 'Solved', sid: 'word-today', week: 'done' },
