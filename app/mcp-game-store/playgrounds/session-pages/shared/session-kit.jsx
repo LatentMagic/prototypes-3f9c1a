@@ -1,6 +1,6 @@
 // ============================================================================
 // Session pages: the shared foundation. Loads after canon's modules, before the options.
-// Exposes window.Ss = { Page, Head, Stats, Cells, Strip, Card, ShareCard, Record, GameLink, OnceLine, useOutcome, copyText, shortDay }.
+// Exposes window.Ss = { useView, Page, Head, Stats, Cells, Strip, Card, ShareCard, Record, GameLink, OnceLine, useOutcome, copyText, shortDay }.
 // Built from canon's parts, mounted not copied: DS.Button, DS.TextLink, DS.Disclosure, DS.Tag, GsCover, LbBackTo, GsNeedsPass, GS_ONCE_LINE.
 // The one new thing is the square cell (the design system's TileGrid is chat-only: light ground, 32px cap). Surfaces read --ss-* tokens (game-tokens.css).
 // Babel scripts share one global scope: everything is inside this function.
@@ -9,8 +9,10 @@
   const D = () => window.DS;
   const h = React.createElement;
 
-  // The distance (near | middle | far) from the rail's switch. Pages never read it directly: they read the tokens it sets on .ss-page.
-  const useDist = () => (window.usePgSel().dist || 'near');
+  // The colour switch (Near / Middle / Far) is retired: data-dist stays 'near' so its old rules are inert. Options read the element and layout as props.
+  const useDist = () => 'near';
+  // What the Element and Layout switches resolved to for this option (pg/stage.jsx): { element: store|between|game, layout: built|ia }. Props are the contract; this is for kit parts.
+  const useView = () => React.useContext(window.PgViewCtx);
   const shortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
   // A daily game's date has no clock time ("Tue 6 October", as Earlier shows it); a weekly or chapter game keeps whatever it has.
   const dayOnly = (gid, d) => (typeof d === 'string' && window.gsRhythm && window.gsRhythm(gid) === 'daily' ? d.replace(/,?\s+\d{1,2}:\d{2}.*$/, '') : d);
@@ -34,8 +36,8 @@
 
   // ---- Page: ground wrapper (the Far ground), back link, container. children = Head, then .ss-body (Hero + Side), then Record. ----
   function Page({ gid, children }) {
-    const dist = useDist();
-    return h('div', { className: 'ss-page', 'data-game': gid, 'data-dist': dist },
+    const dist = useDist(), view = useView();
+    return h('div', { className: 'ss-page', 'data-game': gid, 'data-dist': dist, 'data-element': view.element, 'data-layout': view.layout },
       h('main', { className: 'ss-main' }, h('div', null, h(window.LbBackTo, { gid })), children));
   }
 
@@ -48,12 +50,24 @@
     const g = window.GS_GAMES[gid];
     const kind = mark === '✅' ? 'ok' : mark === '❌' ? 'bad' : null;   // the library's result glyphs (LbResult): check / error, in the status colour
     const day = date ? shortDay(dayOnly(gid, date)) : null;
+    // The h1 takes two lines at most on a phone: when it would wrap to a third, it steps down a size (kit.css .ss-h1[data-shrink]).
+    const ref = React.useRef(null);
+    React.useLayoutEffect(() => {
+      const el = ref.current; if (!el) return undefined;
+      const fit = () => {
+        el.removeAttribute('data-shrink');
+        const lh = parseFloat(getComputedStyle(el).lineHeight) || el.getBoundingClientRect().height;
+        if (el.getBoundingClientRect().height > lh * 2.4 && window.innerWidth < 640) el.setAttribute('data-shrink', '1');
+      };
+      fit(); const ro = new ResizeObserver(fit); ro.observe(el.parentNode);
+      return () => ro.disconnect();
+    }, [h1]);
     return h('section', { className: 'ss-head' },
       h(window.GsCover, { art: art || g.art }),
       h('div', { className: 'ss-head-label' },
         h('span', { className: 'ss-head-name' }, label),
         day ? h('span', { className: 'ss-head-date' }, day) : null),
-      h('h1', { className: 'ss-h1' }, kind ? h('span', { className: 'ss-mark is-' + kind }, h(D().Icon, { name: kind === 'ok' ? 'check' : 'error', size: 28 })) : null, h('span', null, h1)),
+      h('h1', { className: 'ss-h1', ref }, kind ? h('span', { className: 'ss-mark is-' + kind }, h(D().Icon, { name: kind === 'ok' ? 'check' : 'error', size: 28 })) : null, h('span', null, h1)),
       sub ? h('p', { className: 'ss-caption', style: { gridColumn: '1 / -1', margin: 0 } }, sub) : null,
       stats && stats.length ? h(Stats, { items: stats.slice(0, 4) }) : null);
   }
@@ -96,7 +110,7 @@
   // ---- ShareCard: the action card (shortlist 2.2). One card, one place; its content changes with the state, its shape does not. ----
   // props: status 'done' | 'live' | 'ended' | 'kept';  lines (the exact share text, from the outcome function; null unless done);
   //        say (live only: the option's one line about the game in progress, e.g. "4 guesses left"),
-  //        gid, session, sid, api (for Play / Start over). The share text is shown as it will paste, with Copy inside it. No pop-up, never floats.
+  //        gid, session, sid, api (for Play / Start over). A Share button opens canon's pop-up with the exact text (MCPG-030); never floats. `embed` (opt-in) puts the text on the card with Copy.
   // Display only: a line may break after a "/" (a <wbr>), never mid-word; <wbr> adds no character, so the text still copies byte-identical.
   function shareNodes(lines) {
     var out = [];
@@ -106,8 +120,9 @@
     });
     return out;
   }
-  function ShareCard({ status, lines, say, gid, session, sid, api }) {
+  function ShareCard({ status, lines, say, gid, session, sid, api, embed }) {
     const [copied, setCopied] = React.useState(false);
+    const [popup, setPopup] = React.useState(false);
     React.useEffect(() => { if (!copied) return undefined; const t = setTimeout(() => setCopied(false), 2400); return () => clearTimeout(t); }, [copied]);
     const B = D().Button;
     // A finished-looking card with no share text is an abandoned play: show "Not finished", never throw on null lines (fix round 1).
@@ -124,8 +139,13 @@
     const startOver = window.gsStartsOver && window.gsStartsOver(gid);
     return h('section', { className: 'ss-card ss-side-card', 'aria-label': 'Share this result' },
       h('h3', { className: 'ss-card-title' }, 'Share this result'),
-      h('pre', { className: 'ss-sharetext', 'data-testid': 'share-text' }, shareNodes(lines)),
-      h(B, { done: copied, doneLabel: 'Copied', onClick: () => { copyText(lines.join('\n')); setCopied(true); } }, 'Copy'),
+      embed
+        // Opt-in (embed): the text sits on the page with Copy, for an option whose idea is the message.
+        ? [h('pre', { className: 'ss-sharetext', 'data-testid': 'share-text', key: 't' }, shareNodes(lines)),
+           h(B, { key: 'b', done: copied, doneLabel: 'Copied', onClick: () => { copyText(lines.join('\n')); setCopied(true); } }, 'Copy')]
+        // Default: one button that opens canon's own Share pop-up, which shows the exact text before it is copied.
+        : [h(B, { key: 'b', onClick: () => setPopup(true) }, 'Share'),
+           h(window.GsSharePopup, { key: 'p', open: popup, onClose: () => setPopup(false), lines })],
       startOver ? h(B, { variant: 'secondary', onClick: () => api.play(session.game, sid) }, 'Start over') : h(OnceLine));
   }
 

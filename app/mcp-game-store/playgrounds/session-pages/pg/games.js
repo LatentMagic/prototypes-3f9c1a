@@ -8,6 +8,10 @@ window.PG_OPTION_COUNT = 3;
 // loads a listed file only if it exists, so a game whose builder has not made one yet loads its options as before.
 window.PG_MODELS = ['casebook', 'escape', 'delve', 'word', 'mystery'];
 window.PG_SHARE_OPT = 4;   // the rail entry after the options: the share-text whiteboard (pg/share.jsx). Seeds for the lost states: seeds/failures.jsx.
+window.PG_NOTES_OPT = 5;   // the rail entry after the share-text view: the game's notes (pg/notes.jsx, notes/<game>.md)
+// The two global switches (pg/store.js, pg/rail.jsx). Ids are the deep-link vocabulary (?e=store|between|game&l=built|ia); the first of each is the default.
+window.PG_ELEMENTS = [{ id: 'store', label: 'Store' }, { id: 'between', label: 'Between' }, { id: 'game', label: 'Game' }];
+window.PG_LAYOUTS = [{ id: 'built', label: 'As built' }, { id: 'ia', label: 'IA pass' }];
 window.PG_GAMES = [
   { id: 'casebook', name: 'Casebook', record: true, states: [
     { id: 'finished', label: 'Solved', week: 'done' },

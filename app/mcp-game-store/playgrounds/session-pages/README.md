@@ -23,21 +23,26 @@ Canon's real app, by path. `index.html` sets `<base href="../../canon/">`, reads
 
 ## Deep links and storage
 
-`?g=<game>&o=<0..4>&s=<state>` or `#<game>/<o>/<state>`, e.g. `index.html?g=delve&o=2&s=finished` or `index.html#delve/2/finished`. Both work on load and on an already-open page (`hashchange`); where both are present the hash wins. The address is always written back in one canonical form, the query, and the hash is dropped. Games: `casebook escape delve word mystery`. States: `finished lost unfinished earlier` (per game, see above). `o=0` is Today; `o=4` is the Share text view. "Copy link to this view" copies the canonical form. The URL beats storage. Selection (game, option, state per game, open groups) persists in `localStorage` key `pg_session-pages_v1`.
+`?g=<game>&o=<0..5>&s=<state>&e=<element>&l=<layout>` or `#<game>/<o>/<state>`, e.g. `index.html?g=delve&o=2&s=finished` or `index.html#delve/2/finished`. Both work on load and on an already-open page (`hashchange`); where both are present the hash wins. The address is always written back in one canonical form, the query, and the hash is dropped. Games: `casebook escape delve word mystery`. States: `finished lost unfinished earlier` (per game, see above). `o=0` is Today; `o=4` is the Share text view; `o=5` is Notes. "Copy link to this view" copies the canonical form. The URL beats storage. Selection (game, option, state per game, open groups, the two switches) persists in `localStorage` key `pg_session-pages_v1`.
 
-## Distance switch
+## Element and Layout switches
 
-Rail header, above the games: **Near / Middle / Far**, global (every game and option), default Near. Persisted in `pg_session-pages_v1` (`dist`) and deep-linkable as `d=near|middle|far` (`?g=word&o=1&s=finished&d=far`; the URL beats storage; it never restages the page). It is a token layer, not a build: options write the same named regions (`.ss-head`, `.ss-hero`, `.ss-side`, `.ss-record`) and `Ss.Page` sets `data-dist` on `.ss-page`.
+Rail header, above the games: two global switches (every game and option), persisted in `pg_session-pages_v1` (`el`, `ly`) and deep-linkable (`?e=store|between|game&l=built|ia`; the URL beats storage; they never restage the page).
 
-| Layer | What changes |
-|---|---|
-| Near | Today's design-system tokens only. `shared/game-tokens.css` adds nothing. |
-| Middle | **Marks only.** The game's colour goes on its marks (`--ss-mark-1..3`: cells, glyphs, rules, accents; the Hero also gets a 3px top rule in mark 1) on the store's own grounds. No tinted ground, card or line; everything that is not a mark is Near. It works on indigo. Fix round 1 redefined it; before, it tinted the Hero card. |
-| Far | The whole page body takes `--game-ground`; every card uses `--game-ground-card` and `--game-ground-line`; marks anywhere. Store chrome stays `--page`. |
+- **Element: Store / Between / Game.** How far the page's key element is drawn from the store's own look: Store is the design system as it is; Between is the element in the cover's flat shapes; Game is the element drawn in the game's world. Chrome, grounds, the head, the Share button, the Record and the two typefaces for anything a player reads stay the store's at every stop (fable-plan section 1).
+- **Layout: As built / IA pass.** As built is the option as it shipped; IA pass is the same option cut down for a phone (short lines, structure, collapse and visuals, no paragraphs; the essential signal above the fold at 390).
+- Defaults are **Store** and **As built**: every option renders exactly what it rendered before the switches existed.
+- The old colour switch (Near / Middle / Far, `?d=`) is retired. `?d=` is ignored; `shared/game-tokens.css` and the `data-dist` rules are inert (`data-dist` is always `near`) and are left in place for a later clean-up.
 
-`shared/game-tokens.css` is the one file of per-game tokens (ground and three marks per game, plus the two derived tokens), written to read as candidate design-system additions, with the measured contrast table in its header. Findings: the raw cover teal and orange failed 4.5 as text and as a fill under page-coloured text, so the marks use `--mark-teal` and `--mark-orange` (teal 85% and orange 90%, mixed with cover cream); every mark now passes 4.5 on the store's page and card, so Middle passes AA for every pairing. At Far, teal and orange (and lilac on wine and forest) are still graphics only as text on the game's card. Indigo against `--page` is 1.06:1, so at Far Casebook and Escape change by hue only (the rail says so under Far). The full table is in the header of `game-tokens.css`.
+**The contract for an option (and for game builders adding stops later).**
 
-Surfaces inside an option read these tokens, never a game colour directly: `--ss-card`, `--ss-line`, `--ss-cell`, `--ss-cell-line`, `--ss-mark-1..3` (neutral at Near, the game's marks at Middle and Far, anywhere on the page).
+1. The component receives two more props: `element` (`'store' | 'between' | 'game'`) and `layout` (`'built' | 'ia'`). They are the *effective* values: what the player asked for if this option draws it, else the default.
+2. An option declares what it draws in `pgOption`: `elements: ['store', 'between', 'game']` and `layouts: ['built', 'ia']`. Omitted means `['store']` and `['built']`, so every existing option keeps working untouched.
+3. Ask for a stop the option does not declare and the harness hands it `store` / `built` and puts a small marker on the page label (`... · Game element not built yet`) and in the rail note under the switches. The option does nothing special.
+4. The default path (`element === 'store' && layout === 'built'`) must render exactly what it rendered before; a screenshot diff holds it. Branch inside the component on the two props; do not fork the file.
+5. Every mark at Between and Game is one recorded event (the data never changes, only the drawing). The option's `cost` line lists the event-to-mark mapping; a mark that needs a field the engine does not send is seeded and says so. Lettering inside a drawing is art, allowed only where the fact is also in the design system's type.
+6. `Ss.Page` sets `data-element` and `data-layout` on `.ss-page` (for CSS in an option's `css`); `Ss.useView()` returns `{ element, layout }` for kit parts.
+7. Add the option's stance and cost for each new stop (an IA line and an element line), so the `+` on the rail row says what the stop does.
 
 ## Failure seeds
 
@@ -53,7 +58,7 @@ Options receive these as `session` like any other state (Casebook's `session` is
 
 ## Share text view
 
-Rail entry **T Share text**, after the options (`o=4`), for every game. A whiteboard, not the app: a full-window sheet over the app with no shell. It shows the three candidates A to C from `_resources/ideation/share-shortlist.md` section 2, each as a Triumph and a Failure, with the recommended one (B for every game) marked. **A and C are exactly as the shortlist writes them. The recommended one is generated at render time from `SsOutcome` on the seeded plays** (so it is the amended text the options copy: shortlist B plus fable-steer section 4), and says so on the sheet; the seeds' own numbers differ from the shortlist's illustrations (a Daily Word failure is No. 208, say). Each text sits in a chat bubble inside a 393-column and a 360-column phone frame, side by side where the window has room and stacked where it has not (phone, and 1024 with the dock). System font, 16px, bubble at about 80% of the screen width.
+Rail entry **T Share text**, after the options (`o=4`), for every game. **N Notes** follows it (`o=5`): `pg/notes.jsx` renders `notes/<game>.md` (headings, lists, paragraphs, bold, code, links) on a sheet like this one; the files hold the recommendation, the IA verdicts, the element spec and the open questions for the game. A whiteboard, not the app: a full-window sheet over the app with no shell. It shows the three candidates A to C from `_resources/ideation/share-shortlist.md` section 2, each as a Triumph and a Failure, with the recommended one (B for every game) marked. **A and C are exactly as the shortlist writes them. The recommended one is generated at render time from `SsOutcome` on the seeded plays** (so it is the amended text the options copy: shortlist B plus fable-steer section 4), and says so on the sheet; the seeds' own numbers differ from the shortlist's illustrations (a Daily Word failure is No. 208, say). Each text sits in a chat bubble inside a 393-column and a 360-column phone frame, side by side where the window has room and stacked where it has not (phone, and 1024 with the dock). System font, 16px, bubble at about 80% of the screen width.
 
 The bubble is a **simulation** of a WhatsApp message and the widths are **approximate**: real phones, fonts and text-size settings wrap differently. Where the window is narrower than a frame the whole frame is scaled down, with its width caption saying so; wrapping is unchanged by that. The texts are proposals, none deployed, and the link is a placeholder. `pg/share-data.js` is generated from the shortlist; regenerate it rather than hand-editing it. The sheet's eyebrow is `#7a005c` (the app's pink is 2.96:1 on the light sheet).
 
@@ -86,6 +91,7 @@ One module per option: `options/<game>-<n>.jsx` (`n` = 1..3), already present as
 | `session` | the record: `GS_SESSIONS[sid]`, or the case record for Casebook (see above) |
 | `share` | `{ lines, canonLines, supported }`: the text this option shares, canon's text, and whether Share exists in this state (false when unfinished) |
 | `Today` | a component rendering canon's own page for this state, for an option that wraps or extends it |
+| `element`, `layout` | the effective Element and Layout switches (see above) |
 | `api` | canon's app context (`window.gsApi`): `api.go`, `api.view`, `api.play` ... |
 
 **Game models (fix round 1).** An optional `options/<game>-model.jsx` loads before that game's options 1 to 3, so a game's reader (`PgCb`, `PgMystery`, `EsModel`, `DvModel`) need not live in option 1. It is a plain `(function () { ... })();` that sets its `window` global. **Add the game id to `window.PG_MODELS` in `pg/games.js`** when you add the file (the loader requests only listed files, so an unlisted game costs no 404). All five games are listed. The loader probes each listed file and loads it only if it exists (one 404 per absent file in the network log, no page error), so a game without a model file loads its options as before.
@@ -120,8 +126,8 @@ Loaded for every option. An option mounts these; it does not re-draw them. Globa
 
 | Part | Props | Notes |
 |---|---|---|
-| `Ss.Page` | `gid` | Ground wrapper (`data-game`, `data-dist`), container, back link (`LbBackTo`). Children: Head, `.ss-body`, Record. |
-| `Ss.Head` | `gid, art, label, date, h1, mark, stats, sub` | Cover 96px on a phone, 144px above (the library's); Far dissolves it into the ground. Label is plain text (the back link above already goes to the game page); a daily game's date has no clock time. `mark` (`out.mark`) puts canon's check or error glyph, in the status colour, before the h1 (text stays white). `stats` (`{label, value}`, 0 to 4) only for what the h1 does not say; none, no strip. Styled as canon's product-page fact strip (`gs-facts`): label over value, no border, one line. Capped so the hero starts above the fold at 390x844. |
+| `Ss.Page` | `gid` | Ground wrapper (`data-game`, `data-element`, `data-layout`), container, back link (`LbBackTo`). Children: Head, `.ss-body`, Record. |
+| `Ss.Head` | `gid, art, label, date, h1, mark, stats, sub` | Cover 96px on a phone, 144px above (the library's); Label is plain text (the back link above already goes to the game page); a daily game's date has no clock time. `mark` (`out.mark`) puts canon's check or error glyph, in the status colour, before the h1 (text stays white). `stats` (`{label, value}`, 0 to 4) only for what the h1 does not say; none, no strip. Styled as canon's product-page fact strip (`gs-facts`): label over value, no border, one line. Capped so the hero starts above the fold at 390x844; on a phone an h1 that would wrap past two lines steps down to 22px. |
 | `Ss.Cells` | `rows, cols, size, label` | The one square-cell component. A cell is `{ t, k, sub }`; kinds `hit near miss filled empty hint mark1 mark2 mark3 plain`. Size `md` 52px, `lg` 64px, `fit`. |
 | `Ss.Strip` | `cells, perRow, size, label` | One run of cells, wrapped. |
 | `Ss.Card` | `kicker, title, facts, tag{text,tone}` | The one card kind: kicker, title, up to three facts, optional status tag (status colour for status only). |
@@ -133,11 +139,11 @@ The design system's `TileGrid` is chat-only (light ground, 32px cap), so `Ss.Cel
 
 **Layout.** Head, then `.ss-body` (Hero, then `.ss-side` with the Share card), then Record. Two columns (2fr/1fr) from a 960px page width, because the side column is the narrowest place the share block sits beside the Hero; below that the Share card sits under the Hero. The page is its own container (`@container ss`), so use `@container ss (min-width: ...)` in an option's css, not viewport media queries.
 
-**How an option uses it.** Copy `options/word-1.jsx`. Shape: `pgOption(...)` with `shareText: (session) => window.SsOutcome.<game>(session).lines`; a component that calls `Ss.useOutcome(gid, session)`, then returns `<Ss.Page>` with `<Ss.Head h1={out.h1} .../>`, `<div className="ss-body"><section className="ss-hero ss-surface">...hero...</section><aside className="ss-side"><Ss.ShareCard status lines={share.lines} .../></aside></div>` and `<Ss.Record/>`. Hero colours come from `--ss-*` tokens so Near / Middle / Far work with no extra code. Prefix your own classes (`dv2-`) and scope css with `:scope`.
+**How an option uses it.** Copy `options/word-1.jsx`. Shape: `pgOption(...)` with `shareText: (session) => window.SsOutcome.<game>(session).lines`; a component that calls `Ss.useOutcome(gid, session)`, then returns `<Ss.Page>` with `<Ss.Head h1={out.h1} .../>`, `<div className="ss-body"><section className="ss-hero ss-surface">...hero...</section><aside className="ss-side"><Ss.ShareCard status lines={share.lines} .../></aside></div>` and `<Ss.Record/>`. Hero surfaces come from `--ss-*` tokens. Prefix your own classes (`dv2-`) and scope css with `:scope`.
 
 ## Files
 
-`index.html` (loader) · `pg/games.js` (games, states, `PG_MODELS`) · `pg/share-data.js` (the shortlist's texts) · `pg/share.jsx` (share-text view) · `seeds/failures.jsx` (lost seeds) · `seeds/editions.js` (`PG_SEED`: facts the engine does not send yet) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `shared/` (`outcome.js`, `session-kit.jsx`, `kit.css`, `game-tokens.css`) · `options/*.jsx` (the three options per game, plus an optional `<game>-model.jsx`).
+`index.html` (loader) · `pg/games.js` (games, states, `PG_MODELS`) · `pg/share-data.js` (the shortlist's texts) · `pg/share.jsx` (share-text view) · `seeds/failures.jsx` (lost seeds) · `seeds/editions.js` (`PG_SEED`: facts the engine does not send yet) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body, the two switches) · `pg/notes.jsx` and `notes/<game>.md` (the Notes entry) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `shared/` (`outcome.js`, `session-kit.jsx`, `kit.css`, `game-tokens.css`) · `options/*.jsx` (the three options per game, plus an optional `<game>-model.jsx`).
 
 ## Known limits
 

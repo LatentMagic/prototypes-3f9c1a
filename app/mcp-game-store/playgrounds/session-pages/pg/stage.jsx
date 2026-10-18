@@ -45,6 +45,9 @@ const PgScopedCss = ({ cls, css }) => {
   return null;
 };
 
+// What the two switches resolve to for the option on screen, for the kit (Ss.Page sets data-element / data-layout from it).
+window.PgViewCtx = React.createContext({ element: 'store', layout: 'built' });
+
 const isShareOpt = (o) => o === window.PG_SHARE_OPT;
 const PgScreen = ({ api }) => {
   const sel = window.usePgSel();
@@ -68,26 +71,36 @@ const PgScreen = ({ api }) => {
     catch (e) { lines = null; shareErr = String((e && e.message) || e); }
   }
   const cls = 'pgo-' + game.id + '-' + sel.opt;
-  const Comp = sel.opt > 0 && !isShareOpt(sel.opt) ? def.Component : null;
-  const isShare = sel.opt === window.PG_SHARE_OPT;
-  const label = game.name + ' · ' + (isShare ? 'Share text' : (sel.opt === 0 ? '0 Today' : sel.opt + ' ' + def.name) + ' · ' + st.label);
-  const text = label + (!isShare && sel.opt > 0 && !Comp ? ' · not built' : '');
+  const Comp = sel.opt > 0 && !isShareOpt(sel.opt) && !isNotes ? def.Component : null;
+  const isShare = sel.opt === window.PG_SHARE_OPT, isNotes = sel.opt === window.PG_NOTES_OPT;
+  const view = window.pgView(def, sel);
+  const label = game.name + ' · ' + (isShare ? 'Share text' : isNotes ? 'Notes' : (sel.opt === 0 ? '0 Today' : sel.opt + ' ' + def.name) + ' · ' + st.label);
+  const text = label + (!isShare && !isNotes && sel.opt > 0 && !Comp ? ' · not built' : '') + (Comp && view.missing.length ? ' · ' + view.missing.join(', ') + ' not built yet' : '');
   if (isShare) return (
     <>
       {ReactDOM.createPortal(<window.PgShareText game={game} />, document.body)}
       {ReactDOM.createPortal(<div className="pg-now" aria-live="polite" title={text}>{text}</div>, document.body)}
     </>
   );
+  if (isNotes) return (
+    <>
+      {ReactDOM.createPortal(<window.PgNotes game={game} />, document.body)}
+      {ReactDOM.createPortal(<div className="pg-now" aria-live="polite" title={text}>{text}</div>, document.body)}
+    </>
+  );
   return (
     <>
-      <div className={'pgo ' + cls} data-pg-game={game.id} data-pg-option={sel.opt} data-pg-state={st.id} style={{ display: 'contents' }}>
+      <div className={'pgo ' + cls} data-pg-game={game.id} data-pg-option={sel.opt} data-pg-state={st.id} data-pg-element={view.element} data-pg-layout={view.layout} style={{ display: 'contents' }}>
         <PgScopedCss cls={cls} css={sel.opt > 0 ? def.css : null} />
         {shareErr && <p role="alert" className="gs-wrap" style={{ margin: '8px auto', maxWidth: 720, padding: '0 16px' }}>This option's share text failed: {shareErr}</p>}
         <PgBoundary key={game.id + sel.opt + st.id + sel.nonce}>
-          {Comp
-            ? <Comp gid={game.id} game={game.name} optionN={sel.opt} stateId={st.id} stateLabel={st.label} sid={st.sid || null}
-                session={session} share={{ lines, canonLines, supported: !!lines }} Today={() => <PgToday game={game} st={st} />} api={api} />
-            : <PgToday game={game} st={st} />}
+          <window.PgViewCtx.Provider value={view}>
+            {Comp
+              ? <Comp gid={game.id} game={game.name} optionN={sel.opt} stateId={st.id} stateLabel={st.label} sid={st.sid || null}
+                  element={view.element} layout={view.layout}
+                  session={session} share={{ lines, canonLines, supported: !!lines }} Today={() => <PgToday game={game} st={st} />} api={api} />
+              : <PgToday game={game} st={st} />}
+          </window.PgViewCtx.Provider>
         </PgBoundary>
       </div>
       {ReactDOM.createPortal(<div className="pg-now" aria-live="polite" title={text}>{text}</div>, document.body)}

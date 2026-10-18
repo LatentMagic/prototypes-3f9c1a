@@ -14,12 +14,12 @@ const PgRow = ({ game, n, active, onPick }) => {
     <li className="pg-opt" data-active={active ? '1' : undefined}>
       <div className="pg-opt-line">
         <button type="button" className="pg-opt-pick" aria-pressed={active} onClick={() => onPick(game.id, n)}>
-          <span className="pg-opt-n">{n === window.PG_SHARE_OPT ? 'T' : n}</span>
+          <span className="pg-opt-n">{n === window.PG_SHARE_OPT ? 'T' : n === window.PG_NOTES_OPT ? 'N' : n}</span>
           <span className="pg-opt-name">{def.name}</span>
           {n > 0 && n < window.PG_SHARE_OPT && !def.built && <span className="pg-opt-tag">not built yet</span>}
         </button>
         <button type="button" className="pg-opt-why" aria-expanded={why} aria-controls={id}
-          aria-label={'Stance and cost of ' + (n === 0 ? 'Today' : n === window.PG_SHARE_OPT ? 'share text' : 'option ' + n)} onClick={() => setWhy((w) => !w)}>{why ? '−' : '+'}</button>
+          aria-label={'Stance and cost of ' + (n === 0 ? 'Today' : n === window.PG_SHARE_OPT ? 'share text' : n === window.PG_NOTES_OPT ? 'notes' : 'option ' + n)} onClick={() => setWhy((w) => !w)}>{why ? '−' : '+'}</button>
       </div>
       {why && <dl id={id} className="pg-opt-detail">
         <dt>Stance</dt><dd>{def.stance}</dd>
@@ -41,7 +41,7 @@ const PgGroup = ({ game, sel, onPick }) => {
         <button type="button" aria-expanded={open} aria-controls={body} onClick={() => window.pgStore.toggle(game.id)}>
           <span className="pg-chev" aria-hidden="true">{open ? '▾' : '▸'}</span>
           <span className="pg-grp-name">{game.name}</span>
-          <span className="pg-grp-sum">{cur ? (sel.opt === 0 ? 'Today' : sel.opt === window.PG_SHARE_OPT ? 'Share text' : 'Option ' + sel.opt) + ' · ' + stateLabel : ''}</span>
+          <span className="pg-grp-sum">{cur ? (sel.opt === 0 ? 'Today' : sel.opt === window.PG_SHARE_OPT ? 'Share text' : sel.opt === window.PG_NOTES_OPT ? 'Notes' : 'Option ' + sel.opt) + ' · ' + stateLabel : ''}</span>
         </button>
       </h2>
       {open && <div id={body} className="pg-grp-body">
@@ -51,10 +51,26 @@ const PgGroup = ({ game, sel, onPick }) => {
             onChange={(v) => { window.pgStore.setState(game.id, v); if (onPick) onPick(); }} />
         </div>
         <ul className="pg-opts">
-          {[0, 1, 2, 3, window.PG_SHARE_OPT].map((n) => <PgRow key={n} game={game} n={n} active={cur && sel.opt === n} onPick={(g, o) => { window.pgStore.select(g, o); if (onPick) onPick(); }} />)}
+          {[0, 1, 2, 3, window.PG_SHARE_OPT, window.PG_NOTES_OPT].map((n) => <PgRow key={n} game={game} n={n} active={cur && sel.opt === n} onPick={(g, o) => { window.pgStore.select(g, o); if (onPick) onPick(); }} />)}
         </ul>
       </div>}
     </section>
+  );
+};
+
+// The two global switches. Both persist, deep-link (?e= and ?l=) and reach every option as the props element and layout.
+const PgSwitches = ({ sel }) => {
+  const def = window.pgGetOption(sel.game, sel.opt);
+  const view = window.pgView(def, sel);
+  const drawn = sel.opt > 0 && sel.opt < window.PG_SHARE_OPT;
+  return (
+    <div className="pg-dist">
+      <div className="pg-states-label">Element</div>
+      <window.ConfigSeg value={sel.el} options={window.PG_ELEMENTS.map((x) => ({ value: x.id, label: x.label }))} onChange={(v) => window.pgStore.setElement(v)} />
+      <div className="pg-states-label">Layout</div>
+      <window.ConfigSeg value={sel.ly} options={window.PG_LAYOUTS.map((x) => ({ value: x.id, label: x.label }))} onChange={(v) => window.pgStore.setLayout(v)} />
+      <p className="pg-dist-note">{drawn && view.missing.length ? 'Not built yet for this option: ' + view.missing.join(' and ') + '. It shows the default for each.' : 'Element: how far the key element is drawn from the store\u2019s look. Layout: the page as built, or with the IA pass.'}</p>
+    </div>
   );
 };
 
@@ -73,11 +89,7 @@ const PgRail = ({ onPick }) => {
         <h1 className="pg-title">Session pages</h1>
         <p className="pg-lede">Five games, three options each. Pick a row; the page beside it is the real store.</p>
       </header>
-      <div className="pg-dist">
-        <div className="pg-states-label">Distance from the store's look</div>
-        <window.ConfigSeg value={sel.dist || 'near'} options={[{ value: 'near', label: 'Near' }, { value: 'middle', label: 'Middle' }, { value: 'far', label: 'Far' }]} onChange={(v) => window.pgStore.setDist(v)} />
-        <p className="pg-dist-note">{(sel.dist || 'near') === 'near' ? 'Near: the design system as it is today.' : (sel.dist === 'middle' ? 'Middle: marks only. The game\u2019s colour goes on its cells and accents; every ground stays the store\u2019s.' : 'Far: the whole page takes the game\u2019s ground.') + (sel.dist === 'far' && (sel.game === 'casebook' || sel.game === 'escape') ? ' On indigo this reads as a hue change only.' : '')}</p>
-      </div>
+      <PgSwitches sel={sel} />
       <div className="pg-groups">
         {window.PG_GAMES.map((g) => <PgGroup key={g.id} game={g} sel={sel} onPick={onPick} />)}
       </div>

@@ -18,6 +18,8 @@
 .ss-head-name a, .ss-head-name button { font: inherit; }
 .ss-head-date { font: var(--type-caption); color: var(--muted); }
 .ss-h1 { grid-column: 1 / -1; margin: 0; font: var(--type-page-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
+/* A phone h1 that would wrap past two lines steps down (set by Ss.Head). */
+.ss-h1[data-shrink] { font-size: 22px; line-height: 1.2; }
 .ss-mark { display: inline-flex; vertical-align: -3px; margin-right: 10px; }
 .ss-mark.is-ok { color: var(--success); }
 .ss-mark.is-bad { color: var(--error); }

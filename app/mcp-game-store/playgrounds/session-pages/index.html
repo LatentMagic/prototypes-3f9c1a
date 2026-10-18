@@ -41,7 +41,7 @@
     var modelExists = function (src) {
       try { var x = new XMLHttpRequest(); x.open('HEAD', src, false); x.send(); return x.status === 200; } catch (e) { return false; }
     };
-    var mine = [tag(B + 'seeds/failures.jsx'), tag(B + 'pg/rail.jsx'), tag(B + 'pg/share.jsx'), tag(B + 'pg/stage.jsx'), tag(B + 'shared/session-kit.jsx')];
+    var mine = [tag(B + 'seeds/failures.jsx'), tag(B + 'pg/rail.jsx'), tag(B + 'pg/share.jsx'), tag(B + 'pg/notes.jsx'), tag(B + 'pg/stage.jsx'), tag(B + 'shared/session-kit.jsx')];
     // A game's optional reader (options/<game>-model.jsx: PgCb, PgMystery, EsModel, DvModel) loads before the game's options, so it need not sit in option 1.
     // Games listed in PG_MODELS have one; a missing file is simply not listed (a 404 on a babel script would log an error).
     window.PG_GAMES.forEach(function (g) {
