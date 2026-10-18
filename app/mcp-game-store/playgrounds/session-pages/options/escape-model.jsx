@@ -126,15 +126,29 @@
     return w;
   };
 
+  // The reader's text scale: a probe one em wide, set in the slot's own 13px face, is 13px at the default size and wider as text grows.
+  const useScale = (ref) => {
+    const [k, setK] = React.useState(1);
+    React.useLayoutEffect(() => {
+      const el = ref.current; if (!el) return undefined;
+      const f = () => setK(Math.max(1, Math.round((el.getBoundingClientRect().width / 13) * 100) / 100));
+      f(); const ro = new ResizeObserver(f); ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    return k;
+  };
+
   // planGeom: where everything sits. Slots run clockwise from the top-left in examine order; the exit object takes the top-centre slot, and the wall opens there once out.
   // Phone holds 8 slots (top 3, right 2, bottom 2, left 1), desktop 10 (top 3, right 2, bottom 3, left 2). Right and left columns include their corner slots, evenly spaced.
   const quad = (a, c, b, t) => [(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * c[0] + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * c[1] + t * t * b[1]];
-  const planGeom = (W, items, escaped) => {
-    const big = W >= 560, PT = 30, sh = big ? 56 : 48;
+  // k is the reader's text scale (1 at the default size). A slot holds a two-line name over a 12px footer, so its height, and the room's, grow with k: lettering is never cut to fit.
+  // BADGE is the move number's side; ROW_GAP is the clear strip between rows that carries it, so a number never sits on a label.
+  const BADGE = 16, ROW_GAP = 22;
+  const planGeom = (W, items, escaped, k) => {
+    const big = W >= 560, PT = 30, sh = Math.max(big ? 56 : 0, Math.ceil(52 * k));
     const sw = big ? 140 : Math.max(64, Math.min(88, Math.floor((W - 56) / 3)));
-    const H = big ? 400 : PT + 268;
     const xL = 22, xR = W - 22 - sw, xC = Math.round((W - sw) / 2);
-    const yT = PT + 14, yB = H - 22 - sh;
+    const yT = PT + 14, H = Math.max(big ? 400 : 0, yT + 3 * (sh + ROW_GAP) + sh + 22), yB = H - 22 - sh;
     const col = (i) => Math.round(yT + (i * (yB - yT)) / 3), mid = Math.round((yT + yB) / 2);
     const P = big
       ? [[xL, yT], [xC, yT], [xR, yT], [xR, col(1)], [xR, col(2)], [xR, yB], [xC, yB], [xL, yB], [xL, col(2)], [xL, col(1)]]
@@ -152,9 +166,14 @@
     const exitSlot = slots.find((s) => s.it === exitItem);
     if (exitSlot && seq[seq.length - 1].s !== exitSlot) seq.push({ s: exitSlot, p: cen(exitSlot) });
     const legs = [], marks = [];
+    const obstacles = [];
+    slots.forEach((q) => { obstacles.push([q.x - 1, q.y - 1, q.x + sw + 1, q.y + sh + 1]);
+      q.it.locks.forEach((_, i) => { const lx = q.x + sw - 7 - i * 17; obstacles.push([lx - 1, q.y - 12, lx + 15, q.y + 12]); }); });
     let prev = [you.x + 5, you.y + 5], prevSlot = null;
     // A leg runs straight from slot to slot, and bows toward the middle of the room only as far as it must to stay clear of a third slot.
-    const hits = (pts, a, b) => slots.some((q) => q !== a && q !== b && pts.some((t) => t[0] > q.x - 5 && t[0] < q.x + sw + 5 && t[1] > q.y - 5 && t[1] < q.y + sh + 5));
+    // The exit slot gets a wide berth (its own leg arrives at its foot, with the move number), so a leg that is not going out never reads as going out.
+    const hits = (pts, a, b) => slots.some((q) => { if (q === a || q === b) return false; const m = q === exitSlot ? 30 : 5;
+      return pts.some((t) => t[0] > q.x - m && t[0] < q.x + sw + m && t[1] > q.y - m && t[1] < q.y + sh + m); });
     seq.forEach(({ s, p }) => {
       const mx = (prev[0] + p[0]) / 2, my = (prev[1] + p[1]) / 2, dx = p[0] - prev[0], dy = p[1] - prev[1];
       const vx = c[0] - mx, vy = c[1] - my, vl = Math.hypot(vx, vy) || 1;
@@ -165,8 +184,9 @@
         if (!hits(pts, prevSlot, s)) break;
       }
       legs.push('M' + prev[0].toFixed(1) + ' ' + prev[1].toFixed(1) + 'Q' + ctl[0].toFixed(1) + ' ' + ctl[1].toFixed(1) + ' ' + p[0].toFixed(1) + ' ' + p[1].toFixed(1));
-      let t = 1; const inside = (q) => q[0] >= s.x && q[0] <= s.x + sw && q[1] >= s.y && q[1] <= s.y + sh;
-      while (t > 0 && inside(quad(prev, ctl, p, t))) t -= 0.02;
+      // The move number rides the route just outside the slot it arrives at: back along the leg until its box clears every slot and lock pin.
+      let t = 1; const clear = (q) => obstacles.every((o) => q[0] + BADGE / 2 <= o[0] || q[0] - BADGE / 2 >= o[2] || q[1] + BADGE / 2 <= o[1] || q[1] - BADGE / 2 >= o[3]);
+      while (t > 0.05 && !clear(quad(prev, ctl, p, t))) t -= 0.02;
       marks.push({ s, at: quad(prev, ctl, p, Math.max(t, 0)) });
       prev = p; prevSlot = s;
     });
@@ -179,16 +199,17 @@
 
   // The floor plan. interactive: slots are buttons (selected, onSelect). Lettering is the object's name, also in the Record.
   const Plan = ({ m, interactive, selected, onSelect, caption }) => {
-    const ref = React.useRef(null);
-    const W0 = useWidth(ref), W = Math.min(W0, 640);
+    const ref = React.useRef(null), probe = React.useRef(null);
+    const W0 = useWidth(ref), W = Math.min(W0, 640), k = useScale(probe);
     const items = React.useMemo(() => objItems(m), [m]);
     const escaped = m.done && !!m.exitLock;
-    const g = W > 0 ? planGeom(W, items, escaped) : null;
+    const g = W > 0 ? planGeom(W, items, escaped, k) : null;
     return (
       <figure className="es-fig">
         <div className="es-pic" ref={ref} style={g ? null : { minHeight: 290 }}>
+          <span className="es-probe" ref={probe} aria-hidden="true" />
           {g ? (
-            <div className="es-plan" style={{ width: W, height: g.H }} role="group" aria-label={'Floor plan of the room, objects in the order you examined them' + (escaped ? '; the way out is open' : '')}>
+            <div className="es-plan" style={{ width: W, height: g.H, '--es-k': k }} role="group" aria-label={'Floor plan of the room, objects in the order you examined them' + (escaped ? '; the way out is open' : '')}>
               <svg className="es-svg" width={W} height={g.H} viewBox={'0 0 ' + W + ' ' + g.H} aria-hidden="true">
                 <path className="es-wall" d={g.wall} />
                 {escaped ? <path className="es-leaf" d={'M' + g.gl + ' ' + g.PT + 'L' + (g.gl - 25) + ' ' + (g.PT - 25)} /> : null}
@@ -227,17 +248,18 @@
       :scope .es-fig { margin: 0; display: grid; gap: 8px; min-width: 0; }
       :scope .es-pic { background: var(--cover-bg-indigo); box-shadow: var(--shadow-card); display: grid; justify-items: center; min-width: 0; overflow: hidden; }
       :scope .es-plan { position: relative; flex: none; }
+      :scope .es-probe { position: absolute; left: 0; top: 0; width: 1em; height: 1px; visibility: hidden; pointer-events: none; font: 600 13px/1 var(--font-text); }
       :scope .es-svg { position: absolute; inset: 0; display: block; }
       :scope .es-wall { fill: none; stroke: var(--cover-cream); stroke-width: 3; stroke-linejoin: miter; stroke-linecap: butt; }
       :scope .es-leaf { fill: none; stroke: var(--cover-cream); stroke-width: 2; stroke-linecap: butt; }
       :scope .es-route { fill: none; stroke: var(--cover-amber); stroke-width: 2; stroke-linecap: butt; }
       :scope .es-arrow { fill: var(--cover-amber); }
       :scope .es-you { fill: var(--cover-cream); }
-      :scope .es-slot { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; margin: 0; padding: 3px 6px; border-radius: 0; background: color-mix(in srgb, var(--cover-cream) 9%, var(--cover-bg-indigo)); border: 1.5px solid var(--cover-cream); color: var(--cover-cream); font: 600 13px/1.15 var(--font-text); text-align: center; appearance: none; -webkit-appearance: none; cursor: default; overflow: hidden; }
+      :scope .es-slot { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; margin: 0; padding: 3px 2px; border-radius: 0; background: color-mix(in srgb, var(--cover-cream) 9%, var(--cover-bg-indigo)); border: 1.5px solid var(--cover-cream); color: var(--cover-cream); font: 600 13px/1.15 var(--font-text); text-align: center; appearance: none; -webkit-appearance: none; cursor: default; overflow: hidden; }
       :scope button.es-slot { cursor: pointer; }
       :scope .es-name { flex: 1; min-height: 0; display: grid; align-items: center; justify-items: center; overflow: hidden; overflow-wrap: anywhere; }
       :scope .es-slot[data-foot="0"] .es-name { flex: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-      :scope .es-foot { flex: none; display: flex; justify-content: space-between; align-items: center; height: 12px; line-height: 12px; }
+      :scope .es-foot { flex: none; display: flex; justify-content: space-between; align-items: center; height: calc(12px * var(--es-k, 1)); line-height: 1; }
       :scope .es-foot b { font: 600 12px/12px var(--font-text); }
       :scope .es-slot[data-exit="1"] { border-color: var(--cover-amber); border-width: 2px; }
       :scope .es-slot[data-sel="1"] { background: var(--cover-cream); color: var(--cover-bg-indigo); }
@@ -255,7 +277,7 @@
       :scope .es-sqp i.on { background: currentColor; }
       :scope .es-num16 { width: 16px; height: 16px; background: var(--cover-cream); color: var(--cover-bg-indigo); font: 700 11px/16px var(--font-text); text-align: center; }
   `;
-  window.EsModel = { numCss, build, sentences, plural, triesText, lockFacts, shortName, cap, storyOf, Num, lockState, stateWord, objItems, firstClause, Glyph, SqPips, useWidth, Plan, planCss };
+  window.EsModel = { numCss, build, sentences, plural, triesText, lockFacts, shortName, cap, storyOf, Num, lockState, stateWord, objItems, firstClause, Glyph, SqPips, useWidth, Plan, planCss, useScale };
 
 
 })();
