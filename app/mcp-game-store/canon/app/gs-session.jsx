@@ -7,29 +7,16 @@
 // gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
 // ============================================================================
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
-const GsNeedsPass = ({ gid }) => {
+// text: the line where it isn't the edition's own (a kept session).
+const GsNeedsPass = ({ gid, text }) => {
   const gs = useGs();
   return (
     <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
-      <span className="gs-muted">{'This ' + GS_GAMES[gid].ed[0] + ' comes with the Pass.'}</span>
+      <span className="gs-muted">{text || 'This ' + GS_GAMES[gid].ed[0] + ' comes with the Pass.'}</span>
       <DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
     </div>
   );
 };
-const GsShareCard = ({ s }) => {
-  const gs = useGs();
-  return (
-    <div className="gs-share-card">
-      <GsCover art={s.art} />
-      <div className="gs-stack-xs">
-        <span className="mcp-t-card">{s.game}</span>
-        <span className="gs-num-text gs-share-line">{gsOr(s.share)}</span>
-        <span className="gs-small">{gs.user.username}</span>
-      </div>
-    </div>
-  );
-};
-
 // Share text, as it will be pasted: emoji, no letters, nothing of the scene,
 // ending with the game's product page. Null where nothing is decided.
 const gsWordRow = (guess, answer) => {
@@ -42,7 +29,9 @@ const gsWordRow = (guess, answer) => {
 const gsShortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
 const gsShareText = (s) => {
   if (s.share == null) return null;
-  const link = 'https://platform.example/' + GS_GAMES[s.gid].route;
+  const link = gsLink(s.gid);
+  // A result whose card is written out in full (Casebook, Escape, Delve, the Barrow), with the product link last.
+  if (s.shareLines) return [...s.shareLines, link];
   if (s.gid === 'word' && s.number) {
     // A Hint line is not a guess: the tile rows and the count skip it.
     const guesses = s.lines.filter((l) => /^Guess/.test(l[0])).map((l) => l[1]); const answer = s.answer || guesses[guesses.length - 1];
@@ -101,7 +90,11 @@ const GsSessionRecord = () => {
   // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once (owner, 2026-10-17).
   const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
-  const again = over ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Start over</DS.Button> : null;
+  // Controls only where they work: a player without the Pass can carry on or start over only a free game or its free first edition.
+  // A Pass-ended player's unfinished Pass-only session is kept: it says so, with the Pass page, and no Play.
+  const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!window.PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
+  const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
+  const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Start over</DS.Button> : null;
   const onceLine = !!s.gid && !over && <p>{GS_ONCE_LINE}</p>;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   const list = (
@@ -141,7 +134,7 @@ const GsSessionRecord = () => {
             {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
           </div>
           <div className="gs-pairwrap">
-            {s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
+            {kept ? null : s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
               : text ? (again ? <DS.ButtonPair>
                 {again}
                 <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
@@ -149,6 +142,7 @@ const GsSessionRecord = () => {
               : again}
           </div>
           {!s.live && onceLine}
+          {kept && <GsNeedsPass gid={s.gid} text="This session is kept. Carrying it on comes with the Pass." />}
         </div>
       </section>
 
@@ -158,8 +152,8 @@ const GsSessionRecord = () => {
           <div className="gs-stack-md">
             <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
               <span className="gs-label">{s.live ? 'THE TRACKS SO FAR' : 'THE TRACKS AS THEY ENDED'}</span>
-              <GsTrack label="Progress" value={s.tracks.progress} />
-              <GsTrack label="Threat" value={s.tracks.threat} threat />
+              <GsTrack label="Rooms reached" value={s.tracks.progress} max={s.tracks.rooms || 6} />
+              <GsTrack label="Threat" value={s.tracks.threat} max={s.tracks.threatMax || 6} threat />
             </DS.Card>
             <DS.Card style={{ gap: 12, justifyItems: 'stretch' }}>
               <h2 className="mcp-t-card">Endings</h2>
@@ -175,6 +169,8 @@ const GsSessionRecord = () => {
         </section>
       ) : list}
 
+      {s.credit && <p className="gs-small gs-muted" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
+
       <GsSharePopup open={share} onClose={closeShare} lines={text} linkOnly={linkOnly} />
     </main>
   </>);
@@ -182,4 +178,4 @@ const GsSessionRecord = () => {
 
 const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
-Object.assign(window, { GsNeedsPass, GsSession, GsShareCard, GsSharePopup, gsShareText });
+Object.assign(window, { GsNeedsPass, GsSession, GsSharePopup, gsShareText });

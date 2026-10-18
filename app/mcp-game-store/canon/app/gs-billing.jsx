@@ -38,11 +38,12 @@ const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
 
 // ---- The Pass card: the same card on the Account page and the Pass page ----------
 // What a player keeps and what freezes when a Pass ends (cancel flow, ending and lapsed cards, Pass page).
-const GsKeepLock = ({ lead, locked }) => (
+// One sentence at every place it appears (owner's ruling, 2026-10-18): earned achievements never freeze.
+const GsKeepLock = ({ lead }) => (
   <div className="gs-stack-sm">
     <p>{lead}</p>
     <p><b>You keep</b> your results, your history and the achievements you earned.</p>
-    <p><b>What freezes:</b> the Pass-only games and editions, and the achievements earned in them. They {locked}.</p>
+    <p><b>What freezes:</b> your streaks, and progress toward achievements you haven’t earned yet.</p>
   </div>
 );
 // A change to the Pass that did not go through (Config "Pass changes: Fail"). The card stays as it was.
@@ -71,7 +72,7 @@ const GsPassCard = () => {
     <DS.Card style={card}>
       <h2 className="mcp-t-card">Pass</h2>
       {sub.hadPass
-        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} locked="are frozen until you get the Pass again" />
+        ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} />
         : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
       <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>{sub.hadPass ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
@@ -103,7 +104,7 @@ const GsPassCard = () => {
     rows.push(['Ends on', date]);
     body = (
       <div className="gs-stack-md">
-        <GsKeepLock lead={<>Your Pass ends on that date. You can resume any time before then.</>} locked="freeze when it ends" />
+        <GsKeepLock lead={<>Your Pass ends on that date. You can resume any time before then.</>} />
         <div className="gs-pair-even">
           {update}
           <DS.Button data-gs-focus="resume" variant="secondary" loading={busy} onClick={() => { setFailed(null); run(() => { if (gsPassFails(gs)) { setFailed('resume'); return; } done('cancel', 'Your subscription is resumed.'); gs.setSub({ status: 'active' }); }); }}>Resume subscription</DS.Button>
@@ -187,7 +188,7 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
     <DS.Popup open={open} onClose={close} posture="window" label="Cancel your subscription?">
       <GsPopTitle>Cancel your subscription?</GsPopTitle>
       <GsBeforeAfter now={now} then={[p.failed ? 'Today' : 'From ' + p.date, 'Ends', 'Nothing charged']} />
-      <GsKeepLock lead={p.failed ? 'Your Pass ends today.' : 'You keep the Pass until it ends.'} locked="freeze when it ends, and carry on if the Pass returns" />
+      <GsKeepLock lead={p.failed ? 'Your Pass ends today.' : 'You keep the Pass until it ends.'} />
       {failed && <GsXLine>Your subscription wasn’t cancelled. Try again.</GsXLine>}
       <GsActs>
         <DS.Button variant="secondary" onClick={close}>Keep subscription</DS.Button>

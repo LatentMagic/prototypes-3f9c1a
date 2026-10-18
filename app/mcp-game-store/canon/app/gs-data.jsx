@@ -44,13 +44,14 @@ const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // ed: the game's own word for one of its editions, [singular, plural] (walk-sweep-2). Players never see a platform-wide word.
 const GS_GAMES = {
   word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['FREE', 'Daily', '10 min'] },
-  groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['groups', 'groups'], edLink: 'See all groups', edAll: 'All groups', free: true, daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['FREE', 'Daily', '10 min'] },
+  groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', free: false, daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['PASS', 'Daily', '10 min'] },
   mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], free: true, daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
-  escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], free: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FREE', 'Weekly', '10 min'] },
-  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', 'Weekly', '25–40 min'] },
-  delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['scene', 'scenes'], first: true, blurb: 'Get her out before the drums stop.', tags: ['FIRST', 'Weekly', '25–40 min'] },
+  escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], free: false, first: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FIRST', 'Weekly', 'About 30 min'] },
+  // Casebook is episodic (game-pages-refresh, 2026-10-18): cases are its editions, with no schedule, so it lists them through eds.
+  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], eds: true, once: true, blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', '25–40 min'] },
+  delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], first: true, blurb: 'Get her out before the ritual is complete.', tags: ['FIRST', 'Weekly', '25–40 min'] },
   // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
-  barrow: { name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', first: true, blurb: 'Something under the hill wants its gold back. Go down anyway.', tags: ['FIRST', '45–60 min'] },
+  barrow: { name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', first: true, blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['FIRST', 'Several sessions'] },
   hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
 };
 const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
@@ -64,11 +65,11 @@ const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
 const gsStartsOver = (k) => !!k && !!GS_GAMES[k] && !gsRhythm(k) && !GS_GAMES[k].once;
 const GS_ONCE_LINE = 'You’ve played this one. It can’t be played again.';
 const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
-// This edition's play of each free game, by plan: today's for a daily, this week's for Escape.
+// This edition's play of each free daily, by plan: today's. Daily Groups is Pass-only and Escape's free room is its first edition (cprFirstState), so a free account has neither here.
 // Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).
 const GS_TODAY_PLAYED = {
   out: {},
-  free: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
+  free: { word: 'word-today', mystery: 'mystery-today' },
   pass: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
 };
 // This player's plays of this edition. Config "Free account, today: Not played" empties a free account's (state free-not-played-today).
@@ -81,46 +82,122 @@ const GS_ENDED_SAMPLE = new Date(2026, 8, 18);
 const gsEndedOn = (gs) => { gs = gs || window.gsApi; return gs && gs.sub && gs.sub.endedOn ? new Date(gs.sub.endedOn) : GS_ENDED_SAMPLE; };
 // Search text: lower case, no apostrophes, and a comma between digits dropped, so 36000 finds 36,000 Summers Ago.
 const gsNorm = (s) => (s || '').toLowerCase().replace(/(\d),(?=\d)/g, '$1').replace(/[’'‘]/g, '').trim();
-// The small mark on a card, per game. Pass: this edition of each game played; free, signed in: the free plays only.
-const gsMarks = (view, gs) => {
-  const m = {};
-  // An edition in progress is never shown as played (Config: This week, or today).
-  const live = !!(gs && gs.review && gs.review.week === 'live');
-  const mark = (k) => (live ? 'In progress' : GS_GAMES[k].daily ? 'Played today' : 'Played this week');
-  Object.keys(gs ? gsTodayPlayed(gs) : GS_TODAY_PLAYED[view] || {}).forEach((k) => { m[k] = mark(k); });
-  if (view === 'pass' && !gsFresh(gs)) { m.casebook = mark('casebook'); m.delve = mark('delve'); }
-  return m;
-};
+
+// Coming soon: a game not out yet, and the Barrow's next chapter, chapter 3 (owner, 2026-10-16); its chip opens the Barrow's page.
 const GS_SOON = [
   { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction' },
-  // The Barrow's next chapter: the line is the game's own blurb (SoonCard.prompt.md).
-  { name: GS_GAMES.barrow.name, art: 'barrow', line: GS_GAMES.barrow.blurb, label: 'CHAPTER 2', play: 'Play chapter 1', route: 'barrow' },
+  { name: GS_GAMES.barrow.name, art: 'barrow', line: GS_GAMES.barrow.blurb, label: 'CHAPTER 3', play: 'Play chapter 1', route: 'barrow' },
 ];
 
-const GS_ROLLS = [
-  ['Stealth','d20 11 + 3 = 14 vs 15','Weak hit'],
-  ['Perception','d20 16 + 2 = 18 vs 12','Hit'],
-  ['Stealth','d20 7 + 3 = 10 vs 14','Miss'],
-  ['Bluff','d20 15 + 1 = 16 vs 15','Hit'],
-  ['Athletics','d20 9 + 2 = 11 vs 13','Miss, HP 9/12'],
-  ['Survival','d20 18 + 2 = 20 vs 14','Hit'],
-  ['Attack','d20 20 + 4 = 24 vs 13','Natural 20'],
-  ['Stealth','d20 12 + 3 = 15 vs 16','Weak hit'],
-  ['Sleight of hand','d20 14 + 3 = 17 vs 15','Hit'],
-  ['Defence','d20 5 + 2 = 7 vs 14','Miss, HP 5/12'],
-  ['Athletics','d20 13 + 2 = 15 vs 15','Hit'],
+// The share card's link for the games whose deployed card names /discover/<game>.
+const gsLink = (gid) => 'https://platform.example/' + (['casebook', 'escape', 'delve', 'barrow'].includes(gid) ? 'discover/' : '') + GS_GAMES[gid].route;
+// Required wherever the Barrow's rules material is used (verbatim).
+const GS_BARROW_CREDIT = 'Rules material from the System Reference Document 5.2.1 by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/legalcode).';
+
+// ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
+const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
+const GS_DV_WON = [
+  ['Wisdom', 'd20 1 + 0 = 1 vs 12', 'Search the lock-keeper\'s niche: natural 1, HP 12/13'],
+  ['Room', 'Entered The chime run'],
+  ['Dexterity', 'd20 9 + 1 = 10 vs 12', 'Miss, HP 11/13'],
+  ['Dexterity', 'd20 11 + 1 = 12 vs 12', 'Weak hit'],
+  ['Dexterity', 'd20 18 + 1 = 19 vs 12', 'Hit'],
+  ['Room', 'Entered The warren'],
+  ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
+  ['Strength', 'd20 9 + 3 = 12 vs 12', 'Weak hit'],
+  ['Strength', 'd20 13 + 3 = 16 vs 12', 'Weak hit, HP 9/13'],
+  ['Strength', 'd20 17 + 3 = 20 vs 12', 'Hit'],
+  ['Dexterity', 'd20 20 + 1 = 21 vs 12', 'Rifle the stolen sacks: natural 20'],
+  ['Room', 'Entered Snaggle\'s den'],
+  ['Gear', 'A pepper pouch', 'Snaggle: track 3 → 1'],
+  ['Strength', 'd20s 15 and 18, kept 18 + 3 = 21 vs 12', 'Hit'],
+  ['Gear', 'Took the iron key'],
+  ['Room', 'Doubled back to The warren', 'The ritual +1'],
+  ['Lock', 'Opened the bone gate with the iron key'],
+  ['Room', 'Entered The shrine cavern'],
+  ['Strength', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Hit'],
+  ['Strength', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Hit'],
 ];
+const GS_DV_LIVE = [
+  ['Oracle', 'Is anyone awake down here?', 'd100 23 vs 25', 'Yes'],
+  ['Room', 'Entered The chime run'],
+  ['Dexterity', 'd20 13 + 3 = 16 vs 12', 'Weak hit'],
+  ['Dexterity', 'd20 16 + 3 = 19 vs 12', 'Hit'],
+  ['Room', 'Entered The warren'],
+  ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
+  ['Dexterity', 'd20 14 + 3 = 17 vs 12', 'Hit'],
+  ['Dexterity', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Hit'],
+  ['Intelligence', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12', 'Study the wall scratchings: hit'],
+  ['Room', 'Entered Snaggle\'s den'],
+  ['Dexterity', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Hit'],
+  ['Dexterity', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12', 'Hit'],
+  ['Dexterity', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12', 'Climb to the skeleton on the high ledge: natural 20'],
+  ['Room', 'Doubled back to The warren', 'The ritual +1'],
+];
+const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
+
+// ---- Escape No. 1, The Clockmaker’s Study (par 30): deployed text. A sample record never prints a typed answer;
+// a Try or Set row names what the lock takes instead (game-pages-refresh, this brief's Set 9). ----
+const GS_ES1 = {
+  bench: 'A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.',
+  clock: 'A tall case clock, stopped, its hands stiff. There is a winding hole in its face.',
+  cabinet: 'A glass cabinet with a four-digit lock. Through the glass, four pocket watches hang on tagged chains: Thursday’s shows nine o’clock, Monday’s seven, Wednesday’s one, Tuesday’s four. A brass plate on the frame: “My code is my watches’ hours, Monday to Thursday.”',
+  portrait: 'A girl of about ten, reaching up to a tall clock, a locket at her throat lost in the gloom. Beneath, in Ezra’s hand: “Ada.”',
+  fire: 'Cold ashes in an iron grate. The panelling beside it is carved with tiny gears, too shadowed to make out.',
+  door: 'A narrow oak door, hidden in the panelling until now, with a four-letter lock.',
+  drawer: 'Inside the drawer lies a small brass key, its bow shaped like a clock face.',
+  diary: 'Among the pocket watches lies a page torn from Ezra’s diary: “Ada went to live with her mother across the sea. Her train left at four o’clock, and I stood on the platform with her for the last quarter of an hour before it went. I stopped every clock in the house that day. Set the case clock to the moment I said goodbye, and this room will show you where I am.”',
+  hands: 'The hands click home at a quarter to four, and the case clock begins to tick. The cloud outside breaks.',
+};
+const GS_ES1_LINES = [
+  ['Move 1', 'Examine the workbench', GS_ES1.bench],
+  ['Move 2', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
+  ['Hint', 'The workbench drawer', 'Count the gears’ teeth, and read each count as a letter.'],
+  ['Move 3', 'Try an answer (4 letters) on the workbench drawer', GS_ES1.drawer],
+  ['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.'],
+  ['Move 4', 'Examine the case clock', GS_ES1.clock],
+  ['Move 5', 'Use the brass winding key on the case clock', 'Used up'],
+  ['Move 6', 'Examine the glass cabinet', GS_ES1.cabinet],
+  ['Move 7', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
+  ['Move 8', 'Try an answer (4 digits) on the cabinet lock', GS_ES1.diary],
+  ['Move 9', 'Set the clock hands to an hour and a minute', GS_ES1.hands],
+  ['Move 10', 'Examine the portrait', GS_ES1.portrait],
+  ['Move 11', 'Examine the fireplace', GS_ES1.fire],
+  ['Move 12', 'Examine the oak door', GS_ES1.door],
+  ['Move 13', 'Try an answer (4 letters) on the oak door lock', 'Out'],
+];
+
+// ---- Casebook, Case 1: The Last Night at Gull Point. Turn codes: F search found, N search found nothing, Q question,
+// H evidence shown and the story stood, B lie exposed, A the accusation (unnumbered). ----
+const GS_CB_REC = [
+  { c: 'F', act: 'Search', what: 'Searched the hotel bar', out: 'Found the bar ledger' },
+  { c: 'F', act: 'Search', what: 'Searched the harbour noticeboard', out: 'Found the ferry notice' },
+  { c: 'F', act: 'Search', what: 'Searched the lighthouse stairs', out: 'Found a green silk scarf, Pike’s broken watch' },
+  { c: 'F', act: 'Search', what: 'Searched Pike’s office', out: 'Found a letter of dismissal, a partnership deed, Pike’s will' },
+  { c: 'Q', act: 'Question', what: 'Asked Maeve Doyle about Tobias Pike' },
+  { c: 'B', act: 'Show evidence', what: 'Showed the bar ledger to Maeve Doyle', out: 'Lie exposed' },
+  { c: 'B', act: 'Show evidence', what: 'Showed the ferry notice to Tobias Pike', out: 'Lie exposed' },
+  { c: 'Q', act: 'Question', what: 'Asked Dr. Celia Rourke about Pike’s broken watch' },
+  { c: 'B', act: 'Show evidence', what: 'Showed a green silk scarf to Dr. Celia Rourke', out: 'Lie exposed' },
+  { c: 'H', act: 'Show evidence', what: 'Showed Pike’s will to Dr. Celia Rourke', out: 'Their story stood' },
+  { c: 'B', act: 'Show evidence', what: 'Showed What Tobias heard to Dr. Celia Rourke', out: 'Lie exposed' },
+  { c: 'A', act: 'Accusation', what: 'Dr. Celia Rourke', out: 'Right' },
+];
+// The session page's rows: numbered turns, then the accusation.
+const gsCbLines = (rec) => rec.map((r, i) => (r.c === 'A' ? ['Accused ' + r.what, r.out] : ['Turn ' + (i + 1), r.what, ...(r.out ? [r.out] : [])]));
 
 // Today's Daily Mystery questions, shared by the finished play and its in-progress form.
 const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'Yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'Yes']];
 const GS_SESSIONS = {
+  // Delve run 1 won, Bryn the Fighter.
   delve: {
-    kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Rescued', date: 'Monday 5 October', lapsedDate: 'Monday 14 September',
-    figures: ['Threat 5/6', '11 rolls', '1 natural 20', 'HP 5/12'],
-    tracks: { progress: 6, threat: 5 },
-    listTitle: 'Every roll', lines: GS_ROLLS,
-    endings: ['Clean rescue', 'Close call', 'Alone', 'Caught'], reached: 'Close call',
-    share: 'Rescued · threat 5/6 · 11 rolls · 1 natural 20',
+    kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
+    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 9/13'],
+    tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
+    listTitle: 'Every roll', lines: GS_DV_WON,
+    endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
+    share: 'Elsie rescued',
+    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
   },
   // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play (LM-1110).
   'word-today': {
@@ -128,13 +205,12 @@ const GS_SESSIONS = {
     listTitle: 'Every guess', share: 'Solved in 3 of 6',
     lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'The word contains the letter I.'], ['Guess 3', 'STILL', 'Solved']],
   },
-  // This week's room, played on Tuesday.
+  // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
   'escape-week': {
-    kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', result: 'Escaped in 7 moves', date: GS.today,
-    listTitle: 'Every move', share: 'Escaped in 7 moves', shareHead: 'Escape 🚪 The Locked Study · out in 7 moves',
-    lines: [['Move 1', 'Search the desk', 'Brass key'], ['Move 2', 'Use key on door', 'Wrong lock'], ['Move 3', 'Look under rug', 'Hatch, bolted'],
-      ['Move 4', 'Read note on wall', 'Four numbers'], ['Move 5', 'Enter numbers on safe', 'Opens'],
-      ['Move 6', 'Take crowbar', 'Crowbar'], ['Move 7', 'Lever hatch', 'Out']],
+    kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', result: 'Escaped in 28 min, under par', date: GS.today,
+    figures: ['28 min, under par', '1 hint', '2 wrong tries'],
+    listTitle: 'Every move', share: 'Escaped in 28 min, under par', shareLines: ['Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries'],
+    lines: GS_ES1_LINES,
   },
   'mystery-today': {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
@@ -162,23 +238,12 @@ const GS_SESSIONS = {
     lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'JACK · KING · QUEEN · ACE', 'Found: playing cards'],
       ['Try 3', 'MARS · VENUS · PLUTO · EARTH', 'Found: planets'], ['Try 4', 'BOW · STERN · DECK · HULL', 'Found: parts of a ship']],
   },
-  'escape-0928': {
-    kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', result: 'Escaped in 9 moves', date: 'Monday 28 September',
-    listTitle: 'Every move', share: 'Escaped in 9 moves', shareHead: 'Escape 🚪 The Flooded Cellar · out in 9 moves',
-    lines: [['Move 1', 'Go to shelves', 'Jar of keys'], ['Move 2', 'Use keys on door', 'None fit'], ['Move 3', 'Look up', 'Hatch'],
-      ['Move 4', 'Stack crates', 'Too low'], ['Move 5', 'Drain water', 'Cover, stuck'], ['Move 6', 'Lever cover', 'Lifts'],
-      ['Move 7', 'Reach into drain', 'Brass key'], ['Move 8', 'Open cabinet', 'Ladder'], ['Move 9', 'Climb through hatch', 'Out']],
-  },
+  // Case 1, The Last Night at Gull Point, solved.
   casebook: {
-    kind: 'case', gid: 'casebook', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October', lapsedDate: 'Sunday 13 September',
-    figures: ['11 of 16 turns', '4 lies exposed'], listTitle: 'The record', share: 'Solved · 11 of 16 turns · 4 lies exposed',
-    lines: [
-      ['Confront', 'Maeve Doyle, the bar ledger', 'Lie exposed'],
-      ['Confront', 'Tobias Pike, the ferry notice', 'Lie exposed'],
-      ['Confront', 'Dr. Celia Rourke, the green scarf', 'Lie exposed'],
-      ['Confront', 'Dr. Celia Rourke, what Tobias heard', 'Lie exposed'],
-      ['Accusation', 'Dr. Celia Rourke', 'Right'],
-    ],
+    kind: 'case', gid: 'casebook', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October',
+    figures: ['11 of 16 turns', '4 of 4 lies exposed', 'You accused Dr. Celia Rourke'], listTitle: 'Every turn', share: 'Solved',
+    shareLines: ['Casebook: The Last Night at Gull Point', '✅ solved · 11 of 16 turns · 4 lies exposed'],
+    lines: gsCbLines(GS_CB_REC),
   },
   'mystery-1004': {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
@@ -198,22 +263,19 @@ Object.assign(GS_SESSIONS, {
     figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: null, lines: GS_MYSTERY_QS.slice() },
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, listTitle: 'Every move', share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', lapsedDate: undefined, figures: ['Threat 3/6', '9 rolls'], tracks: { progress: 4, threat: 3 }, lines: GS_ROLLS.slice(0, 9), reached: null, share: null },
+  // Delve run 1 in progress, Wren the Rogue.
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null },
 });
+// Escape has one room so far; the old earlier-room id reads this week's.
+GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];
 
-// A lapsed player's Pass-game plays predate the day their Pass ended (gsEndedOn). The sample (18 September) moves this week's plays before it (lapsedDate).
 const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.hadPass;
-const gsSessDate = (s, gs) => (gsLapsed(gs) && !gs.sub.endedOn && s.lapsedDate) || s.date;
+// A session's date is its play's, written onto it from the play log (gs-history.jsx).
+const gsSessDate = (s) => s.date;
 
 // The scroller: the phone frame's screen when forced-mobile, else the document.
 const gsScroller = () => document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;
 const gsScrollTop = () => { gsScroller().scrollTop = 0; };
-const gsScrollToId = (id) => {
-  const el = document.getElementById(id); if (!el) return;
-  const sc = gsScroller();
-  const base = sc === document.scrollingElement || sc === document.documentElement ? 0 : sc.getBoundingClientRect().top;
-  sc.scrollTop = el.getBoundingClientRect().top - base + sc.scrollTop - 16;
-};
 
 // ---- Results: one formatter per game. Every result line (rows, session pages, the now card) is built here from the play's facts. ----
 const gsMis = (n) => (n === 0 ? 'no mistakes' : n === 1 ? '1 mistake' : n + ' mistakes');
@@ -221,10 +283,13 @@ const GS_RESULT = {
   word: (r) => (r.ok ? 'Solved in ' + r.guesses + ' of 6' : 'Failed'),
   groups: (r) => (r.found === 4 ? 'All 4 groups, ' + gsMis(r.mistakes) : r.found + ' of 4 groups'),
   mystery: (r) => (r.ok ? 'Solved' : 'Failed'),
-  escape: (r) => (r.ok ? 'Escaped in ' + r.moves + ' moves' : 'Still locked in'),
-  casebook: (r) => (r.ok ? 'Solved' : 'Unsolved'),
-  delve: (r) => ({ won: 'Rescued', ritual: 'Ritual done', fell: 'Hero fell' })[r.end],
-  hunter: (r) => (r.restarted ? 'Restarted' : 'Finished'),
+  // Escape has no lost outcome: every room can be finished. par: 'under par' | 'at par' | 'over par'.
+  escape: (r) => 'Escaped in ' + r.min + ' min, ' + r.par,
+  casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
+  // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
+  delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
+  // A day that ended without an ending reads as the app's unfinished status.
+  hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
 };
 
 // A row's result in its forms, longest first (ListRow): the short form is the score alone, or the game's own short word.
@@ -233,12 +298,10 @@ const gsForms = (s) => {
   if ((m = /^(?:Solved|Escaped) in (.+)$/.exec(s))) return [s, m[1]];
   if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
   if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
-  if (/^Done (today|this week)$/.test(s)) return [s, 'Done'];
+  if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, 'Done'];
   return s;
 };
 
 Object.assign(window, {
-  GS_RESULT, gsMis, gsForms, gsStartsOver, GS_ONCE_LINE,
-  DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, gsMarks, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed,
-  GS_ROLLS, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop, gsScrollToId,
+  GS_RESULT, gsMis, gsForms, gsStartsOver, GS_ONCE_LINE, DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed, GS_DV_WON, GS_DV_LIVE, GS_DV_ENDINGS, GS_ES1, GS_CB_REC, gsCbLines, gsLink, GS_BARROW_CREDIT, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop,
 });

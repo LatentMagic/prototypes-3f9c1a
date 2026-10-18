@@ -25,7 +25,7 @@ const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAM
 // What a play control starts: on a session's page, the edition that session belongs to; elsewhere the game.
 const gsSessEd = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid;
-  if (gid === 'barrow' && window.bwEds) return bwEds(gs)[0];
+  if (gid === 'barrow' && window.bwEds) { const l = bwEds(gs); return l.find((e) => e.key === (s.edKey || 'bw1')) || l[l.length - 1]; }
   if (!gid || !window.ED_GAMES || !ED_GAMES.includes(gid)) return null;
   const list = edList(gs, gid);
   if (s.edKey) return list.find((e) => e.key === s.edKey) || list[0];
@@ -48,11 +48,14 @@ const GsCopyPrompt = ({ text, label, block }) => {
   return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); }}>{label || 'Copy prompt'}</DS.Button>;
 };
 const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
+// The address scrolls sideways under a finger so the whole of it can be read; focus or a tap selects it for copying by hand.
+// A box, not an input: an input's select-on-focus stops the swipe.
+const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
 const GsAddress = () => {
   const [done, setDone] = React.useState(false);
   return (
     <div className="gs-copy">
-      <input className="mcp-in gs-num-text" readOnly value={GS.link} aria-label="The [Platform] address" onFocus={(e) => e.target.select()} />
+      <div className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label="The [Platform] address" onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}>{GS.link}</div>
       <DS.Button variant="secondary" done={done} doneLabel="Copied" onClick={() => { lbCopy([GS.link]); setDone(true); setTimeout(() => setDone(false), 2400); }}>Copy</DS.Button>
     </div>
   );
@@ -60,8 +63,9 @@ const GsAddress = () => {
 const GsOtherSteps = ({ id }) => { const o = GS_AI_OTHERS.find((x) => x[0] === id); return <GsSteps items={[<div className="gs-stack-sm"><span>Copy the [Platform] address.</span><GsAddress /></div>, ...o[2]]} />; };
 
 // ---- The play dialog: one line about connecting, the prompt, Copy ----
-// A finished edition of a game played once starts nothing, by any route: the dialog says so, with no prompt and no Copy.
-const gsReqEd = (gs, r) => r.e || (r.kind === 'game' && gs.view !== 'out' && window.ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
+// A finished edition of a game played once starts nothing: the dialog says so, with no prompt and no Copy. The product page's
+// Play is the one exception (owner, 2026-10-18): its request carries page: true and always opens the prompt.
+const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === 'game' && gs.view !== 'out' && window.ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
 const gsReqDone = (gs, r) => { const e = gsReqEd(gs, r); return !!e && !gsStartsOver(e.gid) && !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live'; };
 const GsPlayDialog = () => {
   const gs = useGs(); const last = React.useRef(null); if (gs.playing) last.current = gs.playing; const r = last.current;

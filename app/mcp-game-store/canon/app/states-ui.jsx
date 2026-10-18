@@ -39,7 +39,7 @@ const StatesRow = ({ state, onGo }) => {
       <div className="kit-states-row">
         <button className="kit-states-jump" onClick={() => onGo(state.id)}>
           <span className="kit-states-label">{state.label}</span>
-          <span className="kit-states-id">?state={state.id}</span>
+          <span className="kit-states-id">?state={state.id}{state.aliases && state.aliases.length ? ' · also ' + state.aliases.join(', ') : ''}</span>
         </button>
         <button className="kit-states-copy" onClick={copy} title="Copy link to this state"
           aria-label={'Copy link to ' + state.label}>
@@ -101,7 +101,7 @@ const kitFilterGroups = (groups, q) => {
   const t = q.trim().toLowerCase();
   if (!t) return groups;
   return groups
-    .map((g) => ({ title: g.title, notes: g.notes, items: g.items.filter((s) => (s.label + ' ' + s.id + ' ' + g.title).toLowerCase().includes(t)) }))
+    .map((g) => ({ title: g.title, notes: g.notes, items: g.items.filter((s) => (s.label + ' ' + s.id + ' ' + (s.aliases || []).join(' ') + ' ' + g.title).toLowerCase().includes(t)) }))
     .filter((g) => g.items.length > 0);
 };
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-10-18. Notifications and the data copy removed
+- Notifications, the push banner and "copy of your data" are gone from the app (descoped by the owner, 2026-10-16).
+
 ## 2026-10-16. How the site mentions the Pass
 - The Pass is named only where something is sold, as "the Pass".
 - Pass-only games carry a Pass mark on their picture; Free and First chips are gone.

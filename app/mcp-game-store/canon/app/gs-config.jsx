@@ -34,8 +34,8 @@ const GsConfigExtra = () => {
       <div className="kit-config-group-title">Library</div>
       {row('This week, or today', r.week === 'live' ? 'live' : 'done', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
       {row('Free account, today', r.today === 'none' ? 'none' : 'played', (v) => set(() => api.setReview({ today: v })), o([['played', 'Played'], ['none', 'Not played']]))}
-      {row('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day and a week']]))}
-      <div className="kit-config-hint">This edition's play, on every screen that shows it: the week for Casebook, Delve and Escape, the day for each daily game. Finished unless set here or in the demo bar. Ended unfinished adds a Daily Groups day and a Delve week that ended before you finished.</div>
+      {row('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]))}
+      <div className="kit-config-hint">This edition's play, on every screen that shows it: the case for Casebook, the week for Delve and Escape, the day for each daily game. Finished unless set here or in the demo bar. Ended unfinished adds a Daily Groups day and a Delve week that ended before you finished.</div>
       <div className="kit-config-group-title">Pass</div>
       {row('Subscription', sub.status || 'none', (v) => setSub({ status: v, pending: null, ...(v === 'none' ? {} : { hadPass: true }) }),
         o([['none', 'None'], ['active', 'Active'], ['failed', 'Payment failed'], ['ending', 'Ending']]))}
@@ -44,37 +44,6 @@ const GsConfigExtra = () => {
       {row('Pass changes', r.passFail ? 'fail' : 'work', (v) => set(() => api.setReview({ passFail: v === 'fail' })), o([['work', 'Work'], ['fail', 'Fail']]))}
       {row('Pass ended', sub.endedOn ? 'today' : 'earlier', (v) => setSub({ endedOn: v === 'today' ? GS_DAY0.getTime() : null }), o([['earlier', '18 September'], ['today', 'Today']]))}
       <div className="kit-config-hint">The demo bar at the foot of every screen agrees with Subscription: Free is None, Pass is Active. A subscription of None with Had the Pass before set to Yes is the lapsed card. Pass changes covers cancel, resume, switch and keeping the current plan. Pass ended sets the one date every page prints for a Pass that has ended (Subscription None, Had the Pass before Yes).</div>
-      {api.setPush && window.GS_PUSH_DEFAULT && (() => {
-        const p = api.push || {};
-        const perm = p.channel === 'unsupported' ? 'unsupported' : p.channel === 'ios-tab' ? 'ios' : p.perm === 'granted' ? 'granted' : p.perm === 'denied' ? 'denied' : 'default';
-        const setPerm = (v) => set(() => api.setPush({
-          default: { channel: 'ok', perm: 'default', asked: false, on: false },
-          granted: { channel: 'ok', perm: 'granted', asked: true, on: true },
-          denied: { channel: 'ok', perm: 'denied', asked: true, on: false },
-          ios: { channel: 'ios-tab', perm: 'default', asked: false, on: false },
-          unsupported: { channel: 'unsupported', perm: 'default', asked: false, on: false },
-        }[v]));
-        const wait = window.gsPushWait(p.snoozes);
-        const left = p.snoozes ? Math.max(0, Math.ceil((p.snoozeAt + wait * window.GS_PUSH_DAY - Date.now()) / window.GS_PUSH_DAY)) : 0;
-        return (
-          <React.Fragment>
-            <div className="kit-config-group-title">Notifications</div>
-            {row('Permission on this device', perm, setPerm, o([['default', 'Undecided'], ['granted', 'Allowed'], ['denied', 'Blocked'], ['ios', 'iPhone tab'], ['unsupported', 'Unsupported']]))}
-            {row('Banner', p.snoozes && left > 0 ? 'dismissed' : 'showing', (v) => set(() => api.setPush({ channel: 'ok', perm: 'default', asked: false, on: false,
-              ...(v === 'dismissed' ? { snoozes: Math.max(1, p.snoozes || 0), snoozeAt: Date.now() } : { snoozes: 0, snoozeAt: 0 }) })), o([['showing', 'Showing'], ['dismissed', 'Dismissed']]))}
-            {row('Turning on', p.fail ? 'fail' : 'work', (v) => set(() => api.setPush({ fail: v === 'fail' })), o([['work', 'Works'], ['fail', 'Fails']]))}
-            <div className="kit-config-hint">
-              {p.asked ? 'The browser’s dialog has been raised on this device, so the banner never returns. Set Banner to Showing to start again. '
-                : p.snoozes ? 'Dismissed ' + p.snoozes + (p.snoozes === 1 ? ' time' : ' times') + '. ' + (left > 0 ? 'Back in ' + left + (left === 1 ? ' day. ' : ' days. ') : 'Due back now. ') : ''}
-              The banner shows on Discover, Library and History to a signed-in player while permission is Undecided. Its × hides it for 3 days, then 7, then every 30.
-            </div>
-            {!p.asked && p.snoozes > 0 && left > 0 && (
-              <button type="button" className="kit-config-btn-secondary" style={{ marginBottom: 12 }}
-                onClick={() => api.setPush({ snoozeAt: p.snoozeAt - wait * window.GS_PUSH_DAY })}>Move on {wait} days</button>
-            )}
-          </React.Fragment>
-        );
-      })()}
     </React.Fragment>
   );
 };

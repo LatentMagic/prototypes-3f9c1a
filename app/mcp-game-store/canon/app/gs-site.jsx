@@ -121,7 +121,7 @@ const GsOffline = () => {
 
 // ---- Footer: a directory. Wide: brand, contact, legal. Narrow: see CSS.
 const GS_SUPPORT = 'support@[platform].example';
-// Placeholder until the owner names the real second address.
+// Both addresses are placeholders: the product's domain is not decided.
 const GS_HELLO = 'hello@[platform].example';
 const GS_LEGAL_LINKS = [['privacy', 'Privacy'], ['terms', 'Terms'], ['refunds', 'Refunds']];
 const GsFooter = () => {

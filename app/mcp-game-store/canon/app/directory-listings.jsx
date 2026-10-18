@@ -5,7 +5,6 @@
 // law for these two routes only).
 // Absent ⇒ the two routes render nothing and the register group is not there.
 // ============================================================================
-const DL_ROUTES = ['directory-claude', 'directory-chatgpt'];
 const DL_PHONE = 768;
 const DL_LOGO = 'assets/logo.svg';
 
@@ -405,4 +404,4 @@ const DL_STATES = [
   { group: 'Store listing', id: 'directory-listing-chatgpt', label: 'Directory listing: ChatGPT plugin', stage: (c) => c.go('directory-chatgpt') },
 ];
 
-Object.assign(window, { DL_ROUTES, DL_STATES, DlClaudeListing, DlChatGptListing });
+Object.assign(window, { DL_STATES, DlClaudeListing, DlChatGptListing });

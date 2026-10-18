@@ -5,28 +5,22 @@
 // Ratified 2026-10-08: the top-bar item is "Library"; the player page is titled with the game's name alone.
 // The card reads "IN YOUR LIBRARY" and links "Go to your <game>"; its line is not decided yet.
 // ============================================================================
-// ---- Seed: one player's Delve ------------------------------
+// ---- Seed: one player's Delve (run 1, The Goblin Warren beneath Ashford Mill; game-pages-refresh, 2026-10-18) ------------------------------
 const GP_RECENT = [
-  { date: '5 October', ending: 'Close call' },
-  { date: '28 September', ending: 'Alone' },
-  { date: '21 September', ending: 'Close call' },
-  { date: '7 September', ending: 'Caught' },
+  { date: '5 October', ending: 'Elsie rescued' },
 ];
-const GP_WEEKS = [['31 Aug', false], ['7 Sep', true], ['14 Sep', false], ['21 Sep', true], ['28 Sep', true], ['5 Oct', true]];
-const GP_ENDINGS = ['Clean rescue', 'Close call', 'Alone', 'Caught'];
+const GP_WEEKS = [['5 Oct', true]];
+const GP_ENDINGS = GS_DV_ENDINGS;
+// Delve's five achievements, by class (verbatim).
 const GP_ACH = [
   { cls: 'Discovery', line: 'Find something', items: [
-    { n: 'Found the fungus path', got: true },
-    { n: 'Found the escape tunnel', got: true },
-    { n: 'Found the drum room', how: 'It’s off the main tunnels.' }] },
+    { n: 'Know Thy Enemy', how: 'Bring down a foe by what it fears.' }] },
   { cls: 'Mastery', line: 'Do it well', items: [
-    { n: 'A natural 20', got: true },
-    { n: 'Clean rescue', how: 'Get her out before the warren wakes.' },
-    { n: 'Unseen', how: 'Reach the ritual chamber without a failed stealth check.' }] },
+    { n: 'Untouched', how: 'Win a run without losing a hit point.' },
+    { n: 'Hot Streak', got: true }] },
   { cls: 'Completion', line: 'Do all of it, over many plays', items: [
-    { n: 'Every ending', of: 4, have: 3 },
-    { n: 'Four weeks running', of: 4, have: 3 },
-    { n: 'Ten scenes', of: 10, have: 4 }] },
+    { n: 'Regular', of: 4, have: 1 },
+    { n: 'Ten Runs', of: 10, have: 1 }] },
 ];
 
 
@@ -37,32 +31,33 @@ const GpThisWeek = ({ who }) => {
   const gs = useGs();
   return (
     <DS.Card style={{ gap: 12, justifyItems: 'stretch', alignContent: 'start' }}>
-      <span className="gs-label">THIS WEEK’S SCENE</span>
+      <span className="gs-label">THIS WEEK’S RUN</span>
       <h2 className="mcp-t-card">{GS_PAGES.delve.week.line}</h2>
       {who === 'played' && <>
-        <div className="gs-tags"><DS.Tag kind="daily" icon="check">Played · Close call</DS.Tag></div>
+        <div className="gs-tags"><DS.Tag kind="daily" icon="check">Played · Elsie rescued</DS.Tag></div>
         <div><DS.TextLink onClick={() => gs.go('session', { id: 'delve' })}>See this week’s session</DS.TextLink></div>
       </>}
-      <p className="gs-small">New scene Monday 12 October.</p>
+      <p className="gs-small">Next run: Monday 12 October</p>
     </DS.Card>
   );
 };
 // Per game: the unit you play, how a run is counted, how plays can end, and recent plays.
 // Hunter has nothing decided yet: blanks show as a muted "—".
 const GP_CFG = {
-  delve: { units: 'scenes', run: 'WEEKS RUNNING', strip: ['LAST SIX WEEKS', 'weeks', GP_WEEKS], ends: GP_ENDINGS,
-    recent: GP_RECENT.map((r) => ({ ...r, when: 'Week of ' + r.date, sid: 'delve' })) },
+  delve: { units: 'runs', run: 'WEEKS RUNNING', strip: ['THE LAST WEEK', 'weeks', GP_WEEKS], ends: GP_ENDINGS,
+    recent: GP_RECENT.map((r) => ({ ...r, when: r.date, sid: 'delve' })) },
   word: { units: 'words' }, groups: { units: 'groups' }, mystery: { units: 'cases' }, escape: { units: 'rooms' },
-  casebook: { units: 'cases', run: 'WEEKS RUNNING', strip: ['LAST SIX WEEKS', 'weeks', [['31 Aug', true], ['7 Sep', true], ['14 Sep', false], ['21 Sep', true], ['28 Sep', false], ['5 Oct', true]]], ends: ['Solved', 'Unsolved'],
-    recent: [{ ending: 'Solved', when: 'Week of 5 October', sid: 'casebook' }, { ending: 'Unsolved', when: 'Week of 21 September', sid: 'casebook' }, { ending: 'Solved', when: 'Week of 7 September', sid: 'casebook' }, { ending: 'Solved', when: 'Week of 31 August', sid: 'casebook' }] },
+  casebook: { units: 'cases', run: null, strip: null, ends: ['Solved', 'Wrong accusation'],
+    recent: [{ ending: 'Solved', when: '5 October', sid: 'casebook' }] },
   hunter: { units: 'days', run: null, strip: null, ends: null, recent: [{ ending: null, when: '5 October', sid: 'hunter' }] },
 };
 // Card lines. Delve uses the default line.
 const GP_LINE = {
   word: 'See every day’s word and how many guesses it took you.', groups: 'See every day’s groups and how many mistakes you made.',
-  mystery: 'See every case you closed and every one that got away.', escape: 'See every room you got out of and how many moves it took.',
+  mystery: 'See every case you closed and every one that got away.', escape: 'See every room you got out of, with your time against par, hints and wrong tries.',
   casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.',
-  barrow: 'See every chapter you’ve played and what you carried out.' };
+  delve: 'See every week’s run you’ve played and how each one ended.',
+  barrow: 'See every chapter you’ve played and how each one ended.' };
 const gpUp = (t) => t.toUpperCase();
 const GpRecord = ({ id }) => {
   const c = GP_CFG[id];
@@ -74,7 +69,7 @@ const GpRecord = ({ id }) => {
       <h2 className="mcp-t-sec">Your {c.units}</h2>
       <div className="gs-grid3">
         <div className="gs-stack-xs"><span className="gs-label">{gpUp(c.units)} PLAYED</span><span className="gs-figure">{n}</span></div>
-        {c.run && <div className="gs-stack-xs"><span className="gs-label">{c.run}</span><span className="gs-figure">{id === 'casebook' ? 1 : 3}</span></div>}
+        {c.run && <div className="gs-stack-xs"><span className="gs-label">{c.run}</span><span className="gs-figure">1</span></div>}
         {c.strip && <div className="gs-stack-sm"><span className="gs-label">{c.strip[0]}</span>
           <div className="gs-days" role="img" aria-label={'Played ' + on + ' of the last ' + c.strip[2].length + ' ' + c.strip[1]}>{c.strip[2].map(([d, v]) => <i key={d} title={d} className={v ? 'is-on' : ''} />)}</div>
         </div>}

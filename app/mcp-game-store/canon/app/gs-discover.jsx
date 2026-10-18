@@ -9,7 +9,7 @@ const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
 const GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
 const gsFind = (q, k) => { const s = gsNorm(q); return !s || gsNorm(GS_GAMES[k].name).includes(s); };
 // The two picks: chosen by us, not by rule. Seed.
-const GS_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'FREE EVERY DAY']];
+const GS_PICKS = [['casebook', 'ONE CASE'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
 const GS_ADDED = ['barrow', 'hunter', 'casebook', 'delve', 'escape'];
 const GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
@@ -45,7 +45,7 @@ const DcBody = () => {
       <DS.CardRow title="Just added" className="gs-row4">{GS_ADDED.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <section className="dc-sec">
-      <DS.CardRow title="Free to play" className="gs-row4" sub={GS_NAME.casebook + '’s first case and Delve’s first scene are free.'}>{freeIds.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
+      <DS.CardRow title="Free to play" className="gs-row4" sub={GS_NAME.casebook + '’s first case and Delve’s first run are free.'}>{freeIds.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <DcPassBand />
     <section className="dc-sec">
@@ -72,7 +72,6 @@ const GsDiscover = () => {
     return () => clearTimeout(t);
   }, [load]);
   return (<>
-    {window.GsPushAsk && <window.GsPushAsk />}
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Discover</h1>
       {load === 'hold' || load === 'loading' ? <div className="gs-inplace"><GsSpin /></div>
@@ -85,40 +84,7 @@ const GsDiscover = () => {
 // ---- Library: every game, and whether something is waiting to be played (design system ListRow, "A library of games").
 // Worked out from the same state the game's own page reads (lbNow, lbWeekDone, the Today switch), so the two always agree.
 const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
-const gsLibShort = (s) => { const m = /(\d{1,2}) ([A-Z][a-z]{2})[a-z]*,?( \d{4})?/.exec(s || ''); return m ? m[1] + ' ' + m[2] + (m[3] && m[3] !== ' 2026' ? m[3] : '') : ''; };
-// { result, tone, when, at }: at is the last-played time for the "Last played" order (higher is more recent), 0 when never played.
-const gsLibRow = (gs, k) => {
-  const lapsed = gsLapsed(gs); const pass = gs.view === 'pass'; const done = lbWeekDone(gs);
-  const at = (s) => { const t = s ? new Date(/\d{4}$/.test(s) ? s : s + ' 2026').getTime() : 0; return isNaN(t) ? 0 : t; };
-  const row = (result, tone, date) => ({ result, tone, when: date === 'Today' ? 'Today' : gsLibShort(date), at: date === 'Today' ? 9e15 : at(date) });
-  if (gsFresh(gs)) {
-    if (k === 'casebook' || k === 'delve') return row(pass ? (k === 'casebook' ? 'This week’s case is ready' : 'This week’s scene is ready') : (k === 'casebook' ? 'Your free case is ready' : 'Your free scene is ready'), null, '');
-    if (k === 'hunter') return row(pass ? GS_LIB_READY.hunter : 'Pass only', null, '');
-  }
-  const c = window.PZ && PZ[k];
-  if (c) {
-    const now = gs.review.never === k ? null : lbNow(gs, k);
-    const today = c.weekly ? gsLibShort(GS_SESSIONS[c.today] && GS_SESSIONS[c.today].date) : 'Today';
-    if (now) return now.status.kind === 'live' ? row('In progress', null, today) : row(c.weekly ? 'Done this week' : 'Done today', 'ok', today);
-    const last = gs.review.never === k || gsFresh(gs) ? null : c.all.slice(1).find((x) => x.played);
-    return row(GS_LIB_READY[k], null, last ? (window.phPlayedOn && phPlayedOn(last.id)) || last.date : '');
-  }
-  if (k === 'casebook' || k === 'delve') {
-    const live = k === 'casebook' ? CB_LIVE : DV_ALL[0]; const hist = k === 'casebook' ? cbHist(gs) : dvHist(gs);
-    // The day the case or scene was played (its play record), never its edition date.
-    const date = (x) => (x ? (window.phPlayedOn && phPlayedOn(x.id)) || (k === 'casebook' ? x.week : x.date) : '');
-    if (pass) { const now = lbNow(gs, k); return now.status.kind === 'live' ? row('In progress', null, date(live)) : row('Done this week', 'ok', date(live)); }
-    if (lapsed) return row('Pass only', null, date(hist[0]));
-    if (!done) return row('In progress', null, date(hist[0]));
-    return row(k === 'casebook' ? 'Free case done' : 'Free scene done', 'ok', date(hist[0]));
-  }
-  if (k === 'hunter') {
-    if (pass) return row(GS_LIB_READY.hunter, null, HG_DAYS[0].date);
-    const old = lapsed ? HG_DAYS.find((x) => lbOld(x.date, gs)) : null;
-    return row('Pass only', null, old ? old.date : '');
-  }
-  return row(GS_LIB_READY[k] || null, null, '');
-};
+// A row's { result, tone, when, at } comes from gsLibRow (app/gs-pass-library.jsx), read from the play record.
 const GsLibrary = () => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
@@ -134,7 +100,6 @@ const GsLibrary = () => {
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || GS_GAME_ORDER.indexOf(a) - GS_GAME_ORDER.indexOf(b)));
   return (<>
-    {window.GsPushAsk && <window.GsPushAsk />}
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Library</h1>
       <div className="lb-alllay" ref={lay}>

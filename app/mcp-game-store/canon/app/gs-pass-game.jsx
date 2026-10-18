@@ -16,7 +16,7 @@ const CprPlayBox = ({ id }) => {
       <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
       {passOnly
         ? <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
-        : <DS.Button block onClick={() => gs.play(g.name)}>{label}</DS.Button>}
+        : <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>}
       {small && (small.endsWith(' comes with the Pass.')
         ? <CprPassEnd className="gs-small gs-pu-wrap" text={small} />
         : <p className="gs-small gs-pu-wrap">{small}</p>)}

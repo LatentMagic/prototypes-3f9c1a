@@ -26,7 +26,7 @@ const GS_PAGES = {
   },
   groups: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s groups'), heading: 'New groups every day', button: 'Play today’s groups',
+    box: { free: false, label: 'ONLY WITH THE PASS', small: gsFreeSmall('Today’s groups'), heading: 'New groups every day', button: 'Play today’s groups',
       steps: [GS_STEP_CONNECT, <><b>Find today’s four groups.</b> You can make four mistakes.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'Sixteen words hide four groups of four.', ps: [
@@ -48,55 +48,58 @@ const GS_PAGES = {
   },
   escape: {
     rhythm: 'A NEW ROOM EVERY WEEK',
-    box: { free: true, label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('This week’s room'), heading: 'A new room every week', button: 'Play this week’s room',
-      steps: [GS_STEP_CONNECT, <><b>Play this week’s room</b>, from the locked door to the way out.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { long: '10 min', often: 'A new room every week' }, tags: [],
+    box: { first: true, label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the [Platform] Pass.', heading: 'A new room every week', button: 'Play the first room',
+      steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
+    facts: { long: 'About 30 min', often: 'A new room every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
-      'Search the room, try what you find and work out the way out. A new room arrives every Monday.',
-      'Your AI describes the room and what you find. The game engine decides what each move does and counts them. Say what you search first.'] },
-    who: { ai: 'Describes the room and everything you find in it.', server: 'Decides what each move does, counts your moves and keeps the record.' },
+      'Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.',
+      'Every lock has three hints, taken in order. The first two point the way and the third gives the answer. A hint costs no try, and it shows on your result.',
+      'No clock runs while you play, and every room can be finished. Your time against par shows once you’re out. Say what you examine first.'] },
+    who: { ai: 'Describes the room and everything you find in it.', server: 'Decides what each move does and keeps secret what the room hasn’t shown. It records wrong tries, hints and your time.' },
     week: { title: 'This week’s room', line: 'Find the way out.', session: 'escape-week' },
   },
   casebook: {
-    rhythm: 'A NEW CASE EVERY WEEK',
-    box: { first: true, label: 'FIRST CASE FREE', heading: 'A new case every week', session: 'casebook', button: 'Play the first case',
+    rhythm: 'ONE CASE',
+    box: { first: true, label: 'FIRST CASE FREE', heading: 'Sixteen turns. One accusation.', session: 'casebook', button: 'Play the first case',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'The first case is free with an account. Every other case comes with the [Platform] Pass.' },
-    facts: { long: '25–40 min', often: 'A new case every week' },
+    facts: { long: '25–40 min', often: 'One case, ready when you are' },
     tags: ['Mystery', 'One case, sixteen turns, one accusation'],
     pitch: { h: 'Ask the question they haven’t prepared for.', ps: [
-      'This week’s suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.',
+      'The suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.',
       'Sixteen turns to search, question and confront them. Then one accusation.',
       'The game engine holds every statement word for word, so any story can be checked.'] },
     who: { ai: 'Voices every suspect and narrates what you find.', server: 'Holds every statement and every piece of evidence, counts your turns and keeps the record.' },
-    week: { title: 'This week’s case', line: 'Sixteen turns. One accusation.', session: 'casebook' },
+    week: { label: 'A CASE', title: 'Sixteen turns, then one accusation', line: 'Ask the question they haven’t prepared for.', session: 'casebook' },
   },
   delve: {
-    rhythm: 'ONE SCENE',
-    box: { first: true, label: 'FIRST SCENE FREE', heading: 'A new scene every week', session: 'delve', button: 'Play the first scene',
-      steps: [GS_STEP_CONNECT, <><b>Play one full scene</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
-      small: 'The first scene is free with an account. Every other scene comes with the [Platform] Pass.' },
-    facts: { long: '25–40 min', often: 'A new scene every week' },
-    tags: ['Adventure', 'One scene · new warren layout each run'],
-    pitch: { h: 'Get her out before the drums stop', ps: [
-      'Goblins have dragged the miller’s daughter into the warren beneath Gallows Hill. When the drums stop, the ritual is complete. You have one scene: sneak, talk, fight or bluff your way through tunnels, fungus galleries and a bone bridge to the ritual chamber, then get back out.',
-      <>Every risky move is a d20 roll, made by the game engine where nobody can fudge it. Two tracks decide the scene: your <b>progress</b> towards the captive, and the <b>threat clock</b> that fills as the warren wakes. Your AI tells the story around the dice.</>] },
-    who: { ai: 'Narrates the warren, voices the goblins and the captive, and asks what you do next.', server: 'Rolls every die, keeps both tracks, decides each outcome and records your session.' },
-    week: { title: 'This week’s scene', line: 'Get her out before the drums stop.', session: 'delve' },
+    rhythm: 'ONE RUN A WEEK',
+    box: { first: true, label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
+      steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
+      small: 'The first run is free with an account. Every other run comes with the [Platform] Pass.' },
+    facts: { long: '25–40 min', often: 'One run every week' },
+    tags: ['Adventure', 'One run a week · five rooms'],
+    pitch: { h: 'Get her out before the ritual is complete', ps: [
+      'Goblins have dragged the miller’s daughter into the tunnels beneath Ashford Mill, and their shaman means to offer her to his idol at moonrise. Pick a fighter, a rogue or a wizard and make your way room by room: past bone chimes and goblin sentries, through choices about what to search and what to carry, to the shrine where the ritual is under way.',
+      'Every risky move is a d20 roll, made by the game where nobody can fudge it. Each foe has a track you wear down, your hit points run out if you are careless, and the ritual creeps on with every slip. Your AI tells the story around the dice.'] },
+    who: { ai: 'Narrates the warren, voices the goblins and the captive, and asks what you do next.', server: 'Rolls every die, keeps the score of foes, hit points and threat, decides each outcome and records your session.' },
+    week: { title: 'This week’s run', line: 'Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.', session: 'delve' },
   },
   barrow: {
-    rhythm: 'ONE CHAPTER',
-    box: { first: true, label: 'FIRST CHAPTER FREE', heading: 'A campaign told in chapters', button: 'Play the first chapter',
-      steps: [GS_STEP_CONNECT, <><b>Play chapter 1</b>, from the barrow’s door to its deepest room.</>, <><b>Keep your loot.</b> It carries into the next chapter.</>],
+    rhythm: 'A BARROW CAMPAIGN',
+    box: { first: true, label: 'FIRST CHAPTER FREE', heading: 'A campaign in two chapters', button: 'Play Chapter 1',
+      steps: [GS_STEP_CONNECT, <><b>Choose a hero</b>, then play at your own pace.</>, <><b>Keep your hero.</b> They carry on into the next chapter.</>],
       small: 'The first chapter is free with an account. Every other chapter comes with the [Platform] Pass.' },
-    facts: { long: '45–60 min', often: 'At your own pace' },
-    tags: ['Adventure', 'Five levels · your loot carries on'],
-    pitch: { h: 'Something under the hill wants its gold back.', ps: [
-      'The barrow above Hollowmere has been sealed for three hundred years. Last night the seal broke, and the village’s sheep began walking into the hill.',
-      'Chapter 1 takes you down five levels. Whatever you bring back stays yours: your loot and your wounds carry into the next chapter.',
-      'Your AI tells the story and voices what lives under the hill. The game engine rolls every die and keeps your pack. Pick your first door.'] },
-    who: { ai: 'Narrates each level and voices what lives under the hill.', server: 'Rolls every die, carries your loot between levels and keeps the record.' },
-    week: { title: 'Chapter 1', line: 'Five levels under the hill. Your loot carries on.' },
+    facts: { long: 'Several sessions', often: 'Two chapters, played at your own pace over several sessions' },
+    tags: ['Adventure', 'Mist, old stone and honest dice'],
+    pitch: { h: 'Bring the bell home. Keep the hero.', ps: [
+      'Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Go as a fighter, a rogue or a wizard, through the churchyard and Whisperwood to the old stone and the older things beneath it.',
+      'Explore a world that stays put, fight with dice nobody can fudge, and stop whenever you like. Finish the quest and your hero carries on, levelled up, into the second chapter, out across the mere to the drowned abbey.',
+      'Your AI is the Game Master and gives the world its voice. The game engine holds the map, rolls every die and keeps the journal. Choose your hero.'] },
+    who: { ai: 'Plays the Game Master: narrates the world and turns what you say into moves.', server: 'Holds the map, the hero’s sheet and every enemy, rolls every die and keeps the journal.' },
+    week: { label: 'A QUEST', title: 'The bell is in the barrow', line: 'Bring the Bell of Hollowmere home from the barrow, and stop whenever you like.' },
+    // Chapter 2's card, for a player past Chapter 1 (written for game-pages-refresh, 2026-10-18; label as deployed).
+    week2: { label: 'A QUEST', title: 'The chalice is in the abbey', line: 'Bring the Chalice of St. Ebba home from the drowned abbey, and stop whenever you like.' },
   },
   hunter: {
     rhythm: 'ONE DAY',
@@ -128,7 +131,7 @@ const GsPlayBox = ({ id }) => {
       <h2 className="mcp-t-card">{b.heading}</h2>
       <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
       {b.free || b.first || paying
-        ? <DS.Button block onClick={() => gs.play(g.name)}>{label}</DS.Button>
+        ? <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>
         : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
       {small && <p className="gs-small">{small}{!b.free && ' ' + GS.purchase}</p>}
       {b.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
@@ -190,13 +193,14 @@ const GsGamePage = ({ id, top }) => {
 
       <section className="gs-stack-md">
         <GsChatRow id={id} />
+        {id === 'barrow' && <p className="gs-small gs-muted gs-credit" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
       </section>
 
       {id === 'delve' && (
         <section className="gs-grid3">
-          <GsStat label="IN A SCENE" figure="6–7 locations" line="Sinkhole to ritual chamber, shuffled each run." />
+          <GsStat label="IN A RUN" figure="5 rooms" line="This week: flooded tunnel to shrine cavern." />
           <GsStat label="TYPICAL RUN" figure="10–14 rolls" line="Every one listed on your session page afterwards." />
-          <GsStat label="ENDINGS" figure="4 ways out" line="Clean rescue, close call, alone, or caught." />
+          <GsStat label="ENDINGS" figure="4 ways out" line="Win, turn back early, fall, or run out of time." />
         </section>
       )}
 

@@ -22,35 +22,20 @@ const useCpr = () => {
   return cprStore.v;
 };
 
-// ---- Display staging (owner, 2026-10-15: display data, never policy). Daily Word, Daily Groups and Daily Mystery a free daily
-// (Groups restored by the owner, 2026-10-16); the first edition of Escape, Casebook and Delve; the Barrow's chapter 1;
-// 36,000 Summers Ago Pass-only. ----
+// ---- Display staging (owner, 2026-10-15: display data, never policy). Daily Word and Daily Mystery a free daily; Daily Groups and
+// 36,000 Summers Ago Pass-only (Groups: owner, 2026-10-16); the first edition of Escape and Delve; the Barrow's chapter 1. Casebook's
+// first case is staged the same way for display only. ----
 const CPR_STAGE = { word: 'daily', groups: 'pass', mystery: 'daily', escape: 'first', casebook: 'first', delve: 'first', barrow: 'first', hunter: 'pass' };
 const CPR_SHOWN = GS_GAME_ORDER.filter((k) => !!CPR_STAGE[k]);
 // A game with editions (daily, weekly, chapters). A standalone such as 36,000 Summers Ago has none.
 const cprEditions = (k) => k === 'barrow' || !!gsRhythm(k) || !!GS_GAMES[k].eds;
 const cprLocked = (gs, k) => CPR_STAGE[k] === 'pass' && gs.view !== 'pass';
-// Escape as a free first edition (laid over gs-data.jsx and gs-game.jsx).
-GS_GAMES.escape.free = false; GS_GAMES.escape.first = true; GS_GAMES.escape.tags = ['FIRST', 'Weekly', '10 min'];
-GS_PAGES.escape.box = { ...GS_PAGES.escape.box, free: false, first: true, label: 'FIRST ROOM FREE', button: 'Play the first room',
-  small: 'The first room is free with an account. Every other room comes with the [Platform] Pass.' };
-delete GS_TODAY_PLAYED.free.escape;
-// Daily Groups needs the Pass (owner, 2026-10-16), laid over gs-data.jsx and gs-game.jsx.
-GS_GAMES.groups.free = false; GS_GAMES.groups.tags = ['PASS', 'Daily', '10 min'];
-GS_PAGES.groups.box = { ...GS_PAGES.groups.box, free: false, label: 'ONLY WITH THE PASS' };
-delete GS_TODAY_PLAYED.free.groups;
-// The Barrow's coming-soon card names chapter 3 (owner, 2026-10-16). On merge this is a fix to GS_SOON in app/gs-data.jsx.
-GS_SOON.forEach((g, i) => { if (g.route === 'barrow') GS_SOON[i] = { ...g, label: 'CHAPTER 3' }; });
-// The Barrow's finished chapter 1: a record to open. Level, ring and loot are placeholders; canon holds no Barrow result.
-GS_SESSIONS['gs-pu-barrow-ch1'] = { kind: 'puzzle', gid: 'barrow', game: GS_GAMES.barrow.name, art: 'barrow', result: 'Finished', date: 'Wednesday 14 October',
-  figures: ['Level 4 of 5', '6 pieces of loot'], listTitle: 'Every roll', lines: GS_ROLLS.slice(0, 8), share: 'Chapter 1 finished · level 4 · 6 pieces of loot' };
-
 // ---- A Pass-ended player, per game with a free first part (proposed by the owner 2026-10-16, not ratified): used, the free first
 // part is played; pass, they played the game with the Pass. Library shows "You stopped here" only when both; otherwise the free card.
-// 'seed' is the default Pass-ended player. at: the Return card's label where it isn't the default. ----
+// 'seed' is the default Pass-ended player. What the card says they played is read from the play record. ----
 const CPR_LAPSED = {
   seed: { escape: { used: true, pass: false }, casebook: { used: true, pass: true }, delve: { used: true, pass: true }, barrow: { used: true, pass: true } },
-  every: { escape: { used: false, pass: true }, casebook: { used: true, pass: true }, barrow: { used: true, pass: true, at: 'CHAPTER 2' }, delve: { used: true, pass: false } },
+  every: { escape: { used: false, pass: true }, casebook: { used: true, pass: true }, barrow: { used: true, pass: true }, delve: { used: true, pass: false } },
 };
 const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
 // Where a free first part stands for this player: 'pass' | 'none' | 'live' | 'done'.
@@ -98,7 +83,7 @@ const CprPassEnd = ({ text, className }) => {
 const cprBoxCopy = (id) => {
   const k = CPR_STAGE[id]; const u = (GS_GAMES[id].ed || ['edition'])[0]; const U = u.toUpperCase();
   if (k === 'daily' && id === 'groups') return null; // "a new groups" doesn't read; the play box keeps canon's copy until worded
-  if (k === 'daily') { const no = { word: 212, mystery: 64 }[id]; return ['TODAY’S ' + U + ' · NO. ' + no, 'Free with an account. A new ' + u + ' every day.']; }
+  if (k === 'daily') { const no = { word: 212, mystery: 64 }[id]; return ['TODAY’S ' + U + ' · #' + no, 'Free with an account. A new ' + u + ' every day.']; }
   if (k === 'first') return [id === 'barrow' ? 'CHAPTER 1' : 'THE FIRST ' + U, 'Free with an account. Every other ' + u + ' comes with the Pass.'];
   if (k === 'pass') return ['WITH THE PASS', (GS_NAME[id] || GS_GAMES[id].name) + ' comes with the Pass.'];
   return null;

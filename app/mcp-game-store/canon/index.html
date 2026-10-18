@@ -433,6 +433,8 @@
   .gs-wait { min-height: 60vh; display: grid; place-content: center; justify-items: center; gap: 16px; }
   .gs-choice { display: grid; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gs-copy { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .gs-copy-addr { display: flex; align-items: center; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; white-space: nowrap; touch-action: pan-x; scrollbar-width: none; cursor: text; }
+  .gs-copy-addr::-webkit-scrollbar { display: none; }
   .gs-waiting { display: flex; align-items: center; gap: 12px; padding-top: 4px; }
 
   /* home proposal (review candidate) */
@@ -879,10 +881,6 @@
   .lb-badge.is-todo { box-shadow: inset 0 0 0 1px var(--line); }
   .lb-badge { position: relative; }
   .lb-badge-art { display: block; width: 100%; height: 100%; }
-  .lb-badge.is-locked .lb-badge-art { opacity: .5; filter: saturate(.55); }
-  .lb-lock { position: absolute; right: -4px; bottom: -4px; width: 20px; height: 20px; display: grid; place-items: center; background: var(--off-white); color: var(--page); border: 2px solid var(--card); box-sizing: content-box; }
-  .lb-achpop .lb-lock { border-color: var(--popup); }
-  .lb-lock .mcp-ico { width: 14px; height: 14px; }
   .lb-alllay { display: grid; gap: 24px; }
   .lb-tools { display: grid; gap: 24px; align-content: start; min-width: 0; }
   .lb-choicegrp { display: grid; gap: 8px; min-width: 0; }
@@ -1176,50 +1174,6 @@
     .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
     .hw-ai-act { grid-column: auto; }
   }
-  /* push notifications (app/gs-push.jsx): banner, card, switch, and the browser's own dialog */
-  .gs-pushask { background: var(--card); border-bottom: 1px solid var(--line); }
-  .gs-pushask-in { display: flex; align-items: center; gap: 12px; padding-top: 8px; padding-bottom: 8px; }
-  .gs-pushask-in > p { flex: 1; min-width: 0; font: 400 clamp(14px, 1.45cqi, 16px)/1.5 var(--font-text); text-wrap: pretty; }
-  .gs-pushask-x { margin-right: -12px; color: var(--muted); }
-  .gs-pushask-in .gs-inlink { font-weight: 600; white-space: nowrap; }
-  @media (hover: hover) { .gs-pushask-x:hover { color: var(--text); } }
-  /* phone width: the line is centred, with no inset beside it */
-  @container gs (max-width: 719px) { .gs-pushask-in > p { text-align: center; text-wrap: pretty; } }
-  .gs-nt { display: grid; gap: 8px; }
-  .gs-nt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; min-height: 48px; }
-  .gs-nt-sep { border-top: 1px solid var(--line); padding-top: 12px; }
-  .gs-nt-group { display: grid; gap: 4px; }
-  .gs-nt-group > .gs-stack-xs { padding-bottom: 4px; }
-  .gs-nt-h { margin: 0; font: 600 16px/1.3 var(--font-text); }
-  .gs-nt-master { font-size: 17px; line-height: 1.3; }
-  .gs-nt-sub { font-size: 14px; line-height: 1.4; }
-  .gs-nt-go { width: 100%; padding-left: 0; padding-right: 0; padding-bottom: 0; background: none; border-left: 0; border-right: 0; border-bottom: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
-  .gs-nt-go:disabled { cursor: default; opacity: .5; }
-  .gs-nt-count { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-  .gs-nt-panel { display: grid; gap: 16px; }
-  .mcp-pop-body:has(> .gs-nt-panel) { margin: 0 -12px 0 -4px; padding: 4px 12px 0 4px; }
-  .gs-nt-list { list-style: none; margin: 0; padding: 0; display: grid; }
-  .gs-nt-list > li + li { border-top: 1px solid var(--line); }
-  .gs-sw-slot { display: inline-flex; align-items: center; gap: 8px; }
-  .gs-sw { display: inline-grid; place-items: center; width: 52px; height: 44px; margin: 0 -4px; padding: 0; background: none; border: 0; cursor: pointer; }
-  .gs-sw-track { position: relative; width: 44px; height: 24px; border: 1.5px solid var(--control-edge); background: transparent; transition: background-color var(--time-swap) var(--ease), border-color var(--time-swap) var(--ease); }
-  .gs-sw-thumb { position: absolute; top: 3px; left: 3px; width: 15px; height: 15px; background: var(--control-edge); transition: transform var(--time-swap) var(--ease), background-color var(--time-swap) var(--ease); }
-  .gs-sw[aria-checked="true"] .gs-sw-track { background: var(--off-white); border-color: var(--off-white); }
-  .gs-sw[aria-checked="true"] .gs-sw-thumb { background: var(--page); transform: translateX(20px); }
-  .gs-sw:active:not(:disabled) .gs-sw-track { transform: scale(.97); }
-  .gs-sw:disabled { cursor: not-allowed; opacity: .4; }
-  .gs-sw[aria-busy="true"] { cursor: progress; }
-  @media (hover: hover) { .gs-sw:not(:disabled):not([aria-checked="true"]):hover .gs-sw-track { background: color-mix(in srgb, var(--text) 8%, transparent); } }
-  @media (prefers-reduced-motion: reduce) { .gs-sw-track, .gs-sw-thumb { transition: none; } }
-  .gs-osperm { position: fixed; z-index: 200; top: calc(8px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); left: 8px; width: min(320px, calc(100% - 16px)); padding: 16px; background: #fff; color: #1f1f1f; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); font: 400 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; gap: 12px; }
-  .gs-osperm-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .gs-osperm-x { width: 28px; height: 28px; border: 0; background: none; border-radius: 50%; font: 400 20px/1 system-ui, sans-serif; color: #444; cursor: pointer; }
-  .gs-osperm-x:hover { background: #eee; }
-  .gs-osperm-what { display: flex; align-items: center; gap: 10px; color: #1f1f1f; }
-  .gs-osperm-acts { display: flex; justify-content: flex-end; gap: 8px; }
-  .gs-osperm-acts > button { min-height: 32px; padding: 0 16px; border-radius: 16px; border: 1px solid #c4c7c5; background: #fff; color: #0b57d0; font: 500 14px/1 system-ui, sans-serif; cursor: pointer; }
-  .gs-osperm-acts > button.is-main { background: #0b57d0; border-color: #0b57d0; color: #fff; }
-  .gs-osperm button:focus-visible { outline: 2px solid #0b57d0; outline-offset: 2px; }
   /* phone-snags-second-pass, 2026-10-11 */
   /* The hold, by category: anything a press acts on, and any picture, never starts a selection or the phone's callout. Reading text stays selectable; a real link keeps its long-press menu; fields stay editable. */
   :where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -1275,17 +1229,16 @@
   @container gs (max-width: 639.98px) {
     .gs-pu-first.is-done .lb-foot { display: grid; gap: 12px; justify-content: stretch; }
   }
-  /* "Your streak comes with the Pass." comes off every Library page (owner, 2026-10-16); the card keeps its frozen weeks. */
-  .lb-runcard.is-pass .lb-runbody > p.gs-small { display: none; }
   /* At phone width no Library heading or line ends on one or two words alone. */
   @container gs (max-width: 559px) {
     .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }
     .lb-lay .lb-card > p, .lb-lay .lb-card .gs-stack-xs > p { text-wrap: balance; }
   }
   /* One button width (design system Layout), keyed to the width the page is handed so the phone frame gets it too: the system's own rule
-     reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule. */
+     reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
+     and so does a button attached to a field (the Connect page's Copy), which keeps its own width. */
   @container gs (max-width: 639.98px) {
-    .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn) { display: flex; width: 100%; }
+    .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn) { display: flex; width: 100%; }
     .mcp-btn-pair:not(.mcp-pop .mcp-btn-pair) { grid-template-columns: minmax(0, 1fr); width: 100%; }
     .mcp-npass { grid-template-columns: minmax(0, 1fr); min-height: 0; }
     .mcp-npass-half { padding: var(--space-4); }
@@ -1341,7 +1294,6 @@
 <script type="text/babel" src="app/gs-chats.jsx"></script>
 <script type="text/babel" src="app/directory-listings.jsx"></script>
 <script type="text/babel" src="app/gs-home.jsx"></script>
-<script type="text/babel" src="app/gs-puzzles.jsx"></script>
 <script type="text/babel" src="app/gs-session.jsx"></script>
 <script type="text/babel" src="app/gs-game.jsx"></script>
 <script type="text/babel" src="app/gs-library.jsx"></script>
@@ -1358,7 +1310,6 @@
 <script type="text/babel" src="app/gs-connect.jsx"></script>
 <script type="text/babel" src="app/gs-billing.jsx"></script>
 <script type="text/babel" src="app/gs-account.jsx"></script>
-<script type="text/babel" src="app/gs-push.jsx"></script>
 <script type="text/babel" src="app/states.jsx"></script>
 <script type="text/babel" src="app/states-ui.jsx"></script>
 <script type="text/babel" src="app/config.jsx"></script>

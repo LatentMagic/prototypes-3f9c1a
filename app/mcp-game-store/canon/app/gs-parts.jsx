@@ -73,8 +73,8 @@ const GsSteps = ({ items, row }) => (
 );
 const GsWhoCols = ({ ai, server }) => (
   <div className="gs-cols2">
-    <div className="gs-stack-sm"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">{ai}</p></div>
-    <div className="gs-stack-sm"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
+    <div className="gs-stack-sm" style={{ alignContent: 'start' }}><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">{ai}</p></div>
+    <div className="gs-stack-sm" style={{ alignContent: 'start' }}><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
   </div>
 );
 // The Pass page's comparison, back (free-and-pass, 2026-10-09). One row per thing; a tick in each column that has it. Rows agree with the free and Pass rules.
@@ -178,7 +178,6 @@ const GsTile = ({ id, pass, page }) => {
 // "More games" on a product page.
 const GsGameCard = GsCard;
 
-const GsUp = () => <DS.Icon name="back" size={14} style={{ transform: 'rotate(90deg)' }} />;
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
 // Manage account, Your AI, divider, Sign out. On a phone the trigger is a person icon in a
 // button shaped like the Menu button beside it, which holds only the pages (phone-snags-second-pass).
@@ -345,7 +344,4 @@ const GsDemoBar = () => {
 // ---- The play dialog lives in gs-connect.jsx with the prompts ----
 const GsPlayPopup = () => <GsPlayDialog />;
 
-Object.assign(window, {
-  GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard, GsCard, GsPick, GsTile, gsKeepLast,
-  GsUp, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss,
-});
+Object.assign(window, { GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard, GsCard, GsPick, GsTile, gsKeepLast, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss });

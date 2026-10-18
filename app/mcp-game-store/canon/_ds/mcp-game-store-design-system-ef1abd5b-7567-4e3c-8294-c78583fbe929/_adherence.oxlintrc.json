@@ -18,9 +18,11 @@
             "group": [
               "components/**",
               "components/actions/**",
+              "components/chat/**",
               "components/feedback/**",
               "components/forms/**",
               "components/media/**",
+              "components/media/playback/**",
               "components/surfaces/**",
               "docs/archive/rows-and-history/playground/**",
               "docs/specs/canonical-row/playground/**",
@@ -80,16 +82,36 @@
         "message": "<CardRow> kind must be one of 'cards' | 'chat'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ChatTurn'] > JSXAttribute > JSXIdentifier[name!=/^(?:from|text|tool|blocks|key|ref|className|style|children)$/]",
-        "message": "<ChatTurn> doesn't accept that prop. Declared props: from, text, tool, blocks."
+        "selector": "JSXOpeningElement[name.name='ChatTurn'] > JSXAttribute > JSXIdentifier[name!=/^(?:from|text|tool|blocks|after|key|ref|className|style|children)$/]",
+        "message": "<ChatTurn> doesn't accept that prop. Declared props: from, text, tool, blocks, after."
       },
       {
         "selector": "JSXOpeningElement[name.name='ChatTurn'] > JSXAttribute[name.name='from'] > Literal[value!=/^(?:user|ai)$/]",
         "message": "<ChatTurn> from must be one of 'user' | 'ai'."
       },
       {
+        "selector": "JSXOpeningElement[name.name='ChatPlaybackPace'] > JSXAttribute > JSXIdentifier[name!=/^(?:lead|type|typeMin|typeMax|send|enter|think|call|word|wordIn|gap|user|read|end|key|ref|className|style|children)$/]",
+        "message": "<ChatPlaybackPace> doesn't accept that prop. Declared props: lead, type, typeMin, typeMax, send, enter, think, call, word, wordIn, gap, user, read, end."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='Checkbox'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|checked|defaultChecked|onChange|className|key|ref|className|style|children)$/]",
         "message": "<Checkbox> doesn't accept that prop. Declared props: label, checked, defaultChecked, onChange, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ChoiceButtons'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|picked|onChoose|label|className|key|ref|className|style|children)$/]",
+        "message": "<ChoiceButtons> doesn't accept that prop. Declared props: items, picked, onChoose, label, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ClueCards'] > JSXAttribute > JSXIdentifier[name!=/^(?:groups|newLabel|className|key|ref|className|style|children)$/]",
+        "message": "<ClueCards> doesn't accept that prop. Declared props: groups, newLabel, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ConfirmCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|question|facts|note|confirm|cancel|answer|onConfirm|onCancel|className|key|ref|className|style|children)$/]",
+        "message": "<ConfirmCard> doesn't accept that prop. Declared props: title, question, facts, note, confirm, cancel, answer, onConfirm, onCancel, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ConfirmCard'] > JSXAttribute[name.name='answer'] > Literal[value!=/^(?:confirm|cancel)$/]",
+        "message": "<ConfirmCard> answer must be one of 'confirm' | 'cancel'."
       },
       {
         "selector": "JSXOpeningElement[name.name='Cover'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|art|src|children|fill|ground|extend|onClick|className|key|ref|className|style|children)$/]",
@@ -112,6 +134,14 @@
         "message": "<Disclosure> doesn't accept that prop. Declared props: title, children, defaultOpen."
       },
       {
+        "selector": "JSXOpeningElement[name.name='EntityCards'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|items|onPick|className|key|ref|className|style|children)$/]",
+        "message": "<EntityCards> doesn't accept that prop. Declared props: title, items, onPick, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='FactRows'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|plain|label|className|key|ref|className|style|children)$/]",
+        "message": "<FactRows> doesn't accept that prop. Declared props: items, plain, label, className."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='FormCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|children|className|style|key|ref|className|style|children)$/]",
         "message": "<FormCard> doesn't accept that prop. Declared props: title, children, className, style."
       },
@@ -128,24 +158,24 @@
         "message": "<GameArt> shape must be one of 'square' | 'landscape' | 'wide'."
       },
       {
-        "selector": "JSXOpeningElement[name.name='GameCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|title|mark|blurb|tags|className|style|key|ref|className|style|children)$/]",
-        "message": "<GameCard> doesn't accept that prop. Declared props: art, title, mark, blurb, tags, className, style."
+        "selector": "JSXOpeningElement[name.name='GameCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|pass|title|mark|blurb|tags|className|style|key|ref|className|style|children)$/]",
+        "message": "<GameCard> doesn't accept that prop. Declared props: art, pass, title, mark, blurb, tags, className, style."
       },
       {
-        "selector": "JSXOpeningElement[name.name='GamePick'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|label|title|blurb|tags|className|style|key|ref|className|style|children)$/]",
-        "message": "<GamePick> doesn't accept that prop. Declared props: art, label, title, blurb, tags, className, style."
+        "selector": "JSXOpeningElement[name.name='GamePick'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|pass|label|title|blurb|tags|className|style|key|ref|className|style|children)$/]",
+        "message": "<GamePick> doesn't accept that prop. Declared props: art, pass, label, title, blurb, tags, className, style."
       },
       {
-        "selector": "JSXOpeningElement[name.name='GameTile'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|title|kind|className|style|key|ref|className|style|children)$/]",
-        "message": "<GameTile> doesn't accept that prop. Declared props: art, title, kind, className, style."
+        "selector": "JSXOpeningElement[name.name='GameTile'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|pass|title|kind|className|style|key|ref|className|style|children)$/]",
+        "message": "<GameTile> doesn't accept that prop. Declared props: art, pass, title, kind, className, style."
       },
       {
         "selector": "JSXOpeningElement[name.name='Icon'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|className|style|label|key|ref|className|style|children)$/]",
         "message": "<Icon> doesn't accept that prop. Declared props: name, size, className, style, label."
       },
       {
-        "selector": "JSXOpeningElement[name.name='ListRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|lead|result|tone|when|note|meta|end|sub|href|onClick|label|muted|className|key|ref|className|style|children)$/]",
-        "message": "<ListRow> doesn't accept that prop. Declared props: title, lead, result, tone, when, note, meta, end, sub, href, onClick, label, muted, className."
+        "selector": "JSXOpeningElement[name.name='ListRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|game|lead|result|tone|when|replay|note|meta|end|sub|href|onClick|label|muted|className|key|ref|className|style|children)$/]",
+        "message": "<ListRow> doesn't accept that prop. Declared props: title, game, lead, result, tone, when, replay, note, meta, end, sub, href, onClick, label, muted, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='ListRow'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:ok|bad|none)$/]",
@@ -162,6 +192,18 @@
       {
         "selector": "JSXOpeningElement[name.name='MenuItem'] > JSXAttribute[name.name='icon'] > Literal[value!=/^(?:search|back|close|lock|play|settings|mail|logout|card)$/]",
         "message": "<MenuItem> icon must be one of 'search' | 'back' | 'close' | 'lock' | 'play' | 'settings' | 'mail' | 'logout' | 'card'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='MenuRows'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|search|onSearch|onGo|label|className|key|ref|className|style|children)$/]",
+        "message": "<MenuRows> doesn't accept that prop. Declared props: items, search, onSearch, onGo, label, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='NavButtons'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|stack|onGo|label|className|key|ref|className|style|children)$/]",
+        "message": "<NavButtons> doesn't accept that prop. Declared props: items, stack, onGo, label, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='NeedsPass'] > JSXAttribute > JSXIdentifier[name!=/^(?:game|word|words|record|total|onGet|className|style|key|ref|className|style|children)$/]",
+        "message": "<NeedsPass> doesn't accept that prop. Declared props: game, word, words, record, total, onGet, className, style."
       },
       {
         "selector": "JSXOpeningElement[name.name='PageGrid'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|split|className|style|key|ref|className|style|children)$/]",
@@ -188,8 +230,24 @@
         "message": "<ProgressBar> doesn't accept that prop. Declared props: label, value, max, showValue."
       },
       {
+        "selector": "JSXOpeningElement[name.name='ResultCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|status|line|stats|actions|onGo|className|key|ref|className|style|children)$/]",
+        "message": "<ResultCard> doesn't accept that prop. Declared props: title, status, line, stats, actions, onGo, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='RollLine'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|die|roll|mod|total|target|result|outcome|className|key|ref|className|style|children)$/]",
+        "message": "<RollLine> doesn't accept that prop. Declared props: label, die, roll, mod, total, target, result, outcome, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='RollLine'] > JSXAttribute[name.name='result'] > Literal[value!=/^(?:hit|weak|miss)$/]",
+        "message": "<RollLine> result must be one of 'hit' | 'weak' | 'miss'."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='SoonCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:art|label|title|line|play|onPlay|playHref|className|style|key|ref|className|style|children)$/]",
         "message": "<SoonCard> doesn't accept that prop. Declared props: art, label, title, line, play, onPlay, playHref, className, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|grid|label|className|key|ref|className|style|children)$/]",
+        "message": "<StatRow> doesn't accept that prop. Declared props: items, grid, label, className."
       },
       {
         "selector": "JSXOpeningElement[name.name='StatusMessage'] > JSXAttribute > JSXIdentifier[name!=/^(?:kind|children|key|ref|className|style|children)$/]",
@@ -198,6 +256,14 @@
       {
         "selector": "JSXOpeningElement[name.name='StatusMessage'] > JSXAttribute[name.name='kind'] > Literal[value!=/^(?:success|warning|error)$/]",
         "message": "<StatusMessage> kind must be one of 'success' | 'warning' | 'error'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatusTag'] > JSXAttribute > JSXIdentifier[name!=/^(?:tone|label|children|className|key|ref|className|style|children)$/]",
+        "message": "<StatusTag> doesn't accept that prop. Declared props: tone, label, children, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatusTag'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:live|won|lost|warn|idle)$/]",
+        "message": "<StatusTag> tone must be one of 'live' | 'won' | 'lost' | 'warn' | 'idle'."
       },
       {
         "selector": "JSXOpeningElement[name.name='Tag'] > JSXAttribute > JSXIdentifier[name!=/^(?:kind|children|icon|go|key|ref|className|style|children)$/]",
@@ -218,6 +284,18 @@
       {
         "selector": "JSXOpeningElement[name.name='TextLink'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|danger|href|onClick|className|key|ref|className|style|children)$/]",
         "message": "<TextLink> doesn't accept that prop. Declared props: children, danger, href, onClick, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TileGrid'] > JSXAttribute > JSXIdentifier[name!=/^(?:rows|length|count|label|className|key|ref|className|style|children)$/]",
+        "message": "<TileGrid> doesn't accept that prop. Declared props: rows, length, count, label, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Track'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|className|key|ref|className|style|children)$/]",
+        "message": "<Track> doesn't accept that prop. Declared props: items, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='WordBoard'] > JSXAttribute > JSXIdentifier[name!=/^(?:words|solved|picked|cols|onPick|label|className|key|ref|className|style|children)$/]",
+        "message": "<WordBoard> doesn't accept that prop. Declared props: words, solved, picked, cols, onPick, label, className."
       }
     ]
   },
@@ -245,13 +323,31 @@
       "ChatTurn": {
         "replaces": []
       },
+      "ChatPlaybackPace": {
+        "replaces": []
+      },
       "Checkbox": {
+        "replaces": []
+      },
+      "ChoiceButtons": {
+        "replaces": []
+      },
+      "ClueCards": {
+        "replaces": []
+      },
+      "ConfirmCard": {
         "replaces": []
       },
       "Cover": {
         "replaces": []
       },
       "Disclosure": {
+        "replaces": []
+      },
+      "EntityCards": {
+        "replaces": []
+      },
+      "FactRows": {
         "replaces": []
       },
       "FormCard": {
@@ -281,6 +377,15 @@
       "MenuItem": {
         "replaces": []
       },
+      "MenuRows": {
+        "replaces": []
+      },
+      "NavButtons": {
+        "replaces": []
+      },
+      "NeedsPass": {
+        "replaces": []
+      },
       "PageGrid": {
         "replaces": []
       },
@@ -290,10 +395,22 @@
       "ProgressBar": {
         "replaces": []
       },
+      "ResultCard": {
+        "replaces": []
+      },
+      "RollLine": {
+        "replaces": []
+      },
       "SoonCard": {
         "replaces": []
       },
+      "StatRow": {
+        "replaces": []
+      },
       "StatusMessage": {
+        "replaces": []
+      },
+      "StatusTag": {
         "replaces": []
       },
       "Tag": {
@@ -303,6 +420,15 @@
         "replaces": []
       },
       "TextLink": {
+        "replaces": []
+      },
+      "TileGrid": {
+        "replaces": []
+      },
+      "Track": {
+        "replaces": []
+      },
+      "WordBoard": {
         "replaces": []
       }
     },
@@ -334,6 +460,16 @@
       "--c-tile-fg",
       "--c-y",
       "--card",
+      "--cb-band-ink",
+      "--cb-edge",
+      "--cb-ground",
+      "--cb-ink",
+      "--cb-ink2",
+      "--cb-line",
+      "--cb-on",
+      "--cb-panel",
+      "--cb-soft",
+      "--cb-tone",
       "--control-edge",
       "--control-height",
       "--cover-amber",
@@ -392,6 +528,7 @@
       "--surface-card",
       "--surface-page",
       "--surface-popup",
+      "--t",
       "--tag-neutral-bg",
       "--text",
       "--text-body",
@@ -401,7 +538,6 @@
       "--time-close",
       "--time-dim",
       "--time-dropdown",
-      "--time-link",
       "--time-loader",
       "--time-popup",
       "--time-press",
@@ -518,7 +654,6 @@
       "--time-popup": "other",
       "--time-close": "other",
       "--time-loader": "other",
-      "--time-link": "other",
       "--time-art": "other",
       "--ease-art": "other",
       "--press-scale": "other",
@@ -544,7 +679,18 @@
       "--c-g": "color",
       "--c-y": "color",
       "--c-send": "color",
-      "--c-send-fg": "color"
+      "--c-send-fg": "color",
+      "--cb-ground": "color",
+      "--cb-ink": "color",
+      "--cb-ink2": "color",
+      "--cb-soft": "color",
+      "--cb-tone": "color",
+      "--cb-edge": "color",
+      "--cb-line": "color",
+      "--cb-panel": "color",
+      "--cb-band-ink": "color",
+      "--t": "color",
+      "--cb-on": "color"
     },
     "fontFamilies": [
       "Bricolage Grotesque",

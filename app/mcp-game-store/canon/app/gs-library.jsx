@@ -11,14 +11,15 @@ const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : 
 const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
 // An edition dated before the Pass ended.
 const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < gsEndedOn(gs);
-// Achievements by what the player can do now: earned or still to earn when they can earn it; earned and locked when they can't play the game any more.
+// Achievements by what the player can do now (items from phAch, dated by the record): earned or still to earn when they can earn it; when they can't play the game any more, only the earned ones,
+// shown as any earned row (state 'kept'; owner, 2026-10-18). Only progress toward the rest, and the streak, freeze.
 const lbAchView = (items, access, gs) => {
   const past = lbPast(gs); const out = [];
   items.forEach((a) => {
     const earn = access === 'all' || (access === 'first' && a.first);
-    const got = access === 'first' && !past ? a.gotFree : a.got;
+    const got = a.got;
     if (earn) out.push({ ...a, got, state: got ? 'earned' : 'todo' });
-    else if (got && past) out.push({ ...a, got, state: 'locked' });
+    else if (got && past) out.push({ ...a, got, state: 'kept' });
   });
   return out;
 };
@@ -53,9 +54,6 @@ const LbHead = ({ id, name, more }) => {
 
 // A result: { kind: 'ok' | 'bad' | 'live' | 'none', label }.
 const lbIcon = (k) => (k === 'ok' ? 'check' : k === 'bad' ? 'error' : null);
-const LbStatus = ({ s }) => (
-  <span className={'lb-st is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={14} />}{s.label}</span>
-);
 const LbResult = ({ s }) => (
   <span className={'lb-v is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={20} />}{s.label}</span>
 );
@@ -85,7 +83,7 @@ const LbRun = ({ n, unit, weeks, locked, figure, pass, on = 'Completed', legend 
           return <span key={w.id} className={cls}>{body}</span>;
         })}
       </div>
-      {pass ? <p className="gs-muted gs-small">Your streak comes with the Pass.</p> : <ul className="lb-legend"><li><i className="is-on" />{on}</li>{streak && <li><i className="is-fail"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M0 0L12 12M12 0L0 12" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg></i>Failed</li>}<li><i />{off}</li>{weeks.some((w) => w.frozen) && <li><i className="is-fz" />Frozen</li>}</ul>}
+      {!pass && <ul className="lb-legend"><li><i className="is-on" />{on}</li>{streak && <li><i className="is-fail"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M0 0L12 12M12 0L0 12" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg></i>Failed</li>}<li><i />{off}</li>{weeks.some((w) => w.frozen) && <li><i className="is-fz" />Frozen</li>}</ul>}
       </div>
     </section>
   );
@@ -99,11 +97,10 @@ const LbRunPass = ({ unit, weeks }) => <LbRun unit={unit} weeks={weeks.map((w) =
 // A badge is [ground, [[tag, attrs, fill], ...]] drawn on a 48 grid.
 const lbBadgeSvg = ([bg, shapes], got) => '<svg viewBox="0 0 48 48" aria-hidden="true">' + (got ? '<rect width="48" height="48" fill="' + bg + '"/>' : '')
   + shapes.map(([t, a, c]) => '<' + t + ' ' + a + (got ? ' fill="' + c + '"' : ' fill="none" stroke="#918B80" stroke-width="1.5"') + '/>').join('') + '</svg>';
-// Locked: still the earned badge, dimmed, with a lock at its corner.
-const LbBadge = ({ art, got, locked }) => (
-  <span className={'lb-badge' + (got ? '' : ' is-todo') + (locked ? ' is-locked' : '')}>
+// An earned badge is in full colour whether or not the game can still be played.
+const LbBadge = ({ art, got }) => (
+  <span className={'lb-badge' + (got ? '' : ' is-todo')}>
     <span className="lb-badge-art" dangerouslySetInnerHTML={{ __html: lbBadgeSvg(art, got) }} />
-    {locked && <span className="lb-lock"><DS.Icon name="lock" size={14} /></span>}
   </span>
 );
 const c13CapLb = (s) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -117,27 +114,30 @@ const LB_SHAPES = [
 ];
 const LB_INKS = ['#E5A63B', '#328A88', '#D66847', '#A390B2', '#4CC38A'];
 const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
-const lbAchLine = (a) => (a.state === 'locked' ? 'Earned ' + a.got + ' · Frozen' : a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
-// items: [{ k, n, how, got?, gotFree?, first?, of?, have? }]; badges: { k: art }; access: 'all' | 'first' | 'none'
+const lbAchLine = (a) => (a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
+// An achievement counted over many plays: the plays that each add one distinct value (phAch's count).
+const lbDistinct = (f) => (plays) => { const seen = new Set(); return plays.filter((p) => { const v = f(p); if (!v || seen.has(v)) return false; seen.add(v); return true; }); };
+// The one count of earned achievements: the Needs the Pass card's foot and the header read it from the same list.
+const lbAchEarned = (list) => list.filter((a) => a.got).length;
+// items: [{ k, n, how, got?, first?, of?, have? }]; badges: { k: art }; access: 'all' | 'first' | 'none'
 const LbAch = ({ items, badges, access, ended, ed }) => {
   const gs = useGs(); const [open, setOpen] = React.useState(null);
   const list = lbAchView(items, access, gs);
-  const live = list.filter((a) => a.state !== 'locked'); const earned = live.filter((a) => a.got).length;
-  const locked = list.some((a) => a.state === 'locked');
+  // A game this player can no longer play shows its earned rows only; the count is of the game's achievements, as the Needs the Pass card's foot.
+  const kept = list.some((a) => a.state === 'kept'); const of = kept ? items.length : list.length;
   return (
     <section className="lb-card">
-      <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{live.length > 0 && <span className="gs-muted">{earned + ' of ' + live.length + ' earned'}</span>}</div>
+      <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{list.length > 0 && <span className="gs-muted">{lbAchEarned(list) + ' of ' + of + ' earned'}</span>}</div>
       {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every other ' + (ed || ['edition'])[0] + ' comes with the Pass.'}</p>}
-      {locked && <div className="gs-stack-xs"><p className="gs-muted">{'Your Pass ended on ' + lbDate(gsEndedOn(gs)) + '. Achievements earned in games you can no longer play stay here, frozen. They carry on if the Pass returns.'}</p>
-        <p className="gs-muted">You can’t earn any more of the frozen ones until the Pass returns.</p></div>}
+      {kept && <p className="gs-muted">You can’t earn the rest until the Pass returns.</p>}
       <ul className="lb-ach">
         {list.map((a) => (
-          <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} locked={a.state === 'locked'} />
+          <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} />
             <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{a.how}</span><span className="lb-ach-sub">{lbAchLine(a)}</span></span></button></li>
         ))}
       </ul>
       <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
-        {open && <div className="lb-achpop"><LbBadge art={badges[open.k]} got={!!open.got} locked={open.state === 'locked'} /><div className="gs-stack-xs"><p>{open.how}</p><p className="gs-muted">{lbAchLine(open)}</p>{open.state === 'locked' && <p className="gs-muted">It carries on if the Pass returns.</p>}</div></div>}
+        {open && <div className="lb-achpop"><LbBadge art={badges[open.k]} got={!!open.got} /><div className="gs-stack-xs"><p>{open.how}</p><p className="gs-muted">{lbAchLine(open)}</p></div></div>}
       </DS.Popup>
     </section>
   );
@@ -253,10 +253,11 @@ const LbShare = ({ lines }) => {
   </>;
 };
 
-// This week's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
-const LbFreshNow = ({ title, line, next, onPlay }) => (
-  <section className="lb-card">
-    <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">THIS WEEK</span><h2 className="mcp-t-sec">{title}</h2></div></div>
+// This edition's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
+// label: the card's own label where it isn't THIS WEEK (Casebook's A CASE); span: the card takes the whole row (no streak card beside it).
+const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
+  <section className="lb-card" style={span ? { gridColumn: '1 / -1' } : undefined}>
+    <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{label || 'THIS WEEK'}</span><h2 className="mcp-t-sec">{title}</h2></div></div>
     <p>{line}</p>
     <div className="lb-foot">
       <div className="lb-acts"><DS.Button onClick={onPlay}>Play</DS.Button></div>
@@ -264,8 +265,6 @@ const LbFreshNow = ({ title, line, next, onPlay }) => (
     </div>
   </section>
 );
-// A new account has earned nothing yet.
-const lbNoAch = (items) => items.map((a) => ({ ...a, got: undefined, gotFree: undefined, have: a.of ? 0 : a.have }));
 
 window.GS_LIBRARY = window.GS_LIBRARY || {};
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
@@ -280,9 +279,4 @@ const lbNow = (gs, id) => {
   const s = GS_SESSIONS[c.today];
   return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-// The Pass offer on a free first-edition card (Casebook, Delve): its line wraps beside Get the Pass, on the actions' row when there is room.
-const LbPassOffer = ({ unit }) => {
-  const gs = useGs();
-  return <div className="lb-pass"><DS.Button variant="secondary" onClick={() => gs.go('pass')}>Get the Pass</DS.Button><span className="gs-muted">{'Every other ' + unit + ' comes with the Pass.'}</span></div>;
-};
-Object.assign(window, { LbRunPass, LbPassOffer, LbFreshNow, lbNoAch, lbFrozen, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbStatus, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+Object.assign(window, { LbRunPass, LbFreshNow, lbFrozen, lbAchEarned, lbDistinct, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

@@ -1,6 +1,6 @@
 // ============================================================================
-// [Platform] — Account page (circlists-match-1): the Pass card, notifications, then the details you change
-// rarely (Username, change email, change password), your data, delete account, and the support line.
+// [Platform] — Account page (circlists-match-1): the Pass card, then the details you change
+// rarely (Username, change email, change password), delete account, and the support line.
 // Username moved down beside email and password 2026-10-11 (phone-snags-second-pass). A provider
 // account (Google, Apple) gets one card in place of the two change cards.
 // ============================================================================
@@ -145,37 +145,6 @@ const GsChangePassword = () => {
   );
 };
 
-// A copy of the player's data (MCPG-011 BF-01): Confirm it's you, then a machine-readable file. Account details alone if they have never played.
-const GsDataCopy = () => {
-  const gs = useGs();
-  const [ask, setAsk] = React.useState(false); const [ready, setReady] = React.useState(false);
-  const provider = gs.provider === 'email' ? null : gs.provider;
-  const file = () => {
-    const plays = window.phVisible ? phVisible(gs) : [];
-    const out = { account: { firstName: gs.user.first, lastName: gs.user.last, username: gs.user.username, email: gs.user.email, signIn: gs.provider } };
-    if (plays.length) {
-      out.sessions = plays.map((p) => ({ game: GS_GAMES[p.gid].name, edition: p.edTitle, played: p.at.toISOString(), result: p.status.label }));
-      out.streaks = 'one per game that has one';
-      out.achievements = 'earned in the games played';
-    }
-    return JSON.stringify(out, null, 2);
-  };
-  const download = () => {
-    try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([file()], { type: 'application/json' })); a.download = 'my-data.json'; a.click(); } catch (e) {}
-  };
-  return (
-    <DS.Card style={GS_ACCT_CARD}>
-      <h2 className="mcp-t-card">Your data</h2>
-      <p>Get a file with your account details, sessions, results, streaks and achievements.</p>
-      <div className="gs-card-acts">
-        {ready && <GsDone>Your copy is ready.</GsDone>}
-        {ready ? <DS.Button variant="secondary" onClick={download}>Download file</DS.Button> : <DS.Button variant="secondary" onClick={() => setAsk(true)}>Get a copy</DS.Button>}
-      </div>
-      <GsIdentity open={ask} provider={provider} onCancel={() => setAsk(false)} onOk={() => { setAsk(false); setReady(true); }} />
-    </DS.Card>
-  );
-};
-
 const GsDeleteAccount = () => {
   const gs = useGs();
   const [step, setStep] = React.useState(gs.route.stage === 'delete' ? 'alert' : gs.route.stage === 'delete-code' ? 'identity' : null); // alert | identity
@@ -216,7 +185,6 @@ const GsAccount = () => {
         </div>
         <div className="gs-acct-cards">
           <GsPassCard />
-          {window.GsNotifCard && <window.GsNotifCard />}
           <GsUsernameCard />
           {providerAcct ? (
             <DS.Card style={GS_ACCT_CARD}>
@@ -224,7 +192,6 @@ const GsAccount = () => {
               <p>Your email and password are managed by your sign-in provider and can be changed there.</p>
             </DS.Card>
           ) : <><GsChangeEmail /><GsChangePassword /></>}
-          <GsDataCopy />
           <GsDeleteAccount />
         </div>
         <p><a className="gs-support" href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a></p>

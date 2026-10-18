@@ -5,7 +5,7 @@
 // only a game's product page and its Library page do, so it has no Pass line.
 
 // The picks (seed). Labels name each game's rhythm, never a price or "this week".
-const CPR_PICKS = [['casebook', 'A NEW CASE EVERY WEEK'], ['word', 'A NEW WORD EVERY DAY']];
+const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
 // The selection: Just added (games with editions, not picked), then Free to play (every game with free play, picks
 // included; gone with the Pass). "Play any time" is gone (owner, 2026-10-16). A row with nothing in it isn't shown.
 const cprSelection = (gs) => {
@@ -64,7 +64,6 @@ const CprDiscover = () => {
     return () => clearTimeout(t);
   }, [load]);
   return (<>
-    {window.GsPushAsk && <window.GsPushAsk />}
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Discover</h1>
       {load === 'hold' || load === 'loading' ? <div className="gs-inplace"><GsSpin /></div>

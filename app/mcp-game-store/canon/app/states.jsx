@@ -16,6 +16,10 @@
 //   label  — how it reads to a person, in the palette and the index.
 //   stage  — the staging function, handed the context built from main.jsx's
 //            setters.
+//   aliases (optional) — more ids that open this same state. An id whose
+//            staging was identical to another's is kept as an alias of it,
+//            because ids are public links; it is listed under its state, not
+//            on its own.
 //   platform (optional) — 'app' | 'web': sets Config → Platform before the
 //            state stages, so its address opens in that posture. Absent: the
 //            posture is left as it is. An app-only state sits beside its web
@@ -70,59 +74,58 @@ const KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'mystery-pass', label: '5. Daily Mystery, with the Pass (today not solved)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery'); } },
   { group: 'Screens', id: 'escape-free', label: '5. Escape, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('escape'); } },
   { group: 'Screens', id: 'escape-pass', label: '5. Escape, with the Pass (played this week)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('escape'); } },
-  { group: 'Screens', id: 'casebook-free', label: '5. Casebook, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook'); } },
+  { group: 'Screens', id: 'casebook-free', aliases: ['fp-product-casebook-free'], label: '5. Casebook, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook'); } },
   { group: 'Screens', id: 'casebook-pass', label: '5. Casebook, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook'); } },
-  { group: 'Screens', id: 'hunter-free', label: '5. 36,000 Summers Ago, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('hunter'); } },
+  { group: 'Screens', id: 'hunter-free', aliases: ['fp-product-hunter-free'], label: '5. 36,000 Summers Ago, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('hunter'); } },
   { group: 'Screens', id: 'hunter-pass', label: '5. 36,000 Summers Ago, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('hunter'); } },
   { group: 'Screens', id: 'barrow-free', label: '5. The Barrow of Hollowmere, not paying', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('barrow'); } },
   { group: 'Screens', id: 'barrow-pass', label: '5. The Barrow of Hollowmere, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('barrow'); } },
-  { group: 'Library', id: 'library-barrow', label: 'The Barrow of Hollowmere in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('barrow', { page: 'record' }); } },
+  { group: 'Library', id: 'library-barrow', label: 'The Barrow of Hollowmere in your library, with the Pass, chapter 1 finished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('barrow', { page: 'record' }); gsPassSet({ bwDone: true }); } },
+  { group: 'Library', id: 'library-barrow-not-played', label: 'The Barrow of Hollowmere in your library, with the Pass, not played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('barrow', { page: 'record' }); } },
   { group: 'Library', id: 'barrow-all-chapters', label: 'The Barrow of Hollowmere, All chapters', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('barrow', { page: 'record', list: true }); } },
   { group: 'Library', id: 'library-barrow-free', label: 'The Barrow of Hollowmere in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('barrow', { page: 'record' }); } },
-  { group: 'Screens', id: 'games', label: '6. Discover, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
+  { group: 'Screens', id: 'games', aliases: ['pass-holder'], label: '6. Discover, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
   { group: 'Screens', id: 'games-free', label: '6. Discover, free account (played today)', stage: (c) => { gsPassSet({ freeNew: false }); c.setView('free'); c.setConnected(true); c.go('games'); } },
   { group: 'Screens', id: 'games-signed-out', label: '6. Discover, signed out', stage: (c) => c.go('games') },
-  { group: 'Screens', id: 'library', label: '6. Library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('library'); } },
+  { group: 'Screens', id: 'library', aliases: ['pur-pass-holder'], label: '6. Library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('library'); } },
   { group: 'Screens', id: 'library-free', label: '6. Library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('library'); } },
   { group: 'Screens', id: 'library-pass-ended', label: '6. Library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('library'); } },
-  { group: 'Screens', id: 'session-delve', label: '7. Session page: Delve', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve' }); } },
+  { group: 'Screens', id: 'session-delve', aliases: ['session-delve-past'], label: '7. Session page: Delve', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve' }); } },
   { group: 'Screens', id: 'session-groups', label: '7. Session page: Daily Groups', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'groups-today' }); } },
   { group: 'Screens', id: 'session-escape', label: '7. Session page: Escape', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'escape-week' }); } },
   { group: 'Screens', id: 'session-puzzle', label: '7. Session page: Daily Word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'word-today' }); } },
-  { group: 'Screens', id: 'session-barrow', label: '7. Session page: The Barrow, chapter 1 finished (Start over)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'gs-pu-barrow-ch1' }); } },
-  { group: 'Screens', id: 'session-casebook', label: '7. Session page: Casebook', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: 'c0928' }); } },
+  { group: 'Screens', id: 'session-barrow', label: '7. Session page: The Barrow, chapter 1 finished (Start over)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'gs-pu-barrow-ch1' }); gsPassSet({ bwDone: true }); } },
+  { group: 'Screens', id: 'session-kept-pass-ended', label: '7. Session page: Pass ended, an unfinished 36,000 Summers Ago day (kept, no Play)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('session', { id: 'hunter-hg8' }); } },
+  { group: 'Screens', id: 'session-casebook', aliases: ['library-casebook-case'], label: '7. Session page: Casebook', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: CB_ID }); } },
   { group: 'Screens', id: 'session-hunter', label: '7. Session page: 36,000 Summers Ago', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'hunter-hg0' }); } },
-  { group: 'Screens', id: 'session-delve-past', label: '7. Session page: an earlier Delve scene (#28, Rescued)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve-dv2' }); } },
   { group: 'Screens', id: 'session-word-in-progress', label: '7. Session page: Daily Word in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('session', { id: 'word-live' }); } },
   { group: 'Screens', id: 'session-mystery', label: '7. Session page: Daily Mystery', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'mystery-today' }); } },
   { group: 'Screens', id: 'session-mystery-in-progress', label: '7. Session page: Daily Mystery in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('session', { id: 'mystery-live' }); } },
   { group: 'Screens', id: 'history', label: '8. History, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history'); } },
-  { group: 'Screens', id: 'pass-free', label: '9. Pass, with a free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
+  { group: 'Screens', id: 'pass-free', aliases: ['pass-page-never-subscribed'], label: '9. Pass, with a free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
   { group: 'Screens', id: 'pass-holder-page', label: '9. Pass, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('pass'); } },
   { group: 'Library', id: 'library-casebook', label: 'Casebook in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
-  { group: 'Library', id: 'library-casebook-in-progress', label: 'Casebook in your library, this week in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
+  { group: 'Library', id: 'library-casebook-in-progress', label: 'Casebook in your library, the case in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
   { group: 'Library', id: 'library-delve', label: 'Delve in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('delve', { page: 'record' }); } },
   { group: 'Library', id: 'library-delve-in-progress', label: 'Delve in your library, this week in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('delve', { page: 'record' }); } },
   { group: 'Library', id: 'library-word', label: 'Daily Word in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-word-in-progress', label: 'Daily Word in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-word-streak-broken', label: 'Daily Word in your library, streak broken (yesterday failed)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ broken: true }); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-mystery-never-played', label: 'Daily Mystery in your library, free account, never played', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ never: 'mystery', today: 'none' }); c.go('mystery', { page: 'record' }); } },
-  { group: 'Library', id: 'library-casebook-free-in-progress', label: 'Casebook in your library, free account, first case in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
-  { group: 'Library', id: 'library-delve-free-in-progress', label: 'Delve in your library, free account, first scene in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('delve', { page: 'record' }); } },
+  { group: 'Library', id: 'library-casebook-free-in-progress', aliases: ['pur-first-in-progress'], label: 'Casebook in your library, free account, first case in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
+  { group: 'Library', id: 'library-delve-free-in-progress', label: 'Delve in your library, free account, first run in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('delve', { page: 'record' }); } },
   { group: 'Library', id: 'library-list-free-in-progress', label: 'Library list, free account, Casebook’s first case in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('library'); } },
-  { group: 'Library', id: 'library-word-free', label: 'Daily Word in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
+  { group: 'Library', id: 'library-word-free', aliases: ['fp-word-library-free'], label: 'Daily Word in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups', label: 'Daily Groups in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('groups', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups-in-progress', label: 'Daily Groups in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('groups', { page: 'record' }); } },
   // The Pass upsell (1153, merged 2026-10-16). Its review store (app/gs-pass-store.jsx) resets before every state.
   { group: 'Pass upsell', id: 'pur-new-account', label: '1. Library, free account, nothing played', stage: (c) => { c.setView('free'); c.setConnected(true); c.setUser({ fresh: true }); c.go('library'); } },
   { group: 'Pass upsell', id: 'pur-new-for-you', label: '2. Library, New for you full', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('library'); gsPassSet({ newEds: 'most' }); } },
-  { group: 'Pass upsell', id: 'pur-first-in-progress', label: '3. Casebook, free first case in progress', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('casebook', { page: 'record' }); } },
-  { group: 'Pass upsell', id: 'pur-first-done', label: '4. Casebook, free first case done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-first-done', aliases: ['library-casebook-no-pass', 'fp-casebook-library-free'], label: '4. Casebook, free first case done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
   { group: 'Pass upsell', id: 'pur-barrow-done', label: '5. The Barrow, free chapter 1 done', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('barrow', { page: 'record' }); gsPassSet({ bwDone: true }); } },
   { group: 'Pass upsell', id: 'pur-word-done', label: '6. Daily Word, today’s word done', stage: (c) => { gsPassSet({ freeNew: false }); c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
-  { group: 'Pass upsell', id: 'pur-pass-ended', label: '7. Casebook, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
-  { group: 'Pass upsell', id: 'pur-pass-holder', label: '8. Library, Pass holder', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('library'); } },
-  { group: 'Pass upsell', id: 'pur-discover-free', label: '9. Discover, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
+  { group: 'Pass upsell', id: 'pur-pass-ended', aliases: ['library-casebook-pass-ended', 'fp-casebook-library-lapsed'], label: '7. Casebook, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
+  { group: 'Pass upsell', id: 'pur-discover-free', aliases: ['free-plan'], label: '9. Discover, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
   { group: 'Pass upsell', id: 'pur-pass-ended-every', label: 'Pass ended: every case', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('library'); gsPassSet({ lapsed: 'every' }); } },
   { group: 'Library', id: 'library-groups-free', label: 'Daily Groups in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('groups', { page: 'record' }); } },
   { group: 'Library', id: 'library-mystery', label: 'Daily Mystery in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery', { page: 'record' }); } },
@@ -130,19 +133,14 @@ const KIT_STATE_REGISTER = [
   { group: 'Library', id: 'library-mystery-free', label: 'Daily Mystery in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('mystery', { page: 'record' }); } },
   { group: 'Library', id: 'library-escape', label: 'Escape in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('escape', { page: 'record' }); } },
   { group: 'Library', id: 'library-escape-in-progress', label: 'Escape in your library, this week in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('escape', { page: 'record' }); } },
-  { group: 'Library', id: 'library-escape-free', label: 'Escape in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('escape', { page: 'record' }); } },
+  { group: 'Library', id: 'library-escape-free', aliases: ['fp-escape-library-free'], label: 'Escape in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('escape', { page: 'record' }); } },
   { group: 'Library', id: 'library-hunter', label: '36,000 Summers Ago in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('hunter', { page: 'record' }); } },
-  { group: 'Library', id: 'library-casebook-no-pass', label: 'Casebook in your library, no Pass', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
-  { group: 'Library', id: 'library-casebook-pass-ended', label: 'Casebook in your library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
-  { group: 'Library', id: 'library-casebook-case', label: 'Casebook: one case', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: 'c0928' }); } },
   { group: 'Library', id: 'library-casebook-editions', label: 'Casebook: every case (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', list: true }); } },
-  { group: 'Library', id: 'library-delve-no-pass', label: 'Delve in your library, no Pass', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('delve', { page: 'record' }); } },
-  { group: 'Library', id: 'library-delve-pass-ended', label: 'Delve in your library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('delve', { page: 'record' }); } },
-  { group: 'Library', id: 'library-hunter-pass-ended', label: '36,000 Summers Ago in your library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('hunter', { page: 'record' }); } },
+  { group: 'Library', id: 'library-delve-no-pass', aliases: ['fp-delve-library-free'], label: 'Delve in your library, no Pass', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('delve', { page: 'record' }); } },
+  { group: 'Library', id: 'library-delve-pass-ended', aliases: ['fp-delve-library-lapsed'], label: 'Delve in your library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('delve', { page: 'record' }); } },
+  { group: 'Library', id: 'library-hunter-pass-ended', aliases: ['fp-hunter-library-lapsed'], label: '36,000 Summers Ago in your library, Pass ended', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('hunter', { page: 'record' }); } },
   { group: 'Library', id: 'history-in-progress', label: 'History, today and this week in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('history'); } },
-  { group: 'Plans', id: 'free-plan', label: 'Signed in, free account, AI connected', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
   { group: 'Plans', id: 'free-not-played-today', label: 'Free account, nothing played today or this week', stage: (c) => { c.setView('free'); c.setConnected(true); c.setReview({ today: 'none' }); c.go('word', { page: 'record' }); } },
-  { group: 'Plans', id: 'pass-holder', label: 'Signed in with the Pass, AI connected', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('games'); } },
   { group: 'Plans', id: 'not-connected', label: 'Signed in, AI not connected (Play opens the play pop-up, with How to connect)', stage: (c) => { c.setView('free'); c.go('groups'); } },
   { group: 'Plans', id: 'free-puzzle-result', label: 'Free account: a puzzle result', stage: (c) => { gsPassSet({ freeNew: false }); c.setView('free'); c.setConnected(true); c.go('session', { id: 'word-today' }); } },
   { group: 'Plans', id: 'free-history', label: 'Free account: History, free games only', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('history'); } },
@@ -152,28 +150,14 @@ const KIT_STATE_REGISTER = [
   { group: 'Sign in', id: 'sign-in-new-device-provider', label: 'Sign in with Google on a new device: verify this device', stage: (c) => { c.setReview({ device: 'new' }); c.go('verify', { ctx: 'device', provider: 'google', email: 'you@example.com' }); } },
   { group: 'Sign in', id: 'code-expired', label: 'One-time code: expired', stage: (c) => c.go('verify', { ctx: 'device', email: 'you@example.com', preset: 'expired' }) },
   { group: 'Sign in', id: 'code-wrong', label: 'One-time code: wrong', stage: (c) => c.go('verify', { ctx: 'device', email: 'you@example.com', preset: 'wrong' }) },
-  { group: 'Account', id: 'account-email', label: 'Account, email account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
+  { group: 'Account', id: 'account-email', aliases: ['pass-card-none'], label: 'Account, email account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
   { group: 'Account', id: 'account-provider', label: 'Account, provider account (Google)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setProvider('google'); c.go('account'); } },
   { group: 'Account', id: 'delete-account-confirm', label: 'Delete account: confirm', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account', { stage: 'delete' }); } },
   { group: 'Account', id: 'delete-account-code-provider', label: 'Delete account, Google account: the code step', stage: (c) => { c.setView('free'); c.setConnected(true); c.setProvider('google'); c.go('account', { stage: 'delete-code' }); } },
   { group: 'Account', id: 'change-email-code', label: 'Change email: code step', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account', { stage: 'email-code' }); } },
-  { group: 'Notifications', id: 'notifications-undecided', label: 'Account: Notifications, permission undecided (all switch off, the rest disabled)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-on', label: 'Account: Notifications, allowed and on', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ perm: 'granted', asked: true, on: true }); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-off', label: 'Account: Notifications, allowed, all switch off', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ perm: 'granted', asked: true, on: false }); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-turn-on-fails', label: 'Account: Notifications, turning on fails (press the all switch)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ perm: 'granted', asked: true, on: false, fail: true }); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-blocked', label: 'Account: Notifications, blocked', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ perm: 'denied', asked: true }); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-ios-tab', label: 'Account: Notifications, iPhone browser tab', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ channel: 'ios-tab' }); c.go('account'); } },
-  { group: 'Notifications', id: 'notifications-unsupported', label: 'Account: unsupported device (no Notifications card)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ channel: 'unsupported' }); c.go('account'); } },
-  { group: 'Notifications', id: 'push-banner-discover', label: 'Banner on Discover', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('games'); } },
-  { group: 'Notifications', id: 'push-banner-library', label: 'Banner on Library', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('library'); } },
-  { group: 'Notifications', id: 'push-banner-history', label: 'Banner on History', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history'); } },
-  { group: 'Notifications', id: 'push-permission-dialog', label: 'The browser’s permission dialog, raised from the banner', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ prompt: 'banner', asked: true }); c.go('games'); } },
-  { group: 'Notifications', id: 'push-banner-dismissed', label: 'Banner dismissed once (back in 3 days; Config moves the clock on)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ snoozes: 1, snoozeAt: Date.now() }); c.go('games'); } },
-  { group: 'Notifications', id: 'push-banner-back', label: 'Banner back 3 days after its first × (the next × hides it for 7)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setPush({ snoozes: 1, snoozeAt: Date.now() - 3 * 86400000 }); c.go('library'); } },
   { group: 'Username', id: 'username-new-account', label: 'Your username, after a Google sign-up (no account yet)', stage: (c) => c.go('username', { next: 'connect', provider: 'google' }) },
   { group: 'Username', id: 'username-taken', label: 'Your username, taken', stage: (c) => c.go('username', { next: 'connect', provider: 'google', preset: 'taken' }) },
   { group: 'Username', id: 'account-username-wait', label: 'Account, username in the 30-day wait', stage: (c) => { c.setView('free'); c.setConnected(true); c.setUser({ locked: true }); c.go('account'); } },
-  { group: 'Pass card', id: 'pass-card-none', label: 'Not subscribed', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account'); } },
   { group: 'Pass card', id: 'pass-card-monthly', label: 'Active, monthly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('account'); } },
   { group: 'Pass card', id: 'pass-card-yearly', label: 'Active, yearly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ plan: 'yearly' }); c.go('account'); } },
   { group: 'Pass card', id: 'pass-card-pending-switch', label: 'Pending switch to yearly', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ pending: 'yearly' }); c.go('account'); } },
@@ -181,7 +165,6 @@ const KIT_STATE_REGISTER = [
   { group: 'Pass card', id: 'pass-card-payment-failed', label: 'Payment failed', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'failed' }); c.go('account'); } },
   { group: 'Pass card', id: 'pass-card-ending', label: 'Ending', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'ending' }); c.go('account'); } },
   { group: 'Pass card', id: 'pass-card-lapsed', label: 'Lapsed', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('account'); } },
-  { group: 'Billing', id: 'pass-page-never-subscribed', label: 'Pass page, never had the Pass', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
   { group: 'Billing', id: 'pass-page-subscribed-before', label: 'Pass page, had the Pass before', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('pass'); } },
   { group: 'Billing', id: 'subscribe', label: 'Subscribe page', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('subscribe'); } },
   { group: 'Billing', id: 'checkout', label: 'Payment provider checkout', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('checkout'); } },
@@ -194,15 +177,6 @@ const KIT_STATE_REGISTER = [
   { group: 'Billing', id: 'pass-resume-fails', label: 'Ending card, Resume fails', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ status: 'ending' }); c.setReview({ passFail: true }); c.go('account'); } },
   { group: 'Billing', id: 'pass-switch-fails', label: 'Switch sheet, the switch fails', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ passFail: true }); c.go('account', { sheet: 'switch' }); } },
   { group: 'Billing', id: 'pass-keep-fails', label: 'Pending switch, Keep monthly fails', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setSub({ pending: 'yearly' }); c.setReview({ passFail: true }); c.go('account'); } },
-  { group: 'Free and Pass', id: 'fp-word-library-free', label: 'Daily Word library page, free player (this edition, streak, achievements)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-escape-library-free', label: 'Escape library page, free player', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('escape', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-casebook-library-free', label: 'Casebook library page, free player (first edition, no streak)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-delve-library-free', label: 'Delve library page, free player (first edition, no streak)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('delve', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-casebook-library-lapsed', label: 'Casebook library page, Pass ended (frozen achievements)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('casebook', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-delve-library-lapsed', label: 'Delve library page, Pass ended (frozen achievements)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('delve', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-hunter-library-lapsed', label: '36,000 Summers Ago library page, Pass ended (frozen achievements)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('hunter', { page: 'record' }); } },
-  { group: 'Free and Pass', id: 'fp-product-casebook-free', label: 'Casebook product page, free player', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('casebook'); } },
-  { group: 'Free and Pass', id: 'fp-product-hunter-free', label: '36,000 Summers Ago product page, free player', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('hunter'); } },
   { group: 'Free and Pass', id: 'fp-pass-page-signed-out', label: 'Pass page, signed out', stage: (c) => { c.setView('out'); c.setConnected(true); c.go('pass'); } },
   { group: 'Site', id: 'not-found', label: 'Not found', stage: (c) => c.go('nowhere') },
   { group: 'Site', id: 'not-found-signed-in', label: 'Not found, signed in (Go home opens Discover)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('nowhere'); } },
@@ -216,7 +190,7 @@ const KIT_STATE_REGISTER = [
   { group: 'Site', id: 'loading-page-product', label: 'Loading, page: a product page (held)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { hold: 'page' }); } },
   { group: 'Site', id: 'loading-page-product-signed-out', label: 'Loading, page: a product page, signed out (held)', stage: (c) => { c.go('word', { hold: 'page' }); } },
   { group: 'Site', id: 'loading-page-library-game', label: 'Loading, page: a library game page (held)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', hold: 'page' }); } },
-  { group: 'Site', id: 'loading-page-library-case', label: 'Loading, page: a case inside a library game (held)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: 'c0928', hold: 'page' }); } },
+  { group: 'Site', id: 'loading-page-library-case', label: 'Loading, page: a case inside a library game (held)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: CB_ID, hold: 'page' }); } },
   { group: 'Site', id: 'loading-page-session', label: 'Loading, page: a session (held)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'delve', hold: 'page' }); } },
   { group: 'Site', id: 'loading-page-pass', label: 'Loading, page: the Pass (held)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass', { hold: 'page' }); } },
   { group: 'Site', id: 'loading-page-account', label: 'Loading, page: Account (held)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('account', { hold: 'page' }); } },
@@ -234,7 +208,15 @@ const KIT_STATE_REGISTER = [
   { group: 'Library', id: 'library-mystery-editions', label: 'Daily Mystery: every case (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery', { page: 'record', list: true }); } },
   { group: 'Library', id: 'edition-mystery-earlier', label: 'Daily Mystery: an earlier case not played, its prompt', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery', { page: 'record', list: true, pgeOpen: PZ.mystery.all.find((x) => x.i > 0 && !x.played).id }); } },
   { group: 'Library', id: 'edition-mystery-done', label: 'Daily Mystery: an earlier case played (played once, no prompt)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('mystery', { page: 'record', list: true, pgeOpen: PZ.mystery.all[2].id }); } },
-  { group: 'Library', id: 'edition-casebook-done', label: 'Casebook: a case played (played once, no prompt)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', list: true, pgeOpen: CB_ALL.find((x, i) => i > 0 && x.played).id }); } },
+  { group: 'Library', id: 'edition-casebook-done', label: 'Casebook: Case 1 played (played once, no prompt)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', list: true, pgeOpen: CB_ALL[0].id }); } },
+  { group: 'Library', id: 'edition-barrow-done', label: 'The Barrow: chapter 1 finished, its panel (start over, Copy, See in History)', stage: (c) => { c.setView('pass'); c.setConnected(true); gsPassSet({ bwDone: true }); c.go('barrow', { page: 'record', list: true, pgeOpen: 'bw1' }); } },
+  { group: 'Library', id: 'edition-barrow-done-free', label: 'The Barrow, free account: chapter 1 finished, its panel; chapter 2 needs the Pass', stage: (c) => { c.setView('free'); c.setConnected(true); gsPassSet({ bwDone: true }); c.go('barrow', { page: 'record', list: true, pgeOpen: 'bw1' }); } },
+  { group: 'Library', id: 'edition-delve-in-progress', label: 'Delve: run 1 in progress, its panel', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('delve', { page: 'record', list: true, pgeOpen: DV_ALL[0].id }); } },
+  { group: 'Library', id: 'library-escape-two-in-progress', label: 'Escape in your library: two rooms in progress (this week’s and an earlier one)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live', several: true }); c.go('escape', { page: 'record' }); } },
+  { group: 'Library', id: 'editions-escape-two-in-progress', label: 'Escape: every room, two in progress, no warning', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live', several: true }); c.go('escape', { page: 'record', list: true }); } },
+  { group: 'Library', id: 'library-delve-two-in-progress', label: 'Delve in your library: two runs in progress (this week’s and an earlier one)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live', several: true }); c.go('delve', { page: 'record' }); } },
+  { group: 'Library', id: 'editions-delve-two-in-progress', label: 'Delve: every run, two in progress, no warning', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live', several: true }); c.go('delve', { page: 'record', list: true }); } },
+  { group: 'Library', id: 'editions-word-free', label: 'Daily Word, free account: every word (the editions list)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record', list: true }); } },
   { group: 'History', id: 'session-word-earlier', label: 'Session page, an earlier Daily Word played (played once)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: PZ.word.all[2].sid }); } },
   { group: 'History', id: 'session-mystery-earlier', label: 'Session page, an earlier Daily Mystery played (played once)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: PZ.mystery.all[2].sid }); } },
   { group: 'History', id: 'history-hunter', label: 'History, 36,000 Summers Ago (no editions)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history', { game: 'hunter', from: 'hunter' }); } },
@@ -247,8 +229,8 @@ const KIT_STATE_REGISTER = [
   { group: 'New account', id: 'new-account-history', label: 'History, a new account (empty)', stage: (c) => { c.setView('free'); c.setUser({ username: 'NewPlayer', fresh: true, locked: true, since: GS_DAY0.getTime() }); c.go('history'); } },
   { group: 'New account', id: 'new-account-casebook-pass', label: 'Casebook in your library, a new account with the Pass', stage: (c) => { c.setView('pass'); c.setUser({ username: 'NewPlayer', fresh: true, locked: true, since: GS_DAY0.getTime() }); c.go('casebook', { page: 'record' }); } },
   { group: 'Ended unfinished', id: 'session-groups-unfinished', label: 'Session page, a Daily Groups day that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('session', { id: 'groups-unfinished' }); } },
-  { group: 'Ended unfinished', id: 'session-delve-unfinished', label: 'Session page, a Delve week that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('session', { id: 'delve-unfinished' }); } },
-  { group: 'Ended unfinished', id: 'history-unfinished', label: 'History, with a day and a week that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('history'); } },
+  { group: 'Ended unfinished', id: 'session-delve-unfinished', label: 'Session page, Delve run 1 in progress (Wren; no Delve week has ended yet)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('session', { id: 'delve-live' }); } },
+  { group: 'Ended unfinished', id: 'history-unfinished', label: 'History, with a Daily Groups day that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('history'); } },
   { group: 'Site', id: 'sign-in-return-library', label: 'Signed out, opened the Library: Sign in, then the Library', stage: (c) => c.go('signin', { next: { name: 'library' } }) },
   { group: 'Site', id: 'session-unknown', label: 'A session address that doesn’t exist (not found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'nowhere' }); } },
   // Directory listing mocks: held in app/directory-listings.jsx (droppable); absent ⇒ none.
@@ -261,7 +243,7 @@ const KIT_STATE_REGISTER = [
 // palette, and readable off window.KIT_STATE_NOTES.
 const KIT_STATE_GROUP_NOTES = {
   'Ended unfinished': [
-    'Or set Config “Ended unfinished” to A day and a week: the Daily Groups day and the Delve week show as Not finished in History and on their library game pages.',
+    'Or set Config “Ended unfinished” to A day: the Daily Groups day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress.',
   ],
   'Username': [
     'Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.',
@@ -292,23 +274,26 @@ const KIT_STATE_INDEX_NAMES = ['index', 'states'];
 // and everything below reads this list.
 const KIT_STATE_ID_RULE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const kitRefuseState = (id, why) => console.error('[kit states] refused state id ' + JSON.stringify(id) + ': ' + why + '. Fix it in KIT_STATE_REGISTER (app/states.jsx).');
+const kitIdsOf = (s) => [s.id, ...(s.aliases || [])];
 const KIT_STATES_ACCEPTED = KIT_STATE_REGISTER.filter((s, i) => {
-  if (typeof s.id !== 'string' || !KIT_STATE_ID_RULE.test(s.id)) { kitRefuseState(s.id, 'an id is lowercase letters, digits and single hyphens'); return false; }
-  if (KIT_STATE_INDEX_NAMES.includes(s.id)) { kitRefuseState(s.id, 'that name opens the states index'); return false; }
-  if (KIT_STATE_REGISTER.findIndex((x) => x.id === s.id) !== i) { kitRefuseState(s.id, 'an earlier entry already has it'); return false; }
+  for (const id of kitIdsOf(s)) {
+    if (typeof id !== 'string' || !KIT_STATE_ID_RULE.test(id)) { kitRefuseState(id, 'an id is lowercase letters, digits and single hyphens'); return false; }
+    if (KIT_STATE_INDEX_NAMES.includes(id)) { kitRefuseState(id, 'that name opens the states index'); return false; }
+    if (KIT_STATE_REGISTER.slice(0, i).some((x) => kitIdsOf(x).includes(id)) || (s.aliases || []).includes(s.id)) { kitRefuseState(id, 'an earlier entry already has it'); return false; }
+  }
   return true;
 });
 
 // ---- derived: what an agent or a script can read off the page --------------
 // Names and labels only. Nothing runnable, so reading it can't stage anything.
-window.KIT_STATES = KIT_STATES_ACCEPTED.map(({ id, label, group }) => ({ id, label, group }));
+window.KIT_STATES = KIT_STATES_ACCEPTED.map(({ id, aliases, label, group }) => ({ id, aliases: aliases || [], label, group }));
 
 // ---- derived: the bound register main.jsx renders from ---------------------
 function buildStates(api) {
   const ctx = kitStateContext(api);
   // Reseed, then stage, so a state opens the same way whatever came before it.
   const states = KIT_STATES_ACCEPTED.map((s) => ({
-    id: s.id, label: s.label, group: s.group,
+    id: s.id, aliases: s.aliases || [], label: s.label, group: s.group,
     go: () => {
       // An entry's `platform: 'app' | 'web'` sets Config → Platform before it
       // stages, so its address opens in the right posture. No platform: left as is.
@@ -321,7 +306,7 @@ function buildStates(api) {
   const byId = {};
   const groups = [];
   states.forEach((s) => {
-    byId[s.id] = s;
+    byId[s.id] = s; s.aliases.forEach((a) => { byId[a] = s; });
     let g = groups.find((x) => x.title === s.group);
     if (!g) { g = { title: s.group, notes: KIT_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
     g.items.push(s);
@@ -347,7 +332,7 @@ function kitResolveState() {
   const name = (raw || '').trim().toLowerCase();
   if (!name) return null;
   if (KIT_STATE_INDEX_NAMES.includes(name)) return { kind: 'index', name };
-  if (KIT_STATES_ACCEPTED.some((s) => s.id === name)) return { kind: 'state', id: name };
+  if (KIT_STATES_ACCEPTED.some((s) => kitIdsOf(s).includes(name))) return { kind: 'state', id: name };
   return { kind: 'unresolved', name };
 }
 

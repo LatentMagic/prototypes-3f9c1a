@@ -11,13 +11,11 @@
 // always agree, because the view is derived from the subscription.
 //
 // A candidate build (skills/candidate-build) may publish window.KitCandidate; it is
-// read below, per render, and absent means the shipped behaviour. Stored state reads
-// its key as `window.KIT_STATE_KEY || '<default>'` (app/gs-push.jsx) so a candidate
-// entry can set its own.
+// read below, per render, and absent means the shipped behaviour.
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false };
+const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false };
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.
 const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
@@ -25,7 +23,7 @@ const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', 
 const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
 // Screens with their own frame (no shared top bar).
 const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
-// The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar, play pop-up or push host over them.
+// The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar or play pop-up over them.
 const GS_LISTING = ['directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
@@ -140,10 +138,6 @@ const KitApp = () => {
   const [connected, setConnected] = useState(false);
   const [review, setReviewState] = useState(GS_REVIEW_DEFAULT);
   const [playing, setPlaying] = useState(null);
-  // Push notifications (app/gs-push.jsx, droppable): per device, so kept in localStorage.
-  const [push, setPushState] = useState(() => ({ ...(window.GS_PUSH_DEFAULT || {}), ...(window.gsPushLoad ? window.gsPushLoad() : {}) }));
-  useEffect(() => { if (window.gsPushSave) window.gsPushSave(push); }, [push]);
-  const setPush = (patch) => setPushState((p) => ({ ...p, ...patch }));
   const [width, setWidth] = useState(() => window.innerWidth);
   const rootRef = useRef(null);
 
@@ -200,11 +194,11 @@ const KitApp = () => {
   };
   const reset = () => {
     setSignedIn(false); setSubState(GS_SUB_DEFAULT); setUserState(GS_USER_DEFAULT); setProvider('email');
-    setChoice('yearly'); setConnected(false); setReviewState(GS_REVIEW_DEFAULT); setPushState({ ...(window.GS_PUSH_DEFAULT || {}) }); go('home', null, 'out');
+    setChoice('yearly'); setConnected(false); setReviewState(GS_REVIEW_DEFAULT); go('home', null, 'out');
   };
 
   const gs = {
-    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640, push, setPush, isApp,
+    route, view, sub, user, provider, choice, connected, review, playing, width, narrow: width < 640, isApp,
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
     // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
     keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
@@ -266,7 +260,7 @@ const KitApp = () => {
   // ---- the states register (app/states.jsx, a deletable aid) ----------------------
   const [landing, setLanding] = useState(() => (window.kitResolveState ? window.kitResolveState() : null));
   const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (window.buildStates
-    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPush, setPlatform })
+    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform })
     : { byId: {}, groups: [] });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
   window.kitGoState = goState; // opens a state by id from a script (checking a build)
@@ -310,7 +304,6 @@ const KitApp = () => {
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         {!GS_LISTING.includes(route.name) && <>
           <GsPlayPopup />
-          {window.GsPushHost && <window.GsPushHost />}
           <GsDemoBar />
         </>}
       </div>
