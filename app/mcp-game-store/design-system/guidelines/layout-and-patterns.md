@@ -8,7 +8,7 @@ Principles first. These hold for every screen; the components below are one prov
 - **Group by meaning.** Related information sits together in one clear compartment; unrelated information is visibly apart. Fewer, larger, well-grouped pieces read better than many small ones. Lots of small text with little grouping reads as flicker.
 - **Highest value first, everywhere.** Order content by what the player most needs now. On a phone that order is the scroll, so it matters most there.
 - **Keep the phone short.** Every block added is scrolling on a phone. Show a summary on the page and move the full set one tap away (its own page, a Disclosure, a panel). If a phone page needs a long scroll to reach the second important thing, cut or move content rather than shrinking it.
-- **Use wide screens by arranging.** On desktop, place things side by side rather than stretching one column or leaving it stranded. Nothing runs full width by default.
+- **Use wide screens by arranging.** On desktop, place things side by side rather than stretching one column or leaving it stranded. From 640px nothing runs full width by default; under 640px buttons do (visual-foundations.md, Layout).
 - **States change content, not shape.** A block with several states keeps one layout and about one height, so the page doesn't jump and no state looks emptier than another.
 - **Clickable reads as clickable at rest.** Whole target, visible signal (chevron, underline, button shape), hover only as a bonus.
 
@@ -25,6 +25,7 @@ Reach for these when they fit; don't bend a problem to fit them.
 - `ListRow`: whole row one target, chevron at rest, no inline actions, fixed slots that don't move between widths. See ListRow for what earns a place in a row.
 - **The footer stays at the foot of the window.** On a page shorter than the window, the extra height goes above the footer, never below it: the page is a column at least the window's height and the footer takes `margin-top:auto` (decided 2026-10-13, LM-1110).
 - **Coming soon is a pair of `SoonCard`s** under a row of games, two columns from 720px. Every card carries the Coming soon chip. A game that is out with a chapter coming keeps the pair's shape: a CHAPTER label and one "Play chapter 1" chip as its only way in (decided 2026-10-13, docs/specs/chapter-coming-soon/).
+- **Needs the Pass takes the play control's place** when the player cannot play without the Pass: `NeedsPass`, "What stays, what returns". Two halves split by one ruled line; side by side from 640px, stacked under it. One size and one grid place in both variants (had the Pass, never had it). Every line is filled by rule from platform facts, never per game (decided 2026-10-17, docs/specs/elegance-audit/).
 - **A row of games ends with "All games".** Every `CardRow` of games is followed by an "All games" `TextLink` to the store, on its own line under the row, and under the Coming soon cards when they follow the row. As on the home page's Available games and a product page's More games (decided 2026-10-13, LM-1110).
 - **Coming soon is a pair of `SoonCard`s** under a row of games, two columns from 720px. Every card carries the Coming soon chip. A game that is out with a chapter coming keeps the pair's shape: a CHAPTER label and one "Play chapter 1" chip as its only way in (decided 2026-10-13, docs/specs/chapter-coming-soon/).
 

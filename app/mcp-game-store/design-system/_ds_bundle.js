@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"248177b53049","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"c22de55edee6","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"86df9ae7b395","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"71789f1698f0","components/surfaces/GamePick.jsx":"966a702bb953","components/surfaces/GameTile.jsx":"3d41c3a4d95d","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"248177b53049","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"c22de55edee6","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"09130bb52dab","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"71789f1698f0","components/surfaces/GamePick.jsx":"966a702bb953","components/surfaces/GameTile.jsx":"3d41c3a4d95d","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"c91dac80697e"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -2001,7 +2001,7 @@ function CardRow({
     name = label || (typeof title === 'string' ? title : 'Cards'),
     n = React.Children.count(children);
   return /*#__PURE__*/React.createElement("div", {
-    className: ('mcp-crow' + (kind === 'chat' ? ' is-chat' : '') + ' ' + className).trim()
+    className: ('mcp-crow' + (kind === 'chat' ? ' is-chat' : kind === 'tiles' ? ' is-tiles' : '') + ' ' + className).trim()
   }, /*#__PURE__*/React.createElement("div", {
     className: "mcp-crow-head"
   }, /*#__PURE__*/React.createElement(T, {
@@ -2507,6 +2507,97 @@ function Menu({
 }
 Object.assign(__ds_scope, { Menu });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/Menu.jsx", error: String((e && e.message) || e) }); }
+
+// components/surfaces/NeedsPass.jsx
+try { (() => {
+// Needs the Pass ("What stays, what returns"): stands where a game's play control would be when the player cannot play without the Pass.
+// Every line is built here by rule from platform facts; no game supplies its own wording.
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const fmt = s => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || '');
+  return m ? +m[3] + ' ' + MON[+m[2] - 1] : String(s || '').toUpperCase();
+};
+const count = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+function needsPassCopy({
+  game,
+  word,
+  words,
+  record,
+  total
+}) {
+  const many = words || (word ? word + 's' : '');
+  const cadence = word ? 'Play every ' + word + ' as it comes out.' : 'Play the whole game.';
+  if (!record) {
+    return {
+      label: null,
+      heading: game + ' comes only with the Pass.',
+      foot: null,
+      rightLabel: 'WHAT YOU GET',
+      lines: [cadence, total ? 'Earn ' + count(total, 'achievement', 'achievements') + '.' : null].filter(Boolean),
+      action: 'Get the Pass'
+    };
+  }
+  const label = !word ? 'LAST PLAYED · ' + fmt(record.last) : 'YOUR LAST ' + word.toUpperCase() + ' · ' + (record.chapter != null ? record.chapter : fmt(record.last));
+  const played = word && record.played ? 'played ' + count(record.played, word, many) : null;
+  const earned = record.earned ? 'earned ' + count(record.earned, 'achievement', 'achievements') : null;
+  const foot = played || earned ? 'You ' + [played, earned].filter(Boolean).join(' and ') + '.' : null;
+  return {
+    label,
+    heading: 'You stopped here. Everything you earned is still yours.',
+    foot,
+    rightLabel: 'WHAT COMES BACK',
+    lines: [cadence, 'Pick up where you stopped.'],
+    action: 'Get the Pass again'
+  };
+}
+function NeedsPass({
+  game,
+  word,
+  words,
+  record,
+  total = 0,
+  onGet,
+  className = '',
+  style
+}) {
+  const c = needsPassCopy({
+    game,
+    word,
+    words,
+    record,
+    total
+  });
+  return /*#__PURE__*/React.createElement("section", {
+    className: ('mcp-npass ' + className).trim(),
+    style: style,
+    "aria-label": c.heading
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mcp-npass-half"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-npass-label",
+    "aria-hidden": c.label ? undefined : true
+  }, c.label || '\u00a0'), /*#__PURE__*/React.createElement("h3", {
+    className: "mcp-t-sec"
+  }, c.heading), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-npass-foot"
+  }, c.foot && /*#__PURE__*/React.createElement("p", {
+    className: "mcp-npass-note"
+  }, c.foot))), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-npass-half"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-npass-label"
+  }, c.rightLabel), c.lines.map((l, i) => /*#__PURE__*/React.createElement("p", {
+    key: i,
+    className: "mcp-npass-line"
+  }, l)), /*#__PURE__*/React.createElement("div", {
+    className: "mcp-npass-foot"
+  }, /*#__PURE__*/React.createElement(__ds_scope.Button, {
+    variant: "secondary",
+    onClick: onGet
+  }, c.action))));
+}
+Object.assign(__ds_scope, { needsPassCopy, NeedsPass });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/NeedsPass.jsx", error: String((e && e.message) || e) }); }
 
 // components/surfaces/PageGrid.jsx
 try { (() => {
@@ -7668,6 +7759,8 @@ __ds_ns.RowList = __ds_scope.RowList;
 __ds_ns.ListRow = __ds_scope.ListRow;
 
 __ds_ns.Menu = __ds_scope.Menu;
+
+__ds_ns.NeedsPass = __ds_scope.NeedsPass;
 
 __ds_ns.PageGrid = __ds_scope.PageGrid;
 

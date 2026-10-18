@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Controls" viewport="700x480" name="Button" subtitle="Main, secondary, delete; hover, working, done, disabled. ButtonPair puts two side by side" -->
+<!-- @dsCard group="Components · Controls" viewport="700x900" name="Button" subtitle="Main, secondary, delete; hover, working, done, disabled. ButtonPair puts two side by side. Widths: full under 640px, natural from 640px" -->
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -25,6 +25,8 @@ return <div style={{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))'
 <div className="cell"><Button disabled>Add to Claude</Button><span className="cap">Disabled</span></div>
 <div className="cell"></div>
 <div className="cell" style={{gridColumn:'1/-1'}}><ButtonPair><Button variant="secondary">Sign in</Button><Button>Sign up</Button></ButtonPair><span className="cap">ButtonPair: secondary, then main</span></div>
+<div className="cell" style={{gridColumn:'1/-1'}}><span className="cap">Screen 390px: every button full width, the pair stacks, a link in the row drops beneath</span><iframe src="button-widths.html" title="Buttons at 390px" style={{width:390,height:250,border:'1px solid var(--line)'}}></iframe></div>
+<div className="cell" style={{gridColumn:'1/-1'}}><span className="cap">Screen 660px: natural width, the pair shares one width</span><iframe src="button-widths.html" title="Buttons at 660px" style={{width:660,height:130,border:'1px solid var(--line)'}}></iframe></div>
 </div>;}
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script></body></html>

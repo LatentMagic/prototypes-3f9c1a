@@ -31,6 +31,12 @@ Source: [`specs/governance/standards/ui-design.md`](https://github.com/LatentMag
 - Reading directions: what sits under or beside a thing reads as belonging to it. No implied connection.
 - When rules clash: change size, then spacing, then layout, then wording.
 - Designed empty states: say why it is empty and offer the next step.
+  - A filter or search that finds nothing: the bare line "Nothing matches that." and one `TextLink`, **Clear all**, that clears the search and every filter. No box, no button, no heading. The same wording wherever a filter or search can come up empty.
+
+    ```jsx
+    <p>Nothing matches that.</p>
+    <TextLink onClick={clearAll}>Clear all</TextLink>
+    ```
 - Ration confirmation; undo beats confirm; protect unsaved work (absolute for costly input; a short inline rename may discard silently).
 - Past ~10s of waiting, show progress and a way out.
 

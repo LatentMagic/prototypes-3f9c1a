@@ -17,7 +17,7 @@ export interface ButtonProps{
   doneLabel?:string;
   /** Prefer a plain statement in the slot over a disabled button (ui-design.md). Never use disabled for the working state. */
   disabled?:boolean;
-  /** Full width. Use on phones; on desktop keep natural width ("fill by arranging, not stretching"). */
+  /** Full width at every screen width. Rarely needed: under 640px every button is already full width, and at 640px and up it keeps natural width, without a prop. */
   block?:boolean;
   icon?:'search'|'back'|'close'|'lock'|'play'|'settings';
   type?:'button'|'submit'|'reset';
@@ -26,6 +26,6 @@ export interface ButtonProps{
   className?:string;
 }
 export declare function Button(props:ButtonProps):JSX.Element;
-/** Two equal-width buttons side by side, 12px gap. Order: secondary then main (Sign in, Sign up; Keep it, Delete save). */
+/** Two buttons sharing one width, 12px gap. Order: secondary then main (Sign in, Sign up; Keep it, Delete save). At 640px and up they sit side by side at the wider label's width; under 640px they stack full width, secondary on top. In a Popup the actions fill the dialog and stack only below 300px. */
 export interface ButtonPairProps{children?:React.ReactNode;className?:string;}
 export declare function ButtonPair(props:ButtonPairProps):JSX.Element;

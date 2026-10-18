@@ -202,6 +202,10 @@
         "message": "<NavButtons> doesn't accept that prop. Declared props: items, stack, onGo, label, className."
       },
       {
+        "selector": "JSXOpeningElement[name.name='NeedsPass'] > JSXAttribute > JSXIdentifier[name!=/^(?:game|word|words|record|total|onGet|className|style|key|ref|className|style|children)$/]",
+        "message": "<NeedsPass> doesn't accept that prop. Declared props: game, word, words, record, total, onGet, className, style."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='PageGrid'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|split|className|style|key|ref|className|style|children)$/]",
         "message": "<PageGrid> doesn't accept that prop. Declared props: children, split, className, style."
       },
@@ -377,6 +381,9 @@
         "replaces": []
       },
       "NavButtons": {
+        "replaces": []
+      },
+      "NeedsPass": {
         "replaces": []
       },
       "PageGrid": {

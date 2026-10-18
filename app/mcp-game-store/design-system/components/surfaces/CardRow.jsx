@@ -22,7 +22,7 @@ export function CardRow({title,sub,label,as='h2',kind='cards',children,className
     const still=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     el.scrollBy({left:d*step,behavior:still?'auto':'smooth'});};
   const T=as,name=label||(typeof title==='string'?title:'Cards'),n=React.Children.count(children);
-  return <div className={('mcp-crow'+(kind==='chat'?' is-chat':'')+' '+className).trim()}>
+  return <div className={('mcp-crow'+(kind==='chat'?' is-chat':kind==='tiles'?' is-tiles':'')+' '+className).trim()}>
     <div className="mcp-crow-head">
       <T className="mcp-t-sec mcp-crow-title">{title}</T>
       {at.over&&<div className="mcp-crow-nav">
