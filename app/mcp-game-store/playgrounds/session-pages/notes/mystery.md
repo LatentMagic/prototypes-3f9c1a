@@ -7,14 +7,14 @@
 
 ## Best thing in each version
 
-- **1 The case file**: the case as a file, accusation drawn from its line.
-- **2 Yes and No**: tick and cross squares read fastest.
-- **3 The accusation**: the three parts first; a wrong room knocks one tag askew.
+- **1 The case file**: the case as a file, accusation drawn from its line. (main thread's read)
+- **2 Yes and No**: tick and cross squares read fastest. (Fable)
+- **3 The accusation**: the three parts first; a wrong room knocks one tag askew. (main thread's read)
 
 ## Open questions
 
-- Texture: may a Game stop break the flat rule? Lean: every stop holds flat.
-- After a wrong accusation, show the true suspect, weapon and room, or only the part missed? Lean: only the part missed.
+- Texture: may a Game stop break the flat rule? Lean: every stop holds flat. (main thread's read)
+- After a wrong accusation, show the true suspect, weapon and room, or only the part missed? Lean: only the part missed. (main thread's read)
 
 ## Engine asks
 
