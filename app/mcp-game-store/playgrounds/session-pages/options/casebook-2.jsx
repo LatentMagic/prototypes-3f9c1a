@@ -1,8 +1,109 @@
-// Session page, casebook, option 2. Placeholder: no Component yet, so the harness shows Today with a "not built yet" marker.
-// To build it, see ../README.md ("The option contract"): add name, stance and cost, then a Component (and css / shareText if needed).
-// Wrap anything you declare in an IIFE or prefix it: Babel scripts share one global scope.
-pgOption('casebook', 2, {
-  name: 'Unnamed',
-  stance: 'Not decided yet.',
-  cost: 'Not costed yet.',
-});
+// Session page, Casebook, option 2: "Who you pinned it on". The accused card is the hero (build-rulings 3, fable-steer): the suspect you named, large, Right or Wrong beside the name.
+// The other suspects follow as smaller cards; the places searched are one plain card. Reads the case record through PgCb (defined in casebook-1.jsx).
+// Spoilers: nothing says who did it. A suspect is never marked cleared (on a wrong accusation that would be the answer); the count of places not searched is shown, never their contents.
+(function () {
+  const lieLine = (s) => {
+    const l = s.lies.length, st = s.stood, P = window.PgCb;
+    if (!l && !st) return 'No lies exposed';
+    const lies = l ? P.plural(l, 'lie', 'lies') + ' exposed' + (l === 1 ? ', about the alibi' : l === 2 ? ', both about the alibi' : ', all about the alibi') : 'No lies exposed';
+    return lies + (st ? ' · ' + st + (st === 1 ? ' story' : ' stories') + ' stood' : '');
+  };
+  const askedLine = (s) => {
+    if (!s.asked.length) return 'Not asked anything';
+    const t = s.asked.slice(0, 2).join(' and ');
+    return 'Asked about ' + t + (s.asked.length > 2 ? ' and ' + (s.asked.length - 2) + ' more' : '');
+  };
+
+  const Suspect = ({ s, live, acc }) => {
+    const P = window.PgCb;
+    if (!s.spent) return <Ss.Card className="cb2-card" kicker={s.role} title={s.name} facts={['Not questioned yet.']} />;
+    return <Ss.Card className="cb2-card" kicker={s.role} title={s.name} facts={[lieLine(s), askedLine(s), P.plural(s.spent, 'turn', 'turns') + ' spent here']} />;
+  };
+
+  const Accused = ({ s, acc }) => {
+    const P = window.PgCb;
+    const tag = <span className="ss-tag" data-tone={acc.right ? 'success' : 'error'}>{acc.right ? 'Right' : 'Wrong'}</span>;
+    const title = <span className="cb2-name"><span>{s.name}</span>{tag}</span>;
+    return (
+      <Ss.Card className="cb2-card cb2-accused" kicker="You accused" title={title}
+        facts={[s.role, s.spent ? lieLine(s) : 'Not questioned before the accusation', s.spent ? askedLine(s) + ' · ' + P.plural(s.spent, 'turn', 'turns') : 'No turns spent here']} />
+    );
+  };
+
+  const Places = ({ d }) => {
+    const P = window.PgCb, n = d.searched.length, left = d.placesTotal - n;
+    return (
+      <Ss.Card className="cb2-card cb2-places" kicker="The places" title={n + ' of ' + d.placesTotal + ' searched'}>
+        {n ? <ul className="cb2-plist">
+          {d.searched.map((t) => (
+            <li key={t.n}>
+              <span className="cb2-pname">{t.place}</span>
+              <span className="cb2-pturn">Turn {t.n}</span>
+              <span className="cb2-pfound">{t.result === 'found' ? 'Found ' + t.found.join(', ') : 'Found nothing'}</span>
+            </li>))}
+        </ul> : <p className="ss-caption" style={{ margin: 0 }}>No place searched yet.</p>}
+        {left > 0 && n > 0 ? <p className="ss-caption" style={{ margin: 0 }}>{left === 1 ? '1 place' : left + ' places'} not searched.</p> : null}
+      </Ss.Card>
+    );
+  };
+
+  const CaseTwo = ({ gid, session, sid, share, api }) => {
+    const c = session, P = window.PgCb, d = P.parse(c), out = Ss.useOutcome('casebook', c), H = P.caseHead(c);
+    const live = !!c.live, dawn = live && d.used >= 16;
+    const stats = [{ label: 'Turns', value: d.used + ' of 16' }, { label: 'Lies exposed', value: live ? String(d.lies.length) : d.lies.length + ' of ' + c.total }];
+    const accused = d.suspects.find((s) => s.accused);
+    const others = d.suspects.filter((s) => !s.accused);
+    const say = dawn ? 'Dawn has come. Only the accusation is left.' : (16 - d.used) + ' turns until dawn.';
+    return (
+      <Ss.Page gid={gid}>
+        <Ss.Head gid={gid} art="casebook" label={H.label} date={H.date} h1={out.h1} mark={out.mark} stats={stats} />
+        <div className="ss-body">
+          <section className="ss-hero ss-surface cb2-hero" aria-label="The suspects">
+            {accused ? <Accused s={accused} acc={d.acc} /> : null}
+            <div className="cb2-others">
+              {others.map((s) => <Suspect key={s.name} s={s} live={live} />)}
+            </div>
+            {dawn ? <p className="ss-caption cb2-note">Only the accusation is left.</p> : null}
+            <Places d={d} />
+          </section>
+          <aside className="ss-side">
+            <Ss.ShareCard status={live ? 'live' : 'done'} say={say} lines={share.lines} gid={gid} session={P.cardSession(c)} sid={sid} api={api} />
+          </aside>
+        </div>
+        <Ss.Record title="Every turn" lines={P.caseLines(c)} />
+      </Ss.Page>
+    );
+  };
+
+  pgOption('casebook', 2, {
+    name: 'Who you pinned it on',
+    stance: 'An interrogation ends in a name, so set the suspect you accused large with Right or Wrong beside it, and give the others and the places searched smaller cards beneath.',
+    cost: 'Needs the engine to send per-suspect turns and the suspects’ roles from the case file (today the record has them only as words; the seed parses them), and cards must wrap when a later case has more than three suspects; replaces the held page, shows the accusation only as the player made it and never marks anyone cleared.',
+    Component: CaseTwo,
+    shareText: (session) => window.SsOutcome.casebook(session).lines,
+    css: `
+      :scope .cb2-hero { gap: 12px; }
+      :scope .cb2-card.ss-card { background: color-mix(in srgb, var(--text) 5%, var(--ss-card)); box-shadow: none; }
+      :scope .cb2-accused.ss-card { border: 2px solid var(--ss-mark-1); padding: 20px 16px; gap: 14px; }
+      :scope .cb2-accused .ss-kicker { text-transform: uppercase; letter-spacing: .08em; }
+      :scope .cb2-accused .ss-card-title { font: var(--type-section-title); letter-spacing: var(--tracking-heading); }
+      :scope .cb2-name { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+      :scope .cb2-name .ss-tag { font: var(--type-small); letter-spacing: 0; }
+      :scope .cb2-accused .ss-card-facts li:first-child { color: var(--muted); }
+      :scope .cb2-others { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+      :scope .cb2-places .ss-card-title { font: var(--type-card-title); }
+      :scope .cb2-plist { list-style: none; margin: 0; padding: 0; display: grid; }
+      :scope .cb2-plist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--ss-line); }
+      :scope .cb2-pname { font: var(--type-label); }
+      :scope .cb2-pturn { font: var(--type-caption); color: var(--muted); text-align: right; }
+      :scope .cb2-pfound { grid-column: 1 / -1; font: var(--type-body); color: var(--muted); }
+      :scope .cb2-note { margin: 0; }
+      @container ss (min-width: 680px) {
+        :scope .cb2-hero { gap: 16px; padding: 20px; }
+        :scope .cb2-plist li { grid-template-columns: 200px auto minmax(0, 1fr); align-items: baseline; }
+        :scope .cb2-pturn { text-align: left; }
+        :scope .cb2-pfound { grid-column: auto; }
+      }
+    `,
+  });
+})();
