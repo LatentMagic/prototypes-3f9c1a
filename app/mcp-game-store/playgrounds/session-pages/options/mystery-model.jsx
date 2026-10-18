@@ -222,17 +222,17 @@
       :scope .mx-ink path { fill: none; stroke: currentColor; stroke-width: 2.4; }
       /* Game: the slot. Cover ground, cover tokens, flat fills, no texture; --shadow-card is the card's own. */
       :scope .mx-slot { container: mxs / inline-size; background: var(--cover-bg-wine); color: var(--cover-cream); box-shadow: var(--shadow-card); margin-inline: calc(var(--hp, 0px) * -1); min-width: 0; }
-      :scope .mx-in { --pad: 16px; --g: 13px; --twmax: 100px; --th: 128px; --tw: min(var(--twmax), calc((100cqw - 2 * var(--pad) - 2 * var(--g)) / 3));
+      :scope .mx-in { --pad: 16px; --g: 13px; --twmax: 100px; --th: 140px; --tw: min(var(--twmax), calc((100cqw - 2 * var(--pad) - 2 * var(--g)) / 3));
         padding: 24px var(--pad) 16px; display: grid; gap: 16px; justify-items: center; min-width: 0; }
       @container mxs (min-width: 480px) { :scope .mx-in { --pad: 24px; --g: 24px; --twmax: 180px; --th: 150px; padding-top: 32px; } }
       :scope .mx-tags { position: relative; display: grid; grid-template-columns: repeat(3, var(--tw)); gap: var(--g); }
       :scope .mx-tag { position: relative; height: var(--th); z-index: 1; }
-      :scope .mx-card { position: absolute; inset: 0; background: var(--cover-cream); color: var(--page); display: grid; gap: 4px; align-content: start; padding: 28px 8px 8px; overflow: hidden;
+      :scope .mx-card { position: absolute; inset: 0; background: var(--cover-cream); color: var(--page); display: grid; gap: 4px; align-content: start; padding: 28px 6px 8px; overflow: hidden;
         clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%, 0 12px); transform-origin: 50% 6px; }
       :scope .mx-tag[data-miss] .mx-card { transform: translateX(var(--sh)) rotate(var(--rot)); }
       :scope .mx-hole { position: absolute; left: 50%; top: 14px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--cover-bg-wine); }
       :scope .mx-kick { font: 600 13px/1.2 var(--font-text); color: color-mix(in srgb, var(--page) 72%, var(--cover-cream)); }
-      :scope .mx-nm { font: 700 15px/1.2 var(--font-heading); letter-spacing: var(--tracking-heading); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+      :scope .mx-nm { font: 700 15px/1.2 var(--font-heading); letter-spacing: -0.02em; overflow-wrap: break-word; hyphens: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
       :scope .mx-tick { position: absolute; right: 8px; bottom: 8px; width: 16px; height: 16px; color: var(--cover-bg-wine); display: block; }
       :scope .mx-strike { position: absolute; left: -25%; width: 150%; top: calc(50% - 1.5px); height: 3px; background: var(--cover-orange); transform: rotate(-45deg); transform: rotate(calc(-1 * atan2(var(--th), var(--tw)))); }
       :scope .mx-tag[data-empty] .mx-card::before { content: ''; position: absolute; inset: 0; background: var(--cover-bg-wine);

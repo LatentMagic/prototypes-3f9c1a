@@ -14,7 +14,7 @@
     return (
       <div className="cb1-group">
         <Ss.Cells rows={[slice]} cols={8} label={label || 'No turns taken in this row'} />
-        <div className="cb1-who" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <span key={i}>{turns[from + i] && (!ia || turns[from + i].result === 'lie') ? turns[from + i].short : ''}</span>)}</div>
+        <div className="cb1-who" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <span key={i} data-alt={i % 2 ? '1' : undefined} style={ia ? { gridColumn: i + 1 } : undefined}>{turns[from + i] && (!ia || turns[from + i].result === 'lie') ? turns[from + i].short : ''}</span>)}</div>
       </div>
     );
   };
@@ -84,7 +84,9 @@
       :scope .cb1-acc-flat { grid-template-columns: minmax(0, 1fr); }
       :scope .cb1-ia .cb1-who { display: grid; grid-template-columns: repeat(8, var(--cb1c)); gap: 6px; font: var(--type-caption); color: var(--muted); text-align: center; }
       :scope .cb1-ia .cb1-who { font-size: 11px; letter-spacing: -0.02em; }
-      :scope .cb1-ia .cb1-who span { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+      :scope .cb1-ia .cb1-who span { overflow: visible; white-space: nowrap; }
+      /* IA names stagger onto a second line on odd turns, so two neighbouring lies never meet. */
+      :scope .cb1-ia .cb1-who span[data-alt] { grid-row: 2; }
       @container ss (min-width: 680px) { :scope .cb1-ia .cb1-who { font: var(--type-caption); letter-spacing: 0; } }
       :scope .cb1-ia .cb1-group { gap: 2px; }
       :scope .cb1-strip { --cb1c: min(64px, calc((100cqi - 32px - 34px - 42px) / 8)); display: grid; gap: 6px; min-width: 0; }

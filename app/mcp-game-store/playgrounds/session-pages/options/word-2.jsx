@@ -49,7 +49,8 @@
       :scope .w2-cells .ss-cells-row { gap: 8px; }
       /* Phone: the poster bleeds to the screen edges so the five tiles take the full column (about 66px). */
       @container ss (max-width: 639px) {
-        :scope .w2-poster { margin-inline: -16px; border-inline-width: 0; }
+        :scope .ss-page:not([data-element="game"]) .w2-poster { margin-inline: -16px; border-inline-width: 0; }
+        /* Game: no bleed. The green ground stays inside the column, as the board's own area, never the page's full width. */
       }
       @container ss (min-width: 640px) {
         :scope .w2-poster { padding: 40px 24px; }
