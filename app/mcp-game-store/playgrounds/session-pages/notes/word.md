@@ -13,8 +13,8 @@
 
 ## Open questions
 
-- Texture: may a Game stop break the flat rule? Lean: Daily Word stays flat either way.
-- On a loss, show the answer? Lean: no, the engine sends no field for it.
+- Texture: may a Game stop break the flat rule? Lean (main thread's read): Daily Word stays flat either way.
+- On a loss, show the answer? Lean (main thread's read): no, the engine sends no field for it.
 
 ## Engine asks
 

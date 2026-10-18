@@ -13,9 +13,9 @@
 
 ## Open questions
 
-- Texture: may a Game stop break the flat rule? Lean: every stop holds flat.
-- "Beat par. Your go:" under a 74-minute escape reads as a dare the sharer lost. Keep or swap past par? Lean: swap the line past par.
-- Share margin ("2 min under par") lets a reader work out par. Keep? Lean: keep, deployed already gives a bound.
+- Texture: may a Game stop break the flat rule? Lean (main thread's read): every stop holds flat.
+- "Beat par. Your go:" under a 74-minute escape reads as a dare the sharer lost. Keep or swap past par? Lean (main thread's read): swap the line past par.
+- Share margin ("2 min under par") lets a reader work out par. Keep? Lean (main thread's read): keep, deployed already gives a bound.
 
 ## Engine asks
 

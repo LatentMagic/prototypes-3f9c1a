@@ -13,9 +13,9 @@
 
 ## Open questions
 
-- Texture: may a Game stop break the flat rule? Lean: every stop holds flat.
-- Solved with turns to spare: half sun on the dawn line, or nothing? Lean: as built, nothing.
-- Share says "lies broken", the page says "exposed". Keep both? Lean: keep, "broken" is the product page's verb.
+- Texture: may a Game stop break the flat rule? Lean (main thread's read): every stop holds flat.
+- Solved with turns to spare: half sun on the dawn line, or nothing? Lean (main thread's read): as built, nothing.
+- Share says "lies broken", the page says "exposed". Keep both? Lean (main thread's read): keep, "broken" is the product page's verb.
 
 ## Engine asks
 
