@@ -1,5 +1,5 @@
 // Session page, Delve, option 2: "Room by room". The run told as a walk through a small map: one chapter per room, ending at the climax.
-// Reuses window.DvModel from delve-1.jsx (the run parsed into rolls and rooms, the roll cell, canon's tracks and endings cards, the shared CSS).
+// Reuses window.DvModel from delve-model.jsx (the run parsed into rolls and rooms, the roll cell, canon's tracks and endings cards, the shared CSS).
 (function () {
   const h = React.createElement;
   const M = () => window.DvModel;

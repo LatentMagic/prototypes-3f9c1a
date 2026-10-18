@@ -1,5 +1,5 @@
 // Session page, Delve, option 3: "The moments". Three things a player retells, picked by a fixed rule and set large; the whole run sits small beneath them.
-// Reuses window.DvModel from delve-1.jsx (the run parsed into rolls, the roll cell, canon's tracks and endings cards, the shared CSS).
+// Reuses window.DvModel from delve-model.jsx (the run parsed into rolls, the roll cell, canon's tracks and endings cards, the shared CSS).
 (function () {
   const h = React.createElement;
   const M = () => window.DvModel;
@@ -39,8 +39,7 @@
       picks.length ? h('div', { className: 'dv3-moments' }, picks.map((p, i) => h(Ss.Card, { key: i, className: 'dv3-card', kicker: p.kicker, title: p.title, facts: facts(p.r) })))
         : h('p', { className: 'ss-say' }, 'No rolls yet.'),
       m.rolls.length ? h(Ss.Card, { className: 'dv3-run', kicker: 'The whole run' },
-        h(Ss.Cells, { className: 'dv-mini', rows: [m.rolls.map((r) => D.cell(r, { nums: false, marks }))], label: m.rolls.length + ' rolls; the moments above are rolls ' + marks.join(', ') }),
-        h('p', { className: 'ss-caption' }, 'The outlined cells are the moments above. Solid is a strong hit, a low bar a weak hit, an outline a miss.')) : null);
+        h(Ss.Cells, { className: 'dv-mini', rows: [m.rolls.map((r) => D.cell(r, { nums: false, marks }))], label: m.rolls.length + ' rolls; the moments above are rolls ' + marks.join(', ') })) : null);
     return h(D.Frame, Object.assign({}, props, { m, out, hero }));
   };
 
