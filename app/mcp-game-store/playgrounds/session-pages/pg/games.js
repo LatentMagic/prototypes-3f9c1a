@@ -4,6 +4,8 @@
 // Casebook has no session id: canon gives it its own record page (gs-casebook.jsx), whose record is cbWeek(), picked by `week`.
 window.PG_BASE = '../playgrounds/session-pages/';   // from canon/, which index.html sets as <base>
 window.PG_OPTION_COUNT = 3;
+// Games that have an options/<game>-model.jsx (the game's reader, loaded before its options). Add the id here when the file is added; leave it out otherwise.
+window.PG_MODELS = [];
 window.PG_SHARE_OPT = 4;   // the rail entry after the options: the share-text whiteboard (pg/share.jsx). Seeds for the lost states: seeds/failures.jsx.
 window.PG_GAMES = [
   { id: 'casebook', name: 'Casebook', record: true, states: [

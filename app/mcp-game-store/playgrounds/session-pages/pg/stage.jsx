@@ -15,8 +15,8 @@ const pgStage = (api, game, st) => {
 // The session record the page is showing, and the share text canon would copy for it.
 const pgSessionOf = (api, game, st) => (game.record ? (st.cb === 'lost' && window.PG_CB_LOST ? window.PG_CB_LOST : window.cbWeek(api)) : window.GS_SESSIONS[st.sid]);
 const pgCanonShare = (game, s) => {
-  if (!s || s.live) return null;
-  return game.record ? window.cbShareLines(s) : window.gsShareText(s);
+  if (!s || s.live || s.unfinished) return null;   // an abandoned play has no Share (MCPG-030 EF-01)
+  try { return game.record ? window.cbShareLines(s) : window.gsShareText(s); } catch (e) { return null; }
 };
 
 // Casebook's lost state is a playground seed (seeds/failures.jsx): canon's own case page, given that record.
@@ -61,7 +61,12 @@ const PgScreen = ({ api }) => {
   const def = window.pgGetOption(game.id, sel.opt);
   const session = pgSessionOf(api, game, st);
   const canonLines = pgCanonShare(game, session);
-  const lines = sel.opt > 0 && def.shareText ? def.shareText(session, canonLines, { game: game.id, state: st.id }) : canonLines;
+  // An option's shareText is its own code: a throw must never blank the app. It becomes "no Share" plus a visible note, and the option still renders.
+  let lines = canonLines, shareErr = null;
+  if (sel.opt > 0 && def.shareText) {
+    try { lines = def.shareText(session, canonLines, { game: game.id, state: st.id }); }
+    catch (e) { lines = null; shareErr = String((e && e.message) || e); }
+  }
   const cls = 'pgo-' + game.id + '-' + sel.opt;
   const Comp = sel.opt > 0 && !isShareOpt(sel.opt) ? def.Component : null;
   const isShare = sel.opt === window.PG_SHARE_OPT;
@@ -77,6 +82,7 @@ const PgScreen = ({ api }) => {
     <>
       <div className={'pgo ' + cls} data-pg-game={game.id} data-pg-option={sel.opt} data-pg-state={st.id} style={{ display: 'contents' }}>
         <PgScopedCss cls={cls} css={sel.opt > 0 ? def.css : null} />
+        {shareErr && <p role="alert" className="gs-wrap" style={{ margin: '8px auto', maxWidth: 720, padding: '0 16px' }}>This option's share text failed: {shareErr}</p>}
         <PgBoundary key={game.id + sel.opt + st.id + sel.nonce}>
           {Comp
             ? <Comp gid={game.id} game={game.name} optionN={sel.opt} stateId={st.id} stateLabel={st.label} sid={st.sid || null}

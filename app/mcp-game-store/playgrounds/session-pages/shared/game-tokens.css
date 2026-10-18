@@ -4,28 +4,37 @@
 
    Three token layers over the same named regions (Head, Hero, Side, Record). The switch writes data-dist on .ss-page.
      near   (default)  today's design-system tokens only. This file adds nothing at Near.
-     middle            the Hero card fills with the game's ground; marks inside it may use the game's own cover colours.
+     middle            MARKS ONLY: the game's colour goes on its marks (cells, glyphs, rules, accents) on the store's own grounds. No tinted ground or card.
      far               the whole page body (between top bar and footer) takes the ground; every card on it uses --game-ground-card.
    No new hues: each token is an existing cover colour or a color-mix of existing tokens.
 
-   Contrast, WCAG ratio, measured 2026-10-18 (flagged = under AA for the use named):
+   Contrast, WCAG ratio, measured 2026-10-18 after fix round 1 (computed values; page-coloured text on a mark = the "fill" column, a mark used as text or a graphic = the others):
      --text on grounds 11.8 to 14.3; --muted on grounds 5.7 to 6.9; --muted on --game-ground-card 4.84 (forest) to 5.89 (indigo): all pass 4.5.
-     Teal: 4.04 (indigo), 3.64 (wine), 3.33 (forest) on --game-ground; FAILS 4.5 as text everywhere, so teal is shapes only.
-           On --game-ground-card (Far): 3.45 indigo, 3.11 wine, 2.83 forest. Forest/teal at Far FAILS even the 3:1 graphics floor: never the only signal.
-     Orange: 4.67 indigo, 4.21 wine, 3.86 forest on --game-ground (3.99, 3.60, 3.28 on the card): graphics only; under 4.5 as text on wine and forest.
-     Lilac: 5.66 / 5.10 / 4.67 on ground; on the card 4.84 / 4.36 / 3.97: passes as text on indigo only. Shapes elsewhere.
-     Amber, green, cream pass 4.5 on every ground and card.
+     MIDDLE (store's own --page 1b1917 and --card 262320): every mark passes 4.5 both as a fill with page-coloured text (5.25 to 14.8) and as text or a graphic on --page (4.68 to 14.8
+       on --card). Teal and orange are the lifted --mark-teal / --mark-orange (the raw cover colours were 4.28 and 4.41 on page and card: failing).
+     FAR, mark on --game-ground-card (text needs 4.5; graphics need 3):
+       casebook  amber 6.65  lilac 4.86  cream 11.98          all pass as text
+       escape    teal 4.25   amber 6.65  cream 11.98          teal: graphics only as text; fill text passes (5.25)
+       delve     amber 5.98  lilac 4.37  orange 4.03          lilac, orange: graphics only
+       word      green 5.23  amber 5.43  teal 3.47            teal: graphics only, never the only signal
+       mystery   orange 4.03 cream 10.77 amber 5.98           orange: graphics only
+       Fills with page-coloured text pass 4.5 for every mark at every distance (5.25 to 14.8).
      --game-ground-line on --game-ground: 1.66 to 1.69 (it is an edge, not text; the card also keeps --shadow-card).
      --game-ground-card against --game-ground: 1.17 to 1.18: the card reads by its edge and shadow, not its fill.
-     Indigo against --page is 1.06:1 (wine 1.18, forest 1.28): at Middle and Far, Casebook and Escape change by hue only.
+     Indigo against --page is 1.06:1 (wine 1.18, forest 1.28): at Far, Casebook and Escape change by hue only. Middle does not depend on the ground, so it holds on indigo.
    ============================================================================ */
 
-/* ---- Per-game tokens (declared always, used only at Middle and Far) ---- */
+/* ---- Mark colours that carry text. A mark is a fill with page-coloured text on it (a cell with a letter, a lock number) and sometimes text itself, so the
+   cover teal and orange are lifted a little towards the cover cream until both pairings pass 4.5:1 on the platform page and card (fix round 1; validate 3).
+   Same hue family, no new colour: teal 85% + cream, orange 90% + cream. ---- */
+.ss-page { --mark-teal: color-mix(in srgb, var(--cover-teal) 85%, var(--cover-cream)); --mark-orange: color-mix(in srgb, var(--cover-orange) 90%, var(--cover-cream)); }
+
+/* ---- Per-game tokens (declared always, used at Middle and Far) ---- */
 .ss-page[data-game="casebook"] { --game-ground: var(--cover-bg-indigo); --game-mark-1: var(--cover-amber); --game-mark-2: var(--cover-lilac);  --game-mark-3: var(--cover-cream); }
-.ss-page[data-game="escape"]   { --game-ground: var(--cover-bg-indigo); --game-mark-1: var(--cover-teal);   --game-mark-2: var(--cover-amber);  --game-mark-3: var(--cover-cream); }
-.ss-page[data-game="delve"]    { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--cover-amber);  --game-mark-2: var(--cover-lilac);  --game-mark-3: var(--cover-orange); }
-.ss-page[data-game="word"]     { --game-ground: var(--cover-bg-forest); --game-mark-1: var(--cover-green);  --game-mark-2: var(--cover-amber);  --game-mark-3: var(--cover-teal); }
-.ss-page[data-game="mystery"]  { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--cover-orange); --game-mark-2: var(--cover-cream);  --game-mark-3: var(--cover-amber); }
+.ss-page[data-game="escape"]   { --game-ground: var(--cover-bg-indigo); --game-mark-1: var(--mark-teal);   --game-mark-2: var(--cover-amber);  --game-mark-3: var(--cover-cream); }
+.ss-page[data-game="delve"]    { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--cover-amber);  --game-mark-2: var(--cover-lilac);  --game-mark-3: var(--mark-orange); }
+.ss-page[data-game="word"]     { --game-ground: var(--cover-bg-forest); --game-mark-1: var(--cover-green);  --game-mark-2: var(--cover-amber);  --game-mark-3: var(--mark-teal); }
+.ss-page[data-game="mystery"]  { --game-ground: var(--cover-bg-wine);   --game-mark-1: var(--mark-orange); --game-mark-2: var(--cover-cream);  --game-mark-3: var(--cover-amber); }
 
 /* Derived. Needed because --line on the grounds measures 1.09:1 (forest) to 1.32:1 (indigo), so a card edge would disappear. */
 .ss-page { --game-ground-line: color-mix(in srgb, var(--text) 18%, var(--game-ground, var(--page))); --game-ground-card: color-mix(in srgb, var(--text) 6%, var(--game-ground, var(--page))); }
@@ -35,9 +44,9 @@
   --ss-mark-1: var(--off-white); --ss-mark-2: var(--muted); --ss-mark-3: var(--control-edge);
   --ss-cell: var(--card); --ss-cell-line: var(--line); }
 
-/* ---- Middle: the Hero card takes the ground; marks inside the Hero may use the game's colours. Rest of the page as Near. ---- */
-.ss-page[data-dist="middle"] .ss-hero { --ss-card: var(--game-ground); --ss-line: var(--game-ground-line); --ss-cell: var(--card); --ss-cell-line: var(--game-ground-line);
-  --ss-mark-1: var(--game-mark-1); --ss-mark-2: var(--game-mark-2); --ss-mark-3: var(--game-mark-3); }
+/* ---- Middle: MARKS ONLY (ruling, fix round 1). The game's colour goes on its marks (cells, glyphs, rules, accents) on the platform's own grounds:
+   no tinted ground, no tinted card, no game-coloured line. Everything that is not a mark is exactly Near. Works on indigo, where a tinted ground is invisible. ---- */
+.ss-page[data-dist="middle"] { --ss-mark-1: var(--game-mark-1); --ss-mark-2: var(--game-mark-2); --ss-mark-3: var(--game-mark-3); }
 
 /* ---- Far: the body takes the ground, full width; every card on it uses the ground-card. Store chrome stays --page. ---- */
 .ss-page[data-dist="far"] { --ss-ground: var(--game-ground); --ss-card: var(--game-ground-card); --ss-line: var(--game-ground-line); --ss-edge: var(--game-ground-line);

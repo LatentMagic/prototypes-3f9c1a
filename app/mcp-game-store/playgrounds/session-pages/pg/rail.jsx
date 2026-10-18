@@ -76,7 +76,7 @@ const PgRail = ({ onPick }) => {
       <div className="pg-dist">
         <div className="pg-states-label">Distance from the store's look</div>
         <window.ConfigSeg value={sel.dist || 'near'} options={[{ value: 'near', label: 'Near' }, { value: 'middle', label: 'Middle' }, { value: 'far', label: 'Far' }]} onChange={(v) => window.pgStore.setDist(v)} />
-        <p className="pg-dist-note">{(sel.dist || 'near') === 'near' ? 'Near: the design system as it is today.' : (sel.dist === 'middle' ? 'Middle: the hero card takes the game\u2019s ground.' : 'Far: the whole page takes the game\u2019s ground.') + (sel.dist !== 'near' && (sel.game === 'casebook' || sel.game === 'escape') ? ' On indigo this reads as a hue change only.' : '')}</p>
+        <p className="pg-dist-note">{(sel.dist || 'near') === 'near' ? 'Near: the design system as it is today.' : (sel.dist === 'middle' ? 'Middle: marks only. The game\u2019s colour goes on its cells and accents; every ground stays the store\u2019s.' : 'Far: the whole page takes the game\u2019s ground.') + (sel.dist === 'far' && (sel.game === 'casebook' || sel.game === 'escape') ? ' On indigo this reads as a hue change only.' : '')}</p>
       </div>
       <div className="pg-groups">
         {window.PG_GAMES.map((g) => <PgGroup key={g.id} game={g} sel={sel} onPick={onPick} />)}

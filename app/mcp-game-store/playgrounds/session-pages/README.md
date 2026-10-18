@@ -32,12 +32,12 @@ Rail header, above the games: **Near / Middle / Far**, global (every game and op
 | Layer | What changes |
 |---|---|
 | Near | Today's design-system tokens only. `shared/game-tokens.css` adds nothing. |
-| Middle | The Hero card (`.ss-hero`) fills with the game's ground (`--game-ground`); marks inside it may use `--game-mark-1..3`. Rest of the page as Near. |
+| Middle | **Marks only.** The game's colour goes on its marks (`--ss-mark-1..3`: cells, glyphs, rules, accents; the Hero also gets a 3px top rule in mark 1) on the store's own grounds. No tinted ground, card or line; everything that is not a mark is Near. It works on indigo. Fix round 1 redefined it; before, it tinted the Hero card. |
 | Far | The whole page body takes `--game-ground`; every card uses `--game-ground-card` and `--game-ground-line`; marks anywhere. Store chrome stays `--page`. |
 
-`shared/game-tokens.css` is the one file of per-game tokens (ground and three marks per game, plus the two derived tokens), written to read as candidate design-system additions, with the measured contrast table in its header. Findings: teal is shapes only (fails 4.5 as text everywhere, and fails even 3:1 on the Far forest card); orange is graphics only on wine and forest; lilac is text-safe on indigo only. Indigo against `--page` is 1.06:1, so Casebook and Escape change by hue only (the rail says so under Far).
+`shared/game-tokens.css` is the one file of per-game tokens (ground and three marks per game, plus the two derived tokens), written to read as candidate design-system additions, with the measured contrast table in its header. Findings: the raw cover teal and orange failed 4.5 as text and as a fill under page-coloured text, so the marks use `--mark-teal` and `--mark-orange` (teal 85% and orange 90%, mixed with cover cream); every mark now passes 4.5 on the store's page and card, so Middle passes AA for every pairing. At Far, teal and orange (and lilac on wine and forest) are still graphics only as text on the game's card. Indigo against `--page` is 1.06:1, so at Far Casebook and Escape change by hue only (the rail says so under Far). The full table is in the header of `game-tokens.css`.
 
-Surfaces inside an option read these tokens, never a game colour directly: `--ss-card`, `--ss-line`, `--ss-cell`, `--ss-cell-line`, `--ss-mark-1..3` (neutral at Near, the game's marks at Middle in the Hero and at Far).
+Surfaces inside an option read these tokens, never a game colour directly: `--ss-card`, `--ss-line`, `--ss-cell`, `--ss-cell-line`, `--ss-mark-1..3` (neutral at Near, the game's marks at Middle and Far, anywhere on the page).
 
 ## Failure seeds
 
@@ -45,7 +45,7 @@ Surfaces inside an option read these tokens, never a game colour directly: `--ss
 
 - **Delve Lost**: `GS_SESSIONS['delve-lost']`. Wren the Rogue, ending "Fell in the warren" (the setting's own words), 10 rolls (marks `🟩🟨🟥🟨🟥🟩🟥🟨🟥💀`), HP 11 to 0 on a natural 1, threat 6 of 12, 3 of 5 rooms reached.
 - **Escape Lost**: `GS_SESSIONS['escape-lost']`. The engine has one outcome (escaped) and no clock, so the worst finish is a long one: 74 min against par 30, 3 hints (nudge, bigger nudge, the answer), 11 wrong tries. No forced lock: The Clockmaker's Study has none in its content. It reads "Escaped in 74 min, over par", not a loss.
-- **Daily Word Failed**: `GS_SESSIONS['word-e4']` (No. 210). Answer LIGHT, six guesses, the last four each four letters in place (the -IGHT trap). Canon has no lost Word session; `games.js` named this id with no seed behind it. The seed keeps the answer only to compute marks: no engine field holds it on a loss, so no page prints it.
+- **Daily Word Failed**: `GS_SESSIONS['word-e4']` (No. 208, the number canon's own history gives it: `212 - 4`; Today and every option say the same). Answer LIGHT, six guesses, the last four each four letters in place (the -IGHT trap). Canon has no lost Word session; `games.js` named this id with no seed behind it. The seed keeps the answer only to compute marks: no engine field holds it on a loss, so no page prints it.
 - **Daily Mystery** `mystery-today` gets `wrong = ['room']` (S: which accusation part missed; needs the engine to send it).
 - **Casebook Lost**: `window.PG_CB_LOST`, built with canon's `cbMake` and shown on canon's own `CbCase`. Dawn comes with the case unsolved: all 16 turns used, 1 lie exposed, 5 stories that stood, then the wrong name (Tobias Pike).
 
@@ -53,9 +53,9 @@ Options receive these as `session` like any other state (Casebook's `session` is
 
 ## Share text view
 
-Rail entry **T Share text**, after the options (`o=4`), for every game. A whiteboard, not the app: a full-window sheet over the app with no shell. It shows the three candidates A to C from `_resources/ideation/share-shortlist.md` section 2, each as a Triumph and a Failure, exactly as written there, with the recommended one (B for every game) marked. Each text sits in a chat bubble inside a 393-column and a 360-column phone frame, side by side where the window has room and stacked where it has not (phone, and 1024 with the dock). System font, 16px, bubble at about 80% of the screen width.
+Rail entry **T Share text**, after the options (`o=4`), for every game. A whiteboard, not the app: a full-window sheet over the app with no shell. It shows the three candidates A to C from `_resources/ideation/share-shortlist.md` section 2, each as a Triumph and a Failure, with the recommended one (B for every game) marked. **A and C are exactly as the shortlist writes them. The recommended one is generated at render time from `SsOutcome` on the seeded plays** (so it is the amended text the options copy: shortlist B plus fable-steer section 4), and says so on the sheet; the seeds' own numbers differ from the shortlist's illustrations (a Daily Word failure is No. 208, say). Each text sits in a chat bubble inside a 393-column and a 360-column phone frame, side by side where the window has room and stacked where it has not (phone, and 1024 with the dock). System font, 16px, bubble at about 80% of the screen width.
 
-The bubble is a **simulation** of a WhatsApp message and the widths are **approximate**: real phones, fonts and text-size settings wrap differently. Where the window is narrower than a frame the whole frame is scaled down, with its width caption saying so; wrapping is unchanged by that. The texts are proposals, none deployed, and the link is a placeholder. The data is generated from the shortlist (`pg/share-data.js`); regenerate it rather than hand-editing it.
+The bubble is a **simulation** of a WhatsApp message and the widths are **approximate**: real phones, fonts and text-size settings wrap differently. Where the window is narrower than a frame the whole frame is scaled down, with its width caption saying so; wrapping is unchanged by that. The texts are proposals, none deployed, and the link is a placeholder. `pg/share-data.js` is generated from the shortlist; regenerate it rather than hand-editing it. The sheet's eyebrow is `#7a005c` (the app's pink is 2.96:1 on the light sheet).
 
 ## The option contract
 
@@ -88,6 +88,10 @@ One module per option: `options/<game>-<n>.jsx` (`n` = 1..3), already present as
 | `Today` | a component rendering canon's own page for this state, for an option that wraps or extends it |
 | `api` | canon's app context (`window.gsApi`): `api.go`, `api.view`, `api.play` ... |
 
+**Game models (fix round 1).** An optional `options/<game>-model.jsx` loads before that game's options 1 to 3, so a game's reader (`PgCb`, `PgMystery`, `EsModel`, `DvModel`) need not live in option 1. It is a plain `(function () { ... })();` that sets its `window` global. **Add the game id to `window.PG_MODELS` in `pg/games.js`** when you add the file (the loader requests only listed files, so an unlisted game costs no 404). Today the list is empty: the readers still sit in each game's option 1 file until its builder moves them.
+
+**Share text errors.** The harness wraps an option's `shareText` in try/catch: a throw gives `share.lines = null` (no Share) and a visible `role="alert"` note above the option, never a blank app. An abandoned play (`unfinished`) passes `canonLines` null.
+
 Everything else is canon's: `useGs()`, `DS.*`, `GsCover`, `LbBackTo`, `window.GsSharePopup` and the rest are on `window`.
 
 **Share text.** `shareText(session, canonLines, ctx)` returns an array of lines (or null for no Share). The harness passes the result as `share.lines`. An option that draws its own Share control opens canon's pop-up with it:
@@ -108,7 +112,7 @@ An option that only wraps `<Today />` shows canon's Share with canon's text; to 
 
 Loaded for every option. An option mounts these; it does not re-draw them. Global `Ss` (kit) and `SsOutcome` (text).
 
-**Outcome and share text: `SsOutcome[game](session)`** (`shared/outcome.js`; `word`, `mystery`, `casebook`, `escape`, `delve`) returns `{ h1, mark, label, lines, link, live, ended, ... }`. `h1` is the outcome line without its emoji (build-rulings 1); `lines` is the exact share text (null while unfinished); both the page and the Share card read the one function, so they cannot drift. Texts are share-shortlist B with fable-steer section 4. Word also returns `play.rows` (guesses with marks and captions, hints in place); Casebook returns `cells`; Escape `par`, `min`; Delve `hero`, `tape`. Data not on today's record is derived from the seed (shortlist label S) and the option's cost line says "needs the engine to send X".
+**Outcome and share text: `SsOutcome[game](session)`** (`shared/outcome.js`; `word`, `mystery`, `casebook`, `escape`, `delve`) returns `{ h1, mark, label, lines, link, live, ended, status, stats, ... }`. `status` is `'done' | 'live' | 'ended'` and is always set. **Every game and every record shape is safe:** a live, abandoned (`unfinished`, not live) or half-built record returns `h1` "In progress" or "Not finished", `lines` null and `stats` for the open play; it never throws and never prints `NaN`. A Casebook record with no verdict, a Delve record with no share lines and an Escape record with no finishing time are `ended`. **`stats`** is the head's fact strip for that game and state, carrying only what the h1 does not say (Word: none when done, Guesses and Hints open; Mystery: Questions, plus Hints on a loss or an open play; Casebook: Turns and Lies exposed; Escape: Time, Hints, Wrong tries when done; Delve: Rolls, HP, Natural 20s). Pass it straight to `Ss.Head`; options should stop computing their own (an option that still does keeps working). `h1` is the outcome line without its emoji (build-rulings 1); `lines` is the exact share text (null while unfinished); both the page and the Share card read the one function, so they cannot drift. Texts are share-shortlist B with fable-steer section 4. Mystery: a solve with no hints is "Solved, no hints"; with hints it is "Solved · N hints" and the questions go on their own line; a loss adds hints to its count line. Escape lists "N locks forced" when there are any (a `Force ... with ...` move, or a figure). Escape reads its room name and par from the record (`s.room`, `s.par`) or the seed (`window.PG_SEED.escape`, `seeds/editions.js`; `out.roomSeeded`, `out.parSeeded` say which): when the record's own "under par" or "over par" disagrees with the seed's par, the page says only "Escaped, under par" and invents no minutes. Hours parse ("1 h 14 min" is 74). Delve prints "1 roll". Word also returns `play.rows` (guesses with marks and captions, hints in place); Casebook returns `cells`; Escape `par`, `min`; Delve `hero`, `tape`. Data not on today's record is derived from the seed (shortlist label S) and the option's cost line says "needs the engine to send X".
 
 **Components (`shared/session-kit.jsx`)**
 
@@ -119,7 +123,7 @@ Loaded for every option. An option mounts these; it does not re-draw them. Globa
 | `Ss.Cells` | `rows, cols, size, label` | The one square-cell component. A cell is `{ t, k, sub }`; kinds `hit near miss filled empty hint mark1 mark2 mark3 plain`. Size `md` 52px, `lg` 64px, `fit`. |
 | `Ss.Strip` | `cells, perRow, size, label` | One run of cells, wrapped. |
 | `Ss.Card` | `kicker, title, facts, tag{text,tone}` | The one card kind: kicker, title, up to three facts, optional status tag (status colour for status only). |
-| `Ss.ShareCard` | `status, lines, gid, session, sid, api` | The action card: share text in a monospace block exactly as it will paste, Copy inside it (copies, then "Copied"), the played-once line or Start over. `say` (live only) is the option's one line about the game in progress ("4 guesses left"). `status` is `done`, `live` (Play), `kept` (Needs the Pass), `ended` (Not finished). Never floats; no pop-up. |
+| `Ss.ShareCard` | `status, lines, gid, session, sid, api` | The action card: share text in a monospace block exactly as it will paste, Copy inside it (copies, then "Copied"), the played-once line or Start over. `say` (live only) is the option's one line about the game in progress ("4 guesses left"). `status` is `done`, `live` (Play), `kept` (Needs the Pass), `ended` (Not finished). Never floats; no pop-up. A `done` card given no lines (an abandoned play) shows the `ended` card instead of throwing. |
 | `Ss.Record` | `title, lines, open` | The ruled list as a Disclosure titled with the count, closed at every width. An option passes `open` only when its hero does not show the play. 200-line paging. |
 | `Ss.GameLink`, `Ss.OnceLine` | `gid` | The link back to the game page; the played-once line. |
 
@@ -131,7 +135,7 @@ The design system's `TileGrid` is chat-only (light ground, 32px cap), so `Ss.Cel
 
 ## Files
 
-`index.html` (loader) · `pg/games.js` (games, states) · `pg/share-data.js` (the shortlist's texts) · `pg/share.jsx` (share-text view) · `seeds/failures.jsx` (lost seeds) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `shared/` (`outcome.js`, `session-kit.jsx`, `kit.css`, `game-tokens.css`) · `options/*.jsx` (`word-1.jsx` built; 14 placeholders).
+`index.html` (loader) · `pg/games.js` (games, states, `PG_MODELS`) · `pg/share-data.js` (the shortlist's texts) · `pg/share.jsx` (share-text view) · `seeds/failures.jsx` (lost seeds) · `seeds/editions.js` (`PG_SEED`: facts the engine does not send yet) · `pg/store.js` (registry, selection, URL, storage) · `pg/rail.jsx` (rail body) · `pg/stage.jsx` (mounts Today or an option, Config hook) · `pg/boot.jsx` (dock) · `pg/pg.css` · `shared/` (`outcome.js`, `session-kit.jsx`, `kit.css`, `game-tokens.css`) · `options/*.jsx` (the three options per game, plus an optional `<game>-model.jsx`).
 
 ## Known limits
 

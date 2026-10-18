@@ -101,6 +101,8 @@
     const [copied, setCopied] = React.useState(false);
     React.useEffect(() => { if (!copied) return undefined; const t = setTimeout(() => setCopied(false), 2400); return () => clearTimeout(t); }, [copied]);
     const B = D().Button;
+    // A finished-looking card with no share text is an abandoned play: show "Not finished", never throw on null lines (fix round 1).
+    if (status === 'done' && !(lines && lines.length)) status = 'ended';
     if (status === 'live') return h('section', { className: 'ss-card ss-side-card', 'aria-label': 'In progress' },
       h('h3', { className: 'ss-card-title' }, 'In progress'), h('p', { className: 'ss-say' }, say || 'No result yet.'),
       h(B, { onClick: () => api.play(session.game, sid) }, 'Play'));

@@ -35,6 +35,8 @@
 
 /* ---- Hero card, the one card kind ---- */
 .ss-surface, .ss-card { background: var(--ss-card); border: 1px solid var(--ss-line); box-shadow: var(--shadow-card); padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; color: var(--text); }
+/* Middle (marks only): the one rule in the game's own colour; every ground and card stays the store's. */
+.ss-page[data-dist="middle"] .ss-hero { border-top: 3px solid var(--ss-mark-1); }
 .ss-kicker { font: var(--type-label); color: var(--muted); }
 .ss-card-title { margin: 0; font: var(--type-card-title); letter-spacing: var(--tracking-heading); text-wrap: balance; }
 .ss-card-facts { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: var(--type-body); }

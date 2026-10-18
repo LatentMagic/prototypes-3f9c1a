@@ -98,8 +98,9 @@
   // ---- Daily Word: a lost day. Canon has no lost Word session ('word-e4' was named in pg/games.js with no seed behind it). ----
   // The -IGHT trap: answer LIGHT, six guesses, the last four each four letters in place. Engine: guess-scored marks, finished {outcome: lost}.
   // Nothing in the record holds the answer on a loss (grounding/daily-word.md), so a page must not print it; the seed keeps it only to compute marks.
+  // Number 208: canon's own history names this edition "Daily Word #208" (gs-puzzles-library: 212 - 4), so Today and every option say the same.
   S['word-e4'] = {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'LIGHT', loss: true, hints: 0, result: 'Failed', date: 'Sunday 4 October',
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'LIGHT', loss: true, hints: 0, result: 'Failed', date: 'Sunday 4 October',
     listTitle: 'Every guess', share: 'Failed',
     lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SOLID', '2 in the word'], ['Guess 3', 'FIGHT', '4 in place'],
       ['Guess 4', 'MIGHT', '4 in place'], ['Guess 5', 'NIGHT', '4 in place'], ['Guess 6', 'SIGHT', '4 in place']],

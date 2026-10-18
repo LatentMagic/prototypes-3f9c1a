@@ -40,19 +40,35 @@ const PgShareRow = ({ label, text }) => (
   </div>
 );
 
+// The recommended candidate shows the text the options actually copy: SsOutcome (shared/outcome.js) on the seeded plays, the shortlist with fable-steer section 4.
+// A and C stay exactly as share-data.js writes them. The seeds differ from the shortlist's illustrative numbers (a different edition number, say); the shape is what is shown.
+const PG_SHARE_SEEDS = { word: ['word-today', 'word-e4'], mystery: ['mystery-1004', 'mystery-today'], escape: ['escape-week', 'escape-lost'], delve: ['delve', 'delve-lost'], casebook: ['CB_DONE', 'PG_CB_LOST'] };
+const pgAmended = (gid) => {
+  try {
+    const ids = PG_SHARE_SEEDS[gid]; const pick = (id) => (gid === 'casebook' ? window[id] : window.GS_SESSIONS[id]);
+    const text = (id) => { const o = window.SsOutcome[gid](pick(id)); return o.lines ? o.lines.join('\n') : null; };
+    const win = text(ids[0]), fail = text(ids[1]);
+    return win && fail ? { win, fail } : null;
+  } catch (e) { return null; }
+};
+
 const PgShareText = ({ game }) => {
-  const cands = (window.PG_SHARE && window.PG_SHARE[game.id]) || [];
+  const cands = ((window.PG_SHARE && window.PG_SHARE[game.id]) || []).map((c) => {
+    const a = c.rec ? pgAmended(game.id) : null;
+    return a ? Object.assign({}, c, a, { amended: true }) : c;
+  });
   return (
     <div className="pgs" role="region" aria-label={game.name + ' share text'}>
       <div className="pgs-in">
         <header className="pgs-head">
           <div className="pg-eyebrow">Whiteboard, not the app</div>
           <h1 className="pgs-title">{game.name}: share text</h1>
-          <p className="pgs-note"><strong>The bubble is a simulation of a WhatsApp message, and the widths are approximate.</strong> It uses the system font at a typical default size and a bubble about 80% of the screen. Phones, fonts and text-size settings change where lines wrap. All texts are proposed, none deployed; figures are the shortlist’s own. The link is a placeholder.</p>
+          <p className="pgs-note"><strong>The bubble is a simulation of a WhatsApp message, and the widths are approximate.</strong> It uses the system font at a typical default size and a bubble about 80% of the screen. Phones, fonts and text-size settings change where lines wrap. All texts are proposed, none deployed. A and C are the shortlist’s own; the recommended one is what the options copy. The link is a placeholder.</p>
         </header>
         {cands.map((c) => (
           <section key={c.k} className="pgs-cand" data-rec={c.rec ? '1' : undefined}>
             <h2 className="pgs-cand-h"><span className="pgs-k">{c.k}</span> {c.name}{c.rec && <span className="pgs-rec">Recommended</span>}</h2>
+            {c.amended && <p className="pgs-amend">Amended text: what the options copy today. It is the shortlist's B with the Fable steer's changes, generated from the same function as the page title, on the seeded plays.</p>}
             <PgShareRow label="Triumph" text={c.win} />
             <PgShareRow label="Failure" text={c.fail} />
           </section>
