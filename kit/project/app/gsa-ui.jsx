@@ -287,8 +287,7 @@ function useGsaBusy(ms = 900) {
 function gsaDay0() {
   const d = window.GSA_DAY0;
   if (d instanceof Date) return d;
-  if (typeof d === 'string' && !isNaN(Date.parse(d))) return new Date(d);
-  return new Date(Date.UTC(2026, 9, 16));
+  return new Date(d);
 }
 function gsaDate(days) {
   return new Date(gsaDay0().getTime() + days * 86400000);

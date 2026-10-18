@@ -137,11 +137,11 @@ function GsaSubscribe() {
 // Update-card mode pictures a different card than the one on file, so a plain
 // Save shows a new last four; subscribe mode pictures the test card.
 function gsaCheckoutNewLast4(last4) {
-  return ['1881', '0005', '4242'].find((d) => d !== last4);
+  return ['1881', '0005', window.GSA_CARD_LAST4].find((d) => d !== last4);
 }
 
 function GsaCheckoutCardFields({ mode, last4 }) {
-  const number = mode === 'update-card' ? '5555 5555 5555 ' + gsaCheckoutNewLast4(last4) : '4242 4242 4242 4242';
+  const number = mode === 'update-card' ? '5555 5555 5555 ' + gsaCheckoutNewLast4(last4) : ('4242 4242 4242 ' + window.GSA_CARD_LAST4);
   return (
     <div className="gsa-checkout-card-fields">
       <window.GsaField label="Card number" defaultValue={number} inputMode="numeric" autoComplete="off" name="gsa-checkout-number" />
@@ -192,8 +192,8 @@ function GsaHostedPayment() {
       }
       const typed = document.querySelector('.gsa-checkout-form');
       const typedDigits = typed ? String(typed.elements['gsa-checkout-number'].value).replace(/\D/g, '') : '';
-      // Empty fields keep the pictured card, ending 4242.
-      store.set({ sub: { status: 'subscribed', plan, pending: null, nextDate: gsaCheckoutRenews(plan), endDate: null, endedOn: null, last4: typedDigits.length >= 4 ? typedDigits.slice(-4) : '4242', billingEmail: g.person.email } });
+      // Empty fields keep the pictured card, ending the seed's card.
+      store.set({ sub: { status: 'subscribed', plan, pending: null, nextDate: gsaCheckoutRenews(plan), endDate: null, endedOn: null, last4: typedDigits.length >= 4 ? typedDigits.slice(-4) : window.GSA_CARD_LAST4, billingEmail: g.person.email } });
       store.replace('home', {});
     });
   };

@@ -150,10 +150,10 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **JSX over `window`, load order fixed in `index.html`**, and the aids are deletable: see `ARCHITECTURE.md` § Deletable aids and § Conventions.
 </important>
 
-<important if="you are adding or changing demo data, or anything a screen shows about it: a person, a plan, a payment, a date, a count, a play">
-- **Every fact the demo shows is held once, in the seed, and every surface reads it from there.** A plan, a date, a count, a play: no screen, state or rig types its own copy, not even one that agrees today. `app/gsa-data.jsx` (`gsaSeed()`) and the store are the pattern.
-- **A surface that needs a variant derives it from the seed or stages it through the store.** Dates are set relative to the seed's day zero (`GSA_DAY0`), never as literals.
-- **Two copies of one fact drift, and the reviewer then meets one account telling two stories.**
+<important if="you are adding or changing demo data, or anything a screen shows about it: a person, a plan, a payment, a date, a count, an item">
+- **Every fact the demo shows is held once, in the seed, and every surface reads it from there.** A plan, a date, a count, an item: no screen, state or rig types its own copy, not even one that agrees today. The seed file `app/README.md` names, and the store, are the pattern (in the kit: `app/gsa-data.jsx`, `gsaSeed()`).
+- **A surface that needs a variant derives it from the seed or stages it through the store.** Dates are set relative to the seed's day zero (the seed's day-zero constant, `GSA_DAY0` in the kit), never as literals.
+- **Two copies drift.** The reviewer then meets one account telling two stories.
 </important>
 
 ## Files

@@ -56,7 +56,7 @@ const GsaConfigExtra = () => {
       {row('Google and Apple', r.provider, (v) => setReview({ provider: v }), [['works', 'Works'], ['fails', 'Fails']],
         'Fails: a line under the buttons (GSA-008.EF-02). Cancel on the provider’s page returns with nothing shown (EF-03).')}
       {row('Google or Apple account', r.providerAccount, (v) => setReview({ providerAccount: v }), [['existing', 'Has an account'], ['first-visit', 'A new person']],
-        'Has an account: Google is Casey Morgan, Apple is Robin Park (hidden email). A new person gets an account on Continue (GSA-008.AF-02); Apple then asks to share or hide the email. Once made, it is an account the next time.')}
+        `Has an account: Google is ${window.GSA_PEOPLE.casey.first} ${window.GSA_PEOPLE.casey.last}, Apple is ${window.GSA_PEOPLE.robin.first} ${window.GSA_PEOPLE.robin.last} (hidden email). A new person gets an account on Continue (GSA-008.AF-02); Apple then asks to share or hide the email. Once made, it is an account the next time.`)}
       {row('Authenticator app', person.enrolled ? 'yes' : 'no', (v) => S.set({ person: { enrolled: yn(v) } }), [['no', 'Not enrolled'], ['yes', 'Enrolled']])}
       {row('Email change asks to prove it’s you', r.emailReverify, (v) => setReview({ emailReverify: v }), [['asks', 'Asks'], ['recent', 'Recent sign-in']],
         'Recent sign-in: no check, the code goes straight to the new address (GSA-012.AF-03).')}
