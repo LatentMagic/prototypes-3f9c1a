@@ -12,8 +12,7 @@
     // A finished day is only the rows that were played (the poster of the result). An open day keeps its empty rows, so the board still reads as six tries.
     const spare = status === 'done' ? 0 : Math.max(0, 6 - played);
     const rows = guesses.map((g) => g.word.split('').map((ch, i) => ({ t: ch, k: KIND[g.marks[i]] }))).concat(Array.from({ length: spare }, BLANK));
-    // The h1 already says guesses and hints on a finished day, so a stat only appears for a day still open.
-    const stats = status === 'done' ? null : [{ label: 'Guesses', value: played + ' of 6' }, { label: 'Hints', value: hints ? String(hints) : 'None' }];
+    const stats = out.stats;
     const left = 6 - played, say = left + (left === 1 ? ' guess left' : ' guesses left');
     const label = 'Your board: ' + guesses.map((g) => g.word + ', ' + g.caption).join('; ');
     // No hint row and no captions on the poster: the hint is in the h1 ("1 hint"), and a lost day shows no answer (no engine field holds it).

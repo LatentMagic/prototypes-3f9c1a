@@ -22,7 +22,7 @@
     // share.lines = [label, "mark outcome", ...grid, lead-in, link]; the grid is drawn as cells, the rest is shown as it will paste.
     const head = lines ? lines.slice(0, 2) : [out.label, status === 'live' ? 'In progress' : 'Not finished'];
     const lead = lines ? lines[lines.length - 2] : null, link = lines ? lines[lines.length - 1] : null;
-    const stats = status === 'done' ? null : [{ label: 'Guesses', value: played + ' of 6' }, { label: 'Hints', value: hints ? String(hints) : 'None' }];
+    const stats = out.stats;
 
     return (
       <Ss.Page gid={gid}>
@@ -64,21 +64,21 @@
     Component: WordThree,
     shareText: (session) => window.SsOutcome.word(session).lines,
     css: `
-      :scope .w3-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto; gap: 12px; align-items: stretch; }
-      :scope .w3-panel { grid-row: 1 / span 3; display: grid; grid-template-rows: subgrid; align-content: normal; padding: 12px; row-gap: 12px; }
+      :scope .w3-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+      :scope .w3-panel { display: grid; align-content: start; padding: 16px; row-gap: 12px; }
       :scope .w3-msg { background: color-mix(in srgb, var(--text) 6%, var(--ss-card)); }
       :scope .w3-head { display: grid; gap: 2px; align-content: start; min-width: 0; }
       :scope .w3-mono { font: 400 11.5px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, "Apple Color Emoji", "Segoe UI Emoji", monospace; color: var(--text); overflow-wrap: break-word; }
       :scope .w3-dim { color: var(--muted); }
       :scope .w3-foot { display: grid; gap: 8px; align-content: start; min-width: 0; }
-      :scope .w3-cells { --c: 26px; gap: 3px; justify-content: center; }
-      :scope .w3-cells .ss-cells-row { gap: 3px; }
+      :scope .w3-cells { --c: min(52px, calc((100cqi - 32px - 32px - 4 * 4px) / 5)); gap: 4px; justify-content: center; }
+      :scope .w3-cells .ss-cells-row { gap: 4px; }
       :scope .w3-yours .w3-foot, :scope .w3-yours .ss-caption { align-self: start; }
       :scope .w3-msg .ss-caption { font: var(--type-caption); }
       :scope .w3-msg .mcp-btn { width: 100%; }
       @container ss (min-width: 640px) {
-        :scope .w3-grid { gap: 16px; }
-        :scope .w3-panel { padding: 20px; row-gap: 16px; }
+        :scope .w3-grid { gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto; }
+        :scope .w3-panel { grid-row: 1 / span 3; grid-template-rows: subgrid; align-content: normal; padding: 20px; row-gap: 16px; }
         :scope .w3-mono { font-size: 14px; }
         :scope .w3-cells { --c: 46px; gap: 4px; }
         :scope .w3-cells .ss-cells-row { gap: 4px; }

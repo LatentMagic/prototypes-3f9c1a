@@ -30,10 +30,10 @@
     const out = Ss.useOutcome('word', session);
     const status = session.unfinished ? 'ended' : session.live ? 'live' : 'done';
     const played = out.play.guesses.length, hints = out.play.hints;
-    // The h1 already says guesses and hints on a finished day, so a stat only appears for a day still open.
-    const stats = status === 'done' ? null : [{ label: 'Guesses', value: played + ' of 6' }, { label: 'Hints', value: hints ? String(hints) : 'None' }];
+    const stats = out.stats;
     const left = 6 - played, say = left + (left === 1 ? ' guess left' : ' guesses left');
-    const spare = Array.from({ length: Math.max(0, 6 - played) });
+    // A finished day shows only the rows played; an open day keeps its empty rows so the board still reads as six tries.
+    const spare = Array.from({ length: status === 'done' ? 0 : Math.max(0, 6 - played) });
     // A lost day shows no answer: nothing in the engine's record holds it. The board is the whole story.
     return (
       <Ss.Page gid={gid}>
