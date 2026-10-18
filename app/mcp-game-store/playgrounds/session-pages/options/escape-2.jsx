@@ -1,5 +1,5 @@
 // Session page, Escape, option 2: "The room". The player never sees the room, so draw it from the objects they examined and the locks they found on each.
-// Reads the play model from escape-1.jsx (window.EsModel), which loads first.
+// Reads the play model from escape-model.jsx (window.EsModel), which loads first.
 (function () {
   const Rungs = ({ n }) => (
     <Ss.Cells className="es2-rungs" label={'Hints taken: rung ' + n + ' of 3'}
@@ -43,7 +43,7 @@
           <span className="es2-knob" aria-hidden="true" />
           <div>
             <p className="es2-lname"><span className="es2-tick"><DS.Icon name="check" size={16} /></span><span>{lk.name}</span></p>
-            <p className="ss-caption">{'Opened at move ' + lk.openedN + ' · ' + EsModel.lockFacts(lk) + ' · par ' + m.par + ' min'}</p>
+            <p className="ss-caption">{'Opened at move ' + lk.openedN + ' · ' + EsModel.lockFacts(lk) + (m.par != null ? ' · par ' + m.par + ' min' : '')}</p>
           </div>
         </div>
       </Ss.Card>
@@ -53,15 +53,12 @@
   const OptionTwo = ({ gid, session, sid, share, api }) => {
     const m = React.useMemo(() => EsModel.build(session), [session]);
     const out = m.out;
-    const stats = m.done ? [
-      { label: 'Time', value: m.min + ' min' }, { label: 'Par', value: m.par + ' min' },
-      { label: 'Hints', value: m.hintCount ? String(m.hintCount) : 'None' }, { label: 'Wrong tries', value: String(m.wrong) }] : null;
     const sub = m.done && m.forced ? EsModel.plural(m.forced, 'lock forced', 'locks forced') : null;
     const say = m.openCount ? EsModel.plural(m.openCount, 'lock', 'locks') + ' open.' : 'No lock open yet.';
     const tiles = m.objects.filter((o) => !(m.done && m.exitLock && o.key === m.exitObj));
     return (
       <Ss.Page gid={gid}>
-        <Ss.Head gid={gid} art="escape" label={out.label} date={session.date} h1={out.h1} mark="" stats={stats} sub={sub} />
+        <Ss.Head gid={gid} art="escape" label={out.label} date={session.date} h1={out.h1} mark="" stats={out.stats} sub={sub} />
         <div className="ss-body">
           <section className="ss-hero ss-surface" aria-label="The room as you found it">
             <p className="es2-lead">{m.done ? 'The room as you found it' : 'The room so far'}</p>
