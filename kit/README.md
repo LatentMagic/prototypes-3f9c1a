@@ -39,6 +39,7 @@ Versions:
 - **2** (2026-10-16): a prototype has no real persistence — a reload restarting at Home, signed out, is never a finding; reload survival belongs to the specs. From the MCP Game Store project (MCPG-018).
 - **3** (2026-10-17): a reload reopens the page named in the address (`#/<page>`) and nothing more, and React `createRoot` warnings after a reload that follows an address change are expected and need no fix. From the Golden Sample App.
 - **4** (2026-10-18): every demo fact is held once, in the seed, and every surface reads it; no screen, state or rig types its own copy, and dates are relative to the seed's day zero. From the MCP Game Store project.
+- **5** (2026-10-18): briefs come from another agent with the user passing messages by hand, so every reply ends in two parts, a block for the other agent and a last part for the user (at most one open question, or "Nothing for you"); an answer from the other agent ratifies only if it says where the decision is written down.
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 
