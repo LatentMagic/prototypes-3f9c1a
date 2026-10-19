@@ -480,6 +480,8 @@
   @container gs (min-width: 900px) {
     .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
     .gs-hero3 > .gs-hero-copy { gap: 24px; }
+    /* the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
+    .gs-hero3 + .gs-band { margin-top: -12px; }
     .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
     .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
     .gs-hero-art3 { padding: 36px 16px; align-content: center; }
@@ -545,6 +547,8 @@
   .gs-ft-link { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; font: 500 13px/1.4 var(--font-text); color: var(--muted); cursor: pointer; text-align: left; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1.5px; transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
   .gs-ft-mail { color: var(--muted); text-decoration: underline; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); text-underline-offset: 4px; font: 500 13px/1.4 var(--font-text); min-height: 44px; display: inline-flex; align-items: center; }
   .gs-ft-copy { margin: 0; white-space: nowrap; color: var(--muted); }
+  .gs-ft-legalese { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 0; min-width: 0; }
+  .gs-ft-reg { margin: 0; font: var(--weight-text) var(--text-2xs)/var(--leading-body) var(--font-text); color: var(--muted); letter-spacing: 0; }
   .gs-ft-wide { display: none; }
   .gs-ft-narrow { display: grid; gap: 12px; }
   .gs-ft-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
@@ -559,10 +563,11 @@
     .gs-ft-h { align-self: center; }
     .gs-ft-col { grid-template-rows: 44px; grid-auto-rows: auto; }
     .gs-ft-col .gs-ft-link, .gs-ft-col .gs-ft-mail { min-height: 32px; }
-    .gs-ft-brand .gs-ft-copy { padding-top: 6px; }
+    .gs-ft-brand .gs-ft-legalese { padding-top: 6px; align-items: flex-start; text-align: left; gap: var(--space-1); }
   }
   @container gs (max-width: 420px) {
     .gs-ft-bottom { flex-direction: column; align-items: flex-start; }
+    .gs-ft-legalese { align-items: flex-start; text-align: left; }
   }
   @container gs (max-width: 300px) {
     .gs-ft-mark { display: none; }

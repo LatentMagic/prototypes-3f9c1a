@@ -132,7 +132,7 @@ const GsFooter = () => {
     <footer className="gs-ft">
       <div className="gs-wrap">
         <div className="gs-ft-wide">
-          <div className="gs-ft-brand"><GsStaticBrand /><p className="gs-ft-copy">© 2026 Harness Intent Ltd</p></div>
+          <div className="gs-ft-brand"><GsStaticBrand /><div className="gs-ft-legalese"><p className="gs-ft-copy">© 2026 Harness Intent Ltd</p><p className="gs-ft-reg">Registered in England and Wales, No.&nbsp;17277971</p></div></div>
           <div className="gs-ft-col"><h2 className="gs-ft-h">contact</h2>{mail}</div>
           <div className="gs-ft-col"><h2 className="gs-ft-h">legal</h2>
             {GS_LEGAL_LINKS.map(([d, l]) => <button key={d} type="button" className="gs-ft-link" onClick={() => legal(d)}>{l}</button>)}
@@ -144,7 +144,7 @@ const GsFooter = () => {
             <div className="gs-ft-run">
               {GS_LEGAL_LINKS.map(([d, l], i) => <React.Fragment key={d}>{i > 0 && <span className="gs-ft-dot" aria-hidden="true">·</span>}<button type="button" className="gs-ft-link" onClick={() => legal(d)}>{l}</button></React.Fragment>)}
             </div>
-            <p className="gs-ft-copy">© 2026 Harness Intent Ltd</p>
+            <div className="gs-ft-legalese"><p className="gs-ft-copy">© 2026 Harness Intent Ltd</p><p className="gs-ft-reg">Registered in England and Wales, No.&nbsp;17277971</p></div>
           </div>
         </div>
       </div>
