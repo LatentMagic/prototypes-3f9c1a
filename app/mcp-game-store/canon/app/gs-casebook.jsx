@@ -1,14 +1,15 @@
 // ============================================================================
-// [Platform] — Casebook's library page, option 16 as ratified 2026-10-08, fitted to an episodic game (game-pages-refresh, 2026-10-18).
+// [Platform] — Casebook's library page, fitted to an episodic game.
 // The case card spans the row (Casebook has no streak card), then achievements beside your cases. "See in History" opens History filtered to Casebook;
-// the case opens its page, turns grouped by kind. Without the Pass: the first case in the case card's place.
+// the case opens its page, turns grouped by kind. Without the Pass the page is replaced by gs-pass-library.jsx (CprCbLibrary);
+// a Pass holder and a case page (route.sid) get this one.
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.
 // ============================================================================
 const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
 const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
-// Case 1 is both the free first case and the current one: one record, read by its finished form.
+// Case 1, read by its finished form: the case a Pass-ended player played before the Pass ended.
 const CB_FIRST = CB_DONE;
-// The free first case as its one play record stands (phFirstRec): in progress, the case so far; ended, as played; not started, null.
+// Casebook has no free first case, so phFirstSt gives null and Case 1 reads as played.
 const cbFirstOf = (gs) => {
   const st = window.phFirstSt ? phFirstSt(gs, 'casebook') : 'done';
   if (st === 'none') return null;
@@ -17,7 +18,7 @@ const cbFirstOf = (gs) => {
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : { kind: c.verdict === 'right' ? 'ok' : 'bad', label: GS_RESULT.casebook({ ok: c.verdict === 'right' }) });
 
-// The case card: the result beside the title once you've named someone; the turns bar stays either way.
+// CbNow is replaced by gs-pass-library.jsx (CprCbNow).
 const CbNow = ({ c }) => {
   const gs = useGs();
   return (
@@ -39,7 +40,7 @@ const CbNow = ({ c }) => {
   );
 };
 
-// The case page: turns grouped by kind. Left as built until the game itself is designed further (user, 2026-10-08).
+// The case page: turns grouped by kind. Not designed further yet: left as built until the game itself is.
 const CB_KINDS = [['Show evidence', 'Evidence shown'], ['Search', 'Searches'], ['Question', 'Questions']];
 const cbCap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const CbOut = ({ r }) => {
@@ -91,7 +92,7 @@ const CbCase = ({ c }) => {
 const CbLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'casebook'); const pass = access === 'all'; const sid = gs.route.sid;
   const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
-  // Without the Pass the one case is the free first case; with it, the case as it stands.
+  // Without the Pass, Case 1 as played before the Pass ended; with it, the case as it stands.
   const c = sid && (!pass && sid === CB_FIRST.id ? cbFirstOf(gs) : pass && sid === CB_LIVE.id ? cbWeek(gs) : null);
   if (c) return <CbCase key={k + sid} c={c} />;
   const ach = phAch(gs, 'casebook', CB_ACH);

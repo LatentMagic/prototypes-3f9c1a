@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — "In your chat": three DS ChatPictures per game, and the home hero's.
-// Turns are invented, written to follow each game's seed record (gs-data.jsx).
+// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, which are deployed.
 // ============================================================================
 const GS_CHAT_BY = '[Platform]';
 const GS_CHAT_MARK = 'assets/logo.svg';
@@ -57,7 +57,7 @@ const GS_CHATS = {
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
-  // The deployed product-page chats. Each block is the design system's mono block, one line per row.
+  // Delve: the deployed product page's chats. Each block is the design system's mono block, one line per row.
   delve: [
     { cap: 'The run opens: the first room, its ways on, and the numbers.', turns: [gscU('Delve, as Bryn the Fighter.'),
       gscAi('delve', 'Knee-deep water, a chant far off. Crawl upstream, or search the niche first?', [{ type: 'mono', text: 'The flooded tunnel\nWays on    Upstream crawl\nThe ritual 0/12 (low)\nBryn       13/13 hit points' }])] },

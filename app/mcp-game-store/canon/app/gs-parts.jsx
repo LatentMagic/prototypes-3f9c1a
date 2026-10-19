@@ -77,7 +77,7 @@ const GsWhoCols = ({ ai, server }) => (
     <div className="gs-stack-sm" style={{ alignContent: 'start' }}><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
   </div>
 );
-// The Pass page's comparison, back (free-and-pass, 2026-10-09). One row per thing; a tick in each column that has it. Rows agree with the free and Pass rules.
+// The Pass page's comparison. One row per thing; a tick in each column that has it. Rows agree with the free and Pass rules.
 const GS_COMPARE = [
   { name: 'Free games', free: true },
   { name: 'The start of select games', free: true },
@@ -127,7 +127,7 @@ const GsTrack = ({ label, value, max = 6, threat }) => (
     </div>
   </div>
 );
-// Coming soon is the design system's SoonCard (2026-10-13). A chapter of a game that is out carries label, play and its route.
+// Coming soon is the design system's SoonCard. A chapter of a game that is out carries label, play and its route.
 const GsSoonCard = ({ g }) => {
   const gs = useGs(); const a = GS_ART[g.art] || {};
   return (
@@ -137,10 +137,11 @@ const GsSoonCard = ({ g }) => {
       play={g.play} onPlay={g.play ? () => gs.go(g.route) : undefined} />
   );
 };
-// ---- A game in three forms, all from the design system (2026-10-13): GsCard (GameCard) in every card row,
+// ---- A game in three forms, all from the design system: GsCard (GameCard) in every card row,
 // GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall and every tile row. Coming soon is GsSoonCard.
-// The whole card is the target and the hover surface: hover, focus and press play the art's motion (phone-snags-second-pass).
-// A blurb's last two words stay together, so its last line is never one word (LM-1110 product copy, 2026-10-13).
+// GsCard, GsGameCard and GsPick are replaced by gs-pass-home.jsx (CprCard, CprPick); GsTile is not.
+// The whole card is the target and the hover surface: hover, focus and press play the art's motion.
+// A blurb's last two words stay together, so its last line is never one word.
 const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
 const GsCard = ({ id, mark }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
@@ -164,7 +165,7 @@ const GsPick = ({ id, label }) => {
       tags={<GsTagList tags={g.tags} ed={g.ed} />} />
   );
 };
-// The one tile part (design system GameTile, 2026-10-16): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
+// The one tile part (design system GameTile): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
 // the same way everywhere. `pass` draws the Pass mark; `page` opens that page of the game (Library opens 'record').
 const GsTile = ({ id, pass, page }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
@@ -175,12 +176,12 @@ const GsTile = ({ id, pass, page }) => {
       kind={gsKind(g.category)} />
   );
 };
-// "More games" on a product page.
+// Replaced by gs-pass-home.jsx (CprCard).
 const GsGameCard = GsCard;
 
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
 // Manage account, Your AI, divider, Sign out. On a phone the trigger is a person icon in a
-// button shaped like the Menu button beside it, which holds only the pages (phone-snags-second-pass).
+// button shaped like the Menu button beside it, which holds only the pages.
 const GsAvatar = ({ big, btn }) => {
   const gs = useGs();
   return <span className={'gs-avatar' + (big ? ' is-big' : '') + (btn ? ' is-btn' : '')} aria-hidden="true">{gsName(gs.user)[0].toUpperCase()}</span>;

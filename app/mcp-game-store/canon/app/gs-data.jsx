@@ -1,5 +1,5 @@
 // ============================================================================
-// [Platform] — demo content and the app context. All content is demo content.
+// [Platform] — seed data and the app context. Content is sample unless its comment says it is deployed.
 // DS is the bound design system's namespace (loaded by _ds_bundle.js).
 // ============================================================================
 const DS = window.MCPGameStoreDesignSystem_ef1abd;
@@ -22,7 +22,7 @@ const GS_ART = {
   delve: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>') },
   escape: { ground: 'indigo', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>') },
   murder: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
-  // Daily Groups: four rows of four, one colour a group, as a solved board (added 2026-10-09, split-daily-puzzles).
+  // Daily Groups: four rows of four, one colour a group, as a solved board.
   groups: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/>' + ['#E5A63B', '#328A88', '#D66847', '#A390B2'].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join('')).join('')) },
   word: { ground: 'forest', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>') },
   derelict: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>') },
@@ -35,31 +35,35 @@ const GS_ART = {
 const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
-// category: one per game, printed before the rhythm in the product page's label (proposed values, split-daily-puzzles).
-// free: free to play (the current edition, a streak, its achievements). first: a free player gets the game's one first edition. Neither: only with the Pass.
+// category: one per game, printed before the rhythm in the product page's label (proposed values).
+// access: who plays what, held here once. 'daily' free to play (the current edition, a streak, its achievements); 'first' a free player
+// gets the game's one first edition; 'pass' only with the Pass. free, first and the card's access tag are derived from it (gsAccess); never type them.
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
-// edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
-// edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups; owner, 2026-10-12).
+// edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
+// edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
 // eds: the game has editions but no schedule (the Barrow's chapters), so it has an editions list without a Daily or Weekly filter.
-// ed: the game's own word for one of its editions, [singular, plural] (walk-sweep-2). Players never see a platform-wide word.
+// ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 const GS_GAMES = {
-  word: { name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], free: true, daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['FREE', 'Daily', '10 min'] },
-  groups: { name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', free: false, daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['PASS', 'Daily', '10 min'] },
-  mystery: { name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], free: true, daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['FREE', 'Daily', '10 min'] },
-  escape: { name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], free: false, first: true, blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['FIRST', 'Weekly', 'About 30 min'] },
-  // Casebook is episodic (game-pages-refresh, 2026-10-18): cases are its editions, with no schedule, so it lists them through eds.
-  casebook: { name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], eds: true, once: true, blurb: 'Ask the question they haven’t prepared for.', first: true, tags: ['FIRST', '25–40 min'] },
-  delve: { name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], first: true, blurb: 'Get her out before the ritual is complete.', tags: ['FIRST', 'Weekly', '25–40 min'] },
-  // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
-  barrow: { name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', first: true, blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['FIRST', 'Several sessions'] },
-  hunter: { name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['PASS', '2 hours'] },
+  word: { access: 'daily', name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily', '10 min'] },
+  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
+  mystery: { access: 'daily', name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily', '10 min'] },
+  escape: { access: 'first', name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly', 'About 30 min'] },
+  // Casebook is episodic: cases are its editions, with no schedule, so it lists them through eds.
+  casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], eds: true, once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
+  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly', '25–40 min'] },
+  // Chapters are its editions; a free player gets chapter 1. Sample content.
+  barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
+  hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
 };
+// Derives a game's free, first and its access tag ('FREE' | 'FIRST' | 'PASS', first in tags) from access.
+const gsAccess = (g) => { g.free = g.access === 'daily'; g.first = g.access === 'first'; g.tags = [{ daily: 'FREE', first: 'FIRST', pass: 'PASS' }[g.access], ...g.tags.filter((t) => !['FREE', 'FIRST', 'PASS'].includes(t))]; return g; };
+Object.values(GS_GAMES).forEach(gsAccess);
 const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
 // How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
 const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
-// Every earlier edition of every game that releases them can be played (every-edition-playable, 2026-10-12); the Pass decides who.
-// Two kinds of game (owner, 2026-10-17). A daily or weekly edition, and a game with a fixed answer, is played once: a finished one
+// Every earlier edition of every game that releases them can be played; the Pass decides who.
+// Two kinds of game. A daily or weekly edition, and a game with a fixed answer, is played once: a finished one
 // shows GS_ONCE_LINE and nothing that starts it. A story or adventure chapter (no schedule, no fixed answer) can be started over
 // as a new session, which counts for nothing new. Read everywhere through this.
 const gsStartsOver = (k) => !!k && !!GS_GAMES[k] && !gsRhythm(k) && !GS_GAMES[k].once;
@@ -74,7 +78,7 @@ const GS_TODAY_PLAYED = {
 };
 // This player's plays of this edition. Config "Free account, today: Not played" empties a free account's (state free-not-played-today).
 const gsTodayPlayed = (gs) => (gsFresh(gs) || (gs.view === 'free' && gs.review && gs.review.today === 'none') ? {} : GS_TODAY_PLAYED[gs.view] || {});
-// A new account (made in the prototype, or Config Account: New): nothing played anywhere (final-audit-snags).
+// A new account (made in the prototype, or Config Account: New): nothing played anywhere.
 const gsFresh = (gs) => { gs = gs || window.gsApi; return !!(gs && gs.user && gs.user.fresh); };
 // The one date a Pass ended on: the day this player's own Pass ended (sub.endedOn, set when it ends in the prototype
 // or by Config Pass ended: Today), else the sample, 18 September. Every date printed about a Pass ending comes from here.
@@ -83,7 +87,7 @@ const gsEndedOn = (gs) => { gs = gs || window.gsApi; return gs && gs.sub && gs.s
 // Search text: lower case, no apostrophes, and a comma between digits dropped, so 36000 finds 36,000 Summers Ago.
 const gsNorm = (s) => (s || '').toLowerCase().replace(/(\d),(?=\d)/g, '$1').replace(/[’'‘]/g, '').trim();
 
-// Coming soon: a game not out yet, and the Barrow's next chapter, chapter 3 (owner, 2026-10-16); its chip opens the Barrow's page.
+// Coming soon: a game not out yet, and the Barrow's next chapter, chapter 3; its chip opens the Barrow's page.
 const GS_SOON = [
   { name: 'Derelict', art: 'derelict', line: 'The same game, in science fiction' },
   { name: GS_GAMES.barrow.name, art: 'barrow', line: GS_GAMES.barrow.blurb, label: 'CHAPTER 3', play: 'Play chapter 1', route: 'barrow' },
@@ -136,8 +140,8 @@ const GS_DV_LIVE = [
 ];
 const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
 
-// ---- Escape No. 1, The Clockmaker’s Study (par 30): deployed text. A sample record never prints a typed answer;
-// a Try or Set row names what the lock takes instead (game-pages-refresh, this brief's Set 9). ----
+// ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text; GS_ES1_LINES is a sample play of it,
+// which never prints a typed answer: a Try or Set row names what the lock takes instead. ----
 const GS_ES1 = {
   bench: 'A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.',
   clock: 'A tall case clock, stopped, its hands stiff. There is a winding hole in its face.',
@@ -167,7 +171,7 @@ const GS_ES1_LINES = [
   ['Move 13', 'Try an answer (4 letters) on the oak door lock', 'Out'],
 ];
 
-// ---- Casebook, Case 1: The Last Night at Gull Point. Turn codes: F search found, N search found nothing, Q question,
+// ---- Casebook, Case 1: The Last Night at Gull Point (deployed case; this play of it is sample). Turn codes: F search found, N search found nothing, Q question,
 // H evidence shown and the story stood, B lie exposed, A the accusation (unnumbered). ----
 const GS_CB_REC = [
   { c: 'F', act: 'Search', what: 'Searched the hotel bar', out: 'Found the bar ledger' },
@@ -188,6 +192,7 @@ const gsCbLines = (rec) => rec.map((r, i) => (r.c === 'A' ? ['Accused ' + r.what
 
 // Today's Daily Mystery questions, shared by the finished play and its in-progress form.
 const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'Yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'Yes']];
+// Session records: sample plays (Delve's lines are the deployed engine's, above).
 const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
   delve: {
@@ -199,7 +204,7 @@ const GS_SESSIONS = {
     share: 'Elsie rescued',
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
   },
-  // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play (LM-1110).
+  // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     listTitle: 'Every guess', share: 'Solved in 3 of 6',

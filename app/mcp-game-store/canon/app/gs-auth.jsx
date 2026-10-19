@@ -1,10 +1,10 @@
 // ============================================================================
-// [Platform] — Sign up and sign in. Structure, steps and labels are Circlists'
-// (circlists-match-1, ratified); the look is the store's.
+// [Platform] — Sign up and sign in. Structure, steps and labels follow Circlists;
+// the look is the store's.
 //   step 1  Google, black Apple, email (no panel, no divider, none primary)
 //   step 2  the email form; adds a browser-history entry so Back = the arrow
 //   sign up (first name, last name, email, username, password) -> verify your email -> connect your AI
-//   sign up (Google / Apple) -> your username -> connect your AI (no code: a new account, 2026-10-11)
+//   sign up (Google / Apple) -> your username -> connect your AI (no code: the account is new)
 //   (from Get the Pass, checkout takes the place of connect: the username always comes first)
 //   sign in (email, Google or Apple) -> verify this device on a new device only -> games
 //   Forgot password -> email, sent, code, new password -> games

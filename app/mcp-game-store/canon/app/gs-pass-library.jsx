@@ -1,8 +1,9 @@
-// [Platform] — Library and the library game pages (owner, 2026-10-16).
-// Re-publishes: GsLibrary (canon's, app/gs-discover.jsx, plus New for you, Your games and the free account's Pass line), gsLibRow
-// (every row read from the play record), PzNow and CbNow (canon's, plus the link once finished), and GS_LIBRARY.casebook / delve /
-// escape / barrow for a free or Pass-ended player. Each page body is canon's composition with the first-part card (CprFirst)
-// or the design system's Needs the Pass card (LbNeedsPass) in the now card's place. A Pass holder gets canon's page, except the Barrow.
+// [Platform] — Library and the library game pages.
+// Re-publishes, replacing canon's: GsLibrary (app/gs-discover.jsx's, plus New for you, Your games and the free account's Pass line),
+// gsLibRow (every row read from the play record), PzNow (app/gs-puzzles-library.jsx's) and CbNow (app/gs-casebook.jsx's), each plus
+// the link once finished, GS_LIBRARY.word / groups / mystery in every view, and GS_LIBRARY.casebook / delve / escape / barrow.
+// Each page body is canon's composition with the first-part card (CprFirst) or the design system's Needs the Pass card (LbNeedsPass)
+// in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 const CPR_SHIP_LIB = { ...window.GS_LIBRARY };
 
 // The link under a finished daily or weekly game: Library as it is, New for you on top, never filtered.
@@ -13,16 +14,10 @@ const CprNextLink = () => {
 
 // ---- The free first part's card: Play before and during; once done, the result, Share and the record link, then
 // "Keep playing with the Pass." with "the Pass" linked and no button. ----
-// One edition each so far (game-pages-refresh, 2026-10-18): Case 1, Run 1 and Room 1 are each the free first edition and the current
+// One edition each so far: Run 1 and Room 1 are each the free first edition and the current
 // one, so these cards print the same recaps as the Pass holder's.
 const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
 const CPR_FIRST = {
-  casebook: (gs) => { const c = CB_DONE; const l = CB_LIVE; return {
-    label: 'THE FIRST CASE · FREE', title: c.title, weekly: true,
-    none: 'The game’s very first case, the same for everyone. Play it free.',
-    live: cbRecap(l), liveBar: [l.turns + ' of 16 turns used', l.turns, 16],
-    done: cbRecap(c), doneBar: [c.turns + ' of 16 turns used', c.turns, 16],
-    result: cbStatus(c), share: cbShareLines(c), rec: 'See every turn', open: () => cbGo(gs, c.id), play: () => gs.play(GS_NAME.casebook) }; },
   delve: (gs) => ({
     label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, weekly: true,
     none: 'The game’s very first run, the same for everyone. Play it free.',
@@ -48,7 +43,7 @@ const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
-  // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it (owner, 2026-10-16).
+  // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? <span className="gs-muted gs-pu-soon">Chapter 3: coming soon</span> : null;
   // A Pass holder past Chapter 1 sees Chapter 2 ready: its own card, with Play (no Chapter 2 play is staged).
   if (id === 'barrow' && gs.view === 'pass' && done) return (
@@ -103,19 +98,21 @@ const LbNeedsPass = ({ id, had, ach, access }) => {
 const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
 const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '') + cprStore.get().lapsed;
 
-// ---- The library game pages for a free or Pass-ended player (canon's composition). ----
+// ---- The library game pages for a free or Pass-ended player (canon's composition). Casebook is Pass-only, as Daily Groups:
+// never played, the never-had Needs the Pass card alone; played before the Pass ended, that card with the record. ----
 const CprCbLibrary = () => {
   const gs = useGs();
   if (gs.route.list && !gs.route.sid) return <PgeListPage key="casebook" gid="casebook" />;
   if (gs.view === 'pass' || gs.route.sid) return <CPR_SHIP_LIB.casebook />;
-  const access = lbAccess(gs, 'casebook'); const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
+  const had = gsLapsed(gs) && phVisible(gs).some((p) => p.gid === 'casebook');
   const ach = phAch(gs, 'casebook', CB_ACH);
+  if (!had) return <main key={cprKey(gs)} className="gs-wrap gs-main"><LbHead id="casebook" /><div className="lb-lay"><LbNeedsPass id="casebook" ach={CB_ACH} access="all" /></div></main>;
   return (
     <main key={cprKey(gs)} className="gs-wrap gs-main">
       <LbHead id="casebook" />
       <div className="lb-lay">
-        {cprNowCard(gs, 'casebook', ach)}
-        <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
+        <LbNeedsPass id="casebook" had ach={ach} access="all" />
+        <LbAch items={ach} badges={CB_BADGES} access="all" ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />
       </div>
     </main>
@@ -137,7 +134,7 @@ const CprDvLibrary = () => {
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
-      {/* Earlier runs come with the Pass (delve.md section 4); a Pass holder gets canon's page, so never sees it. "the Pass" is the line's only link, as the dailies' (owner, 2026-10-16). */}
+      {/* Earlier runs come with the Pass (delve.md section 4); a Pass holder gets canon's page, so never sees it. "the Pass" is the line's only link, as the dailies'. */}
       <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES.delve.ed[1] + ' comes with the Pass.'} />
     </main>
   );
@@ -184,8 +181,8 @@ const CprBwLibrary = () => {
 };
 Object.assign(window.GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
 
-// ---- The daily games' Library pages: canon's (app/gs-puzzles-library.jsx pzLibrary), with "the Pass" as the line's only link
-// (owner, 2026-10-16) in place of the separate About the Pass. The editions list stays where gs-editions.jsx puts it. ----
+// ---- The daily games' Library pages: canon's (app/gs-puzzles-library.jsx pzLibrary), in every view, with "the Pass"
+// as the line's only link in place of the separate About the Pass. The editions list stays where gs-editions.jsx puts it. ----
 const cprPzLibrary = (id) => () => {
   const gs = useGs(); const r = gs.route;
   if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
@@ -220,8 +217,8 @@ const cprPzLibrary = (id) => () => {
 // and the row's line says what that play left: in progress, done, or what is ready next. A game whose next play needs the Pass
 // keeps its last-play date. One date form (phWhen). ----
 const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
-// A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (owner's proposal, 2026-10-16).
-const CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', casebook: 'Case 1 is ready', delve: 'Your free run is ready' };
+// A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (proposed, not ratified).
+const CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', delve: 'Your free run is ready' };
 const CPR_PASS_READY = { casebook: 'Case 1 is ready', delve: 'This week’s run is ready' };
 const cprLibRow = (gs, k) => {
   const pass = gs.view === 'pass';
@@ -243,12 +240,12 @@ const cprLibRow = (gs, k) => {
 // ---- Library (route `library`): canon's search, filters and rows, with New for you on top and Your games under it.
 // New for you: games with editions whose current edition you haven't played, as tiles in one sideways row. A standalone never
 // goes in it. Not shown when there is nothing new. A free account that has played nothing gets one Pass line under the list. ----
-// New for you (owner, 2026-10-16): only what the player can play now. A free player: today's free dailies not yet played and any
+// New for you: only what the player can play now. A free player: today's free dailies not yet played and any
 // free first part not yet started. A Pass holder: as before.
 const cprNewFor = (gs, k) => {
   if (!cprEditions(k) || cprLocked(gs, k)) return false;
   if (gs.view === 'pass') return !cprPlayed(gs, k);
-  // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides (owner's rule, 2026-10-16).
+  // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides.
   if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !gsTodayPlayed(gs)[k]);
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
   return false;

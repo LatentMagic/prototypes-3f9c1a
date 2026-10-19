@@ -1,13 +1,13 @@
-// [Platform] — a product page's play box. Re-publishes GsPlayBox: canon's box (app/gs-game.jsx) with the label
-// and the line under the button set for the signed-out and free views (owner, 2026-10-16). No play box carries the pay line;
-// it lives on Pricing. The heading, steps, button and Works with stay as canon has them. A Pass holder sees canon's label and line.
+// [Platform] — a product page's play box. Re-publishes GsPlayBox, replacing app/gs-game.jsx's: the label and the line under the
+// button are set for the signed-out and free views, and a Pass holder's box has neither. No play box carries the pay line; it lives
+// on Pricing. No links sit under the button. The heading, steps and Works with stay as canon has them.
 const CprPlayBox = ({ id }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const b = GS_PAGES[id].box;
   const paying = gs.view === 'pass';
   const mine = !paying ? cprBoxCopy(id) : null;
   const passOnly = CPR_STAGE[id] === 'pass' && !paying;
-  const label = b.first && !paying ? b.button : 'Play';
-  // A Pass holder's box has no Pass line (owner, 2026-10-16) and no label; a Pass-only box keeps its label and Get the Pass, no line.
+  const label = g.first && !paying ? b.button : 'Play';
+  // A Pass holder's box has no Pass line and no label; a Pass-only box keeps its label and Get the Pass, no line.
   const small = paying || passOnly ? null : mine ? mine[1] : b.small;
   return (
     <DS.Card className="gs-pu-box" style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>

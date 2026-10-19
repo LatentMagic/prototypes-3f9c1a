@@ -1,6 +1,5 @@
 // ============================================================================
 // [Platform] — How it works (route 'connect'), and the play dialog every play control opens.
-// Ratified 2026-10-09 from connect-and-prompts (option 4's page, option 5's play dialog).
 // The store can't know whether your AI is connected, so nothing here shows it.
 // ============================================================================
 const GS_AI_LOGO = {
@@ -64,7 +63,7 @@ const GsOtherSteps = ({ id }) => { const o = GS_AI_OTHERS.find((x) => x[0] === i
 
 // ---- The play dialog: one line about connecting, the prompt, Copy ----
 // A finished edition of a game played once starts nothing: the dialog says so, with no prompt and no Copy. The product page's
-// Play is the one exception (owner, 2026-10-18): its request carries page: true and always opens the prompt.
+// Play is the one exception: its request carries page: true and always opens the prompt.
 const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === 'game' && gs.view !== 'out' && window.ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
 const gsReqDone = (gs, r) => { const e = gsReqEd(gs, r); return !!e && !gsStartsOver(e.gid) && !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live'; };
 const GsPlayDialog = () => {

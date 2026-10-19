@@ -1,10 +1,11 @@
 // ============================================================================
-// [Platform] — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape
-// (Daily Puzzles split into separate games, 2026-10-09).
-// Each is the standard option 16 page, built like Delve's: the now card (today's, or this
+// [Platform] — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape.
+// Word, Groups and Mystery's pages are replaced by gs-pass-library.jsx in every view (cprPzLibrary), Escape's for a player without
+// the Pass (CprEsLibrary), and PzNow there too (CprPzNow).
+// Each is the standard library game page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements and your plays. "All…" opens History filtered to the game.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
-// Free (free-and-pass, 2026-10-09): a free player plays the current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
+// Free: Daily Word and Daily Mystery's current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
 const pzMis = gsMis;
@@ -39,7 +40,7 @@ const PZ = {
       { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && s.q === 0 && !s.hints; } },
       { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7 }],
   },
-  // Escape: one room so far, No. 1 The Clockmaker’s Study (game-pages-refresh, 2026-10-18). Its finished play is escape-week.
+  // Escape: one room so far, No. 1 The Clockmaker’s Study. Its finished play is escape-week.
   escape: {
     weekly: true, count: 1, rooms: ['The Clockmaker’s Study'],
     no: (i) => PZ.escape.rooms[i] || PZ.escape.rooms[0], salt: 3, keep: {}, past: 'escape-week', today: 'escape-week', liveSid: 'escape-live',

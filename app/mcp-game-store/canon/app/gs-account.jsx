@@ -1,8 +1,7 @@
 // ============================================================================
-// [Platform] — Account page (circlists-match-1): the Pass card, then the details you change
-// rarely (Username, change email, change password), delete account, and the support line.
-// Username moved down beside email and password 2026-10-11 (phone-snags-second-pass). A provider
-// account (Google, Apple) gets one card in place of the two change cards.
+// [Platform] — Account page: the Pass card, then the details you change rarely (Username, change email,
+// change password), delete account, and the support line. A provider account (Google, Apple) gets one card
+// in place of the two change cards.
 // ============================================================================
 
 // A tick and a short line beside the button for a few seconds after a change.

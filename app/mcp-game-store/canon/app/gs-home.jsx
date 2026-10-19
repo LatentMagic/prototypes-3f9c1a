@@ -1,14 +1,12 @@
 // ============================================================================
-// [Platform] — Home (screen 1) and Games (screen 6). The Pass page is in gs-billing.jsx.
+// [Platform] — Home (screen 1). GsHome is replaced by gs-pass-home.jsx (CprHome); GsWhatsNew, GsFeature and
+// GS_HOME_GAMES are still read. The Pass page is in gs-billing.jsx.
 // ============================================================================
-// The hero: the product's promise beside Casebook's cover field, with the whole Casebook chat (DS ChatPlayback, played turn by turn) set inside it
-// and scrollable (home-product-hero option 4, ratified 2026-10-11). The field is from
-// home-hero option 9.
 const GsFeature = ({ id }) => <GsCard id={id} />;
-// NOTE (owner, 2026-10-13): Available games is NOT meant to hold every game. It is a small, chosen sample so a visitor gets a sense
+// NOTE: Available games is NOT meant to hold every game. It is a small, chosen sample so a visitor gets a sense
 // of what exists; the whole library is on Discover. A game is added here only on the owner's approval: this row is what we highlight.
-// More games on each game's page uses this same list, minus the page's own game (owner, 2026-10-13).
-// It already holds too much and needs revisiting. Daily Groups and Casebook were taken off (owner, 2026-10-13).
+// More games on each game's page uses this same list, minus the page's own game.
+// It already holds too much and needs revisiting.
 const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
 
 const GS_WHATSNEW = [
@@ -49,7 +47,6 @@ const GsWhatsNew = () => {
 };
 const GsHome = () => {
   const gs = useGs(); const field = React.useRef(null);
-  // Touch: the Casebook pose plays while a finger is down on the name or the art, as on a game card, and stops on release or scroll.
   React.useEffect(() => {
     const f = field.current; if (!f) return undefined;
     const on = (e) => { if (e.pointerType !== 'mouse' && e.target.closest('.gs-hero-name, .gs-hero-shapes4')) f.classList.add('is-on'); };
@@ -80,7 +77,6 @@ const GsHome = () => {
             <span className="gs-label">A NEW CASE EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          {/* The design system's ChatPlayback plays the case turn by turn and stops on the finished chat; its own control pauses and plays again. Under reduced motion it draws the finished chat still. */}
           <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Casebook case being played in a chat" />
         </div>
       </section>
@@ -93,7 +89,6 @@ const GsHome = () => {
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
       </section>
 
-      {/* The promise moved up into the hero, so this band is the Pass's own (home-product-hero option 4). */}
       <section id="gs-how" className="gs-band">
         <div className="gs-stack-sm">
           <h2 className="mcp-t-sec">The Pass</h2>

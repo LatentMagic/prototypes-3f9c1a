@@ -1,4 +1,4 @@
-// [Platform] — ten more games, all Pass-only (owner, 2026-10-16: in the main build).
+// [Platform] — ten more games, all Pass-only.
 // Loads after gs-pass-store.jsx (reads CPR_STAGE, CPR_SHOWN) and before the other gs-pass-* files. main.jsx adds GS_MORE_IDS to its route lists.
 // Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, player page units.
 const cprStep = (b, rest) => <><b>{b}</b>{rest}</>;
@@ -87,9 +87,9 @@ const GS_MORE = [
 const GS_MORE_IDS = GS_MORE.map((d) => d.k);
 const GS_MORE_SCREENS = {};
 GS_MORE.forEach((d) => {
-  const tags = ['PASS', d.when, d.long].filter(Boolean);
+  const tags = [d.when, d.long].filter(Boolean);
   GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-  GS_GAMES[d.k] = { name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags };
+  GS_GAMES[d.k] = gsAccess({ access: 'pass', name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags });
   GS_PAGES[d.k] = {
     rhythm: d.page.rhythm,
     box: { label: 'ONLY WITH THE PASS', heading: d.page.heading, session: null,
@@ -104,7 +104,7 @@ GS_MORE.forEach((d) => {
   GS_LIB_READY[d.k] = d.ready;
   GP_CFG[d.k] = { units: d.units, run: null, strip: null, ends: null, recent: [] };
   GS_GAME_ORDER.push(d.k);
-  CPR_STAGE[d.k] = 'pass';
+  CPR_STAGE[d.k] = GS_GAMES[d.k].access;
   CPR_SHOWN.push(d.k);
   GS_MORE_SCREENS[d.k] = gpGame(d.k);
 });

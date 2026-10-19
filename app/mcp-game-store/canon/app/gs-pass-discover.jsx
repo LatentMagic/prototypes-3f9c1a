@@ -1,13 +1,12 @@
-// [Platform] — Discover (route `games`), from "Discover, tidied", brought up to the 2026-10-16 decisions.
-// Re-publishes window.GsGames. Cards and picks are the re-published GsCard and GsPick (the Pass mark top right, no Free or First
-// chips); the wall is the shared GsTile with the same mark (2026-10-16, owner asked for it). Proposals the owner made on 2026-10-16, not yet ratified: search and filters
-// as History's (one search field and a Filters panel), and the selection below. Discover doesn't sell the Pass (owner, 2026-10-16):
-// only a game's product page and its Library page do, so it has no Pass line.
+// [Platform] — Discover (route `games`). Re-publishes window.GsGames, replacing gs-discover.jsx's GsDiscover. Cards and picks are
+// the re-published GsCard and GsPick (the Pass mark top right, no Free or First chips); the wall is the shared GsTile with the same mark.
+// Proposed, not ratified yet: search and filters as History's (one search field and a Filters panel), and the selection below.
+// Discover doesn't sell the Pass: only a game's product page and its Library page do, so it has no Pass line.
 
 // The picks (seed). Labels name each game's rhythm, never a price or "this week".
 const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
 // The selection: Just added (games with editions, not picked), then Free to play (every game with free play, picks
-// included; gone with the Pass). "Play any time" is gone (owner, 2026-10-16). A row with nothing in it isn't shown.
+// included; gone with the Pass). A row with nothing in it isn't shown.
 const cprSelection = (gs) => {
   const shown = CPR_PICKS.map((p) => p[0]);
   const take = (ks) => { const out = ks.filter((k) => CPR_SHOWN.includes(k) && !shown.includes(k)); shown.push(...out); return out; };
@@ -49,8 +48,8 @@ const CprDiscoverBody = ({ f, setF }) => {
     </section>
   </>;
 };
-// The page shell is canon's GsDiscover with CprDiscoverBody in place of DcBody: DcBody is file-scoped in app/gs-discover.jsx,
-// so on merge the change goes into that file and this copy goes. Loading and failed states as canon.
+// The page shell is a copy of canon's GsDiscover with CprDiscoverBody in place of DcBody, which is file-scoped in app/gs-discover.jsx.
+// Loading and failed states as canon.
 const CprDiscover = () => {
   const gs = useGs();
   const [load, setLoad] = React.useState(gs.route.load || null);

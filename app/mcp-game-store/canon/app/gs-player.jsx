@@ -1,11 +1,10 @@
 // ============================================================================
-// [Platform] — each game's player page, its way in from the game
-// page. (The top bar's Library dropdown gave way to the Library page, app/gs-discover.jsx, 2026-10-09.) From delve-two-pages,
-// option 2 refined as A.
-// Ratified 2026-10-08: the top-bar item is "Library"; the player page is titled with the game's name alone.
+// [Platform] — each game's route (gpGame): the product page, with the card above it when signed in and the player can play;
+// with route.page 'record', the game's library game page (GS_LIBRARY), or the player page here for a game with none.
+// The top-bar item is "Library"; the player page is titled with the game's name alone.
 // The card reads "IN YOUR LIBRARY" and links "Go to your <game>"; its line is not decided yet.
 // ============================================================================
-// ---- Seed: one player's Delve (run 1, The Goblin Warren beneath Ashford Mill; game-pages-refresh, 2026-10-18) ------------------------------
+// ---- Seed: one player's Delve (run 1, The Goblin Warren beneath Ashford Mill) ------------------------------
 const GP_RECENT = [
   { date: '5 October', ending: 'Elsie rescued' },
 ];

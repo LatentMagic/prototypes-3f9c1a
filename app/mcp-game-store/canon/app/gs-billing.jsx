@@ -1,7 +1,7 @@
 // ============================================================================
-// [Platform] — the Pass (circlists-match-2): dates and prices, the Pass card in
-// every state, Switch and Cancel sheets, the buying block, checkout, and the
-// update-card page. Prices £3 a month and £30 a year (decided 2026-10-11).
+// [Platform] — the Pass: dates and prices, the Pass card in every state, Switch and
+// Cancel sheets, the buying block, checkout, and the update-card page. Prices £3 a
+// month and £30 a year. GsPass (the Pass page) is replaced by gs-pass-pricing.jsx.
 // ============================================================================
 const GS_NB = '\u00A0';
 const GS_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -38,7 +38,7 @@ const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
 
 // ---- The Pass card: the same card on the Account page and the Pass page ----------
 // What a player keeps and what freezes when a Pass ends (cancel flow, ending and lapsed cards, Pass page).
-// One sentence at every place it appears (owner's ruling, 2026-10-18): earned achievements never freeze.
+// One sentence at every place it appears: earned achievements never freeze.
 const GsKeepLock = ({ lead }) => (
   <div className="gs-stack-sm">
     <p>{lead}</p>
@@ -198,8 +198,8 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
   );
 };
 
-// ---- The Pass page and the subscribe page (pass-and-subscribe, option 5, ratified 2026-10-11) ----------
-// The Pass page describes: the comparison, closed by the price and the one way on. No plan choice (MCPG-012 BF-03).
+// ---- The Pass page and the subscribe page ----------
+// GsPass is replaced by gs-pass-pricing.jsx (CprPass).
 const GsPass = () => {
   const gs = useGs();
   const holds = gs.view === 'pass';

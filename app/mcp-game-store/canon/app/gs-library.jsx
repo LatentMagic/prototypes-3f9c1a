@@ -1,18 +1,17 @@
 // ============================================================================
 // [Platform] — the library game page: the parts every game's page is built from.
-// From option 16, ratified 2026-10-08.
 // Order at every width: the now card, the run of editions, achievements, your plays. Two columns from 900px.
 // A game's own file holds its seed and its now card, and registers its page on window.GS_LIBRARY.
 // ============================================================================
-// What this player can play of a game (free-and-pass, 2026-10-09): 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
-// The three dailies and Escape are free in full; Casebook and Delve give a free player their first edition; 36,000 Summers Ago is only with the Pass.
-const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : id === 'hunter' ? 'none' : 'first');
+// What this player can play of a game: 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
+// Read from the game's access (gs-data.jsx): a Pass holder or 'daily', 'all'; 'first', 'first'; 'pass', 'none'.
+const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
 const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
 // An edition dated before the Pass ended.
 const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < gsEndedOn(gs);
 // Achievements by what the player can do now (items from phAch, dated by the record): earned or still to earn when they can earn it; when they can't play the game any more, only the earned ones,
-// shown as any earned row (state 'kept'; owner, 2026-10-18). Only progress toward the rest, and the streak, freeze.
+// shown as any earned row (state 'kept'). Only progress toward the rest, and the streak, freeze.
 const lbAchView = (items, access, gs) => {
   const past = lbPast(gs); const out = [];
   items.forEach((a) => {
@@ -34,7 +33,7 @@ const LbBackTo = ({ gid }) => {
   const fromLib = p && p.name === g.route && p.page === 'record';
   return <LbBack label={g.name} onClick={() => (fromLib ? gs.back() : gs.go(g.route, { page: 'record' }))} />;
 };
-// The library game page head: the design system's cover beside a heading (Cover.prompt.md, ratified 2026-10-12; game-editions-list 2g).
+// The library game page head: the design system's cover beside a heading (Cover.prompt.md).
 // The cover fills to the text's height, never below 4:3; the art keeps its scale, placed by its declared extend, on its ground.
 // name and more: a seam for playgrounds (a test name, extra links).
 const LbHead = ({ id, name, more }) => {
@@ -60,7 +59,7 @@ const LbResult = ({ s }) => (
 
 // ---- The run: editions completed in a row join into one bar. Under 480px the last six show. ----
 // weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
-// on / legend: the legend entries. A streak game says Completed / Failed / Not played (failed-vs-missed-strip option 2, owner 2026-10-15);
+// on / legend: the legend entries. A streak game says Completed / Failed / Not played;
 // 36,000 Summers Ago passes its own two (Played / Not played). failed: played and lost; it breaks the streak as a day not played does.
 const LbRun = ({ n, unit, weeks, locked, figure, pass, on = 'Completed', legend }) => {
   const gs = useGs();
@@ -163,7 +162,7 @@ const LbChoice = ({ label, value, opts, onPick }) => (
     <div className="lb-choice">{opts.map(([v, l]) => <button key={v} type="button" aria-pressed={value === v} onClick={() => onPick(v)}>{l}</button>)}</div>
   </div>
 );
-// Search and filters above a long list (History, Library), from filters-on-a-phone (option 1b, 2026-10-10).
+// Search and filters above a long list (History, Library, Discover).
 // Search stays on the page; every LbChoice moves into one Filters panel. The Game choice is a row that opens a search and
 // a list of games narrowed by Genre and Schedule, so the panel keeps its size however many games there are.
 // A seam: a playground may replace window.LbTools.
@@ -197,7 +196,7 @@ const LbGamePick = ({ g, list, onBack }) => {
     </div>
   );
 };
-// Nothing sits under the bar: the button counts what is set, and the panel shows it and clears it (2026-10-12).
+// Nothing sits under the bar: the button counts what is set, and the panel shows it and clears it.
 const LbFilters = ({ children }) => {
   const { search, choices } = lbfParts(children);
   const [open, setOpen] = React.useState(false); const [deep, setDeep] = React.useState(false);

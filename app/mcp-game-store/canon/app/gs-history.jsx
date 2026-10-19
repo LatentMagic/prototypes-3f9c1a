@@ -1,7 +1,7 @@
 // ============================================================================
 // [Platform] — History (every play under its day; search and filters), the play rows, the edition helpers, and the library game page's plays card (LbRecent).
 // History lists every play under the day it was played. A game's editions are listed on its own page (app/gs-editions.jsx).
-// Ported from the History playground (pg-history.jsx). Loads after every library module.
+// Loads after every library module.
 // Seed: one play log built from the library pages' own seeds. Every play opens a record that agrees with its row.
 // This edition's play has two forms, finished and in progress (Config: This week, or today).
 // ============================================================================
@@ -16,7 +16,7 @@ const phDayLabel = (d) => { const n = Math.round((phDay0(d) - PH_TODAY) / 864e5)
 const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 const phShort = (d) => lbShort(lbDate(d));
 
-// ---- Editions (moved here from the removed Editions page module, 2026-10-10) ----
+// ---- Editions ----
 const ED_GAMES = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve'];
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
 // the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
@@ -38,7 +38,7 @@ const edList = (gs, gid) => {
       open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null })));
   }
   const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1]; const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
-  const mine = (x) => !fresh && x.played && (pass || x === first || (lapsed && lbOld(x.week || x.date, gs)));
+  const mine = (x) => !fresh && x.played && (pass || (x === first && !!PH_FIRST[gid]) || (lapsed && lbOld(x.week || x.date, gs)));
   return edMore(gs, gid, all.map((x, i) => {
     // This week's play counts as played before the Pass ended when it ended today.
     const curOld = i === 0 && !now && signed && lapsed && mine(x);
@@ -48,7 +48,7 @@ const edList = (gs, gid) => {
     // The free first edition reads its one record.
     const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
     if (fr && !fresh) { st = fr.status; return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: true, now: false, status: st, open: fr.open && (() => fr.open(gs)) }; }
-    return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first, now: i === 0, status: st,
+    return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first && !!PH_FIRST[gid], now: i === 0, status: st,
       open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: 'delve' }))) : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
   }));
 };
@@ -96,7 +96,7 @@ const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
 const phSess = (id) => (gs) => gs.go('session', { id });
 const PH_LIVE = { kind: 'live', label: 'In progress' };
 const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live' };
-// ---- Several editions in progress (Escape and Delve only; owner, 2026-10-18, Q3). SAMPLE data: one earlier room and one earlier run,
+// ---- Several editions in progress (Escape and Delve only). SAMPLE data: one earlier room and one earlier run,
 // each in progress. They exist only while review.several is on (the two-in-progress states), so everywhere else the game's first
 // edition stays the Clockmaker's Study and run 1. Starting another edition leaves the first where it was; nothing warns about it. ----
 const PH_MORE = {
@@ -159,16 +159,16 @@ const phLog = (gs) => {
   const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
-// Who sees what (free-and-pass, 2026-10-09). A player keeps History for everything they played.
-// Free: the dailies and Escape in full, and the first edition of Casebook and Delve. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
-// ---- The free first edition's one play record (a free first case, run or room). Every surface reads it: the game page's head
+// Who sees what. A player keeps History for everything they played.
+// Free: Daily Word and Daily Mystery in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
+// ---- The free first edition's one play record (a free first run or room, or chapter). Every surface reads it: the game page's head
 // card, its list of plays, History, the Library row, the editions list, the case or session page and its achievements. Its date is
 // the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play
 // (cprFirstState reads it), or not started. ----
-const PH_FIRST = { casebook: CB_ALL[CB_ALL.length - 1].id, delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
-const PH_FIRST_LIVE = { casebook: (gs) => cbGo(gs, PH_FIRST.casebook), delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
+const PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
+const PH_FIRST_LIVE = { delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
 // 'none' | 'live' | 'done' for a player without the Pass; null for a Pass holder or a game with no free first edition.
-const phFirstSt = (gs, gid) => (PH_FIRST[gid] && gs && gs.view && gs.view !== 'pass' && gs.view !== 'out' && window.cprFirstState ? cprFirstState(gs, gid) : null);
+const phFirstSt = (gs, gid) => (PH_FIRST[gid] && GS_GAMES[gid].first && gs && gs.view && gs.view !== 'pass' && gs.view !== 'out' && window.cprFirstState ? cprFirstState(gs, gid) : null);
 const phFirstRec = (gs, gid) => {
   const e = PH_EDS[PH_FIRST[gid]]; if (!e) return null;
   const p = e.plays[0]; const st = phFirstSt(gs, gid);
@@ -197,7 +197,7 @@ const phVisible = (gs) => {
 const phWhen = (d) => (phDayKey(d) === phDayKey(PH_TODAY) ? 'Today' : phShort(d));
 // Achievements, read from the record. Each has its condition: by (a play that meets it), count (the plays that each add one,
 // oldest first) or, for a streak, the streak shown (streak). Earned is dated by the first play that meets it. Plays in progress meet nothing.
-// A chapter started over is a new session that counts for nothing new (owner, 2026-10-17): a play marked restart earns nothing.
+// A chapter started over is a new session that counts for nothing new: a play marked restart earns nothing.
 const phAch = (gs, gid, items, streak) => {
   const plays = phVisible(gs).filter((p) => p.gid === gid && p.status.kind !== 'live' && !p.restart).reverse();
   return items.map((a) => {
@@ -241,7 +241,7 @@ const usePhList = (initial, k0) => {
   return { all, g, setG, pg, go, games, sort, setSort, list: sort === 'old' ? [...shown].reverse() : shown };
 };
 
-// ---- One play: a DS.ListRow, given its parts (canonical row 19E). Title is the edition alone (edName); the game's name goes in game, only in a list that mixes games.
+// ---- One play: a DS.ListRow, given its parts. Title is the edition alone (edName); the game's name goes in game, only in a list that mixes games.
 // v: { key, title, game?, when (text or forms), status, onOpen, gid?, sub? } ----
 const phTone = (s) => (s.kind === 'ok' || s.kind === 'bad' ? s.kind : 'none');
 const PhLead = ({ gid }) => <span dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />;
@@ -250,7 +250,7 @@ const phRow = (v) => (
     result={gsForms(v.status.label)} tone={phTone(v.status)} when={v.when}
     onClick={v.onOpen || undefined} />
 );
-// The library game page's plays card is the newest of History's rows for the game: one row per play (2026-10-12).
+// The library game page's plays card is the newest of History's rows for the game: one row per play.
 // The card has no day headings, so a row shows its day where History shows its time.
 const phRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0, 8)
   .map((p) => ({ key: p.pid, title: phParts(p, true).title, when: [phWhen(p.at) + ', ' + phTime(p.at), phWhen(p.at)], status: p.status, onOpen: () => p.open(gs) }));
@@ -316,8 +316,8 @@ const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
   </nav>
 ) : null);
 
-// History: every play under the day it was played (history-filters-redesign option 1 without its tabs, 2026-10-12; a game's
-// editions are listed on its own page). Search and one Filters panel that only narrows: Genre, Schedule, Game, Order.
+// History: every play under the day it was played (a game's editions are
+// listed on its own page). Search and one Filters panel that only narrows: Genre, Schedule, Game, Order.
 // When nothing matches, Clear all clears search and narrowing. Narrowed to a game when the library game page's "See in History" opens it.
 // Every row opens its session page. No Pass mark on any row or filter.
 // A row's title comes from its edition: edLabel ("Daily Word #212"), or edName in a one-game list ("#212").

@@ -1,9 +1,7 @@
 // ============================================================================
 // [Platform] — Discover (route `games`) and Library (route `library`).
-// Discover: round 4 option 16 with Joe's changes, 2026-10-09: two picks, Free to play, the Pass band,
-// then All games with search and genre chips (Free last), no Pass tile in the wall, no Free tag on the tiles. Just added sits under the picks (Joe).
-// Library: option 13, rows with covers. Names Discover and Library.
-// Loads after gs-player.jsx; replaces GsGames.
+// Both pages here are replaced: Discover (GsDiscover) by gs-pass-discover.jsx, Library (GsLibrary) by gs-pass-library.jsx.
+// Their helpers (gsKind, GS_KINDS, gsFind, GS_ADDED, GS_LIB_READY) are still read.
 // ============================================================================
 const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
 const GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
@@ -34,7 +32,6 @@ const DcBody = () => {
   const rhy = GS_RHYTHMS.map(([v]) => v).filter((v) => on.includes(v));
   const ids = GS_GAME_ORDER.filter((k) => (!kinds.length || kinds.includes(GS_GAMES[k].category)) && (!rhy.length || rhy.includes(gsRhythm(k))) && (!free || GS_GAMES[k].free) && gsFind(q, k));
   const flip = (v) => setOn((a) => (a.includes(v) ? a.filter((x) => x !== v) : a.concat(v)));
-  // Clear and Show every game remove themselves; focus moves to the search field, the first of the controls they reset.
   const tools = React.useRef(null);
   const clear = () => { setOn([]); setQ(''); setTimeout(() => { const i = tools.current && tools.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const freeIds = GS_GAME_ORDER.filter((k) => GS_GAMES[k].free);
@@ -45,7 +42,7 @@ const DcBody = () => {
       <DS.CardRow title="Just added" className="gs-row4">{GS_ADDED.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <section className="dc-sec">
-      <DS.CardRow title="Free to play" className="gs-row4" sub={GS_NAME.casebook + '’s first case and Delve’s first run are free.'}>{freeIds.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
+      <DS.CardRow title="Free to play" className="gs-row4" sub="Delve’s first run is free.">{freeIds.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow>
     </section>
     <DcPassBand />
     <section className="dc-sec">
@@ -61,7 +58,7 @@ const DcBody = () => {
     </section>
   </>;
 };
-// Its content region can stage loading in place and a failed load; the top bar and footer stay.
+// Replaced by gs-pass-discover.jsx (CprDiscover).
 const GsDiscover = () => {
   const gs = useGs();
   const [load, setLoad] = React.useState(gs.route.load || null);
@@ -81,10 +78,8 @@ const GsDiscover = () => {
   </>);
 };
 
-// ---- Library: every game, and whether something is waiting to be played (design system ListRow, "A library of games").
-// Worked out from the same state the game's own page reads (lbNow, lbWeekDone, the Today switch), so the two always agree.
+// ---- Library. GsLibrary is replaced by gs-pass-library.jsx (CprLibrary). GS_LIB_READY: each game's ready line, read by its rows.
 const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
-// A row's { result, tone, when, at } comes from gsLibRow (app/gs-pass-library.jsx), read from the play record.
 const GsLibrary = () => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
@@ -95,7 +90,6 @@ const GsLibrary = () => {
   const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
   const rows = {}; GS_GAME_ORDER.forEach((k) => { rows[k] = gsLibRow(gs, k); });
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
-  // Listed only if the player can play some part of it now, or has held the Pass (owner, 2026-10-15).
   const listed = GS_GAME_ORDER.filter((k) => lbAccess(gs, k) !== 'none' || lbPast(gs));
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
     .sort((a, b) => (sort === 'az' ? az(a, b) : rows[b].at - rows[a].at || GS_GAME_ORDER.indexOf(a) - GS_GAME_ORDER.indexOf(b)));

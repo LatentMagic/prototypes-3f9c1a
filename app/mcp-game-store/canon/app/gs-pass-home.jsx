@@ -1,8 +1,9 @@
 // [Platform] — Home, and the Pass mark on the game cards.
-// Re-publishes GsHome, GsCard / GsGameCard and GsPick. GsHome is canon's (app/gs-home.jsx) with the Pass section changed;
+// Re-publishes GsHome, GsCard / GsGameCard and GsPick, replacing app/gs-home.jsx's GsHome and app/gs-parts.jsx's cards.
+// GsHome is canon's with the Pass section changed and the pay line moved into it;
 // the hero, Available games, Coming soon and What's new are canon's. GsTile (gs-parts.jsx) is the one tile, for the wall and tile rows.
 
-// The Pass mark (owner, 2026-10-16) is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
+// The Pass mark is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
 // is set. Set for Pass-only games, for a player without the Pass.
 // The Free and "First … free" chips come off the cards; the Pass is never a tag.
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
@@ -51,7 +52,7 @@ const CprHome = () => {
           </div>
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
-        {/* Casebook here isn't a decided game (owner, 2026-10-16). The pattern stands whichever game it shows:
+        {/* Casebook here isn't a decided game. The pattern stands whichever game it shows:
             one game's art, its schedule caption, a sample chat. */}
         <div className="gs-hero-field" ref={field}>
           <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.casebook.route)}>
@@ -76,7 +77,7 @@ const CprHome = () => {
         <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
       </section>
 
-      {/* The Pass section: one paragraph built from the game data, "the Pass" its only link, no About the Pass (owner, 2026-10-16).
+      {/* The Pass section: one paragraph built from the game data, "the Pass" its only link, no About the Pass.
           The pay line sits under it; whether it stays here now that it is on Pricing is open. */}
       <section id="gs-how" className="gs-band gs-pu-band">
         <div className="gs-stack-sm">

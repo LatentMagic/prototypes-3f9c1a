@@ -1,9 +1,8 @@
 // ============================================================================
-// [Platform] — the game page: one template for all four games (first-release-
-// games). Delve's page is the model. Order: cover and play box; facts band
-// (how long, how often, genre tags); pitch beside who does what; how it looks
-// in your chat; (Delve: stat tiles); more games. Every null is a gap in the record and shows as "—".
-// The play box at the top is the page's one Play; the edition card that repeated it went 2026-10-11 (phone-snags-second-pass).
+// [Platform] — the game page: one template for every game. Delve's page is the model. Order: cover and
+// play box; facts band (how long, how often, genre tags); pitch beside who does what; how it looks in
+// your chat; (Delve: stat tiles); more games. Every null is a gap in the record and shows as "—".
+// The play box at the top is the page's one Play. GsPlayBox is replaced by gs-pass-game.jsx (CprPlayBox).
 // `week` stays in GS_PAGES: the library game pages read its line.
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
@@ -15,7 +14,7 @@ const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, 
 const GS_PAGES = {
   word: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
+    box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'Six guesses to find today’s five-letter word.', ps: [
@@ -26,7 +25,7 @@ const GS_PAGES = {
   },
   groups: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: false, label: 'ONLY WITH THE PASS', small: gsFreeSmall('Today’s groups'), heading: 'New groups every day', button: 'Play today’s groups',
+    box: { label: 'ONLY WITH THE PASS', small: gsFreeSmall('Today’s groups'), heading: 'New groups every day', button: 'Play today’s groups',
       steps: [GS_STEP_CONNECT, <><b>Find today’s four groups.</b> You can make four mistakes.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'Sixteen words hide four groups of four.', ps: [
@@ -37,7 +36,7 @@ const GS_PAGES = {
   },
   mystery: {
     rhythm: 'NEW EVERY DAY',
-    box: { free: true, label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
+    box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Question the inspector</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'There’s a body and a story that doesn’t add up.', ps: [
@@ -48,7 +47,7 @@ const GS_PAGES = {
   },
   escape: {
     rhythm: 'A NEW ROOM EVERY WEEK',
-    box: { first: true, label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the [Platform] Pass.', heading: 'A new room every week', button: 'Play the first room',
+    box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the [Platform] Pass.', heading: 'A new room every week', button: 'Play the first room',
       steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: 'About 30 min', often: 'A new room every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
@@ -60,9 +59,9 @@ const GS_PAGES = {
   },
   casebook: {
     rhythm: 'ONE CASE',
-    box: { first: true, label: 'FIRST CASE FREE', heading: 'Sixteen turns. One accusation.', session: 'casebook', button: 'Play the first case',
+    box: { label: 'ONLY WITH THE PASS', heading: 'Sixteen turns. One accusation.', session: 'casebook',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
-      small: 'The first case is free with an account. Every other case comes with the [Platform] Pass.' },
+      small: GS_NAME.casebook + ' comes only with the [Platform] Pass.' },
     facts: { long: '25–40 min', often: 'One case, ready when you are' },
     tags: ['Mystery', 'One case, sixteen turns, one accusation'],
     pitch: { h: 'Ask the question they haven’t prepared for.', ps: [
@@ -74,7 +73,7 @@ const GS_PAGES = {
   },
   delve: {
     rhythm: 'ONE RUN A WEEK',
-    box: { first: true, label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
+    box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'The first run is free with an account. Every other run comes with the [Platform] Pass.' },
     facts: { long: '25–40 min', often: 'One run every week' },
@@ -87,7 +86,7 @@ const GS_PAGES = {
   },
   barrow: {
     rhythm: 'A BARROW CAMPAIGN',
-    box: { first: true, label: 'FIRST CHAPTER FREE', heading: 'A campaign in two chapters', button: 'Play Chapter 1',
+    box: { label: 'FIRST CHAPTER FREE', heading: 'A campaign in two chapters', button: 'Play Chapter 1',
       steps: [GS_STEP_CONNECT, <><b>Choose a hero</b>, then play at your own pace.</>, <><b>Keep your hero.</b> They carry on into the next chapter.</>],
       small: 'The first chapter is free with an account. Every other chapter comes with the [Platform] Pass.' },
     facts: { long: 'Several sessions', often: 'Two chapters, played at your own pace over several sessions' },
@@ -98,7 +97,7 @@ const GS_PAGES = {
       'Your AI is the Game Master and gives the world its voice. The game engine holds the map, rolls every die and keeps the journal. Choose your hero.'] },
     who: { ai: 'Plays the Game Master: narrates the world and turns what you say into moves.', server: 'Holds the map, the hero’s sheet and every enemy, rolls every die and keeps the journal.' },
     week: { label: 'A QUEST', title: 'The bell is in the barrow', line: 'Bring the Bell of Hollowmere home from the barrow, and stop whenever you like.' },
-    // Chapter 2's card, for a player past Chapter 1 (written for game-pages-refresh, 2026-10-18; label as deployed).
+    // Chapter 2's card, for a player past Chapter 1 (label as deployed).
     week2: { label: 'A QUEST', title: 'The chalice is in the abbey', line: 'Bring the Chalice of St. Ebba home from the drowned abbey, and stop whenever you like.' },
   },
   hunter: {
@@ -121,21 +120,19 @@ const GsPlayBox = ({ id }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const b = GS_PAGES[id].box;
   const paying = gs.view === 'pass';
-  // Casebook and Delve: "Play" for a Pass holder, the first-edition label for everyone else. The prompt is the same for all.
-  const label = b.first && !paying ? b.button : 'Play';
-  // Signed in, the first sentence ("The first case is free with an account.") goes; the rest stays.
-  const small = b.first && gs.view !== 'out' && b.small ? b.small.slice(b.small.indexOf('. ') + 2) : b.small;
+  const label = g.first && !paying ? b.button : 'Play';
+  const small = g.first && gs.view !== 'out' && b.small ? b.small.slice(b.small.indexOf('. ') + 2) : b.small;
   return (
     <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       <span className="gs-label">{b.label}</span>
       <h2 className="mcp-t-card">{b.heading}</h2>
       <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
-      {b.free || b.first || paying
+      {g.free || g.first || paying
         ? <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>
         : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
-      {small && <p className="gs-small">{small}{!b.free && ' ' + GS.purchase}</p>}
-      {b.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
-      {!b.free && !b.first && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
+      {small && <p className="gs-small">{small}{!g.free && ' ' + GS.purchase}</p>}
+      {g.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
+      {!g.free && !g.first && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
       <div className="gs-rule" />
       <div className="gs-stack-sm">
         <span className="gs-label">WORKS WITH</span>

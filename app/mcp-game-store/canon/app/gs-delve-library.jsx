@@ -1,9 +1,9 @@
 // ============================================================================
-// [Platform] — Delve's library page, option 16 fitted to Delve (picked by Claude on "decide for me", 2026-10-08).
+// [Platform] — Delve's library page.
 // This week's run: the ending beside the title, rooms reached as the bar. Weeks in a row. The game's five achievements.
-// Your runs. One run so far: No. 1, The Goblin Warren beneath Ashford Mill (game-pages-refresh, 2026-10-18), both the free
+// Your runs. One run so far: No. 1, The Goblin Warren beneath Ashford Mill, both the free
 // first run and this week's. Its finished form is session 'delve' (Bryn, won), its in-progress form 'delve-live' (Wren).
-// Without the Pass: the first run in this week's place, and the streak card in the Pass holder's place (LbRunPass).
+// Without the Pass the page is replaced by gs-pass-library.jsx (CprDvLibrary); a Pass holder gets this one.
 // ============================================================================
 const DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: { kind: 'bad', label: GS_RESULT.delve({ end: 'ritual' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
 const DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren beneath Ashford Mill', played: true, end: null };

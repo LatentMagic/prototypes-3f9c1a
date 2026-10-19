@@ -1,5 +1,5 @@
 // ============================================================================
-// [Platform] — 36,000 Summers Ago's library page: option 16's four parts, fitted to a game with no editions.
+// [Platform] — 36,000 Summers Ago's library page: the library game page's four parts, fitted to a game with no editions.
 // Per game-specs/36000-summers-ago.md there is no streak and no result to share (its session page shares the product page link), so the run shows the weeks you played
 // rather than a streak. The now card is your latest day, with where you left off. Records are invented.
 // ============================================================================

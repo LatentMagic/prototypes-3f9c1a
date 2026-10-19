@@ -398,7 +398,7 @@ const DlChatGptListing = () => {
 };
 
 // Register entries, spread into KIT_STATE_REGISTER by app/states.jsx (absent ⇒ none).
-// Group title per the owner's message of 15 Oct: under Store listing in States.
+// Listed under the group Store listing in States.
 const DL_STATES = [
   { group: 'Store listing', id: 'directory-listing-claude', label: 'Directory listing: Claude connector', stage: (c) => c.go('directory-claude') },
   { group: 'Store listing', id: 'directory-listing-chatgpt', label: 'Directory listing: ChatGPT plugin', stage: (c) => c.go('directory-chatgpt') },

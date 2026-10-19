@@ -33,7 +33,7 @@ const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placehold
     : <DS.TextField label={label} placeholder={placeholder} hint={hint} autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus={autoFocus} {...b} />;
 };
 
-// ---- Your username: a Google or Apple sign-up, straight after the provider (no code: a new account has no device to verify, 2026-10-11).
+// ---- Your username: a Google or Apple sign-up, straight after the provider (no code: a new account has no device to verify).
 // The account is made only when a name is chosen; leaving first leaves no account. No Skip. Back returns to sign-up, where Google or Apple leads here again.
 const GsUsername = () => {
   const gs = useGs();

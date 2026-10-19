@@ -1,6 +1,6 @@
 // ============================================================================
 // [Platform] — Casebook's seed: its one case so far, Case 1 "The Last Night at Gull Point" (deployed content), and its badges.
-// Casebook is episodic: cases are its editions, with no schedule, no streak and no next-case line (game-pages-refresh, 2026-10-18).
+// Casebook is episodic: cases are its editions, with no schedule, no streak and no next-case line.
 // The case's turns are GS_CB_REC (gs-data.jsx). `week` is the case's internal edition date, never printed: the play is dated Monday 5 October.
 // ============================================================================
 const cbMake = (id, week, month, title, played, verdict, total, rec) => {
@@ -19,7 +19,7 @@ const CB_LIVE = { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, null,
 // Every case, newest first. One so far; its row in the log is the in-progress form, finished by the Config switch (cbWeek).
 const CB_ALL = [CB_LIVE];
 
-// Sample achievements (allowed in this prototype; owner, 18 October). The streak and weekly ones are gone: Casebook has no cadence.
+// Sample achievements. None is about a streak or a week: Casebook has no cadence.
 // Each is earned by the first play in the record that meets it (src is the case as that play left it); counts count solved cases.
 const cbRight = (p) => p.src.verdict === 'right';
 const CB_ACH = [

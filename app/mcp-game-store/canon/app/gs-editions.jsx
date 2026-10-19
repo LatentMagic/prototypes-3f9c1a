@@ -1,16 +1,16 @@
 // ============================================================================
-// [Platform] — a game's editions (game-editions-list option 2, head 2g).
+// [Platform] — a game's editions.
 // Every game that releases editions (gsRhythm): "Every word / room / case / run" under the library game page's title opens the list
-// (route { page: 'record', list: true }); each row opens the edition in a panel over the list (round 3), its prompt inside.
-// No route leads to one edition. The list is settled (owner, 2026-10-12); the panel is moved over from the playground, unratified.
+// (route { page: 'record', list: true }); each row opens the edition in a panel over the list, its prompt inside.
+// No route leads to one edition. The list is settled; the panel is not ratified yet.
 // What an edition says about itself is SAMPLE text (PGE_INFO). Loads after gs-history.jsx, before main.jsx.
 // ============================================================================
 const ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
-// Only the dailies go by number. A game whose editions are named scenarios shows the name alone, no number anywhere (owner, 2026-10-15).
+// Only the dailies go by number. A game whose editions are named scenarios shows the name alone, no number anywhere.
 const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== 'daily';
-// ---- SAMPLE: what an edition says about itself. The app holds only number, title and date. The four story games' invented
-// per-edition lines are gone (game-pages-refresh, 2026-10-18): no source has them, so their editions carry no line. ----
+// ---- SAMPLE: what an edition says about itself. The app holds only number, title and date. No source has a per-edition line
+// for the four story games, so their editions carry none. ----
 const PGE_INFO = {
   word: 'Five letters. Six guesses.',
   groups: 'Sixteen words hide four groups. Find all four.',
@@ -26,7 +26,7 @@ const pgeInfo = (e) => ({ line: typeof PGE_INFO[e.gid] === 'string' ? PGE_INFO[e
 const pgeDated = (gid) => !GS_GAMES[gid].eds;
 
 // ---- One game's editions, newest first, each once. No result: those are History's. ----
-// Played: a finished play. Not played, in progress and not finished carry no mark (round 2).
+// Played: a finished play. Not played, in progress and not finished carry no mark.
 const pgePlayed = (e) => !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live';
 const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({ ...e, name: edName(e), when: pgeDated(gid) && e.date ? lbShort(e.date) : undefined, played: pgePlayed(e), live: !!e.status && e.status.kind === 'live', held: edNeedsPass(gs, e), info: pgeInfo(e),
   hay: phHay(gid, e.key, e.title, pgeDated(gid) && e.date ? phParse(e.date) : null) + ' ' + pgeRowTitle(gid, { ...e, name: edName(e) }).toLowerCase() }));
@@ -50,7 +50,7 @@ const usePgeList = (gid) => {
   let items = all.filter((x) => (st.show === 'all' || (st.show === 'played' && x.played) || (st.show === 'none' && !x.played) || (st.show === 'can' && !x.held)) && phMatch(x.hay, s));
   if (st.sort === 'old') items = items.reverse();
   const size = 24; const pages = Math.max(1, Math.ceil(items.length / size));
-  // An edition opened from the library game page's row (option 3) starts on its own page of the list.
+  // An edition opened from the library game page's row starts on its own page of the list.
   let pg = Math.min(st.pg, pages - 1);
   if (!k0.pg && st.open && st.pg === 0) { const i = items.findIndex((x) => x.key === st.open); if (i >= size) pg = Math.floor(i / size); }
   return { ...st, s, wait, box, set, clear, pages, pg, rows: items.slice(pg * size, pg * size + size), go: (x) => { set('pg', x); pgeScroll(box.current); } };
@@ -88,7 +88,7 @@ const PgeListPage = ({ gid }) => {
   );
 };
 
-// ---- The edition in a panel over the list (round 3): a bottom sheet under 640px, its prompt inside, no play dialog. ----
+// ---- The edition in a panel over the list: a bottom sheet under 640px, its prompt inside, no play dialog. ----
 // The open edition is the list's own state (f.open), kept in the history entry, so Back from "See in History" returns with it open.
 const PgeEdPanel = ({ gid, k, onClose }) => {
   const gs = useGs(); const g = GS_GAMES[gid]; const last = React.useRef(null);

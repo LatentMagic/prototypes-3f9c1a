@@ -1,7 +1,7 @@
 // ============================================================================
-// [Platform] — The Barrow of Hollowmere's library page (added 2026-10-13). A campaign told in chapters: chapters are its editions.
-// Chapter 1 is free with an account; Chapter 2 is out and comes with the Pass (game-pages-refresh, 2026-10-18). No Chapter 2 play is staged.
-// Chapter titles are authored; achievements are sample content (allowed in this prototype; owner, 18 October).
+// [Platform] — The Barrow of Hollowmere's library page. A campaign told in chapters: chapters are its editions.
+// Chapter 1 is free with an account; Chapter 2 is out and comes with the Pass. No Chapter 2 play is staged.
+// Chapter titles are authored; achievements are sample content.
 // ============================================================================
 const BW_CH1 = { title: GS_PAGES.barrow.week.title, line: GS_PAGES.barrow.week.line };
 const BW_CH2 = { title: GS_PAGES.barrow.week2.title, line: GS_PAGES.barrow.week2.line };

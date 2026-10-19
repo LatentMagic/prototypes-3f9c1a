@@ -60,7 +60,7 @@ const GsShareText = ({ lines }) => {
   );
 };
 
-// The one Share pop-up, opened from the session page and every library game page (2026-10-11).
+// The one Share pop-up, opened from the session page and every library game page.
 // A panel by ui-design.md: it is neither one question nor a short list of commands, so it is a bottom sheet on a phone.
 const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   const [copied, setCopied] = React.useState(false);
@@ -87,7 +87,7 @@ const GsSessionRecord = () => {
   const text = linkOnly ? ['https://platform.example/' + GS_GAMES[s.gid].route] : gsShareText(s);
   const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
-  // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once (owner, 2026-10-17).
+  // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once.
   const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
   // Controls only where they work: a player without the Pass can carry on or start over only a free game or its free first edition.

@@ -1,7 +1,9 @@
-// [Platform] — the Pass upsell's review aids (1153): two Config rows, and a reset of their store before every state.
+// [Platform] — the Pass upsell's review aids: three Config rows, and a reset of their store before every state.
+// Re-publishes ConfigExtra (these rows above gs-config.jsx's) and buildStates (states.jsx's, with the reset).
 // The states themselves are in app/states.jsx (group "Pass upsell"), the walk-through in app/qa.jsx.
 
-// ---- Config: the seed has no played flag per edition, so New for you is empty for most players. This stages it full.
+// ---- Config. The seed has no played flag per edition, so New for you is empty for most players: New editions stages it full.
+// The other two rows stage a free account's Word and Escape, and the Barrow's chapter 1.
 const GsPassConfigRows = () => {
   const v = useCpr();
   return (

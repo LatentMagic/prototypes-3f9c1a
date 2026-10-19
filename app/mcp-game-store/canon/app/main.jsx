@@ -202,7 +202,7 @@ const KitApp = () => {
     go, setConnected, setReview, setView, setSub, setUser, setProvider, setChoice,
     // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
     keep: (patch) => { const i = idx.current; stack.current[i] = { ...stack.current[i], ...patch }; },
-    // The preview frame can swallow history.back() with no popstate; if nothing moved, step the stack ourselves (GOTCHA candidate).
+    // The preview frame can swallow history.back() with no popstate; if nothing moved, step the stack ourselves.
     back: () => {
       const from = idx.current; if (from < 1) return;
       try { window.history.back(); } catch (e) {}
@@ -217,7 +217,7 @@ const KitApp = () => {
     startFree: () => (view === 'out' ? go('signup') : go('games')),
     signOut: () => { setSignedIn(false); go('home', null, 'out'); },
     // Each view has its own home: signed out is `home`, signed in is `games`. Switching views swaps one for the other.
-    // After signing in, and from Home or an auth screen on the demo bar, every player lands on Library (owner, 2026-10-16).
+    // After signing in, and from Home or an auth screen on the demo bar, every player lands on Library.
     setDemoView: (v) => {
       setView(v);
       if (v === 'out' && GS_GUARDED.includes(route.name)) go('signin', gsSignInFor(route), 'out');
