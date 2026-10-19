@@ -1,4 +1,4 @@
-// [Platform] — ten more games, all Pass-only.
+// [Platform] — nine more games, all Pass-only.
 // Loads after gs-pass-store.jsx (reads CPR_STAGE, CPR_SHOWN) and before the other gs-pass-* files. main.jsx adds GS_MORE_IDS to its route lists.
 // Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, player page units.
 const cprStep = (b, rest) => <><b>{b}</b>{rest}</>;
@@ -11,14 +11,6 @@ const GS_MORE = [
       ps: ['Every letter stands for another. Guess a few, test them on the line, and watch the words come through.', 'Your AI takes your guesses and reads back the line as it stands. The game engine holds the key. Name your first letter.'],
       ai: 'Takes your letter swaps and reads the line back to you.', server: 'Holds the key, checks every swap and counts your hints.' },
     chat: ['Swap a letter and the whole line changes.', 'I want to play Daily Cipher.', ['Daily Cipher No. 41. One line, every letter swapped for another.', 'QEB NRFZH YOLTK CLU. Which letter first?']] },
-  { k: 'pin', name: 'Daily Pin', category: 'LEARNING', when: 'Daily', ed: ['place', 'places'], long: '5 min', units: 'places', once: true,
-    blurb: 'Five clues, one place on the map. Pin it.', ready: 'Today’s place is ready',
-    art: ['forest', 'centre', '<rect width="160" height="120" fill="#163328"/><circle cx="76" cy="62" r="36" fill="#328A88"/><rect x="96" y="30" width="4" height="30" fill="#F2EBE0"/><circle cx="98" cy="30" r="10" fill="#D66847"/>'],
-    page: { rhythm: 'NEW EVERY DAY', heading: 'A new place every day', step: cprStep('Read the clues and pin today’s place.', ' Each clue narrows it down.'),
-      often: 'New every day', h: 'Five clues, one place on the map.',
-      ps: ['The first clue is vague. The fifth all but names it. Pin it early and score more.', 'Your AI reads the clues and tells you about the place once you’ve found it. The game engine checks your pin. Take the first clue.'],
-      ai: 'Reads each clue and tells you about the place afterwards.', server: 'Holds the place, checks your pin and keeps your score.' },
-    chat: ['The sooner you pin it, the higher you score.', 'Give me today’s first clue.', ['Clue 1 of 5. This city sits where two rivers meet.', 'Pin it now for five points, or take another clue.']] },
   { k: 'nighttrain', name: 'The Night Train', category: 'MYSTERY', when: 'Weekly', ed: ['case', 'cases'], long: '25–40 min', units: 'cases', once: true,
     blurb: 'Someone left the sleeper car and never reached the next one.', ready: 'This week’s case is ready',
     art: ['indigo', 'bottom', '<rect width="160" height="120" fill="#1D1B3A"/><rect x="14" y="62" width="132" height="36" fill="#D66847"/><rect x="26" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="54" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="82" y="70" width="16" height="12" fill="#1D1B3A"/><rect x="110" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="0" y="106" width="160" height="6" fill="#E5A63B"/><circle cx="128" cy="28" r="10" fill="#A390B2"/>'],

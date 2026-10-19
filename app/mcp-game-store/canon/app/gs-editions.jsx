@@ -15,8 +15,11 @@ const PGE_INFO = {
   word: 'Five letters. Six guesses.',
   groups: 'Sixteen words hide four groups. Find all four.',
   mystery: 'One suspect, one weapon, one room. One accusation.',
+  where: 'You get six guesses to find the country.',
+  chain: 'You get both ends. Find the words between.',
+  salvage: 'You get thirty dives to find five wrecks.',
 };
-const PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', escape: 'About 30 min', casebook: '25–40 min', delve: '25–40 min', barrow: 'Several sessions' };
+const PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', where: '5 min', chain: '10 min', salvage: '15 min', escape: 'About 30 min', casebook: '25–40 min', delve: '25–40 min', barrow: 'Several sessions' };
 // Escape, Casebook, Delve and the Barrow name an edition by its word and number beside its title: “Room 1 · The Clockmaker’s Study”.
 const PGE_WORDNUM = ['escape', 'casebook', 'delve', 'barrow'];
 const pgeRowTitle = (gid, e) => (PGE_WORDNUM.includes(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + ' ' + e.n + ' · ' + e.title : e.title && !pgeNoNum(gid) ? '#' + e.n + ' · ' + e.name : e.name);

@@ -232,6 +232,8 @@ const KIT_STATE_REGISTER = [
   { group: 'Ended unfinished', id: 'history-unfinished', label: 'History, with a Daily Groups day that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('history'); } },
   { group: 'Site', id: 'sign-in-return-library', label: 'Signed out, opened the Library: Sign in, then the Library', stage: (c) => c.go('signin', { next: { name: 'library' } }) },
   { group: 'Site', id: 'session-unknown', label: 'A session address that doesn’t exist (not found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'nowhere' }); } },
+  // Where, Chain and Salvage: held in app/gs-where-chain-salvage.jsx.
+  ...(window.DP_STATES || []),
   // Directory listing mocks: held in app/directory-listings.jsx (droppable); absent ⇒ none.
   ...(window.DL_STATES || []),
 ];

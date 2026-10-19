@@ -27,7 +27,7 @@ const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning
 const GS_LISTING = ['directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 // Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
 // Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
-const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
+const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
 // Screens a signed-out view cannot hold.
 GS_FOOTER.push(...(window.GS_MORE_IDS || []));
 const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
@@ -38,7 +38,7 @@ const gsSignInFor = (r) => ({ name: 'signin', next: { ...r, prev: undefined, nex
 const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'returning'];
 
 // Every route the app holds. Anything else is not-found, which carries no chrome.
-const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow',
+const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow',
   'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
 
 const GsScreen = ({ name }) => {
@@ -59,6 +59,9 @@ const GsScreen = ({ name }) => {
     case 'word': return <GsWord />;
     case 'groups': return <GsGroups />;
     case 'mystery': return <GsMystery />;
+    case 'where': return <GsWhere />;
+    case 'chain': return <GsChain />;
+    case 'salvage': return <GsSalvage />;
     case 'escape': return <GsEscape />;
     case 'casebook': return <GsCasebook />;
     case 'hunter': return <GsHunter />;
@@ -81,7 +84,7 @@ const GsScreen = ({ name }) => {
 
 // A page loads as a page on arrival: the top bar and footer stand, the content waits.
 // Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
-const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', 'escape', 'casebook', 'hunter', 'barrow', ...(window.GS_MORE_IDS || [])];
+const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', ...(window.GS_MORE_IDS || [])];
 const GsArrival = ({ name, quick }) => {
   const gs = useGs(); const r = gs.route;
   const held = r.hold === 'page';

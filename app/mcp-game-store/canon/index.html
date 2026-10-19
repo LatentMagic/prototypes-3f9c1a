@@ -1046,6 +1046,25 @@
   .ga-d-post.l { --x: 22; } .ga-d-post.r { --x: 132; }
   .ga-d-fl { --y: 46; --w: 16; --h: 16; --fill: var(--cover-orange); --s: 60; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(calc(var(--on) * var(--u) * -7.5)); }
   .ga-d-fl.l { --x: 17; } .ga-d-fl.r { --x: 127; }
+  /* Where: the hint's needle swings from north-east round to east and points at today's country, which rounds into a pin: found. Rotation only, so it lands exactly at any size. */
+  .ga-wh-needle { --x: 44; --y: 32; --w: 16; --h: 56; --fill: linear-gradient(var(--cover-orange) 50%, var(--cover-cream) 50%); --s: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: rotate(calc(45deg + var(--on) * 45deg)); }
+  .ga-wh-ans { --x: 96; --y: 44; --w: 32; --h: 32; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * 50%); }
+  /* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
+  .ga-ch { --y: 51; --w: 18; --h: 18; --s: 0; }
+  .ga-ch-1 { --x: 11; --fill: var(--cover-cream); } .ga-ch-5 { --x: 131; --fill: var(--cover-cream); }
+  .ga-ch-o { --fill: transparent; box-sizing: border-box; border: solid var(--c); border-width: max(var(--u) * (3 + var(--on) * 6), 1.5px + var(--on) * var(--u) * 9); }
+  .mcp-art i.ga-ch-o { transition: border-width var(--time-art) var(--ease-art); }
+  .ga-ch-2 { --x: 41; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 101; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
+  .ga-ch-l { --y: 57; --h: 6; --fill: var(--cover-cream); --s: 0; }
+  .ga-ch-l1 { --x: 20; --w: 61; transform-origin: 0 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
+  .ga-ch-l2 { --x: 79; --w: 61; transform-origin: 100% 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
+  /* Salvage: a board mid-hunt. Cream misses and two orange hits in a row. The last dive lands as a third hit, the misses recede to nothing, and the wreck under the three hits shows itself, 50ms behind. Every move is a scale about a shape's own centre, so it lands exactly at any size. */
+  .ga-sv-p { --w: 12; --h: 12; --s: 0; border-radius: 50%; }
+  .ga-sv-miss { --fill: var(--cover-cream); transform: scale(calc(1 - var(--on))); }
+  .ga-sv-hit { --fill: var(--cover-orange); --y: 54; }
+  .ga-sv-m1 { --x: 26; --y: 54; } .ga-sv-m2 { --x: 98; --y: 30; } .ga-sv-m3 { --x: 50; --y: 78; } .ga-sv-m4 { --x: 122; --y: 78; }
+  .ga-sv-h1 { --x: 50; } .ga-sv-h2 { --x: 74; } .ga-sv-h3 { --x: 98; transform: scale(var(--on)); }
+  .ga-sv-hull { --x: 46; --y: 50; --w: 68; --h: 20; --fill: var(--cover-lilac); --s: 50; border-radius: calc(var(--u) * 10); transform: scale(var(--on)); }
   .mcp-card.gs-host { transition: background-color var(--time-press) var(--ease), border-color var(--time-press) var(--ease); }
   .mcp-card.gs-host:is(.is-on, :active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); border-color: var(--control-edge); }
   @media (hover: hover) {
@@ -1302,6 +1321,7 @@
 <script type="text/babel" src="app/gs-session.jsx"></script>
 <script type="text/babel" src="app/gs-game.jsx"></script>
 <script type="text/babel" src="app/gs-library.jsx"></script>
+<script type="text/babel" src="app/gs-where-chain-salvage.jsx"></script>
 <script type="text/babel" src="app/gs-casebook-data.jsx"></script>
 <script type="text/babel" src="app/gs-casebook.jsx"></script>
 <script type="text/babel" src="app/gs-delve-library.jsx"></script>

@@ -39,6 +39,12 @@ const KIT_QA = [
     note: 'Each page: facts band, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'daily-puzzles-1213', title: 'Where, Chain and Salvage (1213)',
+  note: 'Each game, at phone and desktop width: product page signed out, free (Get the Pass) and with the Pass; library page done, in progress and free (Needs the Pass); the editions list; a session and its Share text (no country, word or square named). Point at, Tab to and press each card, tile and Library or History row: the art moves and holds; with reduced motion it stays still. Daily Pin appears nowhere.',
+  steps: ['where-signed-out', 'where-free', 'where-pass', 'library-where', 'library-where-in-progress', 'library-where-free', 'library-where-editions', 'session-where',
+    'chain-signed-out', 'chain-free', 'chain-pass', 'library-chain', 'library-chain-in-progress', 'library-chain-free', 'library-chain-editions', 'session-chain',
+    'salvage-signed-out', 'salvage-free', 'salvage-pass', 'library-salvage', 'library-salvage-in-progress', 'library-salvage-free', 'library-salvage-editions', 'session-salvage',
+    'games', 'games-free', 'library', 'history'] });
 KIT_QA.unshift({ key: 'iffy-decisions', title: 'Decisions, 11 October',
   note: 'Delve product page: signed out and free read "Play the first run", Pass reads "Play"; signed in drops "The first run is free with an account." Casebook is Pass-only: its page reads Get the Pass, as Daily Groups’. A played session page names its edition above the result. Sign up by Google or Apple: no code, straight to Your username (Config Device = New still gives Verify this device on sign-in). Share from a session page and a library game page: the same pop-up, a bottom sheet on a phone.',
   steps: ['sign-up', 'username-new-account', 'verify-email', 'sign-in-new-device-provider', 'reset-password-code', 'session-delve', 'history', 'library-casebook', 'library-delve'] });

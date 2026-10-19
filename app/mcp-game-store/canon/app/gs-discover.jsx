@@ -79,7 +79,7 @@ const GsDiscover = () => {
 };
 
 // ---- Library. GsLibrary is replaced by gs-pass-library.jsx (CprLibrary). GS_LIB_READY: each game's ready line, read by its rows.
-const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
+const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', where: 'Today’s country is ready', chain: 'Today’s chain is ready', salvage: 'Today’s sea is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
 const GsLibrary = () => {
   const gs = useGs();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');

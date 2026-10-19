@@ -302,6 +302,8 @@ const gsForms = (s) => {
   let m; if (!s) return s;
   if ((m = /^(?:Solved|Escaped) in (.+)$/.exec(s))) return [s, m[1]];
   if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+  if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
+  if ((m = /^Solved, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
   if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
   if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, 'Done'];
   return s;

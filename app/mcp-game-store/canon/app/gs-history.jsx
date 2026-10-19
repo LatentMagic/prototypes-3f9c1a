@@ -17,7 +17,7 @@ const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.get
 const phShort = (d) => lbShort(lbDate(d));
 
 // ---- Editions ----
-const ED_GAMES = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve'];
+const ED_GAMES = ['word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'delve'];
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
 // the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
 // "Daily Word #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
@@ -95,7 +95,7 @@ const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
 };
 const phSess = (id) => (gs) => gs.go('session', { id });
 const PH_LIVE = { kind: 'live', label: 'In progress' };
-const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live' };
+const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live', ...Object.fromEntries(DP_IDS.map((k) => [k, k + '-live'])) };
 // ---- Several editions in progress (Escape and Delve only). SAMPLE data: one earlier room and one earlier run,
 // each in progress. They exist only while review.several is on (the two-in-progress states), so everywhere else the game's first
 // edition stays the Clockmaker's Study and run 1. Starting another edition leaves the first where it was; nothing warns about it. ----
@@ -244,7 +244,8 @@ const usePhList = (initial, k0) => {
 // ---- One play: a DS.ListRow, given its parts. Title is the edition alone (edName); the game's name goes in game, only in a list that mixes games.
 // v: { key, title, game?, when (text or forms), status, onOpen, gid?, sub? } ----
 const phTone = (s) => (s.kind === 'ok' || s.kind === 'bad' ? s.kind : 'none');
-const PhLead = ({ gid }) => <span dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />;
+// Where, Chain and Salvage draw their moving art at the 40 by 30 lead, so it plays with the row; every other game keeps its still cover here.
+const PhLead = ({ gid }) => (DP_IDS.includes(gid) ? <GsArt art={GS_GAMES[gid].art} shape="landscape" /> : <span dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />);
 const phRow = (v) => (
   <DS.ListRow key={v.key} sub={!!v.sub} lead={v.gid ? <PhLead gid={v.gid} /> : undefined} title={v.title} game={v.gid ? v.game : undefined}
     result={gsForms(v.status.label)} tone={phTone(v.status)} when={v.when}

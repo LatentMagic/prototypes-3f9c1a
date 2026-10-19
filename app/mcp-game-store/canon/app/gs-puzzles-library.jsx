@@ -55,6 +55,8 @@ const PZ = {
       { k: 'e4', n: 'Regular', how: 'Escape four weeks in a row.', of: 4, count: (ps) => ps.filter((p) => p.status.kind === 'ok') },
       { k: 'e5', n: 'Ten Rooms', how: 'Escape ten rooms.', of: 10, count: (ps) => ps.filter((p) => p.status.kind === 'ok') }],
   },
+  // Where, Chain and Salvage (app/gs-where-chain-salvage.jsx).
+  ...DP_PZ,
 };
 // ---- Generated session pages for earlier editions (seed only) ----
 const PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
@@ -71,7 +73,8 @@ const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbD
 const pzSession = (id, c, x) => {
   const i = x.i; const sid = id + '-e' + i; const base = { kind: 'puzzle', gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
   let s;
-  if (id === 'word') {
+  if (DP_PZ[id]) s = dpSession(id, c, x, base);
+  else if (id === 'word') {
     const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
     const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
     const mark = (g) => { if (g === answer) return 'Solved'; const r = gsWordRow(g, answer); const a = (r.match(/🟩/gu) || []).length; const b = (r.match(/🟨/gu) || []).length;
@@ -181,5 +184,5 @@ const pzLibrary = (id) => () => {
     </main>
   );
 };
-['word', 'groups', 'mystery', 'escape'].forEach((id) => { window.GS_LIBRARY[id] = pzLibrary(id); });
+['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { window.GS_LIBRARY[id] = pzLibrary(id); });
 Object.assign(window, { PZ, pzLong, pzStatus, pzRun });

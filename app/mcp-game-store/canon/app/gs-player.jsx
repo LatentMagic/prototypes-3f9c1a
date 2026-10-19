@@ -45,7 +45,7 @@ const GpThisWeek = ({ who }) => {
 const GP_CFG = {
   delve: { units: 'runs', run: 'WEEKS RUNNING', strip: ['THE LAST WEEK', 'weeks', GP_WEEKS], ends: GP_ENDINGS,
     recent: GP_RECENT.map((r) => ({ ...r, when: r.date, sid: 'delve' })) },
-  word: { units: 'words' }, groups: { units: 'groups' }, mystery: { units: 'cases' }, escape: { units: 'rooms' },
+  word: { units: 'words' }, groups: { units: 'groups' }, mystery: { units: 'cases' }, where: { units: 'countries' }, chain: { units: 'chains' }, salvage: { units: 'seas' }, escape: { units: 'rooms' },
   casebook: { units: 'cases', run: null, strip: null, ends: ['Solved', 'Wrong accusation'],
     recent: [{ ending: 'Solved', when: '5 October', sid: 'casebook' }] },
   hunter: { units: 'days', run: null, strip: null, ends: null, recent: [{ ending: null, when: '5 October', sid: 'hunter' }] },
@@ -53,7 +53,9 @@ const GP_CFG = {
 // Card lines. Delve uses the default line.
 const GP_LINE = {
   word: 'See every day’s word and how many guesses it took you.', groups: 'See every day’s groups and how many mistakes you made.',
-  mystery: 'See every case you closed and every one that got away.', escape: 'See every room you got out of, with your time against par, hints and wrong tries.',
+  mystery: 'See every case you closed and every one that got away.',
+  where: 'See every day’s country and how many guesses it took you.', chain: 'See every day’s chain and how many wrong guesses you made.',
+  salvage: 'See every day’s sea and how many dives it took you.', escape: 'See every room you got out of, with your time against par, hints and wrong tries.',
   casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.',
   delve: 'See every week’s run you’ve played and how each one ended.',
   barrow: 'See every chapter you’ve played and how each one ended.' };
@@ -162,5 +164,5 @@ const gpGame = (id) => () => {
   return <GsGamePage id={id} top={gs.view !== 'out' && canPlay ? <GpCard id={id} /> : null} />;
 };
 
-Object.assign(window, { GsDelve: gpGame('delve'), GsWord: gpGame('word'), GsGroups: gpGame('groups'), GsMystery: gpGame('mystery'), GsEscape: gpGame('escape'),
+Object.assign(window, { GsDelve: gpGame('delve'), GsWord: gpGame('word'), GsGroups: gpGame('groups'), GsMystery: gpGame('mystery'), GsWhere: gpGame('where'), GsChain: gpGame('chain'), GsSalvage: gpGame('salvage'), GsEscape: gpGame('escape'),
   GsCasebook: gpGame('casebook'), GsHunter: gpGame('hunter'), GsBarrow: gpGame('barrow') });

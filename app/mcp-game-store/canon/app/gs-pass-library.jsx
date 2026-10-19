@@ -211,7 +211,7 @@ const cprPzLibrary = (id) => () => {
     </main>
   );
 };
-['word', 'groups', 'mystery'].forEach((id) => { window.GS_LIBRARY[id] = cprPzLibrary(id); });
+['word', 'groups', 'mystery', ...DP_IDS].forEach((id) => { window.GS_LIBRARY[id] = cprPzLibrary(id); });
 
 // ---- Library rows, read from the play record: the latest play this player's record holds (phVisible) gives the row's date,
 // and the row's line says what that play left: in progress, done, or what is ready next. A game whose next play needs the Pass

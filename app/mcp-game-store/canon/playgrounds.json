@@ -1,8 +1,23 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "[Platform]",
-  "generated": "2026-10-16",
+  "generated": "2026-10-19",
   "tickets": [
+    {
+      "id": "1213",
+      "slug": "1213-daily-puzzles",
+      "name": "Where, Chain and Salvage",
+      "state": "active",
+      "touched": "2026-10-19",
+      "entries": [
+        {
+          "name": "Salvage cover, options 1 to 3",
+          "path": "docs/specs/1213-daily-puzzles/playground/salvage-art.html",
+          "note": "Three stories for the last dive on a board of pegs: the wreck revealed under the hits (1), the board’s marks turning to sunk (2), an aim that becomes the hit (3). Rest, halfway and end, plus live hover at every frame shape and the 40px row lead."
+        }
+      ],
+      "archive": []
+    },
     {
       "id": "1153",
       "slug": "1153-pass-upsell",
