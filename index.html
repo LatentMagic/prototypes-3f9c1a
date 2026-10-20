@@ -1421,9 +1421,9 @@
         }
       ]
     },
-    'mcp-game-store': {
-      label: 'MCP Game Store',
-      // Working title, no brand yet — no `logo`, so the rail falls back to text.
+    'after-pixels': {
+      label: 'After Pixels',
+      // No `logo` registered yet, so the rail falls back to text.
       prototypes: [
         {
           slug: 'design-system',
@@ -1432,14 +1432,28 @@
           ticket: '—',
           html: 'find.html',
           kind: 'brand',
-          desc: 'The MCP Game Store design system \u2014 tokens, components, guidelines and the shop click-through, searchable from the Find page. Not a prototype version: a point-in-time copy of its own Claude Design project, replaced wholesale by each export.'
+          desc: 'The After Pixels design system \u2014 tokens, components, guidelines and the shop click-through, searchable from the Find page. Not a prototype version: a point-in-time copy of its own Claude Design project, replaced wholesale by each export.',
+          changelog: [
+            {
+              date: '2026-10-20',
+              title: 'Named After Pixels; the Pass mark opens the Pass page; art tells a story first',
+              items: [
+                'The name is After Pixels across the guidelines, component cards and the shop click-through. The library namespace and the _ds folder name keep the old MCPGameStore form; nothing a page loads changed path.',
+                'GameCard, GamePick and GameTile take a new onPass prop. With it, the Pass mark is its own button above the card\'s link, with hover, pressed and focus states, and opens the Pass page without opening the game.',
+                'Logo hover adds a small turn of the whole mark to the circle\'s lift.',
+                'The game-art motion guideline is rewritten as story first: the resting art says what the game is, the end pose says what happens in it, the change between them calls up what the player does. Pieces are reviewed as a strip of stills at rest, halfway and end, at the smallest and largest size. Travel is no longer capped in pixels; a move must land right at every size.',
+                'Every cover must pass the product-page title test, with light shapes kept in the right half.',
+                'New docs/specs/ folders: art-story-first, logo-hover, product-cover-title.',
+              ],
+            },
+          ],
         },
         {
           slug: 'canon',
           version: 'v0',
           ticket: '—',
           html: 'index.html',
-          desc: 'MCP Game Store (working title). A demo of the store: home, sign-up, connect your AI, two game pages, session page, history and the Pass. Demo only; nothing in it is decided.',
+          desc: 'After Pixels. A demo of the store: home, sign-up, connect your AI, two game pages, session page, history and the Pass. Demo only; nothing in it is decided.',
           changelog: [
             {
               date: '2026-10-06',
@@ -1783,6 +1797,18 @@
                 'New docs/specs/1213-daily-puzzles/ folder, with an art note and a salvage-art playground.',
               ],
             },
+            {
+              date: '2026-10-20',
+              title: 'Named After Pixels; the Pass mark opens Pricing',
+              items: [
+                'The placeholder [Platform] and the working name MCP Games are now After Pixels everywhere in the app, including the page title, the Pass ("the After Pixels Pass") and both directory listings. Links, share links and contact addresses move from platform.example to afterpixels.com.',
+                'The Pass mark on a game\'s picture is now its own button: it opens Pricing, without opening the game.',
+                'Library\'s "Everything else comes with the Pass." line now shows for every free player, Pass ended included, not only a new account that has played nothing.',
+                'Logo hover adds a small turn of the whole mark. The Barrow of Hollowmere\'s cover art changes colour.',
+                'New docs/specs/home-pass-line/ folder: a playground of five ways Home could mention the Pass more strongly (options 0 to 4). Not in the app; nothing chosen.',
+                'The repo folder moved from app/mcp-game-store/ to app/after-pixels/; console links are now #after-pixels/<slug>, and old #mcp-game-store/ links still resolve.',
+              ],
+            },
           ],
         },
         {
@@ -1790,7 +1816,7 @@
           version: 'Session pages',
           ticket: 'Playground',
           html: 'index.html',
-          path: 'app/mcp-game-store/playgrounds/session-pages',
+          path: 'app/after-pixels/playgrounds/session-pages',
           kind: 'candidate',
           desc: 'Playground: three session-page designs for each of five games, a Near / Middle / Far distance from the platform look, and the share texts.'
         }
@@ -2263,8 +2289,11 @@
     if (slash === -1) return { appKey: null, slug: raw, query: query };    // bare slug (legacy)
     return { appKey: raw.slice(0, slash), slug: raw.slice(slash + 1), query: query };
   }
+  // Old app keys still resolve, so a link shared before a rename keeps working.
+  var APP_ALIASES = { 'mcp-game-store': 'after-pixels' };
   function resolveTarget(h) {
     if (!h) return null;
+    if (h.appKey && APP_ALIASES[h.appKey]) h.appKey = APP_ALIASES[h.appKey];
     if (h.appKey) {                                                // scoped #app/slug
       var app = APPS[h.appKey];
       if (!app) return null;                                       // unknown app → leave default

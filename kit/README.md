@@ -36,9 +36,9 @@ The kit is the source for every rule, aid and skill the prototypes share.
 Versions:
 
 - **1** (2026-10-16): chat replies (tour not a log, never ask cold, list then walk), several candidates per ticket, comments never cite `docs/` paths and archive only when the owner asks.
-- **2** (2026-10-16): a prototype has no real persistence — a reload restarting at Home, signed out, is never a finding; reload survival belongs to the specs. From the MCP Game Store project (MCPG-018).
+- **2** (2026-10-16): a prototype has no real persistence — a reload restarting at Home, signed out, is never a finding; reload survival belongs to the specs. From the After Pixels (then MCP Game Store) project (MCPG-018).
 - **3** (2026-10-17): a reload reopens the page named in the address (`#/<page>`) and nothing more, and React `createRoot` warnings after a reload that follows an address change are expected and need no fix. From the Golden Sample App.
-- **4** (2026-10-18): every demo fact is held once, in the seed, and every surface reads it; no screen, state or rig types its own copy, and dates are relative to the seed's day zero. From the MCP Game Store project.
+- **4** (2026-10-18): every demo fact is held once, in the seed, and every surface reads it; no screen, state or rig types its own copy, and dates are relative to the seed's day zero. From the After Pixels (then MCP Game Store) project.
 - **5** (2026-10-18): briefs come from another agent with the user passing messages by hand, so every reply ends in two parts, a block for the other agent and a last part for the user (at most one open question, or "Nothing for you"); an answer from the other agent ratifies only if it says where the decision is written down. It also carried the "Ratification - the standing rule" section into the shared rules, which had been in the first cut but in no version, so a project may lack it.
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.

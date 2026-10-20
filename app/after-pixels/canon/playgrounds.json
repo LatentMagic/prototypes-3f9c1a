@@ -1,0 +1,496 @@
+{
+  "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
+  "product": "After Pixels",
+  "generated": "2026-10-20",
+  "tickets": [
+    {
+      "id": null,
+      "slug": "home-pass-line",
+      "name": "A stronger Pass on Home",
+      "state": "active",
+      "touched": "2026-10-20",
+      "entries": [
+        {
+          "name": "Home’s Pass mention, options 0 to 4",
+          "path": "docs/specs/home-pass-line/playground/index.html",
+          "note": "Today (0), a line in the hero (1), a Pass card with a shape block (2), the band straight after the hero (3), the band with a row of Pass games (4). The strip at the bottom picks one; Show scrolls to it."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "1213",
+      "slug": "1213-daily-puzzles",
+      "name": "Where, Chain and Salvage",
+      "state": "active",
+      "touched": "2026-10-19",
+      "entries": [
+        {
+          "name": "Salvage cover, options 1 to 3",
+          "path": "docs/specs/1213-daily-puzzles/playground/salvage-art.html",
+          "note": "Three stories for the last dive on a board of pegs: the wreck revealed under the hits (1), the board’s marks turning to sunk (2), an aim that becomes the hit (3). Rest, halfway and end, plus live hover at every frame shape and the 40px row lead."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "1153",
+      "slug": "1153-pass-upsell",
+      "name": "How the site mentions the Pass",
+      "state": "active",
+      "touched": "2026-10-16",
+      "entries": [
+        {
+          "kind": "candidate",
+          "name": "How the site mentions the Pass, ratified",
+          "path": "docs/archive/1153-pass-upsell/candidate/pass-upsell-ratified.html",
+          "note": "The whole app with every 1153 decision from 2026-10-16 in it, and Discover tidied brought up to date. The Discover proposals are marked in its handoff.",
+          "on": false,
+          "off": "Merged into the main build, 2026-10-16. Archived to docs/archive/1153-pass-upsell/candidate/."
+        },
+        {
+          "kind": "candidate",
+          "name": "Discover, tidied",
+          "path": "docs/specs/1153-pass-upsell/candidate/discover-tidied.html",
+          "note": "Today’s Discover kept and tidied: search first, each game once, a lock on Pass-only art, the Pass band as one line. Axes A to I in Config."
+        },
+        {
+          "kind": "candidate",
+          "name": "Discover as a games hub",
+          "path": "docs/specs/1153-pass-upsell/candidate/discover-games-hub.html",
+          "note": "Discover rebuilt: search first, every game once in groups, a state line, a play door and a second door on each tile. Axes A to G in Config."
+        },
+        {
+          "name": "The upsell changes, sections A to G",
+          "path": "docs/specs/1153-pass-upsell/playground/index.html",
+          "note": "The owner's decided changes, each with variations to switch in the real app: Home, the product page, a new account's Library, a free first part, a returning player, where you land, connecting. The panel beside the app picks the section, who is looking and the variation."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": null,
+      "slug": "kit-several-candidates",
+      "name": "Several candidate builds per ticket (kit update)",
+      "state": "active",
+      "touched": "2026-10-16",
+      "entries": [],
+      "archive": []
+    },
+    {
+      "id": null,
+      "slug": "failed-vs-missed-strip",
+      "name": "Failed and not played on the streak strip",
+      "state": "archive",
+      "touched": "2026-10-15",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Options 1 to 3",
+          "path": "docs/archive/failed-vs-missed-strip/playground/index.html",
+          "note": "Two states, three states, three states quiet; desktop and phone; tap a day for its record. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": null,
+      "slug": "app-posture-kit",
+      "name": "App posture and its system bars (kit update)",
+      "state": "archive",
+      "touched": "2026-10-15",
+      "entries": [],
+      "archive": [],
+      "base": "docs/archive/"
+    },
+    {
+      "id": null,
+      "slug": "contact",
+      "name": "How people get in touch",
+      "state": "archive",
+      "touched": "2026-10-15",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Contact page, options 2a to 2j",
+          "path": "docs/archive/contact/playground/page-options.html",
+          "note": "Option 2 chosen (2026-10-15): a Get in touch page from the footer, with support and one address for everything else. Three takes, and 2d is 2a rewritten; Why holds the critique for each. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Contact, options 0 to 4",
+          "path": "docs/archive/contact/playground/index.html",
+          "note": "Today (0), three addresses in the footer (1), a contact page (2), a contact panel (3), or a partners band above the footer (4). For players, contributors and buyers. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": null,
+      "slug": "soon-card-phone",
+      "name": "Coming soon cards on a phone",
+      "state": "archive",
+      "touched": "2026-10-13",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Four covers at phone width",
+          "path": "docs/archive/soon-card-phone/playground/index.html",
+          "note": "Today, better art, stack on a phone, cover kept 4:3. Real SoonCard pair at 320 and 390. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "LM-1110",
+      "slug": "1110-daily-word-mystery-content",
+      "name": "Daily Word and Daily Mystery show the real games",
+      "state": "archive",
+      "touched": "2026-10-13",
+      "entries": [],
+      "archive": [],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "game-editions-list",
+      "name": "A game's list of editions",
+      "state": "archive",
+      "touched": "2026-10-12",
+      "entries": [],
+      "archive": [
+        {
+          "name": "A game's list of editions, head 2g",
+          "path": "docs/archive/game-editions-list/playground/index.html",
+          "note": "The way in is a link under the game's name, \"Every case\", beside \"About this game\". Two head layouts, one each at every width and for every game: title across the top with links stacked beside the cover (2i), or title and links first with the cover at the end (2j). Go has a labelled long-name Casebook. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "history-filters-redesign",
+      "name": "History's filters, redesigned",
+      "state": "archive",
+      "touched": "2026-10-12",
+      "entries": [],
+      "archive": [
+        {
+          "name": "History, options 0 to 3",
+          "path": "docs/archive/history-filters-redesign/playground/index.html",
+          "note": "Today (0) beside Played and All editions as two tabs (1), one list with First plays, Replays and Not played on the page (2), or every control on the page with one Games control (3). Go to Casebook, Escape or Daily Word and press its All link to see where it lands. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "pass-and-subscribe",
+      "name": "The Pass page and the subscribe page",
+      "state": "archive",
+      "touched": "2026-10-11",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Pass and subscribe, options 1 to 5",
+          "path": "docs/archive/pass-and-subscribe/playground/index.html",
+          "note": "5 is the base (approved 2026-10-11): a plain heading, the price and Choose a plan closing the comparison, and a trimmed subscribe page. 4 puts the Pass in a card; 1 to 3 were the first round. Four viewers: signed out, no Pass, had the Pass before, Pass. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "filters-on-a-phone",
+      "name": "How History and the Library hold their filters",
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Filters, options 0 to 3 and 1b",
+          "path": "docs/archive/filters-on-a-phone/playground/index.html",
+          "note": "1b is in the app (Today). Before (0) beside one Filters button and panel (1), a control per filter (2), or filters folded in place (3). 1b is 1 with games picked by name, so the list of games can grow. Go between History and the Library; Config sets the viewport. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "home-product-hero",
+      "name": "The home hero: the product or a game",
+      "state": "archive",
+      "touched": "2026-10-11",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Home hero, options 0 to 6, with density",
+          "path": "docs/archive/home-product-hero/playground/index.html",
+          "note": "Today’s Casebook hero (0), three heroes that lead with the product (1 to 3), and 4 to 6 rebased on today’s home with the Casebook field kept; Density sets Roomy, Today or Compact. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "authorize-landing",
+      "name": "Where you land when your AI asks you to connect",
+      "state": "archive",
+      "touched": "2026-10-11",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Landing from Connect, options 1 to 3",
+          "path": "docs/archive/authorize-landing/playground/index.html",
+          "note": "Settled: there is no page that asks a player to approve an AI app (ratified; docs/specs/final-audit-snags/). Archived 2026-10-11; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "plays-and-editions",
+      "name": "What a game has put out, and what you played",
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Plays and editions, options 1 to 3",
+          "path": "docs/archive/plays-and-editions/playground/index.html",
+          "note": "Settled: History is the one list and there is no Editions page (docs/specs/history-only/). Archived 2026-10-10; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "home-how",
+      "name": "The home page: how it works and getting started",
+      "state": "archive",
+      "touched": "2026-10-09",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Home, how it works, options 1 to 5",
+          "path": "docs/archive/home-how/playground/index.html",
+          "note": "Option 3’s line beside the Pass (4) or over three columns (5), three wordings of the line; 1 to 3 kept to compare, 0 is today. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "connect-and-prompts",
+      "name": "Connecting, and the prompts a player copies",
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Connect and prompts, options 1 to 3",
+          "path": "docs/archive/connect-and-prompts/playground/index.html",
+          "note": "How it works, the product page, Editions and Play again: the prompt in plain sight, connect-then-paste every time, or a prompt that tells an unconnected AI to say so. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "editions",
+      "name": "A game's Editions page",
+      "state": "archive",
+      "touched": "2026-10-10",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Editions page, options 1 to 3",
+          "path": "docs/archive/editions/playground/index.html",
+          "note": "Settled: there is no Editions page; History lists every edition (docs/specs/history-only/). Archived 2026-10-10; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "history",
+      "name": "History, and how a library game page connects to it",
+      "state": "archive",
+      "touched": "2026-10-09",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Play rows and replays",
+          "path": "docs/archive/history/playground/replays.html",
+          "note": "Row, replay chip, time of completion, Replays filter. Options 1 to 3. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "History, options 1 to 3",
+          "path": "docs/archive/history/playground/index.html",
+          "note": "Three ways to list every play, replays included, each with its own rule for how a library game page and History connect. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Replay chip and replay filter, options 1 to 3",
+          "path": "docs/archive/history/playground/rows.html",
+          "note": "History with a Replay chip and a replay filter; the library plays card and All pages list every play as its own row. Three chip placements. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "games-and-library",
+      "name": "The Games page and the Library page",
+      "state": "archive",
+      "touched": "2026-10-09",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Round 4: Discover, options 16 to 22",
+          "path": "docs/archive/games-and-library/playground/round-4.html",
+          "note": "Seven ways to arrange Discover, each with search, Free first, the Pass band and hover on everything clickable. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Round 3: Discover, options A and B",
+          "path": "docs/archive/games-and-library/playground/round-3.html",
+          "note": "Option 5 with search beside the chips, All games and Free tags; B adds a Free to play row. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Round 2: storefront, names, signed in, Library covers (options 4 to 15)",
+          "path": "docs/archive/games-and-library/playground/round-2.html",
+          "note": "Four studies with three options each. Every study’s pick applies at once, so they combine. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Games page, options 1 to 3, and the Library",
+          "path": "docs/archive/games-and-library/playground/index.html",
+          "note": "Three ways to show about 12 games on the Games page, signed in and out, and one Library list of every game with search and a filter by kind. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "home-hero",
+      "name": "The home page hero",
+      "state": "archive",
+      "touched": "2026-10-09",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Home hero, option 9",
+          "path": "docs/archive/home-hero/playground/round-4.html",
+          "note": "Option 8 refined: the screenshot set into one Casebook cover field, beside 8 as it was. Subline a. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Home hero, options 7 and 8",
+          "path": "docs/archive/home-hero/playground/round-3.html",
+          "note": "Option 1 with Casebook’s cover and the screenshot both whole, two ways, and three sublines from the Casebook spec. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Home hero, options 4 to 6",
+          "path": "docs/archive/home-hero/playground/round-2.html",
+          "note": "From the review of 1 to 3: every screenshot whole. Casebook two ways, with a slot for its screenshot, and Daily Word all the way. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Home hero, options 1 to 3",
+          "path": "docs/archive/home-hero/playground/index.html",
+          "note": "Three signed-out heroes where the headline, the art and the screenshot all point at the same thing. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "library-game-page",
+      "name": "The library game page",
+      "state": "archive",
+      "touched": "2026-10-08",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Casebook, option 16",
+          "path": "docs/archive/library-game-page/playground/casebook-16.html",
+          "note": "13 revised from its review: 15’s This week, achievements before your cases, your cases last and lighter. Options 13 to 15 stay on the strip to compare. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Casebook, options 13 to 15",
+          "path": "docs/archive/library-game-page/playground/casebook-13-15.html",
+          "note": "The final round: parts side by side, a streak that reads as weeks passing, one-line case rows and a case page grouped by kind of turn. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Casebook, options 10 to 12",
+          "path": "docs/archive/library-game-page/playground/casebook-10-12.html",
+          "note": "This week in progress or finished, ten achievements three ways, and an all-cases page with search, order and filter for about 45 cases. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Casebook, options 7 to 9",
+          "path": "docs/archive/library-game-page/playground/casebook-7-9.html",
+          "note": "What’s happening now gets the most room; each option holds the growing list of cases to a fixed size its own way. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Casebook, options 4 to 6",
+          "path": "docs/archive/library-game-page/playground/casebook.html",
+          "note": "Three arrangements of Your Casebook for three viewers, each with its own share text, achievement badges and way of handling months of cases. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Library game page, options 1 to 3",
+          "path": "docs/archive/library-game-page/playground/index.html",
+          "note": "Three arrangements of a player’s own page for a game, for all four games and three viewers (Pass, no Pass, Pass ended). Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "delve-two-pages",
+      "name": "A game's two pages (Delve)",
+      "state": "archive",
+      "touched": "2026-10-08",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Refining option 2",
+          "path": "docs/archive/delve-two-pages/playground/refine.html",
+          "note": "Three takes on option 2, each with its own names for the player page and dropdown, and one signed-in game page. Archived 2026-10-16; it no longer loads from here."
+        },
+        {
+          "name": "Routes between a game’s two pages",
+          "path": "docs/archive/delve-two-pages/playground/index.html",
+          "note": "Options 1 to 4 for how a signed-in player gets between Delve’s public page and Your Delve, each for three viewers. Archived 2026-10-16; it no longer loads from here."
+        }
+      ],
+      "base": "docs/archive/"
+    },
+    {
+      "id": "—",
+      "slug": "home-free-and-pass",
+      "name": "Free and Pass home",
+      "state": "archive",
+      "touched": "2026-10-07",
+      "base": "docs/archive/",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Free and Pass playground",
+          "path": "docs/archive/home-free-and-pass/playground/index.html",
+          "note": "Finished rig for the free tier and the Pass on the home page. Root-relative assets may not resolve from the archive."
+        }
+      ]
+    },
+    {
+      "id": "—",
+      "slug": "delve-two-pages-options-0-3",
+      "name": "A game’s two pages, options 0 to 3",
+      "state": "archive",
+      "touched": "2026-10-08",
+      "base": "docs/archive/",
+      "entries": [],
+      "archive": [
+        {
+          "name": "Two pages: public page and Your Delve",
+          "path": "docs/archive/delve-two-pages-options-0-3/playground/index.html",
+          "note": "Superseded by the routes rig. Reviewed 2026-10-08."
+        }
+      ]
+    }
+  ]
+}

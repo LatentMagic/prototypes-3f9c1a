@@ -1,0 +1,130 @@
+// ============================================================================
+// After Pixels — Delve's library page, option 16 fitted to Delve (picked by Claude on "decide for me", 2026-10-08).
+// This week's scene: the ending beside the title, the rescue as the bar. Weeks in a row. The spec's four
+// achievements (game-specs/delve.md). Your scenes. Every played scene has its own session page (delve-<id>).
+// Without the Pass: the first scene in this week's place, and the streak card in the Pass holder's place (LbRunPass).
+// Scene titles, heroes and records are invented.
+// ============================================================================
+const DV_TITLES = ['Beneath Gallows Hill', 'The Drum Room', 'The Fungus Path', 'The Escape Tunnel', 'The Drifting Freighter', 'The Cold Hold', 'The Shrine Cavern', 'The Miller’s Cellar'];
+const DV_HEROES = ['Vex the Rogue', 'Bryn the Fighter', 'Oda the Wizard'];
+const DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: { kind: 'bad', label: GS_RESULT.delve({ end: 'ritual' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
+const DV_ALL = Array.from({ length: 30 }, (_, i) => {
+  const d = new Date(2026, 9, 5 - 7 * i);
+  const played = i < 3 || i % 4 !== 3;
+  return { id: 'dv' + i, d, date: lbDate(d), month: lbMonth(d), title: DV_TITLES[i % 8], hero: DV_HEROES[i % 3], played,
+    end: i === 0 || !played ? null : ['won', 'ritual', 'won', 'fell', 'won', 'ritual'][i % 6], rolls: 6 + ((i * 3) % 9) };
+});
+const DV_LIVE = { ...DV_ALL[0], rolls: 9, rescue: 4, ritual: 3 };
+const DV_DONE = { ...DV_LIVE, end: 'won', rolls: 11, rescue: 6, ritual: 5, dice: '🟩🟨🟥🟩🟩🟨🟩✨🟩🟥🟩' };
+const DV_NEXT = 'Monday 12 October';
+const DV_ACH = [
+  { k: 'shrine', n: 'Reached the shrine cavern', how: 'Find your way to the shrine cavern.', got: '14 September', gotFree: '18 March', first: true },
+  { k: 'rescued', n: 'Elsie rescued', how: 'Get Elsie out of the warren.', got: '7 September', first: true },
+  { k: 'clean', n: 'Rescued without a miss', how: 'Rescue Elsie without failing a roll.', first: true },
+  { k: 'heroes', n: 'Won with all three heroes', how: 'Rescue Elsie as the fighter, the rogue and the wizard.', of: 3, have: 1, endedHave: 1 },
+  // Invented beyond the spec's four, so the card carries about ten (review-2-notes.md).
+  { k: 'tunnel', n: 'Found the escape tunnel', how: 'Find the tunnel out of the warren.', got: '31 August' },
+  { k: 'hold', n: 'Reached the freighter’s hold', how: 'Find your way into the drifting freighter’s hold.' },
+  { k: 'potion', n: 'Rescued without the potion', how: 'Rescue Elsie and leave the potion full.', got: '7 September', first: true },
+  { k: 'spare', n: 'Rescued with time to spare', how: 'Rescue Elsie before the ritual passes 2 of 6.', first: true },
+  { k: 'double', n: 'Saved by the double roll', how: 'Win a scene on your double roll.', first: true },
+  { k: 'weeks', n: 'Four weeks in the warren', how: 'Play a scene four weeks in a row.', of: 4, have: 3, endedHave: 3 },
+];
+const DV_BADGES = lbAutoBadges(DV_ACH);
+const dvStatus = (s) => (!s.played ? { kind: 'none', label: 'Not played' } : !s.end ? { kind: 'live', label: 'In progress' } : DV_END[s.end]);
+const dvGo = (gs, sid) => gs.go('delve', sid ? { page: 'record', sid } : { page: 'record' });
+const DV_FIRST = DV_ALL[DV_ALL.length - 1];
+// A free player has the first scene; a player whose Pass ended has everything they played before it ended (this week's finished scene, DV_DONE, when it ended today); the Pass has all. A new account has none.
+const dvHist = (gs) => (gsFresh(gs) ? [] : DV_ALL.filter((s, i) => (gs.view === 'pass' ? i > 0 : gsLapsed(gs) ? s.played && lbOld(s.date, gs) : s === DV_FIRST))
+  .map((s) => (s.id === DV_ALL[0].id ? DV_DONE : s)));
+// A session page for every finished scene; this week's are 'delve' (finished) and 'delve-live' (gs-data.jsx).
+const dvSid = (s) => (s === DV_FIRST ? 'delve-first' : 'delve-' + s.id);
+DV_ALL.forEach((s, i) => {
+  if (!s.played || !s.end) return;
+  const e = DV_END[s.end]; const won = s.end === 'won'; const threat = won ? 3 + (i % 3) : s.end === 'ritual' ? 6 : 3 + (i % 3);
+  const hp = s.end === 'fell' ? 0 : 3 + (i % 8);
+  GS_SESSIONS[dvSid(s)] = { ...GS_SESSIONS.delve, result: e.label, loss: !won, date: s.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + s.date, lapsedDate: undefined,
+    figures: ['Threat ' + threat + '/6', s.rolls + ' rolls', 'HP ' + hp + '/12'], tracks: { progress: won ? 6 : 2 + (i % 3), threat },
+    lines: Array.from({ length: s.rolls }, (_, k) => GS_ROLLS[(k + i) % GS_ROLLS.length]),
+    reached: won ? (threat > 4 ? 'Close call' : 'Clean rescue') : 'Caught', share: e.label + ' · threat ' + threat + '/6 · ' + s.rolls + ' rolls' };
+});
+
+const DvNow = ({ s }) => {
+  const gs = useGs();
+  // The one share text for this result: the session page's (gsShareText).
+  const lines = s.end && gsShareText(GS_SESSIONS.delve);
+  return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THIS WEEK</span><h2 className="mcp-t-sec">{s.title}</h2></div>
+        {s.end && <span className="lb-big"><LbResult s={dvStatus(s)} /></span>}
+      </div>
+      <p>{s.end
+        ? 'You played ' + s.hero + ' and got Elsie out in ' + s.rolls + ' rolls, with the ritual ' + s.ritual + ' of 6 along.'
+        : 'You’re playing ' + s.hero + '. The rescue is ' + s.rescue + ' of 6 along and the ritual is ' + s.ritual + ' of 6.'}</p>
+      <DS.ProgressBar label={'Rescue ' + s.rescue + ' of 6'} value={s.rescue} max={6} showValue={false} />
+      <div className="lb-foot">
+        <div className="lb-acts">
+          {lines && <LbShare lines={lines} />}
+          <DS.TextLink onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })}>{s.end ? 'See every roll' : 'See your rolls so far'}</DS.TextLink>
+        </div>
+        <span className="gs-muted">{'Next scene: ' + DV_NEXT}</span>
+      </div>
+      {s.end && window.GsNextLink && <window.GsNextLink />}
+    </section>
+  );
+};
+const DvFirst = () => {
+  const gs = useGs(); const fresh = gsFresh(gs); const s = fresh ? { ...DV_FIRST, played: false } : DV_FIRST; const again = gsLapsed(gs);
+  // A free account's first scene half-done (Config: This week, or today: In progress). A new account hasn't played it.
+  if (!again && !fresh && !lbWeekDone(gs)) return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THE FIRST SCENE · FREE</span><h2 className="mcp-t-sec">{s.title}</h2></div>
+        <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
+      </div>
+      <p>{'You’re playing ' + s.hero + '. The rescue is 2 of 6 along and the ritual is 1 of 6.'}</p>
+      <DS.ProgressBar label="Rescue 2 of 6" value={2} max={6} showValue={false} />
+      <div className="lb-foot">
+        <div className="lb-acts"><DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button></div>
+        <LbPassOffer unit="scene" />
+      </div>
+    </section>
+  );
+  return (
+    <section className="lb-card">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">THE FIRST SCENE · FREE</span><h2 className="mcp-t-sec">{s.title}</h2></div>
+        {s.played && <span className="lb-big"><LbResult s={dvStatus(s)} /></span>}
+      </div>
+      <p>{s.played ? 'You played ' + s.hero + ' and the ritual finished before Elsie was out, in ' + s.rolls + ' rolls.' : 'The game’s very first scene, the same for everyone. Play it free.'}</p>
+      <div className="lb-foot">
+        <div className="lb-acts">
+          {s.played ? <><LbShare lines={gsShareText(GS_SESSIONS['delve-first'])} /><DS.TextLink onClick={() => gs.go('session', { id: 'delve-first' })}>See every roll</DS.TextLink></> : <DS.Button onClick={() => gs.play('Delve', 'delve')}>Play</DS.Button>}
+        </div>
+        <LbPassOffer unit="scene" />
+      </div>
+    </section>
+  );
+};
+const DvLibrary = () => {
+  const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
+  // A free account's first scene half-done: its row and its achievements say so.
+  const fresh = gsFresh(gs); const firstLive = !pass && !gsLapsed(gs) && !lbWeekDone(gs) && !fresh;
+  const ach = fresh ? lbNoAch(DV_ACH) : firstLive ? DV_ACH.map((a) => ({ ...a, gotFree: undefined })) : DV_ACH;
+  return (
+    <main key={k} className="gs-wrap gs-main">
+      <LbHead id="delve" />
+      <div className="lb-lay">
+        {pass ? (fresh ? <LbFreshNow title={DV_LIVE.title} line="You haven’t started this week’s scene yet. Get her out before the drums stop." next={'Next scene: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />) : <DvFirst />}
+        {pass && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end === 'won' : s.end === 'won', failed: fresh ? false : i === 0 ? lbWeekDone(gs) && DV_DONE.end !== 'won' : s.played && s.end !== 'won' })); return <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list.map((s) => (fresh ? { ...s, played: false } : s)))} />; })()}
+        {!pass && !gsLapsed(gs) && <LbRunPass unit="weeks" weeks={lbRunOf(DV_ALL)} />}
+        {gsLapsed(gs) && (() => { const list = DV_ALL.map((s, i) => ({ ...s, done: i === 0 ? false : s.end === 'won', failed: i > 0 && s.played && s.end !== 'won' })); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
+        <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
+        <LbRecent title="Your scenes" allLabel="See in History" empty="Your scenes appear here once you have played one." />
+      </div>
+    </main>
+  );
+};
+window.GS_LIBRARY.delve = DvLibrary;
+Object.assign(window, { DV_ALL, DV_END, DV_LIVE, DV_DONE, dvStatus, dvSid });
