@@ -20,6 +20,10 @@ type: '{handoff type, e.g. implementation, debugging, exploration}'
 
 {OPTIONAL. 2–3 docs, decisions, or files the next session must follow — e.g. CLAUDE.md rules, a docs/ file, tokens.css. Omit this section if none.}
 
+## Earlier handoffs
+
+{Every other `handoff-*.md` in this folder, one per line: its path, then one line on what it holds that this handoff does not repeat. Omit this section only when there is none.}
+
 ## Recent changes
 
 {Edits made — `path/to/file.ext:line` references over code dumps.}
