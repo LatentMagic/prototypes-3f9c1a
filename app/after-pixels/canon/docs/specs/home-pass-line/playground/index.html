@@ -1326,6 +1326,17 @@
   .hpl-cost { color: #ccc; }
   .hpl-tab { position: fixed; left: 12px; bottom: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); z-index: 400; height: 44px; padding: 0 14px; background: #000; color: #fff; border: 2px solid #FF2EC4; font: 600 14px var(--font-text); cursor: pointer; }
   .kit-config-wrap { bottom: 72px !important; }
+  /* 1A / 1B: the free line and Works with as one block under one rule */
+  .hpl-facts { display: grid; gap: 12px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+  .hpl-fact { display: grid; gap: 4px; min-width: 0; align-content: start; }
+  .hpl-fact > p { margin: 0; }
+  @container gs (min-width: 640px) { .hpl-facts.is-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; } }
+  /* 4A / 4B: the Pass mark as the key in Available games, and on the hero's game */
+  .hpl-mark.mcp-passmark { position: static; flex: none; }
+  .hpl-key { display: flex; align-items: flex-start; gap: 12px; }
+  .hpl-key > .gs-pu-wrap { padding-top: 3px; }
+  /* on the hero's picture, where a card draws it on its own picture */
+  .hpl-mark.hpl-mark-hero { position: absolute; top: var(--space-2); right: var(--space-2); z-index: 2; }
 </style>
 </head>
 <body>

@@ -1,15 +1,45 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "After Pixels",
-  "generated": "2026-10-20",
+  "generated": "2026-10-21",
   "tickets": [
     {
       "id": null,
       "slug": "home-pass-line",
       "name": "A stronger Pass on Home",
       "state": "active",
-      "touched": "2026-10-20",
+      "touched": "2026-10-21",
       "entries": [
+        {
+          "name": "The Pass card, copy: options 1 to 6",
+          "path": "docs/specs/home-pass-line/playground-7/index.html",
+          "note": "Card 3 first in the row, action b. 1 the original line, 2 the reword, 3 to 6 new takes on the two messages."
+        },
+        {
+          "name": "The Pass card, copy and action: copy 1 to 5, action a to e",
+          "path": "docs/specs/home-pass-line/playground-6/index.html",
+          "note": "Card 3 (the lock before the name), first in the row. Copy: five takes on the card text and the line under Available games together. Action: five ways to reach pricing. The strip's meter says whether the card grows the row."
+        },
+        {
+          "name": "The Pass card, not a game: cards 1 to 4, lines a to d",
+          "path": "docs/specs/home-pass-line/playground-5/index.html",
+          "note": "Two axes. Card: five ways for a game card to read as the Pass, not a game. Line: nothing, or one of three lines under Available games. The card’s copy is round 4’s A."
+        },
+        {
+          "name": "The Pass card, copy pairings A to E",
+          "path": "docs/specs/home-pass-line/playground-4/index.html",
+          "note": "Playground 3’s 10 without its edge, second in the row. Each pairing is a line under Available games and the card’s text together. Dark or inverted card; link or button."
+        },
+        {
+          "name": "The Pass card, options 1, 2, 7 to 15",
+          "path": "docs/specs/home-pass-line/playground-3/index.html",
+          "note": "The Pass as a card in Available games. 1 is round 2’s 3; 10 to 15 are 1 played with: edged with a link (10), covers lighting in turn (11), ruled covers with the canon line (12), filled in cover indigo (13), twelve covers to the edges (14), raised (15). 2 and 7 to 9 are other shapes. Switching no longer scrolls; Show does."
+        },
+        {
+          "name": "The Pass in the games, options 1 to 4",
+          "path": "docs/specs/home-pass-line/playground-2/index.html",
+          "note": "Built for a phone first, no Pass band. Round 2’s 4A fixed for a phone (1), Available games sorted by All, Free and With the Pass (2), the Pass as a card in the row (3), the Pass mark as a band on Pass games’ pictures (4)."
+        },
         {
           "name": "Home’s Pass mention, options 0 to 4",
           "path": "docs/specs/home-pass-line/playground/index.html",

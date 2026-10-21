@@ -1,7 +1,7 @@
 // After Pixels — Home, and the Pass mark on the game cards.
 // Re-publishes GsHome, GsCard / GsGameCard and GsPick, replacing app/gs-home.jsx's GsHome and app/gs-parts.jsx's cards.
-// GsHome is canon's with the Pass section changed and the pay line moved into it;
-// the hero, Available games, Coming soon and What's new are canon's. GsTile (gs-parts.jsx) is the one tile, for the wall and tile rows.
+// GsHome is canon's with the Pass section gone: the Pass is a card first in Available games, and the row's line says what's free;
+// the hero, Coming soon and What's new are canon's. GsTile (gs-parts.jsx) is the one tile, for the wall and tile rows.
 
 // The Pass mark is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
 // is set. Set for Pass-only games, for a player without the Pass. The mark is its own control: it opens Pricing (`pass`).
@@ -28,6 +28,36 @@ const CprPick = ({ id, label }) => {
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
       blurb={gsKeepLast(g.blurb)}
       tags={<GsTagList tags={cprTags(id)} ed={g.ed} />} />
+  );
+};
+
+// The line under Available games: what's free, from the staging (a third free daily reads "Three" with no copy edit), then "the Pass" as its only link.
+const CprHomeLine = () => {
+  const gs = useGs(); const c = cprPassLine();
+  return <>{c.p1.replace(/ with your account\. $/, ' free. ')}{c.p1 ? 'Everything else' : 'Everything'} with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
+};
+// The Pass card, first in the row so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
+// Salvage's board is too fine to read at mosaic size, so Daily Word takes its place (owner, 2026-10-21).
+// The eight are then ordered so no square shares its ground colour with the one beside or above it (four to a row).
+const cprMix = (ids) => {
+  const ground = (k) => (GS_ART[GS_GAMES[k].art] || {}).ground; const out = []; const used = ids.map(() => false);
+  const ok = (k, i) => !((i % 4 && ground(out[i - 1]) === ground(k)) || (i >= 4 && ground(out[i - 4]) === ground(k)));
+  const fill = (i) => {
+    if (i === ids.length) return true;
+    for (let j = 0; j < ids.length; j++) if (!used[j] && ok(ids[j], i)) { used[j] = true; out[i] = ids[j]; if (fill(i + 1)) return true; used[j] = false; }
+    return false;
+  };
+  return fill(0) ? out.slice() : ids;
+};
+const CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === 'pass').map((k) => (k === 'salvage' ? 'word' : k)).slice(0, 8));
+const CprPassCard = () => {
+  const gs = useGs(); const host = useGsArtHost(); const go = () => gs.go('pass');
+  return (
+    <DS.GameCard className="mcp-art-host gs-host cpr-pcard"
+      art={<div ref={host} className="cpr-mosaic" aria-hidden="true" onClick={go}>{CPR_MOSAIC.map((k) => <GsArt key={k} art={GS_GAMES[k].art} shape="square" />)}</div>}
+      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={go}><DS.Icon name="lock" size={18} className="cpr-lock" />The Pass<span className="cpr-chev" aria-hidden="true"><DS.Icon name="down" size={18} style={{ transform: 'rotate(-90deg)' }} /></span></button>}
+      blurb="Every game, every edition."
+      tags={<span className="cpr-price"><span>{GS_PLAN.monthly.price}</span> or <span>{GS_PLAN.yearly.price}</span></span>} />
   );
 };
 
@@ -70,19 +100,12 @@ const CprHome = () => {
       </section>
 
       <section className="gs-band">
-        <DS.CardRow title="Available games" className="gs-row4">
-          {GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)}
+        <DS.CardRow title="Available games" sub={<CprHomeLine />} className="gs-row4">
+          {[<CprPassCard key="pass" />, ...GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)]}
         </DS.CardRow>
         <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
-        <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
-      </section>
-
-      {/* The Pass section: one paragraph built from the game data, "the Pass" its only link, no About the Pass.
-          The pay line sits under it; whether it stays here now that it is on Pricing is open. */}
-      <section id="gs-how" className="gs-band gs-pu-band">
         <div className="gs-stack-sm">
-          <h2 className="mcp-t-sec">The Pass</h2>
-          <CprPassPara className="gs-pu-wrap" />
+          <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
           <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
         </div>
       </section>

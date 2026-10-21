@@ -1,6 +1,7 @@
 # home-pass-line
 
-A stronger Pass on Home: options 0 to 4. No tracker id yet.
+A stronger Pass on Home. No tracker id yet.
 
-- `playground/index.html`: the rig (strip at the bottom picks an option).
-- `handoff-2026-10-20-home-pass-options.md`: state, open calls, next steps.
+- `playground-6/`: current rig. Card 3 first in the row; copy 1 to 5 times action a to e, with a height meter.
+- `playground-5/`, `playground-4/`, `playground-3/`, `playground-2/`, `playground/`: earlier rounds, kept for reference.
+- `handoff-2026-10-21-not-a-game.md`: latest; start here. Earlier handoffs are listed in it.

@@ -332,8 +332,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-caret{display:inline-block;width:1.5px;height:1.15em;vertical-align:-.2em;margin-left:1px;background:var(--c-fg)}
 .mcp-chat-comp>i{flex:none}
 .mcp-chat-comp>i.is-sent{transform:scale(var(--press-scale))}
-/* The pause control: the system's own square, in the chat's send colours; 32px seen, 44px to press */
-.mcp-chat-pause{position:absolute;z-index:3;top:8px;left:8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:0;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
+/* The pause control: a square in the chat's send colours, 32px seen, 44px to press. Its 8px corner is the window's 16px corner less its 8px inset, so the two curves run parallel. */
+.mcp-chat-pause{position:absolute;z-index:3;top:8px;left:8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
 .mcp-chat-pause::before{content:"";position:absolute;inset:-6px}
 @media (hover:hover){.mcp-chat-pause:hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg))}}
 .mcp-chat-pause:active{transform:scale(var(--press-scale))}

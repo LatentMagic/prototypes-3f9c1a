@@ -1052,8 +1052,9 @@
   /* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
   .ga-ch { --y: 51; --w: 18; --h: 18; --s: 0; }
   .ga-ch-1 { --x: 11; --fill: var(--cover-cream); } .ga-ch-5 { --x: 131; --fill: var(--cover-cream); }
-  .ga-ch-o { --fill: transparent; box-sizing: border-box; border: solid var(--c); border-width: max(var(--u) * (3 + var(--on) * 6), 1.5px + var(--on) * var(--u) * 9); }
-  .mcp-art i.ga-ch-o { transition: border-width var(--time-art) var(--ease-art); }
+  /* The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
+  .ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (3 + var(--on) * 7), 1.5px + var(--on) * var(--u) * 10) var(--c); }
+  .mcp-art i.ga-ch-o { transition: transform var(--time-art) var(--ease-art) 0ms, box-shadow var(--time-art) var(--ease-art) 0ms; }
   .ga-ch-2 { --x: 41; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 101; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
   .ga-ch-l { --y: 57; --h: 6; --fill: var(--cover-cream); --s: 0; }
   .ga-ch-l1 { --x: 20; --w: 61; transform-origin: 0 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
@@ -1236,6 +1237,19 @@
   .ed-results .mcp-rows { display: grid; grid-auto-rows: 1fr; }
   .ed-results .mcp-rows > * { min-height: 0; }
   .ed-results .mcp-rows > * > .mcp-row, .ed-results .mcp-rows > .mcp-row { height: 100%; }
+
+  /* Home: the Pass card, first in Available games. The mosaic of Pass games is its picture, the chevron marks the whole card as the way to Pricing, and the price sits in the chip line as plain text. */
+  .cpr-mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); aspect-ratio: 2 / 1; overflow: hidden; cursor: pointer; }
+  .cpr-mosaic .mcp-art { aspect-ratio: 1 / 1; }
+  .cpr-mosaic > * { min-width: 0; }
+  .cpr-pcard .mcp-t-card { display: grid; justify-items: start; }
+  .cpr-pcard .gs-titlebtn { display: inline-flex; align-items: center; gap: 8px; text-align: left; }
+  .cpr-pcard .cpr-lock { flex: none; }
+  .cpr-pcard .cpr-chev { margin-left: -2px; transition: transform 220ms var(--ease); }
+  @media (hover: hover) { .cpr-pcard:hover .cpr-chev { transform: translateX(3px); } }
+  @media (prefers-reduced-motion: reduce) { .cpr-pcard .cpr-chev { transition: none; } }
+  .cpr-price { font: 400 16px/1.5 var(--font-text); color: var(--muted); }
+  .cpr-price > span { white-space: nowrap; }
 </style>
 
 <style>
