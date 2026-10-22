@@ -261,7 +261,7 @@ const CircStoreGooglePlay = () => {
       </div>
       <div style={s.feature} role="img" aria-label="Circlists feature graphic">
         <div style={s.featLeft}>
-          <img src="brand/assets/circlists-lockup.svg" alt="" style={s.lockup} />
+          <img src="brand/assets/lockup/circlists-lockup.svg" alt="" style={s.lockup} />
           <p style={s.featLine}>A shared list, <span style={{ color: '#047857' }}>with your own place in it.</span></p>
         </div>
         <div style={s.featPhone}><img src={SL_DIR + 'play-01-reading-loop.png'} alt="" style={{ display: 'block', width: '100%' }} /></div>

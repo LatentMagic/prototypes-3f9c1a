@@ -98,6 +98,22 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-22T06:31:00Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: `wiki/products/circlists/brand/` mirrored whole into `brand/` (tree 49d264bee9dc). No commit sha resolved.
+
+### Updated in this project
+- `brand/` replaced with the 2026-10-22 pack in its own subfolders; app paths moved; `_ds/` refreshed; standalone links set in JetBrains Mono. Handoff in `docs/specs/brand-pack-2026-10-22/`.
+
+## Previous sync
+
+date: 2026-10-20T16:01:27Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Kit update to version 6: `create-handoff` lists and reads earlier handoffs (skill 1.3.0).
+
+## Previous sync
+
 date: 2026-10-18T08:30:14Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
 

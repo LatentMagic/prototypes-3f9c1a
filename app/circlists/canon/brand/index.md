@@ -4,10 +4,9 @@
 
 # Map
 
-* [Circlists Brand — Directory Guide](README.md) - Entry point to the Circlists brand directory — the spec, the visual board, the shippable assets, and the generators that build them.
+* [Circlists Brand — Directory Guide](README.md) - Entry point to the Circlists brand directory — the spec, the visual board, the shippable assets, and the generators and checks that build them.
 
 # Subdirectories
 
-* [assets](assets/index.md) - The shippable Circlists brand assets — the SVG marks and the raster (PNG/ICO) exports, and what each is for.
-* [motion](motion/index.md) - Contains 2 entries: Circlists Brand — Motion Directory Guide, Circlists Brand — Motion.
-* [scripts](scripts/index.md) - How to regenerate the Circlists brand assets — the generator order, the dependencies, and the vendored Inter font.
+* [assets](assets/index.md) - Contains 7 entries: Circlists Brand — Assets, icons, lockup, mark, motion, native, wordmark.
+* [scripts](scripts/index.md) - How to regenerate the Circlists brand pack — the generator order, the dependencies, the vendored Inter font and the pack checks.

@@ -1,21 +1,23 @@
 ---
 type: Concept
 title: "Circlists Brand — Motion"
-description: "The Circlists mark in motion — three animated treatments (pulse, spinner, micro), the motion each carries, and how a surface consumes them."
+description: "The Circlists mark in motion — three animated treatments (pulse, spinner, micro), and the motion each carries."
 tags: ["product", "brand"]
-timestamp: 2026-07-11T00:00:00Z
+timestamp: 2026-10-22T00:00:00Z
 ---
 
 # Circlists brand — motion
 
-The Circlists mark, animated. Three treatments — **pulse**, **spinner**, **micro** — each layering its own motion on the static mark. Geometry and palette are owned by the [brand spec](../circlists-brand.md); this page owns only the motion on top of them. Never redraw the mark.
+Part of the [Circlists brand](../../circlists-brand.md); the directory guide is [../../README.md](../../README.md).
 
-Each treatment ships as a self-contained animated `.svg` in this directory. The CSS animation and its reduced-motion fallback live inside the file, so the asset animates dropped into an `<img>`, a CSS `background`, or inlined — no host stylesheet required. The [directory guide](README.md) lists the files.
+The Circlists mark, animated. Three treatments — **pulse**, **spinner**, **micro** — each layering its own motion on the static mark. Geometry and palette are owned by the [brand spec](../../circlists-brand.md); this page owns only the motion on top of them. Never redraw the mark.
 
-## How a surface consumes these
+Each treatment ships as a self-contained animated `.svg` in this directory that animates in any embedding. The CSS animation and its reduced-motion fallback live inside the file. The three files are `circlists-pulse.svg`, `circlists-spinner.svg` and `circlists-micro.svg`; they are hand-authored sources, not generated, and `scripts/build_motion.py` checks them against `brand_tokens.py`.
+
+## Delivery
 
 - **Drop-in** — reference the `.svg` directly (`<img>`, `background-image`, `<object>`). It animates as-is; nothing else needed.
-- **In-app control** — inline the same `.svg` markup so the product's own CSS can drive tempo, theme, or state. The values on this page are the source of truth either way: an inline component reproduces them, it does not re-invent them.
+- The values on this page are the source of truth.
 
 ## The pulse breath curve
 
@@ -29,7 +31,7 @@ Each stop is a fraction of the full rise, applied as `scale(1 + (amp − 1) × f
 
 ## Pulse — `circlists-pulse.svg`
 
-The idle "breathing" mark. In the app the halo reacts to input, so an idle breath reads as the mark at rest but alive.
+The idle breathing mark: the mark at rest but alive.
 
 - **Motion** — the breath **plus a tone lift**: the sage halo breathes and brightens in lockstep. The disc and white ring hold still; both animations run on the halo only.
 - **Tempo** — 3.0 s cycle.
@@ -43,10 +45,10 @@ The loading state. The disc and white ring hold at centre; the sage halo becomes
 
 - **Motion** — a sage arc on r 19.05 rotates while its length grows and shrinks, so the halo never sits still.
 - **Tempo** — the reference (1×) pace is a 1.917 s rotation with a 2.5 s arc-breathe; pace is expressed as a multiplier on this.
-- **Pace** — the default is **1.4×** — rotation ≈ 1.37 s, arc-breathe ≈ 1.79 s, ratio held so the character survives a fast load. The drop-in `.svg` ships at this default; where a surface inlines the asset, a live speed multiplier can vary it.
+- **Pace** — the default is **1.4×** — rotation ≈ 1.37 s, arc-breathe ≈ 1.79 s, ratio held so the character survives a fast load. The drop-in `.svg` ships at this default.
 - **Band** — arc `stroke-width` 5.3.
 - **Arc growth** — `pathLength` 120, round caps: `stroke-dasharray` `12 108 → 78 42 → 12 108`, `stroke-dashoffset` `0 → −22 → −120`.
-- **Size** — ~100 px, a sense of the footprint it occupies rather than a locked value; the surface resolves the exact size.
+- **Size** — Designed around ~100 px; scales.
 - **Accompanying text** — none by default. The asset's ARIA label carries the loading state for assistive tech, so the spinner alone is enough; add text only where the circumstance needs it to say something the spinner can't.
 
 ## Micro — `circlists-micro.svg`
@@ -59,6 +61,12 @@ The ~10 px "live signal" dot — the mark at status size, marking something as l
 - **Tempo** — 3.8 s cycle, `cubic-bezier(0.45, 0, 0.15, 1)`.
 - **Size** — ~10 px. This is the size-defined treatment: the reveal exists *because* a scale-breath won't read this small. Pulse and spinner scale to context; micro is built for this footprint.
 - **Geometry** — true mark geometry (disc r 14.25), viewBox `-2 -2 52 52`.
+
+## Validating the motion
+
+Validate these by eye in a **real browser**: open a `.svg` directly, or open the board's Motion tab.
+
+Do **not** trust a headless or scripted screenshot to confirm the motion. Virtual-clock capture tools routinely grab only the resting frame and report a working asset as "not animating." Treat any automated "the motion is dead" verdict as inconclusive until you have seen it in a browser. This has misled more than one build here, and the animation was fine each time.
 
 ## Reduced motion
 

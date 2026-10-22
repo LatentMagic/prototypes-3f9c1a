@@ -1,6 +1,6 @@
 // ============================================================================
 // Circlists — brand motion. Three treatments on the static mark; values
-// reproduce brand/motion/circlists-motion.md exactly (the spec is the source
+// reproduce brand/assets/motion/circlists-motion.md exactly (the spec is the source
 // of truth — this does not re-invent tempo, amplitude, or the breath curve).
 //   PulseMark    — idle breathing mark (halo breathes + brightens). Rail only.
 //   BrandSpinner — the loading state (arc rotates + grows/shrinks). Replaces
@@ -143,7 +143,7 @@ const PulseLockup = ({ size = 20 }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', flexShrink: 0 }}>
       <PulseMark size={markSize} />
-      <img src="brand/assets/circlists-wordmark.svg" alt="Circlists" style={{
+      <img src="brand/assets/wordmark/circlists-wordmark.svg" alt="Circlists" style={{
         height: wordmarkH, width: 'auto', display: 'block', flexShrink: 0,
         marginLeft: 0.4 * cap, marginTop: wordmarkMarginTop,
       }} />

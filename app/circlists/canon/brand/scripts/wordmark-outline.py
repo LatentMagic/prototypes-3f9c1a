@@ -3,6 +3,7 @@
 The first 'i' is drawn dotless; a real green vector tittle is laid exactly over its stem,
 matched in size + height to the native i-dot. All letters are true outlines (no font dep)."""
 import os
+from brand_tokens import *
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 from fontTools.pens.svgPathPen import SVGPathPen
@@ -10,13 +11,12 @@ from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.recordingPen import DecomposingRecordingPen
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSETS = os.path.join(HERE, os.pardir, "assets")               # shippable SVGs live in ../assets
+ASSETS = os.path.join(HERE, os.pardir, "assets")               # shippable assets live in ../assets, one dir per thing
 SRC = os.environ.get("WM_FONT", os.path.join(HERE, "inter-latin-wght-normal.woff2"))  # font vendored beside this script
-OUT = os.environ.get("WM_OUT", os.path.join(ASSETS, "circlists-wordmark.svg"))
-WORD = "Circlists"
-INK = os.environ.get("WM_INK", "#0A0A0A")
-GREEN = "#047857"
-TRACK_EM, PAD_EM = -0.01, 0.06
+# Two files, geometrically identical: ink on light grounds, cream reversed on dark grounds.
+OUTS = [(os.path.join(ASSETS, "wordmark", "circlists-wordmark.svg"), INK),
+        (os.path.join(ASSETS, "wordmark", "circlists-wordmark-reversed.svg"), CREAM.lower())]
+GREEN = EMERALD
 
 f = TTFont(SRC)
 instantiateVariableFont(f, {"wght": 700}, inplace=True)
@@ -54,8 +54,7 @@ def cbbox(pts):
 # tittle geometry MEASURED off the design reference (a raised dot, well above the stem):
 #   centre = 1.18 x capHeight above baseline ; diameter = 0.25 x capHeight
 CAP = f["OS/2"].sCapHeight
-TITTLE_CY_OVER_CAP = 1.18
-TITTLE_DIA_OVER_CAP = 0.25
+# TITTLE_CY_OVER_CAP and TITTLE_DIA_OVER_CAP come from brand_tokens.py
 dot_cy = TITTLE_CY_OVER_CAP * CAP
 dot_r = TITTLE_DIA_OVER_CAP * CAP / 2
 
@@ -65,7 +64,7 @@ stem_cx = (sx0 + sx1) / 2
 
 # lay out the word; the SECOND 'i' (in "lists") gets the green tittle over a dotless stem;
 # the first 'i' keeps its native black dot. (Matches the design reference.)
-GREEN_I = 2                       # 1-indexed occurrence of 'i' that gets the tittle
+GREEN_I = TITTLE_ON_I             # 1-indexed occurrence of 'i' that gets the tittle
 glyphs, x, icount = [], 0.0, 0
 green = None
 gx0 = gy0 = 1e9; gx1 = gy1 = -1e9
@@ -94,19 +93,20 @@ mat = f"matrix(1 0 0 -1 {-gx0:.2f} {gy1:.2f})"   # font(y-up) -> svg(y-down)
 paths = "\n".join(
     f'      <path transform="translate({xo:.2f} 0)" d="{cmds}"/>' for cmds, xo in glyphs)
 
-svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.2f} {H:.2f}" role="img" aria-label="Circlists">
+for OUT, ink in OUTS:
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.2f} {H:.2f}" role="img" aria-label="Circlists">
   <title>Circlists</title>
   <g transform="{mat}">
-    <g fill="{INK}">
+    <g fill="{ink}">
 {paths}
     </g>
     <circle cx="{tcx:.2f}" cy="{tcy:.2f}" r="{tr:.2f}" fill="{GREEN}"/>
   </g>
 </svg>
 '''
-os.makedirs(os.path.dirname(OUT), exist_ok=True)
-open(OUT, "w").write(svg)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    open(OUT, "w").write(svg)
+    print("wrote", OUT)
 cap = f["OS/2"].sCapHeight
-print("wrote", OUT)
 print(f"viewBox 0 0 {W:.1f} {H:.1f}  aspect {W/H:.3f}")
 print(f"tittle cx={tcx:.1f} cy={tcy:.1f} r={tr:.1f}  dot/cap={2*tr/cap:.3f}  dot_cy/cap={tcy/cap:.3f}")

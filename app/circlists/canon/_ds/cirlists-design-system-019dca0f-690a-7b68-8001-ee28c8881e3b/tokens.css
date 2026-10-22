@@ -30,21 +30,20 @@
      ground); NOT the accent, never a status or action colour. */
   --color-sage:             #8BBFAD;
 
-  /* New words — the unseen-comment tab (CIRC-037). Its own colour, not the sage:
+  /* New words — unseen comments. Its own colour, not the sage:
      #8BBFAD fails WCAG 1.4.11 on the white surface; #5E9C86 clears 3:1. Dark
      value (for when a dark theme exists): #8BBFAD. */
   --color-new-words:        #5E9C86;
 
   /* Thought paper — ui.md § Design tokens. The sheet a thought is read and
-     written on. Hover LIGHTENS the sheet and deepens its edge (spec; the
-     prototype's #EEEDE5 darken is lag — logged in audit/). */
+     written on. Hover lightens the sheet and deepens its edge (spec). */
   --color-paper:              #F2F1EB;
   --color-paper-hover:        #F8F7F4;
   --color-paper-border:       #DEDCD3;
   --color-paper-border-hover: #CFCDC2;
 
-  /* Arrival wash — sage at 34%, played once on a card that just landed
-     (.circ-glow). Never rests as a state. */
+  /* Arrival wash — sage at 34%, played once on an item that just
+     arrived. Never rests as a state. */
   --color-arrival-wash:     rgba(139, 191, 173, 0.34);
 
   /* Press fill on neutral controls (secondary buttons, menu rows). */
@@ -72,7 +71,7 @@
   --color-border-strong:    #0A0A0A;  /* deliberate emphasis only   */
   --color-border-3:         #949490;  /* mid neutral, ≥3:1 on white — WCAG 1.4.11 floor for resting UI-component states (e.g. switch OFF track) */
 
-  /* Destructive — used in v1 ONLY on the last-member Leave primary action.   */
+  /* Destructive — destructive actions and errors.                           */
   --color-destructive:      #991B1B;
   --color-destructive-hover:#7F1818;
   --color-destructive-press:#641212;
@@ -108,7 +107,7 @@
   --text-lg:    18px;   /* card titles (mobile) */
   --text-xl:    20px;   /* card titles (desktop) */
   --text-2xl:   24px;   /* dialog titles, page H2 */
-  --text-3xl:   32px;   /* page titles (Create Space, Empty-state primary) */
+  --text-3xl:   32px;   /* page titles */
   --text-4xl:   40px;   /* hero / brand moments only */
 
   --leading-tight:  1.25;
@@ -174,7 +173,7 @@
   --bp-who-reacted:  520px;  /* @kind other */
   --bp-add-reveal:   640px;  /* @kind other */
   --bp-rail:         1024px; /* @kind other */
-  --touch-dense-min: 24px;   /* dense secondary displays (reaction roster) */
+  --touch-dense-min: 24px;   /* dense secondary displays */
 
   --max-feed-width: 720px;
   --rail-width:     240px;
@@ -278,6 +277,7 @@ code, kbd, samp, pre, .mono {
 
 /* ---- Links ---- */
 a {
+  font-family: var(--font-mono);
   color: var(--color-fg-1);
   text-decoration: underline;
   text-decoration-thickness: 1px;

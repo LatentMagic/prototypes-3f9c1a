@@ -120,7 +120,7 @@ const OutLink = ({ href, children }) => (
 
 // Quiet consent line — both auth surfaces
 const LegalLink = ({ href, children }) => (
-  <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-fg-2)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{children}</a>
+  <a href={href} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'inherit', color: 'var(--color-fg-2)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{children}</a>
 );
 const ConsentLine = ({ lead = 'By creating an account you accept our' }) => (
   <p style={{

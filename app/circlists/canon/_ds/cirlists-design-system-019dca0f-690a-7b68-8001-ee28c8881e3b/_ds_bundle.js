@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"LatentPulseDesignSystemV010_019dca","components":[{"name":"Avatar","sourcePath":"components/avatar/Avatar.jsx"},{"name":"Spinner","sourcePath":"components/button/Button.jsx"},{"name":"Button","sourcePath":"components/button/Button.jsx"},{"name":"Field","sourcePath":"components/field/Field.jsx"},{"name":"ICONS","sourcePath":"components/icon/Icon.jsx"},{"name":"Icon","sourcePath":"components/icon/Icon.jsx"},{"name":"LogoMark","sourcePath":"components/logo-mark/LogoMark.jsx"}],"sourceHashes":{"components/avatar/Avatar.jsx":"fd297aebd7da","components/button/Button.jsx":"816ae4537a6e","components/field/Field.jsx":"674e8252e4dc","components/icon/Icon.jsx":"06e74568c82f","components/logo-mark/LogoMark.jsx":"abbea239e2ee"},"inlinedExternals":[],"unexposedExports":[{"name":"initialsOf","sourcePath":"components/avatar/Avatar.jsx"}]} */
+/* @ds-bundle: {"format":4,"namespace":"LatentPulseDesignSystemV010_019dca","components":[{"name":"Avatar","sourcePath":"components/avatar/Avatar.jsx"},{"name":"Ring","sourcePath":"components/button/Button.jsx"},{"name":"Button","sourcePath":"components/button/Button.jsx"},{"name":"Spinner","sourcePath":"components/button/Button.jsx"},{"name":"Field","sourcePath":"components/field/Field.jsx"},{"name":"ICONS","sourcePath":"components/icon/Icon.jsx"},{"name":"Icon","sourcePath":"components/icon/Icon.jsx"},{"name":"LogoMark","sourcePath":"components/logo-mark/LogoMark.jsx"},{"name":"Overlay","sourcePath":"components/overlay/Overlay.jsx"},{"name":"Dialog","sourcePath":"components/overlay/Overlay.jsx"},{"name":"Menu","sourcePath":"components/overlay/Overlay.jsx"},{"name":"MenuItem","sourcePath":"components/overlay/Overlay.jsx"},{"name":"MenuSeparator","sourcePath":"components/overlay/Overlay.jsx"},{"name":"Panel","sourcePath":"components/overlay/Overlay.jsx"}],"sourceHashes":{"components/avatar/Avatar.jsx":"fd297aebd7da","components/button/Button.jsx":"153737f985ed","components/field/Field.jsx":"674e8252e4dc","components/icon/Icon.jsx":"06e74568c82f","components/logo-mark/LogoMark.jsx":"abbea239e2ee","components/overlay/Overlay.jsx":"a84ebea75e5c"},"inlinedExternals":[],"unexposedExports":[{"name":"initialsOf","sourcePath":"components/avatar/Avatar.jsx"}]} */
 
 (() => {
 
@@ -47,9 +47,13 @@ Object.assign(__ds_scope, { initialsOf, Avatar });
 
 // components/button/Button.jsx
 try { (() => {
-// Lifted from the Circlists prototype, app/primitives.jsx (Button + Spinner).
+// Lifted from the Circlists prototype, app/primitives.jsx (Button + Spinner, here named Ring).
 // Hover/press states live in components/components.css (.circ-btn-*).
-function Spinner({
+// Working state (`loading`): from the press until the result the button shows a ring and
+// cannot be pressed again. It stays focusable (aria-disabled, not disabled) so focus is not
+// dumped to the page, and announces itself busy. The brand spinner never sits in a button.
+// Ring: the plain in-button ring. Not the brand spinner (assets/brand/motion/circlists-spinner.svg).
+function Ring({
   size = 14,
   light = true
 }) {
@@ -138,24 +142,38 @@ function Button({
   };
   return /*#__PURE__*/React.createElement("button", {
     type: type,
-    onClick: onClick,
-    disabled: loading || disabled,
+    disabled: disabled && !loading,
     title: title,
     autoFocus: autoFocus,
     name: name,
+    onClick: e => {
+      if (loading) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      onClick && onClick(e);
+    },
+    "aria-disabled": loading || undefined,
+    "aria-busy": loading || undefined,
     "aria-label": rest['aria-label'],
     "aria-expanded": rest['aria-expanded'],
+    "aria-haspopup": rest['aria-haspopup'],
+    "aria-controls": rest['aria-controls'],
     className: 'circ-btn circ-btn-' + variant,
     style: {
       ...base,
       ...variants[variant],
       ...(style || {})
     }
-  }, loading && /*#__PURE__*/React.createElement(Spinner, {
+  }, loading && /*#__PURE__*/React.createElement(Ring, {
     light: variant === 'primary' || variant === 'destructive'
   }), !loading && icon, children && /*#__PURE__*/React.createElement("span", null, children));
 }
-Object.assign(__ds_scope, { Spinner, Button });
+
+/** @deprecated Use Ring. */
+const Spinner = Ring;
+Object.assign(__ds_scope, { Ring, Button, Spinner });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/button/Button.jsx", error: String((e && e.message) || e) }); }
 
 // components/field/Field.jsx
@@ -388,11 +406,419 @@ function LogoMark({
 Object.assign(__ds_scope, { LogoMark });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/logo-mark/LogoMark.jsx", error: String((e && e.message) || e) }); }
 
+// components/overlay/Overlay.jsx
+try { (() => {
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+// The three overlay kinds of ui-design.md § Responsive and adaptive design.
+// Dialog and Menu keep one shape at every width; only Panel changes shape on a phone.
+// Motion and pseudo-states live in components/components.css (.circ-ov-*).
+
+const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
+
+// Focus contract shared by every kind: take focus on open, trap Tab (modal kinds),
+// Escape closes, focus returns to the opener on close (ui-design.md § Focus restoration).
+function useOverlayFocus(ref, open, onClose, {
+  initialFocusRef,
+  trap = true,
+  restoreTo
+} = {}) {
+  React.useEffect(() => {
+    if (!open) return;
+    const opener = restoreTo && restoreTo.current || document.activeElement;
+    const el = ref.current;
+    const first = initialFocusRef && initialFocusRef.current || el && el.querySelector(FOCUSABLE) || el;
+    first && first.focus && first.focus();
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose && onClose();
+        return;
+      }
+      if (trap && e.key === 'Tab' && el) {
+        const f = [...el.querySelectorAll(FOCUSABLE)];
+        if (!f.length) return;
+        const a = f[0],
+          z = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === a) {
+          e.preventDefault();
+          z.focus();
+        } else if (!e.shiftKey && document.activeElement === z) {
+          e.preventDefault();
+          a.focus();
+        }
+      }
+    }
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      if (opener && opener.focus && document.contains(opener)) opener.focus();
+    };
+  }, [open]);
+}
+function useOutsidePress(open, refs, onClose) {
+  React.useEffect(() => {
+    if (!open) return;
+    function onDown(e) {
+      if (!refs.some(r => r && r.current && r.current.contains(e.target))) onClose && onClose();
+    }
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  }, [open]);
+}
+function useWide(breakpoint, force) {
+  const q = '(min-width: ' + breakpoint + 'px)';
+  const [wide, setWide] = React.useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches);
+  React.useEffect(() => {
+    const m = window.matchMedia(q);
+    const f = () => setWide(m.matches);
+    m.addEventListener('change', f);
+    f();
+    return () => m.removeEventListener('change', f);
+  }, [q]);
+  return force === 'sheet' ? false : force === 'desktop' ? true : wide;
+}
+const titleStyle = {
+  font: '600 var(--text-2xl)/1.3 var(--font-sans)',
+  letterSpacing: '-0.01em',
+  color: 'var(--color-fg-1)',
+  margin: 0,
+  textWrap: 'balance'
+};
+const bodyStyle = {
+  font: '400 15px/1.55 var(--font-sans)',
+  color: 'var(--color-fg-2)',
+  margin: '8px 0 0',
+  textWrap: 'pretty'
+};
+function Scrim({
+  contained,
+  onPress,
+  align = 'center',
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "circ-ov-fade",
+    onPointerDown: e => {
+      if (e.target === e.currentTarget) onPress && onPress();
+    },
+    style: {
+      position: contained ? 'absolute' : 'fixed',
+      inset: 0,
+      background: 'var(--color-scrim)',
+      zIndex: 50,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: align === 'bottom' ? 'flex-end' : 'center',
+      padding: align === 'bottom' ? 0 : 'var(--space-4)'
+    }
+  }, children);
+}
+
+/** One entry point with the kind as its input. Only kind="panel" ever swaps to a sheet. */
+function Overlay({
+  kind = 'dialog',
+  ...props
+}) {
+  return kind === 'menu' ? /*#__PURE__*/React.createElement(Menu, props) : kind === 'panel' ? /*#__PURE__*/React.createElement(Panel, props) : /*#__PURE__*/React.createElement(Dialog, props);
+}
+let uid = 0;
+function useId(p) {
+  const r = React.useRef(null);
+  if (!r.current) r.current = p + '-' + ++uid;
+  return r.current;
+}
+
+/** Dialog: one question or one short edit. Centred at every width, never scrolls, never a sheet. */
+function Dialog({
+  open = true,
+  onClose,
+  title,
+  description,
+  children,
+  actions,
+  initialFocusRef,
+  width = 400,
+  contained = false,
+  style
+}) {
+  const ref = React.useRef(null);
+  const tid = useId('circ-dlg-t'),
+    did = useId('circ-dlg-d');
+  useOverlayFocus(ref, open, onClose, {
+    initialFocusRef
+  });
+  if (!open) return null;
+  return /*#__PURE__*/React.createElement(Scrim, {
+    contained: contained,
+    onPress: onClose
+  }, /*#__PURE__*/React.createElement("div", {
+    ref: ref,
+    role: "dialog",
+    "aria-modal": "true",
+    "aria-labelledby": tid,
+    "aria-describedby": description ? did : undefined,
+    className: "circ-ov-pop",
+    tabIndex: -1,
+    style: {
+      background: 'var(--color-surface)',
+      borderRadius: 'var(--radius-lg)',
+      boxShadow: 'var(--shadow-overlay)',
+      padding: 'var(--space-6)',
+      width: '100%',
+      maxWidth: width,
+      boxSizing: 'border-box',
+      overflow: 'hidden',
+      outline: 'none',
+      ...(style || {})
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    id: tid,
+    style: titleStyle
+  }, title), description && /*#__PURE__*/React.createElement("p", {
+    id: did,
+    style: bodyStyle
+  }, description), children && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 'var(--space-4)'
+    }
+  }, children), actions && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
+      gap: 'var(--space-2)',
+      marginTop: 'var(--space-5)'
+    }
+  }, actions)));
+}
+
+/** Menu: a short list of commands at its control. Place it beside the trigger inside a
+ *  position:relative wrapper; it opens there at every width. Choosing an item closes it. */
+function Menu({
+  open = true,
+  onClose,
+  anchorRef,
+  label,
+  align = 'end',
+  children,
+  width = 220,
+  style
+}) {
+  const ref = React.useRef(null);
+  useOverlayFocus(ref, open, onClose, {
+    trap: false,
+    restoreTo: anchorRef
+  });
+  useOutsidePress(open, [ref, anchorRef], onClose);
+  if (!open) return null;
+  function onKey(e) {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const items = [...ref.current.querySelectorAll('[role^="menuitem"]')];
+    const i = items.indexOf(document.activeElement);
+    const n = e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1 : (i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+    items[n] && items[n].focus();
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    ref: ref,
+    role: "menu",
+    "aria-label": label,
+    onKeyDown: onKey,
+    className: "circ-ov-pop",
+    onClick: e => {
+      if (e.target.closest('[role^="menuitem"]')) onClose && onClose();
+    },
+    style: {
+      position: 'absolute',
+      top: 'calc(100% + 4px)',
+      [align === 'end' ? 'right' : 'left']: 0,
+      zIndex: 40,
+      width,
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-border-1)',
+      borderRadius: 'var(--radius-lg)',
+      boxShadow: 'var(--shadow-raised)',
+      padding: 4,
+      boxSizing: 'border-box',
+      ...(style || {})
+    }
+  }, children);
+}
+function MenuItem({
+  icon,
+  destructive = false,
+  onClick,
+  children,
+  checked
+}) {
+  const role = checked === undefined ? 'menuitem' : 'menuitemcheckbox';
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    role: role,
+    "aria-checked": checked,
+    onClick: onClick,
+    className: "circ-ov-item",
+    tabIndex: -1,
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10,
+      width: '100%',
+      minHeight: 44,
+      padding: '0 12px',
+      border: 0,
+      background: 'transparent',
+      borderRadius: 'var(--radius-md)',
+      font: '500 14px var(--font-sans)',
+      cursor: 'pointer',
+      textAlign: 'left',
+      color: destructive ? 'var(--color-destructive)' : 'var(--color-fg-1)'
+    }
+  }, icon, children);
+}
+function MenuSeparator() {
+  return /*#__PURE__*/React.createElement("div", {
+    role: "separator",
+    style: {
+      height: 1,
+      background: 'var(--color-border-2)',
+      margin: '4px 8px'
+    }
+  });
+}
+
+/** Panel: anything the user stays in and works with. A bottom sheet below `breakpoint`;
+ *  at and above it, anchored to its control (popover, no scrim) or centred (modal, scrim). */
+function Panel({
+  open = true,
+  onClose,
+  title,
+  children,
+  footer,
+  breakpoint = 640,
+  desktop = 'centred',
+  anchorRef,
+  force = 'auto',
+  width = 400,
+  contained = false,
+  align = 'end',
+  style
+}) {
+  const ref = React.useRef(null);
+  const tid = useId('circ-pnl-t');
+  const wide = useWide(breakpoint, force);
+  const anchored = wide && desktop === 'anchored';
+  useOverlayFocus(ref, open, onClose, {
+    trap: !anchored,
+    restoreTo: anchorRef
+  });
+  useOutsidePress(open && anchored, [ref, anchorRef], onClose);
+  React.useEffect(() => {
+    if (!open || contained || anchored) return;
+    const o = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = o;
+    };
+  }, [open, contained, anchored]);
+  if (!open) return null;
+  const head = title && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 'var(--space-5) var(--space-6) 0'
+    }
+  }, /*#__PURE__*/React.createElement("h2", {
+    id: tid,
+    style: {
+      ...titleStyle,
+      fontSize: 'var(--text-xl)'
+    }
+  }, title));
+  const body = /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 'var(--space-4) var(--space-6)',
+      overflowY: 'auto',
+      flex: '1 1 auto',
+      minHeight: 0
+    }
+  }, children);
+  const foot = footer && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
+      gap: 'var(--space-2)',
+      padding: '0 var(--space-6) var(--space-5)'
+    }
+  }, footer);
+  const box = {
+    background: 'var(--color-surface)',
+    boxShadow: 'var(--shadow-overlay)',
+    display: 'flex',
+    flexDirection: 'column',
+    boxSizing: 'border-box',
+    outline: 'none',
+    overflow: 'hidden'
+  };
+  const a11y = {
+    role: 'dialog',
+    'aria-labelledby': title ? tid : undefined,
+    tabIndex: -1
+  };
+  if (anchored) {
+    return /*#__PURE__*/React.createElement("div", _extends({
+      ref: ref
+    }, a11y, {
+      className: "circ-ov-pop",
+      style: {
+        ...box,
+        position: 'absolute',
+        top: 'calc(100% + 8px)',
+        [align === 'end' ? 'right' : 'left']: 0,
+        zIndex: 40,
+        width,
+        maxHeight: 'min(560px, 70vh)',
+        border: '1px solid var(--color-border-1)',
+        borderRadius: 'var(--radius-lg)',
+        ...(style || {})
+      }
+    }), head, body, foot);
+  }
+  return /*#__PURE__*/React.createElement(Scrim, {
+    contained: contained,
+    onPress: onClose,
+    align: wide ? 'center' : 'bottom'
+  }, /*#__PURE__*/React.createElement("div", _extends({
+    ref: ref
+  }, a11y, {
+    "aria-modal": "true",
+    className: wide ? 'circ-ov-pop' : 'circ-ov-sheet',
+    style: wide ? {
+      ...box,
+      width: '100%',
+      maxWidth: width,
+      maxHeight: '85%',
+      borderRadius: 'var(--radius-lg)',
+      ...(style || {})
+    } : {
+      ...box,
+      width: '100%',
+      maxHeight: '85%',
+      borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      ...(style || {})
+    }
+  }), head, body, foot));
+}
+Object.assign(__ds_scope, { Overlay, Dialog, Menu, MenuItem, MenuSeparator, Panel });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/overlay/Overlay.jsx", error: String((e && e.message) || e) }); }
+
 __ds_ns.Avatar = __ds_scope.Avatar;
 
-__ds_ns.Spinner = __ds_scope.Spinner;
+__ds_ns.Ring = __ds_scope.Ring;
 
 __ds_ns.Button = __ds_scope.Button;
+
+__ds_ns.Spinner = __ds_scope.Spinner;
 
 __ds_ns.Field = __ds_scope.Field;
 
@@ -401,5 +827,17 @@ __ds_ns.ICONS = __ds_scope.ICONS;
 __ds_ns.Icon = __ds_scope.Icon;
 
 __ds_ns.LogoMark = __ds_scope.LogoMark;
+
+__ds_ns.Overlay = __ds_scope.Overlay;
+
+__ds_ns.Dialog = __ds_scope.Dialog;
+
+__ds_ns.Menu = __ds_scope.Menu;
+
+__ds_ns.MenuItem = __ds_scope.MenuItem;
+
+__ds_ns.MenuSeparator = __ds_scope.MenuSeparator;
+
+__ds_ns.Panel = __ds_scope.Panel;
 
 })();

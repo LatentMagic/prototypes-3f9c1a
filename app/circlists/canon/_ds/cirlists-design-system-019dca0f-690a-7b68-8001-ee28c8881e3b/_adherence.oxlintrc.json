@@ -20,7 +20,8 @@
               "components/button/**",
               "components/field/**",
               "components/icon/**",
-              "components/logo-mark/**"
+              "components/logo-mark/**",
+              "components/overlay/**"
             ],
             "message": "Import design-system components from 'index.js', not component internals."
           }
@@ -72,6 +73,10 @@
       {
         "selector": "JSXOpeningElement[name.name='LogoMark'] > JSXAttribute > JSXIdentifier[name!=/^(?:size|key|ref|className|style|children)$/]",
         "message": "<LogoMark> doesn't accept that prop. Declared props: size."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Dialog'] > JSXAttribute > JSXIdentifier[name!=/^(?:open|onClose|title|description|children|actions|initialFocusRef|width|contained|style|key|ref|className|style|children)$/]",
+        "message": "<Dialog> doesn't accept that prop. Declared props: open, onClose, title, description, children, actions, initialFocusRef, width, contained, style."
       }
     ]
   },
@@ -100,6 +105,9 @@
         "replaces": []
       },
       "LogoMark": {
+        "replaces": []
+      },
+      "Dialog": {
         "replaces": []
       }
     },

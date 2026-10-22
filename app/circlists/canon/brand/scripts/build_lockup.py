@@ -11,16 +11,25 @@ Usage:  python build_lockup.py [unreversed|reversed|both]   (default: both)
 
 build_board.py imports compose() so the board and the shippable SVGs are ONE composition."""
 import os, re, sys
+from brand_tokens import *
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSETS = os.path.join(HERE, os.pardir, "assets")   # reads the mark/wordmark SVGs from, and writes the lockups to, ../assets
-CAP = 1490.0           # Inter cap-height, in the wordmark's font units
-MARK_CAP_RATIO = 1.5   # mark halo diameter as a multiple of cap-height (matches in-app)
-GAP_CAP_RATIO = 0.40   # gap (mark box edge -> wordmark) as a multiple of cap-height
-HALO_FRAC = 45.0 / 48.0  # halo diameter / mark viewBox
+ASSETS = os.path.join(HERE, os.pardir, "assets")   # one dir per thing: mark/ wordmark/ lockup/ icons/ native/
+SUBDIRS = ("mark", "wordmark", "lockup", "icons", "native")
+# CAP, MARK_CAP_RATIO, GAP_CAP_RATIO come from brand_tokens.py
+HALO_FRAC = 2 * HALO_R / BOX   # halo diameter / mark viewBox
+
+def asset(fn):
+    """Resolve a bare asset filename to its path under ../assets/<subdir>/ — callers name the
+    file, not the folder, so the layout can change without touching every call site."""
+    for d in SUBDIRS:
+        p = os.path.join(ASSETS, d, fn)
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError(f"{fn} not found under {ASSETS}/{{{','.join(SUBDIRS)}}}")
 
 def _load(fn):
-    s = open(os.path.join(ASSETS, fn)).read()
+    s = open(asset(fn)).read()
     vb = re.search(r'viewBox="([^"]+)"', s).group(1)
     inner = re.sub(r'(?s)^.*?<svg[^>]*>', '', s, count=1)
     inner = re.sub(r'(?s)</svg>\s*$', '', inner)
@@ -58,5 +67,6 @@ if __name__ == '__main__':
     arg = sys.argv[1] if len(sys.argv) > 1 else 'both'
     for v in (['unreversed', 'reversed'] if arg == 'both' else [arg]):
         out = 'circlists-lockup-reversed.svg' if v == 'reversed' else 'circlists-lockup.svg'
-        open(os.path.join(ASSETS, out), 'w').write(svg(v))
+        os.makedirs(os.path.join(ASSETS, 'lockup'), exist_ok=True)
+        open(os.path.join(ASSETS, 'lockup', out), 'w').write(svg(v))
         print("wrote", out)

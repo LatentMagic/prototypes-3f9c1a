@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href="../../../../" />
 <title>Circlists — discourse v9</title>
-<link rel="icon" type="image/svg+xml" href="brand/assets/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="brand/assets/icons/favicon.svg" />
 <link rel="stylesheet" href="tokens.css" />
 <link rel="stylesheet" href="swell.css" />
 <style>
@@ -26,7 +26,7 @@
   @keyframes circ-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
   /* ---- brand motion: pulse (rail mark) / spinner (loading) / micro (live dot) ----
-     Reproduces brand/motion/circlists-motion.md's breath curve (linear, apex at
+     Reproduces brand/assets/motion/circlists-motion.md's breath curve (linear, apex at
      34%) sampled onto scale + brightness for pulse, onto scale only (two
      amplitudes) for micro, plus the spinner's own rotor + arc timings. Classes
      are scoped per-treatment (unlike the source .svg files) since more than one
@@ -60,7 +60,7 @@
      ring of sage into view then resting off-frame for the rest of the cycle — a
      sweep of light, not a breath (a scale won't read at this size). Band travels
      translateX 0→86 (viewBox units) over the first 64% of a 3.8s cycle, then
-     holds. Spec: brand/motion/circlists-motion.md §Micro. */
+     holds. Spec: brand/assets/motion/circlists-motion.md §Micro. */
   @keyframes circ-micro-reveal {
     0%   { transform: translateX(0); }
     64%  { transform: translateX(86px); }

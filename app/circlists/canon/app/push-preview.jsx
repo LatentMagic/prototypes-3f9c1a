@@ -16,7 +16,7 @@
 // only number, and it counts CIRCLES.
 //
 // NOT BUILT: nothing. The Android frame renders the brand's own notification
-// badge (brand/assets/notification-badge.svg) as supplied — a single-colour
+// badge (brand/assets/icons/notification-badge.svg) as supplied — a single-colour
 // alpha silhouette, never the full-colour app icon, never recoloured or
 // redrawn. The file reads black on transparency; Android keeps only its alpha
 // channel and tints it, dark on a light notification header, which is why it
@@ -43,7 +43,7 @@ const PUSH_CAPTION = {
 };
 
 const PushAppIcon = ({ size = 20, radius = null }) => (
-  <img src="brand/assets/icon-192.png" alt="" width={size} height={size}
+  <img src="brand/assets/icons/icon-192.png" alt="" width={size} height={size}
     style={{ display: 'block', borderRadius: radius == null ? size * 0.2237 : radius, flexShrink: 0 }} />
 );
 
@@ -105,7 +105,7 @@ const PushHomeIcon = ({ badge }) => (
 );
 
 const PushBadgeMark = ({ size = 14, opacity = 1 }) => (
-  <img src="brand/assets/notification-badge.svg" alt="" width={size} height={size}
+  <img src="brand/assets/icons/notification-badge.svg" alt="" width={size} height={size}
     style={{ display: 'block', flexShrink: 0, opacity }} />
 );
 

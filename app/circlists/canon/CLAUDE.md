@@ -2,7 +2,7 @@
 
 Circlists is a reading queue for small trusted circles. It is a React + Babel in-browser prototype with three presentation postures (desktop web, mobile web, app) over one shared core.
 
-The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 5.** Each kit update raises it by one.
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 6.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read `specs/governance/standards/ui-design.md` (monorepo, live) at the start of EVERY session, before any other work, whatever the task.** It is binding cross-app UI design law. Re-read it before any design decision that sets a convention.
@@ -48,7 +48,7 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - `CHANGELOG.md` — major milestones over time (not granular). Read to catch up on where the product has been.
 - `docs/ABOUT.md` — what the product is, who it's for, how it's sold, emotional intent, and the deliberate NOTs.
 - `brand/circlists-brand.md` — palette, mark, wordmark, lockup, type. Source of truth for all brand assets; SVGs and raster set in `brand/assets/`, generators in `brand/scripts/`. Mirrors the company wiki (linked in `brand/README.md`) and may be overwritten by future syncs.
-- `brand/motion/circlists-motion.md` — spec for the mark's motion.
+- `brand/assets/motion/circlists-motion.md` — spec for the mark's motion.
 - `GOTCHA.md` — hard-won, non-obvious traps (overlay/sheet motion, sandbox verification pitfalls). Read before touching animated overlays or "verifying" a mount transition.
 - `github.md` — the four-repo working context: business-ops (where intent is refined into the prompts that arrive here), the monorepo (stable project specs *and* governance standards), the wiki (voice, positioning, brand), and prototypes-3f9c1a (where this project is published as `app/circlists/canon/`). Read it before looking for a spec, the PRD, copy voice, positioning, or the reasoning behind a prompt.
 - **CRITICAL — the Circlists stable specs (monorepo `specs/projects/circlists/`, read live).** `prd.md`, `hld.md`, `ui.md`, `glossary.md`, plus `requirements/CIRC-###-*.md` and `changes/LM-###-*/`. Canonical for product behaviour. Cite by path and id; never copy in.
@@ -151,8 +151,8 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - **Three presentation postures, one shared core.** Desktop web, mobile web, and **app** (native mobile). `main.jsx` routes every in-shell surface through `inShell()`, which swaps ONLY the chrome; everything inside is the same shared component, so a shared-surface change must land in all three with no per-posture edit — never fork a surface for the app. Web is frozen.
 </important>
 
-<important if="you need the mark's motion, or are looking at brand/motion/*.svg">
-- The `<style>`/`@keyframes` block gets stripped from the SVGs on upload, so the shipped `brand/motion/*.svg` files are static — do not treat that as a defect and do not edit them. `brand/motion/circlists-motion.md` is the source of truth for the curves, timings, and keyframes.
+<important if="you need the mark's motion, or are looking at brand/assets/motion/*.svg">
+- The `<style>`/`@keyframes` block gets stripped from the SVGs on upload, so the shipped `brand/assets/motion/*.svg` files are static — do not treat that as a defect and do not edit them. `brand/assets/motion/circlists-motion.md` is the source of truth for the curves, timings, and keyframes.
 </important>
 
 ## Files
