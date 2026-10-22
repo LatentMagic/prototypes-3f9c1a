@@ -1,7 +1,7 @@
 :root{
 --font-heading:"Bricolage Grotesque",system-ui,sans-serif;
 --font-text:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
---size-page-title:34px;--size-section-title:24px;--size-card-title:20px;--size-body:16px;--size-small:13px;
+--size-page-title:34px;--size-section-title:24px;--size-card-title:20px;--size-body:16px;--size-small:13px;--size-2xs:11px;
 --size-input-min:16px;
 --weight-heading:700;--weight-text:400;--weight-label:600;
 --tracking-heading:-.01em;

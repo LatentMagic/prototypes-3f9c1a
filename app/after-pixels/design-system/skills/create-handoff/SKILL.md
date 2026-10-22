@@ -3,7 +3,7 @@ name: create-handoff
 description: Write a handoff document so a fresh session can resume the work. Use when pausing or switching context, or when the user asks for a handoff. Outputs handoff-{YYYY-MM-DD}-{topic}.md into the task's spec folder (docs/specs/<ticket-topic>/), or docs/specs/_handoffs/ for a holistic, non-task session handoff.
 metadata:
   author: LatentMagic
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # create-handoff
@@ -26,8 +26,9 @@ Summarise the context. Proceed.
 ### Phase 1 — Synthesise
 
 1. Read [handoff-template.md](assets/handoff-template.md) for the output shape.
-2. Identify the latest unresolved user intent — that is the Current Focus.
-3. Compose the frontmatter and section content for the template.
+2. List the earlier handoffs: every other `handoff-*.md` in the folder this one is written to. They go in its Earlier handoffs section, always, however many there are. A Claude Design project has no git history, so the next session reads only what the latest handoff points it at.
+3. Identify the latest unresolved user intent — that is the Current Focus.
+4. Compose the frontmatter and section content for the template.
 
 ### Phase 2 — Write
 
@@ -39,12 +40,12 @@ Tell the user the file path.
 
 ## Resuming
 
-To resume from a handoff: read the latest `handoff-*.md` in the task's spec folder (or the latest file in `docs/specs/_handoffs/` for a session handoff) and treat it as starting context — what was done, what remains, where things stand — not a spec to re-validate. Read the files it cites; don't re-read beyond them. Also skim `CLAUDE.md` (its product block names where the product's truth lives), `CHANGELOG.md` if the product has created one, and any doc the handoff names under `docs/`.
+To resume from a handoff: read the latest `handoff-*.md` in the task's spec folder (or the latest file in `docs/specs/_handoffs/` for a session handoff) and treat it as starting context — what was done, what remains, where things stand — not a spec to re-validate. Then read every earlier `handoff-*.md` in that folder, the ones it lists under Earlier handoffs and any it does not. Read the files it cites; don't re-read beyond them. Also skim `CLAUDE.md` (its product block names where the product's truth lives), `CHANGELOG.md` if the product has created one, and any doc the handoff names under `docs/`.
 
 ---
 
 ## CRITICAL: PRESERVE RESUME CONTEXT, DO NOT TRUNCATE
 
-- DO NOT omit the objective, current focus, unresolved decisions, validation state, or next action
+- DO NOT omit the objective, current focus, unresolved decisions, validation state, earlier handoffs, or next action
 - DO NOT dump code when `path:line` references or short snippets are enough
 - ONLY write the handoff file at the output path and return its path

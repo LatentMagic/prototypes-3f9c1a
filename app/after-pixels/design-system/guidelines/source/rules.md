@@ -21,7 +21,7 @@
 ## Type
 - Headings: Bricolage Grotesque 700, letter-spacing -0.01em (Google Fonts).
 - Text: Hanken Grotesk 400, and 600 for labels and buttons (Google Fonts).
-- Sizes: page title 34px, section title 24px, card title 20px, body 16px, small label 13px.
+- Sizes: page title 34px, section title 24px, card title 20px, body 16px, small label 13px, fine print 11px (only for legal lines such as the footer's company registration).
 - Inputs are 16px or larger.
 
 ## Spacing and shape
