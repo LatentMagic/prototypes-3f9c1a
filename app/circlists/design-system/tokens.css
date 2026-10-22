@@ -277,6 +277,7 @@ code, kbd, samp, pre, .mono {
 
 /* ---- Links ---- */
 a {
+  font-family: var(--font-mono);
   color: var(--color-fg-1);
   text-decoration: underline;
   text-decoration-thickness: 1px;

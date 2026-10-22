@@ -60,3 +60,7 @@ What the prototype needs to match (its own update):
 ## Other Notes
 
 The C2PA `<metadata>` block in the pack's SVGs is provenance, not geometry; don't strip it, or the files stop matching the pack.
+
+## Prototype catch-up report (2026-10-22)
+
+The prototype reported all five items done. It found one gap here: this system's bare `a` rule set no font, against `guide/foundations.md` § Links. Fixed: `tokens.css` `a` now sets JetBrains Mono, and the inline-link class on the Links and Empty state cards sets Inter.
