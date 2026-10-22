@@ -1,6 +1,6 @@
 # Game art motion and shape
 
-Decided 2026-10-09 from the playground review. The motion and shape rules apply to any game's art, whichever component draws it.
+The motion and shape rules apply to any game's art, whichever component draws it.
 
 **The five pieces below are worked examples, not the game library.** Daily Mystery, Daily Word, Daily Groups, Casebook and 36,000 Summers Ago show how to describe a piece and how it moves. They are not a catalogue of the games, and a product should not assume its games use these pieces. Real game art comes from the game's owner, and each new piece follows the describe-then-draw method.
 
@@ -72,8 +72,6 @@ No hover, so the pose plays while a finger is down on the card, as a button show
 
 ## Extending a cover
 
-Decided 2026-10-12 (docs/specs/cover-beside-heading/).
-
 **Every visual asset must declare how it extends** when its box is taller than its drawing. The declaration is written with the asset, beside its ground colour, and nothing is inferred from the picture. An asset without one can't be used where its box may change shape.
 
 - **Bottom:** the subject stands on the bottom edge. The drawing stays put on the bottom; the ground grows above it.
@@ -81,14 +79,12 @@ Decided 2026-10-12 (docs/specs/cover-beside-heading/).
 
 Either way the drawing keeps its size and shape: no stretch, no crop. A cover has one flat ground colour so it can extend.
 
-## Title on the cover (product page)
+## Title on the cover
 
-Decided 2026-10-19 (docs/specs/product-cover-title/).
-
-The product page is the only place text sits on a cover: the label and title, in light text, bottom-left. It is the strictest test of a cover, so art that passes there is safe on every other surface without a further check.
+Text sits on a cover in one place only, the page head of a single game: the label and title, in light text, bottom-left. It is the strictest test of a cover, so art that passes there is safe on every other surface without a further check.
 
 - **Light shapes stay in the right half.** Cream and the other light cover colours sit in the right half of the drawing.
-- **The test:** each cover with its real label and title, at every width the product page reaches, phone to wide desktop. No text touches a shape it fails AA against.
+- **The test:** each cover with its real label and title, at every width that page reaches, phone to wide desktop. No text touches a shape it fails AA against.
 - **A fail is fixed in the art.** Redraw the piece. Never change the text, and never add a scrim or a plate behind it.
 - **A new or renamed game is tested again.**
 

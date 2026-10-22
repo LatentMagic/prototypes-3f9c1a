@@ -20,8 +20,8 @@ Voice: **cold open, with a dare.** One line from inside the game, then the copy 
 Samples chosen by the owner:
 - Headline: "Someone's lying to you. Go and find out who." Under it: "Play small games by talking to Claude or ChatGPT. New ones arrive every day."
 - Murder mystery: "There's a body, a locked door and a story that doesn't add up. Make your move."
-- Pass page, "What you get": Daily Puzzles "You get short puzzles that change every day." The first scene of Delve "Start the adventure. The rest of it comes with the Pass." Full game library "Every new game joins the library on its release day." Everything you missed "Every earlier edition of the daily and weekly games is ready to play." Your record "Your results, streak and history stay with you. See where you stand."
-- Home, How it works step 3: "Get the Pass to play the full game library and keep your streak." Link: "What's included".
+- What the Pass includes: Daily Puzzles "You get short puzzles that change every day." The first scene of Delve "Start the adventure. The rest of it comes with the Pass." Full game library "Every new game joins the library on its release day." Everything you missed "Every earlier edition of the daily and weekly games is ready to play." Your record "Your results, streak and history stay with you. See where you stand."
+- A how-it-works step: "Get the Pass to play the full game library and keep your streak." Link: "What's included".
 
 Drafts, not yet seen by the owner (full list in `guidelines/source/voice.md`):
 - Nothing played: "You haven't played anything yet. Pick one and see what it does when you talk back." Button: "Choose a game".

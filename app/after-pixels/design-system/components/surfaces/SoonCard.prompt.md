@@ -1,4 +1,4 @@
-SoonCard is the Coming soon card: a game that is not out yet, or the next chapter of a game that is. They come in a pair under a row of games (Home's Available games, a game page's More games), before the "All games" link.
+SoonCard is the Coming soon card: a game that is not out yet, or the next chapter of a game that is. They come in a pair under a row of games, before the "All games" link.
 
 ```jsx
 <div className="your-pair">{/* two columns from 720px, one below */}
@@ -17,4 +17,10 @@ SoonCard is the Coming soon card: a game that is not out yet, or the next chapte
 - No Pass tag and no Free tag on a SoonCard. What the game needs is said on its page.
 - The cover is always `Cover fill` with the asset's ground and extend, so it grows to the card's height without stretching or cropping (game-art-motion.md "Extending a cover"). The pair shares one height, so both covers extend together. A cover has no motion here: the card is not pressable (game-art-motion.md "When art moves").
 - The chips share one row: Coming soon first, then the play chip. They wrap only when the row is too narrow (a phone), and then the play chip goes under Coming soon.
-- Label, name and line run from the top; the chips sit on the card's bottom edge. The pair shares one height, so both cards' chips are on one line whatever the text above them. Decided 2026-10-15 (docs/specs/card-chip-alignment/). Don't centre the text block: the chips then follow the text and land at different heights.
+- Label, name and line run from the top; the chips sit on the card's bottom edge. The pair shares one height, so both cards' chips are on one line whatever the text above them. Don't centre the text block: the chips then follow the text and land at different heights.
+
+## In the Game Store today
+
+A note on the product as it stands, not a rule. It may be out of date; the product is the source.
+
+- The pair sits under Home's Available games and a game page's More games.

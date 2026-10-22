@@ -1,4 +1,4 @@
-ListRow is one thing in a list of things that each open: plays, editions, games, saves. A clickable Card is for one thing that stands alone; a ListRow is for many of the same kind. Settled in canonical-row round 4 (19E, 2026-10-15); `docs/specs/canonical-row/` has the reasoning.
+ListRow is one thing in a list of things that each open: plays, editions, games, saves. A clickable Card is for one thing that stands alone; a ListRow is for many of the same kind.
 
 ```jsx
 <RowList label="Today">
