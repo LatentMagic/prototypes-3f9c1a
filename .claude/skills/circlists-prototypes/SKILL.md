@@ -35,7 +35,7 @@ Read before the code:
 |---|---|
 | `npm install && npm start` | Serve the console and prototypes at http://localhost:4321 (`PORT` overrides). Never `file://`: the module XHR fails on CORS |
 | `npm run check -- [--slug canon] [--widths 1280,390] [--states a,b] [--port 4321]` | Drive every registered state of `app/circlists/<slug>/circlists.html` and screenshot each. Fails on a module that didn't load, a blank stage, or a state that lands on the index. Caches the CDN runtime, so it runs offline |
-| `npx playwright-cli` (or `lm-tooling:playwright-cli`) | Drive one interaction by hand |
+| `npx playwright-cli` (or the `playwright-cli` skill) | Drive one interaction by hand |
 
 In a remote sandbox, follow the repo root's `CLOUD.md` first.
 </important>
