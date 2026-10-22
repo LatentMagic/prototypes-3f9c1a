@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design system audit — October 2026</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-page);color:var(--color-fg-1)}
+a{color:var(--color-fg-1)}a:hover{text-decoration-color:var(--color-fg-1)}
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(24px,5vw,64px) clamp(16px,4vw,40px) 96px}
+.eyebrow{font:500 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--color-fg-3)}
+h1{font-size:clamp(28px,5vw,40px);margin:12px 0 0;text-wrap:balance}
+.lede{font:400 17px/1.6 var(--font-sans);color:var(--color-fg-2);margin:16px 0 0;max-width:68ch;text-wrap:pretty}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:32px 0 0}
+.stat{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:16px 20px}
+.stat b{display:block;font:600 28px/1.1 var(--font-sans);letter-spacing:-.01em}
+.stat span{font:400 14px/1.4 var(--font-sans);color:var(--color-fg-2)}
+section{margin-top:56px}
+h2{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h2 .n{font:500 14px var(--font-mono);color:var(--color-fg-3)}
+.sec-lede{font:400 15px/1.6 var(--font-sans);color:var(--color-fg-2);margin:8px 0 0;max-width:72ch;text-wrap:pretty}
+.rows{margin-top:20px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);overflow:hidden}
+.row{display:grid;grid-template-columns:88px minmax(0,1fr) minmax(0,1fr);gap:8px 20px;padding:14px 20px;border-top:1px solid var(--color-border-2)}
+.row:first-child{border-top:0}
+.row.head{background:var(--color-surface-sunken);font:500 12px/1.4 var(--font-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--color-fg-3)}
+.row p{margin:0;font:400 14.5px/1.5 var(--font-sans);text-wrap:pretty}
+.row p.what{font-weight:600}
+.row .src{display:block;margin-top:4px;font:400 12.5px/1.5 var(--font-mono);color:var(--color-fg-3)}
+.sev{font:500 12px/1 var(--font-mono);letter-spacing:.02em;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--color-border-1);align-self:start;justify-self:start;color:var(--color-fg-1);background:var(--color-surface)}
+.sev.wrong{border-color:var(--color-destructive);color:var(--color-destructive)}
+.sev.missing{border-color:var(--color-fg-1)}
+.sev.stale{color:var(--color-fg-2)}
+.sev.ask{border-style:dashed;color:var(--color-fg-2)}
+code{font:400 .9em var(--font-mono);background:var(--color-surface-sunken);border-radius:3px;padding:1px 5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font:500 12px/1 var(--font-mono);padding:6px 8px;border-radius:var(--radius-sm);background:var(--color-surface-sunken);color:var(--color-fg-1)}
+.chip.have{background:transparent;border:1px solid var(--color-border-1);color:var(--color-fg-3);text-decoration:line-through}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:20px}
+.step{background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:20px}
+.step .k{font:500 12px var(--font-mono);color:var(--color-fg-3)}
+.step h3{margin:6px 0 10px;font-size:18px}
+.step ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font:400 14px/1.5 var(--font-sans);color:var(--color-fg-1)}
+.ask-box{margin-top:20px;background:var(--color-surface);border:1px solid var(--color-fg-1);border-radius:var(--radius-lg);padding:20px 24px}
+.ask-box p{margin:0;font:400 15px/1.6 var(--font-sans);max-width:72ch}
+.ask-box p + p{margin-top:10px}
+@media (max-width:720px){.row{grid-template-columns:minmax(0,1fr)}.row.head{display:none}.row p.now::before{content:"This DS: ";font-weight:600;color:var(--color-fg-3)}.row p.live::before{content:"Live: ";font-weight:600;color:var(--color-fg-3)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">Audit · 5 October 2026</div>
+<h1>Design system vs. the live Circlists build</h1>
+<p class="lede"><b>Update, 5 Oct:</b> phases 1–3 have landed. The rename, brand pack, tokens and docs are done; the v1 kit and copied specs are removed; 35 cards are rebuilt. The findings below are kept as the record. Still open: components for the rest of <code>ui.md</code>'s Component vocabulary, and the upstream conflicts logged here.</p>
+<p class="lede">This design system was last touched in April, before the July rebrand. It still describes LatentPulse v1. The prototype (<code>circlists.html</code> + <code>tokens.css</code> + <code>brand/</code>), the monorepo PRD, the governance UI standard and the wiki copy voice were read live today. Each finding below sets what this system says against what is live, with the source it came from.</p>
+<div class="summary">
+<div class="stat"><b>LatentPulse</b><span>Name used in the README, SKILL, CSS header, kit folder and logo files</span></div>
+<div class="stat"><b>0</b><span>Components the compiler exposes; consuming projects get tokens only</span></div>
+<div class="stat"><b>7</b><span>Token values or names that differ from the prototype's <code>tokens.css</code></span></div>
+<div class="stat"><b>~20</b><span>Shipped patterns with no card or component here</span></div>
+</div>
+
+<section>
+<h2><span class="n">01</span>Identity and brand</h2>
+<p class="sec-lede">The brand pack in the prototype's <code>brand/</code> mirrors the wiki and is the source of truth. None of it is here.</p>
+<div class="rows">
+<div class="row head"><span>Status</span><span>This DS</span><span>Live</span></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Product called LatentPulse, units called "spaces" and "squads"</p><p class="live">Circlists since 7 Jul 2026. The unit is a circle. "Space" is not our word.<span class="src">CHANGELOG · Rebrand; wiki circlists-copy-voice.md</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">First-pass placeholder logos (<code>latentpulse-mark.svg</code> doesn't decode); no favicon</p><p class="live">Mark: sage halo <code>#8BBFAD</code> → white ring → emerald disc. Outlined wordmark with green tittle on the second i. Lockup, reversed variants, favicon.svg/.ico/16/32, apple-touch, icon-192/512 (any), maskable-192/512, notification-badge.<span class="src">brand/circlists-brand.md §2–4, brand/assets/</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No brand motion</p><p class="live">Three treatments: pulse (rail mark), spinner (the loading state, 100px), micro (live-signal dot). All freeze under reduced motion.<span class="src">brand/motion/circlists-motion.md</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No <code>thumbnail.html</code>; project tile is blank</p><p class="live">Needs the mark on emerald with a swatch strip.<span class="src">check_design_system</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Type note: Inter for UI, Mono for domains only</p><p class="live">Mono also carries the Champion marker, status pills ("Coming soon"), section labels and link URLs.<span class="src">brand/circlists-brand.md §5</span></p></div>
+</div>
+</section>
+
+<section>
+<h2><span class="n">02</span>Tokens</h2>
+<p class="sec-lede"><code>colors_and_type.css</code> here vs. <code>tokens.css</code> in the prototype. The structure matches; the prototype has moved on.</p>
+<div class="rows">
+<div class="row head"><span>Status</span><span>This DS</span><span>Live</span></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now"><code>--color-fg-3: #8A8A87</code></p><p class="live"><code>#6E6E6B</code>. Raised to clear AA 4.5:1 on cream and white.<span class="src">tokens.css</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No sage, no new-words, no mid border</p><p class="live"><code>--color-sage #8BBFAD</code> (the mark's halo and arrival wash), <code>--color-new-words #5E9C86</code> (unseen-comment tab; sage fails 1.4.11), <code>--color-border-3 #949490</code> (3:1 resting UI, e.g. switch-off track).<span class="src">tokens.css</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Teal and hunter listed as "Approved fallbacks"</p><p class="live">"NOT approved fallbacks. Never use without raising it to the user first."<span class="src">tokens.css</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">JetBrains Mono loaded 400–600; no <code>::selection</code> rule</p><p class="live">Mono 400–700; selection is accent with inverse text.<span class="src">tokens.css</span></p></div>
+<div class="row"><span class="sev ask">To ratify</span><p class="what now">Values the app hard-codes, with no token</p><p class="live">Press fill <code>#E8E8E5</code> (repeats border-2), thought-card paper <code>#EEEDE5</code>/<code>#CFCDC2</code>, arrival wash <code>rgba(139,191,173,.34)</code>, <code>--color-accent-strong</code> (referenced, never defined), durations 240/300/400/560/2400ms, breakpoints 520/640/760/1024.<span class="src">circlists.html &lt;style&gt;, swell.css</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Five motion tokens unclassified by the compiler</p><p class="live">Needs <code>/* @kind other */</code> markers. File could be renamed <code>tokens.css</code> so it drops into the prototype unchanged.<span class="src">check_design_system</span></p></div>
+</div>
+</section>
+
+<section>
+<h2><span class="n">03</span>Components</h2>
+<p class="sec-lede">The compiler finds six kit files but exposes none, because none have a <code>.d.ts</code> and an exported function. Separately, the kit draws the April v1 flow. Struck-through chips exist here today, though in a superseded form.</p>
+<div class="rows">
+<div class="row head"><span>Status</span><span>This DS</span><span>Live</span></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">Buttons: primary and secondary cards only</p><p class="live">Six variants: primary, secondary, tertiary, destructive, destructive-secondary, ghost. Three sizes: sm 36, md 44, lg 52. Loading spinner in the face; disabled at 45%.<span class="src">app/primitives.jsx Button</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No form primitives</p><p class="live">Field (label, hint, inline error with icon, mono variant, 16px input floor), search field (focus on the row, not the input), plan radio, segmented control, checkbox rows, switch.<span class="src">primitives.jsx, feed-lens.jsx, pricing-*.jsx</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Mark-as-read confirm dialog</p><p class="live">Replaced by the Swell: five glyphs × depth. The control reads "Mark as done". Delete has two reaches (your list / whole circle), both destructive-secondary, with Cancel focused.<span class="src">CHANGELOG · Swell, Delete two reaches; prd.md Feed</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Feed card: URL, attribution, content-type badge</p><p class="live">Enriched card with source line, title, right-hand preview and optional favicon. Pending skeleton; failed extraction shows the URL in mono. Comfortable and compact density. Kebab holds Share/Save/Delete. Watched corner, tucked thought band. No content-type badges, no tint block.<span class="src">app/feed.jsx header</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Tabs Active / Read; FAB never on Read</p><p class="live">Active / History. Add floats on both tabs and confirms with a drawn tick.<span class="src">prd.md Feed; CHANGELOG biz-83, LM-786</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Add popover at every width</p><p class="live">Overlays adapt. Bottom sheet on a phone; popover or centred modal from 640px.<span class="src">ui-design.md Adaptive by exception; CHANGELOG 14 Sep</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">Shipped patterns with no card</p><p class="live"><span class="chips"><span class="chip">Icon (33 glyphs)</span><span class="chip">Avatar</span><span class="chip">LogoMark / Wordmark</span><span class="chip">BrandSpinner · AppLoading</span><span class="chip">Swell reaction</span><span class="chip">Comment reaction pill</span><span class="chip">New pill</span><span class="chip">Waterline · end line</span><span class="chip">Failed-load foot</span><span class="chip">Returns bar</span><span class="chip">Push-ask banner</span><span class="chip">Invite card</span><span class="chip">Lens panel · filter chips</span><span class="chip">Card menu</span><span class="chip">Door link</span><span class="chip">Dormant screen</span><span class="chip">Wizard shell</span><span class="chip">Account / funding card</span><span class="chip">Plan picker · pricing pill</span><span class="chip">App bottom bar · push layers</span><span class="chip have">Space header</span><span class="chip have">Empty state</span></span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Icon files: 19, including article/paper/podcast/video</p><p class="live">The app's inline set adds arrow-right, menu-open, chevron-down, settings, card, crown, edit, more-vertical, logout, lock, mail, google, shield, feed, circles, home, sparkle, bookmark(+filled), bell(+filled). The content-type glyphs are unused.<span class="src">app/primitives.jsx LP_ICONS</span></p></div>
+</div>
+</section>
+
+<section>
+<h2><span class="n">04</span>Rules, copy and docs</h2>
+<div class="rows">
+<div class="row head"><span>Status</span><span>This DS</span><span>Live</span></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Destructive red "in exactly one place"</p><p class="live">Destructive actions signal themselves, in proportion to the consequence (Leave, both Delete reaches, Cancel funding, Delete account).<span class="src">ui-design.md Affordances</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">Vocabulary: queue, Read tab, mark as read; "bookmark, save" banned</p><p class="live">"List" over "queue". Tabs are Active and History. Control reads "Mark as done"; cards are waiting or finished. Save is a shipped feature (CIRC-046).<span class="src">wiki copy voice; prd.md Feed wording rule</span></p></div>
+<div class="row"><span class="sev ask">To ratify</span><p class="what now">Empty Active reads "You're caught up."</p><p class="live">The wiki voice says never "catch up". The PRD still says "You're caught up" under Composed relief. These conflict upstream.<span class="src">wiki copy voice vs prd.md Emotional intent</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Invites "last 7 days", sent by the app</p><p class="live">Champion gets a link bound to an email address. Valid 30 days. No outbound mail.<span class="src">CHANGELOG 28 Aug</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No governance section</p><p class="live">Binding cross-app law: pointer cursor, touch floor, 16px input floor, prefer a statement over a disabled control, non-flicker loading, deferred validation, focus restoration, no overhanging line, consistent width, fill by arranging rather than stretching.<span class="src">specs/governance/standards/ui-design.md</span></p></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now"><code>source/</code> holds copies of the April PRD and UX spec</p><p class="live">House rule: never copy specs in, read them live. The PRD now has CIRC-001–051; the old copy has 45 FRs.<span class="src">prototype CLAUDE.md; github.md</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No <code>github.md</code>, no link to the prototype or console</p><p class="live">Four-repo context (business-ops, monorepo, wiki, prototypes-3f9c1a) is recorded in the prototype's <code>github.md</code>.<span class="src">prototype github.md</span></p></div>
+</div>
+</section>
+
+<section>
+<h2><span class="n">05</span>From <code>ui.md</code> (read in full, 5 Oct)</h2>
+<p class="sec-lede">Order of truth (ratified 5 Oct, recorded in <code>CLAUDE.md</code>): monorepo specs, then the prototype, then this system. The prototype can lag the deployed app on purpose, so the spec wins a conflict. This system is downstream for now and should move upstream later.</p>
+<div class="rows">
+<div class="row head"><span>Status</span><span>This DS / prototype</span><span>ui.md</span></div>
+<div class="row"><span class="sev wrong">Wrong</span><p class="what now">"No emoji. Anywhere."</p><p class="live">The five reaction glyphs are emoji. They are the one sanctioned multi-colour vocabulary: muted on the pad at rest, full colour on the record, pills, glyph stacks and who-reacted.<span class="src">ui.md Design language → Reaction glyphs</span></p></div>
+<div class="row"><span class="sev wrong">Spec wins</span><p class="what now">Prototype thought paper: <code>#EEEDE5</code> on hover (darkens), border <code>#CFCDC2</code></p><p class="live">Paper <code>#f2f1eb</code>, hover <code>#f8f7f4</code> (lightens), border <code>#dedcd3</code>, border-hover <code>#cfcdc2</code>. The prototype and the spec disagree on the hover direction. This system takes the spec values. The prototype lag goes back upstream.<span class="src">ui.md Design tokens</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Touch target 44px everywhere</p><p class="live">44px for primary controls, 24px for dense secondary displays (e.g. the reaction roster). Inline links are exempt and take the size of the sentence they sit in.<span class="src">ui.md Design tokens → Touch target</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">One 1024px breakpoint</p><p class="live">Four adaptive boundaries: who-reacted 520, Add reveal 640, circle switcher and Swell 1024. Confirm dialogs never become sheets.<span class="src">ui.md Patterns → Responsive</span></p></div>
+<div class="row"><span class="sev missing">Missing</span><p class="what now">No component index</p><p class="live">The Component vocabulary names about 45 parts: switch, step dots, back control, challenge dialog, form dialog, one-time code entry, capped writing field, edited marker, way-through mark, reaction door, copy control, checklist row, chip, search trigger, glyph choice, rail-slot receipt, and more. This becomes the component list for this system.<span class="src">ui.md Component vocabulary</span></p></div>
+<div class="row"><span class="sev stale">Stale</span><p class="what now">Loading: unspecified</p><p class="live">There is one standalone indicator, the brand spinner, at three scales (full-viewport, in-panel, in-control). There is no placeholder-card skeleton, and the brand spinner never appears inside a button.<span class="src">ui.md Patterns → State → Loading</span></p></div>
+</div>
+</section>
+
+<section>
+<h2><span class="n">06</span>Proposed order of work</h2>
+<p class="sec-lede">Each phase is self-contained and gets ratified before it starts. Nothing in this audit has been applied.</p>
+<div class="plan">
+<div class="step"><div class="k">Phase 1</div><h3>Identity</h3><ul><li>Rename to Circlists Design System</li><li>Mirror <code>brand/assets</code> + motion, delete placeholder logos</li><li>Write <code>thumbnail.html</code></li><li>Rename kit to <code>ui_kits/circlists-app/</code></li></ul></div>
+<div class="step"><div class="k">Phase 2</div><h3>Tokens</h3><ul><li>Adopt the prototype's <code>tokens.css</code> verbatim</li><li>Add <code>@kind</code> markers</li><li>Hard-coded values: propose names, you ratify</li></ul></div>
+<div class="step"><div class="k">Phase 3</div><h3>Docs</h3><ul><li>Rewrite README and SKILL as an index that points to live specs</li><li>Remove <code>source/</code> copies; add <code>github.md</code></li><li>Governance and vocabulary sections</li></ul></div>
+<div class="step"><div class="k">Phase 4</div><h3>Primitives</h3><ul><li>Button, Field, Icon, Avatar, LogoMark, Wordmark, BrandSpinner as compiled components, lifted from <code>app/primitives.jsx</code></li><li>One card each</li></ul></div>
+<div class="step"><div class="k">Phase 5</div><h3>Patterns</h3><ul><li>Feed card, Delete dialog, adaptive sheet/modal, tabs, New pill, waterline, door link, invite card, push ask, lens</li><li>Retire the v1 cards</li></ul></div>
+</div>
+<div class="ask-box">
+<p><b>Ratified 5 Oct.</b> Monorepo specs come first, then the prototype, then this system. Conflicts are resolved toward the spec and logged here. The prototype is never edited from this project.</p>
+<p>To keep this current, <code>ui.md</code> is copied in temporarily, read in full and deleted in the same turn. No copy stays in the project.</p>
+</div>
+</section>
+</div>
+</body>
+</html>

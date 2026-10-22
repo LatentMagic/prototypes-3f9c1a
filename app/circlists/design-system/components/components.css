@@ -1,0 +1,20 @@
+/* Pseudo-states for the compiled components. Lifted from the Circlists prototype (circlists.html). */
+.circ-btn[aria-busy="true"]{cursor:default!important}
+.circ-btn-primary:hover:not(:disabled):not([aria-busy="true"]){background:var(--color-accent-hover)!important}
+.circ-btn-primary:active:not(:disabled):not([aria-busy="true"]){background:var(--color-accent-press)!important}
+.circ-btn-secondary:hover:not(:disabled):not([aria-busy="true"]),.circ-btn-destructive-secondary:hover:not(:disabled):not([aria-busy="true"]){background:var(--color-surface-sunken)!important}
+.circ-btn-secondary:active:not(:disabled):not([aria-busy="true"]),.circ-btn-destructive-secondary:active:not(:disabled):not([aria-busy="true"]){background:var(--color-surface-press)!important}
+.circ-btn-destructive:hover:not(:disabled):not([aria-busy="true"]){background:var(--color-destructive-hover)!important}
+.circ-btn-destructive:active:not(:disabled):not([aria-busy="true"]){background:var(--color-destructive-press)!important}
+.circ-btn-tertiary:hover{text-decoration:underline}
+.circ-spin{display:inline-block;border-style:solid;border-width:2px;border-radius:50%;animation:circ-spin 700ms linear infinite;flex-shrink:0}
+@keyframes circ-spin{to{transform:rotate(360deg)}}
+.circ-ov-item:hover{background:var(--color-surface-sunken)}.circ-ov-item:active{background:var(--color-surface-press)}.circ-ov-item:focus-visible{outline-offset:-2px}
+.circ-ov-fade{animation:circ-ov-fade var(--duration-slow) var(--ease-quiet)}
+.circ-ov-pop{animation:circ-ov-pop var(--duration-slow) var(--ease-quiet);transform-origin:top center}
+.circ-ov-sheet{animation:circ-ov-sheet var(--duration-slow) var(--ease-quiet)}
+@keyframes circ-ov-fade{from{opacity:0}}
+@keyframes circ-ov-pop{from{opacity:0;transform:scale(.97)}}
+@keyframes circ-ov-sheet{from{transform:translateY(100%)}}
+input:focus-visible{outline-offset:0;border-color:var(--color-accent)!important}
+@media (prefers-reduced-motion:reduce){.circ-spin{animation-duration:2000ms}}

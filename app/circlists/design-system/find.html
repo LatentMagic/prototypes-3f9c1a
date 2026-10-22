@@ -1,0 +1,102 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Find · Circlists design system</title><link rel="icon" href="assets/brand/icons/favicon.svg"><link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0}
+a{color:var(--color-fg-1)}a:hover{color:var(--color-fg-1)}
+main{max-width:860px;margin:0 auto;padding:40px 20px 96px;display:grid;gap:20px}
+.top{display:flex;align-items:center;gap:12px}
+.top img{width:28px;height:28px}
+h1{margin:0;font:var(--weight-semibold) var(--text-3xl)/var(--leading-tight) var(--font-sans);letter-spacing:var(--tracking-tight)}
+.intro{margin:0;color:var(--color-fg-2);font:var(--weight-regular) var(--text-base)/var(--leading-normal) var(--font-sans);max-width:60ch;text-wrap:pretty}
+.q{width:100%;height:48px;padding:0 14px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-sm);color:var(--color-fg-1);font:var(--weight-regular) 16px/1 var(--font-sans)}
+.q:focus-visible{outline:var(--ring-width) solid var(--color-accent);outline-offset:var(--ring-offset)}
+.kinds{display:flex;flex-wrap:wrap;gap:8px}
+.kinds button{min-height:var(--tap-target-min);padding:0 14px;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-md);color:var(--color-fg-2);font:var(--weight-medium) var(--text-sm)/1 var(--font-sans);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background var(--duration-base) var(--ease-quiet)}
+.kinds button:hover{background:var(--color-surface-sunken)}
+.kinds button:active{background:var(--color-surface-press)}
+.kinds button[aria-pressed="true"]{border-color:var(--color-accent);color:var(--color-accent)}
+.kinds .n{font:var(--weight-medium) var(--text-xs)/1 var(--font-mono);color:var(--color-fg-3)}
+.kinds button[aria-pressed="true"] .n{color:var(--color-accent)}
+.sec{display:grid}
+.sec h2{display:flex;align-items:baseline;gap:10px;margin:16px 0 8px;font:var(--weight-semibold) var(--text-lg)/var(--leading-snug) var(--font-sans)}
+.sec h2 span{font:var(--weight-medium) var(--text-xs)/1 var(--font-mono);color:var(--color-fg-3)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:2px 16px;min-height:var(--tap-target-min);padding:10px 8px;margin:0 -8px;border-top:1px solid var(--color-border-2);text-decoration:none;border-radius:var(--radius-sm);transition:background var(--duration-base) var(--ease-quiet)}
+.row:hover{background:var(--color-surface-sunken)}
+.row:hover .nm{text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.nm{font:var(--weight-semibold) var(--text-base)/var(--leading-snug) var(--font-sans);min-width:0;overflow-wrap:anywhere;display:flex;align-items:center;gap:8px}
+.where{font:var(--weight-regular) var(--text-xs)/var(--leading-normal) var(--font-mono);color:var(--color-fg-3);text-align:right;overflow-wrap:anywhere}
+.sub{grid-column:1/-1;font:var(--weight-regular) var(--text-sm)/var(--leading-normal) var(--font-sans);color:var(--color-fg-2);overflow-wrap:anywhere}
+.sw{flex:none;width:14px;height:14px;border-radius:var(--radius-sm);border:1px solid var(--color-border-1)}
+code{font:var(--weight-medium) var(--text-sm)/1.3 var(--font-mono)}
+.empty{margin:8px 0 0;color:var(--color-fg-3);font:var(--weight-regular) var(--text-sm)/var(--leading-normal) var(--font-sans)}
+.more{justify-self:start;margin-top:8px;min-height:var(--tap-target-min);padding:0;background:none;border:0;font:var(--weight-medium) var(--text-sm)/1 var(--font-mono);color:var(--color-fg-1);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;text-decoration-color:var(--color-border-1);cursor:pointer}
+.more:hover{text-decoration-color:var(--color-fg-1)}
+@media (max-width:520px){main{padding:28px 16px 72px}.row{grid-template-columns:minmax(0,1fr)}.where{text-align:left;grid-row:3}}
+</style></head><body><main>
+<div class="top"><img src="assets/brand/mark/circlists-mark.svg" alt=""><h1>Find</h1></div>
+<p class="intro">Search every card, component, token and guide in the Circlists design system. The list is read from the files themselves, so anything new turns up here without editing this page.</p>
+<input class="q" id="q" type="search" placeholder="Try accent, dialog, 16px, links" aria-label="Search the design system" autocomplete="off">
+<div class="kinds" id="kinds" role="group" aria-label="Show"></div>
+<div id="out" aria-live="polite"></div>
+</main>
+<script>
+const KINDS=[['All','All'],['Card','Cards'],['Component','Components'],['Token','Tokens'],['Guide','Guides']];
+const ORDER=['Guide','Component','Card','Token'];
+const TOKEN_PREVIEW=12;
+let items=[],kind='All',showAllTokens=false;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+// Guides: the README's Guides list is the index of guide/; each file's own heading and first line describe it.
+async function loadGuides(){
+  const md=await fetch('README.md').then(r=>r.ok?r.text():'');
+  const paths=[...new Set([...md.matchAll(/\]\((guide\/[^)\s]+\.md)\)/g)].map(m=>m[1]))];
+  return Promise.all(paths.map(async p=>{
+    const t=await fetch(p).then(r=>r.ok?r.text():'').catch(()=>'');
+    const h=(t.match(/^#\s+(.+)$/m)||[])[1]||p.replace(/^guide\/|\.md$/g,'');
+    const heads=[...t.matchAll(/^##\s+(.+)$/gm)].map(m=>m[1]).join(' · ');
+    const first=(t.split('\n').find(l=>l.trim()&&!l.startsWith('#'))||'').replace(/[`*]/g,'');
+    return {kind:'Guide',name:h,sub:heads||first,path:p,where:p,text:t.toLowerCase()};
+  }));
+}
+async function load(){
+  const [m,guides]=await Promise.all([fetch('_ds_manifest.json').then(r=>r.json()),loadGuides().catch(()=>[])]);
+  const cards=m.cards.map(c=>({kind:'Card',name:c.name,sub:c.subtitle,path:c.path,where:c.group}));
+  const comps=m.components.map(c=>{
+    const dir=c.sourcePath.replace(/[^/]+$/,'');
+    const own=m.cards.filter(k=>k.path.startsWith(dir));
+    const hit=own.find(k=>k.name===c.name)||own[0];
+    return {kind:'Component',name:c.name,sub:hit?'Shown on the '+hit.name+' card':'',path:hit?hit.path:c.sourcePath,where:c.sourcePath};
+  });
+  const toks=m.tokens.map(t=>({kind:'Token',name:t.name,sub:t.value,path:t.definedIn,where:t.kind,color:t.kind==='color'?t.value:null}));
+  items=[...guides,...comps,...cards,...toks];
+  renderKinds();render();
+}
+load().catch(()=>{$('out').innerHTML='<p class="empty">Couldn’t load the design system’s file list. Open this page from the project, not as a lone file.</p>';});
+
+function renderKinds(){
+  const count=k=>k==='All'?items.length:items.filter(i=>i.kind===k).length;
+  $('kinds').innerHTML=KINDS.map(([k,l])=>`<button type="button" data-k="${k}" aria-pressed="${k===kind}">${l}<span class="n">${count(k)}</span></button>`).join('');
+}
+$('kinds').onclick=e=>{const b=e.target.closest('button');if(!b)return;kind=b.dataset.k;showAllTokens=false;$('kinds').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===kind));render();};
+$('q').oninput=()=>{showAllTokens=false;render();};
+$('out').onclick=e=>{if(e.target.closest('.more')){showAllTokens=true;render();}};
+
+const norm=s=>s.toLowerCase().replace(/colou?r/g,'color').replace(/[^a-z0-9#.%-]+/g,' ');
+function render(){
+  const words=norm($('q').value).split(' ').filter(Boolean);
+  const hay=i=>norm(i.kind+' '+i.name+' '+i.sub+' '+i.where+' '+(i.text||''));
+  const list=items.filter(i=>(kind==='All'||i.kind===kind)&&words.every(w=>hay(i).includes(w)));
+  const html=ORDER.map(k=>{
+    const rows=list.filter(i=>i.kind===k);if(!rows.length)return '';
+    const clip=k==='Token'&&kind==='All'&&!words.length&&!showAllTokens;
+    const shown=clip?rows.slice(0,TOKEN_PREVIEW):rows;
+    return `<section class="sec"><h2>${KINDS.find(x=>x[0]===k)[1]}<span>${rows.length}</span></h2>${shown.map(i=>row(i,k)).join('')}${clip&&rows.length>TOKEN_PREVIEW?`<button type="button" class="more">Show all ${rows.length} tokens</button>`:''}</section>`;
+  }).join('');
+  $('out').innerHTML=html||'<p class="empty">Nothing matches. Try fewer words.</p>';
+}
+function row(i,k){
+  const tok=k==='Token';
+  return `<a class="row" href="${esc(i.path)}"><span class="nm">${i.color?`<span class="sw" style="background:${esc(i.color)}"></span>`:''}${tok?'<code>'+esc(i.name)+'</code>':esc(i.name)}</span><span class="where">${esc(i.where)}</span>${i.sub?`<span class="sub">${tok?'<code>'+esc(i.sub)+'</code>':esc(i.sub)}</span>`:''}</a>`;
+}
+</script></body></html>

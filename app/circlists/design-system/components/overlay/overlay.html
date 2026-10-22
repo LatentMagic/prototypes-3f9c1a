@@ -1,0 +1,43 @@
+<!-- @dsCard group="Components" viewport="900x1480" name="Overlay" subtitle="Dialog, Menu, Panel · only the panel changes shape on a phone" -->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../tokens.css">
+<style>*{box-sizing:border-box}body{margin:0;padding:24px;background:var(--color-page)}.row{display:grid;grid-template-columns:300px 1fr;gap:16px;margin-bottom:28px}.hd{grid-column:1/-1;display:flex;align-items:baseline;gap:12px}.k{font:600 var(--text-lg)/1.3 var(--font-sans);margin:0}.r{font:400 13px/1.4 var(--font-sans);color:var(--color-fg-2);margin:0}.l{font:500 11px/1.3 var(--font-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--color-fg-3);margin:0 0 6px}.f{position:relative;height:420px;border:1px solid var(--color-border-1);border-radius:var(--radius-lg);background:var(--color-page);overflow:hidden}.bar{height:48px;border-bottom:1px solid var(--color-border-2);background:var(--color-surface);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font:600 15px var(--font-sans)}.feed{padding:12px;display:flex;flex-direction:column;gap:10px}.card{position:relative;background:var(--color-surface);border:1px solid var(--color-border-1);border-radius:var(--radius-lg);padding:14px 44px 14px 14px;font:600 15px/1.35 var(--font-sans)}.card small{display:block;font:500 12px var(--font-mono);color:var(--color-fg-3);margin-top:6px}.more{position:absolute;top:6px;right:6px}.ib{width:36px;height:36px;display:grid;place-items:center;border:0;background:transparent;border-radius:var(--radius-md);color:var(--color-fg-2);cursor:pointer}.pill{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border:1px solid var(--color-border-1);border-radius:var(--radius-pill);background:var(--color-surface);font:500 13px var(--font-sans);cursor:pointer}.who{display:flex;flex-direction:column}.wr{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 4px;border:0;border-bottom:1px solid var(--color-border-2);background:transparent;font:500 15px var(--font-sans);color:var(--color-fg-1);text-align:left;width:100%}.wr:last-child{border-bottom:0}button.wr{cursor:pointer}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head><body><div id="root"></div>
+<script>
+const NS=window.LatentPulseDesignSystemV010_019dca;const h=React.createElement;
+const {Button,Icon,Dialog,Menu,MenuItem,MenuSeparator,Panel}=NS;
+const noop=()=>{};
+function Feed({more,anchor}){return h('div',{className:'feed'},
+ h('div',{className:'card'},'The slow art of reading together, apart',h('small',null,'aeon.co'),
+  h('div',{className:'more'},h('button',{className:'ib',ref:anchor,'aria-label':'Actions','aria-haspopup':'menu','aria-expanded':!!more},h(Icon,{name:'more-vertical',size:18})),more)),
+ h('div',{className:'card'},'How small groups decide what to read',h('small',null,'youtube.com')));}
+function Bar({right}){return h('div',{className:'bar'},'Book club',right);}
+function Frame({label,children,w}){return h('div',null,h('p',{className:'l'},label),h('div',{className:'f',style:w?{width:w}:null},children));}
+function DialogBox(){return h(Dialog,{contained:true,onClose:noop,title:'Delete this link?',description:'It goes from your list. Everyone else keeps it.',width:340,
+ actions:h('div',{style:{display:'flex',flexDirection:'column',gap:8,width:'100%'}},h(Button,{variant:'destructive-secondary',full:true},'Delete for me'),h(Button,{variant:'secondary',full:true},'Cancel'))});}
+function MenuBox({anchor}){return h(Menu,{label:'Actions for The slow art of reading together, apart',anchorRef:anchor,onClose:noop},
+ h(MenuItem,{icon:h(Icon,{name:'share',size:16})},'Share'),h(MenuItem,{icon:h(Icon,{name:'edit',size:16})},'Edit title'),h(MenuSeparator),h(MenuItem,{destructive:true,icon:h(Icon,{name:'trash',size:16})},'Delete'));}
+function Who(){return h('div',{className:'who'},
+ h('button',{className:'wr','aria-label':'Remove your reaction'},h('span',null,'You'),h('span',{'aria-hidden':true},'\u2764\uFE0F')),
+ ...[['Maya','\uD83D\uDD25'],['Tom','\uD83D\uDCA1'],['Priya','\uD83D\uDC4D'],['Former member','\uD83D\uDE02']].map(([n,g])=>h('div',{className:'wr',key:n},h('span',null,n),h('span',{'aria-hidden':true},g))));}
+function Pill({anchor,children}){return h('div',{style:{position:'relative',display:'inline-block'}},h('button',{className:'pill',ref:anchor,'aria-haspopup':'dialog','aria-expanded':true},'\u2764\uFE0F\uD83D\uDD25\uD83D\uDCA1 5'),children);}
+function Comment({pill}){return h('div',{className:'feed'},h('div',{className:'card',style:{fontWeight:400,paddingRight:14}},h('b',null,'Maya'),h('p',{style:{margin:'4px 0 10px',fontSize:15}},'The part about reading at your own pace is the whole point.'),pill));}
+function Row({kind,rule,phone,desk}){return h('div',{className:'row'},h('div',{className:'hd'},h('h2',{className:'k'},kind),h('p',{className:'r'},rule)),phone,desk);}
+function App(){const a1=React.useRef(null),a2=React.useRef(null),p1=React.useRef(null),p2=React.useRef(null);
+return h('div',null,
+ h(Row,{kind:'Dialog',rule:'One question or one short edit. Centred at every width, never scrolls.',
+  phone:h(Frame,{label:'phone · 320'},h(Bar),h(Feed),h(DialogBox)),
+  desk:h(Frame,{label:'desktop · 1024+'},h(Bar),h(Feed),h(DialogBox))}),
+ h(Row,{kind:'Menu',rule:'A short list of commands. Opens at its control at every width.',
+  phone:h(Frame,{label:'phone · 320'},h(Bar),h(Feed,{anchor:a1,more:h(MenuBox,{anchor:a1})})),
+  desk:h(Frame,{label:'desktop · 1024+'},h(Bar),h(Feed,{anchor:a2,more:h(MenuBox,{anchor:a2})}))}),
+ h(Row,{kind:'Panel',rule:'Who reacted, swapping at 520. A bottom sheet below; anchored to its control above.',
+  phone:h(Frame,{label:'phone · below 520'},h(Bar),h(Comment,{pill:h(Pill,{anchor:p1})})
+   ,h(Panel,{contained:true,force:'sheet',title:'Reactions',anchorRef:p1,onClose:noop},h(Who))),
+  desk:h(Frame,{label:'desktop · 520+ · anchored'},h(Bar),h(Comment,{pill:h(Pill,{anchor:p2},h(Panel,{force:'desktop',desktop:'anchored',align:'start',width:300,style:{maxHeight:220},title:'Reactions',anchorRef:p2,onClose:noop},h(Who)))}))}));}
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script></body></html>
