@@ -20,7 +20,7 @@
     // No. 208, a lost day: all six guesses, with the hint taken after the first. The SHA_E trap: the hint gave letter 1 (S),
     // since A and E were already green, and four letters stayed in place from guess 2 to guess 6. The answer (SHAKE) only computes marks.
     'sp2-word-failed': {
-      kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'SHAKE', loss: true, hints: 1, result: 'Failed', date: 'Sunday 4 October',
+      kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'SHAKE', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
       listTitle: 'Every guess', share: 'Failed',
       lines: [['Guess 1', 'CRANE', '2 in place'], ['Hint', 'Letter 1 is S.'], ['Guess 2', 'SHADE', '4 in place'], ['Guess 3', 'SHAME', '4 in place'],
         ['Guess 4', 'SHAPE', '4 in place'], ['Guess 5', 'SHARE', '4 in place'], ['Guess 6', 'SHAVE', '4 in place']],

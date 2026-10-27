@@ -42,25 +42,29 @@
 
 /* ---- 2 Move by move ---- */
 .wd2 { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-.wd2-card { --g: 6px; --t: calc((100cqi - 32px - 4 * var(--g)) / 5); display: grid; gap: 10px; padding: 14px 16px 16px; background: var(--card); }
+.wd2-card { --g: 6px; --t: min(80px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; justify-items: center; gap: 10px; padding: 14px 16px 16px; background: var(--card); }
 .wd2-card .wd-t { font-size: calc(var(--t) * .48); }
-.wd2-k { font: 600 13px/1.2 var(--font-text); letter-spacing: .04em; color: var(--muted); }
+.wd2-k { justify-self: stretch; font: 600 13px/1.2 var(--font-text); letter-spacing: .04em; color: var(--muted); }
 .wd2-hint .wd2-k { color: var(--text); }
 .wd2-open .wd2-k { color: var(--muted); }
 .wd2-hint .wd-gap { width: 100%; }
-@container sp2 (min-width: 720px) {
+/* Two across from 560px, so a mid-width page never stacks six tall cards. */
+@container sp2 (min-width: 560px) {
   .wd2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .wd2-card { --g: 8px; --t: calc((50cqi - 6px - 48px - 4 * var(--g)) / 5); padding: 16px 24px 20px; }
+  .wd2-card { --g: 6px; --t: calc((50cqi - 6px - 32px - 4 * var(--g)) / 5); padding: 14px 16px 16px; }
   /* An odd last move takes the whole row, its tiles the same size as the rest, centred under the pair above. */
   .wd2[data-odd] > .wd2-card:last-child { grid-column: 1 / -1; justify-items: center; }
   .wd2[data-odd] > .wd2-card:last-child .wd2-k { justify-self: stretch; }
 }
+@container sp2 (min-width: 900px) {
+  .wd2-card { --g: 8px; --t: calc((50cqi - 6px - 48px - 4 * var(--g)) / 5); padding: 16px 24px 20px; }
+}
 
 /* ---- 3 On the cover's ground ---- */
 .wd3 { background: var(--wd-ground); color: var(--text); padding: 16px; display: grid; gap: 20px; justify-items: center; }
-.wd3-board { --g: 6px; --t: calc((100cqi - 32px - 4 * var(--g)) / 5); display: grid; gap: var(--g); }
+.wd3-board { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: var(--g); }
 .wd3 .wd-empty { border-color: color-mix(in srgb, var(--text) 16%, transparent); }
-.wd3-hint { --g: 6px; --t: calc((100cqi - 32px - 4 * var(--g)) / 5); display: grid; gap: 10px; justify-items: start; width: 100%; max-width: calc(5 * var(--t) + 4 * var(--g)); }
+.wd3-hint { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: 10px; justify-items: start; width: 100%; max-width: calc(5 * var(--t) + 4 * var(--g)); }
 .wd3-slots { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
 .wd3-slot { box-sizing: border-box; height: calc(var(--t) * .5); border-bottom: 3px solid color-mix(in srgb, var(--text) 22%, transparent); display: grid; place-items: center; font: 700 calc(var(--t) * .5)/1 var(--font-heading); }
 .wd3-slot.is-on { height: var(--t); border: 3px dashed var(--off-white); }
@@ -68,10 +72,15 @@
 .wd3-say b { font-weight: 700; }
 .wd3-say span + span::before { content: '· '; }
 .wd3-hint.is-none .wd3-say { color: var(--muted); }
-@container sp2 (min-width: 720px) {
-  .wd3 { grid-template-columns: auto auto; justify-content: center; align-items: center; gap: 56px; padding: 40px; }
-  .wd3-board, .wd3-hint { --g: 8px; --t: min(80px, calc((50cqi - 80px - 28px - 4 * var(--g)) / 5)); }
+/* From 600px the board and the hint share the panel in two equal halves, each filling its half (tiles up to 96px). */
+@container sp2 (min-width: 600px) {
+  .wd3 { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: start; align-items: center; gap: 32px; padding: 24px; }
+  .wd3-board, .wd3-hint { --g: 8px; --t: min(96px, calc((50cqi - 24px - 16px - 4 * var(--g)) / 5)); max-width: none; }
   .wd3-hint { gap: 16px; }
+}
+@container sp2 (min-width: 900px) {
+  .wd3 { gap: 48px; padding: 32px; }
+  .wd3-board, .wd3-hint { --t: min(96px, calc((50cqi - 32px - 24px - 4 * var(--g)) / 5)); }
   .wd3-say { flex-direction: column; font-size: 18px; }
   .wd3-say span + span::before { content: none; }
   .wd3-say b { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
