@@ -1,40 +1,46 @@
 // ============================================================================
-// Session pages 2, Daily Word: the Backgrounds sheet (?view=backgrounds). One look at several ideas for the ground behind the cover's
-// blocks and behind the board: each cell is the cover, then a three-row slice of the board with the hint (guess 2, the hint, guess 3 of
-// today's solved play). Palette A's tiles throughout, whatever the colour config says. Rejected grounds are not offered: white, cream,
-// indigo #1D1B3A, forest #163328 (owner, 2026-10-27).
+// Session pages 2, Daily Word: the Backgrounds sheet (?view=backgrounds). One look at eight ideas for the ground behind the cover's
+// blocks and behind the board: each cell is the cover, then three rows of the board with the hint (guess 2, the hint, guess 3 of
+// today's solved play). Palette A's tiles throughout, whatever the colour config says. Not offered, by the owner's rulings (2026-10-27):
+// white, cream, indigo #1D1B3A, forest #163328.
 // ============================================================================
 (function () {
-  const A = { hit: '#4CC38A', near: '#E5A63B', miss: '#918B80' };
-  // kind: 'field' (a flat ground), 'page' (no panel: the page itself), 'edge', 'frame', 'band', 'grid'.
-  // Dusk #7F8FA6 and lilac #A390B2 fields were tried and dropped: the not-in-the-word outline vanishes on them.
-  // cover: the cover's own ground where it differs from the panel's (the cover alone carrying colour).
+  const A = { hit: '#4CC38A', near: '#E5A63B', miss: '#918B80', missFill: '#37332E' };
+  // kind: 'field' (a flat ground), 'page' (no panel), 'frame', 'band' (a stripe through the middle), 'grid' (the board's own cells).
+  // fillMiss: a letter not in the word is a filled tile, so it holds on a mid-tone ground where an outline would vanish.
   const IDEAS = [
-    { id: 'plum', name: 'Plum', hex: '#421A28', kind: 'field', ground: '#421A28', note: 'the store\'s wine cover ground' },
-    { id: 'card', name: 'Card surface', hex: '#262320', kind: 'field', ground: '#262320', note: 'the store\'s card, a step off the page' },
-    { id: 'page', name: 'The page, no panel', hex: '#1B1917', kind: 'page', ground: '#1B1917', note: 'tiles straight on the page; the cover edged in the line colour' },
-    { id: 'cover-only', name: 'Cover carries colour', hex: '#421A28 / page', kind: 'page', ground: '#1B1917', cover: '#421A28', note: 'a plum cover; the board straight on the page' },
-    { id: 'edge', name: 'Line edge', hex: '#37332E on page', kind: 'edge', ground: '#1B1917', edge: '#37332E', note: 'no fill: a page-dark field marked by the store\'s line' },
-    { id: 'frame', name: 'Lilac frame', hex: '#A390B2 on page', kind: 'frame', ground: '#1B1917', edge: '#A390B2', note: 'colour as a frame round a page-dark field' },
-    { id: 'band', name: 'Teal band', hex: '#328A88 on page', kind: 'band', ground: '#1B1917', edge: '#328A88', note: 'colour as a band along the top edge' },
-    { id: 'grid', name: 'The game\'s grid', hex: '#37332E on page', kind: 'grid', ground: '#1B1917', edge: '#37332E', note: 'the ground drawn as empty tiles, the board\'s own grid' },
+    { id: 'plum', name: 'Plum', hex: '#421A28', kind: 'field', ground: '#421A28' },
+    { id: 'card', name: 'Card surface', hex: '#262320', kind: 'field', ground: '#262320' },
+    { id: 'page', name: 'The page, no panel', hex: '#1B1917', kind: 'page', ground: '#1B1917' },
+    { id: 'dusk', name: 'Dusk, filled misses', hex: '#7F8FA6', kind: 'field', ground: '#7F8FA6', light: true, fillMiss: true },
+    { id: 'lilac', name: 'Lilac, filled misses', hex: '#A390B2', kind: 'field', ground: '#A390B2', light: true, fillMiss: true },
+    { id: 'frame', name: 'Lilac frame', hex: '#A390B2 on page', kind: 'frame', ground: '#1B1917', edge: '#A390B2' },
+    { id: 'band', name: 'Teal stripe', hex: '#328A88 on page', kind: 'band', ground: '#1B1917', edge: '#328A88' },
+    { id: 'grid', name: 'The game\'s grid', hex: '#37332E on page', kind: 'grid', ground: '#1B1917', edge: '#37332E' },
   ];
 
-  // The cover, drawn here per idea: ground, the idea's structure, then the three blocks in palette A.
+  // The cover, per idea. A frame is drawn on the box edge (CSS), so it survives the crop. It fills its box as canon's covers do (the ground extends, the blocks stay centred).
+  // The grid idea draws 5 x 4 cells (pitch 32 x 30) and puts the three blocks in three cells of the second row.
   const Cover = ({ idea }) => {
-    const g = idea.cover || idea.ground;
     let deco = null;
-    if (idea.kind === 'edge') deco = <rect x="1" y="1" width="158" height="118" fill="none" stroke={idea.edge} strokeWidth="2" />;
-    if (idea.kind === 'frame') deco = <rect x="4" y="4" width="152" height="112" fill="none" stroke={idea.edge} strokeWidth="8" />;
-    if (idea.kind === 'band') deco = <rect x="0" y="0" width="160" height="12" fill={idea.edge} />;
-    if (idea.kind === 'grid') deco = <g fill="none" stroke={idea.edge} strokeWidth="2">{Array.from({ length: 4 }, (_, r) => Array.from({ length: 5 }, (_, c) => <rect key={r + '-' + c} x={4 + c * 31} y={4 + r * 28.5} width="27" height="24.5" />))}</g>;
+    let blocks = [[24, 44, 32], [64, 44, 32], [106, 46, 28]];
+    if (idea.kind === 'band') deco = <rect x="-200" y="36" width="560" height="48" fill={idea.edge} />;
+    if (idea.kind === 'grid') {
+      const cells = [];
+      for (let r = -1; r < 5; r++) for (let c = -3; c < 8; c++) cells.push(<rect key={r + '/' + c} x={c * 32 + 3} y={r * 30 + 3} width="26" height="24" />);
+      deco = <g fill="none" stroke={idea.edge} strokeWidth="2">{cells}</g>;
+      blocks = [[1 * 32 + 3, 1 * 30 + 3, 26], [2 * 32 + 3, 1 * 30 + 3, 26], [3 * 32 + 3, 1 * 30 + 3, 26]].map(([x, y, w]) => [x, y + 30, w]);
+    }
+    const miss = blocks[2], sw = 4;
     return (
-      <svg className={'wdb-cover' + (idea.kind === 'page' && !idea.cover ? ' is-edged' : '')} viewBox="0 0 160 120" role="img" aria-label={idea.name + ' cover'}>
-        <rect width="160" height="120" fill={g} />
+      <svg className={'wdb-cover' + (idea.kind === 'page' ? ' is-edged' : '') + (idea.kind === 'frame' ? ' is-framed' : '')} style={{ '--wdb-edge': idea.edge || 'transparent' }} viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" role="img" aria-label={idea.name + ' cover'}>
+        <rect x="-200" y="0" width="560" height="120" fill={idea.ground} />
         {deco}
-        <rect x="24" y="44" width="32" height="32" fill={A.hit} />
-        <rect x="64" y="44" width="32" height="32" fill={A.near} />
-        <rect x="106" y="46" width="28" height="28" fill="none" stroke={A.miss} strokeWidth="4" />
+        <rect x={blocks[0][0]} y={blocks[0][1]} width={blocks[0][2]} height={idea.kind === 'grid' ? 24 : blocks[0][2]} fill={A.hit} />
+        <rect x={blocks[1][0]} y={blocks[1][1]} width={blocks[1][2]} height={idea.kind === 'grid' ? 24 : blocks[1][2]} fill={A.near} />
+        {idea.fillMiss
+          ? <rect x={miss[0]} y={miss[1]} width={miss[2]} height={idea.kind === 'grid' ? 24 : miss[2]} fill={A.missFill} />
+          : <rect x={miss[0] + sw / 2} y={miss[1] + sw / 2} width={miss[2] - sw} height={(idea.kind === 'grid' ? 24 : miss[2]) - sw} fill="none" stroke={A.miss} strokeWidth={sw} />}
       </svg>
     );
   };
@@ -44,9 +50,7 @@
     const ev = p.events.slice(1);   // guess 2, the hint, guess 3
     return (
       <div className={'wdb-slice is-' + idea.kind + (idea.light ? ' is-light' : '')} style={{ '--wdb-ground': idea.ground, '--wdb-edge': idea.edge || 'transparent' }}>
-        {idea.kind === 'grid' && <WdModel.EmptyRow />}
         {ev.map((e, i) => (e.kind === 'guess' ? <WdModel.Row key={i} g={e} /> : <WdModel.HintRow key={i} h={e} />))}
-        {idea.kind === 'grid' && <WdModel.EmptyRow />}
       </div>
     );
   };
@@ -59,10 +63,10 @@
       </header>
       <ol className="wdb-grid">
         {IDEAS.map((idea, i) => (
-          <li key={idea.id} className="wdb-cell">
+          <li key={idea.id} className={'wdb-cell' + (idea.fillMiss ? ' is-fillmiss' : '')}>
             <Cover idea={idea} />
             <Slice idea={idea} />
-            <div className="wdb-cap"><b>{i + 1}. {idea.name}</b> <span className="wdb-hex">{idea.hex}</span><span className="wdb-note">{idea.note}</span></div>
+            <div className="wdb-cap"><b>{i + 1}. {idea.name}</b><span className="wdb-hex">{idea.hex}</span></div>
           </li>
         ))}
       </ol>

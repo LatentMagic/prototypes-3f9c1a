@@ -3,6 +3,8 @@
 // A state's sid is the GS_SESSIONS key the page shows; a game's own files seed it. week is how canon stages the review ('done' or 'live').
 window.SP2 = {
   base: '../playgrounds/session-pages-2/',   // from canon/, which index.html sets as <base>
+  // Cache-busting: every playground script and stylesheet loads with ?v=<version>. Bump it (and the two in index.html's head) on each push.
+  version: '2026-10-27-6',
   optionCount: 3,
   games: [
     {

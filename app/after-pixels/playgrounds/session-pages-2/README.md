@@ -11,6 +11,10 @@ A playground of three options for each game's session page. Each option is a who
 - `harness/rail.jsx`, `harness/boot.jsx`: the rail, docked at 1024 and up.
 - `harness/store.js`: option registry and selection. Address `?g=<game>&o=<1..3>&s=<state>`; storage key `pg_session-pages-2_v1`.
 
+## Cache
+
+Every playground script and stylesheet loads with `?v=<version>` (`harness/games.js`, and the two script tags in `index.html`'s head). Bump all three on each push, so a returning browser gets the new build.
+
 ## Adding a game
 
 1. Add an entry to `harness/games.js`: id, name, `css`, `files`, and its states (`{ id, label, sid, week }`, `sid` a `GS_SESSIONS` key).
