@@ -155,3 +155,6 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
   .wdb-cover { height: 130px; }
   .wdb-cap { font-size: 14px; }
 }
+
+/* ---- 1: a grey ground behind the board (owner, 2026-10-27). The padding comes out of the board's width on a phone. ---- */
+.sp2-area > .wd1 { --w: min(calc(100cqi - 48px), 480px); background: #302D2A; padding: 24px; }

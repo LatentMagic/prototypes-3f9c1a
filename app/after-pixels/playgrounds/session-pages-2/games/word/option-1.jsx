@@ -15,8 +15,8 @@
   };
   const COST = 'Per-letter colours on a play in progress need the engine to send marks (the record has counts until the day ends); the seed computes them.';
   sp2Option('word', 1, {
-    name: 'Rows, fixed width',
-    stance: 'The board at a fixed width on the page, tiles close to square, so it reads as a board. The hint is its own slim row where it was taken, its letter lit in its column.',
+    name: 'Rows on grey',
+    stance: 'The board at a fixed width on a grey ground, tiles close to square, so it reads as a board. The hint is its own slim row where it was taken, its letter lit in its column.',
     cost: 'On a wide page the board leaves the space to its right empty. ' + COST,
     Component: Rows,
   });
