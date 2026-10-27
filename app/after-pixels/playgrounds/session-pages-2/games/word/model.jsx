@@ -9,7 +9,7 @@
 // The hint is always a letter in its place (game spec daily-word.md section 2): the place of the first letter not yet green.
 // ============================================================================
 (function () {
-  // ---- The three plays (playground seeds; canon's word-today hint is "contains", which the game never gives) ----
+  // ---- The four plays (playground seeds; canon's word-today hint is "contains", which the game never gives) ----
   Object.assign(GS_SESSIONS, {
     // Today, No. 212: CRANE, SLATE, the hint (S is green, so it gives letter 2), STILL.
     'sp2-word-solved': {
@@ -24,6 +24,14 @@
       listTitle: 'Every guess', share: 'Failed',
       lines: [['Guess 1', 'CRANE', '2 in place'], ['Hint', 'Letter 1 is S.'], ['Guess 2', 'SHADE', '4 in place'], ['Guess 3', 'SHAME', '4 in place'],
         ['Guess 4', 'SHAPE', '4 in place'], ['Guess 5', 'SHARE', '4 in place'], ['Guess 6', 'SHAVE', '4 in place']],
+    },
+    // No. 210, a hard day: solved on the fifth guess with the hint taken. After ROBOT only letter 4 (O) was green, so the hint gave
+    // letter 1 (F); FROGS and FLOUR closed in, and FLOOR's second O came last.
+    'sp2-word-hard': {
+      kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
+      listTitle: 'Every guess', share: 'Solved in 5 of 6',
+      lines: [['Guess 1', 'CRANE', '1 in the word'], ['Guess 2', 'ROBOT', '1 in place, 2 in the word'], ['Hint', 'Letter 1 is F.'],
+        ['Guess 3', 'FROGS', '2 in place, 1 in the word'], ['Guess 4', 'FLOUR', '4 in place'], ['Guess 5', 'FLOOR', 'Solved']],
     },
     // Today in progress: two guesses, no hint yet (canon's word-live).
     'sp2-word-live': {

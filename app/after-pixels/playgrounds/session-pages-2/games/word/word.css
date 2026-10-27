@@ -55,12 +55,16 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
   .wd1 .wd-hint::after { font-size: 10px; }
 }
 /* 2: the store's card around the board, sized to it. On a phone the card's padding comes out of the board's width.
-   From 640px the board grows wider, to 760px, tiles up to 96px tall (wider than square, so six guesses stay short), and the
-   card stays centred in the content column (owner, 2026-10-27). */
+   From 640px the board is sized to the screen's height, so five guesses and the hint fit below the page's top section on a
+   laptop: tiles 11.5vh - 50px tall (42px at 800 high, 53px at 900, within 40 to 64), 1.8 times as wide but at least 92px, so
+   the board is never narrower than 480px; the hint row 32px, gaps 6px. The card stays centred in the content column (owner, 2026-10-27). */
 .sp2-area .wd1-card { width: max-content; max-width: 100%; box-sizing: border-box; }
 .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
 @container sp2 (min-width: 640px) {
-  .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 760px); --t-h: min(calc(var(--t-w) * .9), 96px); }
+  .wd1-card .wd1 { --g: 6px; --t-h: clamp(40px, calc(11.5vh - 50px), 64px);
+    --t-w: min(max(calc(var(--t-h) * 1.8), 92px), calc((100cqi - 2 * var(--sp2-card-pad, 16px) - 2px - 4 * var(--g)) / 5));
+    --w: calc(5 * var(--t-w) + 4 * var(--g)); }
+  .wd1-card .wd1-hint .wd-t { --t-h: 32px; }
 }
 
 /* ---- 3 Large board, hint beside ---- */

@@ -23,7 +23,7 @@
   sp2Option('word', 2, {
     name: 'Rows in a card',
     stance: 'The same board inside the store\'s card, which gives it its own edge and gathers the play as one thing.',
-    cost: 'A card around the board; on a wide page the board grows wider (to 760px) with tiles wider than square, centred in the column with space either side. ' + COST,
+    cost: 'A card around the board; on a wide page the board is sized to the screen's height, so its tiles are wider than square (about 2 to 1 on an 800px-high screen), centred in the column with space either side. ' + COST,
     Component: ({ s }) => <DS.Card className="wd1-card"><Rows s={s} /></DS.Card>,
   });
 })();
