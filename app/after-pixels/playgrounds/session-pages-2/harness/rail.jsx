@@ -54,6 +54,7 @@ const Sp2Rail = ({ onPick }) => {
           {opts.map((n) => <Sp2Row key={n} gid={game.id} n={n} active={sel.opt === n} onPick={onPick} />)}
         </ul>
       </section>
+      {game.config && window[game.config] && React.createElement(window[game.config])}
     </div>
   );
 };

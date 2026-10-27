@@ -33,14 +33,11 @@
     },
   });
 
-  // ---- The tile colours, one set for the cover and every option (word.css carries them as --wd-*) ----
-  // Success: the old cover's ground, cover-bg-forest #163328, lifted to 28% lightness at the same hue (#2B6448) so it reads on a dark ground.
-  // In the word: cover-amber #E5A63B. Both are filled. Not in the word: an outline in the store's control edge #918B80, never filled on a tile,
-  // so a filled tile always outranks it. The cover's ground becomes cover-bg-indigo #1D1B3A (no light ground: owner, 2026-10-27).
-  const C = { hit: '#2B6448', near: '#E5A63B', miss: '#918B80', ground: '#1D1B3A' };
-  // The cover: a guess row of three blocks on indigo. Placed, elsewhere, and the outline that fills on hover (word.css) as a letter not in the word.
+  // ---- The cover ----
+  // Colours come from the colour config (colours.jsx), as CSS variables, so the cover and every option's tiles change together.
+  // A guess row of three blocks on the cover ground: in place, in the word, and the outlined block (not in the word), drawn per the config (word.css).
   GS_ART.word = Object.assign({}, GS_ART.word, {
-    svg: GS_SVG('<rect width="160" height="120" fill="' + C.ground + '"/><rect x="24" y="44" width="32" height="32" fill="' + C.hit + '"/><rect x="64" y="44" width="32" height="32" fill="' + C.near + '"/><rect class="wd-cover-miss" x="106" y="46" width="28" height="28" fill="' + C.miss + '" fill-opacity="0" stroke="' + C.miss + '" stroke-width="4"/>'),
+    svg: GS_SVG('<rect width="160" height="120" style="fill:var(--wd-ground)"/><rect x="24" y="44" width="32" height="32" style="fill:var(--wd-hit)"/><rect x="64" y="44" width="32" height="32" style="fill:var(--wd-near)"/><rect class="wd-cover-miss" x="106" y="46" width="28" height="28" stroke-width="4" style="fill:var(--wd-miss);stroke:var(--wd-miss)"/>'),
   });
 
   // ---- Reading a play ----
@@ -78,5 +75,5 @@
     <div className="wd-row" role="img" aria-label={hintLabel(h)}>{[0, 1, 2, 3, 4].map((i) => <Tile key={i} k={i === h.pos ? 'hint' : 'gap'} t={i === h.pos ? h.letter : ''} />)}</div>
   );
 
-  window.WdModel = { read, score, Tile, Row, EmptyRow, HintRow, rowLabel, hintLabel, colours: C };
+  window.WdModel = { read, score, Tile, Row, EmptyRow, HintRow, rowLabel, hintLabel };
 })();

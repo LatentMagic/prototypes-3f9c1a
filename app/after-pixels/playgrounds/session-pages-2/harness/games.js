@@ -8,7 +8,8 @@ window.SP2 = {
     {
       id: 'word', name: 'Daily Word',
       css: ['games/word/word.css'],
-      files: ['games/word/model.jsx', 'games/word/option-1.jsx', 'games/word/option-2.jsx', 'games/word/option-3.jsx'],
+      config: 'WdColourConfig',   // a window component the rail shows under the options (games/word/colours.jsx)
+      files: ['games/word/colours.jsx', 'games/word/model.jsx', 'games/word/option-1.jsx', 'games/word/option-2.jsx', 'games/word/option-3.jsx'],
       states: [
         { id: 'solved', label: 'Solved', sid: 'sp2-word-solved', week: 'done' },
         { id: 'failed', label: 'Failed', sid: 'sp2-word-failed', week: 'done' },

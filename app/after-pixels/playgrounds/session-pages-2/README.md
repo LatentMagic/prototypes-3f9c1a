@@ -33,11 +33,6 @@ The option draws only its area. It never draws the top section or the list. Size
 - **Failed** No. 208: CRANE, hint (letter 1 is S), SHADE, SHAME, SHAPE, SHARE, SHAVE.
 - **In progress** No. 212: CRANE, SLATE, no hint.
 
-Tile colours (`games/word/word.css`) are used in every option and on the cover:
+Colours come from the **colour config** in the rail, under the options (in the Config modal below 1024px), from `games/word/colours.jsx`. It sets CSS variables on `<html>`, so the cover and every option's tiles change together. Its settings: the cover ground; the colours for in place, in the word and not in the word; how not in the word is drawn (filled, outline, or the cover block, an outline that fills on hover); and the letter colour on each. Each has named presets and a hex field. Five starting palettes take one click each, and a reset is beside them. Each colour shows its contrast against the page and the cover ground. The choice is kept in `localStorage` (`pg_session-pages-2_word-colours_v1`). No light or cream ground is offered as a palette (owner, 2026-10-27). Option 3 sits on the cover ground, and its text follows that ground.
 
-- In place: `#2B6448`, filled. The old cover's forest ground `#163328` at the same hue, lifted to 28% lightness so it reads on a dark ground.
-- In the word: `#E5A63B`, the cover's amber, filled.
-- Not in the word: an outline in `#918B80`, the store's control edge, with a muted letter. It is never filled on a tile, so a filled tile always outranks it.
-- A guess not yet made: an outline in `#37332E`, the store's line colour.
-
-No light or cream ground anywhere (owner, 2026-10-27). The cover's ground becomes indigo `#1D1B3A`, a cover ground already in the palette. Its outlined block is the not-in-the-word block, and it fills on hover. The override changes `GS_ART.word` in memory, so only the static cover is recoloured. The design system's animated `GameArt` for Daily Word (library, Discover) keeps its old colours.
+The cover override changes `GS_ART.word` in memory, so only the static cover is recoloured. The design system's animated `GameArt` for Daily Word (library, Discover) keeps its old colours.
