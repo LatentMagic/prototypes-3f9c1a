@@ -10,13 +10,13 @@
 
 /* The cover's block for a letter not in the word (model.jsx draws it at full size; the Backgrounds sheet draws its own).
    At rest: a small square, thin grey outline (scaled to .625; the stroke is 3.2 so it draws at 2). Open: full size, filled.
-   It opens on hover (pointers that hover), on keyboard focus, and on a tap (data-wd-open, model.jsx). The colour config's
+   It opens on hover (pointers that hover), on keyboard focus (not the focus a click or tap leaves), and on a tap (data-wd-open, model.jsx). The colour config's
    "Not in the word, drawn": Filled keeps it open; Outline keeps it at rest; Cover block and Letter only open it as above.
    The Backgrounds sheet always opens it as above, whatever the config says. */
 .wd-cover-miss { transform-box: fill-box; transform-origin: center; transform: scale(.625); stroke-width: 3.2px; fill-opacity: 0;
   transition: transform 520ms cubic-bezier(.22, 1, .36, 1), stroke-width 520ms cubic-bezier(.22, 1, .36, 1), fill-opacity 360ms ease-out 140ms; }
 html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss,
-html:not([data-wd-miss="outline"]) .mcp-cover:focus-within .wd-cover-miss,
+html:not([data-wd-miss="outline"]) .mcp-cover:has(:focus-visible) .wd-cover-miss,
 html:not([data-wd-miss="outline"]) .mcp-cover[data-wd-open] .wd-cover-miss,
 .wdb-cover:focus-visible .wd-cover-miss, .wdb-cover[data-wd-open] .wd-cover-miss { transform: none; stroke-width: 0; fill-opacity: 1; }
 @media (hover: hover) {
