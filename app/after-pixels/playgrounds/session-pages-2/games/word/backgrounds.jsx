@@ -23,7 +23,7 @@
   // The grid idea draws 5 x 4 cells (pitch 32 x 30) and puts the three blocks in three cells of the second row.
   const Cover = ({ idea }) => {
     let deco = null;
-    let blocks = [[24, 44, 32], [64, 44, 32], [106, 46, 28]];
+    let blocks = [[24, 44, 32], [64, 44, 32], [104, 44, 32]];
     if (idea.kind === 'band') deco = <rect x="-200" y="36" width="560" height="48" fill={idea.edge} />;
     if (idea.kind === 'grid') {
       const cells = [];
@@ -31,16 +31,18 @@
       deco = <g fill="none" stroke={idea.edge} strokeWidth="2">{cells}</g>;
       blocks = [[1 * 32 + 3, 1 * 30 + 3, 26], [2 * 32 + 3, 1 * 30 + 3, 26], [3 * 32 + 3, 1 * 30 + 3, 26]].map(([x, y, w]) => [x, y + 30, w]);
     }
-    const miss = blocks[2], sw = 4;
+    const miss = blocks[2];
+    // The block not in the word, as on the cover (word.css .wd-cover-miss): drawn at its full block, a small thin outline at rest,
+    // full and filled on hover, focus or a tap. A filled-misses idea keeps it filled.
     return (
-      <svg className={'wdb-cover' + (idea.kind === 'page' ? ' is-edged' : '') + (idea.kind === 'frame' ? ' is-framed' : '')} style={{ '--wdb-edge': idea.edge || 'transparent' }} viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" role="img" aria-label={idea.name + ' cover'}>
+      <svg className={'wdb-cover' + (idea.kind === 'page' ? ' is-edged' : '') + (idea.kind === 'frame' ? ' is-framed' : '')} style={{ '--wdb-edge': idea.edge || 'transparent' }} viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" role="img" aria-label={idea.name + ' cover'} tabIndex={idea.fillMiss ? undefined : 0}>
         <rect x="-200" y="0" width="560" height="120" fill={idea.ground} />
         {deco}
         <rect x={blocks[0][0]} y={blocks[0][1]} width={blocks[0][2]} height={idea.kind === 'grid' ? 24 : blocks[0][2]} fill={A.hit} />
         <rect x={blocks[1][0]} y={blocks[1][1]} width={blocks[1][2]} height={idea.kind === 'grid' ? 24 : blocks[1][2]} fill={A.near} />
         {idea.fillMiss
-          ? <rect x={miss[0]} y={miss[1]} width={miss[2]} height={idea.kind === 'grid' ? 24 : miss[2]} fill={A.missFill} />
-          : <rect x={miss[0] + sw / 2} y={miss[1] + sw / 2} width={miss[2] - sw} height={(idea.kind === 'grid' ? 24 : miss[2]) - sw} fill="none" stroke={A.miss} strokeWidth={sw} />}
+          ? (idea.kind === 'grid' ? <rect x={miss[0]} y={miss[1]} width={miss[2]} height="24" fill={A.missFill} /> : <rect x="106" y="46" width="28" height="28" fill={A.missFill} />)
+          : <rect className="wd-cover-miss" x={miss[0]} y={miss[1]} width={miss[2]} height={idea.kind === 'grid' ? 24 : miss[2]} style={{ fill: A.miss, stroke: A.miss }} />}
       </svg>
     );
   };

@@ -35,9 +35,21 @@
 
   // ---- The cover ----
   // Colours come from the colour config (colours.jsx), as CSS variables, so the cover and every option's tiles change together.
-  // A guess row of three blocks on the cover ground: in place, in the word, and the outlined block (not in the word), drawn per the config (word.css).
+  // A guess row of three blocks on the cover ground: in place, in the word, and the block not in the word. That block is drawn at
+  // full size (104, 44, 32) and word.css shrinks it to a small, thin grey outline at rest; on hover, keyboard focus or a tap it
+  // grows to full size and fills. The svg is focusable so the keyboard reaches it; GsCover's replace of 'xMidYMid slice' still applies.
   GS_ART.word = Object.assign({}, GS_ART.word, {
-    svg: GS_SVG('<rect width="160" height="120" style="fill:var(--wd-ground)"/><rect x="24" y="44" width="32" height="32" style="fill:var(--wd-hit)"/><rect x="64" y="44" width="32" height="32" style="fill:var(--wd-near)"/><rect class="wd-cover-miss" x="106" y="46" width="28" height="28" stroke-width="4" style="fill:var(--wd-miss);stroke:var(--wd-miss)"/>'),
+    svg: '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" tabindex="0" role="img" aria-label="Daily Word cover">'
+      + '<rect width="160" height="120" style="fill:var(--wd-ground)"/><rect x="24" y="44" width="32" height="32" style="fill:var(--wd-hit)"/><rect x="64" y="44" width="32" height="32" style="fill:var(--wd-near)"/><rect class="wd-cover-miss" x="104" y="44" width="32" height="32" style="fill:var(--wd-miss);stroke:var(--wd-miss)"/>'
+      + '</svg>',
+  });
+  // A tap opens the block (touch has no hover); a second tap, or a tap elsewhere, closes it. The mouse uses hover alone.
+  document.addEventListener('pointerup', (e) => {
+    if (e.pointerType === 'mouse') return;
+    const host = e.target.closest ? e.target.closest('.mcp-cover, .wdb-cover') : null;
+    const own = host && host.querySelector('.wd-cover-miss') ? host : null;
+    document.querySelectorAll('[data-wd-open]').forEach((n) => { if (n !== own) n.removeAttribute('data-wd-open'); });
+    if (own) own.toggleAttribute('data-wd-open');
   });
 
   // ---- Reading a play ----

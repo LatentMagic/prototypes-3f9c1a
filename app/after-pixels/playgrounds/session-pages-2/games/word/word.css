@@ -1,17 +1,30 @@
 /* Session pages 2, Daily Word. One tile palette for the cover and every option (games/word/model.jsx says where each colour comes from). */
 /* Defaults only: colours.jsx sets these on <html> from the colour config (palette A, Brand green, until changed). */
 :root {
-  --wd-ground: #163328; --wd-ground-on: #F0EEE8;
+  --wd-ground: #163328;
   --wd-hit: #4CC38A; --wd-hit-on: #08140E;
   --wd-near: #E5A63B; --wd-near-on: #1B1917;
   --wd-miss: #918B80; --wd-miss-on: #ABA79E;
   --wd-empty: #37332E;
 }
 
-/* The cover's outlined block (not in the word): filled, an outline, or an outline that fills on hover ("cover block"). */
-.mcp-cover .wd-cover-miss { fill-opacity: 0; transition: fill-opacity 240ms var(--ease-out, ease-out); }
-html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss, html[data-wd-miss="cover"] .mcp-cover:hover .wd-cover-miss, html[data-wd-miss="bare"] .mcp-cover:hover .wd-cover-miss { fill-opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .mcp-cover .wd-cover-miss { transition: none; } }
+/* The cover's block for a letter not in the word (model.jsx draws it at full size; the Backgrounds sheet draws its own).
+   At rest: a small square, thin grey outline (scaled to .625; the stroke is 3.2 so it draws at 2). Open: full size, filled.
+   It opens on hover (pointers that hover), on keyboard focus, and on a tap (data-wd-open, model.jsx). The colour config's
+   "Not in the word, drawn": Filled keeps it open; Outline keeps it at rest; Cover block and Letter only open it as above.
+   The Backgrounds sheet always opens it as above, whatever the config says. */
+.wd-cover-miss { transform-box: fill-box; transform-origin: center; transform: scale(.625); stroke-width: 3.2px; fill-opacity: 0;
+  transition: transform 520ms cubic-bezier(.22, 1, .36, 1), stroke-width 520ms cubic-bezier(.22, 1, .36, 1), fill-opacity 360ms ease-out 140ms; }
+html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss,
+html:not([data-wd-miss="outline"]) .mcp-cover:focus-within .wd-cover-miss,
+html:not([data-wd-miss="outline"]) .mcp-cover[data-wd-open] .wd-cover-miss,
+.wdb-cover:focus-visible .wd-cover-miss, .wdb-cover[data-wd-open] .wd-cover-miss { transform: none; stroke-width: 0; fill-opacity: 1; }
+@media (hover: hover) {
+  html:not([data-wd-miss="outline"]) .mcp-cover:hover .wd-cover-miss, .wdb-cover:hover .wd-cover-miss { transform: none; stroke-width: 0; fill-opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .wd-cover-miss { transition: none; } }
+.mcp-cover svg:focus { outline: none; }
+.mcp-cover svg:focus-visible, .wdb-cover:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }
 
 /* Tiles. Size from --t (a square); an option may set --t-w and --t-h apart. */
 .wd-row { display: grid; grid-template-columns: repeat(5, var(--t-w, var(--t, 56px))); gap: var(--g, 8px); }
@@ -45,17 +58,18 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
 
 /* ---- 3 On the cover's ground ---- */
-.wd3 { --off-white: var(--wd-ground-on); background: var(--wd-ground); color: var(--wd-ground-on); padding: 16px; display: grid; gap: 20px; justify-items: center; }
+/* Its own ground, plum (the store's wine cover ground), not the cover's forest: no green ground for option 3 (owner, 2026-10-27). */
+.wd3 { --wd3-ground: #421A28; --wd3-on: #F0EEE8; --off-white: var(--wd3-on); background: var(--wd3-ground); color: var(--wd3-on); padding: 16px; display: grid; gap: 20px; justify-items: center; }
 .wd3-board { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: var(--g); }
-.wd3 .wd-empty { border-color: color-mix(in srgb, var(--wd-ground-on) 22%, transparent); }
+.wd3 .wd-empty { border-color: color-mix(in srgb, var(--wd3-on) 22%, transparent); }
 .wd3-hint { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: 10px; justify-items: start; width: 100%; max-width: calc(5 * var(--t) + 4 * var(--g)); }
 .wd3-slots { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
-.wd3-slot { box-sizing: border-box; height: calc(var(--t) * .5); border-bottom: 3px solid color-mix(in srgb, var(--wd-ground-on) 30%, transparent); display: grid; place-items: center; font: 700 calc(var(--t) * .5)/1 var(--font-heading); }
+.wd3-slot { box-sizing: border-box; height: calc(var(--t) * .5); border-bottom: 3px solid color-mix(in srgb, var(--wd3-on) 30%, transparent); display: grid; place-items: center; font: 700 calc(var(--t) * .5)/1 var(--font-heading); }
 .wd3-slot.is-on { height: var(--t); border: 3px dashed var(--off-white); }
 .wd3-say { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 400 16px/1.3 var(--font-text); }
 .wd3-say b { font-weight: 700; }
 .wd3-say span + span::before { content: '· '; }
-.wd3-hint.is-none .wd3-say { color: color-mix(in srgb, var(--wd-ground-on) 70%, transparent); }
+.wd3-hint.is-none .wd3-say { color: color-mix(in srgb, var(--wd3-on) 70%, transparent); }
 /* From 600px the board and the hint share the panel in two equal halves, each filling its half (tiles up to 96px). */
 @container sp2 (min-width: 600px) {
   .wd3 { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: start; align-items: center; gap: 32px; padding: 24px; }

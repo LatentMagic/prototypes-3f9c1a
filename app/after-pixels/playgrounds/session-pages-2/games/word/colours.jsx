@@ -2,7 +2,7 @@
 // Session pages 2, Daily Word: the colour config. One set of colours, applied live as CSS variables on <html>, to the cover
 // (GS_ART.word reads them, model.jsx) and to every option's tiles (word.css). Kept in localStorage, so it survives switching
 // option and state. Rendered in the rail under the options (harness/rail.jsx reads the game's `config`).
-// The owner's rules (2026-10-27): no white or cream ground; white never means success; success is a forest green, not the logo's.
+// The owner's rules (2026-10-27): no white or cream ground; white never means success; success is the brand green (palette A, chosen).
 // ============================================================================
 (function () {
   const KEY = 'pg_session-pages-2_word-colours_v2';
@@ -17,12 +17,11 @@
   ];
   const NAME = {}; SWATCHES.forEach(([, l]) => l.forEach(([n, h]) => { NAME[h] = n; }));
 
-  // Starting palettes: the cover on its own forest ground, tiles on the dark page.
-  // missStyle: 'fill' | 'outline' | 'cover' (an outline that fills on hover, as the cover's block does) | 'bare' (the letter alone, no tile; the cover keeps its outline).
+  // The palette: the cover on its own forest ground, tiles on the dark page. A (brand green) is the owner's choice (2026-10-27);
+  // B (teal) and C (bare misses) are gone, and an old &pal=b|c link opens on A.
+  // missStyle: 'fill' | 'outline' | 'cover' (an outline that fills on hover; on the cover, a small outline that grows and fills) | 'bare' (the letter alone, no tile; the cover's block as 'cover').
   const PALETTES = [
-    { id: 'a', name: 'A. Brand green', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
-    { id: 'b', name: 'B. Teal', ground: '#163328', hit: '#328A88', hitOn: '#1B1917', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
-    { id: 'c', name: 'C. Green, bare misses', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#918B80', missStyle: 'bare' },
+    { id: 'a', name: 'Brand green', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
   ];
   const DEFAULT = PALETTES[0];
   const FIELDS = ['ground', 'hit', 'hitOn', 'near', 'nearOn', 'miss', 'missOn'];
@@ -41,9 +40,11 @@
     FIELDS.forEach((f) => { if (isHex(raw[f])) s[f] = raw[f].toUpperCase(); });
     if (STYLES.includes(raw.missStyle)) s.missStyle = raw.missStyle;
     s.id = raw.id || null;
+    if (s.id && !PALETTES.some((p) => p.id === s.id)) return Object.assign({}, DEFAULT);   // a retired palette (b, c)
     return s;
   };
-  const fromUrl = PALETTES.find((p) => p.id === new URLSearchParams(location.search).get('pal'));
+  // Any &pal= opens on A, the one palette left (an old b or c link included).
+  const fromUrl = new URLSearchParams(location.search).has('pal') ? DEFAULT : null;
   let cur = fromUrl ? Object.assign({}, fromUrl) : (() => { try { return clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return clean(null); } })();
   // The address carries the palette while one is chosen (&pal=a), so a link opens on it.
   const writePal = () => {
@@ -54,12 +55,10 @@
   window.sp2ExtraParams = () => (cur.id ? { pal: cur.id } : {});
   let subs = [];
 
-  // Text on the ground (option 3's hint and labels): whichever of the page's dark or its text reads better.
   const apply = () => {
     const r = document.documentElement.style;
     r.setProperty('--wd-ground', cur.ground); r.setProperty('--wd-hit', cur.hit); r.setProperty('--wd-hit-on', cur.hitOn);
     r.setProperty('--wd-near', cur.near); r.setProperty('--wd-near-on', cur.nearOn); r.setProperty('--wd-miss', cur.miss); r.setProperty('--wd-miss-on', cur.missOn);
-    r.setProperty('--wd-ground-on', ratio(cur.ground, PAGE) >= ratio(cur.ground, '#F0EEE8') ? PAGE : '#F0EEE8');
     document.documentElement.setAttribute('data-wd-miss', cur.missStyle);
   };
   const set = (patch) => {
