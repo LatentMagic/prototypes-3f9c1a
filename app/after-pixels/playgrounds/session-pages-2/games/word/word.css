@@ -26,42 +26,23 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wd-gap { border-bottom: 2px dotted var(--wd-empty); height: auto; align-self: center; }
 .wd-hint { border: 2px dashed var(--wd-hint-edge, var(--off-white)); color: var(--wd-hint-on, var(--off-white)); }
 
-/* ---- 1 Rows across the page ---- */
-.wd1 { --g: 6px; --t-w: calc((100cqi - 4 * var(--g)) / 5); --t-h: 60px; display: grid; gap: var(--g); }
-.wd1 .wd-t { font-size: 32px; }
-.wd1-hint { position: relative; }
-.wd1-hint .wd-t { --t-h: 48px; font-size: 20px; }
+/* ---- 1 Rows, fixed width; 2 the same in a card ---- */
+/* The board is at most 480px wide, tiles about 90 by 80, so it reads as a board at any width and stays short with six guesses and the hint. */
+.wd1 { --g: 6px; --w: min(100cqi, 480px); --t-w: calc((var(--w) - 4 * var(--g)) / 5); --t-h: calc(var(--t-w) * .9); display: grid; gap: var(--g); width: var(--w); }
+.wd1 .wd-t { font-size: calc(var(--t-h) * .5); }
+.wd1-hint .wd-t { --t-h: 44px; font-size: 20px; }
 .wd1-hint .wd-gap { width: 100%; }
-/* The hint tile names itself: its letter, then "Hint" beside it (wide tiles have the room). */
+/* The hint tile names itself: its letter, then "Hint" under it, or beside it where the tile is wide enough. */
 .wd1 .wd-hint { grid-auto-flow: row; gap: 3px; align-content: center; }
 .wd1 .wd-hint::after { content: 'Hint'; font: 600 9px/1 var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
 @container sp2 (min-width: 640px) {
-  .wd1 { --g: 8px; --t-h: 76px; }
-  .wd1 .wd-t { font-size: 40px; }
-  .wd1-hint .wd-t { --t-h: 48px; font-size: 26px; }
-  .wd1 .wd-hint { grid-auto-flow: column; gap: 10px; }
-  .wd1 .wd-hint::after { font-size: 11px; }
+  .wd1 { --g: 8px; }
+  .wd1 .wd-hint { grid-auto-flow: column; gap: 8px; }
+  .wd1 .wd-hint::after { font-size: 10px; }
 }
-
-/* ---- 2 Move by move ---- */
-.wd2 { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-.wd2-card { --g: 6px; --t: min(80px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; justify-items: center; gap: 10px; padding: 14px 16px 16px; background: var(--card); }
-.wd2-card .wd-t { font-size: calc(var(--t) * .48); }
-.wd2-k { justify-self: stretch; font: 600 13px/1.2 var(--font-text); letter-spacing: .04em; color: var(--muted); }
-.wd2-hint .wd2-k { color: var(--text); }
-.wd2-open .wd2-k { color: var(--muted); }
-.wd2-hint .wd-gap { width: 100%; }
-/* Two across from 560px, so a mid-width page never stacks six tall cards. */
-@container sp2 (min-width: 560px) {
-  .wd2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .wd2-card { --g: 6px; --t: calc((50cqi - 6px - 32px - 4 * var(--g)) / 5); padding: 14px 16px 16px; }
-  /* An odd last move takes the whole row, its tiles the same size as the rest, centred under the pair above. */
-  .wd2[data-odd] > .wd2-card:last-child { grid-column: 1 / -1; justify-items: center; }
-  .wd2[data-odd] > .wd2-card:last-child .wd2-k { justify-self: stretch; }
-}
-@container sp2 (min-width: 900px) {
-  .wd2-card { --g: 8px; --t: calc((50cqi - 6px - 48px - 4 * var(--g)) / 5); padding: 16px 24px 20px; }
-}
+/* 2: the store's card around the board, sized to it. On a phone the card's padding comes out of the board's width. */
+.sp2-area .wd1-card { width: max-content; max-width: 100%; box-sizing: border-box; }
+.wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
 
 /* ---- 3 On the cover's ground ---- */
 .wd3 { --off-white: var(--wd-ground-on); background: var(--wd-ground); color: var(--wd-ground-on); padding: 16px; display: grid; gap: 20px; justify-items: center; }

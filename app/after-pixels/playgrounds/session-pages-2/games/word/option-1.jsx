@@ -1,8 +1,8 @@
-// Session pages 2, Daily Word, option 1: "Rows across the page". The board stretched to the full width: each guess is a band of
-// five wide tiles, so the board fills the page at every width and stays short with all six guesses. The hint is a row of its own,
-// in the order it was taken, with only its letter lit, in its column.
+// Session pages 2, Daily Word, options 1 and 2: the rows board at a fixed width, so its tiles read as a board, not a banner.
+// The hint is a slim row of its own, in the order it was taken, with only its letter lit, in its column.
+// Option 1 sets the board on the page; option 2 sets the same board inside the design system's Card (the store's card surface and edge).
 (function () {
-  const WordRows = ({ s }) => {
+  const Rows = ({ s }) => {
     const p = WdModel.read(s);
     const spare = p.live ? p.left : 0;
     return (
@@ -13,10 +13,17 @@
       </div>
     );
   };
+  const COST = 'Per-letter colours on a play in progress need the engine to send marks (the record has counts until the day ends); the seed computes them.';
   sp2Option('word', 1, {
-    name: 'Rows across the page',
-    stance: 'The board at the page\'s full width: each guess a band of five wide tiles, so nothing sits empty beside it and six guesses stay short. The hint is its own slim row where it was taken, its letter lit in its column.',
-    cost: 'Wide tiles are not the square tiles players know from the chat. Per-letter colours on a play in progress need the engine to send marks (the record has counts until the day ends); the seed computes them.',
-    Component: WordRows,
+    name: 'Rows, fixed width',
+    stance: 'The board at a fixed width on the page, tiles close to square, so it reads as a board. The hint is its own slim row where it was taken, its letter lit in its column.',
+    cost: 'On a wide page the board leaves the space to its right empty. ' + COST,
+    Component: Rows,
+  });
+  sp2Option('word', 2, {
+    name: 'Rows in a card',
+    stance: 'The same board inside the store\'s card, which gives it its own edge and gathers the play as one thing.',
+    cost: 'A card around the board, beside the empty space to its right on a wide page. ' + COST,
+    Component: ({ s }) => <DS.Card className="wd1-card"><Rows s={s} /></DS.Card>,
   });
 })();
