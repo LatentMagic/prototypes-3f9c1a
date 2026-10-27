@@ -34,10 +34,11 @@
   });
 
   // ---- The tile colours, one set for the cover and every option (word.css carries them as --wd-*) ----
-  // Success: the old cover's own ground, cover-bg-forest #163328. In the word, elsewhere: cover-amber #E5A63B.
-  // Not in the word: the store's line colour #37332E. The cover's ground becomes cover-cream #F2EBE0, the one palette colour all three read on.
-  const C = { hit: '#163328', near: '#E5A63B', miss: '#37332E', ground: '#F2EBE0' };
-  // The cover: a guess row of three blocks on cream. Placed, elsewhere, and the outline that fills on hover (word.css) as a letter not in the word.
+  // Success: the old cover's ground, cover-bg-forest #163328, lifted to 28% lightness at the same hue (#2B6448) so it reads on a dark ground.
+  // In the word: cover-amber #E5A63B. Both are filled. Not in the word: an outline in the store's control edge #918B80, never filled on a tile,
+  // so a filled tile always outranks it. The cover's ground becomes cover-bg-indigo #1D1B3A (no light ground: owner, 2026-10-27).
+  const C = { hit: '#2B6448', near: '#E5A63B', miss: '#918B80', ground: '#1D1B3A' };
+  // The cover: a guess row of three blocks on indigo. Placed, elsewhere, and the outline that fills on hover (word.css) as a letter not in the word.
   GS_ART.word = Object.assign({}, GS_ART.word, {
     svg: GS_SVG('<rect width="160" height="120" fill="' + C.ground + '"/><rect x="24" y="44" width="32" height="32" fill="' + C.hit + '"/><rect x="64" y="44" width="32" height="32" fill="' + C.near + '"/><rect class="wd-cover-miss" x="106" y="46" width="28" height="28" fill="' + C.miss + '" fill-opacity="0" stroke="' + C.miss + '" stroke-width="4"/>'),
   });

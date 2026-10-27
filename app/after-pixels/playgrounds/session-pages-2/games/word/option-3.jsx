@@ -1,4 +1,4 @@
-// Session pages 2, Daily Word, option 3: "The board on the cover's ground". The square board, large, on the cover's cream, as the
+// Session pages 2, Daily Word, option 3: "The board on the cover's ground". The square board, large, on the cover's indigo, as the
 // cover is drawn: a picture of the play. Beside it on a wide page (under it on a phone) the hint, drawn large: its letter in a tile
 // twice the board's size, named by its place and when it was taken.
 (function () {
@@ -25,8 +25,8 @@
   };
   sp2Option('word', 3, {
     name: 'On the cover\'s ground',
-    stance: 'The square board, large, on the cover\'s cream ground, so the page\'s picture is the cover played out. The hint stands beside it as large as the board: five places, its letter in its own, when it came.',
-    cost: 'A large light panel on the store\'s dark page. With few guesses the hint is as big as the board, so the hint can outweigh the play. Per-letter colours on a play in progress need the engine to send marks; the seed computes them.',
+    stance: 'The square board, large, on the cover\'s indigo ground, so the page\'s picture is the cover played out. The hint stands beside it as large as the board: five places, its letter in its own, when it came.',
+    cost: 'A block of cover colour on the store\'s page, where the shop itself carries none. With few guesses the hint is as big as the board, so the hint can outweigh the play. Per-letter colours on a play in progress need the engine to send marks; the seed computes them.',
     Component: WordCover,
   });
 })();

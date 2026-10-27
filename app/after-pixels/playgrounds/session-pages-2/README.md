@@ -35,8 +35,9 @@ The option draws only its area. It never draws the top section or the list. Size
 
 Tile colours (`games/word/word.css`) are used in every option and on the cover:
 
-- In place: `#163328`, the forest green of the old cover's ground.
-- In the word: `#E5A63B`, the cover's amber.
-- Not in the word: `#37332E`, the store's line colour.
+- In place: `#2B6448`, filled. The old cover's forest ground `#163328` at the same hue, lifted to 28% lightness so it reads on a dark ground.
+- In the word: `#E5A63B`, the cover's amber, filled.
+- Not in the word: an outline in `#918B80`, the store's control edge, with a muted letter. It is never filled on a tile, so a filled tile always outranks it.
+- A guess not yet made: an outline in `#37332E`, the store's line colour.
 
-The cover's ground becomes the cream `#F2EBE0`. Its outlined block is the not-in-the-word block, and it fills on hover. The override changes `GS_ART.word` in memory, so only the static cover is recoloured. The design system's animated `GameArt` for Daily Word (library, Discover) keeps its old colours.
+No light or cream ground anywhere (owner, 2026-10-27). The cover's ground becomes indigo `#1D1B3A`, a cover ground already in the palette. Its outlined block is the not-in-the-word block, and it fills on hover. The override changes `GS_ART.word` in memory, so only the static cover is recoloured. The design system's animated `GameArt` for Daily Word (library, Discover) keeps its old colours.
