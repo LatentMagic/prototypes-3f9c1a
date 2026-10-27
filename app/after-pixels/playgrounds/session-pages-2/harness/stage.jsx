@@ -29,6 +29,14 @@ const Sp2Screen = ({ api }) => {
   const r = api.route;
   // A link followed out of the page shows canon's real page; picking a row brings the session page back.
   if (!(r.name === 'session' && r.id === st.sid)) return <GsScreen name={r.name} />;
+  // A sheet replaces the page, under canon's top bar.
+  const sheet = sel.view && (game.sheets || []).find((x) => x.id === sel.view);
+  if (sheet && window[sheet.Component]) return (
+    <>
+      <main className="gs-wrap gs-main">{React.createElement(window[sheet.Component])}</main>
+      {ReactDOM.createPortal(<div className="sp2-now" aria-live="polite">{game.name + ' · ' + sheet.name}</div>, document.body)}
+    </>
+  );
   const s = GS_SESSIONS[st.sid];
   const def = window.sp2GetOption(game.id, sel.opt);
   const Comp = def.Component;

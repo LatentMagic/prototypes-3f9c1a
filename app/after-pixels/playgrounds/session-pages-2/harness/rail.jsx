@@ -51,8 +51,18 @@ const Sp2Rail = ({ onPick }) => {
             onChange={(v) => { window.sp2Store.setState(game.id, v); if (onPick) onPick(); }} />
         </div>
         <ul className="sp2-opts">
-          {opts.map((n) => <Sp2Row key={n} gid={game.id} n={n} active={sel.opt === n} onPick={onPick} />)}
+          {opts.map((n) => <Sp2Row key={n} gid={game.id} n={n} active={!sel.view && sel.opt === n} onPick={onPick} />)}
         </ul>
+        {(game.sheets || []).length > 0 && <ul className="sp2-opts">
+          {game.sheets.map((sh) => (
+            <li key={sh.id} className="sp2-opt" data-active={sel.view === sh.id ? '1' : undefined}>
+              <div className="sp2-opt-line">
+                <button type="button" className="sp2-opt-pick" aria-pressed={sel.view === sh.id} onClick={() => { window.sp2Store.setView(game.id, sh.id); if (onPick) onPick(); }}>
+                  <span className="sp2-opt-n">◇</span><span className="sp2-opt-name">{sh.name}</span>
+                </button>
+              </div>
+            </li>))}
+        </ul>}
       </section>
       {game.config && window[game.config] && React.createElement(window[game.config])}
     </div>

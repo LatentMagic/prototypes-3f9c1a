@@ -88,3 +88,32 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wdc-ratio { font: 400 11px/1.2 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
 .wdc-reset { justify-self: start; margin: 0 4px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 500 13px/1 var(--font-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .kit-config-body .wdc-pal, .kit-config-body .wdc-select, .kit-config-body .wdc-hex { border-color: var(--color-border-1, #bbb); }
+
+/* ---- Centring: the fixed-width board (option 1) and its card (option 2) sit in the middle of the content column. ---- */
+.sp2-area > .wd1, .sp2-area .wd1-card { margin-inline: auto; }
+.wd1-card .wd1 { margin-inline: auto; }
+
+/* ---- The Backgrounds sheet: palette A's tiles, whatever the colour config holds ---- */
+.wdb { display: grid; gap: 24px; }
+.wdb-head { display: grid; gap: 8px; }
+.wdb-head p { margin: 0; }
+.wdb-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px 16px; }
+.wdb-cell { display: grid; gap: 8px; align-content: start; min-width: 0;
+  --wd-hit: #4CC38A; --wd-hit-on: #08140E; --wd-near: #E5A63B; --wd-near-on: #1B1917; --wd-miss: #918B80; --wd-miss-on: #ABA79E; }
+.wdb-cell .wd-miss { border: 2px solid #918B80 !important; background: transparent !important; }
+.wdb-cover { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.wdb-cover.is-edged { box-shadow: inset 0 0 0 1px var(--line); outline: 1px solid var(--line); outline-offset: -1px; }
+.wdb-slice { --t: 40px; --g: 6px; display: grid; gap: var(--g); justify-content: center; padding: 16px; background: var(--wdb-ground); }
+.wdb-slice .wd-t { font-size: 20px; }
+.wdb-slice .wd-gap { width: 100%; }
+.wdb-slice.is-light { --wd-hint-edge: #1B1917; --wd-hint-on: #1B1917; }
+.wdb-slice.is-light .wd-gap { border-bottom-color: color-mix(in srgb, #1B1917 35%, transparent); }
+.wdb-slice.is-page { padding-inline: 0; }
+.wdb-slice.is-frame { box-shadow: inset 0 0 0 8px var(--wdb-edge); padding: 18px 16px; }
+.wdb-slice.is-band { border-top: 10px solid var(--wdb-edge); }
+.wdb-slice.is-edge { box-shadow: inset 0 0 0 1px var(--wdb-edge); }
+/* The game's grid: empty tiles above and below the played rows, in a quiet line colour, so the ground is the board itself. */
+.wdb-slice.is-grid .wd-empty { border-color: var(--wdb-edge); }
+.wdb-cap { display: grid; gap: 2px; font-size: 14px; }
+.wdb-hex { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--muted); }
+.wdb-note { font-size: 13px; color: var(--muted); }

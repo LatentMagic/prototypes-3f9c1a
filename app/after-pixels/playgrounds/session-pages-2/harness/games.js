@@ -9,7 +9,9 @@ window.SP2 = {
       id: 'word', name: 'Daily Word',
       css: ['games/word/word.css'],
       config: 'WdColourConfig',   // a window component the rail shows under the options (games/word/colours.jsx)
-      files: ['games/word/colours.jsx', 'games/word/model.jsx', 'games/word/option-1.jsx', 'games/word/option-3.jsx'],
+      files: ['games/word/colours.jsx', 'games/word/model.jsx', 'games/word/option-1.jsx', 'games/word/option-3.jsx', 'games/word/backgrounds.jsx'],
+      // Sheets: comparison views listed under the options (?view=<id>), each a window component.
+      sheets: [{ id: 'backgrounds', name: 'Backgrounds', Component: 'WdBackgrounds' }],
       states: [
         { id: 'solved', label: 'Solved', sid: 'sp2-word-solved', week: 'done' },
         { id: 'failed', label: 'Failed', sid: 'sp2-word-failed', week: 'done' },
