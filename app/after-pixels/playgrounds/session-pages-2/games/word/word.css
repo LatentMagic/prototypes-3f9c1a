@@ -56,7 +56,7 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 }
 /* 2: the store's card around the board, sized to it. On a phone the card's padding comes out of the board's width.
    From 640px the board grows wider, to 760px, tiles up to 96px tall (wider than square, so six guesses stay short), and the
-   card sits on the content column's left edge, under the cover, instead of floating in the middle. */
+   card stays centred in the content column (owner, 2026-10-27). */
 .sp2-area .wd1-card { width: max-content; max-width: 100%; box-sizing: border-box; }
 .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
 @container sp2 (min-width: 640px) {
@@ -109,9 +109,8 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wdc-reset { justify-self: start; margin: 0 4px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 500 13px/1 var(--font-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .kit-config-body .wdc-pal, .kit-config-body .wdc-select, .kit-config-body .wdc-hex { border-color: var(--color-border-1, #bbb); }
 
-/* ---- Placing: the fixed-width board (option 1) sits in the middle of the content column; the card (option 2) on its left edge. ---- */
-.sp2-area > .wd1 { margin-inline: auto; }
-.sp2-area .wd1-card { margin-inline: 0; }
+/* ---- Centring: the fixed-width board (option 1) and its card (option 2) sit in the middle of the content column. ---- */
+.sp2-area > .wd1, .sp2-area .wd1-card { margin-inline: auto; }
 .wd1-card .wd1 { margin-inline: auto; }
 
 /* ---- The Backgrounds sheet: palette A's tiles, whatever the colour config holds ----
