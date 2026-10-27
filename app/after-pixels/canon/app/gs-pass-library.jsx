@@ -42,6 +42,8 @@ const CPR_FIRST = {
 const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
+  // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
+  if (id === 'escape' && st !== 'none' && window.EsNow) return <EsNow label={f.label} title={f.title} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? <span className="gs-muted gs-pu-soon">Chapter 3: coming soon</span> : null;

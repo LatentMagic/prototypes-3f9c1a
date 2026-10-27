@@ -13,7 +13,7 @@ const useGsDone = (ms) => {
 const GsDone = ({ children }) => <span className="gs-ico-row gs-done" role="status"><DS.Icon name="check" />{children}</span>;
 
 // "Confirm it’s you": a password for an email account; for a Google or Apple account, a code sent to its email
-// (shaped like Change email's code step). A centred window at every width.
+// (shaped like Change email's code step). KEEP: a centred window at every width (a dialog: one question).
 const GsIdentity = ({ open, provider, onCancel, onOk }) => {
   const gs = useGs();
   const [pw, setPw] = React.useState('');

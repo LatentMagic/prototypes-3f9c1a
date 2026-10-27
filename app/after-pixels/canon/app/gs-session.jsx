@@ -49,8 +49,8 @@ const gsShareText = (s) => {
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
 };
-// A blank line stays a blank line (Daily Word's line after its head). It is drawn inside the line above it,
-// so the card's gaps stay one token (4px); Copy still carries the empty line.
+// KEEP: a blank share line (Daily Word's, after its head) shows as a blank line while the card's gaps stay one 4px token, and Copy
+// still carries it, so what's pasted matches what's shown.
 const GsShareText = ({ lines }) => {
   const shown = []; (lines || []).forEach((l) => { if (l === '' && shown.length) shown[shown.length - 1] += '\n'; else shown.push(l); });
   return (
@@ -97,6 +97,8 @@ const GsSessionRecord = () => {
   const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Start over</DS.Button> : null;
   const onceLine = !!s.gid && !over && <p>{GS_ONCE_LINE}</p>;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
+  // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx).
+  // A game without one shows the plain list.
   const list = (
     <section className="gs-stack-md">
       <h2 className="mcp-t-sec">{gsOr(s.listTitle)}</h2>
@@ -105,6 +107,10 @@ const GsSessionRecord = () => {
       </ol>}
     </section>
   );
+  const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];
+  // window.GS_SESSION_QUIET[gid](s, ed) gives { label, h1 } for a head that carries no result or figures: the game's body tells them (Escape).
+  const quiet = window.GS_SESSION_QUIET && window.GS_SESSION_QUIET[s.gid] ? window.GS_SESSION_QUIET[s.gid](s, ed) : null;
+  const body = Body ? <Body s={s} sid={gs.route.id} /> : list;
   // A day or week that ended before the player finished: no result, no score line, no play control. What was played stays.
   if (s.unfinished) return (<>
     {back}
@@ -118,7 +124,7 @@ const GsSessionRecord = () => {
           <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
         </div>
       </section>
-      {list}
+      {body}
     </main>
   </>);
   return (<>
@@ -127,11 +133,11 @@ const GsSessionRecord = () => {
       <section className="gs-sess-head">
         <GsCover art={s.art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
-          <h1 className="gs-h1">{gsOr(s.result)}</h1>
+          <span className="mcp-t-card">{quiet ? quiet.label : ed ? edLabel(ed) : s.game}</span>
+          <h1 className="gs-h1">{quiet ? quiet.h1 : gsOr(s.result)}</h1>
           <div className="gs-figs">
             <span className="gs-fig gs-fig-quiet">{gsShortDay(gsSessDate(s, gs))}</span>
-            {(s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
+            {!quiet && (s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
           </div>
           <div className="gs-pairwrap">
             {kept ? null : s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
@@ -167,7 +173,7 @@ const GsSessionRecord = () => {
             </DS.Card>
           </div>
         </section>
-      ) : list}
+      ) : body}
 
       {s.credit && <p className="gs-small gs-muted" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
 

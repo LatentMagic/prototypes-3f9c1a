@@ -36,9 +36,9 @@ const CprHomeLine = () => {
   const gs = useGs(); const c = cprPassLine();
   return <>{c.p1.replace(/ with your account\. $/, ' free. ')}{c.p1 ? 'Everything else' : 'Everything'} with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
 };
-// The Pass card, first in the row so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
+// KEEP: the Pass card is first in the row, so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
 // Salvage's board is too fine to read at mosaic size, so Daily Word takes its place (owner, 2026-10-21).
-// The eight are then ordered so no square shares its ground colour with the one beside or above it (four to a row).
+// KEEP: no square shares its ground colour with the one beside or above it (four to a row).
 const cprMix = (ids) => {
   const ground = (k) => (GS_ART[GS_GAMES[k].art] || {}).ground; const out = []; const used = ids.map(() => false);
   const ok = (k, i) => !((i % 4 && ground(out[i - 1]) === ground(k)) || (i >= 4 && ground(out[i - 4]) === ground(k)));

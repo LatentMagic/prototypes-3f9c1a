@@ -159,8 +159,7 @@ const GsFacts = ({ id }) => {
 const GsGamePage = ({ id, top }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
-  const others = window.GS_HOME_GAMES.filter((k) => k !== id); // Home's Available games row, minus this game
-  return (
+  const others = window.GS_HOME_GAMES.filter((k) => k !== id);   return (
     <main className="gs-wrap gs-main">
       {top}
 

@@ -26,12 +26,9 @@ const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth
 };
 
 // ---- Scroll lock, shared by the aids' dialogs --------------------------------
-// Locks whatever is actually scrolling behind a dialog — the phone frame's
-// inner screen when forced-mobile, otherwise the document — so a scroll gesture
-// that starts on the scrim never falls through to the app behind. Dialogs can
-// stack, so the lock is counted: the overflow it found is put back only when the
-// last one lets go. Returns the release, so it reads as an effect:
-// useEffect(kitLockScroll, []).
+// KEEP: a scroll that starts on a dialog's scrim never moves the page behind it (the phone frame's screen when
+// forced-mobile), and stacked dialogs release it only when the last one closes.
+// Returns the release, so it reads as an effect: useEffect(kitLockScroll, []).
 const kitScrollLocks = new Map();
 const kitLockScroll = () => {
   const scroller = document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;

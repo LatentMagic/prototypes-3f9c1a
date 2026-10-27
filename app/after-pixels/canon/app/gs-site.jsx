@@ -39,8 +39,9 @@ const GsWordmark = () => {
   );
 };
 
-// ---- Loader. Withheld for a wait too short to notice; once shown, held long
-// enough not to flicker. gsSettle(start, fn) applies the hold to a finished wait.
+// ---- Loader ----
+// KEEP: a wait too short to notice shows no loader; once shown, it stays long enough not to flicker.
+// gsSettle(start, fn) applies the hold to a finished wait.
 const GS_LOADER = { withhold: 300, minHold: 600 };
 const gsSettle = (start, fn) => {
   const t = Date.now() - start;

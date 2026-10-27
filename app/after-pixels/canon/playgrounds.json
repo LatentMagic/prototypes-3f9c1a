@@ -1,8 +1,54 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "After Pixels",
-  "generated": "2026-10-21",
+  "generated": "2026-10-27",
   "tickets": [
+    {
+      "id": "1236",
+      "slug": "1236-session-pages",
+      "name": "Session pages, Escape first",
+      "state": "active",
+      "touched": "2026-10-27",
+      "entries": [
+        {
+          "name": "Escape’s session page, v5: lock detail and result",
+          "path": "docs/specs/1236-session-pages/playground/v5.html",
+          "note": "Settled and built into the main build (app/gs-escape.jsx), 2026-10-27. Kept as the harness for the next game’s playground. v4 with the open exit door and lift hover fixed. Three lock details on Every lock at once (Columns, Lanes, Scorecard; one lock alone on a phone), three results that leave the minutes to the line, and tiles or marks for a try. Under, on par, over, inside."
+        },
+        {
+          "name": "Escape’s session page, v4: result, escape and hover",
+          "path": "docs/specs/1236-session-pages/playground/v4.html",
+          "note": "Rebuilt from v3’s Design 1 to v4-goal.md: three designs each of the result, how the escape is shown and hover, picked independently in the bar; the lock’s tries across the card on desktop."
+        },
+        {
+          "name": "Escape’s session page, v3: designs 1 to 3",
+          "path": "docs/specs/1236-session-pages/playground/v3.html",
+          "note": "Three designs of the session page’s own part, each with the result designed into it and none in the head: the locks as tumbler rows (1), a square clock face (2), the doorways you came through (3). Under par, over par, in progress. The library card is v2’s Version 1 until one is picked."
+        },
+        {
+          "name": "Escape’s lock row, v2: versions 1 to 3",
+          "path": "docs/specs/1236-session-pages/playground/v2.html",
+          "note": "Option 1’s line, three ways, on the THIS WEEK card (Out above, Named doors, The gap), and the same row at page size on the session page, with Every move as the store’s list, collapsed. Under par, over par, in progress."
+        },
+        {
+          "name": "Escape’s session page and library card, options 1 to 3",
+          "path": "docs/specs/1236-session-pages/playground/index.html",
+          "note": "The line (1), the rail (2) and the minutes (3), each on the session page under the shared head and in the THIS WEEK card. Escaped, over par and unfinished; two routes in the panel.",
+          "on": false,
+          "off": "Replaced by v2, owner 2026-10-27: options 2 and 3 dropped, the session page work rejected."
+        }
+      ],
+      "archive": []
+    },
+    {
+      "id": "kit-v8",
+      "slug": "kit-v8",
+      "name": "Comments carry intent (kit update)",
+      "state": "active",
+      "touched": "2026-10-27",
+      "entries": [],
+      "archive": []
+    },
     {
       "id": null,
       "slug": "home-pass-line",

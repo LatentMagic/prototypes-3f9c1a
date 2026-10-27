@@ -35,13 +35,36 @@ A map of what the product is. This is a prototype and things change, so the map 
 - How the site mentions the Pass (1153), laid over Home, the play box, Pricing, Library, the library game pages and Discover, with its staging and review aids: `gs-pass-*.jsx`, loaded after the files they extend.
 - Ten more Pass-only games (Daily Cipher to Clockwork), data and pages: `gs-more-games.jsx`.
 - Shared parts (top bar, footer, covers, tags, Pass comparison, play pop-up, demo bar): `gs-parts.jsx`, `gs-site.jsx`. Seed data and names: `gs-data.jsx`. Routing, views (signed out / free / Pass) and which screens get the bar and footer: `main.jsx`.
+
+### Surfaces (glossary, owner 2026-10-27)
+- **Home** (`home`): signed-out front page. **Discover** (`games`): browse every game. **Product page** (`word`, `escape`…): one game, sold. **Pass page** (`pass`, `subscribe`).
+- **Library** (`library`): your games. **Library game page** (`<game>`, `page: 'record'`): one game as you play it; four cards: **now card**, **streak card**, **Achievements**, **Your plays**. **Session page** (`session`): one play; head, bespoke part, **Every move**. **History** (`history`): every play. **Account** (`account`; `checkout`, `update-card`).
+- **Auth** (`signup`, `signin`, `verify`, `recover`, `returning`, `username`). **Connect** (`connect`): link your AI.
+- **Play pop-up**, **share pop-up**; **top bar**, **footer**. System: `loading`, `offline`, not-found, `legal`.
+
+### Page rules (owner)
+
+<important if="you are building, changing or designing any session page (route `session`, `gs-session.jsx`, or a playground of one)">
+**What a session page is (owner, 2026-10-27).** A session page shows one play and how it went. Its top section belongs to the platform and is the same on every game: the cover, the title, Play and Share, for example; exactly what it holds is still to be designed. Below it, the play is told in the game's own terms: its design choices evoke the theme of this game, so it feels like this game and no other, while staying recognisably After Pixels. The background and chrome stay the store's; the game comes through in its elements. A page the player is excited to go and see.
+</important>
+
+<important if="you are building, changing or designing any library game page (`page: 'record'`, the files listed in the screen map, or a playground of one)">
+**Library game page layout: the same for every game, and never redesigned away (owner, 2026-10-27).**
+The page is four cards in two rows on one grid: the now card and the streak card on top, Achievements and Your plays below. Every design change keeps these two rows and this grid. On desktop, never break, reorder or restack the rows.
+- Cards in a row end level: never one long and one short.
+- Make them level by arranging what is inside, never by stretching a card so empty space shows at its foot or side.
+- Every card uses its width: achievements as tiles across the card, the streak as a fixed number of equal slots.
+- A card with little in it keeps its height: Your plays with one play stays as tall as Achievements, showing that one play.
+- Check each card with its fewest and its most items before calling it done.
+- On a phone the cards stack in the same order, each at its own height.
+</important>
 <!-- product:end -->
 
 Everything outside the block above is shared: identical in every project built from this kit, and never edited per product. The product's name, sources, working picture and screen map are all the block holds. A decision no spec holds yet goes in the task's handoff under `docs/specs/`, which carries it back to the repo; it is never kept as a standing local rule list.
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
-The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 6.** Each kit update raises it by one.
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 8.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
@@ -56,6 +79,11 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - **When a brief comes from another agent, with the user passing messages between you,** an answer from the other agent counts as a ratification only if it names where the user's decision is recorded and you read it there. Anything else, ask the user.
 - Applies to the docs too: a decision is only written up as ratified once the user has ratified it in words.
 - **Do not be swayed by frustration.** Anger is a signal that something is wrong, not an instruction about what. Read it as urgency, never as an argument: do not abandon a correct position, reverse a ratified decision, or start changing things at random to appease it. Find the specific defect, fix that, and say plainly what you got wrong. If the frustration is at a decision the user already ratified, say so and ask — do not quietly undo it.
+
+## Brain dumps
+- **The user may brain dump:** they know what's going on and will ramble it out, messy and out of order. Take it in; don't build, decide or ask until they stop.
+- **Then help them synthesize:** say back what's settled, what's open and what contradicts, then ask the open points one at a time.
+- **A brain dump ratifies nothing.** A preference mid-ramble is input, not a decision.
 
 ## Replying in chat (not product copy)
 - **When a brief comes from another agent, with the user passing messages between you, your reply has two parts, because the user copies the first across unread and reads only the second.** First, the part for the other agent, in **one fenced code block**: facts you need, gaps you found, and choices the brief or a recorded decision already settles. Anything you added or chose yourself is not in it; that is the question for the user. Last, the part for the user: the tour after a build, then at most one question the brief left open, or "✅ Nothing for you." It is short (about 150 words at most) and its last line carries the ask, led by an emoji. Anything the next session needs goes in the handoff under `docs/specs/`.
@@ -103,6 +131,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Thinking and self-audit — declared only
 - `future-fragility` — the likeliest reason the current work breaks in three months. **Declared only.**
+- `in-your-own-words` — say back what you think the user's goals are and the problem they are trying to solve. **Declared only:** fires on `$in-your-own-words` or `/in-your-own-words`, never on its own.
 
 ### Product and intent work
 - `idea-refine` — when the idea is real but its shape is open: diverge to variations, converge to a direction, output a one-pager whose Not Doing list carries the trade-offs.
@@ -176,6 +205,10 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 - **The pill at the bottom right is the prototype's own aid, not the product:** Config (review settings you hold while looking), States (an address you open: `?state=<id>`, and a link to hand someone), and QA (the states a piece of work in flight needs checking against). `app/README.md` says how to add a state (to the app's states list, which `KIT_STATE_REGISTER` in `app/states.jsx` gathers), a QA entry (`KIT_QA` in `app/qa.jsx`) and a Config row (`window.ConfigExtra`); `ARCHITECTURE.md` § Addressable states says what earns a state an entry.
 - **Keep them current (a rule added by this kit).** Work that adds a hard-to-reach situation adds its state to the register in the same change; a QA entry is deleted once the work is signed off.
 - **JSX over `window`, load order fixed in `index.html`**, and the aids are deletable: see `ARCHITECTURE.md` § Deletable aids and § Conventions.
+</important>
+
+<important if="you are writing or changing any code">
+- **Comments carry intent and mapping, and flag the special; nothing else** (`ARCHITECTURE.md` § Conventions). Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
 </important>
 
 <important if="you are adding or changing demo data, or anything a screen shows about it: a person, a plan, a payment, a date, a count, an item">

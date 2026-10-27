@@ -1,6 +1,6 @@
 // After Pixels — Pricing (route `pass`). Re-publishes GsPass, replacing app/gs-billing.jsx's: canon's page with the pay line
-// in small type under the price and Choose a plan. Right-aligned while the button sits beside the price,
-// left-aligned once it is full width (the same 640px switch as .gs-pass-foot). The plan picker (`subscribe`) stays canon.
+// in small type under the price and Choose a plan. The plan picker (`subscribe`) stays canon.
+// KEEP: the pay line is right-aligned while the button sits beside the price and left-aligned once the button is full width (640px, as .gs-pass-foot).
 const CprPass = () => {
   const gs = useGs(); const holds = gs.view === 'pass';
   return (

@@ -31,7 +31,7 @@ const edList = (gs, gid) => {
   if (gid === 'barrow') return bwEds(gs);
   if (PZ[gid]) {
     const c = PZ[gid];
-    // The free first edition reads its one record, even when it is also the current one (Escape has one room so far).
+    // The free first edition reads its one record, even when it is also the current one.
     const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
     return edMore(gs, gid, c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
       status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
@@ -257,7 +257,7 @@ const phRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0
   .map((p) => ({ key: p.pid, title: phParts(p, true).title, when: [phWhen(p.at) + ', ' + phTime(p.at), phWhen(p.at)], status: p.status, onOpen: () => p.open(gs) }));
 
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
-// On a phone: the latest four. Beside achievements: as many as fill the card to achievements' height.
+// KEEP: on a phone the card shows the latest four plays; beside achievements, as many as fill it to achievements' height, so the row ends level.
 // A game never played shows the card's empty line only (library-mystery-never-played).
 const LbRecent = (p) => {
   const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
@@ -289,7 +289,7 @@ const LbRecentList = ({ title, allLabel, empty }) => {
       if (list.current) { probe.current.style.right = 'auto'; probe.current.style.width = list.current.offsetWidth + 'px'; }
       const hs = Array.from(probe.current.firstElementChild.children).map((x) => x.offsetHeight);
       let k = 0; let sum = 0; while (k < hs.length && sum + hs[k] <= room + 1) { sum += hs[k]; k += 1; }
-      // Never fewer than the phone's four: a short neighbour grows to match instead.
+      // KEEP: never fewer than four plays; a shorter neighbour grows to match instead.
       if (k < Math.min(4, hs.length)) return reset();
       setFit(k);
     };
@@ -307,7 +307,7 @@ const LbRecentList = ({ title, allLabel, empty }) => {
   );
 };
 
-// Pager: numbers when they fit, "Page 3 of 9" when they don't (container query in the page CSS).
+// KEEP: the pager shows page numbers when they fit and "Page 3 of 9" when they don't (container query in the page CSS).
 const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
   <nav className="lb-pages rp-pg" aria-label="Pages">
     {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="next" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}

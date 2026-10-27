@@ -15,7 +15,7 @@
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
-const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false };
+const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false, escape: 'under' };
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.
 const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
@@ -328,7 +328,7 @@ const KitApp = () => {
         </div>
       ) : appTree}
 
-      {/* Config pill, mounted outside the phone frame: the frame's transform would capture its position: fixed. */}
+      {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
       {ConfigLauncher && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}

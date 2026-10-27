@@ -33,7 +33,7 @@ const GsArt = ({ art, shape }) => {
   }
   return <div className={'mcp-art ' + GS_RATIO[shape] + ' ' + p.bg} aria-hidden="true"><div className="gs-st">{p.body}</div></div>;
 };
-// Touch: the pose plays while a finger is down on the card and stops on release or when a scroll takes over.
+// KEEP: on touch, the pose plays while a finger is down on the card and stops on release or when a scroll takes over, so scrolling a row never animates it.
 // Put the ref on any element inside the card; the card itself carries .gs-host.
 const useGsArtHost = () => {
   const ref = React.useRef(null);
@@ -141,7 +141,7 @@ const GsSoonCard = ({ g }) => {
 // GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall and every tile row. Coming soon is GsSoonCard.
 // GsCard, GsGameCard and GsPick are replaced by gs-pass-home.jsx (CprCard, CprPick); GsTile is not.
 // The whole card is the target and the hover surface: hover, focus and press play the art's motion.
-// A blurb's last two words stay together, so its last line is never one word.
+// KEEP: a blurb's last line is never one word (its last two words stay together), so no card ends on a lone word.
 const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
 const GsCard = ({ id, mark }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
@@ -275,7 +275,7 @@ const GsTopBar = () => {
         <nav className="gs-nav" aria-label="Main">
           {links.map(([id, l, fn]) => <button key={id} type="button" className="gs-navlink" aria-current={cur === id ? 'page' : undefined} onClick={fn}>{l}</button>)}
         </nav>
-        {/* The top bar's buttons are menu triggers, which keep their own width (design system Layout); mcp-menu-wrap is the system's hook for that. */}
+        {/* KEEP: the top bar's buttons keep their own width at every width, as menu triggers do (design system Layout); mcp-menu-wrap is the system's hook. */}
         <div className="gs-top-end mcp-menu-wrap">
           {out ? (
             <div className="gs-wide-only">

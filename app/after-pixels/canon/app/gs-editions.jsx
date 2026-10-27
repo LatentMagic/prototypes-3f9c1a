@@ -91,7 +91,8 @@ const PgeListPage = ({ gid }) => {
   );
 };
 
-// ---- The edition in a panel over the list: a bottom sheet under 640px, its prompt inside, no play dialog. ----
+// ---- The edition in a panel over the list, its prompt inside, no play dialog. ----
+// KEEP: under 640px the panel is a bottom sheet.
 // The open edition is the list's own state (f.open), kept in the history entry, so Back from "See in History" returns with it open.
 const PgeEdPanel = ({ gid, k, onClose }) => {
   const gs = useGs(); const g = GS_GAMES[gid]; const last = React.useRef(null);

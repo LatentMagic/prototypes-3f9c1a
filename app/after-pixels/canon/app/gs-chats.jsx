@@ -89,7 +89,7 @@ const GS_HERO_CHAT = GS_CHATS.casebook.flatMap((c) => c.turns);
 const GsChatPic = ({ turns, height, width, label }) => (
   <DS.ChatPicture turns={turns} mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={height} width={width} label={label} />
 );
-// The product page's row: the design system's CardRow kind="chat". It shares the width when the pictures fit and scrolls sideways
+// KEEP: the product page's chat row (the design system's CardRow kind="chat") shares the width when the pictures fit and scrolls sideways
 // with Previous and Next when they don't. Each ChatPicture scrolls itself, opens on its latest turn and has its own "Back to the start" pill.
 const GsChatRow = ({ id }) => {
   const name = GS_GAMES[id].name;

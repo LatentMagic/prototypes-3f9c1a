@@ -180,3 +180,7 @@ const QaPalette = ({ statesGroups, onGo, onClose }) => {
 };
 
 Object.assign(window, { KIT_QA, QaPalette });
+KIT_QA.unshift({ key: 'escape-1236', title: 'Escape: session page and now card (1236, not signed off)',
+  note: 'Each at desktop and phone width. Session page: the door and Escaped with the verdict, the line, one lane per lock (two a row on desktop, the picked one alone on a phone), Every move collapsed. Now card: Escaped and the verdict at the head’s right, the line; press a door: the session page opens on that lock’s lane. Hard: the cabinet lane wraps to two rows; doors stay 32px apart.',
+  steps: ['library-escape', 'library-escape-on-par', 'library-escape-over', 'library-escape-hard', 'library-escape-in-progress', 'library-escape-free',
+    'session-escape', 'session-escape-on-par', 'session-escape-over', 'session-escape-hard', 'session-escape-in-progress'] });

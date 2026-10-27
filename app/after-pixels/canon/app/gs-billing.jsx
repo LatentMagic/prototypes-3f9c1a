@@ -31,7 +31,7 @@ const GsRows = ({ rows }) => (
     {rows.map(([k, v]) => <div key={k} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
   </dl>
 );
-// Two actions: stacked with the primary first on a phone, one row (secondary left) wider.
+// KEEP: two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
 const GsActs = ({ children }) => <div className="gs-acts">{children}</div>;
 // A plain heading for a pop-up (the system's title renders as h3).
 const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;

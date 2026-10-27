@@ -271,7 +271,7 @@ Object.assign(GS_SESSIONS, {
   // Delve run 1 in progress, Wren the Rogue.
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null },
 });
-// Escape has one room so far; the old earlier-room id reads this week's.
+// The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];
 
 const gsLapsed = (gs) => gs.view !== 'pass' && !!gs.sub.hadPass;
@@ -296,6 +296,78 @@ const GS_RESULT = {
   // A day that ended without an ending reads as the app's unfinished status.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
 };
+
+// ---- Escape: what the room records beyond the moves, read by the session page and the now card (app/gs-escape.jsx). ----
+// Par and the either-or exit are the room's; a mechanism's part count is the lock's. A typed lock answers only Open or Wrong.
+const GS_ES1_PAR = 30;
+const GS_ES1_CLOSED = { 'oak door lock': 'The chimney hatch' };
+const GS_ES_PARTS = { 'clock hands': 2 };
+// Each finished play: its time and the minute each lock gave way, in the order they opened; esParts: a mechanism's
+// wrong settings as [right, of], keyed by move. The in-progress play is this week's cut short, so it reads this week's minutes.
+GS_SESSIONS['escape-week'].esTimes = { min: 28, opened: [6, 17, 19, 28] };
+// Sample plays of this week's room, staged by Config → Escape, this week's room (review.escape). Exactly par counts as under.
+GS_SESSIONS['escape-par'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.escape({ min: 30, par: 'under par' }), share: GS_RESULT.escape({ min: 30, par: 'under par' }),
+  figures: ['30 min, on par', '1 hint', '2 wrong tries'], shareLines: ['Escape No. 1 · escaped in 30 min, on par · 1 hint 💡 · 2 wrong tries'], esTimes: { min: 30, opened: [7, 18, 21, 30] } };
+GS_SESSIONS['escape-over'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.escape({ min: 41, par: 'over par' }), share: GS_RESULT.escape({ min: 41, par: 'over par' }),
+  figures: ['41 min, over par', '4 hints', '7 wrong tries'], shareLines: ['Escape No. 1 · escaped in 41 min, over par · 4 hints 💡 · 7 wrong tries'],
+  esTimes: { min: 41, opened: [9, 27, 34, 41] }, esParts: { 12: [1, 2] },
+  lines: [
+    ['Move 1', 'Examine the workbench', GS_ES1.bench],
+    ['Move 2', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
+    ['Move 3', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
+    ['Hint', 'The workbench drawer', 'Count the gears’ teeth, and read each count as a letter.'],
+    ['Move 4', 'Try an answer (4 letters) on the workbench drawer', GS_ES1.drawer],
+    ['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.'],
+    ['Move 5', 'Examine the case clock', GS_ES1.clock],
+    ['Move 6', 'Examine the glass cabinet', GS_ES1.cabinet],
+    ['Move 7', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
+    ['Hint', 'The cabinet lock', 'Read the watches in the order the plate gives the days.'],
+    ['Move 8', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
+    ['Hint', 'The cabinet lock', 'Monday’s watch comes first, and it shows seven.'],
+    ['Move 9', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
+    ['Hint', 'The cabinet lock', 'The answer, given outright.'],
+    ['Move 10', 'Try an answer (4 digits) on the cabinet lock', GS_ES1.diary],
+    ['Move 11', 'Use the brass winding key on the case clock', 'Used up'],
+    ['Move 12', 'Set the clock hands to an hour and a minute', 'Wrong'],
+    ['Move 13', 'Set the clock hands to an hour and a minute', GS_ES1.hands],
+    ['Move 14', 'Examine the portrait', GS_ES1.portrait],
+    ['Move 15', 'Examine the fireplace', GS_ES1.fire],
+    ['Move 16', 'Examine the oak door', GS_ES1.door],
+    ['Move 17', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
+    ['Move 18', 'Try an answer (4 letters) on the oak door lock', 'Out'],
+  ] };
+// The hard play: a run built to the Escape spec's limits, to test every Escape surface. Six locks; the cabinet lock (typed)
+// takes eighteen tries and all three hints; the clock hands (a mechanism) answer each setting with a count and need a hint.
+// Out at 52 min, over par. All invented.
+GS_SESSIONS['escape-hard'] = (() => {
+  const L = []; let n = 0; const mv = (what, res) => L.push(['Move ' + (n += 1), what, res]);
+  const tryOn = (len, lock, k) => { for (let i = 0; i < k; i += 1) mv('Try an answer (' + len + ') on the ' + lock, 'Wrong'); };
+  const hint = (lock, text) => L.push(['Hint', 'The ' + lock, text]);
+  mv('Examine the workbench', 'Gears of four sizes lie by the drawer.');
+  tryOn('4 letters', 'workbench drawer', 1); mv('Try an answer (4 letters) on the workbench drawer', 'The drawer slides open.');
+  L.push(['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.']);
+  mv('Examine the glass cabinet', 'Seven watches behind glass, each stopped.');
+  tryOn('4 digits', 'cabinet lock', 9); hint('cabinet lock', 'Read the watches in the order the plate gives the days.');
+  tryOn('4 digits', 'cabinet lock', 4); hint('cabinet lock', 'Monday’s watch comes first, and it shows seven.');
+  tryOn('4 digits', 'cabinet lock', 4); hint('cabinet lock', 'The answer, given outright.');
+  mv('Try an answer (4 digits) on the cabinet lock', 'The cabinet door swings open.');
+  mv('Examine the case clock', 'Its hands are stopped; the winding hole is empty.');
+  mv('Use the brass winding key on the case clock', 'Used up');
+  for (let i = 0; i < 3; i += 1) mv('Set the clock hands to an hour and a minute', 'Wrong');
+  hint('clock hands', 'The diary names the minute they parted.');
+  mv('Set the clock hands to an hour and a minute', 'Wrong'); mv('Set the clock hands to an hour and a minute', 'Both hands click home.');
+  mv('Examine the writing desk', 'A three-dial lock on the lid.');
+  tryOn('3 digits', 'writing desk lock', 1); mv('Try an answer (3 digits) on the writing desk lock', 'The lid lifts.');
+  mv('Examine the map case', 'A five-letter lock under the railway map.');
+  tryOn('5 letters', 'map case lock', 3); hint('map case lock', 'The map marks one station in red.');
+  mv('Try an answer (5 letters) on the map case lock', 'The drawer opens on a ticket.');
+  mv('Examine the oak door', 'Four letters, and the ticket fits the slot.');
+  tryOn('4 letters', 'oak door lock', 1); mv('Try an answer (4 letters) on the oak door lock', 'Out');
+  const r = GS_RESULT.escape({ min: 52, par: 'over par' });
+  return { ...GS_SESSIONS['escape-week'], result: r, share: r, figures: ['52 min, over par', '5 hints', '27 wrong tries'],
+    shareLines: ['Escape No. 1 · escaped in 52 min, over par · 5 hints 💡 · 27 wrong tries'], lines: L,
+    esTimes: { min: 52, opened: [3, 21, 30, 34, 44, 52] }, esParts: { 25: [0, 2], 26: [1, 2], 27: [1, 2], 28: [1, 2] } };
+})();
 
 // A row's result in its forms, longest first (ListRow): the short form is the score alone, or the game's own short word.
 const gsForms = (s) => {

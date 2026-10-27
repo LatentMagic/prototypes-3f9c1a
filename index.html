@@ -1862,6 +1862,16 @@
                 'The _ds/ copy picks up the design system\'s hygiene pass: comments in the component code and stylesheet lose decision dates and screen names. The app itself is unchanged.',
               ],
             },
+            {
+              date: '2026-10-27',
+              title: 'Escape\'s own session page and library record',
+              items: [
+                'New app/gs-escape.jsx: Escape\'s session page draws its own body under the shared head (the result, a line of when each lock opened against par, a lane per lock with its tries and hints, then Every move). gs-session.jsx gains a per-game body hook (GS_SESSION_BODY) and a quiet head (GS_SESSION_QUIET) that leaves the result and figures to the body.',
+                'Escape in your library gains nine past rooms with their own sessions (gs-puzzles-library.jsx, gs-data.jsx).',
+                'New states: session-escape-on-par, -over, -hard (six locks, 18 tries on one), -in-progress; library-escape-on-par, -over, -hard. A new review control, escape (under, par, over, hard).',
+                'Many code comments are marked KEEP. _ds/ gains component folders (actions, chat, feedback, forms, media, surfaces). New docs/specs/1236-session-pages/ (Escape\'s spec, handoffs, playground) and kit-v8; new skill in-your-own-words. Unused uploads were dropped by the export.',
+              ],
+            },
           ],
         },
         {

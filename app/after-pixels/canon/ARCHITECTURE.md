@@ -54,4 +54,9 @@ A state is a scenario, never a width: posture comes from the window or the Viewp
 - **Container / presentation split**, focused components, split past ~200 lines. See `skills/frontend-ui-engineering/SKILL.md`.
 - **State** lives in `main.jsx` unless it is purely local chrome state (a drawer, a transition).
 - **Comments never cite a `docs/` path.** A comment may state what the code does and any rule or decision it keeps, reason included ("required before Terms ship"). It never points at a task folder or a handoff: those move when work is archived, and the pointer then leads nowhere.
+- **Comments carry intent and mapping, and flag the special; nothing else.**
+  - Intent: a rule or decision the code keeps, with its reason.
+  - Mapping: a short label that helps a reader find their way around a file, or says where a part sits in the product.
+  - The special: behaviour a rebuild from screenshots of the usual states would get wrong (adaptive styling, overlap or overflow handling, a value chosen against the default). Mark it `// KEEP:` and state the outcome the product must keep, in plain words with any numbers that matter, then one clause of why. Never the algorithm. These marks are written for another agent: the one that integrates this prototype into the product reads `KEEP:` as "preserve this", so it never needs speccing in a ticket. Change that behaviour and you update or remove its `KEEP:` in the same edit.
+  - No narration. A comment that restates what the code plainly does is deleted.
 - **Prefix.** Everything the kit names carries `kit` / `KIT` (`KIT_STATES`, `kitResolveState`, `.kit-config-*`). `app/README.md` says the same.

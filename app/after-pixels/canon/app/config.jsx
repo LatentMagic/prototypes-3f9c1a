@@ -66,7 +66,7 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
     window.addEventListener('pointerup', up);
   };
 
-  // keep a restored/old button position inside the current viewport (mount + resize)
+  // KEEP: the pill always sits inside the viewport, after a resize or with a position saved at another size.
   useCEffect(() => {
     const clamp = () => setBtnPos(p => {
       if (!p) return p;
@@ -174,12 +174,9 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
   // Lock whatever is scrolling behind the modal (app/primitives.jsx). Released on close.
   useCEffect(kitLockScroll, []);
 
-  // Staging buttons act on the app behind us, and some of those acts are
-  // animated. Firing while the modal is still on screen means the motion plays
-  // behind a card. So: intercept the click, play our exit, replay the click on
-  // a clear screen, then close. One place, every .kit-config-btn-secondary in
-  // the body (a product's ConfigExtra buttons included), nothing to configure:
-  // the button's own handler does not have to close the modal.
+  // KEEP: a staging button's effect plays on a clear screen, after the modal has gone, so its motion is never hidden behind the
+  // card. Applies to every .kit-config-btn-secondary in the body (a product's ConfigExtra buttons included); a button's own
+  // handler never has to close the modal.
   const onBodyClickCapture = (e) => {
     const btn = e.target.closest && e.target.closest('.kit-config-btn-secondary');
     if (!btn || btn.dataset.replay === '1') return;

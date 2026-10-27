@@ -47,7 +47,7 @@ const GsCopyPrompt = ({ text, label, block }) => {
   return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); }}>{label || 'Copy prompt'}</DS.Button>;
 };
 const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
-// The address scrolls sideways under a finger so the whole of it can be read; focus or a tap selects it for copying by hand.
+// KEEP: the address scrolls sideways under a finger so the whole of it can be read; focus or a tap selects it for copying by hand.
 // A box, not an input: an input's select-on-focus stops the swipe.
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
 const GsAddress = () => {

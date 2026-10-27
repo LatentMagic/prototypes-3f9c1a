@@ -33,6 +33,7 @@ const GsConfigExtra = () => {
       <div className="kit-config-hint">New: the Library shows every game never played and History is empty, as for an account made here.</div>
       <div className="kit-config-group-title">Library</div>
       {row('This week, or today', r.week === 'live' ? 'live' : 'done', (v) => set(() => api.setReview({ week: v })), o([['live', 'In progress'], ['done', 'Finished']]))}
+      {row('Escape, this week’s room', r.escape || 'under', (v) => set(() => api.setReview({ escape: v })), o([['under', 'Under par'], ['par', 'On par'], ['over', 'Over par'], ['hard', 'Hard']]))}
       {row('Free account, today', r.today === 'none' ? 'none' : 'played', (v) => set(() => api.setReview({ today: v })), o([['played', 'Played'], ['none', 'Not played']]))}
       {row('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]))}
       <div className="kit-config-hint">This edition's play, on every screen that shows it: the case for Casebook, the week for Delve and Escape, the day for each daily game. Finished unless set here or in the demo bar. Ended unfinished adds a Daily Groups day and a Delve week that ended before you finished.</div>
