@@ -19,7 +19,7 @@
 
   // The palette: the cover on its own forest ground, tiles on the dark page. A (brand green) is the owner's choice (2026-10-27);
   // B (teal) and C (bare misses) are gone, and an old &pal=b|c link opens on A.
-  // missStyle: 'fill' | 'outline' | 'cover' (an outline that fills on hover; on the cover, a small outline that grows and fills) | 'bare' (the letter alone, no tile; the cover's block as 'cover').
+  // missStyle: 'fill' | 'outline' | 'cover' (an outline; on the cover, a small outline that grows and fills on hover) | 'bare' (the letter alone, no tile; the cover's block as 'cover').
   const PALETTES = [
     { id: 'a', name: 'Brand green', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
   ];

@@ -6,6 +6,7 @@
   --wd-near: #E5A63B; --wd-near-on: #1B1917;
   --wd-miss: #918B80; --wd-miss-on: #ABA79E;
   --wd-empty: #37332E;
+  --wd-empty-edge: #746E65;   /* an empty slot's edge: 3:1 against the card (3.1) and the page (3.5), WCAG 1.4.11 */
 }
 
 /* The cover's block for a letter not in the word (model.jsx draws it at full size; the Backgrounds sheet draws its own).
@@ -32,10 +33,10 @@ html:not([data-wd-miss="outline"]) .mcp-cover[data-wd-open] .wd-cover-miss,
   font: 700 calc(var(--t-h, var(--t, 56px)) * .5)/1 var(--font-heading); text-transform: uppercase; }
 .wd-hit { background: var(--wd-hit); color: var(--wd-hit-on); }
 .wd-near { background: var(--wd-near); color: var(--wd-near-on); }
-.wd-miss { border: 2px solid var(--wd-miss); color: var(--wd-miss-on); transition: background-color 240ms var(--ease-out, ease-out); }
-html[data-wd-miss="fill"] .wd-miss, html[data-wd-miss="cover"] .wd-miss:hover { background: var(--wd-miss); }
+.wd-miss { border: 2px solid var(--wd-miss); color: var(--wd-miss-on); }
+html[data-wd-miss="fill"] .wd-miss { background: var(--wd-miss); }   /* tiles have no hover; only the cover's block answers the pointer */
 html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
-.wd-empty { border: 2px solid var(--wd-empty); }
+.wd-empty { border: 2px solid var(--wd-empty-edge); }
 .wd-gap { border-bottom: 2px dotted var(--wd-empty); height: auto; align-self: center; }
 .wd-hint { border: 2px dashed var(--wd-hint-edge, var(--off-white)); color: var(--wd-hint-on, var(--off-white)); }
 
@@ -53,9 +54,14 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
   .wd1 .wd-hint { grid-auto-flow: column; gap: 8px; }
   .wd1 .wd-hint::after { font-size: 10px; }
 }
-/* 2: the store's card around the board, sized to it. On a phone the card's padding comes out of the board's width. */
+/* 2: the store's card around the board, sized to it. On a phone the card's padding comes out of the board's width.
+   From 640px the board grows wider, to 760px, tiles up to 96px tall (wider than square, so six guesses stay short), and the
+   card sits on the content column's left edge, under the cover, instead of floating in the middle. */
 .sp2-area .wd1-card { width: max-content; max-width: 100%; box-sizing: border-box; }
 .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
+@container sp2 (min-width: 640px) {
+  .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 760px); --t-h: min(calc(var(--t-w) * .9), 96px); }
+}
 
 /* ---- 3 Large board, hint beside ---- */
 /* On the page itself, as the Backgrounds sheet's idea 3 (the page, no panel): no ground or panel behind the board and hint (owner, 2026-10-27). */
@@ -103,8 +109,9 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wdc-reset { justify-self: start; margin: 0 4px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 500 13px/1 var(--font-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .kit-config-body .wdc-pal, .kit-config-body .wdc-select, .kit-config-body .wdc-hex { border-color: var(--color-border-1, #bbb); }
 
-/* ---- Centring: the fixed-width board (option 1) and its card (option 2) sit in the middle of the content column. ---- */
-.sp2-area > .wd1, .sp2-area .wd1-card { margin-inline: auto; }
+/* ---- Placing: the fixed-width board (option 1) sits in the middle of the content column; the card (option 2) on its left edge. ---- */
+.sp2-area > .wd1 { margin-inline: auto; }
+.sp2-area .wd1-card { margin-inline: 0; }
 .wd1-card .wd1 { margin-inline: auto; }
 
 /* ---- The Backgrounds sheet: palette A's tiles, whatever the colour config holds ----
