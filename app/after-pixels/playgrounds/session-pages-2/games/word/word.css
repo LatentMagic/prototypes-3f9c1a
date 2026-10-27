@@ -1,16 +1,16 @@
 /* Session pages 2, Daily Word. One tile palette for the cover and every option (games/word/model.jsx says where each colour comes from). */
-/* Defaults only: colours.jsx sets these on <html> from the colour config (the "Sage, pine" palette until changed). */
+/* Defaults only: colours.jsx sets these on <html> from the colour config (palette A, Brand green, until changed). */
 :root {
-  --wd-ground: #8FA89A; --wd-ground-on: #1B1917;
-  --wd-hit: #2B6448; --wd-hit-on: #F2EBE0;
+  --wd-ground: #163328; --wd-ground-on: #F0EEE8;
+  --wd-hit: #4CC38A; --wd-hit-on: #08140E;
   --wd-near: #E5A63B; --wd-near-on: #1B1917;
-  --wd-miss: #37332E; --wd-miss-on: #ABA79E;
+  --wd-miss: #918B80; --wd-miss-on: #ABA79E;
   --wd-empty: #37332E;
 }
 
 /* The cover's outlined block (not in the word): filled, an outline, or an outline that fills on hover ("cover block"). */
 .mcp-cover .wd-cover-miss { fill-opacity: 0; transition: fill-opacity 240ms var(--ease-out, ease-out); }
-html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss, html[data-wd-miss="cover"] .mcp-cover:hover .wd-cover-miss { fill-opacity: 1; }
+html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss, html[data-wd-miss="cover"] .mcp-cover:hover .wd-cover-miss, html[data-wd-miss="bare"] .mcp-cover:hover .wd-cover-miss { fill-opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .mcp-cover .wd-cover-miss { transition: none; } }
 
 /* Tiles. Size from --t (a square); an option may set --t-w and --t-h apart. */
@@ -21,6 +21,7 @@ html[data-wd-miss="fill"] .mcp-cover .wd-cover-miss, html[data-wd-miss="cover"] 
 .wd-near { background: var(--wd-near); color: var(--wd-near-on); }
 .wd-miss { border: 2px solid var(--wd-miss); color: var(--wd-miss-on); transition: background-color 240ms var(--ease-out, ease-out); }
 html[data-wd-miss="fill"] .wd-miss, html[data-wd-miss="cover"] .wd-miss:hover { background: var(--wd-miss); }
+html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wd-empty { border: 2px solid var(--wd-empty); }
 .wd-gap { border-bottom: 2px dotted var(--wd-empty); height: auto; align-self: center; }
 .wd-hint { border: 2px dashed var(--wd-hint-edge, var(--off-white)); color: var(--wd-hint-on, var(--off-white)); }

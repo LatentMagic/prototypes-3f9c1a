@@ -35,7 +35,12 @@
   var write = function () {
     try { localStorage.setItem(KEY, JSON.stringify({ game: sel.game, opt: sel.opt, state: sel.state })); } catch (e) {}
     var u = new URL(location.href);
-    u.search = '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.state[sel.game]; u.hash = '';
+    // A game's own settings (window.sp2ExtraParams, e.g. Word's &pal=) ride along after the selection.
+    // Before the game's files load, any other parameter already in the address is kept as it is.
+    var extra = {};
+    if (window.sp2ExtraParams) extra = window.sp2ExtraParams();
+    else new URLSearchParams(location.search).forEach(function (v, k) { if (['g', 'o', 's'].indexOf(k) < 0) extra[k] = v; });
+    u.search = '?g=' + sel.game + '&o=' + sel.opt + '&s=' + sel.state[sel.game] + Object.keys(extra).map(function (k) { return '&' + k + '=' + encodeURIComponent(extra[k]); }).join(''); u.hash = '';
     history.replaceState(history.state, '', u.toString());
   };
   var set = function (patch) {

@@ -5,29 +5,28 @@
 // The owner's rules (2026-10-27): no white or cream ground; white never means success; success is a forest green, not the logo's.
 // ============================================================================
 (function () {
-  const KEY = 'pg_session-pages-2_word-colours_v1';
+  const KEY = 'pg_session-pages-2_word-colours_v2';
   const PAGE = '#1B1917';
 
-  // Named swatches: the store palette, the Daily Word cover, then mid-light grounds lighter than the indigo and clearly not cream.
+  // Named swatches: the store palette and the covers' colours. Covers are a dark ground (forest, indigo, wine) with bright figures on it;
+  // tiles are figures, the page and the cover background are grounds.
   const SWATCHES = [
-    ['Store', [['Page', '#1B1917'], ['Card', '#262320'], ['Popup', '#322E2A'], ['Line', '#37332E'], ['Control edge', '#918B80'], ['Muted', '#ABA79E'], ['Text', '#F0EEE8'], ['Off-white', '#EDE8DF'], ['Success (logo green)', '#4CC38A'], ['Warning', '#FFD23A'], ['Error', '#FF6B5E']]],
-    ['Covers', [['Indigo', '#1D1B3A'], ['Wine', '#421A28'], ['Forest', '#163328'], ['Amber', '#E5A63B'], ['Orange', '#D66847'], ['Teal', '#328A88'], ['Lilac', '#A390B2'], ['Cream', '#F2EBE0']]],
-    ['Greens', [['Pine (forest lifted)', '#2B6448'], ['Fern', '#3E7656'], ['Moss', '#6E8B6A'], ['Eucalyptus', '#7FA396'], ['Sage', '#8FA89A'], ['Olive', '#8A8A5C']]],
-    ['Mids', [['Stone', '#9C978C'], ['Warm stone', '#A8998A'], ['Clay', '#B08A74'], ['Slate', '#6F7C8A'], ['Dusk blue', '#7F8FA6'], ['Heather', '#8E849E']]],
+    ['Store', [['Page', '#1B1917'], ['Card', '#262320'], ['Popup', '#322E2A'], ['Line', '#37332E'], ['Control edge', '#918B80'], ['Muted', '#ABA79E'], ['Text', '#F0EEE8'], ['Off-white', '#EDE8DF'], ['Success (brand green)', '#4CC38A'], ['Success letter', '#08140E'], ['Warning', '#FFD23A'], ['Error', '#FF6B5E']]],
+    ['Cover grounds', [['Forest', '#163328'], ['Indigo', '#1D1B3A'], ['Wine', '#421A28']]],
+    ['Cover figures', [['Amber', '#E5A63B'], ['Orange', '#D66847'], ['Teal', '#328A88'], ['Lilac', '#A390B2'], ['Cream', '#F2EBE0'], ['Green', '#4CC38A']]],
   ];
   const NAME = {}; SWATCHES.forEach(([, l]) => l.forEach(([n, h]) => { NAME[h] = n; }));
 
-  // Starting palettes. miss: 'fill' | 'outline' | 'cover' (an outline that fills on hover, as the cover's block does).
+  // Starting palettes: the cover on its own forest ground, tiles on the dark page.
+  // missStyle: 'fill' | 'outline' | 'cover' (an outline that fills on hover, as the cover's block does) | 'bare' (the letter alone, no tile; the cover keeps its outline).
   const PALETTES = [
-    { id: 'sage', name: 'Sage, pine', ground: '#8FA89A', hit: '#2B6448', hitOn: '#F2EBE0', near: '#E5A63B', nearOn: '#1B1917', miss: '#37332E', missOn: '#ABA79E', missStyle: 'fill' },
-    { id: 'stone', name: 'Stone, forest', ground: '#9C978C', hit: '#163328', hitOn: '#F2EBE0', near: '#E5A63B', nearOn: '#1B1917', miss: '#37332E', missOn: '#ABA79E', missStyle: 'fill' },
-    { id: 'dusk', name: 'Dusk, pine', ground: '#7F8FA6', hit: '#2B6448', hitOn: '#F2EBE0', near: '#E5A63B', nearOn: '#1B1917', miss: '#37332E', missOn: '#ABA79E', missStyle: 'fill' },
-    { id: 'moss', name: 'Moss, forest', ground: '#6E8B6A', hit: '#163328', hitOn: '#F2EBE0', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'outline' },
-    { id: 'clay', name: 'Clay, forest', ground: '#B08A74', hit: '#163328', hitOn: '#F2EBE0', near: '#E5A63B', nearOn: '#1B1917', miss: '#37332E', missOn: '#ABA79E', missStyle: 'cover' },
+    { id: 'a', name: 'A. Brand green', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
+    { id: 'b', name: 'B. Teal', ground: '#163328', hit: '#328A88', hitOn: '#1B1917', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#ABA79E', missStyle: 'cover' },
+    { id: 'c', name: 'C. Green, bare misses', ground: '#163328', hit: '#4CC38A', hitOn: '#08140E', near: '#E5A63B', nearOn: '#1B1917', miss: '#918B80', missOn: '#918B80', missStyle: 'bare' },
   ];
   const DEFAULT = PALETTES[0];
   const FIELDS = ['ground', 'hit', 'hitOn', 'near', 'nearOn', 'miss', 'missOn'];
-  const STYLES = ['fill', 'outline', 'cover'];
+  const STYLES = ['fill', 'outline', 'cover', 'bare'];
 
   const isHex = (v) => /^#[0-9a-fA-F]{6}$/.test(v);
   const lum = (h) => {
@@ -44,7 +43,15 @@
     s.id = raw.id || null;
     return s;
   };
-  let cur = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return clean(null); } })();
+  const fromUrl = PALETTES.find((p) => p.id === new URLSearchParams(location.search).get('pal'));
+  let cur = fromUrl ? Object.assign({}, fromUrl) : (() => { try { return clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return clean(null); } })();
+  // The address carries the palette while one is chosen (&pal=a), so a link opens on it.
+  const writePal = () => {
+    const u = new URL(location.href);
+    if (cur.id) u.searchParams.set('pal', cur.id); else u.searchParams.delete('pal');
+    history.replaceState(history.state, '', u.toString());
+  };
+  window.sp2ExtraParams = () => (cur.id ? { pal: cur.id } : {});
   let subs = [];
 
   // Text on the ground (option 3's hint and labels): whichever of the page's dark or its text reads better.
@@ -58,9 +65,9 @@
   const set = (patch) => {
     cur = Object.assign({}, cur, patch);
     try { localStorage.setItem(KEY, JSON.stringify(cur)); } catch (e) {}
-    apply(); subs.forEach((f) => f());
+    apply(); writePal(); subs.forEach((f) => f());
   };
-  apply();
+  apply(); writePal();
   const useColours = () => React.useSyncExternalStore((f) => { subs.push(f); return () => { subs = subs.filter((x) => x !== f); }; }, () => cur);
 
   // ---- The config ----
@@ -107,7 +114,7 @@
         <ColourField field="miss" label="Not in the word" against={tileGrounds} />
         <div className="sp2-seg">
           <div className="sp2-label">Not in the word, drawn</div>
-          <window.ConfigSeg value={c.missStyle} options={[{ value: 'fill', label: 'Filled' }, { value: 'outline', label: 'Outline' }, { value: 'cover', label: 'Cover block' }]}
+          <window.ConfigSeg value={c.missStyle} options={[{ value: 'fill', label: 'Filled' }, { value: 'outline', label: 'Outline' }, { value: 'cover', label: 'Cover block' }, { value: 'bare', label: 'Letter only' }]}
             onChange={(v) => set({ missStyle: v, id: null })} />
         </div>
         <ColourField field="missOn" label="Not in the word, letter" against={c.missStyle === 'fill' ? [[c.miss, 'tile']] : tileGrounds} />
