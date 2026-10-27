@@ -4,7 +4,7 @@
 window.SP2 = {
   base: '../playgrounds/session-pages-2/',   // from canon/, which index.html sets as <base>
   // Cache-busting: every playground script and stylesheet loads with ?v=<version>. Bump it (and the two in index.html's head) on each push.
-  version: '2026-10-27-7',
+  version: '2026-10-27-8',
   optionCount: 3,
   games: [
     {

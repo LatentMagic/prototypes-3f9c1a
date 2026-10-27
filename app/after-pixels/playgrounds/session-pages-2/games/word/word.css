@@ -57,12 +57,12 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .sp2-area .wd1-card { width: max-content; max-width: 100%; box-sizing: border-box; }
 .wd1-card .wd1 { --w: min(calc(100cqi - 2 * var(--sp2-card-pad, 16px) - 2px), 480px); }
 
-/* ---- 3 On the cover's ground ---- */
-/* Its own ground, plum (the store's wine cover ground), not the cover's forest: no green ground for option 3 (owner, 2026-10-27). */
-.wd3 { --wd3-ground: #421A28; --wd3-on: #F0EEE8; --off-white: var(--wd3-on); background: var(--wd3-ground); color: var(--wd3-on); padding: 16px; display: grid; gap: 20px; justify-items: center; }
-.wd3-board { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: var(--g); }
+/* ---- 3 Large board, hint beside ---- */
+/* On the page itself, as the Backgrounds sheet's idea 3 (the page, no panel): no ground or panel behind the board and hint (owner, 2026-10-27). */
+.wd3 { --wd3-on: var(--text); --off-white: var(--wd3-on); color: var(--wd3-on); display: grid; gap: 20px; justify-items: center; }
+.wd3-board { --g: 6px; --t: min(72px, calc((100cqi - 4 * var(--g)) / 5)); display: grid; gap: var(--g); }
 .wd3 .wd-empty { border-color: color-mix(in srgb, var(--wd3-on) 22%, transparent); }
-.wd3-hint { --g: 6px; --t: min(72px, calc((100cqi - 32px - 4 * var(--g)) / 5)); display: grid; gap: 10px; justify-items: start; width: 100%; max-width: calc(5 * var(--t) + 4 * var(--g)); }
+.wd3-hint { --g: 6px; --t: min(72px, calc((100cqi - 4 * var(--g)) / 5)); display: grid; gap: 10px; justify-items: start; width: 100%; max-width: calc(5 * var(--t) + 4 * var(--g)); }
 .wd3-slots { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
 .wd3-slot { box-sizing: border-box; height: calc(var(--t) * .5); border-bottom: 3px solid color-mix(in srgb, var(--wd3-on) 30%, transparent); display: grid; place-items: center; font: 700 calc(var(--t) * .5)/1 var(--font-heading); }
 .wd3-slot.is-on { height: var(--t); border: 3px dashed var(--off-white); }
@@ -72,13 +72,13 @@ html[data-wd-miss="bare"] .wd-miss { border-color: transparent; }
 .wd3-hint.is-none .wd3-say { color: color-mix(in srgb, var(--wd3-on) 70%, transparent); }
 /* From 600px the board and the hint share the panel in two equal halves, each filling its half (tiles up to 96px). */
 @container sp2 (min-width: 600px) {
-  .wd3 { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: start; align-items: center; gap: 32px; padding: 24px; }
-  .wd3-board, .wd3-hint { --g: 8px; --t: min(96px, calc((50cqi - 24px - 16px - 4 * var(--g)) / 5)); max-width: none; }
+  .wd3 { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: start; align-items: center; gap: 32px; }
+  .wd3-board, .wd3-hint { --g: 8px; --t: min(96px, calc((50cqi - 16px - 4 * var(--g)) / 5)); max-width: none; }
   .wd3-hint { gap: 16px; }
 }
 @container sp2 (min-width: 900px) {
-  .wd3 { gap: 48px; padding: 32px; }
-  .wd3-board, .wd3-hint { --t: min(96px, calc((50cqi - 32px - 24px - 4 * var(--g)) / 5)); }
+  .wd3 { gap: 48px; }
+  .wd3-board, .wd3-hint { --t: min(96px, calc((50cqi - 24px - 4 * var(--g)) / 5)); }
   .wd3-say { flex-direction: column; font-size: 18px; }
   .wd3-say span + span::before { content: none; }
   .wd3-say b { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
