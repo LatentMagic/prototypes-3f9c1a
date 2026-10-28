@@ -1,4 +1,4 @@
-ListRow is one thing in a list of things that each open: plays, editions, games, saves. A clickable Card is for one thing that stands alone; a ListRow is for many of the same kind.
+ListRow is one thing in a list of things that each open: plays, editions, games, saves. A clickable Card is for one thing that stands alone; a ListRow is for many of the same kind. The lines of one play's record (a session page's "Every roll", "Every guess") open nothing: they are MoveRows, which share ListRow's look.
 
 ```jsx
 <RowList label="Today">
