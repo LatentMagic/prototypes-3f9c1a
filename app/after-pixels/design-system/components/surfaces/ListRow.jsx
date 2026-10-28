@@ -8,9 +8,9 @@ const warn=(m)=>{if(!said.has(m)){said.add(m);console.warn('ListRow: '+m);}};
 const isText=(v)=>typeof v==='string'||typeof v==='number';
 const toForms=(v)=>{if(isText(v))return [String(v)];if(Array.isArray(v)&&v.length&&v.every(isText))return v.map(String);return null;};
 const over=(el)=>el.scrollWidth>el.clientWidth+0.5;
-// The longest form that fits; the last form if none does (CSS cuts it with "…").
+// KEEP: The longest form that fits; the last form if none does (CSS cuts it with "…").
 const pick=(el,forms,what)=>{for(const f of forms){el.textContent=f;if(!over(el))return;}warn(what+' "'+forms[forms.length-1]+'" doesn\u2019t fit even in its shortest form; pass a shorter form last.');};
-// Title: name, then " · game". Too long: the game goes first, whole; then the name is cut, with no space or dot before the "…".
+// KEEP: Title: name, then " · game". Too long: the game goes first, whole; then the name is cut, with no space or dot before the "…".
 const fitTitle=(t,n,g,full)=>{
   if(g)g.style.display='';
   n.textContent=full;if(!over(t))return;
@@ -36,6 +36,7 @@ export function ListRow({title,game,lead,result,tone='none',when,replay,note,met
   const gameOn=!!game&&hasLead&&slots;
   const tText=isText(title);
   const fitKey=JSON.stringify([slots,tText&&String(title),gameOn&&game,rF,wF]);
+  // KEEP: in a row under 440px wide, result and when show only their shortest form; the fit reruns once fonts load and on every resize, so no line overflows.
   React.useLayoutEffect(()=>{
     const r=row.current;if(!r||!slots)return undefined;
     const run=()=>{
@@ -57,7 +58,7 @@ export function ListRow({title,game,lead,result,tone='none',when,replay,note,met
   const inner=slots
     ?<>{leadEl}{!sub&&<span className="mcp-row-head"><span className="mcp-row-title" ref={tRef}>{tText?<span ref={nRef}></span>:title}{gameEl}</span></span>}{result!=null&&<span className={'mcp-row-st is-'+tone}>{icon&&<Icon name={icon} size={16}/>}<span ref={sRef}>{rF?null:result}</span></span>}{when!=null&&<span className="mcp-row-when" ref={wRef}>{wF?null:when}</span>}{rep&&<span className="mcp-row-note">Replay</span>}{go}</>
     :<>{leadEl}<span className="mcp-row-body"><span className="mcp-row-title">{title}</span>{meta&&<span className="mcp-row-meta">{meta}</span>}</span>{endEl}{go}</>;
-  // Text the row hides to fit (the game's name, longer forms) stays in the accessible name.
+  // KEEP: Text the row hides to fit (the game's name, longer forms) stays in the accessible name.
   const name=label||(slots&&(tText||sub)?[!sub&&String(title),gameOn&&game,rep&&'Replay',rF&&rF[0],wF&&wF[0]].filter(Boolean).join(', '):undefined);
   if(!live) return <div ref={row} className={cls} aria-label={slots?name:undefined} role={slots&&name?'group':undefined}>{inner}</div>;
   return href

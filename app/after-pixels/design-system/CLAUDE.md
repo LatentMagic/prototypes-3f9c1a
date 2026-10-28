@@ -1,6 +1,6 @@
 # Project notes
 
-**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 6.** Each kit update raises it by one.
+**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 8.** Each kit update raises it by one.
 
 - This design system is used by the Game Store product project: https://claude.ai/design/p/9aec15ee-6c7b-496d-ae68-b88b64b5ccaf (read via `/projects/9aec15ee-6c7b-496d-ae68-b88b64b5ccaf/`). Its screens are in `app/gs-*.jsx` and its product CSS is in `index.html` (`.gs-*` classes). Check it when looking for patterns to bring back into the system. Its playgrounds: https://claude.ai/design/p/9aec15ee-6c7b-496d-ae68-b88b64b5ccaf?file=playgrounds.html
 - Build components and their cards from the product's current code and data: re-read its `app/` and `index.html` first, never work from memory or invent copy. Render the card and compare it with the product before reporting.
@@ -17,7 +17,12 @@
 - `playgrounds.html` at the root lists every current playground by topic; archived topics stay in the list file but don't show on the page. Its list is `playgrounds.json`: add the entry in the same change that builds a playground, and update it whenever one moves or is archived.
 - `$build-playground` skill exists at `skills/build-playground/SKILL.md`. Use it when building playgrounds.
 - `$create-handoff` skill exists at `skills/create-handoff/SKILL.md` (template in `skills/create-handoff/assets/`). Use it when writing a handoff.
+- `in-your-own-words` — say back what you think the user's goals are and the problem they are trying to solve. **Declared only:** fires on `$in-your-own-words` or `/in-your-own-words`, never on its own.
 - Always register a playground as a reviewable asset (`asset` param on write/copy) so it appears in the project's page list, and open it on the user's screen when done.
+
+## Code
+
+- **Comments carry intent and mapping, and flag the special; nothing else** (`ARCHITECTURE.md` § Conventions). Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
 
 ## Replying in chat (not product copy)
 
@@ -40,6 +45,12 @@
 ## Wrapping up
 
 - Record a decision in the task's handoff under `docs/specs/` (the decision, with the date and who ratified it), so it travels back to the repo. Do not keep it in a local rule list. A code comment may state a rule or decision the code keeps, reason included, but the handoff still records it, and the comment never cites the handoff's path or any other `docs/` path.
+
+## Brain dumps
+
+- **The user may brain dump:** they know what's going on and will ramble it out, messy and out of order. Take it in; don't build, decide or ask until they stop.
+- **Then help them synthesize:** say back what's settled, what's open and what contradicts, then ask the open points one at a time.
+- **A brain dump ratifies nothing.** A preference mid-ramble is input, not a decision.
 
 ## Ratification - the standing rule
 

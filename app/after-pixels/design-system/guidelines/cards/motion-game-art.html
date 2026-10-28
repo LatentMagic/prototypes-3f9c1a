@@ -1,4 +1,4 @@
-<!-- @dsCard group="Motion" viewport="700x620" name="Game art hover" subtitle="Example art. Hover a card. 400ms, shapes nearly in step, held until you leave. Component: GameArt" -->
+<!-- @dsCard group="Motion" viewport="700x620" name="Game art hover" subtitle="Worked examples of the motion rules, not the game library. Hover a card. 400ms, shapes nearly in step, held until you leave. Component: GameArt" -->
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>
 body{padding:20px;background:var(--page);margin:0;display:grid;gap:16px}
 .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -8,15 +8,16 @@ a.t:is(:focus-visible,:active) .n{text-decoration-color:currentColor;text-underl
 @media (hover:hover){a.t:hover .n{text-decoration-color:currentColor;text-underline-offset:6px;color:#fff}}
 a.t:focus-visible{outline:2px solid var(--off-white);outline-offset:4px}
 .w a.t{background:var(--card);border:1px solid var(--line);padding:16px}
+.cap{margin:0;font:400 14px/1.4 var(--font-text);color:var(--muted)}
 ul{margin:0;padding-left:18px;display:grid;gap:4px;font:400 14px/1.4 var(--font-text);color:var(--muted)}
-</style></head><body><div class="row" id="m"></div><div class="row" id="r"></div><div class="w" id="w"></div>
+</style></head><body><p class="cap">Worked examples of the motion rules, not the game library.</p><div class="row" id="m"></div><div class="row" id="r"></div><div class="w" id="w"></div>
 <ul><li>The hover says something about the game: the ring closes to a bullseye; the empty tile fills.</li><li>One timing, in and out: 400ms. Stagger 50ms or less, going in only.</li><li>Travel is capped in pixels. Shapes stay whole; edges stay anchored.</li><li>The whole card is the hover surface. On touch the pose plays while a finger is down.</li></ul>
 <script>
 const dg=()=>'<div class="mcp-art-dg">'+[0,1,2,3].map(r=>'<div>'+[0,1,2,3].map(c=>'<b style="--s:'+((r+3-c)*20)+'"></b>').join('')+'</div>').join('')+'</div>';
 const cb=()=>'<i class="mcp-art-cb-bar mcp-art-cb-1"></i><i class="mcp-art-cb-bar mcp-art-cb-2"></i><i class="mcp-art-cb-bar mcp-art-cb-3"></i><i class="mcp-art-cb-sun"></i>';
 const hu=()=>'<i class="mcp-art-hu-sun"></i><i class="mcp-art-hu-peak"></i><i class="mcp-art-hu-teal"></i><i class="mcp-art-hu-cream"></i>';
 const dm=()=>'<div class="mcp-art-st"><i class="mcp-art-dm-ring"></i><i class="mcp-art-dm-bar"></i><i class="mcp-art-dm-cap"></i></div>';
-const dw=()=>'<div class="mcp-art-st"><i class="mcp-art-dw mcp-art-dw-1"></i><i class="mcp-art-dw mcp-art-dw-2"></i><i class="mcp-art-dw-3"></i></div>';
+const dw=()=>'<div class="mcp-art-st"><i class="mcp-art-dw mcp-art-dw-1"></i><i class="mcp-art-dw mcp-art-dw-2"></i><i class="mcp-art-dw mcp-art-dw-3"></i></div>';
 const A={dm:[dm,' is-wine','Daily Mystery'],dw:[dw,' is-forest','Daily Word'],dg:[dg,'','Daily Groups'],cb:[cb,'','Casebook'],hu:[hu,' is-forest','36,000 Summers Ago']};
 const R={s:['mcp-art-1','Square'],l:['mcp-art-43','Landscape 4:3'],w:['mcp-art-3','Wide 3:1']};
 const art=(k,r)=>'<div class="mcp-art '+R[r][0]+A[k][1]+'" aria-hidden="true">'+A[k][0]()+'</div>';

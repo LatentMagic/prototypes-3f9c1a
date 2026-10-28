@@ -1,5 +1,5 @@
 import React from 'react';
-/* Measures the layer, which fills whatever it renders in: the viewport on a real device, or a phone frame (a transformed or contained ancestor) in a prototype. */
+// KEEP: a panel is a sheet or a window by the width of the area the popup renders in (the viewport on a device, a phone frame in a prototype), not the browser window, so a framed prototype shows the phone posture.
 function useWide(ref,bp){
   const [w,setW]=React.useState(()=>typeof window!=='undefined'?window.innerWidth>=bp:true);
   React.useLayoutEffect(()=>{const el=ref.current;if(!el)return;
@@ -17,6 +17,7 @@ export function Popup({open,onClose,title,children,actions,kind='dialog',posture
   const opener=React.useRef(null);
   const dismiss=React.useRef(null);
   dismiss.current=()=>{if(!busy&&onClose)onClose();};
+  // KEEP: on open, focus goes to the first control; on close it returns to what opened it. Escape and the dim close it, except while busy.
   React.useEffect(()=>{
     if(open){
       opener.current=document.activeElement;

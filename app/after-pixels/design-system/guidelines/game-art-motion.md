@@ -42,7 +42,7 @@ Before a piece is approved:
 
 Two worked examples of the story:
 - **Daily Mystery.** At rest, a ring beside a cigarette. On hover it becomes a bullseye, by the ring shrinking until its hole closes. That makes it feel like a murder.
-- **Daily Word.** At rest, two filled tiles and an empty one. On hover the word is solved, by the empty outline thickening inward until it fills and rounds, ending as three filled circles.
+- **Daily Word.** At rest, a green tile, an amber tile and a small grey outline: one guess marked. On hover the outline grows to a full tile and fills, a letter not in the word, so the three tiles read as a whole marked guess.
 
 Both are drawn in full under Shape below.
 
@@ -100,11 +100,11 @@ A cigarette beside a ring. An orange ring left of centre and an upright cream ci
 - Hover: the ring shrinks to 45% of its size and becomes a bullseye. The cigarette and its tip round their tops and rise together (capped at 12px), 50ms behind.
 
 ### Daily Word
-Three tiles of a guess. Three equal squares in a row across the middle on forest: amber and cream solid, an empty teal outline on the right.
-- Always: the three tiles are the same size, at rest and in the hover pose, and evenly spaced; at rest the outline tile is hollow. The outline sits inside its tile's box, so it never grows or moves.
+Three tiles of a guess, in the game's own marks. Three squares in a row across the middle on forest: green (in place) and amber (in the word) solid, and on the right the block for a letter not in the word, a thin grey outline (control edge) at .625 of its tile.
+- Always: the three tile boxes are the same size and evenly spaced; green and amber never move. The grey block stays centred in its box.
 - May change: drawn on a centred 4:3 stage, like Daily Mystery.
 - Extends: from the centre.
-- Hover: amber and cream round into circles in a quick wave. The outline's border thickens inward until it fills the tile completely, with no hole left, as it rounds, over 240ms. Three filled circles of one size: the word is solved.
+- Hover: the grey block grows to full tile size as its outline thins away, over 400ms, and fills grey 100ms behind, over 300ms. Three full tiles: a marked guess. On touch, the product's game-page cover opens and closes the block by tap (the product owns that; ratified by the owner in the product, 2026-10-27).
 
 Each piece is written in words before it is drawn. The words say what must stay true and what may move, so the art can be recomposed for square (1:1), landscape (4:3) and wide (3:1) frames without losing anything. A frame that doesn't suit the original drawing gets a recomposition, not a crop. Write the description, then draw each frame from it.
 

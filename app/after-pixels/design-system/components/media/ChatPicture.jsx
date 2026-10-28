@@ -31,7 +31,7 @@ function Block({b}){
 }
 const paras=t=>t==null?[]:Array.isArray(t)?t:[t];
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
-// Stays at the latest turn while it lays out, until the reader scrolls it themselves.
+// KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
 function useChatScroll(body,turns){
   const [up,setUp]=React.useState(false);
   React.useEffect(()=>{

@@ -67,7 +67,7 @@ function useReducedMotion(){
   },[]);
   return r;
 }
-// Follows the newest piece; a reader who scrolls takes over until they scroll back to the bottom. Under a given time it always follows.
+// KEEP: Follows the newest piece; a reader who scrolls takes over until they scroll back to the bottom. Under a given time it always follows.
 function usePlaybackScroll(body,pinned){
   const follow=React.useRef(true), touched=React.useRef(false);
   const [up,setUp]=React.useState(false);

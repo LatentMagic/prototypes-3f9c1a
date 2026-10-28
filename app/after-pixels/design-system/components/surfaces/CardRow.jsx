@@ -12,11 +12,12 @@ export function CardRow({title,sub,label,as='h2',kind='cards',children,className
     const ro=window.ResizeObserver?new ResizeObserver(read):null;if(ro)ro.observe(el);
     return ()=>{el.removeEventListener('scroll',read);if(ro)ro.disconnect();};
   },[]);
-  // A button that reaches its end hides; focus moves to the other one.
+  // KEEP: A button that reaches its end hides; focus moves to the other one.
   React.useEffect(()=>{
     if(pressed.current==='next'&&at.end&&prev.current){prev.current.focus({preventScroll:true});pressed.current='prev';}
     else if(pressed.current==='prev'&&at.start&&next.current){next.current.focus({preventScroll:true});pressed.current='next';}
   },[at.start,at.end]);
+  // KEEP: each press moves the row by one card; with reduced motion it jumps instead of gliding.
   const move=d=>{const el=ref.current;if(!el)return;pressed.current=d>0?'next':'prev';
     const c=el.firstElementChild,gap=parseFloat(getComputedStyle(el).columnGap)||24,step=c?c.getBoundingClientRect().width+gap:el.clientWidth*.8;
     const still=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;

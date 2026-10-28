@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePress } from '../press.js';
 import { Icon } from '../media/Icon.jsx';
-// Working state: shows at once (a receipt for the press), then holds at least `min` ms so it never flickers.
+// KEEP: Working state: shows at once (a receipt for the press), then holds at least `min` ms so it never flickers.
 function useHeld(on,min){
   const [held,setHeld]=React.useState(on);
   const t0=React.useRef(on?Date.now():0);

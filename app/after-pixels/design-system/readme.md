@@ -1,6 +1,6 @@
 # After Pixels Design System
 
-After Pixels (afterpixels.com) is a shop of small games you play by talking to an AI assistant (Claude or ChatGPT) over MCP. Players browse covers, connect their assistant, and start a game in chat. New games arrive every day: daily puzzles, a weekly interrogation, murder mysteries, escape rooms, dungeon quests, word puzzles.
+Games you play with your AI assistant. Crack today's puzzle, solve a mystery, go on an adventure. You make the moves; the game holds the rules. Players connect their AI assistant to the After Pixels platform (afterpixels.com) using MCP. They can browse games on the platform, where each game's page has a prompt that starts it in their assistant. Or they can ask their assistant to show all the games and pick one there. New games arrive every day: daily puzzles, a weekly interrogation, murder mysteries, escape rooms, dungeon quests, word puzzles.
 
 The system is one dark surface: warm near-black pages, off-white type and actions, square corners, and colour that lives only in game covers and status. The shop itself has no colour.
 
