@@ -7,23 +7,27 @@
       "id": "config-redesign",
       "slug": "config-redesign",
       "name": "Config redesign",
-      "state": "active",
+      "state": "archive",
       "touched": "2026-10-28",
-      "entries": [
+      "entries": [],
+      "archive": [
         {
           "kind": "candidate",
           "name": "Config option A",
-          "path": "docs/specs/config-redesign/candidate/option-a.html",
-          "note": "Two panes: a section rail (Global, then one per feature) beside that section's controls. Not accepted."
+          "path": "docs/archive/config-redesign/candidate/option-a.html",
+          "note": "Two panes: a section rail beside that section's controls. Accepted.",
+          "on": false,
+          "off": "Archived 2026-10-28: option A accepted and merged into app/config.jsx; option B not chosen."
         },
         {
           "kind": "candidate",
           "name": "Config option B",
-          "path": "docs/specs/config-redesign/candidate/option-b.html",
-          "note": "Global always open on top; each feature a folding card that shows its current values. Not accepted."
+          "path": "docs/archive/config-redesign/candidate/option-b.html",
+          "note": "Global on top; each feature a folding card. Not chosen.",
+          "on": false,
+          "off": "Archived 2026-10-28: option A accepted and merged into app/config.jsx; option B not chosen."
         }
-      ],
-      "archive": []
+      ]
     },
     {
       "id": "example",

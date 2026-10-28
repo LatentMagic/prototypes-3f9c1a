@@ -43,6 +43,7 @@ Versions:
 - **6** (2026-10-20): a handoff lists every earlier handoff in its folder under Earlier handoffs, each with what it holds, and a resuming session reads every earlier handoff in the folder as well as the latest; a Claude Design project has no git history, so the latest handoff is the only way to them. From the business-ops workspace.
 - **7** (2026-10-27): the `in-your-own-words` skill (declared only), and a Brain dumps rule: when the user brain dumps, take it in without acting, then synthesize with them; a brain dump ratifies nothing. From the business-ops workspace.
 - **8** (2026-10-27): comments carry intent, mapping and `// KEEP:` flags for the special (read by the agent that integrates the prototype), and no narration. From the business-ops workspace.
+- **9** (2026-10-28): the Config modal redesigned: a section rail (Global, then one section per feature) beside the chosen section's controls, a drill-in list on a phone, and nothing that scrolls sideways. Products declare rows through `ConfigGroup` (`scope="global"` for whole-prototype settings), `ConfigRow`, `ConfigAction` and `ConfigNote` instead of writing `kit-config-row` markup; `ConfigSeg` is gone. From the business-ops workspace.
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 
