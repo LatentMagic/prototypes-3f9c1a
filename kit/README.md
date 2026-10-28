@@ -30,7 +30,7 @@ Not yet verified. Each takes about a minute:
 The kit is the source for every rule, aid and skill the prototypes share.
 
 1. Make the change in `kit/project/`, check it in a browser where it renders, and push.
-2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief asks each project for its kit version, then carries every version it might lack, each rule word for word, standing alone, skipped if the file already says it and placed by meaning. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
+2. Carry it with one Kit carry brief, composed in the business-ops workspace (`biz-authoring:build-design-prompt`, Kit carry mode) and pasted unchanged into each project's Claude Design session. The brief carries only the new version, each rule word for word, standing alone, skipped if the file already says it and placed by meaning. Never drag a kit file over a project's copy or tell a project to overwrite one: the copies differ, and something is lost.
 3. Raise the kit version by one in `project/CLAUDE.md` (the line beside "The kit"), add it to the list below, and have the brief set the same line in each project. A project's line then says which update it has.
 
 Versions:
