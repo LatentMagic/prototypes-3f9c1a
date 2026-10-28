@@ -10,17 +10,31 @@
 //   ConfigNote({ children })                 a short "does not apply" line
 //
 // Layout: a left rail of sections (Global first, then one per feature group),
-// the selected section's rows on the right. Below 640px the rail is a tab strip
-// above the pane, inside the bottom sheet. Styles: the CANDIDATE CSS block in
+// the selected section's rows on the right. Below 640px it is a bottom sheet
+// that drills in: the section list, then one section with a back control.
+// Nothing scrolls sideways at any width. Styles: the CANDIDATE CSS block in
 // option-a.html (.cao-*). Nothing here is accepted.
 // ============================================================================
 const { useState: useCaoState, useRef: useCaoRef, useEffect: useCaoEffect,
         useLayoutEffect: useCaoLayoutEffect, useContext: useCaoContext } = React;
 
 const CAO_GLOBAL = 'Global';
+const CAO_PHONE = '(max-width: 639px)';
 const CaoConfigCtx = React.createContext(null);
 
-// The section a group belongs to: every global group shares one.
+// Drawn in the kit Icon's stroke (24 grid, 2px, round): the kit set has no
+// info, chevron-right, back or event mark.
+const CAO_GLYPHS = {
+  info: <React.Fragment><circle cx="12" cy="12" r="9" /><line x1="12" y1="11" x2="12" y2="16.5" /><line x1="12" y1="7.5" x2="12" y2="7.6" /></React.Fragment>,
+  next: <polyline points="9 6 15 12 9 18" />,
+  back: <polyline points="15 6 9 12 15 18" />,
+  fire: <polygon points="7 5 18 12 7 19 7 5" />,
+};
+const CaoGlyph = ({ name, size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{CAO_GLYPHS[name]}</svg>
+);
+
 const caoSectionOf = (title, scope) => (scope === 'global' ? CAO_GLOBAL : title);
 
 // Children with fragments opened and false/null dropped, so a group can sort
@@ -31,17 +45,35 @@ const caoFlatten = (children, prefix = '') => React.Children.toArray(children).f
     ? caoFlatten(c.props.children, prefix + c.key)
     : [React.isValidElement(c) ? React.cloneElement(c, { key: prefix + c.key }) : c]));
 
+const caoUsePhone = () => {
+  const [phone, setPhone] = useCaoState(() => window.matchMedia(CAO_PHONE).matches);
+  useCaoEffect(() => {
+    const mq = window.matchMedia(CAO_PHONE);
+    const on = () => setPhone(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return phone;
+};
+
+// The info toggle a row or an Events strip carries; the hint opens inline
+// under it, so it can never land off-screen.
+const CaoInfo = ({ open, onToggle, label }) => (
+  <button type="button" className="cao-info" aria-expanded={open} aria-label={label} onClick={onToggle}>
+    <CaoGlyph name="info" size={16} />
+  </button>
+);
+
 // ---- Contract: one row of choices ----
+// KEEP: options are separate bordered chips that wrap onto a new line, never a
+// track that scrolls sideways; the chosen one is filled near-black.
 const ConfigRow = ({ label, value, onChange, options, hint }) => {
   const [hintOpen, setHintOpen] = useCaoState(false);
   return (
     <div className="cao-row">
       <div className="cao-row-head">
         <span className="cao-row-label">{label}</span>
-        {hint && (
-          <button type="button" className="cao-info" aria-expanded={hintOpen}
-            aria-label={'About ' + label} onClick={() => setHintOpen((v) => !v)}>i</button>
-        )}
+        {hint && <CaoInfo open={hintOpen} onToggle={() => setHintOpen((v) => !v)} label={'About ' + label} />}
       </div>
       <div className="cao-seg" role="radiogroup" aria-label={label}>
         {options.map((o) => (
@@ -59,9 +91,9 @@ const ConfigRow = ({ label, value, onChange, options, hint }) => {
 // KEEP: the .cao-action class is what the modal's click-capture replays after
 // closing, so an animated act plays on a clear screen.
 const ConfigAction = ({ label, onClick, hint }) => (
-  <button type="button" className="cao-action" title={hint || undefined}
+  <button type="button" className="cao-action"
     onClick={() => { if (typeof onClick === 'function') onClick(); }}>
-    <span className="cao-action-glyph" aria-hidden="true">›</span>{label}
+    <CaoGlyph name="fire" size={12} />{label}
   </button>
 );
 
@@ -83,19 +115,17 @@ const ConfigGroup = ({ title, scope, children }) => {
   const items = caoFlatten(children);
   const actions = items.filter((c) => c.type === ConfigAction);
   const rest = items.filter((c) => c.type !== ConfigAction);
-  // Feature sections are titled by the rail; only Global's subgroups need a heading.
-  const showTitle = section === CAO_GLOBAL;
+  // Feature sections are titled by the pane; only Global's subgroups need a heading.
   return (
     <section className="cao-group">
-      {showTitle && <h3 className="cao-group-title">{title}</h3>}
+      {section === CAO_GLOBAL && <h3 className="cao-group-title">{title}</h3>}
       {rest.length > 0 && <div className="cao-rows">{rest}</div>}
       {actions.length > 0 && <CaoEvents actions={actions} />}
     </section>
   );
 };
 
-// A group's one-shot events, set apart from its rows. Their hints sit behind
-// one info button, like a row's.
+// A group's one-shot events, set apart from its rows by a heading, not a box.
 const CaoEvents = ({ actions }) => {
   const [hintOpen, setHintOpen] = useCaoState(false);
   const hints = actions.filter((a) => a.props.hint);
@@ -103,30 +133,32 @@ const CaoEvents = ({ actions }) => {
     <div className="cao-events">
       <div className="cao-events-head">
         <span className="cao-events-title">Events</span>
-        <span className="cao-events-sub">Each fires once and closes Config</span>
-        {hints.length > 0 && (
-          <button type="button" className="cao-info" aria-expanded={hintOpen}
-            aria-label="About these events" onClick={() => setHintOpen((v) => !v)}>i</button>
-        )}
+        <span className="cao-events-sub">Fires once, then closes Config</span>
+        {hints.length > 0 && <CaoInfo open={hintOpen} onToggle={() => setHintOpen((v) => !v)} label="About these events" />}
       </div>
-      <div className="cao-events-list">{actions}</div>
       {hintOpen && hints.map((a) => (
         <div key={a.key} className="cao-hint"><b>{a.props.label}:</b> {a.props.hint}</div>
       ))}
+      <div className="cao-events-list">{actions}</div>
     </div>
   );
 };
 
-// The rail's selection survives closing and reopening Config, not a reload.
-let caoLastSection = CAO_GLOBAL;
+// The section open last time; null until one is chosen this page load, so the
+// phone sheet first opens on its section list.
+let caoLastSection = null;
 
 // ---- The modal ----
 const CaoConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, onClose }) => {
   const isApp = platform === 'app';
+  const phone = caoUsePhone();
   const [shown, setShown] = useCaoState(false);
-  const [active, setActive] = useCaoState(caoLastSection);
+  const [active, setActive] = useCaoState(caoLastSection || CAO_GLOBAL);
+  // Phone only: the section list (false) or one section (true).
+  const [drilled, setDrilled] = useCaoState(!!caoLastSection);
   const [sections, setSections] = useCaoState([]);
   const regRef = useCaoRef(new Map());
+  const dialogRef = useCaoRef(null);
 
   const syncSections = () => {
     const seen = [];
@@ -139,12 +171,21 @@ const CaoConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformC
     register: (id, section) => { regRef.current.set(id, section); syncSections(); },
     unregister: (id) => { regRef.current.delete(id); syncSections(); },
   };
+  const choose = (s) => { setActive(s); setDrilled(true); caoLastSection = s; };
 
   // A remembered section that this product does not have falls back to Global.
   useCaoEffect(() => {
     if (sections.length && !sections.includes(active)) setActive(CAO_GLOBAL);
   }, [sections]);
-  useCaoEffect(() => { caoLastSection = active; }, [active]);
+
+  // Focus lands inside the dialog on open, and on the new view after a drill.
+  useCaoEffect(() => {
+    const el = dialogRef.current;
+    if (!el) return;
+    const target = el.querySelector(phone && drilled ? '.cao-back'
+      : phone ? '.cao-rail-btn' : '.cao-rail-btn[aria-current="true"]');
+    if (target) target.focus({ preventScroll: true });
+  }, [phone, drilled, sections.length > 1]); // KEEP: re-run once the feature sections have registered
 
   useCaoEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -168,31 +209,49 @@ const CaoConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformC
     setTimeout(() => { btn.dataset.replay = '1'; btn.click(); onClose(); }, 190);
   };
 
+  const inSection = phone && drilled;
+  const features = sections.filter((s) => s !== CAO_GLOBAL);
+  const railBtn = (s, sub) => (
+    <button key={s} type="button" className="cao-rail-btn"
+      aria-current={!phone && s === active ? 'true' : undefined}
+      onClick={() => choose(s)}>
+      <span className="cao-rail-text">
+        <span className="cao-rail-name">{s}</span>
+        {sub && <span className="cao-rail-sub">{sub}</span>}
+      </span>
+      <span className="cao-rail-chev"><CaoGlyph name="next" size={18} /></span>
+    </button>
+  );
+
   const Extra = window.ConfigExtra;
   return (
     <div className="cao-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-label="Config" className="cao-modal" data-shown={shown ? '1' : undefined}>
+      <div role="dialog" aria-modal="true" aria-label="Config" ref={dialogRef} className="cao-modal"
+        data-shown={shown ? '1' : undefined} data-view={inSection ? 'section' : 'list'}>
         <div className="cao-head">
-          <div>
-            <div className="cao-title">Config</div>
-            <div className="cao-subtitle">Prototype controls, not part of the product.</div>
-          </div>
+          {inSection ? (
+            <button type="button" className="cao-back" onClick={() => setDrilled(false)}>
+              <CaoGlyph name="back" size={20} /><span>Config</span>
+            </button>
+          ) : (
+            <div className="cao-head-text">
+              <div className="cao-title">Config</div>
+              <div className="cao-subtitle">Prototype controls, not part of the product.</div>
+            </div>
+          )}
           <button type="button" onClick={onClose} aria-label="Close" className="cao-close"><Icon name="x" size={18} /></button>
         </div>
 
         <div className="cao-main">
-          <nav className="cao-rail" role="tablist" aria-label="Config sections">
-            {sections.map((s) => (
-              <button key={s} type="button" role="tab" aria-selected={s === active}
-                className="cao-rail-btn" data-active={s === active ? '1' : undefined}
-                data-global={s === CAO_GLOBAL ? '1' : undefined}
-                onClick={() => setActive(s)}>{s}</button>
-            ))}
+          <nav className="cao-rail" aria-label="Config sections">
+            {railBtn(CAO_GLOBAL, 'Whole prototype')}
+            {features.length > 0 && <div className="cao-rail-label">Features</div>}
+            {features.map((s) => railBtn(s))}
           </nav>
 
-          <div className="cao-pane" role="tabpanel" aria-label={active} onClickCapture={onPaneClickCapture}>
-            {active !== CAO_GLOBAL && <h2 className="cao-pane-title">{active}</h2>}
+          <div className="cao-pane" aria-label={active} onClickCapture={onPaneClickCapture}>
+            <h2 className="cao-pane-title">{active}</h2>
             <CaoConfigCtx.Provider value={ctx}>
               <ConfigGroup title="Review" scope="global">
                 {onPlatformChange && (
@@ -200,9 +259,12 @@ const CaoConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformC
                     options={[{ value: 'web', label: 'Web' }, { value: 'app', label: 'Mobile' }]}
                     hint="Mobile renders the product as a native app, in a phone with its status bar and home indicator." />
                 )}
-                <ConfigRow label="Viewport" value={layout} onChange={onLayoutChange}
-                  options={[{ value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' }]}
-                  hint={'Web only. Mobile frames every screen in a phone bezel, with no status bar.' + (isApp ? ' The mobile app always uses the phone.' : '')} />
+                {/* Viewport is a web posture; the mobile app is always in the phone, so the row would do nothing. */}
+                {isApp
+                  ? <ConfigNote>Viewport is for Web only: the mobile app always uses the phone.</ConfigNote>
+                  : <ConfigRow label="Viewport" value={layout} onChange={onLayoutChange}
+                      options={[{ value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' }]}
+                      hint="Mobile frames every screen in a phone bezel, with no status bar." />}
                 {onReset && <ConfigAction label="Reset to seeded data" onClick={onReset} />}
               </ConfigGroup>
               {Extra && <Extra onClose={onClose} />}
