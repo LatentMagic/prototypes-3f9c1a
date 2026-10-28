@@ -44,6 +44,7 @@ Versions:
 - **7** (2026-10-27): the `in-your-own-words` skill (declared only), and a Brain dumps rule: when the user brain dumps, take it in without acting, then synthesize with them; a brain dump ratifies nothing. From the business-ops workspace.
 - **8** (2026-10-27): comments carry intent, mapping and `// KEEP:` flags for the special (read by the agent that integrates the prototype), and no narration. From the business-ops workspace.
 - **9** (2026-10-28): the Config modal redesigned: a section rail (Global, then one section per feature) beside the chosen section's controls, a drill-in list on a phone, and nothing that scrolls sideways. Products declare rows through `ConfigGroup` (`scope="global"` for whole-prototype settings), `ConfigRow`, `ConfigAction` and `ConfigNote` instead of writing `kit-config-row` markup; `ConfigSeg` is gone. From the business-ops workspace.
+- **10** (2026-10-28): dropped the rule that an H1 reads as the largest thing on the page at every width; the lever order and "a role never changes" stay. From the After Pixels session page work (Joe).
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 

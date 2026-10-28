@@ -21,7 +21,7 @@ Everything outside the block above is shared: identical in every project built f
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
-**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 9.** Each kit update raises it by one.
+**The kit** is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at `LatentMagic/prototypes-3f9c1a`, `kit/project/`. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 10.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.
@@ -118,7 +118,7 @@ One external skill, vendored into `skills/impeccable/` exactly as upstream ships
 <important if="you are making any design decision: colour, type, spacing, layout, components or visual style">
 - `tokens.css` and the design law and brand values the product block names are the binding source for exact tokens, components and visual style — when in doubt on a specific value, they win.
 - **Hierarchy via size and weight, never colour.** 4px grid. Readable from 320px.
-- **When layout rules collide, a role never changes.** Overhang, space economy and an even vertical rhythm can pull against each other. Resolve them with the levers in order: size within the element's role, then spacing within its step, then layout (width, stacking), then rewording. Rewording is the last lever, not one to avoid, because copy is designed for each width. An H1 may scale with the page, but it stays the H1 and reads as the largest thing on the page at every width. Never demote a role, or break the rhythm, to make something fit. The role's size range belongs to the design system, not to this file.
+- **When layout rules collide, a role never changes.** Overhang, space economy and an even vertical rhythm can pull against each other. Resolve them with the levers in order: size within the element's role, then spacing within its step, then layout (width, stacking), then rewording. Rewording is the last lever, not one to avoid, because copy is designed for each width. Never demote a role, or break the rhythm, to make something fit. The role's size range belongs to the design system, not to this file.
 </important>
 
 <important if="you are building or changing the app posture (Config → Platform: Mobile), or anything at a screen's top or bottom edge in it: a top bar, a bottom bar, a floating button, a bottom sheet, a full-height page">
