@@ -1883,6 +1883,17 @@
                 'Many code comments are marked KEEP. _ds/ gains component folders (actions, chat, feedback, forms, media, surfaces). New docs/specs/1236-session-pages/ (Escape\'s spec, handoffs, playground) and kit-v8; new skill in-your-own-words. Unused uploads were dropped by the export.',
               ],
             },
+            {
+              date: '2026-10-28',
+              title: 'Daily Word session page; Config rebuilt as sections; This edition pick',
+              items: [
+                'Config is rebuilt as a modal with a rail of sections (Global first, one per feature group) that drills in on a phone. config.jsx publishes ConfigGroup, ConfigRow, ConfigAction and ConfigNote; gs-config.jsx and the Pass upsell rows (gs-pass-aids.jsx, with a new GsBarrowConfigRow in the Barrow section) are rewritten to them. New docs/specs/kit-config-redesign/.',
+                'Config’s old week, today and Escape rows become one “This edition” pick: Average, Hard, Failed, In progress or Not played. gsEdPick (gs-data.jsx) maps it to a finished play per game; new plays word-today-hard and -failed, groups-today-hard and -failed, mystery-today-avg and -hard. History (phCur) and Escape (esFinished) read it.',
+                'New app/gs-word.jsx: Daily Word’s session page. New plays word-hard (No. 210) and word-failed (No. 208); the in-progress hint now reads “Letter 2 is T.” New states session-word-hard and session-word-failed; the Escape hard state now sets ed: hard.',
+                'Every game draws its moving art at the 40 by 30 lead in History and the player’s recent list; Word’s cover is redrawn in the green palette.',
+                'docs/specs/1236-session-pages/ gains the daily-word spec, four handoffs and the v6 and v7 Word playgrounds. The nine new screenshots in uploads/ are not carried.',
+              ],
+            },
           ],
         },
         {

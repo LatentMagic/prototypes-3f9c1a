@@ -13,7 +13,7 @@ const GsCover = ({ art, fit }) => {
 };
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
-const GS_ART_MOTION = ['groups', 'casebook', 'hunter', 'word'];
+const GS_ART_MOTION = ['groups', 'casebook', 'hunter'];
 const I = (c) => <i className={c} />;
 const GS_ART_LOCAL = {
   murder: { bg: 'is-wine', body: <>{I('ga-m-ring')}{I('ga-m-bar')}{I('ga-m-cap')}</> },

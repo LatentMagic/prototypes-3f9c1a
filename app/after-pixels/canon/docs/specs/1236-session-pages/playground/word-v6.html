@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- Playground (1236): Daily Word's session page, v6. Loads the main build live from index.html (its styles and its
+     scripts, in its order) and adds pg-wd6.jsx after app/gs-word.jsx. Nothing in app/ is copied or changed. -->
+<html lang="en">
+<head>
+<base href="../../../../" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Daily Word’s session page, v6 (playground)</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<style>
+  /* ---- Playground only (1236, v6). The bar sits above the demo bar (45px); the page's foot grows by its height. ---- */
+  .pgw-bar { position: relative; z-index: 260; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 6px 8px 6px 16px; overflow-x: auto; background: #0E0D0C; border-bottom: 1px dashed #FF2EC4; font-family: var(--font-text); color: var(--text); }
+  .pgw-eyebrow { flex: none; font: 600 11px/1 var(--font-text); letter-spacing: .06em; color: #FF2EC4; }
+  .pgw-grp { flex: none; display: flex; align-items: center; gap: 4px; }
+  .pgw-lab { font: 600 12px/1 var(--font-text); color: var(--muted); margin-right: 4px; white-space: nowrap; }
+  .pgw-chip { flex: none; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; background: none; border: 1.5px solid var(--control-edge); color: var(--text); font: 600 14px/1 var(--font-text); cursor: pointer; white-space: nowrap; }
+  .pgw-chip b { font: 700 15px/1 var(--font-heading); }
+  .pgw-chip[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+  .pgw-link { flex: none; min-height: 44px; padding: 0 8px; background: none; border: 0; color: var(--off-white); font: 600 13px/1 var(--font-text); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+  .pgw-why p { margin: 0 0 12px; } .pgw-why i { display: block; color: var(--muted); font-style: normal; margin-top: 4px; }
+</style>
+<script>window.KIT_STATE_KEY = "kit_1236_word-session_playground-v6"; window.PGW_KEY = "pg_word-session_v6";</script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(async () => {
+  const PG = 'docs/specs/1236-session-pages/playground/pg-wd6.jsx';
+  const doc = new DOMParser().parseFromString(await (await fetch('index.html', { cache: 'no-store' })).text(), 'text/html');
+  const mine = document.head.querySelector('style');
+  doc.head.querySelectorAll('link[rel="stylesheet"], style').forEach((n) => document.head.insertBefore(n.cloneNode(true), mine));
+  const plain = (s) => new Promise((ok, no) => { const e = document.createElement('script');
+    if (s.src) { e.src = s.getAttribute('src'); if (s.integrity) e.integrity = s.integrity; if (s.crossOrigin) e.crossOrigin = s.crossOrigin; e.onload = ok; e.onerror = no; document.body.appendChild(e); }
+    else { e.textContent = s.textContent; document.body.appendChild(e); ok(); } });
+  const babel = async (src) => { const code = await (await fetch(src, { cache: 'no-store' })).text();
+    const e = document.createElement('script'); e.textContent = Babel.transform(code, { presets: ['react'], filename: src }).code + '\n//# sourceURL=' + src; document.body.appendChild(e); };
+  for (const s of doc.body.querySelectorAll('script')) {
+    const src = s.getAttribute('src');
+    if (s.type === 'text/babel') { if (src === 'app/main.jsx') await babel(PG); await babel(src); }
+    else await plain(s);
+  }
+})();
+</script>
+</body>
+</html>

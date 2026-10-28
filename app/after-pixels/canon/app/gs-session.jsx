@@ -111,12 +111,13 @@ const GsSessionRecord = () => {
   // window.GS_SESSION_QUIET[gid](s, ed) gives { label, h1 } for a head that carries no result or figures: the game's body tells them (Escape).
   const quiet = window.GS_SESSION_QUIET && window.GS_SESSION_QUIET[s.gid] ? window.GS_SESSION_QUIET[s.gid](s, ed) : null;
   const body = Body ? <Body s={s} sid={gs.route.id} /> : list;
+  const art = s.art;
   // A day or week that ended before the player finished: no result, no score line, no play control. What was played stays.
   if (s.unfinished) return (<>
     {back}
     <main className="gs-wrap gs-main">
       <section className="gs-sess-head">
-        <GsCover art={s.art} />
+        <GsCover art={art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
           <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
           <h1 className="gs-h1">Not finished</h1>
@@ -131,7 +132,7 @@ const GsSessionRecord = () => {
     {back}
     <main className="gs-wrap gs-main">
       <section className="gs-sess-head">
-        <GsCover art={s.art} />
+        <GsCover art={art} />
         <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
           <span className="mcp-t-card">{quiet ? quiet.label : ed ? edLabel(ed) : s.game}</span>
           <h1 className="gs-h1">{quiet ? quiet.h1 : gsOr(s.result)}</h1>

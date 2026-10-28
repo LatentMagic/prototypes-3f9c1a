@@ -1,15 +1,25 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "After Pixels",
-  "generated": "2026-10-27",
+  "generated": "2026-10-28",
   "tickets": [
     {
       "id": "1236",
       "slug": "1236-session-pages",
       "name": "Session pages, Escape first",
       "state": "active",
-      "touched": "2026-10-27",
+      "touched": "2026-10-28",
       "entries": [
+        {
+          "name": "Daily Word’s session page, v7: the result statement",
+          "path": "docs/specs/1236-session-pages/playground/word-v7.html",
+          "note": "v6’s agreed tiles, hint and numbers, with three designs of the result statement beside them: the row (1), spelt in tiles (2), the winning tile (3)."
+        },
+        {
+          "name": "Daily Word’s session page, v6: designs 1 to 3",
+          "path": "docs/specs/1236-session-pages/playground/word-v6.html",
+          "note": "The main build loaded live, with three designs of Daily Word’s own part: Escape’s frame (1), side by side (2), the whole board with the result beside its row (3). The head carries no result. Solved, Hard, Failed, In progress."
+        },
         {
           "name": "Escape’s session page, v5: lock detail and result",
           "path": "docs/specs/1236-session-pages/playground/v5.html",

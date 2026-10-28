@@ -4,9 +4,10 @@
 // (esTimes, esParts, GS_ES1_PAR, GS_ES1_CLOSED, GS_ES_PARTS). Loads after app/gs-pass-library.jsx, whose now cards it extends.
 // ============================================================================
 
-// This week's play: in progress (Config: This week, or today), else the finished play Config → Escape, this week's room picks.
+// This week's play: in progress, else the finished play Config picks (This edition: Hard; Escape: par), else the seeded one.
 const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
-const esSid = (gs) => (gs.review.week === 'live' ? 'escape-live' : ES_SIDS[gs.review.escape] || 'escape-week');
+const esFinished = (gs) => gsEdPick('escape', gs) || ES_SIDS[gs.review.escape] || 'escape-week';
+const esSid = (gs) => (gs.review.week === 'live' ? 'escape-live' : esFinished(gs));
 
 // ---- The model: the record's lines read as locks, each with its tries and hints in order. A typed lock answers Open or
 // Wrong; a mechanism (Set …) answers with how many of its parts were right. ----

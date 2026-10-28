@@ -91,8 +91,8 @@ const GpRecent = ({ id }) => {
     <section className="gs-stack-md">
       <h2 className="mcp-t-sec">Recent {c.units}</h2>
       <ul className="gs-hist">{c.recent.map((r, i) => (
-        <li key={i}><button type="button" className="gs-hrow" onClick={() => gs.go('session', { id: r.sid })}>
-          <GpMini art={r.art || GS_GAMES[id].art} />
+        <li key={i}><button type="button" className="gs-hrow mcp-art-host" onClick={() => gs.go('session', { id: r.sid })}>
+          <span className="pg-mini-art"><GsArt art={r.art || GS_GAMES[id].art} shape="landscape" /></span>
           <span className="gs-stack-xs"><span className={r.ending ? 'gs-strong' : 'gs-muted'}>{r.ending || '—'}</span><span className="gs-small">{r.when}</span></span>
           <DS.Icon name="back" size={16} style={{ transform: 'rotate(180deg)' }} />
         </button></li>))}</ul>

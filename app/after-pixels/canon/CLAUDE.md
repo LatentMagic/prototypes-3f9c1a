@@ -40,6 +40,7 @@ A map of what the product is. This is a prototype and things change, so the map 
 - **Home** (`home`): signed-out front page. **Discover** (`games`): browse every game. **Product page** (`word`, `escape`…): one game, sold. **Pass page** (`pass`, `subscribe`).
 - **Library** (`library`): your games. **Library game page** (`<game>`, `page: 'record'`): one game as you play it; four cards: **now card**, **streak card**, **Achievements**, **Your plays**. **Session page** (`session`): one play; head, bespoke part, **Every move**. **History** (`history`): every play. **Account** (`account`; `checkout`, `update-card`).
 - **Auth** (`signup`, `signin`, `verify`, `recover`, `returning`, `username`). **Connect** (`connect`): link your AI.
+- **Result statement**: on a session page, the element of the game's own part that states the outcome outright (Escape: the open door and "Escaped"). Every game has one, themed to the game; it carries down to the now card. (Owner, 2026-10-28.)
 - **Play pop-up**, **share pop-up**; **top bar**, **footer**. System: `loading`, `offline`, not-found, `legal`.
 
 ### Page rules (owner)
@@ -64,7 +65,7 @@ Everything outside the block above is shared: identical in every project built f
 
 This file holds the working rules every product built from this kit shares. It names no product. It is a React + Babel in-browser prototype; `app/README.md` describes the skeleton it is built on.
 
-The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 8.** Each kit update raises it by one.
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 9.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read the product block at the top of this file, and the design law it names, at the start of EVERY session, before any other work, whatever the task.** That law binds every decision below. Re-read it before any design decision that sets a convention.

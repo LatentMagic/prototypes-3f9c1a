@@ -154,8 +154,10 @@ const PH_BROKEN = (() => {
   return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first') }];
 })();
 const PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + '-unf', at: u.at, status: PH_UNF, open: phSess(u.sid) }));
+// This edition's finished play, as Config → This edition picks it (PZ's c.today).
+const phCur = (p) => { const c = PZ[p.gid]; if (!p.cur || !c || !p.now || c.today === p.sid) return p; const s = GS_SESSIONS[c.today]; return { ...p, sid: c.today, status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: phSess(c.today) }; };
 const phLog = (gs) => {
-  const l = gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL;
+  const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map(phCur);
   const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
@@ -244,8 +246,8 @@ const usePhList = (initial, k0) => {
 // ---- One play: a DS.ListRow, given its parts. Title is the edition alone (edName); the game's name goes in game, only in a list that mixes games.
 // v: { key, title, game?, when (text or forms), status, onOpen, gid?, sub? } ----
 const phTone = (s) => (s.kind === 'ok' || s.kind === 'bad' ? s.kind : 'none');
-// Where, Chain and Salvage draw their moving art at the 40 by 30 lead, so it plays with the row; every other game keeps its still cover here.
-const PhLead = ({ gid }) => (DP_IDS.includes(gid) ? <GsArt art={GS_GAMES[gid].art} shape="landscape" /> : <span dangerouslySetInnerHTML={{ __html: GS_ART[GS_GAMES[gid].art].svg }} />);
+// Every game draws its art at the 40 by 30 lead, so it moves with the row.
+const PhLead = ({ gid }) => <GsArt art={GS_GAMES[gid].art} shape="landscape" />;
 const phRow = (v) => (
   <DS.ListRow key={v.key} sub={!!v.sub} lead={v.gid ? <PhLead gid={v.gid} /> : undefined} title={v.title} game={v.gid ? v.game : undefined}
     result={gsForms(v.status.label)} tone={phTone(v.status)} when={v.when}

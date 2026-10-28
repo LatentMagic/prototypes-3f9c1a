@@ -22,11 +22,16 @@ Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: r
 - **A state:** add `{ group, id, label, stage: (c) => ... }` to `KIT_STATE_REGISTER` in `states.jsx`. `c` holds the setters `main.jsx` passes to `buildStates`; if the state needs a new one, add it to that `buildStates({ ... })` call in `main.jsx`. The id becomes `?state=<id>` and is public once linked. An id is lowercase letters, digits and single hyphens (`sign-in`), unique, and not `index` or `states`; any other id is refused at load with a console error naming it, and the state appears nowhere.
 - **A QA entry:** add `{ key, title, note?, only?, steps: ['state-id', ...] }` to `KIT_QA` in `qa.jsx`. Steps are state ids only; one that is not in the register shows as "Not in the register". `only` names a `window` property, and the entry shows only when it is set. Delete the entry when the work is signed off.
 - **A Config row:**
-  1. Create a file in `app/`, for example `app/config-extra.jsx`. In it build one component from `kit-config-row` / `window.ConfigSeg`, as `config-extra.example.jsx` does, and end the file with `Object.assign(window, { ConfigExtra: YourComponent });`. That one component holds every product row.
-  2. Delete `config-extra.example.jsx` and its script tag in `../index.html`. Only one file can publish `window.ConfigExtra`; with two, the one loaded last wins and the other's rows never show.
-  3. Where that tag was (after `config.jsx`, before `main.jsx`), add `<script type="text/babel" src="app/config-extra.jsx"></script>`.
+  1. Edit `gs-config.jsx`, or replace it with a file of your own. That file defines one component that holds every product row, and ends with `Object.assign(window, { ConfigExtra: YourComponent });`.
+  2. Build the component from the four parts `config.jsx` publishes on `window`. Never write Config markup or `kit-config-*` classes by hand.
+     - `ConfigGroup({ title, scope, children })` holds rows. A group with `scope="global"` joins the Global section, which holds the settings for the whole prototype, such as who is signed in; its `title` shows as a heading inside Global. Every other group is one feature's settings, and its `title` names its own section in the rail.
+     - `ConfigRow({ label, value, onChange, options, hint })` is one choice. `options` is a list of `{ value, label }`; `onChange` receives the chosen `value`.
+     - `ConfigAction({ label, onClick, hint })` is a one-shot event, such as a renewal that fails. Config shows a group's actions together under Events. A click plays Config's exit, then runs `onClick` and closes Config, so an animated act plays on a clear screen. The handler never closes Config itself.
+     - `ConfigNote({ children })` is one short line that says why a row is absent, such as "Plans page: off while Takes payment is No".
+  3. Keep each `hint` to one or two short sentences. A hint opens under its row from an info button; an action's hint opens from the Events heading.
+  4. Only one file can publish `window.ConfigExtra`. With two, the one loaded last wins and the other's rows never show. If you replace the file, swap its script tag in `../index.html` (after `config.jsx`, before `main.jsx`).
 
-  A button with the class `kit-config-btn-secondary` inside the modal runs its handler and then closes the modal. A control that should leave the modal open uses `window.ConfigSeg` or its own class.
+  (Here `gs-pass-aids.jsx` is the one deliberate exception: it wraps the shipped `ConfigExtra` and renders it above its own Pass upsell group.)
 
 ## Known limits
 

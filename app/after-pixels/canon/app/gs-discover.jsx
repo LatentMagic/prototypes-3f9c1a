@@ -106,7 +106,7 @@ const GsLibrary = () => {
         <div className="lb-box">
           {wait ? <GsPart label="Loading games" /> : ids.length ? (
             <DS.RowList label="Library">{ids.map((k) => { const g = GS_GAMES[k]; const me = rows[k]; return (
-              <DS.ListRow key={k} lead={<GpMini art={g.art} sm />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />
+              <DS.ListRow key={k} lead={<GsArt art={g.art} shape="landscape" />} title={g.name} result={gsForms(me.result)} tone={me.tone || undefined} when={me.when || undefined} onClick={() => gs.go(g.route, { page: 'record' })} />
             ); })}</DS.RowList>
           ) : <div className="dc-empty" style={{ minWidth: 0 }}><p style={{ overflowWrap: 'anywhere' }}>{q.trim() ? 'No game matches “' + q + '”.' : 'No game matches that.'}</p><DS.TextLink onClick={showAll}>Show every game</DS.TextLink></div>}
         </div>

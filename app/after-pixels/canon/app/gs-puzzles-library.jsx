@@ -11,7 +11,7 @@
 const pzMis = gsMis;
 const PZ = {
   word: {
-    no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
+    no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow', links: ['See every guess', 'See your guesses so far'],
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
@@ -116,6 +116,11 @@ Object.entries(PZ).forEach(([id, c]) => {
   // Every earlier edition played gets its own session page, so each row opens a real record.
   c.all.slice(1).forEach((x) => { if (x.played) x.sid = c.keep[x.i] ? c.past : pzSession(id, c, x); });
   c.badges = lbAutoBadges(c.ach);
+  // pin: an earlier edition whose play is a hand-built record (index → session id); its row reads that record.
+  Object.entries(c.pin || {}).forEach(([i, sid]) => { const x = c.all[+i]; const s = GS_SESSIONS[sid]; Object.assign(x, { played: true, ok: !s.loss, done: !s.loss, line: s.result, sid }); });
+  // KEEP: this edition's finished play is read through c.today everywhere, so Config → This edition (gsEdPick) changes every surface at once.
+  const base = c.today;
+  Object.defineProperty(c, 'today', { configurable: true, get: () => (id === 'escape' && window.gsApi && typeof esFinished === 'function' ? esFinished(window.gsApi) : gsEdPick(id) || base) });
 });
 // State library-word-streak-broken: yesterday's Daily Word finished in a first play that failed.
 (() => {

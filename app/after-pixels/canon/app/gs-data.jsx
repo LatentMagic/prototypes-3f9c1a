@@ -24,7 +24,7 @@ const GS_ART = {
   murder: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
   // Daily Groups: four rows of four, one colour a group, as a solved board.
   groups: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/>' + ['#E5A63B', '#328A88', '#D66847', '#A390B2'].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join('')).join('')) },
-  word: { ground: 'forest', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>') },
+  word: { ground: 'forest', extend: 'centre', svg: '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice"><rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#4CC38A"/><rect x="64" y="44" width="32" height="32" fill="#E5A63B"/><rect class="wd-cover-miss" x="104" y="44" width="32" height="32" fill="#918B80" stroke="#918B80"/></svg>' },
   derelict: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>') },
   barrow: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#328A88"/><rect x="100" y="20" width="16" height="16" fill="#F2EBE0"/>') },
   casebook: { ground: 'indigo', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>') },
@@ -208,7 +208,21 @@ const GS_SESSIONS = {
   'word-today': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     listTitle: 'Every guess', share: 'Solved in 3 of 6',
-    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'The word contains the letter I.'], ['Guess 3', 'STILL', 'Solved']],
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STILL', 'Solved']],
+  },
+  // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
+  // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+  'word-hard': {
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
+    listTitle: 'Every guess', share: 'Solved in 5 of 6',
+    lines: [['Guess 1', 'CRANE', '1 in the word'], ['Guess 2', 'ROBOT', '1 in place, 2 in the word'], ['Hint', 'Letter 1 is F.'],
+      ['Guess 3', 'FROGS', '2 in place, 1 in the word'], ['Guess 4', 'FLOUR', '4 in place'], ['Guess 5', 'FLOOR', 'Solved']],
+  },
+  'word-failed': {
+    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
+    listTitle: 'Every guess', share: 'Failed',
+    lines: [['Guess 1', 'CRANE', '2 in the word'], ['Hint', 'Letter 4 is A.'], ['Guess 2', 'METAL', '2 in place, 2 in the word'], ['Guess 3', 'PETAL', '2 in place, 2 in the word'],
+      ['Guess 4', 'DECAL', '2 in place, 1 in the word'], ['Guess 5', 'SEPAL', '3 in place, 1 in the word'], ['Guess 6', 'SHOAL', '3 in place']],
   },
   // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
   'escape-week': {
@@ -258,6 +272,35 @@ const GS_SESSIONS = {
       ['Accusation', 'Ivy Marchbank, with the vial of foxglove, in the wine cellar', 'Right']],
   },
 };
+// This edition's play as Config → This edition picks it (gsEdPick): Average, Hard (every try and hint used, still won) or Failed.
+// Same edition, same answer as today's play and its in-progress form. A game with no entry for a pick keeps its seeded play.
+Object.assign(GS_SESSIONS, {
+  'word-today-hard': { ...GS_SESSIONS['word-today'], result: 'Solved in 5 of 6', share: 'Solved in 5 of 6',
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STOOL', '3 in place'], ['Guess 4', 'STALL', '4 in place'], ['Guess 5', 'STILL', 'Solved']] },
+  'word-today-failed': { ...GS_SESSIONS['word-today'], loss: true, result: 'Failed', share: 'Failed',
+    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STALL', '4 in place'], ['Guess 4', 'SPILL', '4 in place'], ['Guess 5', 'SKILL', '4 in place'], ['Guess 6', 'SWILL', '4 in place']] },
+  'groups-today-hard': { ...GS_SESSIONS['groups-today'], result: 'All 4 groups, 3 mistakes', share: 'All 4 groups, 3 mistakes', figures: ['4 of 4 groups', '3 mistakes'],
+    shareHead: 'Daily Groups #88 · 3 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟪🟪🟪', '🟩🟩🟩🟩'],
+    lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
+      ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'BASS · CHORD · SCALE · NOTE', 'Found: music'], ['Try 7', 'RAIL · GATE · POST · PANEL', 'Found: parts of a fence']] },
+  'groups-today-failed': { ...GS_SESSIONS['groups-today'], loss: true, result: '2 of 4 groups', share: '2 of 4 groups', figures: ['2 of 4 groups', '4 mistakes'],
+    shareHead: 'Daily Groups #88 · 4 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟩🟩🟪'],
+    lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
+      ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'NOTE · RAIL · GATE · BASS', 'Not a group']] },
+  // Daily Mystery asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
+  'mystery-today-avg': { ...GS_SESSIONS['mystery-today'], loss: false, q: 1, result: 'Solved', share: 'Solved', figures: ['1 question', 'No hints'],
+    lines: [GS_MYSTERY_QS[0], ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
+  'mystery-today-hard': { ...GS_SESSIONS['mystery-today'], loss: false, result: 'Solved', share: 'Solved',
+    lines: [...GS_MYSTERY_QS, ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
+});
+const GS_ED_SIDS = {
+  word: { average: 'word-today', hard: 'word-today-hard', failed: 'word-today-failed' },
+  groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
+  mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
+  escape: { hard: 'escape-hard' },
+};
+// The finished play Config → This edition picks for a game, or null to keep the seeded one.
+const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
   'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
@@ -305,7 +348,7 @@ const GS_ES_PARTS = { 'clock hands': 2 };
 // Each finished play: its time and the minute each lock gave way, in the order they opened; esParts: a mechanism's
 // wrong settings as [right, of], keyed by move. The in-progress play is this week's cut short, so it reads this week's minutes.
 GS_SESSIONS['escape-week'].esTimes = { min: 28, opened: [6, 17, 19, 28] };
-// Sample plays of this week's room, staged by Config → Escape, this week's room (review.escape). Exactly par counts as under.
+// Sample plays of this week's room, staged by Config → Escape (review.escape) and This edition: Hard. Exactly par counts as under.
 GS_SESSIONS['escape-par'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.escape({ min: 30, par: 'under par' }), share: GS_RESULT.escape({ min: 30, par: 'under par' }),
   figures: ['30 min, on par', '1 hint', '2 wrong tries'], shareLines: ['Escape No. 1 · escaped in 30 min, on par · 1 hint 💡 · 2 wrong tries'], esTimes: { min: 30, opened: [7, 18, 21, 30] } };
 GS_SESSIONS['escape-over'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.escape({ min: 41, par: 'over par' }), share: GS_RESULT.escape({ min: 41, par: 'over par' }),
@@ -382,5 +425,5 @@ const gsForms = (s) => {
 };
 
 Object.assign(window, {
-  GS_RESULT, gsMis, gsForms, gsStartsOver, GS_ONCE_LINE, DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed, GS_DV_WON, GS_DV_LIVE, GS_DV_ENDINGS, GS_ES1, GS_CB_REC, gsCbLines, gsLink, GS_BARROW_CREDIT, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop,
+  GS_RESULT, gsMis, gsForms, GS_ED_SIDS, gsEdPick, gsStartsOver, GS_ONCE_LINE, DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed, GS_DV_WON, GS_DV_LIVE, GS_DV_ENDINGS, GS_ES1, GS_CB_REC, gsCbLines, gsLink, GS_BARROW_CREDIT, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop,
 });

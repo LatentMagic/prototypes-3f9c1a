@@ -184,3 +184,9 @@ KIT_QA.unshift({ key: 'escape-1236', title: 'Escape: session page and now card (
   note: 'Each at desktop and phone width. Session page: the door and Escaped with the verdict, the line, one lane per lock (two a row on desktop, the picked one alone on a phone), Every move collapsed. Now card: Escaped and the verdict at the head’s right, the line; press a door: the session page opens on that lock’s lane. Hard: the cabinet lane wraps to two rows; doors stay 32px apart.',
   steps: ['library-escape', 'library-escape-on-par', 'library-escape-over', 'library-escape-hard', 'library-escape-in-progress', 'library-escape-free',
     'session-escape', 'session-escape-on-par', 'session-escape-over', 'session-escape-hard', 'session-escape-in-progress'] });
+KIT_QA.unshift({ key: 'word-1236', title: 'Daily Word: session page (1236, not signed off)',
+  note: 'Each at desktop and phone width; Hard at 1440 x 900 and 1280 x 800 must show the whole board without scrolling. The board on its grey ground, centred, the ground wrapping every tile; the hint a slim row, its letter in its place with "Hint" beside it; no dashed edges; in progress, an underline for each guess left. The cover: the grey square small and thin at rest, full and filled on hover, focus or tap. Every guess collapsed below.',
+  steps: ['session-puzzle', 'session-word-hard', 'session-word-failed', 'session-word-in-progress'] });
+KIT_QA.unshift({ key: 'this-edition-picks', title: 'Config: This edition (Average, Hard, Failed)',
+  note: 'Config → Every game → This edition. Pick Hard, then Failed, then Average: Daily Word, Daily Groups and Daily Mystery change on the now card, Your plays, History and the session page together; Escape changes on Hard only. Daily Word’s History also holds #210 (hard) and #208 (failed). Escape keeps its par pick in its own section.',
+  steps: ['history', 'library-word', 'library-escape'] });
