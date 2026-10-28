@@ -116,6 +116,7 @@ const CircleSignal = ({ state }) => {
   return null;
 };
 
+// KEEP: The New pill keeps its width as its label changes, so nothing beside it jumps.
 // ---- New pill --------------------------------------------------------------
 // Announced by the live region in main.jsx, which is already sitting in the page
 // empty — a region inserted together with its text announces nothing.

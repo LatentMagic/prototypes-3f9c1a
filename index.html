@@ -969,6 +969,17 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-10-28',
+              title: 'Kit 7–9: Config redesigned as a section rail; comments cleaned',
+              items: [
+                'Config (app/config.jsx) rebuilt to kit version 9: a rail of sections (Global, then one per feature) beside the chosen section\'s rows, a drill-in list in a bottom sheet below 640px, and an opaque surface with no blur. Styles are .circ-config-dialog-* and siblings in circlists.html; the States and QA palettes keep the old .circ-config-scrim / -modal shell.',
+                'Product rows move to a new app/config-extra.jsx built from ConfigGroup / ConfigRow / ConfigAction / ConfigNote. The per-person pricing (pricing-states.jsx) and conversation (talk-qa.jsx) candidate rows now use the same parts; their hand-written circ-config-row markup and the old segmented control are gone.',
+                'Kit 8 comments rule: KEEP: marks added across app/*.jsx and circlists.html, narrating comments removed. No behaviour change.',
+                'Kit 7: the in-your-own-words skill (skills/in-your-own-words/). New spec folders kit-v8 and kit-config-redesign; one new upload.',
+                'Authoring cruft the export carried (scraps/, screenshots/, .thumbnail) is no longer kept in canon.',
+              ],
+            },
+            {
               date: '2026-10-15',
               title: 'Frontend Guild landing circle; store listing mocks',
               items: [

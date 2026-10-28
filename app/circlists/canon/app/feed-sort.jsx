@@ -3,17 +3,14 @@
 //
 //   circSortItems(items, order)  — the view-only reorder. Never mutates.
 //
-// THE CONTROL LIVES IN feed-lens.jsx, NOT HERE. Run 1 shipped a standalone
-// "Newest first" menu button in the tab bar; run 2 folded it into one lens
-// control alongside the contributor filter, so this file is now the sort
-// engine alone and the picking UI is the lens's. The reasoning for folding is
-// in feed-lens.jsx's own header.
+// THE CONTROL LIVES IN feed-lens.jsx, NOT HERE: the sort is picked in the one
+// lens control beside the contributor filter.
 //
 // Two orders and no more: newest first (the product's contract) and oldest
 // first. Title and source were considered and cut — both rest on extraction
 // that can fail, and a sort property whose data is not guaranteed is cut rather
 // than shipped with an empty state. Contributor was cut on value, not
-// availability. The reasoning is in the run's rulings file, not repeated here.
+// availability.
 //
 // THE SORT IS A VIEW. Stored order is never touched, because the divider maths,
 // the pill's accept and the seeding all read stored order and would drift the

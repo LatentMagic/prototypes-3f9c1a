@@ -21,12 +21,10 @@ const CandSwellReveal = ({ item, all, firstHere, onClose }) => {
   );
 };
 
-// The shipped review reserves the input palette's former footprint around the
-// disc so the circle never jumps between the input step and the reveal. Below
-// the disc that reserve (42px) stacks on the body's 16px gap, which read loose
-// once the primary button was added under the roster. Pull the roster up so the
-// optical gap under the disc is ~32px; the disc's own position is untouched, so
-// nothing moves between steps. Candidate-scoped: app/swell-reactions.jsx stays.
+// KEEP: about 32px between the disc and the roster under it in the reveal, and
+// the disc in the same place as in the input step, so nothing jumps between
+// steps. The shipped review's reserve plus the body gap read loose once the
+// primary button sat under the roster. Candidate-scoped: app/swell-reactions.jsx stays.
 if (typeof document !== 'undefined' && !document.getElementById('cand652-reveal-css')) {
   const s = document.createElement('style');
   s.id = 'cand652-reveal-css';

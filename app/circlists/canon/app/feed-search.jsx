@@ -184,6 +184,7 @@ const SearchField = ({ value, onChange, onClear }) => {
   return (
   <div className="cand-searchfield" style={{
     display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+    // KEEP: The search field never moves as you type or as the clear button appears.
     // 44px + the 1px border top and bottom. Measured, not guessed: at a flat
     // 44px the bordered box is 44px but the INPUT inside it is 42px, and the
     // 44px floor is about the thing you tap, not the thing you see. Two more

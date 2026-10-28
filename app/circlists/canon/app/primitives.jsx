@@ -49,6 +49,8 @@ const LP_ICONS = {
   // Search. No prior magnifier in this set —
   // `circles` is two concentric rings, a different shape entirely.
   search: '<circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.65" y2="16.65"></line>',
+  info: '<circle cx="12" cy="12" r="9"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><line x1="12" y1="7.5" x2="12" y2="7.6"></line>',
+  'chevron-left': '<polyline points="15 18 9 12 15 6"></polyline>',
 };
 
 const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth = 1.5 }) => {
@@ -112,9 +114,10 @@ const AppLoading = ({ label = 'Loading' }) => (
 const Button = React.forwardRef((props, ref) => {
   const {
     variant = 'primary', loading = false, icon, children, full = false, size = 'md',
-    type = 'button', onClick, disabled, style, title, autoFocus, name,
+    type = 'button', onClick, disabled, style, title, autoFocus, name, className,
   } = props;
   const ariaLabel = props['aria-label'];
+  const ariaPressed = props['aria-pressed'];
   const ariaExpanded = props['aria-expanded'];
   const pad = size === 'lg' ? '14px 22px' : size === 'sm' ? '8px 12px' : '11px 18px';
   const minH = size === 'lg' ? 52 : size === 'sm' ? 36 : 44;
@@ -139,12 +142,12 @@ const Button = React.forwardRef((props, ref) => {
     destructive: { background: 'var(--color-destructive)', color: '#fff' },
     ghost: { background: 'transparent', color: 'var(--color-fg-2)', fontWeight: 500, border: '1px solid var(--color-border-1)' },
   };
-  const cls = 'circ-btn circ-btn-' + variant;
+  const cls = 'circ-btn circ-btn-' + variant + (className ? ' ' + className : '');
   return (
     <button
       ref={ref} type={type} onClick={onClick} disabled={loading || disabled}
       title={title} autoFocus={autoFocus} name={name}
-      aria-label={ariaLabel} aria-expanded={ariaExpanded}
+      aria-label={ariaLabel} aria-expanded={ariaExpanded} aria-pressed={ariaPressed}
       className={cls}
       style={{ ...base, ...variants[variant], ...(style || {}) }}>
       {loading && <Ring light={variant === 'primary' || variant === 'destructive'} />}

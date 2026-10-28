@@ -7,6 +7,7 @@
 // ============================================================================
 const PppShippedDormant = window.DormantSpace;
 
+// KEEP: each sentence keeps its own line where it fits; none strands its last words past its full stop.
 // A sentence never strands its last words past its full stop (ui-design.md, no
 // overhanging line): each sentence keeps its own line where it fits.
 const PppS = ({ children }) => <span className="ppp-s">{children}</span>;

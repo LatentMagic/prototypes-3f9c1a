@@ -163,6 +163,7 @@ const SettingUp = ({ spaceName, onDone }) => {
   return <AppLoading label="Setting up your circle" />;
 };
 
+// KEEP: The asleep circle's buttons sit in a row when the canvas fits them and stack, Fund on top, when it is narrow; the switch follows the canvas width, not the posture.
 // ---- Dormant-space state ---------------------------------------------------
 // ONE calm full-page state, identical for every member — no role branch, and it
 // names nobody. Content + roster preserved, access frozen, recoverable by

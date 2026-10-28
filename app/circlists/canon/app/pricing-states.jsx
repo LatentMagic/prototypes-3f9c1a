@@ -130,36 +130,30 @@ window.circResolveState = () => {
   return PPP_IDS.includes(name) ? { kind: 'state', id: name } : pppResolve();
 };
 
-// ---- Config: the states that are switched rather than clicked to ----------
-const PppSeg = ({ label, options, value, onChange }) => (
-  <div className="circ-config-row">
-    <span className="circ-config-row-label">{label}</span>
-    <div className="circ-config-seg" role="radiogroup" aria-label={label}>
-      {options.map(([v, t]) => (
-        <button key={v} type="button" role="radio" aria-checked={v === value} className="circ-config-seg-btn"
-          data-active={v === value ? '1' : undefined} onClick={() => onChange(v)}>{t}</button>
-      ))}
-    </div>
-  </div>
-);
+// ---- Config rows (composed into window.ConfigExtra by app/config-extra.jsx) ----
 const PppConfig = () => {
   const st = usePPP(); const A = window.CircPPP;
+  const { ConfigGroup: Group, ConfigRow: Row } = window;
+  const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
   return (
-    <div>
-      <div className="circ-config-eyebrow">Per-person pricing (candidate)</div>
-      <PppSeg label="Subscription" value={st.status} onChange={(v) => A.set({ status: v, pending: null, ...(v === 'trial' ? { usedFreeMonth: true } : {}) })}
-        options={[['none', 'None'], ['trial', 'Free month'], ['active', 'Active'], ['failed', 'Failed'], ['ending', 'Ending']]} />
-      <PppSeg label="Free month" value={st.usedFreeMonth ? 'used' : 'open'} onChange={(v) => A.set({ usedFreeMonth: v === 'used' })}
-        options={[['open', 'Available'], ['used', 'Used']]} />
-      <PppSeg label="Plan" value={st.plan} onChange={(v) => A.set({ plan: v, pending: null })}
-        options={[['monthly', 'Monthly'], ['yearly', 'Yearly']]} />
-      <PppSeg label="Card load" value={st.simLoad} onChange={(v) => A.set({ simLoad: v })}
-        options={[['ok', 'Loads'], ['hold', 'Stays loading']]} />
-      <PppSeg label="Card actions" value={st.simBusy} onChange={(v) => A.set({ simBusy: v })}
-        options={[['done', 'Complete'], ['hold', 'Stay busy']]} />
-      <PppSeg label="End date" value={st.noEndDate ? 'unknown' : 'known'} onChange={(v) => A.set({ noEndDate: v === 'unknown' })}
-        options={[['known', 'Known'], ['unknown', 'Unknown']]} />
-    </div>
+    <React.Fragment>
+      <Group title="Per-person pricing (candidate)" scope="global">
+        <Row label="Subscription" value={st.status} onChange={(v) => A.set({ status: v, pending: null, ...(v === 'trial' ? { usedFreeMonth: true } : {}) })}
+          options={o([['none', 'None'], ['trial', 'Free month'], ['active', 'Active'], ['failed', 'Failed'], ['ending', 'Ending']])} />
+        <Row label="Free month" value={st.usedFreeMonth ? 'used' : 'open'} onChange={(v) => A.set({ usedFreeMonth: v === 'used' })}
+          options={o([['open', 'Available'], ['used', 'Used']])} />
+        <Row label="Plan" value={st.plan} onChange={(v) => A.set({ plan: v, pending: null })}
+          options={o([['monthly', 'Monthly'], ['yearly', 'Yearly']])} />
+      </Group>
+      <Group title="Subscription card">
+        <Row label="Card load" value={st.simLoad} onChange={(v) => A.set({ simLoad: v })}
+          options={o([['ok', 'Loads'], ['hold', 'Stays loading']])} />
+        <Row label="Card actions" value={st.simBusy} onChange={(v) => A.set({ simBusy: v })}
+          options={o([['done', 'Complete'], ['hold', 'Stay busy']])} />
+        <Row label="End date" value={st.noEndDate ? 'unknown' : 'known'} onChange={(v) => A.set({ noEndDate: v === 'unknown' })}
+          options={o([['known', 'Known'], ['unknown', 'Unknown']])} />
+      </Group>
+    </React.Fragment>
   );
 };
-window.ConfigExtra = PppConfig;
+window.PppConfig = PppConfig;

@@ -56,6 +56,7 @@ const pppApi = () => window.__pppApi || null;
 // payments Off cannot sell the subscription. The one key for every money
 // difference — the not-subscribed line, and the Subscription card as status only.
 const pppAppNoPay = () => { const a = pppApi(); return !!(a && a.isApp && !a.mobilePayments); };
+// KEEP: no line of the not-subscribed paragraph ends on a single word, at any width.
 // The ratified line, word for word, as one paragraph that wraps with its
 // container (board pg-not-subscribed B.01, 5 Oct). The last two words of each
 // closing phrase are glued so no line ends on one word.
@@ -67,6 +68,7 @@ const PppAppLine = () => (
 const PPP_APP_TITLE = 'You can\u2019t subscribe in this\u00a0app.';
 const PPP_APP_BODY = 'Joining circles is free. Starting your own needs a Circlists\u00a0subscription.';
 const PPP_APP_MANAGE = 'You can\u2019t manage your subscription in this app.';
+// KEEP: the status line is whole where it fits, else breaks only before "in this app."
 // The status line breaks only at its phrase edge (board C.01, 5 Oct): whole
 // where it fits, else before "in this app."
 const PppManageLine = () => (

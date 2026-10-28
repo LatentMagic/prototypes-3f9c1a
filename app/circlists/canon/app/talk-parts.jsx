@@ -114,6 +114,7 @@ const CandSwitch = ({ on, onChange, label }) => (
   </button>
 );
 
+// KEEP: The composer grows to a cap, then scrolls, so up to 500 characters stay readable.
 // ---- The writing field ------------------------------------------------------
 // One field for everything written here: the contributor's thought and every
 // turn. Borderless words on the same warm paper they will land on; grows as you

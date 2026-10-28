@@ -151,6 +151,7 @@ const PppCardPage = () => {
   );
 };
 
+// KEEP: the not-subscribed title scales with the page and sits on two even lines at every phone width.
 // App posture, mobile payments off: the app cannot sell the subscription. Every
 // path that reaches this page (New circle not subscribed, #/subscribe, take-over)
 // reads the ratified line (mobile-readiness, 5 Oct) in the calm-page family's

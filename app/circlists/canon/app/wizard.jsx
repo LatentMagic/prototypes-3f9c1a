@@ -12,7 +12,8 @@
 // text block is identical across viewports and across steps.
 // ============================================================================
 
-const WIZARD_COL = 300;   // the one true content column — mobile and desktop alike
+// KEEP: one 300px content column on both steps at every width, so the text block never shifts between steps or devices.
+const WIZARD_COL = 300;
 const WIZARD_STEPS = 2;   // name → fund
 
 // Progress = segmented dots, dead-centre in the header. IMMUTABLE: nothing is
@@ -39,8 +40,8 @@ const WizardIconBtn = ({ name, label, onClick }) => (
   }}><Icon name={name} size={20} /></button>
 );
 
-// Body is safe-centred with a scroll fallback: centred on tall screens, top-aligned
-// and scrollable on short ones, so it never clips on the smallest phones.
+// KEEP: the body is centred on tall screens and top-aligned and scrollable on
+// short ones, so it never clips on the smallest phones.
 // `flow` is the ONE switch between the two states of a wizard page: {step, steps}
 // means "you are inside the create -> fund flow" (dots + back); null means the
 // same page reached as a standalone task (neither). Nothing else in the page may
@@ -51,6 +52,8 @@ const WizardIconBtn = ({ name, label, onClick }) => (
 // A standalone task has no step-one to have told you what you are acting on, so
 // the slot that answered "where am I" answers "on what" instead. This is why the
 // name needs no new home in the body.
+// KEEP: a long circle name stays on one line and ends in an ellipsis at 200px, so
+// it never pushes Back or the exit out of the header.
 const WizardSubject = ({ children }) => (
   <span style={{
     fontFamily: 'var(--font-mono)', fontWeight: 'var(--weight-medium)', fontSize: 12,

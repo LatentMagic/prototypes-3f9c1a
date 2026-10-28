@@ -98,6 +98,22 @@ is never stale.
 
 ## Last sync
 
+date: 2026-10-28T06:50:00Z
+prototypes-3f9c1a: read `kit/project/app/config.jsx`, `gsa-config.jsx`, `app/README.md`, `index.html` (main, c18d868). Nothing mirrored.
+
+### Updated in this project
+- Kit update to version 9: Config modal rebuilt as a rail of sections (drill-in list on a phone); rows rewritten into the four parts. Handoff in `docs/specs/kit-config-redesign/`.
+
+## Previous sync
+
+date: 2026-10-27T19:33:00Z
+monorepo: read live — `specs/governance/standards/ui-design.md` (session start). Nothing mirrored; no commit sha resolved.
+
+### Updated in this project
+- Kit update to version 8: the comments rule in `CLAUDE.md` and `ARCHITECTURE.md`. Handoff in `docs/specs/kit-v8/`.
+
+## Previous sync
+
 date: 2026-10-22T06:31:00Z
 monorepo: read live — `specs/governance/standards/ui-design.md` (session start). wiki: `wiki/products/circlists/brand/` mirrored whole into `brand/` (tree 49d264bee9dc). No commit sha resolved.
 

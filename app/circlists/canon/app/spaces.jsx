@@ -22,6 +22,7 @@ const ContentPage = ({ onBack, backLabel = 'Back', children, max = 'var(--max-fe
   </main>
 );
 
+// KEEP: A calm page taller than the screen scrolls from its top, so its first line is never cut off above the screen.
 // ---- Standalone calm full page (invalid invite / space full / web handoff) --
 // `children` is an optional slot between the body and the action, for a page
 // that has one more thing to show before the button (the web handoff's
@@ -203,6 +204,7 @@ const RemoveMemberDialog = ({ member, onConfirm, onCancel }) => {
   );
 };
 
+// KEEP: A long circle name wraps and stays fully visible.
 // ---- Edit-circle dialog — champion only -------------------------------------
 // Focused dialog (matches the Remove-member treatment). Auto-growing textarea so
 // a long name wraps and stays fully visible instead of scrolling out of a single

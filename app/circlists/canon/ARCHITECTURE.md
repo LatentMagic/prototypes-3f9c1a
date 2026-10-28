@@ -54,6 +54,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/home.jsx` | droppable body | home falls back to its empty state (`NoSpaceHome`) |
 | `app/gate.jsx` | droppable module | preview gate gone; real flows run |
 | `app/config.jsx` | deletable aid | Config pill + review settings gone |
+| `app/config-extra.jsx` | deletable aid | candidate overlays' Config rows gone (it is the one file that publishes `window.ConfigExtra`) |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
 | `app/report-block.jsx` | droppable module | Report and Block gone; cards, comments and Members rows read as before |
@@ -137,4 +138,23 @@ surface in-app either.)
 - **Container / presentation split**, focused components, split past ~200 lines. See
   `skills/frontend-ui-engineering/SKILL.md`.
 - **State** lives in `main.jsx` unless it is purely local chrome state (a drawer, a transition).
-- **Comments never cite a `docs/` path.** A comment may state what the code does and any rule or decision it keeps, reason included ("required before Terms ship"). It never points at a task folder or a handoff: those move when work is archived, and the pointer then leads nowhere.
+- **Comments never cite a `docs/` path.** A comment never points at a task folder or a handoff: those move when work is archived, and the pointer then leads nowhere.
+- **Comments carry intent and mapping, and flag the special; nothing else.**
+  - Intent: a rule or decision the code keeps, with its reason.
+  - Mapping: a short label that helps a reader find their way around a file, or says where a part sits in the product.
+  - The special: behaviour a rebuild from screenshots of the usual states would get wrong (adaptive styling, overlap or overflow handling, a value chosen against the default). Mark it `// KEEP:` and state the outcome the product must keep, in plain words with any numbers that matter, then one clause of why. Never the algorithm. These marks are written for another agent: the one that integrates this prototype into the product reads `KEEP:` as "preserve this", so it never needs speccing in a ticket. Change that behaviour and you update or remove its `KEEP:` in the same edit.
+  - No narration. A comment that restates what the code plainly does is deleted.
+
+## Adding a Config row
+
+- **A Config row:**
+  1. Edit `config-extra.jsx`, or replace it with a file of your own. That file defines one component that holds every product row, and ends with `Object.assign(window, { ConfigExtra: YourComponent });`.
+  2. Build the component from the four parts `config.jsx` publishes on `window`. Never write Config markup or `circ-config-*` classes by hand.
+     - `ConfigGroup({ title, scope, children })` holds rows. A group with `scope="global"` joins the Global section, which holds the settings for the whole prototype, such as who is signed in; its `title` shows as a heading inside Global. Every other group is one feature's settings, and its `title` names its own section in the rail.
+     - `ConfigRow({ label, value, onChange, options, hint })` is one choice. `options` is a list of `{ value, label }`; `onChange` receives the chosen `value`.
+     - `ConfigAction({ label, onClick, hint })` is a one-shot event, such as a renewal that fails. Config shows a group's actions together under Events. A click plays Config's exit, then runs `onClick` and closes Config, so an animated act plays on a clear screen. The handler never closes Config itself.
+     - `ConfigNote({ children })` is one short line that says why a row is absent, such as "Plans page: off while Takes payment is No".
+  3. Keep each `hint` to one or two short sentences. A hint opens under its row from an info button; an action's hint opens from the Events heading.
+  4. Only one file can publish `window.ConfigExtra`. With two, the one loaded last wins and the other's rows never show. If you replace the file, swap its script tag in `../circlists.html` (after `config.jsx`, before `main.jsx`).
+
+Here `config-extra.jsx` composes the rows each candidate overlay exports (`PppConfig`, `CandTalkConfig`); a new overlay exports its component and is added there. The rows driven by `main.jsx` props (Platform, Viewport, Mobile payments, Preview gate, TEST circles, Reset, Sign-in, Liveliness, Notifications) live in `ConfigModal` itself.

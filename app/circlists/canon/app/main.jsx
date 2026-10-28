@@ -802,6 +802,7 @@ const CircApp = () => {
     const peers = ((sp && sp.members) || []).filter(m => m.name !== 'You');
     return peers.length ? peers[Math.floor(Math.random() * peers.length)].name : 'Sam R.';
   };
+  // KEEP: New cards wait behind the New pill; the feed never shifts underfoot.
   // A link lands. In the circle the member is IN, on Active, it waits behind the
   // New pill — the feed never shifts underfoot. On Read the pill is out of sight,
   // so the dot lights instead and points them to Active, where the pill is

@@ -630,6 +630,7 @@ const SwellReviewModal = ({ item, onClose }) => {
   rxEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') requestClose(); };
     window.addEventListener('keydown', onKey);
+    // KEEP: Focus moves into the sheet without scrolling, so the screen never heaves as the sheet opens.
     // preventScroll: the sheet mounts at translateY(100%) (offscreen below), so a
     // plain focus() makes the browser scroll the close button into view and heave
     // the whole feed up ~half a viewport, then settle as the sheet slides in —
@@ -824,6 +825,7 @@ const SwellReactionFlow = ({ item, swellOpts, onMarkRead, onClose }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [step]);
 
+  // KEEP: The panel's width stays fixed between steps; only its height eases.
   // grow/shrink the panel height between steps (width is locked); clip only while easing
   rxLayout(() => { const el = bodyRef.current; if (el) setBodyH(el.scrollHeight); }, [step]);
   rxEffect(() => { setClip(true); const t = setTimeout(() => setClip(false), 340); return () => clearTimeout(t); }, [step]);

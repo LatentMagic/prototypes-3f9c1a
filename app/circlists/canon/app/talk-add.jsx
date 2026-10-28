@@ -51,6 +51,7 @@ const CandLinkSlot = React.forwardRef(({ value, onChange, error }, ref) => {
   );
 });
 
+// KEEP: The returned thought shows two lines at most, with a fade whenever it runs to a second.
 // ---- the returned state ----------------------------------------------------
 // Two lines at most, and the fade is on whenever the thought runs to a second
 // line — not only when it overruns — so the row never behaves differently at two

@@ -204,6 +204,7 @@ const CandFeedLead = ({ api }) => {
     return () => clearTimeout(t);
   }, [phase]);
 
+  // KEEP: The feed under the returns bar makes one move as the bar opens, never a jump then a slide.
   // Measured before paint, so the keyframe has a real height to travel to and the
   // feed below makes ONE move rather than a jump and then a slide.
   React.useLayoutEffect(() => {

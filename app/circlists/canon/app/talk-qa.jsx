@@ -1,7 +1,7 @@
 // ============================================================================
 // LM-652 candidate — QA staging for the conversation surface's ARRIVAL WASH.
-// Publishes window.ConfigExtra, which app/config.jsx renders when present. Part
-// of the deletable aid: drop this file and its script tag and nothing changes.
+// Publishes window.CandTalkConfig, which app/config-extra.jsx renders when present.
+// Part of the deletable aid: drop this file and its script tag and nothing changes.
 //
 // The wash cannot be staged from inside the surface. The mark a visit is read
 // against is frozen when the member ARRIVES and only moves forward when they
@@ -119,44 +119,21 @@ const candQaActions = {
   watch: () => candQaApply(i => ((i.talk || []).length ? { ...i, watching: true } : i)),
 };
 
-const ConfigExtra = ({ onClose }) => (
-  <React.Fragment>
-    <div className="circ-config-eyebrow">Conversation (LM-652)</div>
-    <div className="circ-config-row">
-      <div className="circ-config-row-label">The returns bar</div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barOn(); onClose(); }}>Bring it in</button>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barOff(); onClose(); }}>Take it away</button>
-      </div>
-    </div>
-    <div className="circ-config-hint">Fires the bar at the head of the feed you are in. <b>Bring it in</b> gives every watched, read card unseen words, so the bar arrives. <b>Take it away</b> marks everything seen, so it empties and leaves. Stay on the feed to watch either happen.</div>
-    <div className="circ-config-row">
-      <div className="circ-config-row-label">One more card</div>
-      <button className="circ-config-btn-secondary" onClick={() => { candQaActions.barMore(); onClose(); }}>Add a watched card</button>
-    </div>
-    <div className="circ-config-hint">Drops one more watched card into the bar. Collapsed, the number moves and the head line may gain a name. Expanded, <b>nothing on screen changes</b> until you collapse it — the bar holds its rows while it is open, and the hold is not marked.</div>
-    <div className="circ-config-row">
-      <div className="circ-config-row-label">The mark</div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.rewind(); onClose(); }}>Everything unseen</button>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.clear(); onClose(); }}>Never visited</button>
-      </div>
-    </div>
-    <div className="circ-config-hint"><b>Everything unseen</b> winds the mark back behind the oldest words, so every turn carries the tab. <b>Never visited</b> takes the mark away: the first arrival sets the baseline and marks nothing, however much has been said — which is what a card you have never opened has to do.</div>
-    <div className="circ-config-row">
-      <div className="circ-config-row-label">New words</div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.turn(); onClose(); }}>A new turn</button>
-        <button className="circ-config-btn-secondary" onClick={() => { candQaActions.tail(); onClose(); }}>A new reply in a tail</button>
-      </div>
-    </div>
-    <div className="circ-config-hint">Applies to every conversation in the circle you are in. Stage it from the shelf, then open a card: the tab is read against the mark as it stood when you walked in, and the mark only moves when you walk out. A tail holding unseen words opens on arrival.</div>
-    <div className="circ-config-row">
-      <div className="circ-config-row-label">Watching</div>
-      <button className="circ-config-btn-secondary" onClick={() => { candQaActions.watch(); onClose(); }}>Watch every card with words</button>
-    </div>
-    <div className="circ-config-hint">Puts every conversation into the return banner, so there is a way in to each of them.</div>
-  </React.Fragment>
-);
+const CandTalkConfig = () => {
+  const { ConfigGroup: Group, ConfigAction: Action } = window;
+  const A = candQaActions;
+  return (
+    <Group title="Conversation">
+      <Action label="Bring the returns bar in" onClick={() => A.barOn()} hint="Gives every watched, read card unseen words, so the bar arrives at the head of the feed you are in. Stay on the feed to watch it." />
+      <Action label="Take the returns bar away" onClick={() => A.barOff()} hint="Marks everything seen, so the bar empties and leaves." />
+      <Action label="Add a watched card" onClick={() => A.barMore()} hint="Drops one more watched card into the bar. Expanded, nothing on screen changes until you collapse it: the bar holds its rows while open." />
+      <Action label="Everything unseen" onClick={() => A.rewind()} hint="Winds the mark back behind the oldest words, so every turn carries the tab." />
+      <Action label="Never visited" onClick={() => A.clear()} hint="Takes the mark away: the first arrival sets the baseline and marks nothing, however much has been said." />
+      <Action label="A new turn" onClick={() => A.turn()} hint="Applies to every conversation in the circle you are in. Stage it from the shelf, then open a card: the tab is read against the mark as it stood on arrival." />
+      <Action label="A new reply in a tail" onClick={() => A.tail()} hint="Same as a new turn, inside a tail. A tail holding unseen words opens on arrival." />
+      <Action label="Watch every card with words" onClick={() => A.watch()} hint="Puts every conversation into the return banner, so there is a way in to each of them." />
+    </Group>
+  );
+};
 
-Object.assign(window, { ConfigExtra, candQaActions });
+Object.assign(window, { CandTalkConfig, candQaActions });

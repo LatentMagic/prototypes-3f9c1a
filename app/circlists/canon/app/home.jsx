@@ -13,6 +13,7 @@
 // rewrite, and here it needed no move at all.
 // ============================================================================
 
+// KEEP: Aligned to the card's own edge, not inset from it.
 // Two named registers on this screen, in the same quiet treatment, so they
 // read as a pair: the strip is what answered you, the rows are where you go.
 // Aligned to the CARD edge, not 4.5px inside it. The design review measured the

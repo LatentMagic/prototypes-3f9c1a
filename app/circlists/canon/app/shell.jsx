@@ -297,6 +297,7 @@ const MobileDrawer = ({ open, width = 272, children, ...rail }) => {
         position: 'fixed', top: 'var(--top-bar-height)', left: 0, bottom: 0, width, maxWidth: '86vw', zIndex: 111,
         background: 'var(--color-surface-sunken)', borderRight: '1px solid var(--color-border-2)',
         padding: '20px 12px',
+        // KEEP: Contents taller than the viewport scroll inside the drawer, never the page behind.
         // Taller-than-viewport contents scroll inside the drawer, not the page.
         overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain',
         transform: shown ? 'translateX(0)' : 'translateX(-100%)',

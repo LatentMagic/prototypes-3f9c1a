@@ -120,6 +120,7 @@ const candCrossSnap = (kept) => kept.map((r) => ({
   ...candBarSnap([r.item])[0], circleId: r.circleId, circleName: r.circleName,
 }));
 
+// KEEP: Every row is one height; a long circle name or roster line is clipped, never wrapped.
 // One height per row, clipped never wrapped (CIRC-034: "a circle name or roster
 // line longer than its row is clipped rather than wrapped, so every row keeps
 // one height") — so no title or circle name can change a row's height.

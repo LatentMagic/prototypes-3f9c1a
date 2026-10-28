@@ -157,6 +157,7 @@ const PUSH_CARD = {
   borderRadius: 'var(--radius-lg)', padding: 'var(--space-6)',
 };
 const PUSH_TITLE = { fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 16, color: 'var(--color-fg-1)', marginBottom: 6 };
+// KEEP: The push description wraps greedily, never balanced, so a phone never shows evened-out short lines.
 // Greedy wrap, NOT `balance`: balance evens the lines, which on a phone left a
 // visible gap at the end of line 1 while the words that would fill it sat on
 // line 2. The line fills, then wraps.

@@ -22,6 +22,8 @@
 // rows to draw — the same degradation home itself takes.
 // ============================================================================
 
+// KEEP: the held link is plain mono text on one line, never wrapped, scrolled
+// sideways to reach the rest, its right edge fading while more lies beyond.
 // The held link. Plain mono URL text, one line, never wrapped — no fetch, no
 // preview card, no favicon, no page title (LM-771 names those as NOT here).
 // Bare text, no box: the rows below are white cards you tap, and a boxed link
@@ -51,6 +53,7 @@ const ShareHeldLink = ({ link }) => {
   );
 };
 
+// KEEP: 24px under the hairline, not 16, so the gaps above and below it read equal.
 // The hairline between the link and the rows. 24 below, not 16, because the
 // link's line box carries ~6px of invisible leading and padding above the
 // rule and nothing does below it — equal numbers read as a short gap.

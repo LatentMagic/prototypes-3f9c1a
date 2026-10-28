@@ -76,6 +76,7 @@ const SlFrame = ({ caption, src, ratio }) => (
   </div>
 );
 
+// KEEP: one phone-width column at every width, centred on desktop, the whole screen inside the phone frame.
 // One phone-width column. On a desktop window it sits centred on a neutral
 // ground; inside the phone frame the column is the screen.
 const slStageStyles = {

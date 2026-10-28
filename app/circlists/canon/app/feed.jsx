@@ -67,6 +67,7 @@ const circCardMetrics = (density) => (density === 'compact'
   ? { pad: 'var(--space-3) var(--space-4)', thumb: 44, avatar: 22, actionIcon: { check: 15, trash: 14, bookmark: 14, share: 13, more: 15 }, actionClass: ' circ-cardaction-icon-compact', colGap: 4, footerTop: 4, actionPull: -6, titleClamp: 2 }
   : { pad: 'var(--space-4) var(--space-5)', thumb: 60, avatar: 28, actionIcon: { check: 18, trash: 17, bookmark: 17, share: 16, more: 18 }, actionClass: '', colGap: 6, footerTop: 8, actionPull: 0, titleClamp: 2 });
 
+// KEEP: The trailing action's drawn edge lines up with the card's content edge (a -13px pull), applied once per row, never twice.
 // ---- Trailing action cluster — [posture] [⋮] (run 10, BIZ-136) ------------
 // Extracted so the same read-door + kebab (Share/Save/Delete) a Read card
 // shows in the feed can be reused verbatim wherever a Read-tab link's actions

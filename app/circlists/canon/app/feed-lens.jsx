@@ -817,6 +817,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // member" under a handset's home indicator. `--space-5` plus the
             // safe-area inset, which is what AddReveal's own sheet uses.
             padding: '0 0 calc(var(--space-5) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
+            // KEEP: The view-options panel is the only thing on its surface that scrolls; the contributor list never scrolls inside it, except on a window too short for both.
             // ONE scroll region, which is the second thing four groups broke.
             // The popover scrolled AND the filter list scrolled inside it — a
             // scroller nested in a scroller, which Linear's own display popover
@@ -835,24 +836,8 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             transition: 'transform var(--duration-slow) var(--ease-quiet)',
           } : {
             position: 'absolute', top: '100%', right: 0, zIndex: 119, outline: 'none',
-            // Wide enough that "Comfortable | Compact | Grid" reads in the
-            // segmented control without truncating.
-            //
-            // 340 on desktop, and that number is a correction rather than a
-            // preference. At 300 the three-option View group gave each segment
-            // ~90px against "Comfortable"'s ~82px of text plus its padding, so
-            // the label spilled out of its own segment and the group rendered
-            // as "ComfortableCompact" with "Grid" adrift. Tightening the
-            // segment padding stopped the spill and truncated the SELECTED
-            // label to "Comfort…" instead, which is not better. The honest fix
-            // is the width: the comment above has always claimed this panel is
-            // wide enough for three, and since run 5 added Grid it has not been.
-            // It is the minWidth that has to move, not the max: the panel sizes
-            // to its content, and its content never asks for more than 260, so
-            // raising the ceiling alone changed nothing on screen.
-            // Both were `isMobile ? … : …` ternaries until run 9; this branch
-            // is unreachable while `isMobile`, so the mobile halves were dead
-            // conditions reading as live ones.
+            // KEEP: the desktop panel is 340px wide, so "Comfortable | Compact | Grid"
+            // reads in full in the View control; at 300 the labels spilled or truncated.
             minWidth: 340, maxWidth: 340,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
             borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-overlay)',
@@ -860,36 +845,10 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // must meet the panel's own edge, or the "there is more" cut reads
             // as clipping. Groups carry their own top spacing.
             padding: '4px 0 0', outline: 'none',
-            // 72vh, raised from 60vh in run 9, and measured rather than
-            // chosen. The fourth group took the panel's content to 531px
-            // against a 60vh cap of 480 at 1280x800 — so the panel scrolled
-            // AND `Added by` scrolled inside it, which is the same
-            // nested-scroller defect the sheet was built to remove on mobile,
-            // reappearing on desktop three groups later. At 72vh the cap is
-            // 576, the outer box fits its content, and the contributor list is
-            // once again the only thing on this surface that scrolls.
-            // The `100vh - 132px` term is untouched and still governs a short
-            // window, where both scrolling is the honest fallback.
-            // 78vh, raised from run 9's 72 by the two section eyebrows, and
-            // measured rather than chosen: they take the popover's content to
-            // 588px against a 72vh cap of 576 at 1280x800, so the panel scrolled
-            // by 12px WHILE `Added by` scrolled inside it — the nested-scroller
-            // defect run 9 removed, back for the sake of a dozen pixels. At 78vh
-            // and 1280x800 the cap is 624, the box fits its content, and the
-            // contributor list is the only thing on this surface that scrolls.
-            //
-            // THAT IS TRUE DOWN TO ~760px OF VIEWPORT HEIGHT AND NOT BELOW IT,
-            // and the qualification is the honest part. Measured: the panel
-            // fits at 800 and 760, and scrolls at 740 and under — where
-            // `Added by` scrolls inside it too, which is the nested pair again.
-            // The eyebrows added ~58px of content while the cap rose 6vh, so
-            // the threshold moved from ~736px to ~754px: a fault that already
-            // existed on a short window, ~18px worse. A 1366x768 laptop nests
-            // either way. Raising the cap further only trades it for a panel
-            // that reaches the fold, so it is recorded rather than chased —
-            // the real answer is fewer pixels of content, not a bigger box.
-            // The `100vh - 132px` term is untouched and still governs a short
-            // window, where both scrolling is the honest fallback.
+            // KEEP: the desktop panel's cap is 78vh (or the window less 132px), so at
+            // 1280x800 the panel fits its content and only `Added by` scrolls. Below
+            // about 760px of window height both scroll; fewer pixels of content is the
+            // fix there, not a bigger box.
             maxHeight: 'min(78vh, calc(100vh - 132px))', overflowY: 'auto',
           }}
         >
@@ -981,6 +940,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   );
 };
 
+// KEEP: Chips stay 44px tall and their remove targets tile edge to edge without overlapping.
 // ---- What is applied -------------------------------------------------------
 // Shown ONLY when something is non-default; the default feed carries nothing.
 // This is what pays for folding the sort label away — and it is the applied-
@@ -1181,6 +1141,7 @@ const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, i
   // accessible name starts with what is on screen.
   const reopen = { onReopen: onReopenLens, reopenLabel: (l) => l + '. Change filters' };
   return (
+    // KEEP: The chip row stays stuck under the tab bar, its edge in line with the tabs.
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab
     // bar's own rule directly above it, which is also full-bleed. The INNER one

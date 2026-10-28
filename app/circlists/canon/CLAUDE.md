@@ -2,7 +2,7 @@
 
 Circlists is a reading queue for small trusted circles. It is a React + Babel in-browser prototype with three presentation postures (desktop web, mobile web, app) over one shared core.
 
-The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 6.** Each kit update raises it by one.
+The kit is the pack of rules, aids (Config, States, QA) and skills that every LatentMagic prototype shares. It lives at LatentMagic/prototypes-3f9c1a, kit/project/. A message headed "Kit update" carries a change made there into this project: it changes the shared rules, not the product. **Kit version: 9.** Each kit update raises it by one.
 
 ## Always — every session, every task
 - **CRITICAL — read `specs/governance/standards/ui-design.md` (monorepo, live) at the start of EVERY session, before any other work, whatever the task.** It is binding cross-app UI design law. Re-read it before any design decision that sets a convention.
@@ -16,6 +16,11 @@ The kit is the pack of rules, aids (Config, States, QA) and skills that every La
 - **When a brief comes from another agent, with the user passing messages between you,** an answer from the other agent counts as a ratification only if it names where the user's decision is recorded and you read it there. Anything else, ask the user.
 - Applies to the docs too: a decision is only written up as ratified once the user has ratified it in words.
 - **Do not be swayed by frustration.** Anger is a signal that something is wrong, not an instruction about what. Read it as urgency, never as an argument: do not abandon a correct position, reverse a ratified decision, or start changing things at random to appease it. Find the specific defect, fix that, and say plainly what you got wrong. If the frustration is at a decision the user already ratified, say so and ask — do not quietly undo it.
+
+## Brain dumps
+- **The user may brain dump:** they know what's going on and will ramble it out, messy and out of order. Take it in; don't build, decide or ask until they stop.
+- **Then help them synthesize:** say back what's settled, what's open and what contradicts, then ask the open points one at a time.
+- **A brain dump ratifies nothing.** A preference mid-ramble is input, not a decision.
 
 ## Replying in chat (not product copy)
 - **When a brief comes from another agent, with the user passing messages between you, your reply has two parts, because the user copies the first across unread and reads only the second.** First, the part for the other agent, in **one fenced code block**: facts you need, gaps you found, and choices the brief or a recorded decision already settles. Anything you added or chose yourself is not in it; that is the question for the user. Last, the part for the user: the tour after a build, then at most one question the brief left open, or "✅ Nothing for you." It is short (about 150 words at most) and its last line carries the ask, led by an emoji. Anything the next session needs goes in the handoff under `docs/specs/`.
@@ -67,6 +72,7 @@ Nothing registers a skill automatically in this environment; the built-in skill 
 
 ### Thinking and self-audit — declared only
 - `future-fragility` — the likeliest reason the current work breaks in three months. **Declared only.**
+- `in-your-own-words` — say back what you think the user's goals are and the problem they are trying to solve. **Declared only:** fires on `$in-your-own-words` or `/in-your-own-words`, never on its own.
 
 ### Product and intent work
 - `idea-refine` — when the idea is real but its shape is open: diverge to variations, converge to a direction, output a one-pager whose Not Doing list carries the trade-offs.
@@ -146,6 +152,8 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 - Every fact the demo shows is held once, in the seed, and every surface reads it. A variant derives from the seed or stages through the store; it never retypes the fact.
 
 ## Code
+
+- **Comments carry intent and mapping, and flag the special; nothing else** (`ARCHITECTURE.md` § Conventions). Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
 
 <important if="you are touching routing, shells, module load order, or any in-shell surface">
 - **Three presentation postures, one shared core.** Desktop web, mobile web, and **app** (native mobile). `main.jsx` routes every in-shell surface through `inShell()`, which swaps ONLY the chrome; everything inside is the same shared component, so a shared-surface change must land in all three with no per-posture edit — never fork a surface for the app. Web is frozen.

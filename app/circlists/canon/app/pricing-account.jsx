@@ -51,6 +51,7 @@ const PppNotSubscribed = ({ st }) => {
 // Phrases that must never split across a line: prices, dates, counts.
 const pppNb = (s) => String(s).replace(/ /g, '\u00a0');
 
+// KEEP: The Account card's buttons sit side by side when both fit, else stack; never one beside and one under.
 // Subscribed (playground 02.1, ratified 2 Oct): neutral acts as an even pair,
 // side by side when both fit, else stacked; never one-and-one-half. Cancel is red
 // text below a rule at the card's foot. While a switch is pending, Keep <plan>

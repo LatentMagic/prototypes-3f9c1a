@@ -437,6 +437,7 @@ const CandCardRow = ({ item, tab, api, children, Face, mark = 'lines', openPaper
   const wrote = () => { setHeldFace('write'); setTimeout(() => swap(false), 60); };
   React.useEffect(() => {
     if (!moving) return;
+    // KEEP: The link card and the open thought swap stacking order only where they do not overlap, so neither pops through the other.
     // The stacking order can only flip where the two cards do NOT overlap, or the
     // contested 15px changes colour in one frame and the card reads as popping.
     // The overlap closes to nothing at the open end of the travel, so that is
