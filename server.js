@@ -52,7 +52,8 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (urlPath === '/' || urlPath === '') urlPath = '/index.html';
+  // A folder serves its index.html, as GitHub Pages does.
+  if (urlPath === '' || urlPath.endsWith('/')) urlPath += 'index.html';
 
   // Resolve against ROOT and confine: reject anything escaping the repo root.
   const resolved = path.resolve(ROOT, '.' + urlPath);
