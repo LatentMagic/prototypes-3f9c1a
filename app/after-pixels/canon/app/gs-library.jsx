@@ -62,8 +62,10 @@ const LbResult = ({ s }) => (
 // weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
 // on / legend: the legend entries. A streak game says Completed / Failed / Not played;
 // 36,000 Summers Ago passes its own two (Played / Not played). failed: played and lost; it breaks the streak as a day not played does.
-const LbRun = ({ n, unit, weeks, locked, figure, pass, on = 'Completed', legend }) => {
+const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = 'Completed', legend }) => {
   const gs = useGs();
+  // KEEP: always ten slots; days before the player started are empty slots at the old end.
+  const weeks = Array.from({ length: Math.max(0, 10 - given.length) }, (_, i) => ({ id: 'empty' + i, day: '', mon: '', month: '', played: false, empty: true })).concat(given);
   const cut = weeks.length - 6;
   const streak = on === 'Completed';
   const off = legend || (streak ? 'Not played' : 'Not completed');
@@ -73,13 +75,13 @@ const LbRun = ({ n, unit, weeks, locked, figure, pass, on = 'Completed', legend 
       {pass ? <div className="lb-sechead"><h2 className="mcp-t-card">{c13CapLb(unit) + ' in a row'}</h2></div> : <div className="lb-streakhead"><span className="gs-figure">{n}</span><span className="gs-strong">{figure || (n === 1 ? unit.replace(/s$/, '') : unit) + ' in a row'}</span>{weeks.some((w) => w.frozen) && <span className="gs-muted gs-strong">· Frozen</span>}</div>}
       <div className="lb-runbody">
       <div className="lb-run" style={{ gridTemplateColumns: 'repeat(' + weeks.length + ', minmax(0, 1fr))' }} role="img"
-        aria-label={pass ? 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month).join(', ') : 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.day + ' ' + w.month + ' ' + word(w)).join(', ')}>
+        aria-label={pass ? 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.filter((w) => !w.empty).map((w) => w.day + ' ' + w.month).join(', ') : 'The last ' + weeks.length + ' ' + unit + ', oldest first: ' + weeks.map((w) => w.empty ? 'before you started' : w.day + ' ' + w.month + ' ' + word(w)).join(', ')}>
         {weeks.map((w, i) => {
-          const join = i > 0 && (w.played || w.frozen) && (weeks[i - 1].played || (weeks[i - 1].frozen && w.frozen));
-          const newMon = i === 0 || weeks[i - 1].mon !== w.mon;
+          const join = i > 0 && !w.empty && (w.played || w.frozen) && (weeks[i - 1].played || (weeks[i - 1].frozen && w.frozen));
+          const newMon = !w.empty && (i === 0 || weeks[i - 1].empty || weeks[i - 1].mon !== w.mon);
           const fail = streak && !w.played && !w.frozen && !!w.failed;
-          const cls = 'lb-wk' + (w.played ? ' is-on' : '') + (w.frozen ? ' is-fz' : '') + (fail ? ' is-fail' : '') + (join ? ' is-join' : '') + (w.now ? ' is-now' : '') + (i < cut ? ' is-early' : '') + (i === cut ? ' is-cut' : '');
-          const body = <><em><b className="lb-mw">{newMon ? w.mon : ''}</b><b className="lb-mn">{newMon || i === cut ? w.mon : ''}</b></em><i>{fail && <DS.Icon name="close" size={14} />}</i><span>{w.day}</span></>;
+          const cls = 'lb-wk' + (w.played ? ' is-on' : '') + (w.frozen ? ' is-fz' : '') + (fail ? ' is-fail' : '') + (join ? ' is-join' : '') + (w.empty ? ' is-empty' : '') + (w.now ? ' is-now' : '') + (i < cut ? ' is-early' : '') + (i === cut ? ' is-cut' : '');
+          const body = <><em><b className="lb-mw">{newMon ? w.mon : ''}</b><b className="lb-mn">{newMon || (i === cut && !w.empty) ? w.mon : ''}</b></em><i>{fail && <DS.Icon name="close" size={14} />}</i><span>{w.empty ? '\u00a0' : w.day}</span></>;
           return <span key={w.id} className={cls}>{body}</span>;
         })}
       </div>

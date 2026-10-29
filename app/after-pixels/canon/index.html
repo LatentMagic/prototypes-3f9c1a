@@ -934,10 +934,14 @@
   
   /* KEEP: The streak card's heading sits at the top, as every other card's does, in every state */
   .lb-runcard { display: flex; flex-direction: column; justify-content: flex-start; }
-  .lb-runbody { flex: 1 1 auto; max-height: 132px; display: flex; flex-direction: column; gap: 16px; }
-  .lb-runbody > .lb-run { flex: 1 1 auto; }
-  .lb-runbody .lb-wk { grid-template-rows: auto minmax(32px, 1fr) auto; }
+  /* KEEP: Ten slots (six on a phone), each 48px tall, never stretched or capped. Days before the player started are faint dashed empty slots. The strip and legend stay together (16px apart) and are centred in the space below the heading, however tall the now card makes the card. */
+  .lb-runcard { gap: 0; }
+  .lb-runbody { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding-block: 16px; }
+  .lb-runbody > .lb-run { flex: 0 0 auto; }
+  .lb-runbody .lb-wk { grid-template-rows: 17px 48px auto; }
   .lb-runbody .lb-wk > i { height: auto; }
+  .lb-runbody .lb-legend { flex-wrap: wrap; gap: 4px 12px; white-space: normal; }
+  .lb-wk.is-empty > i { box-shadow: none; border: 1px dashed var(--line); }
   .lb-card > .lb-tiles:last-child, .lb-card > .lb-facts:last-child { margin-bottom: calc(-1 * var(--lb-pad)); border-bottom: 0; }
   .lb-recentcard { position: relative; }
   .lb-card > .lb-tiles { list-style: none; padding: 0; margin: 0 calc(-1 * var(--lb-pad)); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
