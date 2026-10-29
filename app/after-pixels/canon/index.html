@@ -1073,6 +1073,15 @@
     .lb-card { padding: 24px; --lb-pad: 24px; }
     .lb-box { --lb-pad: 24px; }
   }
+  /* KEEP: Below 900px the streak card is still the desktop card: ten slots (six under 480px) at the width they have at 1440 (32.6px, measured) and 48px tall, never stretched; the strip and legend are centred in the card, the heading stays top left. */
+  @container gs (max-width: 899px) {
+    .lb-runbody { align-items: center; }
+    .lb-runbody .lb-run { grid-template-columns: repeat(10, 32.6px) !important; }
+    .lb-runbody .lb-legend { justify-content: center; }
+  }
+  @container gs (max-width: 479px) {
+    .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
+  }
   @container gs (min-width: 900px) {
     .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
     .lb-alllay { grid-template-columns: 280px minmax(0, 1fr); align-items: start; }
