@@ -4,7 +4,7 @@
 // Headless sanity check for a prototype's addressable states.
 //
 //   npm run check -- [--slug canon] [--widths 1280,390] [--states a,b,c] [--port 4321]
-//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast]
+//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--concurrency 6] [--no-freeze]
 //
 // --app after-pixels checks canon (app/after-pixels/canon/index.html): states
 // come from window.KIT_STATES (`all`, or the default), the page opens with
@@ -12,7 +12,10 @@
 // until nothing is [aria-busy=true] (a state that holds a loader on purpose
 // times out after 3 s and is marked "busy"), screenshots go to <out>/<state>-<w>.png,
 // and per-shot timing plus every console error and warning is printed.
-// Circlists output is unchanged.
+// Shots run --concurrency at a time (default 6 here, 1 for Circlists); the log
+// prints in the same order at any concurrency, but per-shot ms grows with it.
+// After Pixels shots freeze CSS animations and transitions first (--no-freeze
+// to shoot the page as it moves). Circlists output is unchanged.
 //
 // Boots server.js (unless something already answers on the port), caches the
 // entry HTML's unpkg <script> runtime once to .playwright-mcp/check/cdn/ (so
@@ -34,6 +37,7 @@ const ROOT = path.resolve(__dirname, '..');
 const CACHE_DIR = path.join(ROOT, '.playwright-mcp', 'check', 'cdn');
 const BOGUS_ID = '__check_bogus__';
 const BUSY_WAIT_MS = 3000;
+const FREEZE_CSS = '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important;scroll-behavior:auto!important}';
 // Printed on every page load by the in-browser Babel; noted once, not per shot.
 const BABEL_NOTICE = /You are using the in-browser Babel transformer/;
 const INDEX_HEADLINE = 'Every state this prototype can be opened at';
@@ -59,7 +63,7 @@ const APPS = {
 function parseArgs(argv) {
   const opts = {
     app: 'circlists', slug: 'canon', widths: null, states: null, port: Number(process.env.PORT) || 4321,
-    out: null, fast: true,
+    out: null, fast: true, freeze: true, concurrency: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -67,6 +71,8 @@ function parseArgs(argv) {
     else if (a === '--app') opts.app = argv[++i];
     else if (a === '--out') opts.out = path.resolve(argv[++i]);
     else if (a === '--no-fast') opts.fast = false;
+    else if (a === '--no-freeze') opts.freeze = false;
+    else if (a === '--concurrency') opts.concurrency = parseInt(argv[++i], 10);
     else if (a === '--widths') {
       opts.widths = argv[++i].split(',').map((s) => parseInt(s.trim(), 10)).filter((n) => !Number.isNaN(n));
     } else if (a === '--states') {
@@ -81,6 +87,8 @@ function parseArgs(argv) {
   }
   if (!APPS[opts.app]) throw new Error(`unknown --app ${opts.app} (one of: ${Object.keys(APPS).join(', ')})`);
   if (!opts.widths) opts.widths = APPS[opts.app].widths;
+  if (opts.concurrency == null) opts.concurrency = opts.app === 'after-pixels' ? 6 : 1;
+  if (!(opts.concurrency >= 1)) throw new Error('--concurrency must be 1 or more');
   if (!opts.widths.length) throw new Error('--widths parsed to no usable numbers');
   return opts;
 }
@@ -325,6 +333,13 @@ async function testState(browser, opts, cdnMap, id, width) {
       // purpose never settles, so it is marked busy after BUSY_WAIT_MS.
       await page.waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout: BUSY_WAIT_MS })
         .catch(() => { busy = true; });
+      // Freeze motion so two shots of one state match pixel for pixel: spinners,
+      // entrance animations, transitions and the text caret all settle to their
+      // first or final frame. Check mode only; the page itself is untouched.
+      if (opts.freeze) {
+        await page.addStyleTag({ content: FREEZE_CSS });
+        await page.evaluate(() => document.querySelectorAll('svg').forEach((v) => { if (v.pauseAnimations) { v.pauseAnimations(); v.setCurrentTime(0); } }));
+      }
       await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     } else {
       await page.waitForTimeout(400);
@@ -389,24 +404,35 @@ async function main() {
     const ids = opts.app === 'after-pixels' ? realIds : [...realIds, BOGUS_ID];
     log(`states: ${realIds.length} declared + ${ids.length - realIds.length} bogus canary, x ${opts.widths.length} width(s) = ${ids.length * opts.widths.length} checks`);
 
-    const results = [];
-    let anyEgress = false;
-    for (const id of ids) {
-      for (const width of opts.widths) {
-        const r = await testState(browser, opts, cdnMap, id, width);
-        if (r.egress) anyEgress = true;
-        results.push(r);
-        const line = `${r.ok ? (r.warnings.length ? 'warn' : 'ok  ') : 'FAIL'}  ${id} @ ${width}px`;
-        const notes = [...r.reasons, ...r.warnings.map((w) => `react: ${w.slice(0, 90)}`)];
-        if (opts.app === 'after-pixels') {
-          const timing = `ready ${r.readyMs}ms, shot ${r.shotMs}ms${r.busy ? ', busy (loader still showing)' : ''}`;
-          console.log(`${line}  [${timing}]${notes.length ? `  — ${notes.join('; ')}` : ''}`);
-          for (const c of r.consoleLines) if (!BABEL_NOTICE.test(c)) console.log(`      console ${c}`);
-        } else {
-          console.log(notes.length ? `${line}  — ${notes.join('; ')}` : line);
-        }
+    const tasks = [];
+    for (const id of ids) for (const width of opts.widths) tasks.push({ id, width });
+    const done = new Array(tasks.length);
+    let next = 0;
+    let printed = 0;
+    const printResult = (r) => {
+      const { id, width } = r;
+      const line = `${r.ok ? (r.warnings.length ? 'warn' : 'ok  ') : 'FAIL'}  ${id} @ ${width}px`;
+      const notes = [...r.reasons, ...r.warnings.map((w) => `react: ${w.slice(0, 90)}`)];
+      if (opts.app === 'after-pixels') {
+        const timing = `ready ${r.readyMs}ms, shot ${r.shotMs}ms${r.busy ? ', busy (loader still showing)' : ''}`;
+        console.log(`${line}  [${timing}]${notes.length ? `  — ${notes.join('; ')}` : ''}`);
+        for (const c of r.consoleLines) if (!BABEL_NOTICE.test(c)) console.log(`      console ${c}`);
+      } else {
+        console.log(notes.length ? `${line}  — ${notes.join('; ')}` : line);
       }
-    }
+    };
+    // Shots run on `opts.concurrency` workers, one browser context each; lines
+    // still print in task order, so the log reads the same at any concurrency.
+    const worker = async () => {
+      while (next < tasks.length) {
+        const i = next++;
+        done[i] = await testState(browser, opts, cdnMap, tasks[i].id, tasks[i].width);
+        while (printed < tasks.length && done[printed]) printResult(done[printed++]);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(opts.concurrency, tasks.length) }, worker));
+    const results = done;
+    const anyEgress = results.some((r) => r.egress);
 
     if (opts.app === 'after-pixels') log('note: the in-browser Babel notice (printed on every load) is left out of the per-shot console lines');
     if (anyEgress) log('note: off-origin requests were aborted (sandbox egress — fonts/favicons); not counted as failures');
