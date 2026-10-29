@@ -149,4 +149,5 @@ function CqApp() {
     </div>
   );
 }
-ReactDOM.createRoot(document.getElementById('root')).render(<CqApp />);
+// Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+if (document.querySelector('script[src$="pg-row2-app.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(<CqApp />);

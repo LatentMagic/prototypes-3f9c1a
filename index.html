@@ -1501,6 +1501,14 @@
                 'New docs/specs/1236-session-pages/ with a handoff.',
               ],
             },
+            {
+              date: '2026-10-29',
+              title: 'Playgrounds no longer draw themselves inside other pages (hand edit, not an export)',
+              items: [
+                'Hand change in Claude Code after the Claude Design baseline (design system b7cff4b). The six playground pages that mount themselves (docs/specs/canonical-row/playground/pg-row-app.jsx, pg-row2-app.jsx, pg-row3-app.jsx, pg-row4-app.jsx; card-chip-alignment/playground/pg-chip-align.jsx; card-snug-title/playground/pg-card-snug-title.jsx) now mount only on a page that loads their own file.',
+                'Why: _ds_bundle.js carries every .jsx in the project, these included, so any page loading the bundle drew all six into its #root, one after another. The same one-line guard is written into the bundle by hand until the bundle is rebuilt from the fixed files.',
+              ],
+            },
           ],
         },
         {
@@ -1930,6 +1938,14 @@
                 'Every game\'s session page draws one head: the cover on the left, then beside it the label (game · day played, e.g. ESCAPE · TUE 6 OCT), the edition as the game names it (a room\'s name, or No. 212), and the actions, at every width. The cover uses the design system\'s Cover fill, so it takes the height of the text. Daily Word reads Guess in the label.',
                 'The head carries no result and no figures. A game with no body of its own shows its result and figures in a block under the head. Two actions sit side by side at phone width; the buttons keep their natural width. On a phone the title is 16px semibold.',
                 'Start over on the session page reads Play again. The line saying the edition cannot be played again is gone from the session page; GS_ONCE_LINE stays for the casebook, play dialog and editions panel.',
+              ],
+            },
+            {
+              date: '2026-10-29',
+              title: 'No design-system playgrounds flash while the app loads (hand edit, not an export)',
+              items: [
+                'Hand change in Claude Code after the Claude Design baseline (canon 124f3f4). A re-export would revert it; carry it. File: canon/_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js, the six playground mounts guarded, as in the design system\'s entry of the same date.',
+                'Before, the Canonical row rounds and the Available games cards showed one after another until the app replaced them.',
               ],
             },
           ],

@@ -4042,7 +4042,8 @@ function App() {
     room: room
   }))))));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+// Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+if (document.querySelector('script[src$="pg-row-app.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row-app.jsx", error: String((e && e.message) || e) }); }
 
 // docs/specs/canonical-row/playground/pg-row-css.js
@@ -5193,7 +5194,8 @@ function CqApp() {
     room: room
   }))))));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(CqApp, null));
+// Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+if (document.querySelector('script[src$="pg-row2-app.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(CqApp, null));
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row2-app.jsx", error: String((e && e.message) || e) }); }
 
 // docs/specs/canonical-row/playground/pg-row2-data.jsx
@@ -5733,7 +5735,8 @@ function C3App() {
     voice: st.voice
   }))))));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(C3App, null));
+// Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+if (document.querySelector('script[src$="pg-row3-app.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(C3App, null));
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row3-app.jsx", error: String((e && e.message) || e) }); }
 
 // docs/specs/canonical-row/playground/pg-row3-data.jsx
@@ -6377,7 +6380,8 @@ function C3App() {
     voice: st.voice
   }))))));
 }
-ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(C3App, null));
+// Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+if (document.querySelector('script[src$="pg-row4-app.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(C3App, null));
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row4-app.jsx", error: String((e && e.message) || e) }); }
 
 // docs/specs/canonical-row/playground/pg-row4-data.jsx
@@ -6799,7 +6803,8 @@ try { (() => {
       note: "Chips at the bottom, white space above. Coming soon chips at different heights."
     }));
   };
-  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+  // Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+  if (document.querySelector('script[src$="pg-chip-align.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 })();
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/card-chip-alignment/playground/pg-chip-align.jsx", error: String((e && e.message) || e) }); }
 
@@ -7238,7 +7243,8 @@ try { (() => {
       className: read.hs > 1 ? 'bad' : ''
     }, f(read.hs), "px")) : '\u2026'))));
   };
-  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+  // Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+  if (document.querySelector('script[src$="pg-card-snug-title.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 })();
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/card-snug-title/playground/pg-card-snug-title.jsx", error: String((e && e.message) || e) }); }
 

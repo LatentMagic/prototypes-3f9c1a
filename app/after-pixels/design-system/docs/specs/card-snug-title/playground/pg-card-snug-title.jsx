@@ -94,5 +94,6 @@
       </React.Fragment>
     );
   };
-  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  // Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
+  if (document.querySelector('script[src$="pg-card-snug-title.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 })();
