@@ -243,7 +243,9 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, end: 'overrun', result: 'Too
   ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 1/11']] };
 
 // ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx). The head names the run's setting. ----
-window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), delve: (p) => <DlBody key={p.sid} {...p} /> };
-window.GS_SESSION_QUIET = { ...(window.GS_SESSION_QUIET || {}), delve: (s, ed) => ({ label: s.game, h1: (ed && ed.title) || s.setting || s.game }) };
+const registerDelve = () => {
+  GS_SESSION_BODY.delve = (p) => <DlBody key={p.sid} {...p} />;
+  GS_SESSION_QUIET.delve = (s, ed) => ({ label: s.game, h1: (ed && ed.title) || s.setting || s.game });
+};
 
 Object.assign(window, { DlNow, dlBuild, dlSheet, dlWord, dlTone, DlDie, DlResult });

@@ -9,6 +9,9 @@
 // ============================================================================
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
+// Each game's session body and quiet head, by game id; the game's file fills them in its register<File>() (called from main.jsx).
+const GS_SESSION_BODY = {};
+const GS_SESSION_QUIET = {};
 const GsNeedsPass = ({ gid, text }) => {
   const gs = useGs();
   return (
@@ -145,7 +148,7 @@ const GsSessionRecord = () => {
   const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
   const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, sid)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
-  // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
+  // A game's own session body: GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
   // A game without one shows the result and the closed list.
   const list = s.lines.length > 0 ? <GsMoves s={s} /> : null;
   const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];

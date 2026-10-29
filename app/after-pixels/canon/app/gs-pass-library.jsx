@@ -4,7 +4,8 @@
 // the link once finished, GS_LIBRARY.word / groups / mystery in every view, and GS_LIBRARY.casebook / delve / escape / barrow.
 // Each page body is canon's composition with the first-part card (CprFirst) or the design system's Needs the Pass card (LbNeedsPass)
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
-const CPR_SHIP_LIB = { ...window.GS_LIBRARY };
+// Canon's library pages for the games a Pass holder still gets them for: copied from GS_LIBRARY in registerPassLibrary().
+const CPR_SHIP_LIB = {};
 
 // The link under a finished daily or weekly game: Library as it is, New for you on top, never filtered.
 const GsNextLink = () => {
@@ -183,7 +184,6 @@ const CprBwLibrary = () => {
     </main>
   );
 };
-Object.assign(window.GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
 
 // ---- The daily games' Library pages: canon's (app/gs-puzzles-library.jsx pzLibrary), in every view, with "the Pass"
 // as the line's only link in place of the separate About the Pass. The editions list stays where gs-editions.jsx puts it. ----
@@ -215,7 +215,6 @@ const cprPzLibrary = (id) => () => {
     </main>
   );
 };
-['word', 'groups', 'mystery', ...DP_IDS].forEach((id) => { window.GS_LIBRARY[id] = cprPzLibrary(id); });
 
 // ---- Library rows, read from the play record: the latest play this player's record holds (phVisible) gives the row's date,
 // and the row's line says what that play left: in progress, done, or what is ready next. A game whose next play needs the Pass
@@ -355,5 +354,12 @@ const CbNow = ({ c }) => {
 const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
   : props.id === 'escape' && !props.none ? <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />
   : <CprPzNow {...props} />);
+
+// Takes the snapshot, then replaces the game pages: main.jsx calls it after every earlier file has registered its own.
+const registerPassLibrary = () => {
+  Object.assign(CPR_SHIP_LIB, GS_LIBRARY);
+  Object.assign(GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
+  ['word', 'groups', 'mystery', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = cprPzLibrary(id); });
+};
 
 Object.assign(window, { LbNeedsPass, GsLibrary, gsLibRow, PzNow, CbNow, GsNextLink });

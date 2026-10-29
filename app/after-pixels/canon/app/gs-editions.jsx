@@ -131,11 +131,13 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
 };
 
 // The list sits inside the game's library route, as a case page does.
-ED3.forEach((id) => {
-  const L0 = window.GS_LIBRARY[id];
-  window.GS_LIBRARY[id] = () => { const gs = useGs(); const r = gs.route;
-    if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
-    return <L0 />; };
-});
+const registerEditions = () => {
+  ED3.forEach((id) => {
+    const L0 = GS_LIBRARY[id];
+    GS_LIBRARY[id] = () => { const gs = useGs(); const r = gs.route;
+      if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
+      return <L0 />; };
+  });
+};
 
 Object.assign(window, { ED3, pgeList });

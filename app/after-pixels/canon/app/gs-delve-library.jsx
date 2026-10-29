@@ -83,5 +83,5 @@ const DvLibrary = () => {
     </main>
   );
 };
-window.GS_LIBRARY.delve = DvLibrary;
+const registerDelveLibrary = () => { GS_LIBRARY.delve = DvLibrary; };
 Object.assign(window, { DV_ALL, DV_END, DV_LIVE, DV_DONE, DV_ACH, DV_FIRST, dvStatus, dvSid, dvBar, dvRecap, dvRun });

@@ -60,9 +60,11 @@ const WdSessBody = ({ s }) => <>
   <GsMoves s={s} />
 </>;
 
-window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), word: WdSessBody };
 // The head carries no result: the game's part has it (as Escape's).
-window.GS_SESSION_QUIET = { ...(window.GS_SESSION_QUIET || {}), word: (s) => ({ label: s.game, h1: 'No. ' + s.number }) };
+const registerWord = () => {
+  GS_SESSION_BODY.word = WdSessBody;
+  GS_SESSION_QUIET.word = (s) => ({ label: s.game, h1: 'No. ' + s.number });
+};
 
 // ---- The now card (owner, 2026-10-28; v11 D2): canon's frame with the edition as its title ("#212", as Escape's room name), the
 // result as Escape's plain word, and in place of canon's line and bar the play as a picture: the guess it ended on at full tile

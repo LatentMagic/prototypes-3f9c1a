@@ -269,7 +269,8 @@ const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
   </section>
 );
 
-window.GS_LIBRARY = window.GS_LIBRARY || {};
+// The library game pages, by game id. Each game's file adds its page in its register<File>() (called from main.jsx).
+const GS_LIBRARY = {};
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
 const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 // This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).

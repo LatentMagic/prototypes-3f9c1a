@@ -86,5 +86,5 @@ const CbLibrary = () => {
   );
 };
 
-window.GS_LIBRARY.casebook = CbLibrary;
+const registerCasebook = () => { GS_LIBRARY.casebook = CbLibrary; };
 Object.assign(window, { cbGo, cbWeek, cbStatus, cbFirstOf, CB_FIRST });

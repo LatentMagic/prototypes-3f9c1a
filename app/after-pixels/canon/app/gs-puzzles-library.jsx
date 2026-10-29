@@ -156,7 +156,7 @@ const pzLibrary = (id) => () => {
     </main>
   );
 };
-['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { window.GS_LIBRARY[id] = pzLibrary(id); });
+const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = pzLibrary(id); }); };
 Object.assign(window, { PZ, pzLong, pzStatus, pzRun });
 
 // ---- Escape's nine earlier rooms (sample, 1236), so the streak card, Your rooms and History read one history. Newest first after

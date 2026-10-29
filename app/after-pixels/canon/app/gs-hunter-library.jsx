@@ -101,5 +101,5 @@ const HgLibrary = () => {
     </main>
   );
 };
-window.GS_LIBRARY.hunter = HgLibrary;
+const registerHunterLibrary = () => { GS_LIBRARY.hunter = HgLibrary; };
 Object.assign(window, { HG_DAYS, hgSid, hgStatus });

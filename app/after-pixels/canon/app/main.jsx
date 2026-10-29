@@ -15,6 +15,11 @@
 // ============================================================================
 const { useState, useEffect, useRef } = React;
 
+// Every registry write, in the order the files load in index.html, before the first render.
+registerCasebook(); registerDelveLibrary(); registerPuzzlesLibrary(); registerHunterLibrary();
+registerEditions(); registerPassLibrary();
+registerEscape(); registerWord(); registerDelve();
+
 const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false, escape: 'under', ed: null };
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.

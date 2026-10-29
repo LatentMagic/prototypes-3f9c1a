@@ -217,6 +217,6 @@ const EsNow = ({ label, title, next, noNext, children }) => {
 
 // ---- Hooks into the app: the session page's body (app/gs-session.jsx; the head is the shared GsSessHead), and the Pass holder's now card
 // (PzNow in gs-pass-library.jsx). A free player's first-room card reads EsNow in app/gs-pass-library.jsx (CprFirst). ----
-window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), escape: EsSessBody };
+const registerEscape = () => { GS_SESSION_BODY.escape = EsSessBody; };
 
 Object.assign(window, { esSid, esBuild, EsNow, EsLine, EsResult });
