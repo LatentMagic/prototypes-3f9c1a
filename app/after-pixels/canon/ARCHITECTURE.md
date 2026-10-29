@@ -1,6 +1,6 @@
 # Architecture
 
-How the prototype is put together. App-wide structure only. The map of screens to files is in `AGENTS.md`; `index.html` holds the load order.
+How the prototype is put together. App-wide structure only. The map of screens to files is in `AGENTS.md`; `app/main.jsx` holds the import and init order.
 
 ## Postures
 
@@ -49,7 +49,7 @@ A state is a scenario, never a width: posture comes from the window or the Viewp
 
 ## Conventions
 
-- **JSX over `window`.** Every file exports with `Object.assign(window, { ... })`; scripts do not share Babel scope. Load order is fixed in `index.html`.
+- **ES modules.** Every file imports what it uses and exports what others use; `main.jsx` imports every file, and load-time code that reads another file runs in an `init<File>()` that `main.jsx` calls in order. `tools/ap-names.mjs --check` fails a build that uses a name without importing it.
 - **No `const styles = {}`.** Name style objects after their component — collisions across files are silent and fatal.
 - **Container / presentation split**, focused components, split past ~200 lines.
 - **State** lives in `main.jsx` unless it is purely local chrome state (a drawer, a transition).

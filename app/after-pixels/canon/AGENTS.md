@@ -50,11 +50,11 @@ Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-da
 
 ## Serve and check
 
-- Build first (`npm run build`). Serve with `PORT=<port> npm start` (default 4321), then open `http://localhost:<port>/app/after-pixels/canon/index.html`. Never `python3 -m http.server`: it lets the browser cache the build, so edits do not show.
+- In a fresh checkout or worktree, run `npm ci` once. Build first (`npm run build`). Serve with `PORT=<port> npm start` (default 4321), then open `http://localhost:<port>/app/after-pixels/canon/index.html`. Never `python3 -m http.server`: it lets the browser cache the build, so edits do not show.
 - A state is a URL: `?state=<id>` (ids in `app/states.jsx`, or `?state=index` for the list). Add `&fast` to skip the staged 1.2 s page-arrival wait. Content still arriving carries `aria-busy="true"`.
 - **Screenshot with the check, not by hand** (it runs `npm run build` first; `--no-build` skips that, `--react-dev` serves development React for React warnings and full error messages, so rerun a crashing state with it):
   `PORT=<port> npm run check -- --app after-pixels --states <id>,<id> --widths 1440,390 --out <dir>`
-  It starts the server if none answers, waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. Name only the states your change touches: that takes seconds.
+  It starts the server if none answers (and stops it afterwards: run `npm start` yourself to click through), waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. Name only the states your change touches: that takes seconds.
 - To prove a refactor changed nothing, run `--states all` (about 3 min) before and after, then `npm run diff -- <dirA> <dirB>` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; that is not a finding.
