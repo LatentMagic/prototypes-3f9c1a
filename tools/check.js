@@ -4,6 +4,15 @@
 // Headless sanity check for a prototype's addressable states.
 //
 //   npm run check -- [--slug canon] [--widths 1280,390] [--states a,b,c] [--port 4321]
+//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast]
+//
+// --app after-pixels checks canon (app/after-pixels/canon/index.html): states
+// come from window.KIT_STATES (`all`, or the default), the page opens with
+// ?fast (skips the staged arrival hold; --no-fast keeps it), each shot waits
+// until nothing is [aria-busy=true] (a state that holds a loader on purpose
+// times out after 3 s and is marked "busy"), screenshots go to <out>/<state>-<w>.png,
+// and per-shot timing plus every console error and warning is printed.
+// Circlists output is unchanged.
 //
 // Boots server.js (unless something already answers on the port), caches the
 // entry HTML's unpkg <script> runtime once to .playwright-mcp/check/cdn/ (so
@@ -24,21 +33,45 @@ const { spawn, spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const CACHE_DIR = path.join(ROOT, '.playwright-mcp', 'check', 'cdn');
 const BOGUS_ID = '__check_bogus__';
+const BUSY_WAIT_MS = 3000;
+// Printed on every page load by the in-browser Babel; noted once, not per shot.
+const BABEL_NOTICE = /You are using the in-browser Babel transformer/;
 const INDEX_HEADLINE = 'Every state this prototype can be opened at';
 
 function log(...args) {
   console.log(...args);
 }
 
+// Per-app facts: where the entry HTML is, which window global lists the states.
+const APPS = {
+  circlists: {
+    widths: [1280, 390],
+    entry: (slug) => `app/circlists/${slug}/circlists.html`,
+    statesGlobal: 'CIRC_STATES',
+  },
+  'after-pixels': {
+    widths: [1440, 390],
+    entry: (slug) => `app/after-pixels/${slug}/index.html`,
+    statesGlobal: 'KIT_STATES',
+  },
+};
+
 function parseArgs(argv) {
-  const opts = { slug: 'canon', widths: [1280, 390], states: null, port: Number(process.env.PORT) || 4321 };
+  const opts = {
+    app: 'circlists', slug: 'canon', widths: null, states: null, port: Number(process.env.PORT) || 4321,
+    out: null, fast: true,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--slug') opts.slug = argv[++i];
+    else if (a === '--app') opts.app = argv[++i];
+    else if (a === '--out') opts.out = path.resolve(argv[++i]);
+    else if (a === '--no-fast') opts.fast = false;
     else if (a === '--widths') {
       opts.widths = argv[++i].split(',').map((s) => parseInt(s.trim(), 10)).filter((n) => !Number.isNaN(n));
     } else if (a === '--states') {
       opts.states = argv[++i].split(',').map((s) => s.trim()).filter(Boolean);
+      if (opts.states.length === 1 && opts.states[0] === 'all') opts.states = null;
     } else if (a === '--port') {
       opts.port = parseInt(argv[++i], 10);
       if (Number.isNaN(opts.port)) throw new Error('--port must be a number');
@@ -46,16 +79,19 @@ function parseArgs(argv) {
       throw new Error(`unknown arg: ${a}`);
     }
   }
+  if (!APPS[opts.app]) throw new Error(`unknown --app ${opts.app} (one of: ${Object.keys(APPS).join(', ')})`);
+  if (!opts.widths) opts.widths = APPS[opts.app].widths;
   if (!opts.widths.length) throw new Error('--widths parsed to no usable numbers');
   return opts;
 }
 
 // ---- entry html + CDN runtime -----------------------------------------
 
-function findEntry(slug) {
-  const entryPath = path.join(ROOT, 'app', 'circlists', slug, 'circlists.html');
+function findEntry(opts) {
+  const rel = APPS[opts.app].entry(opts.slug);
+  const entryPath = path.join(ROOT, rel);
   if (!fs.existsSync(entryPath)) {
-    throw new Error(`no entry at app/circlists/${slug}/circlists.html`);
+    throw new Error(`no entry at ${rel}`);
   }
   return entryPath;
 }
@@ -221,10 +257,11 @@ async function discoverStates(browser, opts, cdnMap) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await attachRouting(context, opts.port, cdnMap, null);
   const page = await context.newPage();
-  const url = `http://127.0.0.1:${opts.port}/app/circlists/${opts.slug}/circlists.html?state=index`;
+  const url = `http://127.0.0.1:${opts.port}/${APPS[opts.app].entry(opts.slug)}?state=index`;
+  const g = APPS[opts.app].statesGlobal;
   await page.goto(url, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => Array.isArray(window.CIRC_STATES) && window.CIRC_STATES.length > 0, { timeout: 10000 });
-  const ids = await page.evaluate(() => window.CIRC_STATES.map((s) => s.id));
+  await page.waitForFunction((name) => Array.isArray(window[name]) && window[name].length > 0, g, { timeout: 10000 });
+  const ids = await page.evaluate((name) => window[name].map((s) => s.id), g);
   await context.close();
   return ids;
 }
@@ -242,7 +279,11 @@ async function testState(browser, opts, cdnMap, id, width) {
 
   const page = await context.newPage();
   page.on('pageerror', (err) => jsErrors.push(String((err && err.message) || err)));
+  const consoleLines = [];
   page.on('console', (msg) => {
+    if (opts.app === 'after-pixels' && (msg.type() === 'error' || msg.type() === 'warning') && !/^Failed to load resource:/.test(msg.text())) {
+      consoleLines.push(`${msg.type()}: ${msg.text().split('\n')[0].slice(0, 200)}`);
+    }
     // Chromium logs a console 'error' for every network-level resource
     // failure too (a page's own uncaught exceptions arrive via 'pageerror'
     // instead) — including the off-origin fonts/favicons this check aborts
@@ -263,9 +304,13 @@ async function testState(browser, opts, cdnMap, id, width) {
     if (isSameOrigin(url, opts.port) && res.status() >= 400) failedRequests.push(`${url} (HTTP ${res.status()})`);
   });
 
-  const targetUrl = `http://127.0.0.1:${opts.port}/app/circlists/${opts.slug}/circlists.html?state=${encodeURIComponent(id)}`;
+  const afterPixels = opts.app === 'after-pixels';
+  const fastQuery = afterPixels && opts.fast ? '&fast' : '';
+  const targetUrl = `http://127.0.0.1:${opts.port}/${APPS[opts.app].entry(opts.slug)}?state=${encodeURIComponent(id)}${fastQuery}`;
   let navErr = null;
   let blank = true;
+  let busy = false;
+  const t0 = Date.now();
   try {
     await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
     // "Non-empty" means anything mounted — text or markup. Several states
@@ -275,7 +320,15 @@ async function testState(browser, opts, cdnMap, id, width) {
       const el = document.getElementById('root');
       return !!(el && el.innerHTML && el.innerHTML.trim().length > 0);
     }, { timeout: 10000 }).catch(() => {});
-    await page.waitForTimeout(400);
+    if (afterPixels) {
+      // Ready = nothing is [aria-busy=true]. A state that holds a loader on
+      // purpose never settles, so it is marked busy after BUSY_WAIT_MS.
+      await page.waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout: BUSY_WAIT_MS })
+        .catch(() => { busy = true; });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+    } else {
+      await page.waitForTimeout(400);
+    }
     const html = await page.evaluate(() => {
       const el = document.getElementById('root');
       return el ? el.innerHTML.trim() : '';
@@ -290,10 +343,13 @@ async function testState(browser, opts, cdnMap, id, width) {
     indexHeadlinePresent = await page.evaluate((needle) => document.body && document.body.innerText.includes(needle), INDEX_HEADLINE);
   } catch { /* page may be gone if nav errored */ }
 
-  const shotDir = path.join(ROOT, '.playwright-mcp', 'check', opts.slug);
+  const readyMs = Date.now() - t0;
+  const shotDir = opts.out || path.join(ROOT, '.playwright-mcp', 'check', opts.slug);
   fs.mkdirSync(shotDir, { recursive: true });
   const shotPath = path.join(shotDir, `${id}-${width}.png`);
-  try { await page.screenshot({ path: shotPath }); } catch { /* best effort */ }
+  const t1 = Date.now();
+  try { await page.screenshot({ path: shotPath, fullPage: afterPixels }); } catch { /* best effort */ }
+  const shotMs = Date.now() - t1;
 
   await context.close();
 
@@ -309,17 +365,17 @@ async function testState(browser, opts, cdnMap, id, width) {
     reasons.push('fell back to states index (resolver did not recognise this id)');
   }
 
-  return { id, width, ok: reasons.length === 0, reasons, warnings, egress };
+  return { id, width, ok: reasons.length === 0, reasons, warnings, egress, busy, readyMs, shotMs, consoleLines };
 }
 
 // ---- main -------------------------------------------------------------------
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
-  const entryPath = findEntry(opts.slug);
+  const entryPath = findEntry(opts);
   const html = fs.readFileSync(entryPath, 'utf8');
   const cdnUrls = extractCdnUrls(html);
-  log(`cdn: ${cdnUrls.length} runtime url(s) declared in circlists.html`);
+  log(`cdn: ${cdnUrls.length} runtime url(s) declared in ${path.basename(entryPath)}`);
   const cdnMap = await ensureCdnCache(cdnUrls);
 
   const serverProc = await ensureServer(opts.port);
@@ -330,8 +386,8 @@ async function main() {
     browser = await launchChromium(chromium);
 
     const realIds = await discoverStates(browser, opts, cdnMap);
-    const ids = [...realIds, BOGUS_ID];
-    log(`states: ${realIds.length} declared + 1 bogus canary, x ${opts.widths.length} width(s) = ${ids.length * opts.widths.length} checks`);
+    const ids = opts.app === 'after-pixels' ? realIds : [...realIds, BOGUS_ID];
+    log(`states: ${realIds.length} declared + ${ids.length - realIds.length} bogus canary, x ${opts.widths.length} width(s) = ${ids.length * opts.widths.length} checks`);
 
     const results = [];
     let anyEgress = false;
@@ -342,10 +398,17 @@ async function main() {
         results.push(r);
         const line = `${r.ok ? (r.warnings.length ? 'warn' : 'ok  ') : 'FAIL'}  ${id} @ ${width}px`;
         const notes = [...r.reasons, ...r.warnings.map((w) => `react: ${w.slice(0, 90)}`)];
-        console.log(notes.length ? `${line}  — ${notes.join('; ')}` : line);
+        if (opts.app === 'after-pixels') {
+          const timing = `ready ${r.readyMs}ms, shot ${r.shotMs}ms${r.busy ? ', busy (loader still showing)' : ''}`;
+          console.log(`${line}  [${timing}]${notes.length ? `  — ${notes.join('; ')}` : ''}`);
+          for (const c of r.consoleLines) if (!BABEL_NOTICE.test(c)) console.log(`      console ${c}`);
+        } else {
+          console.log(notes.length ? `${line}  — ${notes.join('; ')}` : line);
+        }
       }
     }
 
+    if (opts.app === 'after-pixels') log('note: the in-browser Babel notice (printed on every load) is left out of the per-shot console lines');
     if (anyEgress) log('note: off-origin requests were aborted (sandbox egress — fonts/favicons); not counted as failures');
 
     const fails = results.filter((r) => !r.ok);
