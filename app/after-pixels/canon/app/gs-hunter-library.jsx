@@ -29,7 +29,7 @@ const hgStatus = (x) => ({ kind: x.restarted ? 'none' : 'ok', label: GS_RESULT.h
 const hgFact = (p, k) => { const f = p.src.facts.find(([n]) => n === k); return f ? f[1] : null; };
 // A session page for every day: the result matches its row; the record is what happened in the day. Share carries the product page link only (MCPG-030 AF-04).
 HG_DAYS.forEach((x) => {
-  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
+  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', title: x.title, result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
     figures: x.end ? [x.title, x.end] : [x.title], listTitle: 'The day', share: null, lines: x.facts };
 });
 GS_SESSIONS.hunter = GS_SESSIONS[hgSid(HG_LATEST)];

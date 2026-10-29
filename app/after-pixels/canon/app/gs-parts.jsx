@@ -6,8 +6,10 @@
 
 // ---- Covers and tags ---------------------------------------------------------
 // fit: the art is drawn to whatever frame it is given, the whole picture showing on its ground and placed by its declared extend.
-const GsCover = ({ art, fit }) => {
+// fill: the design system's Cover fill, for a cover beside a heading: it takes the height of the text beside it, the art keeps its size and stands where its extend puts it.
+const GsCover = ({ art, fit, fill }) => {
   const a = GS_ART[art] || {}; let svg = a.svg || '';
+  if (fill) return <DS.Cover fill ground={a.ground || 'indigo'} extend={a.extend || 'centre'}><span style={{ display: 'block' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
   if (fit) svg = svg.replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet');
   return <DS.Cover className={fit ? 'gs-cover-fit is-' + (a.ground || 'indigo') : ''}><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
 };

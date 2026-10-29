@@ -1922,6 +1922,16 @@
                 'Slots are fixed at 48px tall, replacing minmax(32px, 1fr) and the 132px cap. The heading stays at the top; the strip and legend stay together (16px gap) and are centred in the space below it. The grid still stretches the card to the now card\'s height. Below 900px the card stays the desktop card: slots 32.6px wide (measured at 1440), ten of them (six under 480px), strip and legend centred, never stretched. The stacked card is also trimmed: square slots, 16px card padding, 8px above and below the strip, 12px strip to legend.',
               ],
             },
+            {
+              date: '2026-10-29',
+              title: 'One shared session page head (hand edit, not an export)',
+              items: [
+                'Hand change in Claude Code after the Claude Design baseline (canon 124f3f4). A re-export would revert it; carry it. Files: canon/app/gs-session.jsx (GsSessHead, GsSessResult), canon/app/gs-parts.jsx (GsCover fill), canon/app/gs-escape.jsx (GS_SESSION_QUIET removed), canon/app/gs-hunter-library.jsx (day title on the session), canon/app/states.jsx (one label), canon/index.html (.gs-sess-head block) and canon/CLAUDE.md (Kit version 10; the H1-largest sentence removed from the layout-collision bullet).',
+                'Every game\'s session page draws one head: the cover on the left, then beside it the label (game · day played, e.g. ESCAPE · TUE 6 OCT), the edition as the game names it (a room\'s name, or No. 212), and the actions, at every width. The cover uses the design system\'s Cover fill, so it takes the height of the text. Daily Word reads Guess in the label.',
+                'The head carries no result and no figures. A game with no body of its own shows its result and figures in a block under the head. Two actions sit side by side at phone width; the buttons keep their natural width. On a phone the title is 16px semibold.',
+                'Start over on the session page reads Play again. The line saying the edition cannot be played again is gone from the session page; GS_ONCE_LINE stays for the casebook, play dialog and editions panel.',
+              ],
+            },
           ],
         },
         {

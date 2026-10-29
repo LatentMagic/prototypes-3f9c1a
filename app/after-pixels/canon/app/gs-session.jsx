@@ -1,7 +1,8 @@
 // ============================================================================
 // After Pixels — Session page (screen 7) with its share pop-up. History (screen 8) is in gs-history.jsx.
 // A session in progress (s.live) has no Share: one button carries it on in your AI.
-// A finished daily, weekly or fixed-answer play shows GS_ONCE_LINE and nothing that starts it; a finished chapter has Start over (gsStartsOver).
+// A finished daily, weekly or fixed-answer play shows nothing that starts it; a finished chapter has Play again (gsStartsOver).
+// One shared head (GsSessHead) serves every game: cover, then label (game · day played), edition title, actions. A game supplies data, never a head.
 // A session page is one play: it lists no other plays.
 // A 36,000 Summers Ago day has no result to share: Share carries the product page link only.
 // gsShareText is the one share text for a result, wherever Share is offered (the session page and the game pages).
@@ -78,6 +79,31 @@ const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   );
 };
 
+// ---- The one session head. A game supplies data only: its name, its edition's name or number, the day played, its art, which actions apply. ----
+// The label's game name: Daily Word is called Guess on this page.
+const gsHeadGame = (s) => (s.gid === 'word' ? 'Guess' : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game);
+// The day played, short: "Tuesday 6 October, 21:40" → "Tue 6 Oct".
+const gsHeadDay = (d) => (typeof d === 'string' ? gsShortDay(d.split(',')[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, '$1') : d);
+// The edition as its game names it: a room's name, or a number ("No. 212"). Falls back to the session's own title (a 36,000 Summers Ago day), then its number.
+const gsHeadTitle = (s, ed) => (ed ? (ed.title || 'No. ' + ed.n) : s.title || (s.number != null ? 'No. ' + s.number : null));
+const GsSessHead = ({ art, label, title, actions }) => (
+  <section className="gs-sess-head">
+    <GsCover art={art} fill />
+    <div className="gs-sess-text">
+      <span className="gs-sess-label">{label}</span>
+      <h1 className="gs-h1 gs-sess-title">{title}</h1>
+      {actions && <div className="gs-sess-acts">{actions}</div>}
+    </div>
+  </section>
+);
+// The result and figures a head does not carry: a game with no body of its own tells them here, under the head.
+const GsSessResult = ({ s, title }) => (
+  <section className="gs-stack-md" style={{ justifyItems: 'start' }}>
+    <h2 className="mcp-t-sec">{gsOr(s.result)}</h2>
+    {(s.figures || []).filter((f) => f !== title).length > 0 && <div className="gs-figs">{s.figures.filter((f) => f !== title).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}</div>}
+  </section>
+);
+
 const GsSessionRecord = () => {
   const gs = useGs();
   const s = GS_SESSIONS[gs.route.id];
@@ -94,10 +120,9 @@ const GsSessionRecord = () => {
   // A Pass-ended player's unfinished Pass-only session is kept: it says so, with the Pass page, and no Play.
   const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!window.PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
   const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
-  const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Start over</DS.Button> : null;
-  const onceLine = !!s.gid && !over && <p>{GS_ONCE_LINE}</p>;
+  const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
-  // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx).
+  // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
   // A game without one shows the plain list.
   const list = (
     <section className="gs-stack-md">
@@ -108,50 +133,28 @@ const GsSessionRecord = () => {
     </section>
   );
   const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];
-  // window.GS_SESSION_QUIET[gid](s, ed) gives { label, h1 } for a head that carries no result or figures: the game's body tells them (Escape).
-  const quiet = window.GS_SESSION_QUIET && window.GS_SESSION_QUIET[s.gid] ? window.GS_SESSION_QUIET[s.gid](s, ed) : null;
   const body = Body ? <Body s={s} sid={gs.route.id} /> : list;
+  const title = gsHeadTitle(s, ed);
+  const label = gsHeadGame(s) + ' · ' + gsHeadDay(gsSessDate(s, gs));
   const art = s.art;
   // A day or week that ended before the player finished: no result, no score line, no play control. What was played stays.
   if (s.unfinished) return (<>
     {back}
     <main className="gs-wrap gs-main">
-      <section className="gs-sess-head">
-        <GsCover art={art} />
-        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="mcp-t-card">{ed ? edLabel(ed) : s.game}</span>
-          <h1 className="gs-h1">Not finished</h1>
-          <div className="gs-figs"><span className="gs-fig gs-fig-quiet">{gsShortDay(gsSessDate(s, gs))}</span></div>
-          <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
-        </div>
-      </section>
+      <GsSessHead art={art} label={label} title={title} />
+      <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
       {body}
     </main>
   </>);
   return (<>
     {back}
     <main className="gs-wrap gs-main">
-      <section className="gs-sess-head">
-        <GsCover art={art} />
-        <div className="gs-stack-md" style={{ justifyItems: 'start' }}>
-          <span className="mcp-t-card">{quiet ? quiet.label : ed ? edLabel(ed) : s.game}</span>
-          <h1 className="gs-h1">{quiet ? quiet.h1 : gsOr(s.result)}</h1>
-          <div className="gs-figs">
-            <span className="gs-fig gs-fig-quiet">{gsShortDay(gsSessDate(s, gs))}</span>
-            {!quiet && (s.figures || []).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}
-          </div>
-          <div className="gs-pairwrap">
-            {kept ? null : s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
-              : text ? (again ? <DS.ButtonPair>
-                {again}
-                <DS.Button onClick={() => setShare(true)}>Share</DS.Button>
-              </DS.ButtonPair> : <DS.Button onClick={() => setShare(true)}>Share</DS.Button>)
-              : again}
-          </div>
-          {!s.live && onceLine}
-          {kept && <GsNeedsPass gid={s.gid} text="This session is kept. Carrying it on comes with the Pass." />}
-        </div>
-      </section>
+      <GsSessHead art={art} label={label} title={title} actions={
+        kept ? <GsNeedsPass gid={s.gid} text="This session is kept. Carrying it on comes with the Pass." />
+          : s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
+          : <>{again}{text && <DS.Button onClick={() => setShare(true)}>Share</DS.Button>}</>
+      } />
+      {!Body && <GsSessResult s={s} title={title} />}
 
       {delve ? (
         <section className="gs-pitch">

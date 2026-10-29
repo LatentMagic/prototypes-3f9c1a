@@ -404,7 +404,17 @@
   .gs-grid2, .gs-grid3 { display: grid; gap: 16px; }
   .gs-cols2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
   .gs-head-split, .gs-pitch { display: grid; gap: 24px; }
-  .gs-pz-head, .gs-sess-head { display: grid; gap: 16px; }
+  .gs-pz-head { display: grid; gap: 16px; }
+  /* The one session head: cover left, then label, title and actions stacked beside it, at every width. The cover fills the text's height (design system Cover fill). */
+  .gs-sess-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-4); align-items: stretch; }
+  .gs-sess-head > .mcp-cover { min-width: 0; }
+  .gs-sess-head .mcp-cover-art > span > svg { display: block; width: 100%; height: 100%; }
+  .gs-sess-text { display: grid; align-content: center; justify-items: start; gap: var(--space-2); min-width: 0; }
+  .gs-sess-label { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .gs-sess-title { overflow-wrap: normal; word-break: normal; hyphens: none; text-wrap: balance; }
+  .gs-sess-acts { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+  /* KEEP: the system's phone rule (full-width buttons under 640px) gives way here: the head's buttons keep their natural width so two sit side by side. */
+  .gs-sess-acts.gs-sess-acts .mcp-btn.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn) { display: inline-flex; width: auto; }
   .gs-top-align { align-items: start; }
   .gs-sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
   .gs-title-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
@@ -603,6 +613,7 @@
   @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
   @container gs (min-width: 720px) {
+    .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
     .gs-wrap { padding-inline: 24px; }
     .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
     .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
@@ -611,7 +622,6 @@
     .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
     .gs-hero-art { padding: 36px; }
     .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
-    .gs-sess-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: center; }
     .gs-choice { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .gs-buy { grid-auto-flow: column; justify-content: space-between; align-items: center; }
     .gs-cover-over { padding: 24px; }
@@ -1346,10 +1356,7 @@
   @container gs (max-width: 719px) {
     .gs-hero-cover { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
     .gs-hero-cover .gs-cover-over { position: static; padding: 0; }
-    .gs-sess-head { grid-template-columns: 96px minmax(0, 1fr); align-items: center; justify-items: start; }
-    .gs-sess-head > .mcp-cover { justify-self: stretch; }
-    .gs-sess-head > .gs-stack-md { display: contents; }
-    .gs-sess-head > .gs-stack-md > :not(:first-child) { grid-column: 1 / -1; }
+    .gs-sess-title { font: 600 16px/1.25 var(--font-heading); letter-spacing: 0; }
   }
 
   /* ==== LM-1110 (2026-10-13): Daily Word and Daily Mystery layout fixes, made once in the shared parts ==== */

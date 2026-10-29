@@ -218,10 +218,9 @@ const EsNow = ({ label, title, next, noNext, children }) => {
   );
 };
 
-// ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx), and the Pass holder's now card
+// ---- Hooks into the app: the session page's body (app/gs-session.jsx; the head is the shared GsSessHead), and the Pass holder's now card
 // (window.PzNow). A free player's first-room card reads EsNow in app/gs-pass-library.jsx (CprFirst). ----
 window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), escape: EsSessBody };
-window.GS_SESSION_QUIET = { ...(window.GS_SESSION_QUIET || {}), escape: (s, ed) => ({ label: s.game, h1: (ed && ed.title) || PZ.escape.title }) };
 const ES_SHIP_NOW = window.PzNow;
 window.PzNow = (props) => (props.id !== 'escape' || props.none ? <ES_SHIP_NOW {...props} /> : <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />);
 
