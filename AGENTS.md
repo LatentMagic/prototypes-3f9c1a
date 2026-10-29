@@ -21,7 +21,7 @@ Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natur
 </important>
 
 <important if="you are adding or changing a rule, aid or skill that every prototype shares, or anything under kit/">
-**The kit** — `kit/project/` holds the rules (`CLAUDE.md`), aids (Config, States, QA) and skills every prototype shares; `kit/README.md` is its runbook. A shared change is made there and pushed, then carried into each Claude Design project by one Kit carry brief composed in the business-ops workspace (`biz-authoring:build-design-prompt`). Never make it by editing a `canon/` copy; After Pixels canon has no Claude Design project, so a kit change it needs is also made there by hand. The kit's app is the Golden Sample App, listed in the console at `#gsa/canon`; an edit there is a hand change under the commit gate, not an export sync.
+**The kit** — `kit/project/` holds the rules (`CLAUDE.md`), aids (Config, States, QA) and skills every prototype shares; `kit/README.md` is its runbook. A shared change is made there and pushed, then carried into each Claude Design project by one Kit carry brief composed in the business-ops workspace (`biz-authoring:build-design-prompt`). Never make it by editing a `canon/` copy. The exception is After Pixels: its canon is no longer updated from Claude Design, so a kit change it needs is also made directly in its canon. The kit's app is the Golden Sample App, listed in the console at `#gsa/canon`; an edit there is a hand change under the commit gate, not an export sync.
 </important>
 
 ## How the console works
