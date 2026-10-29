@@ -77,9 +77,7 @@ const pzSession = (id, c, x) => {
   else if (id === 'word') {
     const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
     const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
-    const mark = (g) => { if (g === answer) return 'Solved'; const r = gsWordRow(g, answer); const a = (r.match(/🟩/gu) || []).length; const b = (r.match(/🟨/gu) || []).length;
-      return a + b === 0 ? 'No letters in the word' : [a && a + ' in place', b && b + ' in the word'].filter(Boolean).join(', '); };
-    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, mark(g)]) };
+    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
   } else if (id === 'groups') {
     const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
     for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
@@ -91,13 +89,13 @@ const pzSession = (id, c, x) => {
   } else if (id === 'mystery') {
     const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
     const qs = Array.from({ length: q }, (_, k) => (k === 0
-      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'Yes' : 'No']
-      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'Yes' : 'No']));
+      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'The inspector said yes' : 'The inspector said no']
+      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'The inspector said yes' : 'The inspector said no']));
     const part = i % 3;
     const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
       : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
     s = { ...base, number: 64 - i, q, hints: 0, listTitle: 'Every question', share: x.line, figures: [pzQn(q), 'No hints'],
-      lines: [...qs, ['Accusation', acc, x.ok ? 'Right' : 'Wrong']] };
+      lines: [...qs, x.ok ? ['Accusation', acc, 'Right'] : ['Accusation', acc, 'Wrong', ['The suspect was wrong', 'The weapon was wrong', 'The room was wrong'][part]]] };
   } else {
     // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
     s = { ...GS_SESSIONS['escape-week'], date: base.date };
@@ -218,11 +216,11 @@ Object.assign(window, { PZ, pzLong, pzStatus, pzRun });
     const line = played ? GS_RESULT.escape({ min, par }) : c.bad;
     const x = { id: 'escape' + i, i, d, date: lbDate(d), month: lbMonth(d), title, played, ok: played, done: played, line };
     if (played) {
-      const sid = 'escape-e' + i; const lines = [['Move 1', 'Examine the room', 'Two locks stand between you and the way out.']];
-      let n = 1; for (let w = 0; w < wrong; w += 1) lines.push(['Move ' + (++n), 'Try an answer (4 letters) on the iron box', 'Wrong']);
-      for (let h = 0; h < hints; h += 1) lines.push(['Hint', 'The iron box', 'Sample hint.']);
-      lines.push(['Move ' + (++n), 'Try an answer (4 letters) on the iron box', 'The lid lifts.']);
-      lines.push(['Move ' + (++n), 'Try an answer (4 letters) on the door lock', 'Out']);
+      const sid = 'escape-e' + i; const lines = [['Move 1', 'Examined the room', 'Two locks stand between you and the way out.']];
+      let n = 1; for (let w = 0; w < wrong; w += 1) lines.push(['Move ' + (++n), 'Tried ' + GS_ES_WORDS4[w % GS_ES_WORDS4.length] + ' on the iron box', 'Wrong']);
+      for (let h = 0; h < hints; h += 1) lines.push(gsEsHint('iron box', Math.min(h + 1, 3), 'Sample hint.'));
+      lines.push(['Move ' + (++n), 'Tried KEYS on the iron box', 'The lid lifts.']);
+      lines.push(['Move ' + (++n), 'Tried EXIT on the door lock', 'Out']);
       GS_SESSIONS[sid] = { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', date: pzLong(d), result: line, share: line,
         figures: [min + ' min, ' + par, fig(hints, 'hint', 'hints', 'No hints'), fig(wrong, 'wrong try', 'wrong tries', 'No wrong tries')],
         shareLines: ['Escape · ' + title + ' · escaped in ' + min + ' min, ' + par], listTitle: 'Every move', lines,

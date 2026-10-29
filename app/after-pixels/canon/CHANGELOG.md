@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-29. Every move, the same for every game
+- Every game's Every move list is the design system's move list, closed, below the game's own section.
+- Guess, Daily Mystery, Delve, Escape, Chain and Where write their lines in the same grammar: the label names the line, the first part says what the move was in the game's own words, the rest qualify it.
+- Chain and Where have session states of their own: in progress, an earlier play that failed, and an earlier play.
+
 ## 2026-10-29. Delve's session page, told in its own terms
 - Delve's session page shows the hero's character sheet, then the run: the result statement (the ending word and its line), the route of rooms with every roll as a die, and the held roll beside it.
 - On a phone the sheet opens folded to the hero, hit points and threat.

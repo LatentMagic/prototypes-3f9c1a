@@ -98,50 +98,79 @@ const gsLink = (gid) => 'https://afterpixels.com/' + (['casebook', 'escape', 'de
 // Required wherever the Barrow's rules material is used (verbatim).
 const GS_BARROW_CREDIT = 'Rules material from the System Reference Document 5.2.1 by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/legalcode).';
 
+// ---- Move lines (1236 move-list delta, owner 2026-10-29: clinical). Each line says what the move was, in the game's own words,
+// and holds only what the game's engine and spec allow. Every game writes { label, parts }: the label names the line, the first
+// part is what happened, the rest qualify it. Sample plays; the wording follows each game's session-record.ts. ----
+const GS_ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
+const gsJoin = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]);
+// Daily Word / Guess: what each letter of a guess scored, as the game's page says it: "S is in place. L and T are in the word."
+// A letter the guess repeats is named by its place ("the second L"), so the two never read as one.
+const gsGuessParts = (word, answer) => {
+  const w = word.split(''); const a = answer.split(''); const marks = w.map(() => 'miss'); const left = {};
+  a.forEach((ch, i) => { if (w[i] === ch) marks[i] = 'hit'; else left[ch] = (left[ch] || 0) + 1; });
+  w.forEach((ch, i) => { if (marks[i] !== 'hit' && left[ch]) { marks[i] = 'near'; left[ch] -= 1; } });
+  if (marks.every((m) => m === 'hit')) return ['Every letter is in place'];
+  const name = (ch, i) => (w.filter((x) => x === ch).length > 1 ? 'the ' + GS_ORD[w.slice(0, i + 1).filter((x) => x === ch).length - 1] + ' ' + ch : ch);
+  const say = (kind, tail) => { const n = w.map((ch, i) => (marks[i] === kind ? name(ch, i) : null)).filter(Boolean); if (!n.length) return null;
+    const t = gsJoin(n) + (n.length === 1 ? ' is ' : ' are ') + tail; return t.charAt(0).toUpperCase() + t.slice(1); };
+  return [say('hit', 'in place'), say('near', 'in the word'), say('miss', 'not in the word')].filter(Boolean);
+};
+// A Daily Word play: each entry is a guess (a word) or a line passed through (the hint, as ['Hint', 'Letter 2 is T.']).
+const gsWordLines = (answer, seq) => { let n = 0; return seq.map((x) => (typeof x === 'string' ? ['Guess ' + (n += 1), x, ...gsGuessParts(x, answer)] : x)); };
+// Escape: moves are numbered across moves only (hints and items are not moves). A name sits mid-sentence in lower case.
+const gsEsLines = (steps) => { let n = 0; return steps.map((x) => (x[0] === 'Hint' || x[0] === 'Item' ? x : ['Move ' + (n += 1), ...x])); };
+const gsEsHint = (lock, rung, text) => ['Hint', 'The ' + lock, 'Hint ' + rung + ' of 3', text];
+// Wrong answers a sample player types: the letters of a four-letter lock, then permutations of the cabinet's four digits.
+const GS_ES_WORDS4 = ['GEAR', 'TIME', 'HAND', 'BELL', 'HOUR', 'SAND', 'WIND', 'DUST'];
+const GS_ES_DIG4 = ['1234', '1479', '9147', '4719', '7149', '1947', '4179', '9741', '7491', '1974', '4197', '9471', '7194', '1497', '4917', '9174', '7941', '4971'];
+const GS_ES_WORDS5 = ['TRAIN', 'STEAM', 'TRACK', 'PLATE']; const GS_ES_DIG3 = ['123', '482', '907', '256'];
+// Delve: a name sits mid-sentence in lower case ("Entered the warren"), as the engine writes it.
+const gsDvName = (n) => n.replace(/^The /, 'the ');
+
 // ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
 const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
 const GS_DV_WON = [
-  ['Wisdom', 'd20 1 + 0 = 1 vs 12', 'Search the lock-keeper\'s niche: natural 1, HP 12/13'],
-  ['Room', 'Entered The chime run'],
-  ['Dexterity', 'd20 9 + 1 = 10 vs 12', 'Miss, HP 11/13'],
-  ['Dexterity', 'd20 11 + 1 = 12 vs 12', 'Weak hit'],
-  ['Dexterity', 'd20 18 + 1 = 19 vs 12', 'Hit'],
-  ['Room', 'Entered The warren'],
-  ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
-  ['Strength', 'd20 9 + 3 = 12 vs 12', 'Weak hit'],
-  ['Strength', 'd20 13 + 3 = 16 vs 12', 'Weak hit, HP 9/13'],
-  ['Strength', 'd20 17 + 3 = 20 vs 12', 'Hit'],
-  ['Dexterity', 'd20 20 + 1 = 21 vs 12', 'Rifle the stolen sacks: natural 20'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 12/13'],
+  ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'HP 11/13'],
+  ['Dexterity', 'Weak hit', 'Rolled 11 + 1 = 12 against DC 12'],
+  ['Dexterity', 'Strong hit', 'Rolled 18 + 1 = 19 against DC 12'],
+  ['Room', 'Entered the warren'],
+  ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
+  ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'],
+  ['Strength', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12', 'HP 9/13'],
+  ['Strength', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'],
+  ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'Rolled 20 + 1 = 21 against DC 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Gear', 'A pepper pouch', 'Snaggle: track 3 → 1'],
-  ['Strength', 'd20s 15 and 18, kept 18 + 3 = 21 vs 12', 'Hit'],
+  ['Gear', 'Used a pepper pouch', 'Snaggle: track 3 → 1'],
+  ['Strength', 'Strong hit', 'Rolled 18, the higher of 15 and 18, + 3 = 21 against DC 12'],
   ['Gear', 'Took the iron key'],
-  ['Room', 'Doubled back to The warren', 'The ritual +1'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Lock', 'Opened the bone gate with the iron key'],
-  ['Room', 'Entered The shrine cavern'],
-  ['Strength', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Hit'],
-  ['Strength', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Hit'],
+  ['Room', 'Entered the shrine cavern'],
+  ['Strength', 'Strong hit', 'Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12'],
+  ['Strength', 'Strong hit', 'Rolled 17, the higher of 17 and 9, + 3 = 20 against DC 12'],
 ];
 const GS_DV_LIVE = [
-  ['Oracle', 'Is anyone awake down here?', 'd100 23 vs 25', 'Yes'],
-  ['Room', 'Entered The chime run'],
-  ['Dexterity', 'd20 13 + 3 = 16 vs 12', 'Weak hit'],
-  ['Dexterity', 'd20 16 + 3 = 19 vs 12', 'Hit'],
-  ['Room', 'Entered The warren'],
-  ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
-  ['Dexterity', 'd20 14 + 3 = 17 vs 12', 'Hit'],
-  ['Dexterity', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Hit'],
-  ['Intelligence', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12', 'Study the wall scratchings: hit'],
+  ['Oracle', 'Is anyone awake down here?', 'Yes', 'Rolled d100 23 against 25'],
+  ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12'],
+  ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  ['Room', 'Entered the warren'],
+  ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
+  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12'],
+  ['Dexterity', 'Strong hit', 'Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12'],
+  ['Intelligence', 'Study the wall scratchings', 'Success', 'Rolled 19, the higher of 19 and 15, + 1 = 20 against DC 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Hit'],
-  ['Dexterity', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12', 'Hit'],
-  ['Dexterity', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12', 'Climb to the skeleton on the high ledge: natural 20'],
-  ['Room', 'Doubled back to The warren', 'The ritual +1'],
+  ['Dexterity', 'Strong hit', 'Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12'],
+  ['Dexterity', 'Strong hit', 'Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12'],
+  ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'Rolled 20, the higher of 20 and 6, + 3 = 23 against DC 12'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'],
 ];
 const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
 
-// ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text; GS_ES1_LINES is a sample play of it,
-// which never prints a typed answer: a Try or Set row names what the lock takes instead. ----
+// ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text (content/escape/1.v3.json); GS_ES1_LINES is a
+// sample play of it, written as the engine writes a line: a typed try keeps what was typed, a mechanism names its parts. ----
 const GS_ES1 = {
   bench: 'A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.',
   clock: 'A tall case clock, stopped, its hands stiff. There is a winding hole in its face.',
@@ -150,26 +179,27 @@ const GS_ES1 = {
   fire: 'Cold ashes in an iron grate. The panelling beside it is carved with tiny gears, too shadowed to make out.',
   door: 'A narrow oak door, hidden in the panelling until now, with a four-letter lock.',
   drawer: 'Inside the drawer lies a small brass key, its bow shaped like a clock face.',
-  diary: 'Among the pocket watches lies a page torn from Ezra’s diary: “Ada went to live with her mother across the sea. Her train left at four o’clock, and I stood on the platform with her for the last quarter of an hour before it went. I stopped every clock in the house that day. Set the case clock to the moment I said goodbye, and this room will show you where I am.”',
+  diary: 'Among the pocket watches lies a page torn from Ezra’s diary: “Ada went to live with her mother across the sea. Her train left at four o’clock. I said goodbye to her on the platform a quarter of an hour before it went, and stood there alone until it had gone. I stopped every clock in the house that day. Set the case clock to the moment I said goodbye, and this room will show you where I am.”',
+  clockWound: 'A tall case clock, wound but silent. Its hands now turn freely: the hour hand to any hour, the minute hand to the hour, quarter past, half past or quarter to.',
   hands: 'The hands click home at a quarter to four, and the case clock begins to tick. The cloud outside breaks.',
 };
-const GS_ES1_LINES = [
-  ['Move 1', 'Examine the workbench', GS_ES1.bench],
-  ['Move 2', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
-  ['Hint', 'The workbench drawer', 'Count the gears’ teeth, and read each count as a letter.'],
-  ['Move 3', 'Try an answer (4 letters) on the workbench drawer', GS_ES1.drawer],
-  ['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.'],
-  ['Move 4', 'Examine the case clock', GS_ES1.clock],
-  ['Move 5', 'Use the brass winding key on the case clock', 'Used up'],
-  ['Move 6', 'Examine the glass cabinet', GS_ES1.cabinet],
-  ['Move 7', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
-  ['Move 8', 'Try an answer (4 digits) on the cabinet lock', GS_ES1.diary],
-  ['Move 9', 'Set the clock hands to an hour and a minute', GS_ES1.hands],
-  ['Move 10', 'Examine the portrait', GS_ES1.portrait],
-  ['Move 11', 'Examine the fireplace', GS_ES1.fire],
-  ['Move 12', 'Examine the oak door', GS_ES1.door],
-  ['Move 13', 'Try an answer (4 letters) on the oak door lock', 'Out'],
-];
+const GS_ES1_LINES = gsEsLines([
+  ['Examined the workbench', GS_ES1.bench],
+  ['Tried GEAR on the workbench drawer', 'Wrong'],
+  gsEsHint('workbench drawer', 1, 'Count the gears’ teeth, and read each count as a letter.'),
+  ['Tried TICK on the workbench drawer', GS_ES1.drawer],
+  ['Item', 'Picked up the brass winding key', 'A small brass key, its bow shaped like a clock face.'],
+  ['Examined the case clock', GS_ES1.clock],
+  ['Used the brass winding key on the case clock', 'Used up', GS_ES1.clockWound],
+  ['Examined the glass cabinet', GS_ES1.cabinet],
+  ['Tried 1479 on the cabinet lock', 'Wrong'],
+  ['Tried 7419 on the cabinet lock', GS_ES1.diary],
+  ['Set the clock hands: Hour hand 3, Minute hand 45', GS_ES1.hands],
+  ['Examined the portrait', GS_ES1.portrait],
+  ['Examined the fireplace', GS_ES1.fire],
+  ['Examined the oak door', GS_ES1.door],
+  ['Tried TOCK on the oak door lock', 'Out'],
+]);
 
 // ---- Casebook, Case 1: The Last Night at Gull Point (deployed case; this play of it is sample). Turn codes: F search found, N search found nothing, Q question,
 // H evidence shown and the story stood, B lie exposed, A the accusation (unnumbered). ----
@@ -191,7 +221,7 @@ const GS_CB_REC = [
 const gsCbLines = (rec) => rec.map((r, i) => (r.c === 'A' ? ['Accused ' + r.what, r.out] : ['Turn ' + (i + 1), r.what, ...(r.out ? [r.out] : [])]));
 
 // Today's Daily Mystery questions, shared by the finished play and its in-progress form.
-const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'Yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'Yes']];
+const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'The inspector said yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'The inspector said yes']];
 // Session records: sample plays (Delve's lines are the deployed engine's, above).
 const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
@@ -210,21 +240,19 @@ const GS_SESSIONS = {
   'word-today': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     listTitle: 'Every guess', share: 'Solved in 3 of 6',
-    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STILL', 'Solved']],
+    lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
   // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
   // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
     listTitle: 'Every guess', share: 'Solved in 5 of 6',
-    lines: [['Guess 1', 'CRANE', '1 in the word'], ['Guess 2', 'ROBOT', '1 in place, 2 in the word'], ['Hint', 'Letter 1 is F.'],
-      ['Guess 3', 'FROGS', '2 in place, 1 in the word'], ['Guess 4', 'FLOUR', '4 in place'], ['Guess 5', 'FLOOR', 'Solved']],
+    lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     listTitle: 'Every guess', share: 'Failed',
-    lines: [['Guess 1', 'CRANE', '2 in the word'], ['Hint', 'Letter 4 is A.'], ['Guess 2', 'METAL', '2 in place, 2 in the word'], ['Guess 3', 'PETAL', '2 in place, 2 in the word'],
-      ['Guess 4', 'DECAL', '2 in place, 1 in the word'], ['Guess 5', 'SEPAL', '3 in place, 1 in the word'], ['Guess 6', 'SHOAL', '3 in place']],
+    lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
   // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
   'escape-week': {
@@ -237,12 +265,12 @@ const GS_SESSIONS = {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
     setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
     figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Failed',
-    lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong']],
+    lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong', 'The suspect, the weapon and the room were all wrong']],
   },
   'word-1005': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     listTitle: 'Every guess', share: 'Solved in 4 of 6',
-    lines: [['Guess 1', 'CRANE', '2 in place, 1 in the word'], ['Guess 2', 'CHANT', '3 in place, 1 in the word'], ['Guess 3', 'CHAIR', '4 in place'], ['Guess 4', 'CHAIN', 'Solved']],
+    lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
   // Daily Groups. Fish 🟦, weather 🟨, music 🟪, fence 🟩. Share rows hide every word.
   'groups-today': {
@@ -270,7 +298,7 @@ const GS_SESSIONS = {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
     setting: 'the annual gala of the Royal Botanical Society', victim: 'Dr Ambrose Kell, the collector',
     figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Solved',
-    lines: [['Question 1', 'Was Mr Graves in the study?', 'Yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'Yes'],
+    lines: [['Question 1', 'Was Mr Graves in the study?', 'The inspector said yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'The inspector said yes'],
       ['Accusation', 'Ivy Marchbank, with the vial of foxglove, in the wine cellar', 'Right']],
   },
 };
@@ -278,9 +306,9 @@ const GS_SESSIONS = {
 // Same edition, same answer as today's play and its in-progress form. A game with no entry for a pick keeps its seeded play.
 Object.assign(GS_SESSIONS, {
   'word-today-hard': { ...GS_SESSIONS['word-today'], result: 'Solved in 5 of 6', share: 'Solved in 5 of 6',
-    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STOOL', '3 in place'], ['Guess 4', 'STALL', '4 in place'], ['Guess 5', 'STILL', 'Solved']] },
+    lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STOOL', 'STALL', 'STILL']) },
   'word-today-failed': { ...GS_SESSIONS['word-today'], loss: true, result: 'Failed', share: 'Failed',
-    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word'], ['Hint', 'Letter 2 is T.'], ['Guess 3', 'STALL', '4 in place'], ['Guess 4', 'SPILL', '4 in place'], ['Guess 5', 'SKILL', '4 in place'], ['Guess 6', 'SWILL', '4 in place']] },
+    lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STALL', 'SPILL', 'SKILL', 'SWILL']) },
   'groups-today-hard': { ...GS_SESSIONS['groups-today'], result: 'All 4 groups, 3 mistakes', share: 'All 4 groups, 3 mistakes', figures: ['4 of 4 groups', '3 mistakes'],
     shareHead: 'Daily Groups #88 · 3 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟪🟪🟪', '🟩🟩🟩🟩'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
@@ -306,7 +334,7 @@ const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.revi
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
   'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
-    lines: [['Guess 1', 'CRANE', 'No letters in the word'], ['Guess 2', 'SLATE', '1 in place, 2 in the word']] },
+    lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], listTitle: 'Every try', share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
   'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
@@ -357,61 +385,61 @@ GS_SESSIONS['escape-par'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.e
 GS_SESSIONS['escape-over'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.escape({ min: 41, par: 'over par' }), share: GS_RESULT.escape({ min: 41, par: 'over par' }),
   figures: ['41 min, over par', '4 hints', '7 wrong tries'], shareLines: ['Escape No. 1 · escaped in 41 min, over par · 4 hints 💡 · 7 wrong tries'],
   esTimes: { min: 41, opened: [9, 27, 34, 41] }, esParts: { 12: [1, 2] },
-  lines: [
-    ['Move 1', 'Examine the workbench', GS_ES1.bench],
-    ['Move 2', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
-    ['Move 3', 'Try an answer (4 letters) on the workbench drawer', 'Wrong'],
-    ['Hint', 'The workbench drawer', 'Count the gears’ teeth, and read each count as a letter.'],
-    ['Move 4', 'Try an answer (4 letters) on the workbench drawer', GS_ES1.drawer],
-    ['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.'],
-    ['Move 5', 'Examine the case clock', GS_ES1.clock],
-    ['Move 6', 'Examine the glass cabinet', GS_ES1.cabinet],
-    ['Move 7', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
-    ['Hint', 'The cabinet lock', 'Read the watches in the order the plate gives the days.'],
-    ['Move 8', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
-    ['Hint', 'The cabinet lock', 'Monday’s watch comes first, and it shows seven.'],
-    ['Move 9', 'Try an answer (4 digits) on the cabinet lock', 'Wrong'],
-    ['Hint', 'The cabinet lock', 'The answer, given outright.'],
-    ['Move 10', 'Try an answer (4 digits) on the cabinet lock', GS_ES1.diary],
-    ['Move 11', 'Use the brass winding key on the case clock', 'Used up'],
-    ['Move 12', 'Set the clock hands to an hour and a minute', 'Wrong'],
-    ['Move 13', 'Set the clock hands to an hour and a minute', GS_ES1.hands],
-    ['Move 14', 'Examine the portrait', GS_ES1.portrait],
-    ['Move 15', 'Examine the fireplace', GS_ES1.fire],
-    ['Move 16', 'Examine the oak door', GS_ES1.door],
-    ['Move 17', 'Try an answer (4 letters) on the oak door lock', 'Wrong'],
-    ['Move 18', 'Try an answer (4 letters) on the oak door lock', 'Out'],
-  ] };
+  lines: gsEsLines([
+    ['Examined the workbench', GS_ES1.bench],
+    ['Tried GEAR on the workbench drawer', 'Wrong'],
+    ['Tried TIME on the workbench drawer', 'Wrong'],
+    gsEsHint('workbench drawer', 1, 'Count the gears’ teeth, and read each count as a letter.'),
+    ['Tried TICK on the workbench drawer', GS_ES1.drawer],
+    ['Item', 'Picked up the brass winding key', 'A small brass key, its bow shaped like a clock face.'],
+    ['Examined the case clock', GS_ES1.clock],
+    ['Examined the glass cabinet', GS_ES1.cabinet],
+    ['Tried 1479 on the cabinet lock', 'Wrong'],
+    gsEsHint('cabinet lock', 1, 'Each watch has a day on its tag. The plate says what order to read them in.'),
+    ['Tried 9147 on the cabinet lock', 'Wrong'],
+    gsEsHint('cabinet lock', 2, 'Put the watches in order Monday to Thursday, then read the hour each one shows.'),
+    ['Tried 4719 on the cabinet lock', 'Wrong'],
+    gsEsHint('cabinet lock', 3, 'Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419.'),
+    ['Tried 7419 on the cabinet lock', GS_ES1.diary],
+    ['Used the brass winding key on the case clock', 'Used up', GS_ES1.clockWound],
+    ['Set the clock hands: Hour hand 4, Minute hand 45', '1 of 2 hands click into place.'],
+    ['Set the clock hands: Hour hand 3, Minute hand 45', GS_ES1.hands],
+    ['Examined the portrait', GS_ES1.portrait],
+    ['Examined the fireplace', GS_ES1.fire],
+    ['Examined the oak door', GS_ES1.door],
+    ['Tried TICK on the oak door lock', 'Wrong'],
+    ['Tried TOCK on the oak door lock', 'Out'],
+  ]) };
 // The hard play: a run built to the Escape spec's limits, to test every Escape surface. Six locks; the cabinet lock (typed)
 // takes eighteen tries and all three hints; the clock hands (a mechanism) answer each setting with a count and need a hint.
 // Out at 52 min, over par. All invented.
 GS_SESSIONS['escape-hard'] = (() => {
-  const L = []; let n = 0; const mv = (what, res) => L.push(['Move ' + (n += 1), what, res]);
-  const tryOn = (len, lock, k) => { for (let i = 0; i < k; i += 1) mv('Try an answer (' + len + ') on the ' + lock, 'Wrong'); };
-  const hint = (lock, text) => L.push(['Hint', 'The ' + lock, text]);
-  mv('Examine the workbench', 'Gears of four sizes lie by the drawer.');
-  tryOn('4 letters', 'workbench drawer', 1); mv('Try an answer (4 letters) on the workbench drawer', 'The drawer slides open.');
-  L.push(['Item', 'Brass winding key', 'A small brass key, its bow shaped like a clock face.']);
-  mv('Examine the glass cabinet', 'Seven watches behind glass, each stopped.');
-  tryOn('4 digits', 'cabinet lock', 9); hint('cabinet lock', 'Read the watches in the order the plate gives the days.');
-  tryOn('4 digits', 'cabinet lock', 4); hint('cabinet lock', 'Monday’s watch comes first, and it shows seven.');
-  tryOn('4 digits', 'cabinet lock', 4); hint('cabinet lock', 'The answer, given outright.');
-  mv('Try an answer (4 digits) on the cabinet lock', 'The cabinet door swings open.');
-  mv('Examine the case clock', 'Its hands are stopped; the winding hole is empty.');
-  mv('Use the brass winding key on the case clock', 'Used up');
-  for (let i = 0; i < 3; i += 1) mv('Set the clock hands to an hour and a minute', 'Wrong');
-  hint('clock hands', 'The diary names the minute they parted.');
-  mv('Set the clock hands to an hour and a minute', 'Wrong'); mv('Set the clock hands to an hour and a minute', 'Both hands click home.');
-  mv('Examine the writing desk', 'A three-dial lock on the lid.');
-  tryOn('3 digits', 'writing desk lock', 1); mv('Try an answer (3 digits) on the writing desk lock', 'The lid lifts.');
-  mv('Examine the map case', 'A five-letter lock under the railway map.');
-  tryOn('5 letters', 'map case lock', 3); hint('map case lock', 'The map marks one station in red.');
-  mv('Try an answer (5 letters) on the map case lock', 'The drawer opens on a ticket.');
-  mv('Examine the oak door', 'Four letters, and the ticket fits the slot.');
-  tryOn('4 letters', 'oak door lock', 1); mv('Try an answer (4 letters) on the oak door lock', 'Out');
+  const L = []; const mv = (what, res, more) => L.push(more ? [what, res, more] : [what, res]);
+  const tryOn = (lock, list, k, from) => { for (let i = 0; i < k; i += 1) mv('Tried ' + list[from + i] + ' on the ' + lock, 'Wrong'); };
+  const setHands = (h, m, lit) => mv('Set the clock hands: Hour hand ' + h + ', Minute hand ' + m, lit + ' of 2 hands click into place.');
+  mv('Examined the workbench', 'Gears of four sizes lie by the drawer.');
+  tryOn('workbench drawer', GS_ES_WORDS4, 1, 0); mv('Tried TICK on the workbench drawer', 'The drawer slides open.');
+  L.push(['Item', 'Picked up the brass winding key', 'A small brass key, its bow shaped like a clock face.']);
+  mv('Examined the glass cabinet', 'Seven watches behind glass, each stopped.');
+  tryOn('cabinet lock', GS_ES_DIG4, 9, 0); L.push(gsEsHint('cabinet lock', 1, 'Each watch has a day on its tag. The plate says what order to read them in.'));
+  tryOn('cabinet lock', GS_ES_DIG4, 4, 9); L.push(gsEsHint('cabinet lock', 2, 'Put the watches in order Monday to Thursday, then read the hour each one shows.'));
+  tryOn('cabinet lock', GS_ES_DIG4, 4, 13); L.push(gsEsHint('cabinet lock', 3, 'Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419.'));
+  mv('Tried 7419 on the cabinet lock', 'The cabinet door swings open.');
+  mv('Examined the case clock', 'Its hands are stopped; the winding hole is empty.');
+  mv('Used the brass winding key on the case clock', 'Used up', GS_ES1.clockWound);
+  setHands(5, 30, 0); setHands(3, 30, 1); setHands(4, 45, 1);
+  L.push(gsEsHint('clock hands', 1, 'Ezra’s diary page says which moment to set.'));
+  setHands(3, 15, 1); mv('Set the clock hands: Hour hand 3, Minute hand 45', 'Both hands click home.');
+  mv('Examined the writing desk', 'A three-dial lock on the lid.');
+  tryOn('writing desk lock', GS_ES_DIG3, 1, 0); mv('Tried 731 on the writing desk lock', 'The lid lifts.');
+  mv('Examined the map case', 'A five-letter lock under the railway map.');
+  tryOn('map case lock', GS_ES_WORDS5, 3, 0); L.push(gsEsHint('map case lock', 1, 'The map marks one station in red.'));
+  mv('Tried ROUTE on the map case lock', 'The drawer opens on a ticket.');
+  mv('Examined the oak door', 'Four letters, and the ticket fits the slot.');
+  tryOn('oak door lock', GS_ES_WORDS4, 1, 1); mv('Tried TOCK on the oak door lock', 'Out');
   const r = GS_RESULT.escape({ min: 52, par: 'over par' });
   return { ...GS_SESSIONS['escape-week'], result: r, share: r, figures: ['52 min, over par', '5 hints', '27 wrong tries'],
-    shareLines: ['Escape No. 1 · escaped in 52 min, over par · 5 hints 💡 · 27 wrong tries'], lines: L,
+    shareLines: ['Escape No. 1 · escaped in 52 min, over par · 5 hints 💡 · 27 wrong tries'], lines: gsEsLines(L),
     esTimes: { min: 52, opened: [3, 21, 30, 34, 44, 52] }, esParts: { 25: [0, 2], 26: [1, 2], 27: [1, 2], 28: [1, 2] } };
 })();
 
@@ -428,5 +456,6 @@ const gsForms = (s) => {
 };
 
 Object.assign(window, {
+  gsGuessParts, gsEsHint, GS_ES_WORDS4, gsJoin,
   GS_RESULT, gsMis, gsForms, GS_ED_SIDS, gsEdPick, gsStartsOver, GS_ONCE_LINE, DS, GsCtx, useGs, GS, GS_ART, GS_NAME, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute, GS_SOON, GS_TODAY_PLAYED, gsTodayPlayed, GS_DV_WON, GS_DV_LIVE, GS_DV_ENDINGS, GS_ES1, GS_CB_REC, gsCbLines, gsLink, GS_BARROW_CREDIT, GS_SESSIONS, gsLapsed, gsSessDate, gsFresh, gsEndedOn, gsNorm, GS_ENDED_SAMPLE, gsScroller, gsScrollTop,
 });

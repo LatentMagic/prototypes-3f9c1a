@@ -57,11 +57,7 @@ const WdResult = ({ s }) => { const r = wdResult(s); return (
 // plain list, collapsed. ----
 const WdSessBody = ({ s }) => <>
   <div className="wd-play"><section className="wd-card" aria-label="How it went"><WdBoard s={s} /><WdResult s={s} /></section></div>
-  <section className="wd-every">
-    <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
-      <ol className="gs-lines">{s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l.slice(1).join(' · ')}</li>)}</ol>
-    </DS.Disclosure>
-  </section>
+  <GsMoves s={s} />
 </>;
 
 window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), word: WdSessBody };

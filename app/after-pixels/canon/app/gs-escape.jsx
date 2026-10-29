@@ -25,10 +25,11 @@ const esBuild = (s) => {
     if (label === 'Hint') { const lk = lockFor(what); lk.hints = Math.min(3, lk.hints + 1); lk.rows.push({ k: 'hint', rung: lk.hints }); return; }
     if (!mv) return;
     moves += 1; const n = Number(mv[1]); let m; let lk; let kind; let slots;
-    if ((m = /^Try an answer \((\d+) [^)]*\) on (.+)$/.exec(what))) { lk = lockFor(m[2]); kind = 'typed'; slots = Number(m[1]); }
-    else if ((m = /^Set (the .+?) to /.exec(what))) { lk = lockFor(m[1]); kind = 'mech'; slots = GS_ES_PARTS[lockFor(m[1]).key] || 2; }
+    if ((m = /^Tried (\S+) on (.+)$/.exec(what))) { lk = lockFor(m[2]); kind = 'typed'; slots = m[1].length; }
+    else if ((m = /^Set (the .+?): /.exec(what))) { lk = lockFor(m[1]); kind = 'mech'; slots = GS_ES_PARTS[lockFor(m[1]).key] || 2; }
     if (!lk) return;
-    const ok = res !== 'Wrong'; lk.tries += 1; if (!ok) wrong += 1;
+    // A try is wrong when the lock answers Wrong, or a mechanism says how many of its parts are right ("1 of 2 hands click into place.").
+    const ok = !(res === 'Wrong' || /^\d+ of \d+ .* into place\.$/.test(res)); lk.tries += 1; if (!ok) wrong += 1;
     const lit = ok ? slots : kind === 'mech' && parts[n] ? parts[n][0] : 0;
     lk.rows.push({ k: 'try', n, kind, slots, lit, ok });
     if (ok) { lk.exit = res === 'Out'; lk.index = locks.push(lk); lk.closed = GS_ES1_CLOSED[lk.key] || null; }
@@ -183,11 +184,7 @@ const EsBody = ({ s, sid }) => {
       <EsLine m={m} sel={sel} onSel={setSel} />
       {m.locks.length > 0 && <div className="es-detail" aria-label="The locks"><EsLanes m={m} sel={sel} onSel={setSel} /></div>}
     </section>
-    <section className="es-every">
-      <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
-        <ol className="gs-lines">{s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l.slice(1).join(' · ')}</li>)}</ol>
-      </DS.Disclosure>
-    </section>
+    <GsMoves s={s} />
   </>;
 };
 const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;

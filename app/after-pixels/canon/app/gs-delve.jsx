@@ -21,13 +21,17 @@ const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 const DL_TIER = { strong: 'Strong hit', weak: 'Weak hit', miss: 'Miss' };
+// A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 9/13"].
+// A foe roll grades Strong hit, Weak hit or Miss; an option roll Success, Partial success or Failure (delve.md).
+const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
 const dlRoll = (l) => {
-  const t = String(l[2] || ''); const m = /(?:kept|d20)\s+(\d+)\s*\+\s*(-?\d+)\s*=\s*(-?\d+)\s+vs\s+(\d+)/.exec(l[1] || ''); if (!m) return null;
-  const crit = /natural 20/i.test(t); const fumble = /natural 1\b/i.test(t);
-  const tier = fumble ? 'miss' : /weak hit/i.test(t) ? 'weak' : /\bmiss\b/i.test(t) ? 'miss' : (/hit/i.test(t) || crit) ? 'strong' : 'miss';
-  const hp = /HP\s+(\d+)\/(\d+)/.exec(t); const c = t.indexOf(':');
-  const two = /d20s\s+(\d+)\s+and\s+(\d+)/.exec(l[1] || ''); const other = two ? (+two[1] === +m[1] ? +two[2] : +two[1]) : null;
-  return { stat: l[0], kept: +m[1], other, mod: +m[2], total: +m[3], dc: +m[4], gap: +m[3] - +m[4], tier, crit, fumble, two: !!two, hp: hp ? +hp[1] : null, action: c > 0 ? t.slice(0, c) : '' };
+  const parts = l.slice(1).map(String); const t = parts.join(' · ');
+  const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t); if (!m) return null;
+  const kept = +(m[1] || m[4]); const two = m[1] != null; const other = two ? (+m[2] === kept ? +m[3] : +m[2]) : null;
+  const crit = /Natural 20/.test(t); const fumble = /Natural 1\b/.test(t);
+  const tier = fumble ? 'miss' : /Weak hit|Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/Strong hit|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
+  const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
+  return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, action: DL_GRADE.test(parts[0]) ? '' : parts[0] };
 };
 const DL_END = { won: 'The winning blow', fallen: 'The last blow', overrun: 'The last roll', live: 'Latest roll', ended: 'Last roll played' };
 // The key moments: the best roll, the closest call, the worst roll, and the roll the run ended on.
@@ -44,12 +48,12 @@ const dlMoments = (R, end) => {
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 const dlBuild = (s) => {
   const stops = []; const rolls = []; const order = []; let cur = null; let hp = s.hpMax;
-  const open = (name, back) => { const key = name || '_first'; if (!order.includes(key)) order.push(key);
+  const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [] }; stops.push(cur); };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
-    const r = /^d20/.test(l[1] || '') ? dlRoll(l) : null; if (!r) return;
+    const r = dlRoll(l); if (!r) return;
     r.n = rolls.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     rolls.push(r); cur.rolls.push(r);
@@ -130,7 +134,7 @@ const dlSheet = (s, m) => {
   const find = (name) => { const n = dlCap(name.replace(/^(a|an|the)\s+/i, '')); let g = gear.find((x) => x.name === n);
     if (!g) { g = { name: n, kind: /key/i.test(n) ? 'key' : 'once', does: DL_GEAR_DOES[n] || '', state: 'held' }; gear.push(g); } return g; };
   (s.lines || []).forEach((l) => {
-    if (l[0] === 'Gear') { const t = String(l[1]); if (/^Took /.test(t)) find(t.replace(/^Took /, '')); else if (l[2]) find(t).state = 'used'; }
+    if (l[0] === 'Gear') { const t = String(l[1]); if (/^Took /.test(t)) find(t.replace(/^Took /, '')); else if (/^Used /.test(t)) find(t.replace(/^Used /, '')).state = 'used'; }
     // KEEP: a key opens its lock and is kept (delve.md, Gear), so it stays in the pack, noted with the lock it opened.
     if (l[0] === 'Lock') { const w = /^Opened (.+) with (.+)$/.exec(String(l[1])); if (w) find(w[2]).note = 'Opened ' + w[1]; }
   });
@@ -180,11 +184,7 @@ const DlBody = ({ s }) => {
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
   return <>
     <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} /></div>
-    <section className="es-every">
-      <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
-        <ol className="gs-lines">{s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l.slice(1).join(' · ')}</li>)}</ol>
-      </DS.Disclosure>
-    </section>
+    <GsMoves s={s} />
   </>;
 };
 
@@ -221,26 +221,26 @@ const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], nex
 // (every room, going back three times, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
-  ['Wisdom', 'd20 14 + 0 = 14 vs 12', 'Search the lock-keeper\'s niche: hit'], ['Room', 'Entered The chime run'],
-  ['Dexterity', 'd20 5 + 1 = 6 vs 12', 'Miss, HP 11/13'], ['Dexterity', 'd20 12 + 1 = 13 vs 12', 'Weak hit, HP 10/13'], ['Dexterity', 'd20 19 + 1 = 20 vs 12', 'Hit'],
-  ['Room', 'Entered The warren'], ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
-  ['Strength', 'd20 3 + 3 = 6 vs 12', 'Miss, HP 7/13'], ['Strength', 'd20 9 + 3 = 12 vs 12', 'Weak hit, HP 5/13'], ['Strength', 'd20 1 + 3 = 4 vs 12', 'Natural 1, HP 2/13'],
-  ['Strength', 'd20 15 + 3 = 18 vs 12', 'Hit'], ['Strength', 'd20 7 + 3 = 10 vs 12', 'Miss, HP 0/13']] };
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'Rolled 14 + 0 = 14 against DC 12'], ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'Rolled 5 + 1 = 6 against DC 12', 'HP 11/13'], ['Dexterity', 'Weak hit', 'Rolled 12 + 1 = 13 against DC 12', 'HP 10/13'], ['Dexterity', 'Strong hit', 'Rolled 19 + 1 = 20 against DC 12'],
+  ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
+  ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'HP 7/13'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'HP 5/13'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'HP 2/13'],
+  ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'HP 0/13']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 11, threat: 12, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
-  ['Wisdom', 'd20 1 + 1 = 2 vs 12', 'Search the lock-keeper\'s niche: natural 1, HP 10/11'], ['Room', 'Entered The chime run'],
-  ['Dexterity', 'd20 8 + 3 = 11 vs 12', 'Miss, HP 9/11'], ['Dexterity', 'd20 9 + 3 = 12 vs 12', 'Weak hit'], ['Dexterity', 'd20 16 + 3 = 19 vs 12', 'Hit'],
-  ['Room', 'Entered The warren'], ['Turn', GS_DV_TURNCOAT, 'The turncoat joins'],
-  ['Dexterity', 'd20 14 + 3 = 17 vs 12', 'Hit'], ['Dexterity', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Hit'], ['Dexterity', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Miss, HP 7/11'],
-  ['Strength', 'd20 12 + 0 = 12 vs 12', 'Weak hit, HP 6/11'], ['Dexterity', 'd20 15 + 3 = 18 vs 12', 'Hit'],
-  ['Room', 'Doubled back to The chime run', 'The ritual +1'], ['Intelligence', 'd20 13 + 1 = 14 vs 12', 'Read the chime wires: weak hit'],
-  ['Room', 'Doubled back to The warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'd20 7 + 3 = 10 vs 12', 'Miss, HP 5/11'], ['Dexterity', 'd20 20 + 3 = 23 vs 12', 'Natural 20'], ['Dexterity', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12', 'Hit'],
-  ['Room', 'Doubled back to The warren', 'The ritual +1'],
-  ['Strength', 'd20 6 + 0 = 6 vs 12', 'Force the bone gate: miss'], ['Strength', 'd20 11 + 0 = 11 vs 12', 'Force the bone gate: miss'], ['Strength', 'd20 14 + 0 = 14 vs 12', 'Force the bone gate: hit'],
-  ['Lock', 'Forced the bone gate'], ['Room', 'Entered The shrine cavern'],
-  ['Dexterity', 'd20 10 + 3 = 13 vs 12', 'Weak hit, HP 3/11'], ['Dexterity', 'd20 17 + 3 = 20 vs 12', 'Hit'], ['Dexterity', 'd20 18 + 3 = 21 vs 12', 'Hit'],
-  ['Dexterity', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Miss, HP 2/11'], ['Dexterity', 'd20 11 + 3 = 14 vs 12', 'Weak hit'], ['Dexterity', 'd20 8 + 3 = 11 vs 12', 'Miss, HP 1/11']] };
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 10/11'], ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 9/11'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
+  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'HP 7/11'],
+  ['Strength', 'Weak hit', 'Rolled 12 + 0 = 12 against DC 12', 'HP 6/11'], ['Dexterity', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'],
+  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'Rolled 13 + 1 = 14 against DC 12'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
+  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'HP 5/11'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'],
+  ['Strength', 'Force the bone gate', 'Failure', 'Rolled 6 + 0 = 6 against DC 12'], ['Strength', 'Force the bone gate', 'Failure', 'Rolled 11 + 0 = 11 against DC 12'], ['Strength', 'Force the bone gate', 'Success', 'Rolled 14 + 0 = 14 against DC 12'],
+  ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
+  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'HP 3/11'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12'],
+  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 1/11']] };
 
 // ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx). The head names the run's setting. ----
 window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), delve: (p) => <DlBody key={p.sid} {...p} /> };

@@ -79,6 +79,17 @@ const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   );
 };
 
+// Every move: the game's list as the design system's MoveList, closed, below the game's own section; the same for every game.
+const GsMoves = ({ s }) => (
+  <section className="gs-moves">
+    <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
+      <DS.MoveList label={gsOr(s.listTitle)}>
+        {s.lines.map((l, i) => <DS.MoveRow key={i} label={l[0]} parts={l.slice(1)} />)}
+      </DS.MoveList>
+    </DS.Disclosure>
+  </section>
+);
+
 // ---- The one session head. A game supplies data only: its name, its edition's name or number, the day played, its art, which actions apply. ----
 // The label's game name: Daily Word is called Guess on this page.
 const gsHeadGame = (s) => (s.gid === 'word' ? 'Guess' : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game);
@@ -135,15 +146,8 @@ const GsSessionRecord = () => {
   const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, sid)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
-  // A game without one shows the plain list.
-  const list = (
-    <section className="gs-stack-md">
-      <h2 className="mcp-t-sec">{gsOr(s.listTitle)}</h2>
-      {s.lines.length > 0 && <ol className="gs-lines">
-        {s.lines.map((l, i) => <li key={i}><span className="gs-strong">{l[0]}</span> · {l.slice(1).join(' · ')}</li>)}
-      </ol>}
-    </section>
-  );
+  // A game without one shows the result and the closed list.
+  const list = s.lines.length > 0 ? <GsMoves s={s} /> : null;
   const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];
   const body = Body ? <Body s={s} sid={sid} /> : list;
   const title = gsHeadTitle(s, ed);
@@ -201,4 +205,4 @@ const GsSessionRecord = () => {
 
 const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
-Object.assign(window, { GsNeedsPass, GsSession, GsSharePopup, gsShareText });
+Object.assign(window, { GsNeedsPass, GsSession, GsSharePopup, gsShareText, GsMoves });

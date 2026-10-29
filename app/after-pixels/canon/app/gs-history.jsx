@@ -104,10 +104,10 @@ const PH_MORE = {
   delve: { id: 'dv-r0', gid: 'delve', d: new Date(2026, 8, 28), title: 'The Drowned Chapel under Fenwick Marsh', sid: 'delve-r0-live', at: phAt(new Date(2026, 9, 4), 21, 5) },
 };
 GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
-  lines: [['Move 1', 'Examine the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Climb to the lamp room', 'The hatch is bolted from above.']] };
+  lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
 GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
   figures: ['Threat 2/12', '4 rolls', 'HP 10/11'], threat: 2, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 }, endings: null, reached: null, shareLines: null,
-  lines: [['Room', 'Entered The flooded nave'], ['Dexterity', 'd20 14 + 2 = 16 vs 12', 'Cross the sunken pews: strong hit'], ['Room', 'Entered The bell loft']] };
+  lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'Rolled 14 + 2 = 16 against DC 12'], ['Room', 'Entered the bell loft']] };
 const phMoreOn = (gs) => !!(gs && gs.review && gs.review.several) && gs.view === 'pass';
 const PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
 // The editions list with the earlier edition added: it is the first released, so it takes number 1 and the others move up one.

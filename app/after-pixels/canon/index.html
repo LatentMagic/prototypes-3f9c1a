@@ -532,8 +532,8 @@
   .gs-fig { display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; min-height: 32px; padding: 4px 12px; font-size: 14px; line-height: 1.3; border: 1px solid var(--line); font-weight: 600; font-variant-numeric: tabular-nums; }
   .gs-fig-quiet { font-weight: 400; color: var(--muted); padding-inline: 8px; }
   .gs-pairwrap { width: 100%; max-width: 400px; }
-  .gs-lines { list-style: none; padding: 0; display: grid; font-variant-numeric: tabular-nums; }
-  .gs-lines > li { padding: 12px 0; border-top: 1px solid var(--line); }
+  /* Every move: the design system's MoveList inside a closed Disclosure, below the game's own section, at ListRow's measure. */
+  .gs-moves { max-width: 760px; }
   .gs-share-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; background: var(--card); border: 1px solid var(--line); }
   .gs-hist { list-style: none; padding: 0; display: grid; border-top: 1px solid var(--line); }
   .gs-hrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 0; color: var(--text); text-align: left; font: inherit; cursor: pointer; }
@@ -1464,7 +1464,6 @@
   .es-cap { margin: 0; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
   .es-card { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; display: grid; gap: 12px; min-width: 0; }
   @container gs (min-width: 720px) { .es-card { padding: 24px; } }
-  .es-every .gs-lines { margin: 0; }
 
   /* the result */
   .es-res { display: flex; align-items: center; gap: 24px; min-width: 0; }
@@ -1594,7 +1593,6 @@
     .wd-res { order: 0; width: auto; min-width: 0; align-self: stretch; padding: 0 0 0 20px; border-bottom: 0; border-left: 1px solid var(--line); }
     .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
   }
-  .wd-every .gs-lines { margin: 0; }
   /* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
   /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
   .wd-now { container: wdnow / inline-size; }

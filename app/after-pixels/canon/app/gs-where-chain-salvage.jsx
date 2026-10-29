@@ -47,10 +47,13 @@ const dpKm = (n) => n.toLocaleString('en-GB') + ' km';
 // Share marks, one per guess: 1,000 km or more ○, 100 to 990 km ◐, under 100 km (a shared border included) ●, found ◉.
 const dpWhMark = (km) => (km >= 1000 ? '○' : km >= 100 ? '◐' : '●');
 const dpWhere = (t, ok) => {
-  const rows = t.g.map(([c, km]) => [c, km === 0 ? '0 km, shares a border' : dpKm(km) + ' away', dpWhMark(km)]);
-  if (ok) rows.push([t.a, 'Found', '◉']);
-  const lines = rows.map((r, k) => ['Guess ' + (k + 1), r[0], r[1]]);
-  if (t.hint) lines.splice(lines.length - 1, 0, ['Hint', t.hint]);
+  const rows = t.g.map(([c, km]) => [c, km, dpWhMark(km)]);
+  if (ok) rows.push([t.a, null, '◉']);
+  // A line says what the guess was: its country, then how far it lies from the hidden one (a shared border is not a distance).
+  const far = (km) => (km === null ? 'Found it' : km === 0 ? 'Shares a border with the hidden country' : dpKm(km) + ' from the hidden country, border to border');
+  const lines = rows.map((r, k) => ['Guess ' + (k + 1), r[0], far(r[1])]);
+  const h = t.hint && /^From (.+), the country lies (.+)$/.exec(t.hint);
+  if (h) lines.splice(lines.length - 1, 0, ['Hint', 'The hidden country lies ' + h[2] + ' of ' + h[1]]);
   if (!ok) lines.push(['Answer', t.a]);
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
@@ -69,14 +72,16 @@ const WH_FAIL = { a: 'Slovenia', g: [['Greece', 720], ['Serbia', 200], ['Hungary
 // ---- Chain. A play from a template: { w: the line, p: [[guess, index of the word it was for]] }. The line is 5 to 7 words; each
 // neighbouring pair makes a compound word or a common two-word phrase. Only the intended word counts; a wrong guess shows that word's
 // next letter, and a word that runs out of letters is given away. Lengths stay hidden. No hint and no overall limit. ----
+const DP_NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
 const dpChain = (t) => {
   const last = t.w.length - 1; const pre = t.w.map(() => 1); const res = t.w.map(() => null); const miss = t.w.map(() => 0);
-  const lines = [['Ends', t.w[0] + ' … ' + t.w[last]]];
+  // Ends, then a line per guess: the word it was for, what it was, and what the game showed back. Only the guess's own result is said.
+  const lines = [['Ends', t.w[0] + ' to ' + t.w[last], DP_NUM[t.w.length] + ' words in all']];
   t.p.forEach(([guess, k], j) => {
     let note;
-    if (guess === t.w[k]) { res[k] = 'found'; note = 'Right'; }
-    else { miss[k] += 1; pre[k] += 1; note = pre[k] >= t.w[k].length ? (res[k] = 'given', 'Wrong. Given away: ' + t.w[k]) : 'Wrong. It starts ' + t.w[k].slice(0, pre[k]); }
-    lines.push(['Guess ' + (j + 1), guess, note]);
+    if (guess === t.w[k]) { res[k] = 'found'; note = ['Right']; }
+    else { miss[k] += 1; pre[k] += 1; note = pre[k] >= t.w[k].length ? (res[k] = 'given', ['Wrong, so it was given away', 'The word was ' + t.w[k]]) : ['Wrong', 'Now shows ' + t.w[k].slice(0, pre[k])]; }
+    lines.push(['Guess ' + (j + 1), guess, 'Word ' + (k + 1), ...note]);
   });
   const hidden = t.w.length - 2; const given = res.filter((r) => r === 'given').length; const found = res.filter((r) => r === 'found').length;
   // Share marks, one per word, ends included: found first time ●, found after a wrong guess ◐, given away ○.
