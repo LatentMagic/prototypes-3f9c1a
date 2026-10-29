@@ -1,0 +1,39 @@
+/* Sign in, username and connect-your-AI screens (app/gs-auth.jsx, app/gs-username.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* auth, connect, checkout */
+.gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
+/* KEEP: In the phone frame the auth screen fills the screen it sits in (gs-root is a flex column at the screen's height), less the demo bar's spacer, not the browser window */
+.kit-phone-clip .gs-auth { min-height: 0; flex: 1 0 auto; }
+.gs-auth-col { width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 16px 36px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.gs-auth-foot { margin-top: auto; padding-top: 24px; }
+.gs-auth-head { display: grid; gap: 8px; text-align: center; }
+.gs-auth-foot { display: grid; gap: 12px; text-align: center; color: var(--muted); }
+.gs-auth-foot .gs-small { text-wrap: balance; }
+.gs-sugg { display: flex; flex-wrap: wrap; gap: 8px; }
+.gs-code .mcp-in { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.gs-stop { font-weight: 600; outline: none; text-wrap: balance; }
+.gs-wait { min-height: 60vh; display: grid; place-content: center; justify-items: center; gap: 16px; }
+.gs-choice { display: grid; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gs-copy { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.gs-copy-addr { display: flex; align-items: center; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; white-space: nowrap; touch-action: pan-x; scrollbar-width: none; cursor: text; }
+.gs-copy-addr::-webkit-scrollbar { display: none; }
+.gs-waiting { display: flex; align-items: center; gap: 12px; padding-top: 4px; }
+
+.gs-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.gs-iconbtn { width: 44px; height: 44px; display: inline-grid; place-items: center; flex: none; background: none; border: 0; padding: 0; color: var(--text); cursor: pointer; }
+.gs-iconbtn:active { opacity: .55; }
+.gs-iconbtn-space { width: 44px; height: 44px; flex: none; }
+.gs-auth-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 8px 0; }
+.gs-auth-h1 { margin: 0; display: flex; justify-content: center; align-items: center; gap: 12px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
+.gs-auth-h1 .gs-brand-mark { width: 28px; height: 28px; }
+.gs-root .gs-btn-apple { background: #000; color: #fff; border-color: var(--control-edge); }
+.gs-root .gs-btn-apple:active, .gs-root .gs-btn-apple.is-pressed { background: #262626; }
+.gs-xline { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--text); font: 600 15px/1.35 var(--font-text); }
+.gs-xline.is-center { justify-content: center; text-align: center; }
+.gs-xline .mcp-ico { margin-top: 1px; }
+.gs-code .mcp-in { text-align: center; font: 600 22px/1 var(--gs-mono); letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.gs-code.gs-code-sm .mcp-in { text-align: left; font-size: 20px; }
+.gs-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.gs-field-label { font: 600 14px/1.2 var(--font-text); color: var(--text); }
+.gs-link-slot { min-height: 48px; align-items: center; }

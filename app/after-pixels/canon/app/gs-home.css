@@ -1,0 +1,201 @@
+/* Home: hero, how-it-works band, chat window, Delve tiles, puzzles, hero proposal, game-card rows, Today list, hero cover field, What is new feed.
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* home */
+.gs-home { padding-top: 0; }
+.gs-hero2 { display: grid; gap: 24px; padding-top: 24px; }
+.gs-hero-copy { display: grid; gap: 16px; align-content: center; justify-items: start; }
+.gs-hero-sub { max-width: 40ch; }
+.gs-hero-art { position: relative; overflow: hidden; padding: 36px 16px; display: grid; }
+.gs-hero-shapes { position: absolute; inset: 0; }
+.gs-hero-shapes > svg { width: 100%; height: 100%; display: block; }
+.gs-band { display: grid; gap: 24px; padding-top: 36px; border-top: 1px solid var(--line); }
+.gs-how { list-style: none; padding: 0; display: grid; gap: 24px; }
+.gs-how > li { display: grid; gap: 8px; align-content: start; }
+.gs-how-num { font: 700 34px/1 var(--font-heading); color: var(--off-white); font-variant-numeric: tabular-nums; }
+.gs-lead { font-size: 16px; line-height: 1.5; max-width: 44ch; }
+.gs-hero { display: grid; gap: 16px; max-width: 760px; padding-top: 12px; }
+.gs-hero-act { display: grid; gap: 12px; width: 100%; }
+.gs-steps { list-style: none; padding: 0; display: grid; gap: 16px; }
+.gs-step { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: start; }
+.gs-num { width: 32px; height: 32px; display: grid; place-items: center; border: 1.5px solid var(--control-edge); font: 700 16px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
+.gs-step > div { padding-top: 4px; }
+
+/* chat window */
+.gs-pair { display: flex; flex-wrap: wrap; gap: 4px 24px; font-weight: 600; }
+.gs-roll { display: flex; align-items: center; gap: 12px; }
+.gs-badge { width: 56px; height: 56px; flex: none; display: grid; place-content: center; text-align: center; gap: 2px; background: var(--warning); color: var(--warning-on); }
+.gs-badge b { font: 700 24px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
+.gs-badge small { font: 600 11px/1 var(--font-text); letter-spacing: .06em; }
+.gs-threat { display: inline-flex; align-items: center; gap: 4px; color: var(--error); }
+.gs-tiles { display: flex; gap: 4px; }
+.gs-tiles > span { width: 32px; height: 32px; display: grid; place-items: center; border: 1.5px solid var(--control-edge); font: 700 18px/1 var(--font-heading); }
+.gs-tiles > span.is-on { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+
+/* delve */
+.gs-hero-cover { position: relative; }
+.gs-cover-over { position: absolute; left: 0; bottom: 0; padding: 16px; display: grid; gap: 4px; }
+.gs-cover-title { margin: 0; font: 700 34px/1.08 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
+.gs-track { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.gs-track > i { height: 12px; background: var(--line); }
+.gs-track > i.is-on { background: var(--off-white); }
+.gs-track > i.is-threat { background: var(--error); }
+
+/* puzzles */
+
+.gs-pz-items { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.gs-pz-item { display: grid; gap: 2px; text-align: left; min-height: 56px; padding: 8px 12px; background: var(--card); border: 1px solid var(--line); color: var(--text); font: inherit; cursor: pointer; transition: transform var(--time-press) var(--ease); }
+.gs-pz-item:active { transform: scale(.97); background: color-mix(in srgb, var(--text) 16%, var(--card)); }
+.gs-streak { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.gs-days { display: flex; gap: 4px; }
+.gs-days > i { width: 24px; height: 24px; border: 1.5px solid var(--control-edge); }
+.gs-days > i.is-on { background: var(--off-white); border-color: var(--off-white); }
+.gs-act { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.gs-act-end { justify-content: flex-end; }
+
+/* home proposal (review candidate) */
+.gs-hero3 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 24px; }
+/* KEEP: home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
+.gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
+.gs-h1.gs-h1-home > span { display: block; }
+.gs-hero3 .gs-hero-sub { max-width: 56ch; }
+.gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-br-wide { display: none; }
+.gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
+.gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
+.gs-hero-covers > span { overflow: hidden; }
+.gs-hero-covers svg { width: 100%; height: 100%; display: block; }
+/* KEEP: Every game-card row sizes its cards four to a width (220–280px), not by its own count: a row of five or more pinned cards at 220px, narrower than other rows, and made tags wrap */
+.gs-row4 .mcp-crow-track { --n: 4 !important; }
+.gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
+.gs-card-eq .gs-plain { align-content: start; }
+.gs-today-list > li + li { border-top: 1px solid var(--line); }
+.gs-gdaily { display: grid; gap: 16px; }
+.gs-gdaily .mcp-cover-art { aspect-ratio: 2 / 1; }
+@container gs (min-width: 720px) {
+  .gs-gdaily { grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .gs-gdaily .mcp-cover-art { aspect-ratio: 4 / 3; }
+}
+@container gs (min-width: 1100px) {
+  .gs-today-list.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .gs-today-list.is-row > li + li { border-top: 0; }
+  .gs-today-list.is-row .gs-today-item { align-items: start; height: 100%; }
+  .gs-today-list.is-row .gs-today-cover { align-self: center; }
+}
+.gs-today-item { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 56px; padding: 12px 0; background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: opacity var(--time-press) var(--ease); }
+.gs-today-item:active { opacity: .55; }
+.gs-today-cover svg { width: 64px; height: 48px; display: block; }
+.gs-who2 { display: grid; gap: 24px; }
+.gs-who2 > div { display: grid; gap: 8px; align-content: start; }
+.gs-card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+@container gs (min-width: 720px) {
+  .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+  .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
+}
+@container gs (min-width: 900px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
+  .gs-hero3 > .gs-hero-copy { gap: 24px; }
+  /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
+  .gs-hero3 + .gs-band { margin-top: -12px; }
+  .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
+  .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
+  .gs-hero-art3 { padding: 36px 16px; align-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
+
+@container gs (min-width: 720px) {
+  .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
+  .gs-wrap { padding-inline: 24px; }
+  .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .gs-steps.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .gs-hero-act { display: flex; width: auto; gap: 12px; }
+  .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+  .gs-hero-art { padding: 36px; }
+  .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
+  .gs-choice { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gs-buy { grid-auto-flow: column; justify-content: space-between; align-items: center; }
+  .gs-cover-over { padding: 24px; }
+}
+@container gs (min-width: 820px) {
+  .gs-nav { display: flex; }
+  .gs-wide-only { display: flex; }
+  .gs-narrow-only { display: none; }
+}
+@container gs (min-width: 900px) {
+  .gs-head-split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+  .gs-hero2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: stretch; padding-top: 36px; }
+  .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
+}
+
+/* home hero: one Casebook cover field with the screenshot set inside it (home-hero option 9) */
+.gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: #1D1B3A; overflow: hidden; min-width: 0; align-self: center; }
+.gs-hero-shapes4 { position: absolute; top: 0; right: 20px; width: 46%; height: 132px; display: flex; align-items: flex-end; gap: 12%; padding-left: 4%; }
+/* Casebook motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
+.gs-hero-field { --on: 0; }
+.gs-hero-shapes4 { cursor: pointer; }
+.gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
+.gs-hero-shapes4 > i { display: block; width: 14%; height: calc(var(--h) + 24px); margin-bottom: -24px; border-radius: calc(var(--on) * 3cqw) calc(var(--on) * 3cqw) 0 0; transform: translateY(calc(var(--on) * var(--rise) * -1)); }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) { --on: 1; }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
+@media (hover: hover) { .gs-hero-field:hover { --on: 1; } }
+.gs-hero-shapes4 > b { position: absolute; top: 18px; right: 0; width: 40px; height: 40px; border-radius: calc((1 - var(--on)) * 50%); background: #E5A63B; transform: translateY(calc(var(--on) * 6px)); }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) .gs-hero-shapes4 > b { transition-delay: 50ms; }
+@media (hover: hover) { .gs-hero-field:hover .gs-hero-shapes4 > b { transition-delay: 50ms; } }
+@media (prefers-reduced-motion: reduce) { .gs-hero-shapes4 { --on: 0 !important; } .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: none; } }
+.gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
+.gs-hero-name:active { opacity: .55; }
+.gs-hero-name-t .mcp-ico { transition: transform var(--time-press) var(--ease); }
+@media (hover: hover) { .gs-hero-field:hover .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; } }
+@media (prefers-reduced-motion: reduce) { .gs-hero-name-t .mcp-ico, .gs-inlink, .gs-ft-link, .gs-ft-mail, .gs-support, .gs-legal-col a { transition: none; } }
+.gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
+.gs-hero-field { container-type: inline-size; }
+.gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+.gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
+@container gs (min-width: 900px) {
+  .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
+  .gs-hero-shapes4 { right: 28px; height: 160px; }
+  .gs-hero-shapes4 > b { width: 48px; height: 48px; top: 24px; }
+}
+/* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
+@container gs (min-width: 900px) {
+  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+}
+
+/* what's new: release feed on Home */
+.wn-panel { background: var(--card); border: 1px solid var(--line); padding: 4px 16px 0; }
+.wn-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0 16px; border-bottom: 1px solid var(--line); }
+.wn-live { width: 7px; height: 7px; background: var(--off-white); flex: none; }
+.wn-list { list-style: none; margin: 0; padding: 0 0 0 22px; position: relative; }
+.wn-list::before { content: ""; position: absolute; left: 3px; top: 18px; bottom: 18px; width: 1px; background: var(--line); }
+.wn-e { position: relative; display: grid; gap: 4px 24px; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.wn-e:last-child { border-bottom: 0; }
+.wn-e::before { content: ""; position: absolute; left: -22px; top: 20px; width: 7px; height: 7px; background: var(--control-edge); }
+.wn-e.is-latest::before { background: var(--off-white); }
+.wn-body { display: grid; gap: 4px; min-width: 0; }
+.wn-t { margin: 0; font: 600 16px/1.3 var(--font-text); }
+.wn-d { margin: 0; max-width: 64ch; color: var(--muted); font: 400 14px/1.5 var(--font-text); text-wrap: pretty; }
+.wn-e.is-latest .wn-d { color: var(--text); }
+.wn-meta { display: flex; align-items: baseline; justify-content: flex-end; font: 400 13px/1.3 var(--gs-mono); color: var(--muted); white-space: nowrap; }
+.wn-e.is-latest .wn-meta > time { color: var(--text); font-weight: 700; }
+  @media (max-width: 640px) { .wn-e { grid-template-columns: minmax(0, 1fr); } .wn-meta { justify-content: flex-start; } .wn-e.is-latest { display: flex; flex-direction: column; gap: 6px; } .wn-e.is-latest .wn-meta { order: -1; } }
+.wn-list.has-fold::before { bottom: 0; }
+.wn-foldrow { display: block; padding: 0; border-bottom: 0; }
+.wn-foldrow::before { content: none; }
+.wn-sum { display: flex; align-items: center; gap: 8px; min-height: 44px; font: 400 13px/1.2 var(--gs-mono); text-transform: lowercase; color: var(--muted); cursor: pointer; list-style: none; transition: color var(--time-swap) var(--ease); }
+.wn-sum::-webkit-details-marker { display: none; }
+.wn-sum::marker { content: ""; }
+@media (hover: hover) { .wn-sum:hover { color: var(--text); } }
+.wn-sum:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.wn-caret { flex: none; display: inline-flex; transition: transform 180ms var(--ease); }
+details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
+.wn-wrap { padding: 0 12px 8px 22px; margin-left: -22px; scrollbar-gutter: stable; max-height: 300px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--control-edge) transparent; }
+.wn-nest { list-style: none; margin: 0; padding: 0; position: relative; }
+.wn-nest::before { content: ""; position: absolute; left: -19px; top: 0; bottom: 18px; width: 1px; background: var(--line); }
+.wn-nest > .wn-e:first-child { border-top: 1px solid var(--line); }
+.wn-nest::after { content: ""; display: block; position: sticky; bottom: -8px; height: 56px; margin-top: -56px; pointer-events: none; background: linear-gradient(to top, var(--card), rgb(0 0 0 / 0)); }
+@supports (animation-timeline: scroll()) { .wn-nest::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
+@media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }

@@ -1,0 +1,51 @@
+/* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* game page: facts, finished play, gaps */
+.gs-gap { color: var(--muted); font-weight: 400; }
+.gs-factband { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.gs-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 0 36px; }
+.gs-fact { display: grid; gap: 4px; align-content: start; padding: 12px 0; }
+.gs-fact-tags { padding: 12px 0; }
+.gs-week { display: grid; gap: 16px; }
+.gs-fact dd { margin: 0; font-weight: 600; }
+.gs-mini { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; }
+.gs-share-line { font-weight: 600; }
+@container gs (min-width: 640px) {
+  .gs-card-acts-pair { flex-direction: row; align-items: center; }
+  .gs-pair-even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gs-line-act { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .gs-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gs-week { grid-template-columns: minmax(160px, 280px) minmax(0, 1fr); gap: 24px; align-items: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gs-acct-btn .mcp-ico, .gs-inlink, .gs-pz-item { transition: none; }
+  .gs-pz-item:active { transform: none; }
+}
+
+/* KEEP: product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
+@container gs (min-width: 900px) {
+  .gs-head-split { align-items: stretch; }
+  .gs-hero-cover { min-height: 320px; }
+  .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
+  .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
+}
+@container gs (min-width: 1000px) {
+  .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  .hw-ai-act { grid-column: auto; }
+}
+
+/* KEEP: Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */
+@container gs (max-width: 719px) {
+  .gs-hero-cover { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+  .gs-hero-cover .gs-cover-over { position: static; padding: 0; }
+  .gs-sess-title { font: 600 16px/1.25 var(--font-heading); letter-spacing: 0; }
+}
+
+/* ==== LM-1110 (2026-10-13): Daily Word and Daily Mystery layout fixes, made once in the shared parts ==== */
+/* C5: the pitch and "How it plays" share a top */
+.gs-pitch > * { align-self: start !important; }
+
+/* KEEP: S10: the pitch heading wraps at the column's width, as the paragraph under it does */
+
+.gs-pitch h2 { text-wrap: pretty; }

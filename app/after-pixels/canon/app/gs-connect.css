@@ -1,0 +1,22 @@
+/* How it works and the play dialog (app/gs-connect.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* How it works and the play dialog (app/gs-connect.jsx) */
+.hw-head .gs-lead { max-width: none; }
+@container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }
+.hw-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
+.hw-need { margin: 0; text-wrap: pretty; }
+.hw-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.hw-ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
+.hw-ai-logo { display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid var(--control-edge); color: var(--text); flex: none; }
+.hw-ai-tx { display: grid; gap: 4px; min-width: 0; }
+.hw-ai-act { grid-column: 2; }
+.hw-other { display: grid; gap: 20px; }
+.hw-band { display: grid; gap: 16px; padding: 20px; border: 1.5px solid var(--control-edge); }
+.hw-promptrow { display: grid; gap: 12px; justify-items: start; }
+.hw-promptrow > .hw-prompt { justify-self: stretch; }
+@container gs (min-width: 720px) {
+  .hw-other { grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 32px; align-items: start; }
+  .hw-band { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 32px; padding: 24px; }
+  .hw-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+}

@@ -1,0 +1,57 @@
+/* Session page parts shared by every game (note, figures, share card) and the History page with its play rows (app/gs-session.jsx, app/gs-history.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* session + history */
+.gs-note { padding: 12px; border: 1px solid var(--control-edge); background: var(--card); }
+.gs-figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); width: 100%; max-width: 400px; }
+.gs-fig { display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; min-height: 32px; padding: 4px 12px; font-size: 14px; line-height: 1.3; border: 1px solid var(--line); font-weight: 600; font-variant-numeric: tabular-nums; }
+.gs-fig-quiet { font-weight: 400; color: var(--muted); padding-inline: 8px; }
+.gs-pairwrap { width: 100%; max-width: 400px; }
+.gs-share-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; background: var(--card); border: 1px solid var(--line); }
+.gs-hist { list-style: none; padding: 0; display: grid; border-top: 1px solid var(--line); }
+.gs-hrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px 0; color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.gs-hrow:active { background: color-mix(in srgb, var(--text) 10%, var(--page)); }
+.gs-hdate { text-align: right; }
+.gs-loss { color: var(--error); font-weight: 600; }
+.gs-status { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.gs-buy { display: grid; gap: 12px; padding-top: 8px; }
+
+/* ---- History and play rows (app/gs-history.jsx) ---- */
+.ph-day { margin: 0; padding: 16px var(--lb-pad, 16px) 8px; font: 600 14px/1.3 var(--font-text); color: var(--muted); border-top: 1px solid var(--line); }
+.lb-box > .ph-day:first-child { border-top: 0; }
+/* KEEP: A results box ends at its last row; only the loading state holds 720px (five-small-fixes follow-up, 2026-10-12) */
+.lb-results > .gs-inplace { min-height: 720px; padding: 0 16px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@container gs (min-width: 900px) { .lb-tools { max-height: calc(100vh - 200px); overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; } }
+.rp-pg-of { display: none; }
+@container gs (max-width: 719px) {
+  .rp-pg-nums { display: none; }
+  .rp-pg-of { display: block; }
+  
+}
+/* KEEP: a list of plays: columns set on the list and shared by every row (subgrid), so results and dates line up; the edition wraps, nothing is cut */

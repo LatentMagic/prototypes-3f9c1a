@@ -1,0 +1,21 @@
+/* Player page (app/gs-player.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* player page (app/gs-player.jsx) */
+.pg-mini svg { width: 64px; height: 48px; display: block; }
+.pg-mini.is-sm svg { width: 32px; height: 24px; }
+/* KEEP: on a phone the band drops its cover; the page's own cover sits right below it, and two stacked covers read as noise */
+.pg-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
+.pg-band > :first-child { display: none; }
+/* KEEP: the link's 48px hit area overlaps the band's gap and padding when stacked, so the visible space matches the rest of the band */
+.pg-band-link { grid-column: 1 / -1; margin-block: -12px; }
+.pg-yours-pop { left: 0; right: auto; min-width: 220px; }
+.pg-menu-label { display: block; padding: 12px 16px 4px; }
+.pg-kv { justify-content: space-between; }
+.pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
+.pg-ach-bar { display: block; max-width: 280px; }
+.rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
+@container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } .pg-band-link { grid-column: auto; margin-block: 0; } }
+@container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
+/* KEEP: a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
+.mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }

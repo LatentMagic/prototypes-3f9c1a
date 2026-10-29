@@ -1,0 +1,92 @@
+/* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* Discover and Library (app/gs-discover.jsx) */
+.dc-sec { display: grid; gap: 16px; }
+.dc-tools { display: grid; gap: 16px; }
+.dc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dc-chips > button { min-height: 44px; padding: 0 16px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 14px/1.2 var(--font-text); cursor: pointer; transition: transform var(--time-press) var(--ease); }
+.dc-chips > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.dc-chips > button:active { transform: scale(.97); }
+.dc-empty { display: grid; gap: 8px; justify-items: start; padding: 24px 16px; }
+.dc-empty .mcp-lnk { min-height: 44px; }
+.dc-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; width: 100%; }
+@container gs (min-width: 720px) {
+  .dc-tools { grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); align-items: end; }
+}
+/* hover on everything that goes somewhere (mouse only) */
+.gs-coverbtn .mcp-cover-art { transition: outline-color 160ms var(--ease); outline: 1px solid transparent; outline-offset: -1px; }
+.gs-coverbtn .mcp-cover-art svg { transition: transform 260ms var(--ease); }
+@media (hover: hover) {
+  .gs-coverbtn:hover .mcp-cover-art { outline-color: var(--control-edge); }
+  .gs-coverbtn:hover .mcp-cover-art svg { transform: scale(1.04); }
+  .dc-chips > button:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+  .gs-tagbtn:hover .mcp-tag { border-color: var(--text); color: var(--text); }
+}
+/* Game cards on Home and Discover: the whole card is the target and the hover surface (design system game-art-motion.md).
+   The title button stretches over the card; the Pass tag sits above it. */
+.gs-host { position: relative; }
+.gs-host .gs-titlebtn::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.gs-host .gs-tagbtn { position: relative; z-index: 2; }
+.gs-host .gs-titlebtn:focus-visible { outline: none; }
+.gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
+/* KEEP: Motion art for Daily Word, Daily Mystery, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
+.mcp-art.is-wine { background: var(--cover-bg-wine); }
+.mcp-art.is-forest { background: var(--cover-bg-forest); }
+.gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }
+.gs-st > i, .gs-st > b { left: calc(var(--u) * var(--x)); top: calc(var(--u) * var(--y)); width: calc(var(--u) * var(--w)); height: calc(var(--u) * var(--h)); }
+.ga-m-ring { --x: 36; --y: 24; --w: 72; --h: 72; --fill: transparent; --s: 0; box-sizing: border-box; border: calc(var(--u) * 12) solid var(--cover-orange); border-radius: 50%; transform: scale(calc(1 - var(--on) * .55)); }
+.ga-m-bar { --x: 114; --y: 24; --w: 10; --h: 72; --fill: var(--cover-cream); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
+.ga-m-cap { --x: 114; --y: 24; --w: 10; --h: 20; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * var(--u) * 5) calc(var(--on) * var(--u) * 5) 0 0; transform: translateY(max(var(--on) * var(--u) * -8, -12px)); }
+.ga-e-door { --x: 60; --y: 26; --w: 44; --h: 134; --fill: var(--cover-teal); --s: 0; border-radius: calc(var(--on) * var(--u) * 22) calc(var(--on) * var(--u) * 22) 0 0; }
+.ga-e-knob { --x: 89; --y: 71; --w: 10; --h: 10; --fill: var(--cover-amber); --s: 50; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(max(var(--on) * var(--u) * -5, -8px)); }
+.ga-e-win { --x: 22; --y: 22; --w: 16; --h: 16; --fill: var(--cover-cream); --s: 100; border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * min(var(--u) * 6, 10px)), calc(var(--on) * max(var(--u) * -6, -10px))); }
+.ga-d-out { --x: 50; --y: 10; --w: 60; --h: 150; --fill: var(--cover-lilac); --s: 0; border-radius: calc(var(--u) * 30) calc(var(--u) * 30) 0 0; }
+.ga-d-in { --x: 64; --y: 36; --w: 32; --h: 124; --fill: var(--cover-bg-indigo); --s: 40; border-radius: calc(var(--u) * 16) calc(var(--u) * 16) 0 0; transform-origin: 50% calc(var(--u) * 84); transform: scale(calc(1 + var(--on) * .07)); }
+.ga-d-st { --x: 64; --y: 88; --w: 32; --h: 8; --fill: var(--cover-amber); --s: 0; }
+.ga-d-st2 { --x: 68; --y: 100; --w: 24; --h: 8; --fill: var(--cover-amber); --s: 0; }
+.ga-d-st3 { --x: 72; --y: 112; --w: 16; --h: 8; --fill: var(--cover-amber); --s: 0; }
+.ga-d-post { --y: 62; --w: 6; --h: 30; --fill: var(--cover-cream); --s: 0; transform-origin: 50% 100%; transform: scaleY(calc(1 + var(--on) * .25)); }
+.ga-d-post.l { --x: 22; } .ga-d-post.r { --x: 132; }
+.ga-d-fl { --y: 46; --w: 16; --h: 16; --fill: var(--cover-orange); --s: 60; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(calc(var(--on) * var(--u) * -7.5)); }
+.ga-d-fl.l { --x: 17; } .ga-d-fl.r { --x: 127; }
+/* Where: the hint's needle swings from north-east round to east and points at today's country, which rounds into a pin: found. Rotation only, so it lands exactly at any size. */
+.ga-wh-needle { --x: 44; --y: 32; --w: 16; --h: 56; --fill: linear-gradient(var(--cover-orange) 50%, var(--cover-cream) 50%); --s: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: rotate(calc(45deg + var(--on) * 45deg)); }
+.ga-wh-ans { --x: 96; --y: 44; --w: 32; --h: 32; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * 50%); }
+/* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
+.ga-ch { --y: 51; --w: 18; --h: 18; --s: 0; }
+.ga-ch-1 { --x: 11; --fill: var(--cover-cream); } .ga-ch-5 { --x: 131; --fill: var(--cover-cream); }
+/* KEEP: The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
+.ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (3 + var(--on) * 7), 1.5px + var(--on) * var(--u) * 10) var(--c); }
+.mcp-art i.ga-ch-o { transition: transform var(--time-art) var(--ease-art) 0ms, box-shadow var(--time-art) var(--ease-art) 0ms; }
+.ga-ch-2 { --x: 41; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 101; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
+.ga-ch-l { --y: 57; --h: 6; --fill: var(--cover-cream); --s: 0; }
+.ga-ch-l1 { --x: 20; --w: 61; transform-origin: 0 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
+.ga-ch-l2 { --x: 79; --w: 61; transform-origin: 100% 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
+/* Salvage: a board mid-hunt. Cream misses and two orange hits in a row. The last dive lands as a third hit, the misses recede to nothing, and the wreck under the three hits shows itself, 50ms behind. Every move is a scale about a shape's own centre, so it lands exactly at any size. */
+.ga-sv-p { --w: 12; --h: 12; --s: 0; border-radius: 50%; }
+.ga-sv-miss { --fill: var(--cover-cream); transform: scale(calc(1 - var(--on))); }
+.ga-sv-hit { --fill: var(--cover-orange); --y: 54; }
+.ga-sv-m1 { --x: 26; --y: 54; } .ga-sv-m2 { --x: 98; --y: 30; } .ga-sv-m3 { --x: 50; --y: 78; } .ga-sv-m4 { --x: 122; --y: 78; }
+.ga-sv-h1 { --x: 50; } .ga-sv-h2 { --x: 74; } .ga-sv-h3 { --x: 98; transform: scale(var(--on)); }
+.ga-sv-hull { --x: 46; --y: 50; --w: 68; --h: 20; --fill: var(--cover-lilac); --s: 50; border-radius: calc(var(--u) * 10); transform: scale(var(--on)); }
+.mcp-card.gs-host { transition: background-color var(--time-press) var(--ease), border-color var(--time-press) var(--ease); }
+.mcp-card.gs-host:is(.is-on, :active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); border-color: var(--control-edge); }
+@media (hover: hover) {
+  .mcp-card.gs-host:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); border-color: var(--control-edge); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gs-host:has(:focus-visible) { --on: 0; }
+  .mcp-card.gs-host { transition: none; }
+  .dc-chips > button, .gs-coverbtn .mcp-cover-art svg { transition: none; }
+  .dc-chips > button:active, .gs-coverbtn:hover .mcp-cover-art svg { transform: none; }
+}
+
+/* KEEP: SoonCard on a phone (owner, 2026-10-13; soon-card-phone option 2): below 480px the cover sits full width on top at 4:3, the text under it.
+   Local until SoonCard carries it upstream; then delete this rule. */
+@container gs (max-width: 479px) {
+  .mcp-soon { grid-template-columns: minmax(0, 1fr); }
+  /* KEEP: The cover runs the card's full width as a 2:1 band. The art keeps its 4:3 at the band's height, centred; its ground fills the sides. */
+  .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art::before { aspect-ratio: 2 / 1; }
+  .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art > * { width: auto; height: 100%; top: 0; bottom: auto; left: 50%; translate: -50% 0; }
+}

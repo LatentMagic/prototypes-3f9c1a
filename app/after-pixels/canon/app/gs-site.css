@@ -1,0 +1,88 @@
+/* Site chrome: loaders, load failed, footer, legal, not found, user menu (app/gs-site.jsx, app/gs-parts.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* loader + load failed */
+.gs-full { min-height: 100vh; display: grid; place-items: center; align-content: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 24px; background: var(--page); }
+.kit-phone-clip .gs-full { min-height: 100%; }
+.gs-spin-slot { width: 100px; height: 100px; display: grid; place-items: center; }
+.gs-inplace { display: grid; place-items: center; min-height: 320px; padding: 72px 16px; }
+.gs-failed { display: grid; gap: 8px; justify-items: center; text-align: center; }
+.gs-failed > .mcp-btn { margin-top: 8px; }
+
+/* footer */
+.gs-ft { padding: 0 0 24px; color: var(--muted); font: 500 13px/1.4 var(--font-text); }
+.gs-ft-h { margin: 0; font: 500 12px/1.2 var(--gs-mono); color: var(--text); text-transform: lowercase; }
+.gs-ft-link { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; font: 500 13px/1.4 var(--font-text); color: var(--muted); cursor: pointer; text-align: left; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1.5px; transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+.gs-ft-mail { color: var(--muted); text-decoration: underline; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); text-underline-offset: 4px; font: 500 13px/1.4 var(--font-text); min-height: 44px; display: inline-flex; align-items: center; }
+.gs-ft-copy { margin: 0; white-space: nowrap; color: var(--muted); }
+.gs-ft-legalese { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 0; min-width: 0; }
+.gs-ft-reg { margin: 0; font: var(--weight-text) var(--size-2xs)/var(--leading-body) var(--font-text); color: var(--muted); letter-spacing: 0; }
+.gs-ft-wide { display: none; }
+.gs-ft-narrow { display: grid; gap: 12px; }
+.gs-ft-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.gs-ft-top .gs-ft-mail { font-family: var(--gs-mono); font-size: 12px; }
+.gs-ft-bottom { display: flex; justify-content: space-between; align-items: center; gap: 4px 16px; flex-wrap: wrap; }
+.gs-ft-run { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
+.gs-ft-dot { color: var(--muted); }
+@container gs (min-width: 721px) {
+  .gs-ft-wide { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, clamp(9rem, 16cqi, 200px)); column-gap: 24px; align-items: start; }
+  .gs-ft-narrow { display: none; }
+  .gs-ft-brand, .gs-ft-col { display: grid; grid-template-rows: 44px auto; align-content: start; justify-items: start; }
+  .gs-ft-h { align-self: center; }
+  .gs-ft-col { grid-template-rows: 44px; grid-auto-rows: auto; }
+  .gs-ft-col .gs-ft-link, .gs-ft-col .gs-ft-mail { min-height: 32px; }
+  .gs-ft-brand .gs-ft-legalese { padding-top: 6px; align-items: flex-start; text-align: left; gap: var(--space-1); }
+}
+@container gs (max-width: 420px) {
+  .gs-ft-bottom { flex-direction: column; align-items: flex-start; }
+  .gs-ft-legalese { align-items: flex-start; text-align: left; }
+}
+@container gs (max-width: 300px) {
+  .gs-ft-mark { display: none; }
+  .gs-ft-top { justify-content: flex-start; }
+}
+
+/* legal */
+.gs-legal { padding-top: 36px; }
+.gs-legal-col { max-width: 720px; margin: 0 auto; display: grid; gap: 24px; }
+.gs-legal-h1 { margin: 0; font: 700 clamp(28px, 8cqi, 40px)/1.05 var(--font-heading); letter-spacing: -.015em; text-wrap: balance; }
+.gs-legal-rev { font: 400 12px/1.3 var(--gs-mono); color: var(--muted); }
+.gs-legal-foot { color: var(--muted); padding-top: 8px; }
+.gs-legal-sec, .gs-legal-sub { display: grid; gap: 8px; max-width: 64ch; }
+.gs-legal-sec { gap: 12px; }
+.gs-legal-h2 { margin: 0; font: 700 20px/1.2 var(--font-heading); }
+.gs-legal-h3 { margin: 0; font: 600 16px/1.3 var(--font-text); }
+.gs-legal-col p { line-height: 1.65; }
+.gs-legal-col a { color: var(--text); text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+
+/* not found */
+.gs-nf { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 72px; background: var(--page); }
+.kit-phone-clip .gs-nf { min-height: 100%; }
+.gs-nf-col { align-self: center; width: 100%; max-width: 460px; display: grid; gap: 16px; justify-items: center; text-align: center; padding: 36px 0; }
+
+/* user menu */
+.gs-acct-btn { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0; background: none; border: 0; color: var(--text); cursor: pointer; text-align: left; font: inherit; }
+.gs-acct-btn:active { opacity: .55; }
+.gs-acct-who { display: grid; gap: 0; line-height: 1.25; }
+.gs-avatar { width: 32px; height: 32px; flex: none; display: grid; place-items: center; background: var(--popup); border: 1px solid var(--control-edge); font: 700 16px/1 var(--font-heading); color: var(--text); }
+.gs-avatar.is-big { width: 40px; height: 40px; font-size: 20px; }
+.gs-avatar.is-btn { width: 48px; height: 48px; font-size: 20px; background: transparent; border-width: 1.5px; }
+.gs-pop { min-width: 260px; }
+.gs-idhead { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.gs-id-text { min-width: 0; overflow-wrap: anywhere; gap: 0; line-height: 1.3; }
+.gs-menu-ico { display: flex; align-items: center; gap: 12px; }
+.gs-spin-ink { display: inline-block; flex: none; border-color: color-mix(in srgb, var(--text) 30%, transparent); border-top-color: var(--text); }
+.gs-ico-slot { width: 20px; flex: none; display: grid; place-items: center; }
+.mcp-lnk .gs-spin-ink { margin-right: 8px; }
+.gs-menu-item[aria-busy="true"], .mcp-lnk[aria-busy="true"] { cursor: progress; }
+@media (prefers-reduced-motion: reduce) { .gs-menu-item[aria-busy="true"], .mcp-lnk[aria-busy="true"] { animation: mcp-busy 1.2s ease-in-out infinite alternate; } }
+.gs-ico-space { width: 20px; flex: none; }
+.gs-menu-div { height: 1px; background: var(--line); margin: 4px 0; }
+.gs-menu-user { border-top: 1px solid var(--line); }
+.gs-menu-user .gs-idhead { padding: 12px 0; }
+.gs-menu-user .gs-menu-div { margin: 0; }
+.gs-menu-anchor { position: relative; }
+.gs-pop-cta { display: grid; gap: 8px; padding: 8px 16px; }
+
+/* Phone account button: a person icon, shaped like the Menu button beside it */
+.mcp-btn.gs-acct-ico { width: 48px; padding-left: 0; padding-right: 0; justify-content: center; }

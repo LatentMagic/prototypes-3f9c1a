@@ -1,0 +1,26 @@
+/* Account and billing screens (app/gs-account.jsx, app/gs-billing.jsx).
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* account */
+.gs-subbar { justify-content: flex-start; gap: 8px; }
+.gs-subbar-title { font: 700 20px/1.2 var(--font-heading); letter-spacing: -.01em; }
+.gs-acct-page { max-width: 720px; }
+.gs-acct-cards { display: grid; gap: 16px; }
+.gs-card-acts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px; }
+.gs-card-acts-pair { flex-direction: column-reverse; align-items: stretch; }
+.gs-done { font: 600 14px/1.3 var(--font-text); color: var(--text); }
+.gs-support { font: 400 13px/1.4 var(--font-text); color: var(--muted); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+.gs-root .gs-btn-danger-outline { color: var(--error); border-color: var(--error); }
+.gs-marker { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1.2 var(--font-text); }
+.gs-marker.is-bad { color: var(--error); }
+.gs-rows-dl { margin: 0; display: grid; }
+.gs-row-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 8px 0; border-top: 1px solid var(--line); }
+.gs-row-kv:first-child { border-top: 0; }
+.gs-row-kv dd { margin: 0; text-align: right; font-weight: 600; }
+.gs-pair-even { display: grid; gap: 12px; }
+.gs-line-act { display: grid; gap: 12px; }
+.gs-acts { display: flex; flex-direction: column-reverse; gap: 12px; }
+.gs-ba { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; padding: 12px; background: var(--page); border: 1px solid var(--line); }
+.gs-ba > .mcp-ico { color: var(--muted); }
+.gs-ba-side { display: grid; gap: 2px; padding: 8px; border: 1.5px solid transparent; }
+.gs-ba-side.is-hi { border-color: var(--off-white); }

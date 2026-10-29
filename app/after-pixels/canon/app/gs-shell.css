@@ -1,0 +1,131 @@
+/* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, top bar, demo bar, phone-wide press and cover rules.
+   Linked from index.html in the order listed there; later files win ties. */
+
+/* ==== After Pixels product. Values come from the design system's tokens; layout
+   adapts to the width it is handed (container queries on .gs-root). ==== */
+html, body { background: var(--page); color: var(--text); font-family: var(--font-text); }
+.gs-root { container: gs / inline-size; min-height: 100vh; display: flex; flex-direction: column; background: var(--page); color: var(--text); font: 400 16px/1.5 var(--font-text); }
+/* KEEP: the footer sits at the foot of the window when the page is short; the spacer keeps it clear of the demo bar */
+.gs-root > .gs-ft { margin-top: auto; }
+.gs-demo-space { flex: none; height: calc(44px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
+.kit-phone-clip .gs-root { min-height: 100%; }
+.gs-root p, .gs-root ol, .gs-root ul, .gs-root figure { margin: 0; }
+.gs-root :focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.gs-root input:focus-visible { outline-offset: 2px; border-color: var(--off-white) !important; }
+.gs-root b { font-weight: 600; }
+.gs-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding-inline: 16px; }
+/* One gap between stacked sections on a session page (the sheet, the game's card, Every move), whichever game; .gs-main's own 36px stays between the head and the body. */
+:root { --gs-sec-gap: 16px; }
+.gs-moves { margin-top: calc(var(--gs-sec-gap) - 36px); }
+.gs-main { display: grid; gap: 36px; padding-top: 36px; padding-bottom: 36px; }
+.gs-backbar + .gs-main { padding-top: 24px; }
+.gs-stack-xs { display: grid; gap: 4px; }
+.gs-stack-sm { display: grid; gap: 8px; }
+.gs-stack-md { display: grid; gap: 16px; align-content: start; }
+.gs-muted { color: var(--muted); }
+.gs-small { font: 400 13px/1.4 var(--font-text); color: var(--muted); }
+.gs-strong { font-weight: 600; }
+.gs-num-text { font-variant-numeric: tabular-nums; }
+.gs-label { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; color: var(--off-white); }
+.gs-h1 { margin: 0; font: 700 clamp(28px, 8cqi, 34px)/1.08 var(--font-heading); letter-spacing: -.01em; text-wrap: balance; }
+.gs-figure { font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
+.gs-measure { max-width: 68ch; }
+.gs-center { display: flex; justify-content: center; text-align: center; }
+.gs-ico-row { display: inline-flex; align-items: center; gap: 8px; }
+.gs-rule { height: 1px; background: var(--line); }
+.gs-foot { padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-inlink { background: none; border: 0; padding: 0; font: inherit; color: var(--off-white); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; cursor: pointer; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+.gs-small a { text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+/* One underline everywhere (design system, visual foundations: Underlines). Hover, focus and press: full strength, 6px below, text to white; a danger link stays red. */
+.mcp-gtile-open { transition: color var(--time-swap) var(--ease), text-decoration-color var(--time-swap) var(--ease), text-underline-offset var(--time-swap) var(--ease); }
+.gs-root a:is(:focus-visible, :active), .gs-inlink:is(:focus-visible, :active), .gs-ft-mail:is(:focus-visible, :active), .gs-support:is(:focus-visible, :active), .mcp-lnk:focus-visible, .mcp-gtile-open:is(:focus-visible, :active) { text-decoration-color: currentColor; text-underline-offset: 6px; }
+.gs-root a:is(:focus-visible, :active), .gs-inlink:is(:focus-visible, :active), .gs-ft-mail:is(:focus-visible, :active), .gs-support:is(:focus-visible, :active), .mcp-lnk:not(.is-danger):focus-visible, .mcp-gtile-open:is(:focus-visible, :active) { color: #fff; }
+@media (hover: hover) { .gs-root a:hover, .gs-inlink:hover, .gs-ft-mail:hover, .gs-support:hover, .mcp-gtile-open:hover { text-decoration-color: currentColor; text-underline-offset: 6px; color: #fff; } }
+.gs-ft-link:is(:focus-visible, :active) { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; }
+@media (hover: hover) { .gs-ft-link:hover { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; } }
+@media (prefers-reduced-motion: reduce) { a, .gs-ft-link, .gs-ft-mail, .gs-support, .mcp-lnk, .mcp-gtile-open { transition: none; } }
+.gs-pz-item, .gs-hrow, .lb-tile, .lb-achbtn, .dc-chips > button, .lb-choice > button, .gs-plan { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.gs-plain { list-style: none; padding: 0; display: grid; }
+.gs-plain > li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--line); }
+.gs-plain > li:first-child { border-top: 0; }
+.gs-reached { font-weight: 600; }
+
+/* grids */
+.gs-grid2, .gs-grid3 { display: grid; gap: 16px; }
+.gs-cols2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.gs-head-split, .gs-pitch { display: grid; gap: 24px; }
+.gs-pz-head { display: grid; gap: 16px; }
+/* The one session head: cover left, then label, title and actions stacked beside it, at every width. The cover fills the text's height (design system Cover fill). */
+.gs-sess-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-4); align-items: stretch; }
+.gs-sess-head > .mcp-cover { min-width: 0; }
+.gs-sess-head .mcp-cover-art > span > svg { display: block; width: 100%; height: 100%; }
+.gs-sess-text { display: grid; align-content: center; justify-items: start; gap: var(--space-2); min-width: 0; }
+.gs-sess-label { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.gs-sess-title { overflow-wrap: normal; word-break: normal; hyphens: none; text-wrap: balance; }
+.gs-sess-acts { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+/* KEEP: the system's phone rule (full-width buttons under 640px) gives way here: the head's buttons keep their natural width so two sit side by side. */
+.gs-sess-acts.gs-sess-acts .mcp-btn.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn) { display: inline-flex; width: auto; }
+.gs-top-align { align-items: start; }
+.gs-sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.gs-title-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+
+/* KEEP: tags: long ones may wrap rather than run off a phone */
+.gs-tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gs-root .mcp-tag { white-space: normal; height: auto; min-height: 26px; padding-top: 4px; padding-bottom: 4px; line-height: 1.3; }
+.gs-tagbtn { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; color: inherit; }
+/* KEEP: The 44px target reaches past the tag without making its row taller, so a card with the Pass tag ends where the others do (2026-10-12) */
+.gs-tagbtn { margin-block: -9px; }
+.gs-dot { width: 6px; height: 6px; background: var(--off-white); flex: none; }
+.gs-coverbtn, .gs-titlebtn { background: none; border: 0; padding: 0; margin: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; display: block; width: 100%; }
+.gs-coverbtn:active, .gs-titlebtn:active { opacity: .55; }
+.gs-titlebtn { width: auto; }
+
+/* top bar */
+.gs-top { border-bottom: 1px solid var(--line); background: var(--page); padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
+.gs-root > .gs-top { position: sticky; top: 0; z-index: 50; }
+.gs-top-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px; }
+.gs-brand { font: 700 20px/1.2 var(--font-heading); letter-spacing: -.01em; color: var(--text); background: none; border: 0; padding: 0; cursor: pointer; min-height: 44px; white-space: nowrap; display: inline-flex; align-items: center; gap: 12px; }
+.gs-brand-mark { width: 32px; height: 32px; display: block; flex: none; overflow: visible; transform-origin: 50% 50%; }
+.gs-brand-mark i { animation: none; } .gs-brand-mark .tr { background: #D66847; border-radius: 50%; transform: translate(10px,-10px); }
+.gs-brand:active { opacity: .55; }
+.gs-nav { display: none; flex: 1; align-items: center; gap: 24px; }
+.gs-top-end { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+.gs-wide-only { display: none; align-items: center; gap: 16px; }
+.gs-navlink { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; color: var(--text); font: 600 16px/1.2 var(--font-text); white-space: nowrap; }
+.gs-navlink[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--off-white); }
+.gs-navlink { position: relative; }
+.gs-navlink::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--off-white); opacity: .45; transform: scaleX(0); transform-origin: 50% 50%; transition: transform var(--time-swap) var(--ease); pointer-events: none; }
+.gs-navlink:active { opacity: .55; }
+@media (hover: hover) { .gs-navlink:not([aria-current="page"]):hover::after { transform: scaleX(1); } .gs-acct-btn .gs-avatar { transition: border-color var(--time-swap) var(--ease); } .gs-brand-mark, .gs-brand-mark i { transition: transform 330ms cubic-bezier(.16,1,.3,1); } .gs-brand:hover .gs-brand-mark, .gs-brand:hover .gs-brand-mark i { transition-duration: 440ms; } .gs-brand:hover .gs-brand-mark { transform: rotate(-8deg); } .gs-brand:hover .gs-brand-mark .tr { transform: translate(28px,-28px); } .gs-brand:hover .gs-brand-mark .tl { transform: translate(0,6px); } .gs-brand:hover .gs-brand-mark .br { transform: translate(-6px,0); } .gs-acct-btn:hover .gs-avatar { border-color: var(--off-white); } .gs-menu-item { transition: background-color var(--time-press) var(--ease); } .gs-menu-item:hover { background: color-mix(in srgb, var(--text) 8%, var(--popup)); } }
+@media (prefers-reduced-motion: reduce) { .gs-navlink::after, .gs-brand-mark, .gs-brand-mark i, .gs-acct-btn .gs-avatar, .gs-menu-item { transition: none; } }
+@media (hover: hover) and (prefers-reduced-motion: reduce) { .gs-brand:hover .gs-brand-mark { transform: none; } .gs-brand:hover .gs-brand-mark .tr { transform: translate(10px,-10px); } .gs-brand:hover .gs-brand-mark .tl, .gs-brand:hover .gs-brand-mark .br { transform: none; } }
+.gs-acct { position: relative; }
+.gs-acct-btn .mcp-ico { transition: transform var(--time-dropdown) var(--ease); }
+.gs-acct-btn[aria-expanded="true"] .mcp-ico { transform: rotate(180deg); }
+.gs-pop { position: absolute; right: 0; top: calc(100% + 8px); min-width: 200px; background: var(--popup); border: 1px solid var(--control-edge); box-shadow: var(--shadow-card); display: grid; padding: 4px 0; z-index: 50; }
+.gs-pop .gs-menu-item { padding: 0 16px; }
+.gs-menu-list { display: grid; }
+.gs-menu-item { text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); min-height: 48px; padding: 0; color: var(--text); font: 600 16px/1.2 var(--font-text); cursor: pointer; }
+.gs-pop .gs-menu-item { border-bottom: 0; }
+.gs-menu-item:active { background: color-mix(in srgb, var(--text) 16%, var(--popup)); }
+
+/* demo bar (prototype control, not product) */
+.gs-demo { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: var(--page); border-top: 1px dashed var(--control-edge); padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)); }
+.gs-demo-in { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 0 8px; font: 600 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
+.gs-demo-sep { width: 1px; height: 20px; background: var(--control-edge); margin: 0 12px; }
+.gs-demo-in { flex-wrap: nowrap; overflow-x: auto; justify-content: safe center; }
+.gs-demo-in > * { flex: none; }
+@container gs (max-width: 599px) {
+  .gs-demo-space.is-two { height: calc(88px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); }
+  .gs-demo-in.is-two { flex-wrap: wrap; justify-content: center; overflow-x: visible; }
+  .gs-demo-in.is-two > .gs-demo-sep { flex-basis: 100%; height: 0; margin: 0; }
+}
+.gs-demo-opt { min-height: 44px; padding: 0 8px; background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; }
+.gs-demo-opt[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 -2px 0 var(--off-white); }
+
+.gs-root { --gs-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* phone-snags-second-pass, 2026-10-11 */
+/* KEEP: The hold, by category: anything a press acts on, and any picture, never starts a selection or the phone's callout. Reading text stays selectable; a real link keeps its long-press menu; fields stay editable. */
+:where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+:where(input, textarea, [contenteditable="true"]) { -webkit-user-select: text; user-select: text; }
