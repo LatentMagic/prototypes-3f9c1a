@@ -193,7 +193,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-btn[aria-expanded="true"] .mcp-ico{transform:rotate(180deg)}
 .mcp-disc-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows var(--time-dropdown) var(--ease),opacity var(--time-swap) var(--ease)}
 .mcp-disc-body.is-open{grid-template-rows:1fr;opacity:1}
-.mcp-disc-body>div{overflow:hidden;contain:paint}
+.mcp-disc-body>div{overflow:hidden}
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
 /* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
 .mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
