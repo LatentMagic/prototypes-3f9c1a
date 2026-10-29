@@ -86,7 +86,8 @@ const GsFullLoader = ({ label, ms, onDone }) => {
 // ---- Pages and parts. One staged duration for every page and part load.
 // A page loads as a page on arrival (GsArrival, main.jsx); a part loads on its own
 // when its controls change (useGsPart). A state can hold either: route.hold = 'page' | 'part'.
-const GS_LOAD_MS = 1200;
+// KEEP: 1200 ms for a person. `?fast` on the page address skips the wait, for automated checks only; the settled page is identical.
+const GS_LOAD_MS = /[?&]fast(?:[=&]|$)/.test(window.location.search) ? 0 : 1200;
 const useGsPart = (deps) => {
   const gs = useGs();
   const [on, setOn] = React.useState(false);
