@@ -43,8 +43,8 @@ Build from the design system's components, `DS.<Name>` (`const DS` at `gs-data.j
 - A state is a URL: `?state=<id>` (ids in `app/states.jsx`, or `?state=index` for the list). Add `&fast` to skip the staged 1.2 s page-arrival wait. Content still arriving carries `aria-busy="true"`.
 - **Screenshot with the check, not by hand.** From the repo root:
   `PORT=<port> npm run check -- --app after-pixels --states <id>,<id> --widths 1440,390 --out <dir>`
-  It starts the server if none answers, waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. `--states all` runs all of them (about 3 min).
-- Compare two runs: `npm run diff -- <dirA> <dirB>` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
+  It starts the server if none answers, waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. Name only the states your change touches: that takes seconds.
+- To prove a refactor changed nothing, run `--states all` (about 3 min) before and after, then `npm run diff -- <dirA> <dirB>` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; React `createRoot` warnings after a reload are expected. Neither is a finding.
 
