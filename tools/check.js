@@ -4,10 +4,11 @@
 // Headless sanity check for a prototype's addressable states.
 //
 //   npm run check -- [--slug canon] [--widths 1280,390] [--states a,b,c] [--port 4321]
-//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--concurrency 6] [--no-freeze]
+//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--no-build] [--react-dev] [--concurrency 6] [--no-freeze]
 //
-// After Pixels runs first `npm run build` (--no-build skips it) and --react-dev swaps the production React files for the
-// development ones, for React's warnings and full error messages.
+// After Pixels canon is ES modules under app/after-pixels/canon/app/, built by `npm run build` into build/ (the page loads
+// the build). The check runs the build first (--no-build skips it, to shoot what is already built) and --react-dev
+// swaps the production React files for the development ones, for React's warnings and full error messages.
 // --app after-pixels checks canon (app/after-pixels/canon/index.html): states
 // come from window.KIT_STATES (`all`, or the default), the page opens with
 // ?fast (skips the staged arrival hold; --no-fast keeps it), each shot waits
