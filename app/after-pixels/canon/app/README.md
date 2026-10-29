@@ -1,8 +1,8 @@
-# kit/project/app
+# After Pixels canon: the kit's aids
 
-A no-build page: `index.html` loads React and Babel from the CDN, then each file below as a `text/babel` script. Files share state through `window`; nothing is imported. It must be served (not `file://`). Prefix for everything the kit names: `kit` / `KIT`.
+Canon is built on the kit's skeleton: the aids below (states, Config, QA) plus the product's own modules. Load order for all of them is the `text/babel` script list in `../index.html`; the map of screens to files is in `../AGENTS.md`. Prefix for everything the kit names: `kit` / `KIT`.
 
-## Files, in load order
+## The kit's files
 
 | File | What it is | A new product |
 |---|---|---|
@@ -12,10 +12,10 @@ A no-build page: `index.html` loads React and Babel from the CDN, then each file
 | `states-ui.jsx` | The States palette and the states index | leaves alone |
 | `config.jsx` | The Config pill and the Config modal shell | leaves alone |
 | `qa.jsx` | The QA list | replaces the entries |
-| `config-extra.example.jsx` | Example of adding a Config section | deletes, or replaces with its own |
+| `gs-config.jsx` | The product's Config rows (the kit's example file, replaced) | replaces it with its own |
 | `main.jsx` | Root: state, the Viewport setting, placeholder screen, mounts the aids | replaces the seed and the screen; keeps the wiring |
 
-Every file from `states.jsx` to `config-extra.example.jsx` is a deletable aid: remove the file and its script tag in `../index.html`, nothing else, and the page still works. Each can go on its own. `main.jsx` loads last.
+Every file from `states.jsx` to `gs-config.jsx` is a deletable aid: remove the file and its script tag in `../index.html`, nothing else, and the page still works. Each can go on its own. `main.jsx` loads last.
 
 ## Adding things
 
