@@ -62,7 +62,7 @@ A single-file export (`<Name>.dc.html` + `support.js`, as `app/commentape/protot
 
 The commit gate doesn't apply: nothing in an export can be fixed here. A failure goes back to the user as a note for Claude Design. The export's handoffs and QA lists are for the Claude Design session, not this one — never read one to write the changelog entry.
 
-**A full walk** — `npm run check` drives every registered state of a `app/circlists/<slug>/circlists.html` entry (or After Pixels canon, with `--app after-pixels`) at 1280 and 390 (1440 and 390 for After Pixels) and screenshots each to `.playwright-mcp/check/`; it fails on a module that didn't load or a state that lands on the index, and reports React dev warnings. Not the console shell, not a `.dc.html` export. Reach for it when a change touches many states; the Playwright CLI is the normal check.
+**A full walk** — `npm run check` drives every registered state of a `app/circlists/<slug>/circlists.html` entry (or After Pixels canon, with `--app after-pixels`) at 1280 and 390 (1440 and 390 for After Pixels) and screenshots each to `.playwright-mcp/check/`; it fails on a module that didn't load or a state that lands on the index, and reports React dev warnings. Not the console shell, not a `.dc.html` export. Circlists: reach for it when a change touches many states; the Playwright CLI is the normal check. After Pixels: the check is the normal check, scoped with `--states` to what a change touches (canon `AGENTS.md`).
 </important>
 
 <important if="a push hasn't deployed, or the site shows a stale version after a push">
