@@ -3,8 +3,7 @@
 // and mounts the prototype aids around it.
 //
 // The aids (config.jsx, states.jsx + states-ui.jsx, qa.jsx, gs-config.jsx) are
-// read off `window` and each may be ABSENT: leave a file and its script tag out
-// and the app carries on without it, no edit here.
+// imported below like every other file; removing one means removing its imports.
 //
 // The demo bar (GsDemoBar) is a prototype control: signed out, free (not
 // subscribed) and Pass (active, monthly). It and the Subscription config row
@@ -326,7 +325,7 @@ const KitApp = () => {
   };
   window.gsApi = gs;
 
-  // ---- the states register (app/states.jsx, a deletable aid) ----------------------
+  // ---- the states register (app/states.jsx) ----------------------
   const [landing, setLanding] = useState(() => (kitResolveState ? kitResolveState() : null));
   const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (buildStates
     ? buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform })
