@@ -7,7 +7,7 @@ export interface MoveRowProps{
   className?:string;
 }
 export declare function MoveRow(props:MoveRowProps):JSX.Element;
-/** The list that holds MoveRows, in the order played. Renders an ol; each child becomes an li, with ListRow's line between rows. Put it in a Disclosure titled with the list's title, closed on the session page; give it ListRow's measure (about 760px) on wide screens. */
+/** The list that holds MoveRows, in the order played. Renders an ol; each child becomes an li, with ListRow's line between rows. Put it in a Disclosure titled with the list's title, closed on the session page; match the width of the section above it on wide screens. */
 export interface MoveListProps{
   children?:React.ReactNode;
   /** Accessible name: the list's title ("Every roll"). */

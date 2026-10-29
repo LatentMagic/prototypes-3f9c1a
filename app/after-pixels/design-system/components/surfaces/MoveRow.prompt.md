@@ -19,7 +19,7 @@ MoveRow is one line of a play's record: the list at the end of every session pag
 
 **It opens nothing.** No chevron, no hover, no press, no focus stop. Never put a button or link in a row.
 
-**On the session page** the list is a Disclosure titled with the list's title, closed, below the game's own section. On wide screens give it ListRow's measure, about 760px.
+**On the session page** the list is a Disclosure titled with the list's title, closed, below the game's own section. It matches the width of the section above it, at every width.
 
 **How a long list is cut short** is not settled: ListRow's guidance asks for numbered pages, the product spec for "Show more".
 

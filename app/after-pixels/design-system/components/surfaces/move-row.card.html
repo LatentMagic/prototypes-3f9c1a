@@ -13,7 +13,7 @@ const List=({title,lines})=><Disclosure title={title} defaultOpen><MoveList labe
 function App(){return <div style={{display:'grid',gap:28,maxWidth:760}}>
 <div style={{display:'grid',gap:8}}><p className="h">Delve</p><List title="Every roll" lines={DELVE}/></div>
 <div style={{display:'grid',gap:8}}><p className="h">Daily Word No. 212</p><List title="Every guess" lines={WORD}/></div>
-<span className="cap">Label in ink, 600. The first part in ink, the rest muted. A part that doesn’t fit beside the one before starts a new line. No chevron, no hover: the row opens nothing. ListRow’s measure, 760px.</span>
+<span className="cap">Label in ink, 600. The first part in ink, the rest muted. A part that doesn’t fit beside the one before starts a new line. No chevron, no hover: the row opens nothing.</span>
 </div>;}
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script></body></html>
