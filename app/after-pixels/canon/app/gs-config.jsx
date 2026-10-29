@@ -2,7 +2,7 @@
 // After Pixels — review settings in Config (PROTOTYPE AID). Published as
 // window.ConfigExtra; reads and writes the app through window.gsApi.
 // ============================================================================
-const GsConfigExtra = () => {
+const ConfigExtraBase = () => {
   const api = window.gsApi || {};
   const r = api.review || {};
   const sub = api.sub || {};
@@ -65,4 +65,4 @@ const GsConfigExtra = () => {
   );
 };
 
-Object.assign(window, { ConfigExtra: GsConfigExtra });
+Object.assign(window, { ConfigExtraBase });

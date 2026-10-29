@@ -1,4 +1,4 @@
-// After Pixels — Discover (route `games`). Re-publishes window.GsGames, replacing gs-discover.jsx's GsDiscover. Cards and picks are
+// After Pixels — Discover (route `games`). Declares GsGames. Cards and picks are
 // the re-published GsCard and GsPick (the Pass mark top right, no Free or First chips); the wall is the shared GsTile with the same mark.
 // Proposed, not ratified yet: search and filters as History's (one search field and a Filters panel), and the selection below.
 // Discover doesn't sell the Pass: only a game's product page and its Library page do, so it has no Pass line.
@@ -48,9 +48,9 @@ const CprDiscoverBody = ({ f, setF }) => {
     </section>
   </>;
 };
-// The page shell is a copy of canon's GsDiscover with CprDiscoverBody in place of DcBody, which is file-scoped in app/gs-discover.jsx.
+// The page shell is a copy of canon's old Discover with CprDiscoverBody in place of DcBody (app/gs-discover.jsx).
 // Loading and failed states as canon.
-const CprDiscover = () => {
+const GsGames = () => {
   const gs = useGs();
   const [load, setLoad] = React.useState(gs.route.load || null);
   const fOf = (r, prevQ) => { const k = r.dcKeep || {}; return { q: k.q != null ? k.q : prevQ, cat: k.cat || r.kind || 'all', rhy: k.rhy || r.rhythm || 'all' }; };
@@ -72,4 +72,4 @@ const CprDiscover = () => {
   </>);
 };
 
-Object.assign(window, { GsGames: CprDiscover });
+Object.assign(window, { GsGames });

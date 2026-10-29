@@ -1,7 +1,7 @@
 // ============================================================================
 // After Pixels — the Pass: dates and prices, the Pass card in every state, Switch and
 // Cancel sheets, the buying block, checkout, and the update-card page. Prices £3 a
-// month and £30 a year. GsPass (the Pass page) is replaced by gs-pass-pricing.jsx.
+// month and £30 a year. GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 const GS_NB = '\u00A0';
 const GS_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -199,27 +199,6 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
 };
 
 // ---- The Pass page and the subscribe page ----------
-// GsPass is replaced by gs-pass-pricing.jsx (CprPass).
-const GsPass = () => {
-  const gs = useGs();
-  const holds = gs.view === 'pass';
-  return (
-    <main className="gs-wrap gs-main">
-      <div className="gs-pass-page">
-        <div className="gs-pass-head">
-          <h1 className="gs-h1">After Pixels Pass</h1>
-          {holds && <div className="gs-pass-have"><span className="gs-marker"><DS.Icon name="check" />You have the Pass</span><DS.TextLink onClick={() => gs.go('account')}>Manage in account</DS.TextLink></div>}
-        </div>
-        <GsCompare foot={!holds && (
-          <div className="gs-pass-foot">
-            <span className="gs-pass-price gs-num-text">{GS_PLAN.yearly.price}<span className="gs-muted"> or {GS_PLAN.monthly.price}</span></span>
-            <DS.Button onClick={() => gs.go('subscribe')}>Choose a plan</DS.Button>
-          </div>
-        )} />
-      </div>
-    </main>
-  );
-};
 // The subscribe page: the plan choice (yearly first), what is due, and the one control (MCPG-012 BF-01, AF-02).
 const GsSubscribe = () => {
   const gs = useGs();
@@ -321,5 +300,5 @@ const GsUpdateCard = () => {
 
 Object.assign(window, {
   GS_DAY0, GS_PLAN, GS_SUB_HOLDS, gsAddDays, gsAddMonths, gsLong, gsShort, gsSubDate,
-  GsRows, GsActs, GsPopTitle, GsKeepLock, GsPassCard, GsSwitchSheet, GsCancelSheet, GsPass, GsSubscribe, GsCheckout, GsUpdateCard,
+  GsRows, GsActs, GsPopTitle, GsKeepLock, GsPassCard, GsSwitchSheet, GsCancelSheet, GsSubscribe, GsCheckout, GsUpdateCard,
 });

@@ -1,13 +1,13 @@
 // After Pixels — Library and the library game pages.
-// Re-publishes, replacing canon's: GsLibrary (app/gs-discover.jsx's, plus New for you, Your games and the free player's Pass line),
-// gsLibRow (every row read from the play record), PzNow (app/gs-puzzles-library.jsx's) and CbNow (app/gs-casebook.jsx's), each plus
+// Declares GsLibrary (Library, with New for you, Your games and the free player's Pass line),
+// gsLibRow (every row read from the play record), PzNow (the daily games' now card) and CbNow (Casebook's), each plus
 // the link once finished, GS_LIBRARY.word / groups / mystery in every view, and GS_LIBRARY.casebook / delve / escape / barrow.
 // Each page body is canon's composition with the first-part card (CprFirst) or the design system's Needs the Pass card (LbNeedsPass)
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 const CPR_SHIP_LIB = { ...window.GS_LIBRARY };
 
 // The link under a finished daily or weekly game: Library as it is, New for you on top, never filtered.
-const CprNextLink = () => {
+const GsNextLink = () => {
   const gs = useGs(); if (gs.view === 'out') return null;
   return <div className="gs-pu-nextlink"><DS.TextLink onClick={() => gs.go('library')}>See what’s out for you to play</DS.TextLink></div>;
 };
@@ -75,7 +75,7 @@ const CprFirst = ({ id }) => {
         {soon}
       </div>
       {done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}
-      {done && f.weekly && !gsLapsed(gs) && <CprNextLink />}
+      {done && f.weekly && !gsLapsed(gs) && <GsNextLink />}
     </section>
   );
 };
@@ -224,7 +224,7 @@ const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
 // A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (proposed, not ratified).
 const CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', delve: 'Your free run is ready' };
 const CPR_PASS_READY = { casebook: 'Case 1 is ready', delve: 'This week’s run is ready' };
-const cprLibRow = (gs, k) => {
+const gsLibRow = (gs, k) => {
   const pass = gs.view === 'pass';
   if (GS_GAMES[k].added) return cprRow(pass ? GS_LIB_READY[k] : 'Pass only', null, '', 0);
   const p = phVisible(gs).find((x) => x.gid === k);
@@ -254,7 +254,7 @@ const cprNewFor = (gs, k) => {
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
   return false;
 };
-const CprLibrary = () => {
+const GsLibrary = () => {
   const gs = useGs(); useCpr();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
   const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
@@ -262,7 +262,7 @@ const CprLibrary = () => {
   const wait = useGsPart([q, cat, rhy, sort]);
   const lay = React.useRef(null);
   const showAll = () => { setQ(''); setCat('all'); setRhy('all'); setTimeout(() => { const i = lay.current && lay.current.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 0); };
-  const rows = {}; CPR_SHOWN.forEach((k) => { rows[k] = cprLibRow(gs, k); });
+  const rows = {}; CPR_SHOWN.forEach((k) => { rows[k] = gsLibRow(gs, k); });
   const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
   const listed = CPR_SHOWN.filter((k) => (lbAccess(gs, k) !== 'none' && !cprLocked(gs, k)) || lbPast(gs));
   const ids = listed.filter((k) => (cat === 'all' || GS_GAMES[k].category === cat) && (rhy === 'all' || gsRhythm(k) === rhy) && gsFind(q, k))
@@ -325,11 +325,11 @@ const CprPzNow = ({ c, done, none, id }) => {
         </div>
         <span className="gs-muted">{c.next}</span>
       </div>
-      {done && <CprNextLink />}
+      {done && <GsNextLink />}
     </section>
   );
 };
-const CprCbNow = ({ c }) => {
+const CbNow = ({ c }) => {
   const gs = useGs();
   return (
     <section className="lb-card" style={{ gridColumn: '1 / -1' }}>
@@ -345,9 +345,15 @@ const CprCbNow = ({ c }) => {
           <DS.TextLink onClick={() => cbGo(gs, c.id)}>{c.live ? 'See your turns so far' : 'See every turn'}</DS.TextLink>
         </div>
       </div>
-      {!c.live && <CprNextLink />}
+      {!c.live && <GsNextLink />}
     </section>
   );
 };
 
-Object.assign(window, { LbNeedsPass, GsLibrary: CprLibrary, gsLibRow: cprLibRow, PzNow: CprPzNow, CbNow: CprCbNow, GsNextLink: CprNextLink });
+// The now card of a library game page. Daily Word's and Escape's own cards (WdNow in gs-word.jsx, EsNow in gs-escape.jsx) take it once
+// there is a play, Word's first; every other card is CprPzNow.
+const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
+  : props.id === 'escape' && !props.none ? <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />
+  : <CprPzNow {...props} />);
+
+Object.assign(window, { LbNeedsPass, GsLibrary, gsLibRow, PzNow, CbNow, GsNextLink });

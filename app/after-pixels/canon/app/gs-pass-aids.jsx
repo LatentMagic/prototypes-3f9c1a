@@ -1,5 +1,5 @@
 // After Pixels — the Pass upsell's review aids: two Config rows and the Barrow row, and a reset of their store before every state.
-// Re-publishes ConfigExtra (these rows above gs-config.jsx's) and buildStates (states.jsx's, with the reset).
+// Declares ConfigExtra (these rows above ConfigExtraBase, gs-config.jsx's) and buildStates (buildStatesBase, states.jsx's, with the reset).
 // The states themselves are in app/states.jsx (group "Pass upsell"), the walk-through in app/qa.jsx.
 
 // ---- Config. The seed has no played flag per edition, so New for you is empty for most players: New editions stages it full.
@@ -25,15 +25,13 @@ const GsBarrowConfigRow = () => {
   return <Row label="Chapter 1" value={v.bwDone ? 'done' : 'none'} onChange={(x) => GsPassStage.set({ bwDone: x === 'done' })}
     options={[{ value: 'none', label: 'Not played' }, { value: 'done', label: 'Finished' }]} />;
 };
-const GsPassShippedExtra = window.ConfigExtra;
-const GsPassConfigExtra = () => <React.Fragment>{GsPassShippedExtra ? <GsPassShippedExtra /> : null}<GsPassConfigRows /></React.Fragment>;
+const ConfigExtra = () => <React.Fragment><ConfigExtraBase /><GsPassConfigRows /></React.Fragment>;
 
 // ---- Every state starts from the store's defaults; a state that needs more sets it in its stage.
-const gsPassShippedBuild = window.buildStates;
-const gsPassBuildStates = (api) => {
-  const r = gsPassShippedBuild(api);
+const buildStates = (api) => {
+  const r = buildStatesBase(api);
   r.states.forEach((s) => { const go = s.go; s.go = () => { GsPassStage.set({ ...CPR_DEFAULTS }); go(); }; });
   return r;
 };
 
-Object.assign(window, { GsBarrowConfigRow, ConfigExtra: GsPassConfigExtra, buildStates: gsPassBuildStates });
+Object.assign(window, { GsBarrowConfigRow, ConfigExtra, buildStates });

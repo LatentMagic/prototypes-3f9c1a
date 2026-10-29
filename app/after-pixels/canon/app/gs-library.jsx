@@ -227,8 +227,8 @@ const LbFilters = ({ children }) => {
     </div>
   );
 };
-window.LbTools = LbFilters;
-window.LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
+const LbTools = LbFilters;
+const LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // KEEP: Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
 const lbCopy = (lines) => {
@@ -282,4 +282,4 @@ const lbNow = (gs, id) => {
   const s = GS_SESSIONS[c.today];
   return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { LbRunPass, LbFreshNow, lbFrozen, lbAchEarned, lbDistinct, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });
+Object.assign(window, { LbTools, LbToolsColumn, LbRunPass, LbFreshNow, lbFrozen, lbAchEarned, lbDistinct, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

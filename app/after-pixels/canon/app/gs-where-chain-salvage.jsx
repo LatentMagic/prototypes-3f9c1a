@@ -341,7 +341,7 @@ const DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[
     { group: g, id: 'session-' + k + '-failed', label: 'Session page: ' + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
     { group: g, id: 'session-' + k + '-earlier', label: 'Session page: ' + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
   ]; });
-const DP_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
+const DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
   { group: g, id: k + '-signed-out', label: n + ', signed out', stage: (c) => c.go(k) },
   { group: g, id: k + '-free', label: n + ', free account (Get the Pass)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go(k); } },
   { group: g, id: k + '-pass', label: n + ', with the Pass (played today)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k); } },
@@ -352,4 +352,6 @@ const DP_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily
   { group: g, id: 'session-' + k, label: 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });
 
-Object.assign(window, { DP_IDS, DP_PZ, dpSession, DP_STATES: [...DP_STATES, ...DP_SESSION_STATES], svBoard });
+const DP_STATES = [...DP_PZ_STATES, ...DP_SESSION_STATES];
+
+Object.assign(window, { DP_IDS, DP_PZ, dpSession, DP_STATES, svBoard });

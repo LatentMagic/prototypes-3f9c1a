@@ -2,7 +2,7 @@
 // After Pixels — the game page: one template for every game. Delve's page is the model. Order: cover and
 // play box; facts band (how long, how often, genre tags); pitch beside who does what; how it looks in
 // your chat; (Delve: stat tiles); more games. Every null is a gap in the record and shows as "—".
-// The play box at the top is the page's one Play. GsPlayBox is replaced by gs-pass-game.jsx (CprPlayBox).
+// The play box at the top is the page's one Play. GsPlayBox is in gs-pass-game.jsx.
 // `week` stays in GS_PAGES: the library game pages read its line.
 // ============================================================================
 const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
@@ -115,32 +115,6 @@ const GS_PAGES = {
   },
 };
 const GS_FACT_LABELS = [['long', 'How long'], ['often', 'How often']];
-
-const GsPlayBox = ({ id }) => {
-  const gs = useGs();
-  const g = GS_GAMES[id]; const b = GS_PAGES[id].box;
-  const paying = gs.view === 'pass';
-  const label = g.first && !paying ? b.button : 'Play';
-  const small = g.first && gs.view !== 'out' && b.small ? b.small.slice(b.small.indexOf('. ') + 2) : b.small;
-  return (
-    <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
-      <span className="gs-label">{b.label}</span>
-      <h2 className="mcp-t-card">{b.heading}</h2>
-      <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
-      {g.free || g.first || paying
-        ? <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>
-        : <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>}
-      {small && <p className="gs-small">{small}{!g.free && ' ' + GS.purchase}</p>}
-      {g.first && !paying && <div><DS.TextLink onClick={() => gs.go('pass')}>Get the Pass</DS.TextLink></div>}
-      {!g.free && !g.first && !paying && <div><DS.TextLink onClick={() => gs.go('games')}>Play a free game</DS.TextLink></div>}
-      <div className="gs-rule" />
-      <div className="gs-stack-sm">
-        <span className="gs-label">WORKS WITH</span>
-        <p className="gs-small">{GS.works}</p>
-      </div>
-    </DS.Card>
-  );
-};
 
 const GsFacts = ({ id }) => {
   const p = GS_PAGES[id];

@@ -210,15 +210,13 @@ const EsNow = ({ label, title, next, noNext, children }) => {
         {next && <span className="gs-muted">{next}</span>}
       </div>
       {children}
-      {!m.live && !noNext && <CprNextLink />}
+      {!m.live && !noNext && <GsNextLink />}
     </section>
   );
 };
 
 // ---- Hooks into the app: the session page's body (app/gs-session.jsx; the head is the shared GsSessHead), and the Pass holder's now card
-// (window.PzNow). A free player's first-room card reads EsNow in app/gs-pass-library.jsx (CprFirst). ----
+// (PzNow in gs-pass-library.jsx). A free player's first-room card reads EsNow in app/gs-pass-library.jsx (CprFirst). ----
 window.GS_SESSION_BODY = { ...(window.GS_SESSION_BODY || {}), escape: EsSessBody };
-const ES_SHIP_NOW = window.PzNow;
-window.PzNow = (props) => (props.id !== 'escape' || props.none ? <ES_SHIP_NOW {...props} /> : <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />);
 
 Object.assign(window, { esSid, esBuild, EsNow, EsLine, EsResult });

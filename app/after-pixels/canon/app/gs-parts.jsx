@@ -141,32 +141,10 @@ const GsSoonCard = ({ g }) => {
 };
 // ---- A game in three forms, all from the design system: GsCard (GameCard) in every card row,
 // GsPick (GamePick) for Discover's two picks, GsTile (GameTile) in Discover's wall and every tile row. Coming soon is GsSoonCard.
-// GsCard, GsGameCard and GsPick are replaced by gs-pass-home.jsx (CprCard, CprPick); GsTile is not.
+// GsCard, GsGameCard and GsPick are in gs-pass-home.jsx.
 // The whole card is the target and the hover surface: hover, focus and press play the art's motion.
 // KEEP: a blurb's last line is never one word (its last two words stay together), so no card ends on a lone word.
 const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
-const GsCard = ({ id, mark }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
-  return (
-    <DS.GameCard className="mcp-art-host gs-host"
-      art={<div ref={host}><GsArt art={g.art} shape="wide" /></div>}
-      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
-      mark={mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
-      blurb={gsKeepLast(g.blurb)}
-      tags={<GsTagList tags={g.tags} ed={g.ed} />} />
-  );
-};
-const GsPick = ({ id, label }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
-  return (
-    <DS.GamePick className="mcp-art-host gs-host"
-      art={<div ref={host}><GsArt art={g.art} shape="wide" /></div>}
-      label={label}
-      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
-      blurb={gsKeepLast(g.blurb)}
-      tags={<GsTagList tags={g.tags} ed={g.ed} />} />
-  );
-};
 // The one tile part (design system GameTile): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
 // the same way everywhere. `pass` draws the Pass mark, which opens Pricing; `page` opens that page of the game (Library opens 'record').
 const GsTile = ({ id, pass, page }) => {
@@ -178,8 +156,6 @@ const GsTile = ({ id, pass, page }) => {
       kind={gsKind(g.category)} />
   );
 };
-// Replaced by gs-pass-home.jsx (CprCard).
-const GsGameCard = GsCard;
 
 // ---- User menu. Trigger: avatar, name, email, chevron. Panel: identity header,
 // Manage account, Your AI, divider, Sign out. On a phone the trigger is a person icon in a
@@ -347,4 +323,4 @@ const GsDemoBar = () => {
 // ---- The play dialog lives in gs-connect.jsx with the prompts ----
 const GsPlayPopup = () => <GsPlayDialog />;
 
-Object.assign(window, { GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsGameCard, GsCard, GsPick, GsTile, gsKeepLast, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss });
+Object.assign(window, { GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsTile, gsKeepLast, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss });

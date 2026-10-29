@@ -18,28 +18,6 @@ const cbFirstOf = (gs) => {
 const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : { kind: c.verdict === 'right' ? 'ok' : 'bad', label: GS_RESULT.casebook({ ok: c.verdict === 'right' }) });
 
-// CbNow is replaced by gs-pass-library.jsx (CprCbNow).
-const CbNow = ({ c }) => {
-  const gs = useGs();
-  return (
-    <section className="lb-card" style={{ gridColumn: '1 / -1' }}>
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">A CASE</span><h2 className="mcp-t-sec">{c.title}</h2></div>
-        {!c.live && <span className="lb-big"><LbResult s={cbStatus(c)} /></span>}
-      </div>
-      <p>{cbRecap(c)}</p>
-      <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {!c.live && <LbShare lines={cbShareLines(c)} />}
-          <DS.TextLink onClick={() => cbGo(gs, c.id)}>{c.live ? 'See your turns so far' : 'See every turn'}</DS.TextLink>
-        </div>
-      </div>
-      {!c.live && window.GsNextLink && <window.GsNextLink />}
-    </section>
-  );
-};
-
 // The case page: turns grouped by kind. Not designed further yet: left as built until the game itself is.
 const CB_KINDS = [['Show evidence', 'Evidence shown'], ['Search', 'Searches'], ['Question', 'Questions']];
 const cbCap = (s) => s.charAt(0).toUpperCase() + s.slice(1);

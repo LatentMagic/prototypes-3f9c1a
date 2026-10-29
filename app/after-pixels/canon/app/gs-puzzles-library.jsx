@@ -1,7 +1,7 @@
 // ============================================================================
 // After Pixels — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape.
 // Word, Groups and Mystery's pages are replaced by gs-pass-library.jsx in every view (cprPzLibrary), Escape's for a player without
-// the Pass (CprEsLibrary), and PzNow there too (CprPzNow).
+// the Pass (CprEsLibrary), and PzNow there too.
 // Each is the standard library game page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements and your plays. "All…" opens History filtered to the game.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
@@ -129,37 +129,6 @@ Object.entries(PZ).forEach(([id, c]) => {
 const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
 const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
 
-const PzNow = ({ c, done, none, id }) => {
-  const gs = useGs(); const st = done ? c.done : c.live;
-  if (none) return (
-    <section className="lb-card">
-      <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div></div>
-      <p>{GS_PAGES[id].week.line}</p>
-      <div className="lb-foot">
-        <div className="lb-acts"><DS.Button onClick={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })}>Play</DS.Button></div>
-        <span className="gs-muted">{c.next}</span>
-      </div>
-    </section>
-  );
-  const lines = done && window.gsShareText ? window.gsShareText(GS_SESSIONS[c.today]) : null;
-  return (
-    <section className="lb-card">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div>
-        {done && <span className="lb-big"><LbResult s={c.done.st} /></span>}
-      </div>
-      <p>{st.line}</p>
-      {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {lines && <LbShare lines={lines} />}
-          <DS.TextLink onClick={() => gs.go('session', { id: done ? c.today : c.liveSid })}>{done ? c.links[0] : c.links[1]}</DS.TextLink>
-        </div>
-        <span className="gs-muted">{c.next}</span>
-      </div>
-    </section>
-  );
-};
 // The run, from the record: each edition as this player's play of it stands (completed, failed, in progress or not played).
 const pzRun = (gs, id) => {
   const by = {}; phVisible(gs).forEach((p) => { if (p.gid === id && !by[p.ed]) by[p.ed] = p; });

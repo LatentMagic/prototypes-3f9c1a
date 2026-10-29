@@ -87,4 +87,5 @@ const cprBoxCopy = (id) => {
   return null;
 };
 
-Object.assign(window, { GsPassStage: cprStore, useCpr, CPR_DEFAULTS, CPR_LAPSED, cprLapsedOf, CPR_STAGE, CPR_SHOWN, cprEditions, cprLocked, cprFirstState, cprPlayed, cprPassLine, CprPassPara, CprPassEnd, cprBoxCopy });
+const GsPassStage = cprStore;
+Object.assign(window, { GsPassStage, useCpr, CPR_DEFAULTS, CPR_LAPSED, cprLapsedOf, CPR_STAGE, CPR_SHOWN, cprEditions, cprLocked, cprFirstState, cprPlayed, cprPassLine, CprPassPara, CprPassEnd, cprBoxCopy });

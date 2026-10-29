@@ -1,5 +1,5 @@
 // After Pixels — Home, and the Pass mark on the game cards.
-// Re-publishes GsHome, GsCard / GsGameCard and GsPick, replacing app/gs-home.jsx's GsHome and app/gs-parts.jsx's cards.
+// Declares GsHome, GsCard / GsGameCard and GsPick (the Home and the cards every card row draws).
 // GsHome is canon's with the Pass section gone: the Pass is a card first in Available games, and the row's line says what's free;
 // the hero, Coming soon and What's new are canon's. GsTile (gs-parts.jsx) is the one tile, for the wall and tile rows.
 
@@ -8,7 +8,7 @@
 // The Free and "First … free" chips come off the cards; the Pass is never a tag.
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
 const CprArt = ({ host, id, shape }) => <div ref={host}><GsArt art={GS_GAMES[id].art} shape={shape} /></div>;
-const CprCard = ({ id, mark }) => {
+const GsCard = ({ id, mark }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GameCard className="mcp-art-host gs-host"
@@ -19,7 +19,8 @@ const CprCard = ({ id, mark }) => {
       tags={<GsTagList tags={cprTags(id)} ed={g.ed} />} />
   );
 };
-const CprPick = ({ id, label }) => {
+const GsGameCard = GsCard;
+const GsPick = ({ id, label }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GamePick className="mcp-art-host gs-host"
@@ -61,7 +62,7 @@ const CprPassCard = () => {
   );
 };
 
-const CprHome = () => {
+const GsHome = () => {
   const gs = useGs(); const field = React.useRef(null);
   React.useEffect(() => {
     const f = field.current; if (!f) return undefined;
@@ -115,4 +116,4 @@ const CprHome = () => {
   );
 };
 
-Object.assign(window, { GsHome: CprHome, GsCard: CprCard, GsGameCard: CprCard, GsPick: CprPick, CprArt, cprTags });
+Object.assign(window, { GsHome, GsCard, GsGameCard, GsPick, CprArt, cprTags });

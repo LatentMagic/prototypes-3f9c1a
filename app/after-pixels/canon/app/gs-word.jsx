@@ -103,8 +103,4 @@ const WdNow = ({ c, done }) => {
       {done && <GsNextLink />}
     </div></section>);
 };
-// Hooks into the library game page's now card (window.PzNow), as Escape's: canon's card while nothing is played.
-const WD_SHIP_NOW = window.PzNow;
-window.PzNow = (props) => (props.id !== 'word' || props.none ? <WD_SHIP_NOW {...props} /> : <WdNow c={props.c} done={props.done} />);
-
 Object.assign(window, { wdRead, wdScore, WdBoard, wdResult, WdNow });

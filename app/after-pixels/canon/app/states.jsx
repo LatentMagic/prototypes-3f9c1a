@@ -302,7 +302,7 @@ const KIT_STATES_ACCEPTED = KIT_STATE_REGISTER.filter((s, i) => {
 window.KIT_STATES = KIT_STATES_ACCEPTED.map(({ id, aliases, label, group }) => ({ id, aliases: aliases || [], label, group }));
 
 // ---- derived: the bound register main.jsx renders from ---------------------
-function buildStates(api) {
+function buildStatesBase(api) {
   const ctx = kitStateContext(api);
   // Reseed, then stage, so a state opens the same way whatever came before it.
   const states = KIT_STATES_ACCEPTED.map((s) => ({
@@ -376,4 +376,4 @@ function kitStateLink(id) {
   return own;
 }
 
-Object.assign(window, { buildStates, kitResolveState, kitStateLink });
+Object.assign(window, { buildStatesBase, kitResolveState, kitStateLink });
