@@ -10,7 +10,7 @@ Source is ES modules: `app/main.jsx` imports every `app/*.jsx`, and `npm run bui
 
 ## Where a screen lives
 
-`main.jsx` maps each route to a component (`case 'games': return <GsGames />` and the rest of its `switch`). Each name is declared in one file: find it with `grep -nE "(function|const) <Name>\b" app/*.jsx`.
+`main.jsx` maps each route to a component (`case 'games': return <GsGames />` and the rest of its `switch`). Each name is declared in one file: find it with `grep -nE "(function|const|let) <Name>\b" app/*.jsx`.
 
 | Route or surface | File that renders it |
 |---|---|
@@ -34,9 +34,9 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 
 - Tokens: the design system's `tokens/*.css` and `components/components.css`, linked from `index.html` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px.
 - Product CSS is `app/*.css`, one file per area, imported by `app/canon.css` and built into `build/canon.css` (no inline `<style>`). **Import order is the cascade: a later file wins a tie, so a rule that overrides another sits in a file imported after it.** Each file's first comment says what it holds. Find a rule with `grep -n "<class>" app/*.css`.
-Shell and aids: `aids.css` (Config, States and QA palettes, phone frame, base reset), `gs-shell.css` (`.gs-root`, utilities, links, grids, session head, tags, top bar, demo bar), `gs-site.css` (loaders, footer, legal, not found, user menu).
-Screens: `gs-home.css`, `gs-cards.css` (Discover, Library lists, game cards and their motion art), `gs-game.css` (product page), `gs-player.css`, `gs-library-page.css` (cards, streak, now card, editions list), `gs-session-history.css` (session parts every game shares; History), `gs-auth.css` (sign in, username), `gs-connect.css` (How it works, play dialog), `gs-account.css`, `gs-pass.css` (pricing, upsell, Home Pass card).
-Game session bodies: `gs-escape.css`, `gs-word.css`, `gs-delve.css`.
+- Shell and aids: `aids.css` (Config, States and QA palettes, phone frame, base reset), `gs-shell.css` (`.gs-root`, utilities, links, grids, session head, tags, top bar, demo bar), `gs-site.css` (loaders, footer, legal, not found, user menu).
+- Screens: `gs-home.css`, `gs-cards.css` (Discover, Library lists, game cards and their motion art), `gs-game.css` (product page), `gs-player.css`, `gs-library-page.css` (cards, streak, now card, editions list), `gs-session-history.css` (session parts every game shares; History), `gs-auth.css` (sign in, username), `gs-connect.css` (How it works, play dialog), `gs-account.css`, `gs-pass.css` (pricing, upsell, Home Pass card).
+- Game session bodies: `gs-escape.css`, `gs-word.css`, `gs-delve.css`.
 
 - `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
 - Before adding a class, grep for it: a name already used elsewhere restyles that too (`GOTCHA.md` 13).
@@ -58,7 +58,7 @@ Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-da
 - To prove a refactor changed nothing, run `--states all` (about 3 min) before and after, then `npm run diff -- <dirA> <dirB>` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; that is not a finding.
-A change that makes a situation hard to reach (an account state, a failed play, a game mid-run) adds its state in the same change: read `ARCHITECTURE.md` § Addressable states first.
+- A change that makes a situation hard to reach (an account state, a failed play, a game mid-run) adds its state in the same change: read `ARCHITECTURE.md` § Addressable states first.
 
 ## Owner rulings that bind every change
 

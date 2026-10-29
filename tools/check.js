@@ -458,7 +458,6 @@ async function main() {
     const results = done;
     const anyEgress = results.some((r) => r.egress);
 
-    if (opts.app === 'after-pixels') log('note: the in-browser Babel notice (printed on every load) is left out of the per-shot console lines');
     if (anyEgress) log('note: off-origin requests were aborted (sandbox egress — fonts/favicons); not counted as failures');
 
     const fails = results.filter((r) => !r.ok);
