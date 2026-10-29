@@ -12,6 +12,8 @@ Cut from the Circlists prototype (`app/circlists/canon/`, commit `dddbb6c`) on 2
 
 Live, with nothing to run: the app at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/ and the launcher at https://latentmagic.github.io/prototypes-3f9c1a/kit/project/playgrounds.html, whose Example ticket holds one playground and one candidate build, both on the Golden Sample App's queue. In the console it is the Golden Sample App at https://latentmagic.github.io/prototypes-3f9c1a/#gsa/canon. Locally, run `node server.js` from the repo root and open the same paths under http://localhost:4321.
 
+Config, States and QA open from the pill at the bottom right; Config is its gear. Drag the pill to move it.
+
 ## Starting a new prototype from it
 
 1. Drag the `kit/project/` folder into the new Claude Design project yourself. The Circlists project's files show dropped files landing in an `uploads/` folder, so check where they landed: if they sit under `uploads/` instead of the project root, the first instruction to the agent is to move them to the root with paths preserved. Connect GitHub to the project: the agent reads the product's specs from there. Then tell the agent to read `SETUP.md` and do what it says: it moves the files to the root if they landed under `uploads/`, clears the upload, opens the Golden Sample App's Home as it is, checks the config button, states and QA work, reports what it found (including whether `CLAUDE.md` was read without being told), and deletes itself. It builds no prototype.
