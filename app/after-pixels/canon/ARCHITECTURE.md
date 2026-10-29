@@ -1,6 +1,6 @@
 # Architecture
 
-How the prototype is put together. App-wide structure only — the product's own structure (its screens, its postures, its guards) belongs in the specs the product block in `CLAUDE.md` names, or a doc beside this one. `app/README.md` lists the skeleton's files in load order.
+How the prototype is put together. App-wide structure only. The map of screens to files is in `AGENTS.md`; `index.html` holds the load order.
 
 ## Postures
 
@@ -20,7 +20,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/config.jsx` | deletable aid | Config pill gone: review settings, the states palette and QA with it. `?state=` and the index survive |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
-| `app/config-extra.example.jsx` | deletable example | no product rows in Config |
+| `app/gs-config.jsx`, `app/gs-pass-aids.jsx` | product's Config rows | no product rows in Config |
 | `app/directory-listings.jsx` | droppable module (review aid) | the routes `directory-claude` and `directory-chatgpt` render nothing, and the register's Store listing entries are not there |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.
@@ -45,13 +45,13 @@ An `id` is **public** once a ticket links to it: renaming or removing one breaks
 
 A state is a scenario, never a width: posture comes from the window or the Viewport control, so a state never has a "· phone" twin.
 
-> **The resolver looks inert in preview, and is not.** Nothing in the design tool can hand this page a URL, so `?state=` does nothing there. It is exercised by driving the register directly (`window.buildStates`, the palette, the index) — never by concluding from a screenshot that the address reading is dead. **Do not delete it on that evidence.** A copied link also depends on the host: when the page is framed in a console that addresses a prototype by its URL hash (`#<app>/<slug>`), `kitStateLink` rebuilds that address with `?state=<id>` after the hash, and the console must forward that query onto the iframe `src`. Both are outside this project.
+> **A copied link depends on the host.** When the page is framed in the console, which addresses a prototype by its URL hash (`#<app>/<slug>`), `kitStateLink` rebuilds that address with `?state=<id>` after the hash, and the console forwards that query onto the iframe `src`.
 
 ## Conventions
 
 - **JSX over `window`.** Every file exports with `Object.assign(window, { ... })`; scripts do not share Babel scope. Load order is fixed in `index.html`.
 - **No `const styles = {}`.** Name style objects after their component — collisions across files are silent and fatal.
-- **Container / presentation split**, focused components, split past ~200 lines. See `skills/frontend-ui-engineering/SKILL.md`.
+- **Container / presentation split**, focused components, split past ~200 lines.
 - **State** lives in `main.jsx` unless it is purely local chrome state (a drawer, a transition).
 - **Comments never cite a `docs/` path.** A comment may state what the code does and any rule or decision it keeps, reason included ("required before Terms ship"). It never points at a task folder or a handoff: those move when work is archived, and the pointer then leads nowhere.
 - **Comments carry intent and mapping, and flag the special; nothing else.**

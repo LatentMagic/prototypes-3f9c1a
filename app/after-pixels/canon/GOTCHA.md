@@ -3,12 +3,14 @@
 Hard-won, non-obvious traps. Read before touching overlay/sheet motion or
 "verifying" an animation.
 
-Entries 1–3 are code traps. **Entries 4–9 are judgement traps** — the mistakes
+Entries 1 and 3 are code traps. **Entries 4–9 are judgement traps** — the mistakes
 that cost the most time were not wrong code, they were wrong intent. Read those
 before starting design work, not while debugging it.
 
-Entries 10–14 are code or platform traps; they sit after the judgement traps
-because they were found later, not because they matter less.
+Entries 10, 11, 13 and 14 are code or platform traps; they sit after the judgement
+traps because they were found later, not because they matter less. Numbers are
+kept so code and changelog references hold: 2 and 12 were traps of the Claude
+Design preview and upload, retired with it.
 
 ---
 
@@ -31,32 +33,6 @@ that animates in from off-screen.
 **Rule.** Any `.focus()` inside a sheet/modal/drawer that starts off-screen must
 pass `{ preventScroll: true }`. If you don't need the focus for a11y flow, don't
 call it while the element is translated out of view.
-
----
-
-## 2. This preview sandbox pauses `requestAnimationFrame` — so screenshots lie about transitions
-
-**Symptom.** Multiple rounds "confirming" a sheet slide as working, then broken,
-then working — all wrong. `save_screenshot` (html-to-image) froze CSS animations
-at frame 0 and rendered `position: fixed` + scrim badly; measurement
-`requestAnimationFrame` never fired because the sandbox document is treated as
-hidden.
-
-**Consequences to remember.**
-- rAF-driven entrances (a `render`/`shown` + double-rAF pattern) do **not**
-  advance in the agent's own iframe — the sheet stays at `translateY(100%)` and
-  looks "broken" when it is actually fine in the user's real, foreground browser.
-- html-to-image captures (`save_screenshot`, `screenshot_user_view`) misrender
-  fixed overlays, scrims, and mid-transition opacity — they showed a working
-  modal as faint/behind the page. Do not trust them for overlay/stacking bugs.
-
-**How to actually verify mount transitions.** Drive and measure in the user's
-**live** view with `eval_js_user_view`: sample real values over time —
-`getComputedStyle(sheet).transform`, `getBoundingClientRect().top` of a
-background element, `scroller.scrollTop`.
-
-**Rule.** For anything animated on mount, don't conclude from a screenshot.
-Measure numbers in the live view, or hand it to the user to eyeball.
 
 ---
 
@@ -153,7 +129,7 @@ naming the content rather than the mechanism).
 **Cause.** The voice doc was available the whole time. The copy was written from
 instinct and the doc was opened only once the copy had been rejected twice.
 
-**Rule.** Read the copy voice the product block in `CLAUDE.md` names **before** writing any product
+**Rule.** Read the copy voice (`app/after-pixels/design-system/guidelines/voice.md`) **before** writing any product
 string, not after it is challenged. The same goes for the other durable docs —
 the assets exist so the reasoning is not re-derived badly each session.
 
@@ -177,7 +153,7 @@ being criticised.
 reason, name what you would overrule and why, and reserve one genuine open
 question for the user. Options are for the exploration phase; verdicts are for
 the resolution phase. A verdict is still a proposal: it takes effect only once
-the user ratifies it (`CLAUDE.md`, Ratification).
+the user ratifies it.
 
 ---
 
@@ -237,7 +213,7 @@ it is not (see entry 2: you cannot verify this from a screenshot).
 
 ---
 
-## 11. The "referenced file not found" warning is only a false positive when `<base>` is *right*
+## 11. A nested entry's `<base>` depth counts its own folder
 
 **Symptom.** A whiteboard in `docs/specs/<ticket>/playground/` was handed over
 with no tokens at all — no fonts, no accent, no spacing. The user opened it and
@@ -250,24 +226,10 @@ base-relative false positive" and shipped twice that way.
 count is levels *of the file's own folder*, not a constant: `playground/` adds
 one.
 
-**Fix and rule.** `CLAUDE.md` § Files holds them (the `<base>` depth, and the
-warning being a false positive only when that depth is right). Count the `../`
+**Fix and rule.** A nested entry needs `<base href>` with one `../` per level of
+its own folder, and every path in it written root-relative. Count the `../`
 against the file's own depth and confirm one token-driven thing rendered before
 handing it over.
-
----
-
-## 12. `<style>` and `@keyframes` inside an SVG are stripped on upload
-
-**Symptom.** An animated SVG shipped as a static image after being uploaded to
-the project.
-
-**Cause.** The platform strips the `<style>`/`@keyframes` block from SVGs on
-upload. The shipped file is static; that is not a defect in the SVG.
-
-**Rule.** Do not treat a static uploaded SVG as broken, and do not edit it to
-"restore" the motion. The curves, timings and keyframes live in the doc that
-specifies the motion, not in the file.
 
 ---
 
