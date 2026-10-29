@@ -6,6 +6,8 @@
 //   npm run check -- [--slug canon] [--widths 1280,390] [--states a,b,c] [--port 4321]
 //   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--concurrency 6] [--no-freeze]
 //
+// After Pixels runs first `npm run build` (--no-build skips it) and --react-dev swaps the production React files for the
+// development ones, for React's warnings and full error messages.
 // --app after-pixels checks canon (app/after-pixels/canon/index.html): states
 // come from window.KIT_STATES (`all`, or the default), the page opens with
 // ?fast (skips the staged arrival hold; --no-fast keeps it), each shot waits
@@ -63,7 +65,7 @@ const APPS = {
 function parseArgs(argv) {
   const opts = {
     app: 'circlists', slug: 'canon', widths: null, states: null, port: Number(process.env.PORT) || 4321,
-    out: null, fast: true, freeze: true, concurrency: null,
+    out: null, fast: true, freeze: true, concurrency: null, build: true, reactDev: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -72,6 +74,8 @@ function parseArgs(argv) {
     else if (a === '--out') opts.out = path.resolve(argv[++i]);
     else if (a === '--no-fast') opts.fast = false;
     else if (a === '--no-freeze') opts.freeze = false;
+    else if (a === '--no-build') opts.build = false;
+    else if (a === '--react-dev') opts.reactDev = true;
     else if (a === '--concurrency') opts.concurrency = parseInt(argv[++i], 10);
     else if (a === '--widths') {
       opts.widths = argv[++i].split(',').map((s) => parseInt(s.trim(), 10)).filter((n) => !Number.isNaN(n));
@@ -240,9 +244,22 @@ function isSameOrigin(urlStr, port) {
   }
 }
 
-async function attachRouting(context, port, cdnMap, onEgress) {
-  await context.route('**/*', (route) => {
+// --react-dev: the entry HTML is served with the production React files swapped for the development ones
+// (and their integrity hashes dropped), so React's warnings and full error messages show.
+const toDevUrl = (u) => u.replace(/\.production\.min\.js$/, '.development.js');
+function devHtml(html) {
+  return html.replace(/<script([^>]+)src="(https:\/\/unpkg\.com\/[^"]+\.production\.min\.js)"([^>]*)>/g,
+    (m, a, u, b) => `<script${a}src="${toDevUrl(u)}"${b.replace(/\s*integrity="[^"]*"/, '')}>`.replace(/\s*integrity="[^"]*"/, ''));
+}
+
+async function attachRouting(context, port, cdnMap, onEgress, reactDev, entryRel) {
+  await context.route('**/*', async (route) => {
     const url = route.request().url();
+    if (reactDev && isSameOrigin(url, port) && new URL(url).pathname === '/' + entryRel) {
+      const res = await route.fetch();
+      route.fulfill({ response: res, body: devHtml(await res.text()) });
+      return;
+    }
     if (isSameOrigin(url, port)) { route.continue(); return; }
     if (cdnMap.has(url)) {
       try {
@@ -263,7 +280,7 @@ async function attachRouting(context, port, cdnMap, onEgress) {
 async function discoverStates(browser, opts, cdnMap) {
   if (opts.states && opts.states.length) return opts.states;
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  await attachRouting(context, opts.port, cdnMap, null);
+  await attachRouting(context, opts.port, cdnMap, null, opts.reactDev, APPS[opts.app].entry(opts.slug));
   const page = await context.newPage();
   const url = `http://127.0.0.1:${opts.port}/${APPS[opts.app].entry(opts.slug)}?state=index`;
   const g = APPS[opts.app].statesGlobal;
@@ -283,7 +300,7 @@ async function testState(browser, opts, cdnMap, id, width) {
   const failedRequests = [];
   let egress = false;
 
-  await attachRouting(context, opts.port, cdnMap, () => { egress = true; });
+  await attachRouting(context, opts.port, cdnMap, () => { egress = true; }, opts.reactDev, APPS[opts.app].entry(opts.slug));
 
   const page = await context.newPage();
   page.on('pageerror', (err) => jsErrors.push(String((err && err.message) || err)));
@@ -389,7 +406,13 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const entryPath = findEntry(opts);
   const html = fs.readFileSync(entryPath, 'utf8');
+  if (opts.app === 'after-pixels' && opts.build) {
+    log('build: npm run build (--no-build skips it)');
+    const b = spawnSync('npm', ['run', 'build'], { cwd: ROOT, stdio: 'inherit' });
+    if (b.status !== 0) { console.error('build failed; nothing was checked'); process.exit(1); }
+  }
   const cdnUrls = extractCdnUrls(html);
+  if (opts.reactDev) for (const u of [...cdnUrls]) if (toDevUrl(u) !== u) cdnUrls.push(toDevUrl(u));
   log(`cdn: ${cdnUrls.length} runtime url(s) declared in ${path.basename(entryPath)}`);
   const cdnMap = await ensureCdnCache(cdnUrls);
 
