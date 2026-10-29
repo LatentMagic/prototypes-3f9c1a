@@ -179,7 +179,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-alllay { display: grid; gap: 24px; }
 .lb-tools { display: grid; gap: 24px; align-content: start; min-width: 0; }
 .lb-choicegrp { display: grid; gap: 8px; min-width: 0; }
-.lb-alllay:has(> .lbf-top) { grid-template-columns: minmax(0, 1fr) !important; }
+.lb-alllay:has(> .lbf-top) { grid-template-columns: minmax(0, 1fr); }
 .lbf-top { display: grid; gap: 12px; min-width: 0; }
 .lbf-bar { display: flex; align-items: flex-end; gap: 12px; }
 .lbf-bar > .mcp-btn { flex: none; }
@@ -187,8 +187,8 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lbf-sum { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
 .lb-empty-clear { display: grid; gap: 16px; justify-items: start; }
 .lbf-groups { display: grid; gap: 24px; }
-.lbf-groups .lb-choice { flex-direction: row !important; flex-wrap: wrap !important; }
-.lbf-groups .lb-choice > button { text-align: center !important; }
+.lbf-groups .lb-choice { flex-direction: row; flex-wrap: wrap; }
+.lbf-groups .lb-choice > button { text-align: center; }
 .lbf-grow { display: grid; gap: 8px; }
 .lbf-pick { display: grid; gap: 16px; }
 .lbf-back { justify-self: start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; background: none; border: 0; color: var(--text); font: 600 16px/1.5 var(--font-text); cursor: pointer; }
