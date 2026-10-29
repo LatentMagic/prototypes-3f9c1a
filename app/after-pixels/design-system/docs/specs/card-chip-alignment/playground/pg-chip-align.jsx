@@ -1,6 +1,8 @@
 // Card chip alignment: Home's Available games band (product app/gs-home.jsx), today beside the proposed fix.
 // Today mounts DS.GameCard and DS.SoonCard as shipped. The fix adds one wrapper round name and blurb in GameCard (pgx-text) and changes CSS only.
 (() => {
+  // Mount only on this playground's own page: the design-system bundle also carries this file, runs it before pg-chip-data.jsx, and the prototype loads the bundle.
+  if (!document.querySelector('script[src$="pg-chip-align.jsx"]')) return;
   const DS = window.MCPGameStoreDesignSystem_ef1abd;
   const KEY = 'pg_card-chip-alignment_v1';
   const HOME = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
@@ -73,6 +75,5 @@
       </div>
     );
   };
-  // Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
-  if (document.querySelector('script[src$="pg-chip-align.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 })();

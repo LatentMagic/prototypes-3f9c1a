@@ -1516,6 +1516,13 @@
                 'The design system project now holds the six guarded playground files, and its own _ds_bundle.js carries all six guards, so the hand edit to the bundle is no longer needed. New: docs/specs/playground-mount/ with a handoff.',
               ],
             },
+            {
+              date: '2026-10-29',
+              title: 'Export: the chip-alignment playground checks its page before anything else',
+              items: [
+                'pg-chip-align.jsx returns at its top when the page does not load it, instead of guarding only its mount line: the bundle runs it before its data file, so the rest of it must not run there either. The handoff says so.',
+              ],
+            },
           ],
         },
         {

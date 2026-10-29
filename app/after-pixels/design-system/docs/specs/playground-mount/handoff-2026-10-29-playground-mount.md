@@ -9,7 +9,7 @@ type: 'implementation'
 
 ## Current Focus
 
-Done, pending one check: confirm the rebuilt `_ds_bundle.js` carries the six guards (see Action Items).
+Done. The rebuilt `_ds_bundle.js` carries all six guards (checked 2026-10-29).
 
 ## Task(s)
 
@@ -36,6 +36,8 @@ None was guarded before. Each playground page loads its file with a `src` ending
 - Other playground files also mount unguarded, but they are `.jsx.txt` or inline `<script>` in `.html`, so the bundle does not carry them: `chapter-coming-soon`, `card-row-evenness`, `chat-picture` (`*.jsx.txt`), and the `phone-snags`, `cover-beside-heading`, `underline-hover`, `chat-blocks` pages. Left as they are.
 - Any new playground `.jsx` added to the project will be bundled; its mount needs the same guard.
 
+- `pg-chip-align.jsx` read `GS_GAMES` at the top of its wrapper, before the mount guard. The bundle runs it before `pg-chip-data.jsx`, so it raised a caught `GS_GAMES is not defined`. Fixed 2026-10-29: the guard now sits first in the wrapper and returns early on other pages.
+
 ## Artifacts
 
 - The six files above.
@@ -43,6 +45,6 @@ None was guarded before. Each playground page loads its file with a `src` ending
 
 ## Action Items & Next Steps
 
-1. Grep `_ds_bundle.js` for `script[src$=` and confirm six hits.
-2. Then the product agent refreshes `_ds/` and checks the prototype no longer draws the Canonical row rounds or Available games cards while loading.
+1. ~~Grep `_ds_bundle.js` for `script[src$=` and confirm six hits.~~ Done: six hits.
+2. The product agent refreshes `_ds/` and checks the prototype no longer draws the Canonical row rounds or Available games cards while loading.
 3. Consider adding the mount-guard rule to `skills/build-playground/SKILL.md` so new playground `.jsx` files carry it (needs the user's ratification).
