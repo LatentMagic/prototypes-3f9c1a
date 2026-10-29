@@ -1,0 +1,304 @@
+/* ============================================================================
+   After Pixels — Delve's session page (1236): the run card (3 · Band result, the route, the held roll) and the 3B character sheet.
+   Read by app/gs-delve.jsx. Carried over from the playgrounds delve-v3.html to delve-v9.html in their cascade order, KEEP notes
+   included. Left out: the playground bar and its page offsets, and every rule for a concept not taken (pruned 2026-10-29: the computed
+   style of every element matched before and after, on the hard, fallen and in-progress runs and the now card, at desktop and phone width).
+   Every rule here is scoped to a dv class, so nothing reaches another page. Class names keep the playgrounds' dv2- to dv8- prefixes.
+   ============================================================================ */
+/* ---- from delve-v3.html ---- */
+/* ---- Playground only (1236, Delve v3). ---- */
+/* KEEP: inside the phone frame the screen scrolls on its own, so the top bar sticks to its top, not under the playground bar. */
+/* ---- The card and its top: result statement, character sheet (v2's, with its heading). ---- */
+.dv2 { container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
+@container gs (min-width: 720px) {
+  .dv2 { padding: 24px; }
+}
+/* ---- The die (v2, agreed). ---- */
+.dv2-dbtn { position: relative; z-index: 1; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: grid; place-items: center; color: inherit; }
+.dv2-dbtn:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
+.dv2-die { display: block; overflow: visible; flex: none; }
+/* KEEP: a miss is an empty hex with a visible edge, so it holds 3:1 against the card as a shape. */
+.dv2-die .hx { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dv2-die.is-strong .hx { fill: var(--success); stroke: none; }
+.dv2-die.is-weak .hx { fill: var(--warning); stroke: none; }
+.dv2-die .nm { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+.dv2-die.is-strong .nm { fill: var(--success-on); }
+.dv2-die.is-weak .nm { fill: var(--warning-on); }
+.dv2-die .rim { fill: none; stroke: var(--success); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
+/* KEEP: a natural 1 is a miss with a red edge, heavier than a miss's grey one; no rim, so only the natural 20 has one. */
+.dv2-die.is-fumble .hx { stroke: var(--error); stroke-width: 2.25; }
+.dv2-die.is-fumble .nm { fill: var(--error); }
+/* KEEP: under 64px a two-d20 roll shows a second hex behind its die; from 64px the small numbered die at its corner. */
+.dv2-die .gh { fill: var(--card); stroke: var(--muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.dv2-die .tw polygon { fill: var(--card); stroke: var(--muted); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.dv2-die .tw text { font: 700 17px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; }
+/* KEEP: the picked die gets an off-white ring outside its own rim, so a natural's rim still shows. */
+.dv2-die .sl { fill: none; stroke: var(--off-white); stroke-width: 2.5; vector-effect: non-scaling-stroke; display: none; transform: scale(1.12); transform-origin: 18px 20px; }
+.dv2-die.is-sel .sl { display: inline; }
+/* KEEP: inside the held roll, which sits on the pop-up fill, a miss's hex takes that fill so it reads as empty there too. */
+.dv3-held .dv2-die .hx, .dv3-held .dv2-die .gh, .dv3-held .dv2-die .tw polygon { fill: var(--popup); }
+.dv3-held .dv2-die.is-strong .hx { fill: var(--success); }
+.dv3-held .dv2-die.is-weak .hx { fill: var(--warning); }
+/* ---- The route (v2's E). ---- */
+.dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
+.dv2-num i { font-style: normal; font-weight: 600; }
+.dv2-num.is-back { box-shadow: inset 0 0 0 1.5px var(--muted); color: var(--muted); }
+.dv2-sname { font: 600 12px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
+.dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
+.dvA2-route { display: flex; min-width: 0; }
+.dvA2-stop { flex: 1 1 0; min-width: 0; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 10px; padding: 8px 0 9px; }
+.dvA2-stop.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
+.dvA2-stop.is-on .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
+.dvA2-head { position: relative; width: 100%; display: grid; justify-items: center; gap: 4px; text-align: center; padding: 0 4px; box-sizing: border-box; }
+.dvA2-head::before { content: ''; position: absolute; top: 13px; left: 0; right: 0; height: 2px; background: var(--control-edge); }
+.dvA2-stop:first-child .dvA2-head::before { left: 50%; }
+.dvA2-stop:last-child .dvA2-head::before { right: 50%; }
+.dvA2-dice { position: relative; display: grid; gap: 4px; align-content: start; justify-items: center; }
+.dvE-mom { display: grid; justify-items: center; margin: 4px 0; }
+.dvE-mom:last-child { margin-bottom: 0; }
+/* Column lines, the study (brief item 0): a rule between rooms, or a line down each room behind its dice. */
+.dvA2-route.is-cols-between .dvA2-stop + .dvA2-stop { box-shadow: inset 1px 0 0 var(--line); }
+/* KEEP: on a phone the route keeps room numbers (↩ marks going back) and the held roll names the room; every die takes one fixed row slot so neighbouring columns line up. */
+@container dv2 (max-width: 719.98px) {
+  .dvA2-head .dv2-sname { display: none; }
+  .dvA2-dice svg { width: 30px; height: 33px; }
+  .dv2-num { min-width: 24px; padding: 0 2px; font-size: 13px; }
+  .dvE-mom svg { width: 40px; height: 43px; }
+  .dvA2-route.is-e .dvA2-dice { grid-auto-rows: 46px; gap: 2px; align-items: center; }
+  .dvA2-route.is-e .dvE-mom { margin: 0; }
+}
+.dvE-main { display: grid; gap: 16px; min-width: 0; }
+/* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. Under 800px it sits above the route. */
+@container dv2 (min-width: 800px) {
+  .dvE-main { grid-template-columns: minmax(0, 1fr) 272px; align-items: stretch; }
+}
+.dvE-side, .dv3-live { display: grid; min-width: 0; }
+@container dv2 (max-width: 799.98px) {
+  .dvE-side { order: -1; }
+}
+/* ---- The held roll, three designs. Shared: the pop-up fill and edge, the name of the roll, the moment line. ---- */
+.dv3-held { box-sizing: border-box; min-width: 0; display: grid; align-content: start; gap: 12px; padding: 16px; background: var(--popup); border: 1px solid var(--control-edge); }
+.dv3-hk { display: grid; gap: 2px; min-width: 0; }
+.dv3-k { margin: 0; font: 700 20px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
+.dv3-n { margin: 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); }
+.dv3-lht { display: grid; gap: 4px; min-width: 0; }
+.is-strong { --tc: var(--success); }
+.is-weak { --tc: var(--warning); }
+.is-miss { --tc: var(--text); }
+.is-fumble { --tc: var(--error); }
+/* 1 · Ledger: the die and its name centred, then a labelled row per fact. */
+.dv3-lh { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.dv3-dl { margin: 0; display: grid; border-top: 1px solid var(--line); }
+.dv3-dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.dv3-dl dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
+.dv3-dl dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
+.dv3-dl dd span { font-weight: 400; color: var(--muted); }
+.dv3-dl dd[class*="is-"] { color: var(--tc); }
+/* KEEP: under 800px the held roll sits above the route, so it is kept short: the ledger's die moves beside its name, the big figures shrink. */
+@container dv2 (max-width: 799.98px) {
+  .dv3-held { padding: 12px; gap: 8px; }
+  .dv3-lh { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; text-align: left; gap: 12px; }
+  .dv3-lh svg { width: 52px; height: 57px; }
+  .dv3-dl > div { padding: 6px 0; }
+  .dv3-k { font-size: 18px; }
+}
+/* ---- A key moment picked: an off-white diamond in the held box's top right. ---- */
+.dv3-held { position: relative; }
+.dv3-mk { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; background: var(--off-white); transform: rotate(45deg); }
+@container dv2 (max-width: 799.98px) {
+  .dv3-mk { top: 12px; right: 12px; }
+}
+/* ---- from delve-v4.html ---- */
+/* ---- The sheet card: the session card's surface. ---- */
+.dv4-lay { display: grid; gap: 16px; min-width: 0; }
+.dv4 { container: dv4 / inline-size; display: grid; gap: 16px; align-content: start; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
+@container gs (min-width: 720px) {
+  .dv4 { padding: 24px; }
+}
+/* Glyph boxes: a square per thing, line-drawn; a used one goes grey and struck; an empty slot is a faint outline. */
+.dv4-g { position: relative; flex: none; width: 32px; height: 32px; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--control-edge); color: var(--text); }
+.dv4-g.is-used { box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); }
+.dv4-g.is-used::after { content: ''; position: absolute; left: 3px; right: 3px; top: 50%; height: 1.5px; background: var(--muted); transform: rotate(-45deg); }
+.dv4-g.is-empty { box-shadow: inset 0 0 0 1px var(--line); }
+.dv4-uses { display: flex; gap: 3px; }
+.dv4-uses i { display: block; width: 10px; height: 10px; box-sizing: border-box; border: 1px solid var(--control-edge); }
+.dv4-uses i.is-on { background: var(--off-white); border-color: var(--off-white); }
+/* KEEP: inspiration is the die's hex, rimmed green as a natural 20 is (a natural 20 gives it back); spent, an empty hex. */
+.dv4-insp { display: block; overflow: visible; flex: none; }
+.dv4-insp .hx { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dv4-insp.is-on .hx { fill: var(--off-white); stroke: none; }
+.dv4-insp .rim { fill: none; stroke: var(--success); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
+.dv4-sx { display: block; overflow: visible; }
+.dv4-sx .hx { fill: var(--card); stroke: var(--control-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dv4-sx text { font: 700 13px var(--font-heading); fill: var(--text); text-anchor: middle; dominant-baseline: central; }
+/* ---- from delve-v5.html ---- */
+.dv5 { gap: 12px; }
+.dv5-insw { display: inline-flex; min-height: 26px; align-items: center; }
+.dv5 .dv4-sx text { font-size: 14px; }
+/* KEEP: a free pack slot is a dashed outline, so it reads as room, not as a thing. */
+.dv5 .dv4-g.is-empty { box-shadow: none; outline: 1.5px dashed var(--control-edge); outline-offset: -1.5px; }
+/* 1CB, 1DB: the same sheets with less padding and smaller gaps. */
+.dv4.dv5.is-tight { gap: 8px; padding: 12px 16px; }
+.dv5.is-tight .dv4-g { width: 28px; height: 28px; }
+.dv6-bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; font: 600 14px/1.2 var(--font-text); color: var(--text); padding-bottom: 3px; }
+.dv6-bar small { font: 600 13px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dv6-bar .mcp-prog-top { display: none; }
+/* 1G, 1H: one cell anatomy for every piece: a 36px figure, one line under it. */
+/* KEEP: cells in a group are equal width (the widest name's), so boxes sit evenly however long each name is. */
+.dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px 12px; }
+.dv7-cell { display: grid; grid-template-rows: 36px auto; justify-items: center; align-items: center; align-content: start; gap: 6px; min-width: 32px; }
+.dv7-fig { position: relative; display: grid; place-items: center; }
+/* KEEP: armour carries its +1 on the box's corner, so what it does is seen without a tap. */
+.dv7-arm { position: absolute; top: -6px; right: -12px; min-width: 18px; padding: 2px 3px; background: var(--off-white); color: var(--page); font: 700 11px/1 var(--font-text); font-style: normal; text-align: center; font-variant-numeric: tabular-nums; }
+.dv7-cell.is-used .dv7-arm { background: var(--muted); }
+/* KEEP: a name wraps to at most two balanced lines inside its cell, so a long one never runs into the next box. */
+.dv7-lb { max-width: 88px; align-self: start; text-align: center; text-wrap: balance; font: 600 12px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
+.dv7-cell.is-used .dv7-lb { color: var(--muted); }
+.dv7 .dv7-cell .dv4-sx text { font-size: 20px; }
+.dv7 .dv7-cell .dv4-g { width: 32px; height: 32px; }
+.dv7 .dv7-cell .dv4-uses { gap: 4px; }
+.dv7 .dv7-cell .dv4-uses i { width: 14px; height: 14px; }
+.dv7-h { display: flex; align-items: baseline; gap: 8px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+.dv7-h b { font: 600 13px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
+.dv7 .mcp-prog-top { display: none; }
+/* 1H · Band: groups centred across the card, split by hairlines. */
+/* KEEP: every group grows by the same amount, so the card's slack is shared out between groups, never left beside the hero. */
+/* KEEP: the band never wraps on a desktop card; groups may shrink, never drop to a second row. */
+.dv7-band { display: flex; flex-wrap: nowrap; gap: 0; }
+.dv7-grp { flex: 1 1 auto; min-width: 0; display: grid; gap: 8px; justify-items: center; align-content: start; padding: 0 12px; }
+.dv7-grp:first-child { padding-left: 0; }
+.dv7-grp:last-child { padding-right: 0; }
+.dv7.is-band .dv7-cells { gap: 8px; }
+.dv7-grp.is-hero { justify-items: center; text-align: center; align-content: start; gap: 6px; }
+.dv7-grp.is-hero { align-content: center; }
+.dv7-hero { margin: 0; display: grid; justify-items: center; gap: 4px; }
+.dv7-hero b { font: 700 22px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); white-space: nowrap; }
+.dv7-hero span { font: 600 14px/1.2 var(--font-text); color: var(--muted); }
+/* KEEP: ~ not +, because the phone's fold button sits between Threat and Stats in the markup. */
+.dv7-grp ~ .dv7-grp { border-left: 1px solid var(--line); }
+.dv7-grp .dv7-h { justify-content: center; }
+@container dv4 (max-width: 559.98px) {
+  .dv7-hero b { font-size: 18px; }
+}
+/* ---- from delve-v7.html ---- */
+/* v7: the result statement. 3 · Band: the word and its line on one row, split by a hairline (3g: a space instead). */
+.dv7r-band { display: flex; align-items: center; gap: 0; min-width: 0; }
+.dv7r-word { margin: 0; font: 700 34px/1.05 var(--font-heading); letter-spacing: -.01em; text-wrap: balance; }
+.dv7r-word.is-ok { color: var(--success); }
+.dv7r-word.is-bad { color: var(--warning); }
+.dv7r-word.is-live { color: var(--text); }
+/* KEEP: the line takes the system's 20px heading, so word and line read as one statement, not a heading over small print. */
+.dv7r-line { margin: 0; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; color: var(--text); text-wrap: balance; min-width: 0; }
+.dv7r-band .dv7r-word { padding-right: 24px; flex: none; font-size: 28px; }
+/* KEEP: in the band the line is body text at label weight (Hanken 600), so only the word is display type. */
+.dv7r-band .dv7r-line { padding-left: 24px; border-left: 1px solid var(--line); align-self: stretch; display: flex; align-items: center; font: 600 16px/1.35 var(--font-text); letter-spacing: 0; }
+@container dv2 (max-width: 559.98px) {
+  .dv7r-band { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .dv7r-band .dv7r-word { padding-right: 0; }
+  .dv7r-band .dv7r-line { padding-left: 0; border-left: 0; }
+  .dv7r-word { font-size: 28px; }
+  .dv7r-line { font-size: 18px; }
+  .dv7r-band .dv7r-word { font-size: 24px; }
+  .dv7r-band .dv7r-line { font-size: 16px; }
+}
+/* ---- from delve-v8.html ---- */
+/* v8: the band in rows. Every row uses 1H's group and cell anatomy, so a second row reads as more of the same sheet. */
+.dv8-rows { display: grid; gap: 16px; }
+/* 3B: one row, with more height so the denser groups get air: taller padding, wider gaps inside groups. */
+.dv8.is-3b .dv7-band { padding: 8px 0; }
+.dv8.is-3b .dv7-grp { padding: 0 6px; gap: 12px; min-width: min-content; }
+/* KEEP: 3B's cells never shrink below their label, so a squeezed band wraps (below) instead of labels running together. */
+.dv8.is-3b .dv7-cells { gap: 8px; grid-auto-columns: minmax(min-content, 1fr); }
+/* KEEP: no cell shrinks below its own label (1H's 32px floor would let it), so names never run together. */
+.dv8.is-3b .dv7-cell { min-width: min-content; }
+.dv8.is-3b .dv7-cell .dv7-fig > svg { width: 24px; height: auto; }
+.dv8.is-3b .dv8-stats .dv7-cells { gap: 2px; }
+/* KEEP: the stat hexes are one fixed size, so all six match; they step up to v7's 32px once the card has the room. */
+.dv8.is-3b .dv8-stats .dv7-cell .dv7-fig > svg { width: 28px; }
+@container dv4 (min-width: 960px) {
+  .dv8.is-3b .dv8-stats .dv7-cell .dv7-fig > svg { width: 32px; }
+  .dv8.is-3b .dv8-stats .dv7-cells { gap: 6px; }
+}
+.dv8.is-3b .dv7-band { min-width: 0; }
+.dv8.is-3b .dv7-cell .dv4-g { width: 28px; height: 28px; }
+.dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
+/* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length; labels never wrap. */
+.dv8-meters { display: grid !important; grid-template-columns: max-content minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
+.dv8-meters .dv6-bar { display: contents; font-size: 13px; }
+.dv8-meters .dv6-bar > span { white-space: nowrap; }
+.dv8-meters .dv6-bar small { text-align: left; }
+/* The streak is a count, not slots: a figure in the cell's 36px row. */
+.dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
+/* KEEP: 3B's end groups take only their own width, so the hero sits at the card's left edge and the last group at its right; the slack goes between groups. Like 1H, the band never wraps on a desktop card. */
+.dv8.is-3b .dv7-band { flex-wrap: nowrap; }
+/* KEEP: even space at every hairline. Every group grows by the same px and centres its content, so both sides of each rule get the same space;
+the two end groups grow by half as much and hug the card's edge, so their one inner side matches the rest. Inside an end group the lines stay centred on each other. */
+.dv8.is-3b .dv7-grp { flex: 1 1 auto; }
+.dv8.is-3b .dv7-grp.is-hero { flex: .5 1 auto; padding-left: 0; grid-template-columns: auto; justify-content: start; justify-items: center; }
+.dv8.is-3b .dv7-grp:last-child { flex: .5 1 auto; padding-right: 0; grid-template-columns: auto; justify-content: end; justify-items: center; }
+.dv8-tog { display: none; }
+/* KEEP: a pack name wraps to two lines at most, so its cell never narrows below the width two lines need. */
+.dv8.is-3b .dv8-pack .dv7-cell { min-width: 44px; }
+/* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell. */
+.dv8.is-3b .dv8-adv .dv7-cells { grid-auto-columns: auto; }
+/* Phone card: the rows wrap into a grid of groups, hero across the top. A first pass; M1's fold is not carried over yet. */
+@container dv4 (max-width: 559.98px) {
+  .dv8 .dv7-band { flex-wrap: wrap; }
+  .dv8 .dv7-grp { flex: 1 1 40%; padding: 12px 6px !important; border: 0 !important; border-top: 1px solid var(--line) !important; }
+  .dv8 .dv7-grp.is-hero { flex-basis: 100%; border-top: 0 !important; padding-top: 0 !important; }
+  .dv8-meters { min-width: 0; flex-basis: 100% !important; }
+  /* KEEP: 3B on a phone card: hero, meters and stats each take the full width; the smaller groups pair up two to a row; a lone last group takes the full row. */
+  .dv8.is-3b .dv7-band { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; padding: 0; }
+  .dv8.is-3b .dv7-grp, .dv8.is-3b .dv7-grp.is-hero, .dv8.is-3b .dv7-grp:last-child { min-width: 0; margin: 0; padding: 12px 0 !important; border: 0 !important; border-top: 1px solid var(--line) !important; justify-content: center; justify-items: center; }
+  .dv8.is-3b .dv7-grp.is-hero { grid-column: 1; border-top: 0 !important; padding-top: 0 !important; justify-content: start; justify-items: start; }
+  /* KEEP: on a phone the name and class share one line, wrapping only when the name needs the room. */
+  .dv8.is-3b .dv7-hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; text-align: left; }
+  /* KEEP: as M1, the phone sheet opens folded to the hero and the meters; the control opens the rest. */
+  .dv8.is-3b .dv8-tog { display: grid; grid-column: 2; grid-row: 1; justify-self: end; align-self: start; place-items: center; width: 44px; height: 44px; margin: -10px -10px 0 0; background: none; border: 0; color: var(--text); cursor: pointer; }
+  .dv8.is-3b .dv8-tog svg { transform: rotate(-90deg); transition: transform var(--dur-fast, .15s); }
+  .dv8.is-3b .dv8-tog[aria-expanded="false"] svg { transform: rotate(90deg); }
+  .dv8.is-3b .dv8-tog:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
+  .dv8.is-3b.is-shut .dv7-grp:not(.is-hero):not(.dv8-meters) { display: none; }
+  .dv8.is-3b .dv8-meters, .dv8.is-3b .dv8-stats, .dv8.is-3b .dv7-grp:nth-child(odd):last-child { grid-column: 1 / -1; }
+  .dv8.is-3b .dv8-meters { justify-items: stretch !important; grid-template-columns: max-content minmax(0, 1fr) max-content; }
+  .dv8.is-3b .dv8-stats .dv7-cells { gap: 6px; }
+  .dv8.is-3b .dv7-cell .dv7-fig > svg { width: 28px; }
+}
+/* ---- from delve-v9.html ---- */
+/* KEEP: the hero's name wraps to balanced lines instead of holding one line, so a long name never widens the band past the card. */
+.dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; text-align: center; }
+/* KEEP: on a phone the hero sits left (v8's phone rule), so a wrapped name keeps that alignment. */
+@container dv4 (max-width: 559.98px) {
+  .dv8.is-3b .dv7-hero b { text-align: left; }
+  /* KEEP: on a phone the whole hero row is the fold control: one hover area across the card, the chevron at its right, centred on the hero. The hero sits above it and lets clicks through. */
+  .dv8.is-3b .dv8-tog { grid-column: 1 / -1; grid-row: 1; justify-self: stretch; align-self: stretch; display: flex; justify-content: flex-end; align-items: center; width: auto; height: auto; min-height: 44px; margin: -8px -8px 4px; padding: 0 4px; transition: background var(--dur-fast, .15s); }
+  .dv8.is-3b .dv8-tog:hover { background: var(--popup); }
+  .dv8.is-3b .dv7-grp.is-hero { position: relative; z-index: 1; pointer-events: none; grid-column: 1 / -1; grid-row: 1; padding-right: 40px !important; }
+  /* KEEP: two groups sharing a phone row get the desktop's hairline between them, so a full pack and full abilities never read as one run. */
+  .dv8.is-3b .dv7-band > .dv7-grp.is-r { border-left: 1px solid var(--line) !important; padding-left: 12px !important; }
+  .dv8.is-3b .dv7-band > .dv7-grp:has(+ .is-r) { padding-right: 12px !important; }
+  /* KEEP: Advantage's two cells sit apart on a phone, so Inspiration and Streak read as two things. */
+  .dv8.is-3b .dv8-adv .dv7-cells { gap: 24px; }
+}
+/* ---- canon (2026-10-29) ---- */
+/* KEEP: on a desktop card the meter bars stop growing at 160px and the meters centre in their group, like every other group, so slack
+   lands evenly either side of each hairline; stretched bars soaked it up and left the hero's hairline lopsided. A phone keeps full-width bars. */
+@container dv4 (min-width: 560px) {
+  .dv8.is-3b .dv8-meters { grid-template-columns: max-content minmax(32px, 160px) max-content; justify-content: center; }
+}
+/* The now card's route: its own dv2 container, so the route takes the session page's narrow-card form (numbers, no room names) at the card's width. */
+.dl-now-route { container: dv2 / inline-size; min-width: 0; }
+/* KEEP: the now card's route is the session page's phone form a step smaller (owner, 2026-10-29: "just a bit smaller"): room numbers,
+no room names, 26px dice, 34px key moments, a 36px row slot per die (the phone's 30, 40 and 46). Every die is a button: hover or focus
+rings it as the session page rings the held roll, and a press opens the session page on that roll. */
+.dl-now-route .dvA2-head .dv2-sname { display: none; }
+.dl-now-route .dvA2-dice svg { width: 26px; height: 28px; }
+.dl-now-route .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
+.dl-now-route .dvA2-head::before { top: 10px; }
+.dl-now-route .dvE-mom svg { width: 34px; height: 37px; }
+.dl-now-route .dvA2-route.is-e .dvA2-dice { grid-auto-rows: 36px; gap: 2px; align-items: center; }
+.dl-now-route .dvA2-route.is-e .dvE-mom { margin: 0; }
+.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .sl { display: inline; }
+/* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
+.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .gh { display: none; }
+.dl-now-route .dv2-dbtn:focus-visible { outline: 0; }

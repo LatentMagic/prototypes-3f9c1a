@@ -201,6 +201,8 @@ const GS_SESSIONS = {
     tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
     listTitle: 'Every roll', lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
+    // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
+    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 13, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued',
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
   },
@@ -312,7 +314,8 @@ Object.assign(GS_SESSIONS, {
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, listTitle: 'Every move', share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null },
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
+    hero: 'Wren the Rogue', hpMax: 11, threat: 3, sheet: { used: { Backstab: 1 }, insp: true } },
 });
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];

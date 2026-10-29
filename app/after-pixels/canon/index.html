@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=ds-2026-10-20" />
+<link rel="stylesheet" href="app/gs-delve.css" />
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -832,15 +833,18 @@
   /* player page (app/gs-player.jsx) */
   .pg-mini svg { width: 64px; height: 48px; display: block; }
   .pg-mini.is-sm svg { width: 32px; height: 24px; }
-  .pg-band { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
-  .pg-band-link { grid-column: 1 / -1; }
+  /* KEEP: on a phone the band drops its cover; the page's own cover sits right below it, and two stacked covers read as noise */
+  .pg-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
+  .pg-band > :first-child { display: none; }
+  /* KEEP: the link's 48px hit area overlaps the band's gap and padding when stacked, so the visible space matches the rest of the band */
+  .pg-band-link { grid-column: 1 / -1; margin-block: -12px; }
   .pg-yours-pop { left: 0; right: auto; min-width: 220px; }
   .pg-menu-label { display: block; padding: 12px 16px 4px; }
   .pg-kv { justify-content: space-between; }
   .pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
   .pg-ach-bar { display: block; max-width: 280px; }
   .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
-  @container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band-link { grid-column: auto; } }
+  @container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } .pg-band-link { grid-column: auto; margin-block: 0; } }
   @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
   /* KEEP: a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
   .mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }
@@ -1535,29 +1539,104 @@
 </style>
 <style>
   /* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
-  /* KEEP: the board sits on a grey ground (owner, 2026-10-27), centred in the content column, sized to its tiles so the ground
-     always wraps the board: width is max-content, never a fixed width the tiles can outgrow. */
+  /* KEEP: the card is exactly as wide as what it holds and centred in the column: no stretch of card with nothing in it. */
   .wd-play { display: grid; justify-items: center; min-width: 0; }
-  .wd-board { --g: 6px; --pad: 16px; box-sizing: border-box; width: max-content; max-width: 100%; display: grid; gap: var(--g); padding: var(--pad); background: #302D2A;
-    /* phone: tiles share the column's width (page padding 2 x 16, board padding, four gaps), up to 64px */
-    --t: min(64px, calc((100cqi - 32px - 2 * var(--pad) - 4 * var(--g)) / 5)); }
-  /* KEEP: from 640px the tiles are sized to the window's height, so the hard play (five guesses and the hint) fits below the
-     page's top section on a laptop (1440 x 900: 56px tiles; 1280 x 800: 40px), between 40 and 72px. */
-  @container gs (min-width: 640px) { .wd-board { --g: 8px; --pad: 24px; --t: clamp(40px, calc((100vh - 620px) / 5), 72px); } }
+  /* The tile size (--t) and gap (--g) are set on the card, so the board and the result share them. */
+  .wd-card { --g: 6px; --t: min(64px, calc((100cqi - 32px - 34px - 2 * 28px - 4 * var(--g)) / 5));
+    box-sizing: border-box; width: max-content; max-width: 100%; min-width: 0; padding: 16px; display: grid; gap: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+  /* Tiles are square. Phone: from the column's width (page and card padding, the number gutters out), up to 64px. From 640px:
+     from the window's height, so the hard play fits under the head on a laptop, 56 to 72px. */
+  .wd-board { display: grid; gap: var(--g); justify-content: center; }
   .wd-row { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
   .wd-t { box-sizing: border-box; display: grid; place-items: center; width: var(--t); height: var(--t); font: 700 calc(var(--t) * .5)/1 var(--font-heading); text-transform: uppercase; }
-  /* Tile colours, ruled 2026-10-27; every letter meets AA on its tile or the ground. */
+  /* Tile colours, ruled 2026-10-27; every letter meets AA on its tile or the card. */
   .wd-t.is-hit { background: #4CC38A; color: #08140E; }
   .wd-t.is-near { background: #E5A63B; color: #1B1917; }
   .wd-t.is-miss { border: 2px solid #918B80; color: #ABA79E; }
-  /* KEEP: a guess not yet made is an underline, not a box, so an outlined tile always means a letter not in the word. */
-  .wd-t.is-empty { border-bottom: 3px solid #746E65; }
-  /* The hint row is slim: its letter in a solid off-white edge (the system has no dashed edges), "Hint" beside it. */
-  .wd-row.is-hint { grid-template-rows: 36px; }
-  .wd-t.is-hint { height: 36px; border: 2px solid var(--off-white); color: var(--off-white); font-size: 20px; }
-  .wd-hlab { align-self: center; padding-left: 4px; font: 600 13px/1 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .wd-hlab.is-before { justify-self: end; padding: 0 4px 0 0; }
+  .wd-t.is-empty { border: 2px solid #746E65; }
+  /* The hint row, from the owner's reference (2026-10-28): half a tile high (at least 40px), a dashed off-white edge, the letter
+     at the left and "Hint" at the right; dotted marks across the rest of the row. */
+  .wd-hrow { display: flex; align-items: center; gap: var(--g); width: calc(5 * var(--t) + 4 * var(--g)); height: max(40px, calc(var(--t) * .5)); }
+  /* The columns either side of the hint stay empty: no marks, which clashed with the hint's dashed edge (owner, 2026-10-28). */
+  .wd-dots { flex: 1 1 0; min-width: 0; }
+  .wd-dots.is-l { flex: none; width: calc(var(--p) * (var(--t) + var(--g)) - var(--g)); }
+  /* The hint in the grey of a letter not in the word (owner, 2026-10-28). */
+  .wd-t.is-hint { flex: none; width: var(--t); height: 100%; border: 1.5px dashed #918B80; color: #ABA79E; display: flex; align-items: center; justify-content: space-between; padding: 0 calc(clamp(4px, calc(var(--t) * .09), 10px) + 2px);
+    font: 700 clamp(16px, calc(var(--t) * .3), 20px)/1 var(--font-heading); }
+  /* KEEP: the hint stays one tile wide at every tile size; its padding, letter and "Hint" scale with the tile so both always fit. */
+  .wd-t.is-hint::after { content: 'Hint'; font: 600 clamp(10px, calc(var(--t) * .16), 13px)/1 var(--font-text); letter-spacing: .04em; text-transform: uppercase; }
+  /* KEEP: on a phone the hint row is .7 of a tile high (at least 34px), so it stays a rectangle now the number gutters make the tiles
+     smaller (about 49px at 390px wide); the letter sits over "Hint". */
+  @container gs (max-width: 639px) { .wd-hrow { height: max(34px, calc(var(--t) * .7)); } .wd-t.is-hint { flex-direction: column; justify-content: center; gap: 1px; padding: 0; font-size: 16px; } .wd-t.is-hint::after { font-size: 10px; } }
+  /* Each row's number in a gutter at its left (the hint row's is empty), mirrored by an empty gutter at the right so the tiles
+     stay centred while the board has the card to itself. */
+  .wd-nrow { display: grid; grid-template-columns: 20px auto 20px; align-items: center; gap: 8px; font: 600 13px/1 var(--font-text); }
+  .wd-n { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  /* The result statement: the system's Tag (fill, ink, icon, square edge) at heading size. On a phone it sits above the board,
+     centred, never wider than it (so the card hugs the tiles).
+     KEEP: a faint rule parts the tag from the board, 20px either side at every width (owner, 2026-10-28): under the tag here,
+     upright beside it from 900px. */
+  .wd-res { order: -1; width: 0; min-width: 100%; display: flex; align-items: center; justify-content: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  /* KEEP: the tag is exactly one tile high at every tile size; its type, icon and padding scale with the tile. */
+  .wd-tag { margin: 0; box-sizing: border-box; display: inline-flex; align-items: center; gap: calc(var(--t) * .16); height: var(--t); padding: 0 calc(var(--t) * .3); font: 700 calc(var(--t) * .42)/1 var(--font-heading); white-space: nowrap; }
+  .wd-tag svg { width: calc(var(--t) * .4); height: calc(var(--t) * .4); }
+  .wd-tag.is-ok { background: var(--success); color: var(--success-on, #08140E); } .wd-tag.is-bad { background: var(--warning); color: var(--warning-on, #1B1917); }
+  .wd-tag.is-live { background: color-mix(in srgb, var(--text) 14%, var(--page)); color: var(--text); }
+  @container gs (min-width: 640px) {
+    .wd-card { --g: 8px; --t: clamp(56px, calc((100vh - 560px) / 5), 72px); padding: 24px; gap: 20px; }
+    .wd-nrow { grid-template-columns: 24px auto 24px; gap: 12px; font-size: 14px; }
+  }
+  /* KEEP: from 900px the result sits to the right of the board, centred on its height, so the card is wide rather than tall.
+     Beside it the numbers' mirrored gutter goes, and the number column is exactly one digit wide (1ch in the numbers' own
+     font) on every row, the hint row's empty one included, so the card hugs the numbers and the hint stays in its columns. */
+  @container gs (min-width: 900px) {
+    .wd-card { grid-template-columns: auto auto; column-gap: 20px; align-items: center; }
+    .wd-res { order: 0; width: auto; min-width: 0; align-self: stretch; padding: 0 0 0 20px; border-bottom: 0; border-left: 1px solid var(--line); }
+    .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
+  }
   .wd-every .gs-lines { margin: 0; }
+  /* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
+  /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
+  .wd-now { container: wdnow / inline-size; }
+  .wd-now-in { display: grid; gap: 16px; min-width: 0; }
+  .wd-now-in > .lb-top { flex-wrap: nowrap; }
+  .wd-now-in > .lb-top > .gs-stack-xs { flex: 1 1 0; }
+  .wd-now-in > .lb-top > .lb-big, .wd-now-in > .lb-top > .es-vd { flex: 0 1 auto; max-width: 50%; text-align: right; }
+  .wd-now-pic { display: grid; justify-self: center; }
+  .wd-now-line { --t: 56px; --g: 6px; display: flex; align-items: center; gap: 16px; }
+  .wd-now-row { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
+  .wd-trail { display: grid; gap: 3px; }
+  .wd-tr { display: grid; grid-template-columns: repeat(5, 10px); gap: 2px; }
+  .wd-tr > i { display: block; aspect-ratio: 1; box-sizing: border-box; }
+  .wd-tr > i.is-hit { background: #4CC38A; }
+  .wd-tr > i.is-near { background: #E5A63B; }
+  /* KEEP: the trail's misses at a 1px outline, so the small blocks read lighter than the big tiles. */
+  .wd-tr > i.is-miss { border: 1px solid #918B80; }
+  /* A guess not used: a flat block in the line colour, so it never reads as a miss. */
+  .wd-tr > i.is-empty { background: var(--line); }
+  /* KEEP: the hint at trail size: a 10px square under the letter it gave, edged in 1px dots 3px apart (a dot at each corner, four
+     a side) so it reads as dotted at this size; the rest of its row empty. */
+  .wd-tr > i.is-hint { background:
+    linear-gradient(90deg, #ABA79E 1px, transparent 0) top / 3px 1px repeat-x,
+    linear-gradient(90deg, #ABA79E 1px, transparent 0) bottom / 3px 1px repeat-x,
+    linear-gradient(180deg, #ABA79E 1px, transparent 0) left / 1px 3px repeat-y,
+    linear-gradient(180deg, #ABA79E 1px, transparent 0) right / 1px 3px repeat-y; }
+  /* KEEP: stacked (a card under 600px): the gap below the picture matches the gap above it as seen. The title's line box ends about
+     6px under its figures, so the picture gets 6px more below it. Under 480px the trail's gap is 12px and the tiles fit the card
+     (44px at most), so the row never runs past the card's right padding. */
+  @container wdnow (max-width: 599.98px) { .wd-now-in > .wd-now-pic { margin-bottom: 6px; } }
+  @container wdnow (max-width: 479.98px) { .wd-now-line { gap: 12px; --t: min(44px, calc((100cqi - 96px) / 5)); } }
+  /* KEEP: on a card 600px wide or more, the label and title, the picture and the result share the top row (the result stays top
+     right) and the foot runs below. The head gives way before the picture, so the tiles never spill into the gutters. */
+  @container wdnow (min-width: 600px) {
+    .wd-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res" "foot foot foot" "next next next"; column-gap: 24px; row-gap: 24px; }
+    .wd-now-in > .lb-top { display: contents; }
+    .wd-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
+    .wd-now-in > .lb-top > :is(.lb-big, .es-vd) { grid-area: res; align-self: start; max-width: none; }
+    .wd-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
+    .wd-now-in > .lb-foot { grid-area: foot; }
+    .wd-now-in > .gs-pu-nextlink { grid-area: next; }
+  }
   /* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
      stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's
      game-art rule) it grows to full size and fills. Where nothing sets --on (the session page) it stays at rest. */
@@ -1631,6 +1710,7 @@
 <script type="text/babel" src="app/gs-pass-aids.jsx"></script>
 <script type="text/babel" src="app/gs-escape.jsx"></script>
 <script type="text/babel" src="app/gs-word.jsx"></script>
+<script type="text/babel" src="app/gs-delve.jsx"></script>
 <script type="text/babel" src="app/main.jsx"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 date: '2026-10-28'
 ticket: '1236'
 topic: 'word-session-v6'
-status: 'in-progress'
+status: 'superseded'
 type: 'playground'
 ---
 

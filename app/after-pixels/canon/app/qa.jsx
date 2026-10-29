@@ -180,6 +180,9 @@ const QaPalette = ({ statesGroups, onGo, onClose }) => {
 };
 
 Object.assign(window, { KIT_QA, QaPalette });
+KIT_QA.unshift({ key: 'delve-1236', title: 'Delve: session page and now card (1236, not signed off)',
+  note: 'Each at desktop and phone width. The sheet in one row on desktop (3B); on a phone folded to the hero and meters, the whole hero row opens it. The run card: the ending word, a hairline, its line; the route; the held roll. Every move collapsed. Now card: the ending word top right, the route at card size; a die opens the session page on that roll.',
+  steps: ['library-delve', 'library-delve-in-progress', 'session-delve', 'session-delve-fallen', 'session-delve-hard', 'session-delve-in-progress'] });
 KIT_QA.unshift({ key: 'escape-1236', title: 'Escape: session page and now card (1236, not signed off)',
   note: 'Each at desktop and phone width. Session page: the door and Escaped with the verdict, the line, one lane per lock (two a row on desktop, the picked one alone on a phone), Every move collapsed. Now card: Escaped and the verdict at the head’s right, the line; press a door: the session page opens on that lock’s lane. Hard: the cabinet lane wraps to two rows; doors stay 32px apart.',
   steps: ['library-escape', 'library-escape-on-par', 'library-escape-over', 'library-escape-hard', 'library-escape-in-progress', 'library-escape-free',

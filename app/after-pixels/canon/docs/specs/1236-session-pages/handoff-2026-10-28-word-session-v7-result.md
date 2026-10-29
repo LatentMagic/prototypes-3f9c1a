@@ -2,7 +2,7 @@
 date: '2026-10-28'
 ticket: '1236'
 topic: 'word-session-result'
-status: 'in-progress'
+status: 'landed'
 type: 'exploration'
 ---
 
@@ -25,6 +25,45 @@ All three are rejected. A full redesign is needed. The tiles, hint and numbers a
 - **No redundancy.** "In 6" is always 6. "6/6" with "All 6 guesses used" says it three times.
 - **3:** the concept has something, but it's only a first sketch. "4/6" reads as a fraction, as if you did 4 out of 6. The track reads as a progress bar you failed to fill. "Not solved" could be amber (minor).
 - **Shape:** tiles on the left and the content on the right would give the card a better shape. 1's use of space was acceptable.
+
+## Round 7, eight objects (owner, 2026-10-28)
+
+He read them from the bottom. Cover: no, the art asset keeps coming back and makes no sense under the head's cover. Stamp on the board: no, it covers the solved word. Plaque: acceptable, but the double rule is a new theme. Ticket and ruler: no, they look like a football scorecard. Seal: strays from the game. Key: acceptable, but too much green, and a button with depth isn't an agreed surface. Receipt: it now looks even more like a football card; round 6's version was more interesting. "Getting somewhere, but not there yet."
+- **Lesson: stay inside the language already set.** That is the game spec and what the session page already draws (tiles, the dashed hint tile, the card, the DS type). No new surfaces, depth, double rules or cover art, nothing over the board, little green, and nothing that looks like a sports scorecard.
+
+## Round 6, eight concepts (owner, 2026-10-28)
+
+- 1 Crossword: no, it repeats the tiles. 2 Headline: it repeats the chrome (the No.) and sets a sentence in title type, which is wrong. 3 Trophy: a floating duplicate of the row, though it would be acceptable if it were held as a special object. 4 Tally: a big no, it doesn't evoke the game. 5 Day crossed off: it signals nothing. 6 Quote: a big no. 8: broken.
+- **7 Receipt: the most interesting.** It "felt like a game card". Use "Solved", not "Found".
+
+## Landed in the main build (2026-10-28)
+
+- `app/gs-word.jsx` and the Daily Word block in `index.html` now hold v6's board (square tiles, numbers, the dashed hint row) in one card, with D beside it: the store's Tag at heading size, centred on the board. It reads "Solved", "Failed" or "In progress". The head carries no result (`GS_SESSION_QUIET.word`). The old grey-ground board is gone.
+- The hint misalignment is fixed: from 900px the number column is exactly 1ch, in the numbers' own font, on every row. The hint row's empty one had been narrower and pulled the hint left. The same fix is in `pg-wd7.jsx`.
+- Reach it: States → "7. Session page: Daily Word, the hard play", or Library → Daily Word → Your plays → a play.
+- Not done: the now card (open, below). The playground bar's other switches (Numbers, The 5, Failed says) were playground-only.
+
+## Decided (owner, 2026-10-28)
+
+- **The result statement is the store's status Tag**, scaled up beside the board, centred on the board's height (round 11, D): "Solved" in green, "Failed" in amber, "In progress" in the neutral fill.
+- The left hug: beside something, the number column is only as wide as its digit.
+- **The now card, still open.** Decide it when the library game page is built: either the chip, or plain coloured text as Escape uses ("Solved" in green). The owner leans towards Escape's way. It depends on what else carries over to the card, and on whether the card is thematic enough without the chip.
+
+## Next session: start here
+
+1. **Bug (owner, 2026-10-28): on a phone the hint is a full-size square tile**, not the half-height row. Likely cause: the phone rule in `index.html` (`@container gs (max-width: 639px) { .wd-hrow { height: max(48px, calc(var(--t) * .75)) } … }`) now reads `--t`, which moved from `.wd-board` to `.wd-card`. Check it against the v6 reference and fix it.
+2. **Open: on a phone, does the result chip go above the board or below it?** For now it is above, centred, with 24px to the board. The owner leans towards the top but hasn't decided.
+3. Landed since the D build: the chip is one tile high at every size (`--t` and `--g` are now set on `.wd-card`, shared by the board and the chip), and on a phone it is centred.
+4. Check the landed page at phone and desktop widths, on all four plays.
+5. Daily Word's now card on the library game page: the chip, or Escape's plain green text (the owner leans towards Escape's).
+
+## Earlier "start here" (superseded)
+
+- **Go wide.** Make a sheet of about eight rough concepts for Word's result statement. Each should be a different concept, not a layout of the same parts, and some should be deliberately too far. The owner reacts best to everything shown together on one sheet.
+- Starting points from Word's world (not yet shown): the found word written in like a crossword answer; a dated daily stamp, like a newspaper's; the last row lifting off as the trophy; on Failed, the word's outline with its one missing letter.
+- Fixed: the tiles, the hint and the numbers. The 5 carries the signal better than "to spare".
+- Round 5 (A Lockup, B In one line, C The row's own number) has had no reaction yet, beyond "not creative enough".
+- Never again: "Solved" as the same heading every time, "/6", a six-slot bar, big blocks of green, words that aren't English ("5th", "5 Guess"), sentences per row, board and keys.
 
 ## v7 (`playground/word-v7.html`, `pg-wd7.jsx`): two rounds, all rejected (owner, 2026-10-28)
 
@@ -89,4 +128,4 @@ v7 keeps v6's board. The numbers are always on (agreed; no switch).
 
 - Not ratified: all result copy, the 900px breakpoint, and showing the word on the session page (design 1 shows only the letters that were placed; a failed play never reveals the missing letter).
 - The owner is frustrated with how often agents repeat themselves. Keep replies short, ask one question at a time, and never re-ask what a handoff already settles.
-- `uploads/Screenshot 2026-10-28 at 06.57.53.png`: the owner's screenshot of the block; used, and can be deleted at session end.
+- This session's screenshots in `uploads/` were used and deleted. The older ones (05.37 to 06.26, and 27 Oct) were left alone.

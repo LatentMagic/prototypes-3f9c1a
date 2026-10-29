@@ -104,9 +104,21 @@ const GsSessResult = ({ s, title }) => (
   </section>
 );
 
+// KEEP: a session page open on this edition's play follows Config → This edition and the demo bar while it is open: in progress
+// shows the play so far, finished shows the play Config picks. An earlier edition's page is left alone.
+const gsThisEdSid = (gs, sid) => {
+  const s = GS_SESSIONS[sid]; const gid = s && s.gid; const live = gs.review && gs.review.week === 'live';
+  if (gid === 'delve') return sid === 'delve' || sid === 'delve-live' ? (live ? 'delve-live' : 'delve') : sid;
+  const c = gid && ((typeof PZ !== 'undefined' && PZ[gid]) || (typeof DP_PZ !== 'undefined' && DP_PZ[gid])); if (!c) return sid;
+  const mine = [c.todayBase || c.today, c.liveSid, ...Object.values((window.GS_ED_SIDS || {})[gid] || {}), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])];
+  if (!mine.includes(sid)) return sid;
+  const to = live ? c.liveSid : c.today;
+  return GS_SESSIONS[to] ? to : sid;
+};
 const GsSessionRecord = () => {
   const gs = useGs();
-  const s = GS_SESSIONS[gs.route.id];
+  const sid = gsThisEdSid(gs, gs.route.id);
+  const s = GS_SESSIONS[sid];
   const [share, setShare] = React.useState(false);
   // A game with no result block (36,000 Summers Ago) shares its product page link only (MCPG-030 AF-04).
   const linkOnly = s.share == null && s.kind === 'day' && !s.live;
@@ -114,13 +126,13 @@ const GsSessionRecord = () => {
   const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
   // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once.
-  const ed = window.gsSessEd ? gsSessEd(gs, gs.route.id) : null;
+  const ed = window.gsSessEd ? gsSessEd(gs, sid) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
   // Controls only where they work: a player without the Pass can carry on or start over only a free game or its free first edition.
   // A Pass-ended player's unfinished Pass-only session is kept: it says so, with the Pass page, and no Play.
   const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!window.PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
   const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
-  const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, gs.route.id)}>Play again</DS.Button> : null;
+  const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, sid)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   // A game's own session body: window.GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
   // A game without one shows the plain list.
@@ -133,7 +145,7 @@ const GsSessionRecord = () => {
     </section>
   );
   const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];
-  const body = Body ? <Body s={s} sid={gs.route.id} /> : list;
+  const body = Body ? <Body s={s} sid={sid} /> : list;
   const title = gsHeadTitle(s, ed);
   const label = gsHeadGame(s) + ' · ' + gsHeadDay(gsSessDate(s, gs));
   const art = s.art;
@@ -151,12 +163,13 @@ const GsSessionRecord = () => {
     <main className="gs-wrap gs-main">
       <GsSessHead art={art} label={label} title={title} actions={
         kept ? <GsNeedsPass gid={s.gid} text="This session is kept. Carrying it on comes with the Pass." />
-          : s.live ? <DS.Button onClick={() => gs.play(s.game, gs.route.id)}>Play</DS.Button>
+          : s.live ? <DS.Button onClick={() => gs.play(s.game, sid)}>Play</DS.Button>
           : <>{again}{text && <DS.Button onClick={() => setShare(true)}>Share</DS.Button>}</>
       } />
       {!Body && <GsSessResult s={s} title={title} />}
 
-      {delve ? (
+      {/* Delve's own body (app/gs-delve.jsx) replaces the old tracks-and-endings layout. */}
+      {delve && !Body ? (
         <section className="gs-pitch">
           {list}
           <div className="gs-stack-md">

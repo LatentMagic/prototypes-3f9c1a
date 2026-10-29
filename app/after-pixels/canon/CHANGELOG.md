@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-29. Delve's session page, told in its own terms
+- Delve's session page shows the hero's character sheet, then the run: the result statement (the ending word and its line), the route of rooms with every roll as a die, and the held roll beside it.
+- On a phone the sheet opens folded to the hero, hit points and threat.
+- The route carries down to Delve's now card on the library game page, a step smaller; each die opens the session page on that roll.
+
+## 2026-10-28. Session pages told in the game's own terms: Escape and Daily Word
+- A session page now has two parts: a shared top section, the same for every game, and below it the play told in the game's own terms.
+- Escape's session page shows the rooms and locks you came through. Daily Word's shows the board, with the hint row and the result statement.
+- Each game's result statement carries down to its now card on the library game page: Escape's open door, and Daily Word's last guess beside a six-row trail.
+
 ## 2026-10-20. The product is named After Pixels
 - The placeholder `[Platform]` and the working name MCP Games are now After Pixels everywhere in the app, including the Pass ("the After Pixels Pass") and the two directory listings.
 - Links and contact addresses are on afterpixels.com.

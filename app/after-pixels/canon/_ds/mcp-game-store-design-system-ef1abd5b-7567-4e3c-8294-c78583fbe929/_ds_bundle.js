@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"afd1c61a7153","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"248177b53049","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"c22de55edee6","components/press.js":"4f94d27dbfac","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"09130bb52dab","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"41cfed219103","components/surfaces/GamePick.jsx":"dd0548e5be10","components/surfaces/GameTile.jsx":"23c6af665050","components/surfaces/ListRow.jsx":"3b7b8e625a5d","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"8d5e94beb034","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"05ee0cbcfe84","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"fbeb225c43a1","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"0489d893eb17","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"3767a6945782","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"8df2d13f57fc","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"bf863143ea04","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"e25165955e1d"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"MoveList","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"MoveRow","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"e9b7de29de70","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/chat/chat-press.js":"6e03f8f25294","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"ff0c91ecf52b","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"953868a55bdb","components/media/Cover.jsx":"58ccd29ddc40","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"2b754c72f7ec","components/press.js":"894b196527ca","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"45163922cc67","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/GameCard.jsx":"41cfed219103","components/surfaces/GamePick.jsx":"dd0548e5be10","components/surfaces/GameTile.jsx":"23c6af665050","components/surfaces/ListRow.jsx":"43f5ddb69d8e","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/MoveRow.jsx":"2861e1d636c0","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"f0715a8a576a","components/surfaces/SoonCard.jsx":"f4eebe3c025b","docs/archive/rows-and-history/playground/rows.jsx":"9c8ccfd05b69","docs/specs/canonical-row/playground/pg-row-app.jsx":"cc9d315d1064","docs/specs/canonical-row/playground/pg-row-css.js":"b569fd45938d","docs/specs/canonical-row/playground/pg-row-data.jsx":"a2ca1acd67eb","docs/specs/canonical-row/playground/pg-row2-app.jsx":"5c4171cced51","docs/specs/canonical-row/playground/pg-row2-data.jsx":"7a7793c7849c","docs/specs/canonical-row/playground/pg-row3-app.jsx":"d6f7e622ce5a","docs/specs/canonical-row/playground/pg-row3-data.jsx":"a8f679fab965","docs/specs/canonical-row/playground/pg-row4-app.jsx":"eeb7f87cb840","docs/specs/canonical-row/playground/pg-row4-data.jsx":"011bd368af88","docs/specs/card-chip-alignment/playground/pg-chip-align.jsx":"f4163d0726a7","docs/specs/card-chip-alignment/playground/pg-chip-data.jsx":"4f51c4b5eb3d","docs/specs/card-snug-title/playground/pg-card-snug-title.jsx":"b9e037ef2f89","docs/specs/card-snug-title/playground/pg-data.jsx":"4f51c4b5eb3d","ui_kits/shop/Screens.jsx":"e25165955e1d"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 
 (() => {
 
@@ -1109,7 +1109,7 @@ function Block({
 }
 const paras = t => t == null ? [] : Array.isArray(t) ? t : [t];
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
-// Stays at the latest turn while it lays out, until the reader scrolls it themselves.
+// KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
 function useChatScroll(body, turns) {
   const [up, setUp] = React.useState(false);
   React.useEffect(() => {
@@ -1494,7 +1494,7 @@ function useReducedMotion() {
   }, []);
   return r;
 }
-// Follows the newest piece; a reader who scrolls takes over until they scroll back to the bottom. Under a given time it always follows.
+// KEEP: Follows the newest piece; a reader who scrolls takes over until they scroll back to the bottom. Under a given time it always follows.
 function usePlaybackScroll(body, pinned) {
   const follow = React.useRef(true),
     touched = React.useRef(false);
@@ -1694,7 +1694,7 @@ Object.assign(__ds_scope, { ChatPlayback });
 
 // components/press.js
 try { (() => {
-// Holds the pressed look for at least 120ms so a quick tap still shows it (from the hand-off).
+// KEEP: Holds the pressed look for at least 120ms so a quick tap still shows it (from the hand-off).
 function usePress() {
   const [pressed, setPressed] = React.useState(false);
   const t = React.useRef(0);
@@ -1721,7 +1721,7 @@ Object.assign(__ds_scope, { usePress });
 // components/actions/Button.jsx
 try { (() => {
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-// Working state: shows at once (a receipt for the press), then holds at least `min` ms so it never flickers.
+// KEEP: Working state: shows at once (a receipt for the press), then holds at least `min` ms so it never flickers.
 function useHeld(on, min) {
   const [held, setHeld] = React.useState(on);
   const t0 = React.useRef(on ? Date.now() : 0);
@@ -1970,7 +1970,7 @@ function CardRow({
       if (ro) ro.disconnect();
     };
   }, []);
-  // A button that reaches its end hides; focus moves to the other one.
+  // KEEP: A button that reaches its end hides; focus moves to the other one.
   React.useEffect(() => {
     if (pressed.current === 'next' && at.end && prev.current) {
       prev.current.focus({
@@ -1984,6 +1984,7 @@ function CardRow({
       pressed.current = 'next';
     }
   }, [at.start, at.end]);
+  // KEEP: each press moves the row by one card; with reduced motion it jumps instead of gliding.
   const move = d => {
     const el = ref.current;
     if (!el) return;
@@ -2285,7 +2286,7 @@ const toForms = v => {
   return null;
 };
 const over = el => el.scrollWidth > el.clientWidth + 0.5;
-// The longest form that fits; the last form if none does (CSS cuts it with "…").
+// KEEP: The longest form that fits; the last form if none does (CSS cuts it with "…").
 const pick = (el, forms, what) => {
   for (const f of forms) {
     el.textContent = f;
@@ -2293,7 +2294,7 @@ const pick = (el, forms, what) => {
   }
   warn(what + ' "' + forms[forms.length - 1] + '" doesn\u2019t fit even in its shortest form; pass a shorter form last.');
 };
-// Title: name, then " · game". Too long: the game goes first, whole; then the name is cut, with no space or dot before the "…".
+// KEEP: Title: name, then " · game". Too long: the game goes first, whole; then the name is cut, with no space or dot before the "…".
 const fitTitle = (t, n, g, full) => {
   if (g) g.style.display = '';
   n.textContent = full;
@@ -2363,6 +2364,7 @@ function ListRow({
   const gameOn = !!game && hasLead && slots;
   const tText = isText(title);
   const fitKey = JSON.stringify([slots, tText && String(title), gameOn && game, rF, wF]);
+  // KEEP: in a row under 440px wide, result and when show only their shortest form; the fit reruns once fonts load and on every resize, so no line overflows.
   React.useLayoutEffect(() => {
     const r = row.current;
     if (!r || !slots) return undefined;
@@ -2426,7 +2428,7 @@ function ListRow({
   }, title), meta && /*#__PURE__*/React.createElement("span", {
     className: "mcp-row-meta"
   }, meta)), endEl, go);
-  // Text the row hides to fit (the game's name, longer forms) stays in the accessible name.
+  // KEEP: Text the row hides to fit (the game's name, longer forms) stays in the accessible name.
   const name = label || (slots && (tText || sub) ? [!sub && String(title), gameOn && game, rep && 'Replay', rF && rF[0], wF && wF[0]].filter(Boolean).join(', ') : undefined);
   if (!live) return /*#__PURE__*/React.createElement("div", {
     ref: row,
@@ -2545,6 +2547,60 @@ function Menu({
 Object.assign(__ds_scope, { Menu });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/Menu.jsx", error: String((e && e.message) || e) }); }
 
+// components/surfaces/MoveRow.jsx
+try { (() => {
+// The move row (1236 session pages): one line of a play's record, from ListRow's look. It opens nothing, so it has no chevron,
+// hover or press. A game sends a label and its parts as plain strings, in the order played, and writes each line once.
+const said = new Set();
+const warn = m => {
+  if (!said.has(m)) {
+    said.add(m);
+    console.warn('MoveRow: ' + m);
+  }
+};
+const isText = v => typeof v === 'string' || typeof v === 'number';
+function MoveList({
+  children,
+  label,
+  className = ''
+}) {
+  return /*#__PURE__*/React.createElement("ol", {
+    className: ('mcp-rows mcp-moves ' + className).trim(),
+    "aria-label": label
+  }, React.Children.map(children, (c, i) => c && /*#__PURE__*/React.createElement("li", {
+    key: i
+  }, c)));
+}
+function MoveRow({
+  label,
+  parts,
+  className = ''
+}) {
+  if (!isText(label)) warn('label is plain text: the line\u2019s name ("Dexterity", "Guess 1").');
+  const list = (Array.isArray(parts) ? parts : parts == null ? [] : [parts]).filter(p => {
+    if (isText(p)) return true;
+    warn('parts are plain strings; a part that isn\u2019t is dropped.');
+    return false;
+  }).map(String);
+  if (!list.length) warn('"' + label + '" has no parts; line two is empty.');
+  // KEEP: each part is its own unit on line two: parts sit side by side with a 12px gap while they fit, a part that doesn't fit starts a new line, and a long part wraps within itself at spaces, never mid-word, so a long Delve turn and a short guess both read cleanly at 320px.
+  // KEEP: between parts a hidden ", " so a screen reader and a copy read "CRANE, 1 in place, 1 elsewhere", not "CRANE1 in place".
+  return /*#__PURE__*/React.createElement("div", {
+    className: ('mcp-move ' + className).trim()
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mcp-move-label"
+  }, label), list.length > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-move-parts"
+  }, list.map((p, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    className: i === 0 ? 'mcp-move-lead' : 'mcp-move-rest'
+  }, i > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "mcp-move-sep"
+  }, ", "), p))));
+}
+Object.assign(__ds_scope, { MoveList, MoveRow });
+})(); } catch (e) { __ds_ns.__errors.push({ path: "components/surfaces/MoveRow.jsx", error: String((e && e.message) || e) }); }
+
 // components/surfaces/NeedsPass.jsx
 try { (() => {
 // Needs the Pass ("What stays, what returns"): stands where a game's play control would be when the player cannot play without the Pass.
@@ -2656,7 +2712,7 @@ Object.assign(__ds_scope, { PageGrid });
 
 // components/surfaces/Popup.jsx
 try { (() => {
-/* Measures the layer, which fills whatever it renders in: the viewport on a real device, or a phone frame (a transformed or contained ancestor) in a prototype. */
+// KEEP: a panel is a sheet or a window by the width of the area the popup renders in (the viewport on a device, a phone frame in a prototype), not the browser window, so a framed prototype shows the phone posture.
 function useWide(ref, bp) {
   const [w, setW] = React.useState(() => typeof window !== 'undefined' ? window.innerWidth >= bp : true);
   React.useLayoutEffect(() => {
@@ -2700,6 +2756,7 @@ function Popup({
   dismiss.current = () => {
     if (!busy && onClose) onClose();
   };
+  // KEEP: on open, focus goes to the first control; on close it returns to what opened it. Escape and the dim close it, except while busy.
   React.useEffect(() => {
     if (open) {
       opener.current = document.activeElement;
@@ -6545,6 +6602,8 @@ try { (() => {
 // Card chip alignment: Home's Available games band (product app/gs-home.jsx), today beside the proposed fix.
 // Today mounts DS.GameCard and DS.SoonCard as shipped. The fix adds one wrapper round name and blurb in GameCard (pgx-text) and changes CSS only.
 (() => {
+  // Mount only on this playground's own page: the design-system bundle also carries this file, runs it before pg-chip-data.jsx, and the prototype loads the bundle.
+  if (!document.querySelector('script[src$="pg-chip-align.jsx"]')) return;
   const DS = window.MCPGameStoreDesignSystem_ef1abd;
   const KEY = 'pg_card-chip-alignment_v1';
   const HOME = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
@@ -6803,8 +6862,7 @@ try { (() => {
       note: "Chips at the bottom, white space above. Coming soon chips at different heights."
     }));
   };
-  // Mount only on this playground's own page: the design-system bundle also carries this file, and the prototype loads the bundle.
-  if (document.querySelector('script[src$="pg-chip-align.jsx"]')) ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 })();
 })(); } catch (e) { __ds_ns.__errors.push({ path: "docs/specs/card-chip-alignment/playground/pg-chip-align.jsx", error: String((e && e.message) || e) }); }
 
@@ -7802,6 +7860,10 @@ __ds_ns.RowList = __ds_scope.RowList;
 __ds_ns.ListRow = __ds_scope.ListRow;
 
 __ds_ns.Menu = __ds_scope.Menu;
+
+__ds_ns.MoveList = __ds_scope.MoveList;
+
+__ds_ns.MoveRow = __ds_scope.MoveRow;
 
 __ds_ns.NeedsPass = __ds_scope.NeedsPass;
 

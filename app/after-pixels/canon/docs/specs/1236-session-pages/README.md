@@ -2,7 +2,7 @@
 
 ## What a session page is (owner, 2026-10-27)
 
-A session page shows one play and how it went. Its top section belongs to the platform and is the same on every game: the cover, the title, Play and Share, for example; exactly what it holds is still to be designed. Below it, the play is told in the game's own terms: its design choices evoke the theme of this game, so it feels like this game and no other, while staying recognisably After Pixels. The background and chrome stay the store's; the game comes through in its elements. A page the player is excited to go and see.
+A session page shows one play and how it went. Its top section belongs to the platform and is the same on every game: the cover, the title and Share, for example, with Play only where the game can be played again (a daily edition cannot); exactly what it holds is still to be designed. Below it, the play is told in the game's own terms: its design choices evoke the theme of this game, so it feels like this game and no other, while staying recognisably After Pixels. The background and chrome stay the store's; the game comes through in its elements. A page the player is excited to go and see.
 
 Each game's session page is being redesigned one game at a time. Each page should feel like its own game and still read as part of After Pixels. Escape comes first.
 
@@ -10,11 +10,23 @@ Each game's session page is being redesigned one game at a time. Each page shoul
 
 What should Escape's session page be, built on the timeline, and how should it connect with the THIS WEEK card at the top left of Escape's library game page?
 
-## Where it stands (2026-10-27)
+## Where it stands (2026-10-28)
 
 Escape's session page (v5) and its now card are in the main build: `app/gs-escape.jsx`. Latest: `handoff-2026-10-27-escape-into-app.md`.
 
-Daily Word's session page (the playground's option 1, rows on grey) is in the main build: `app/gs-word.jsx`. The owner rejected it on 2026-10-28; its redesign is the v6 playground (`playground/word-v6.html`, `handoff-2026-10-28-word-session-v6.md`). Also: `handoff-2026-10-28-word-asset-and-edition-picks.md` (Daily Word's cover everywhere, Config → This edition).
+Daily Word's session page and its now card are in the main build (`app/gs-word.jsx`).
+- Session page: the board with the result statement as the store's Tag (v6, v7 D, v9). Latest: `handoff-2026-10-28-word-session-v9-built.md`.
+- Now card: v11's D2 at 56px tiles: the edition as the title ("#212"), the plain result word, the last guess beside a six-row trail, no sentence. Latest: `handoff-2026-10-28-word-now-card-built.md`.
+- Also: `handoff-2026-10-28-word-asset-and-edition-picks.md` (Daily Word's cover everywhere, Config → This edition).
+
+Both games are in `CHANGELOG.md` (2026-10-28).
+
+## Delve: the question
+
+What should Delve's session page be, built on the run's key moments joined to its timeline? Session page only; the now card follows. Spec: `delve.md` (monorepo main `55ae858cb`), read from the brief's attachment.
+
+- Playground: `playground/delve-v1.html` (four concepts). Latest: `handoff-2026-10-28-delve-session-audit.md` (audit; Die is Hex, Stone, Mark). Before it: `handoff-2026-10-28-delve-session-playground.md`, which lists where the brief, spec, images and supplied code are.
+- Settled for Delve (brief, 2026-10-28): the store's quiet head as Escape has it, Share in it, no Play on a finished run; Every move as Escape's collapsed list; no white or cream ground; every option keeps the key moments, the path through the rooms with going back, and rooms reached and threat.
 
 ## Settled, not reopened here
 

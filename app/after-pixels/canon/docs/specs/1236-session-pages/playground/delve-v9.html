@@ -1,0 +1,62 @@
+<!doctype html>
+<!-- Playground (1236): Delve v9, 3B only, with config for every optional part of the sheet (fewest to most).
+     The main build, loaded live from index.html, with delve-v3 to v8's styles and pg-dv-seed, pg-dv3 to pg-dv9 before app/main.jsx. -->
+<html lang="en">
+<head>
+<base href="../../../../" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Delve’s sheet, 3B config, v9 (playground)</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<style>
+  /* KEEP: the hero's name wraps to balanced lines instead of holding one line, so a long name never widens the band past the card. */
+  .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; text-align: center; }
+  /* KEEP: on a phone the hero sits left (v8's phone rule), so a wrapped name keeps that alignment. */
+  @container dv4 (max-width: 559.98px) {
+    .dv8.is-3b .dv7-hero b { text-align: left; }
+    /* KEEP: on a phone the whole hero row is the fold control: one hover area across the card, the chevron at its right, centred on the hero. The hero sits above it and lets clicks through. */
+    .dv8.is-3b .dv8-tog { grid-column: 1 / -1; grid-row: 1; justify-self: stretch; align-self: stretch; display: flex; justify-content: flex-end; align-items: center; width: auto; height: auto; min-height: 44px; margin: -8px -8px 4px; padding: 0 4px; transition: background var(--dur-fast, .15s); }
+    .dv8.is-3b .dv8-tog:hover { background: var(--popup); }
+    .dv8.is-3b .dv7-grp.is-hero { position: relative; z-index: 1; pointer-events: none; grid-column: 1 / -1; grid-row: 1; padding-right: 40px !important; }
+    /* KEEP: two groups sharing a phone row get the desktop's hairline between them, so a full pack and full abilities never read as one run. */
+    .dv8.is-3b .dv7-band > .dv7-grp.is-r { border-left: 1px solid var(--line) !important; padding-left: 12px !important; }
+    .dv8.is-3b .dv7-band > .dv7-grp:has(+ .is-r) { padding-right: 12px !important; }
+    /* Playground option: every group below the stats takes its own row, so the pack and abilities never share one. */
+    .dv8.is-3b.ph-rows .dv7-band > .dv7-grp:not(.is-hero) { grid-column: 1 / -1; padding-left: 0 !important; padding-right: 0 !important; }
+    .dv8.is-3b.ph-rows .dv7-band > .dv7-grp.is-r { border-left: 0 !important; }
+    /* KEEP: Advantage's two cells sit apart on a phone, so Inspiration and Streak read as two things. */
+    .dv8.is-3b .dv8-adv .dv7-cells { gap: 24px; }
+  }
+  /* KEEP: clues are at most two, so their marks are short bars rather than squares, a touch longer on a phone card where the meter column is wider. */
+  .dv8 .dv8-clues .dv4-uses i { width: 16px; }
+  @container dv4 (max-width: 559.98px) { .dv8 .dv8-clues .dv4-uses i { width: 20px; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+window.DV3_NO_BAR = true; window.DV4_NO_BAR = true; window.DV5_NO_BAR = true; window.DV6_NO_BAR = true; window.DV7_NO_BAR = true; window.DV8_NO_BAR = true; window.DV_NO_TWO = true;
+(async () => {
+  const D = 'docs/specs/1236-session-pages/playground/';
+  const PG = [D + 'pg-dv-seed.jsx', D + 'pg-dv3.jsx', D + 'pg-dv4.jsx', D + 'pg-dv5.jsx', D + 'pg-dv6.jsx', D + 'pg-dv7.jsx', D + 'pg-dv8.jsx', D + 'pg-dv9.jsx'];
+  const parse = async (u) => new DOMParser().parseFromString(await (await fetch(u, { cache: 'no-store' })).text(), 'text/html');
+  const doc = await parse('index.html');
+  // KEEP: v3's to v8's styles are taken from their own pages, never copied here.
+  const prev = await Promise.all(['delve-v3.html', 'delve-v4.html', 'delve-v5.html', 'delve-v6.html', 'delve-v7.html', 'delve-v8.html'].map((f) => parse(D + f)));
+  const mine = document.head.querySelector('style');
+  doc.head.querySelectorAll('link[rel="stylesheet"], style').forEach((n) => document.head.insertBefore(n.cloneNode(true), mine));
+  prev.forEach((d) => d.head.querySelectorAll('style').forEach((n) => document.head.insertBefore(n.cloneNode(true), mine)));
+  const plain = (s) => new Promise((ok, no) => { const e = document.createElement('script');
+    if (s.src) { e.src = s.getAttribute('src'); if (s.integrity) e.integrity = s.integrity; if (s.crossOrigin) e.crossOrigin = s.crossOrigin; e.onload = ok; e.onerror = no; document.body.appendChild(e); }
+    else { e.textContent = s.textContent; document.body.appendChild(e); ok(); } });
+  const babel = async (src) => { const code = await (await fetch(src, { cache: 'no-store' })).text();
+    const e = document.createElement('script'); e.textContent = Babel.transform(code, { presets: ['react'], filename: src }).code + '\n//# sourceURL=' + src; document.body.appendChild(e); };
+  for (const s of doc.body.querySelectorAll('script')) {
+    const src = s.getAttribute('src');
+    if (s.type === 'text/babel') { if (src === 'app/main.jsx') for (const p of PG) await babel(p); await babel(src); }
+    else await plain(s);
+  }
+})();
+</script>
+</body>
+</html>

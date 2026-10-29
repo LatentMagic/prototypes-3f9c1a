@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/fonts.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/colors.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/typography.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css">
+<script src="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js"></script>
+<style>body{margin:0;background:#1B1917;color:#F0EEE8;font-family:var(--font-text)} a{color:#EDE8DF} a:hover{color:#fff}</style>
+</helmet>
+<section id="3" style="padding:48px;display:grid;gap:64px;background:#1B1917;border-bottom:1px solid #37332E">
+<header style="display:grid;gap:8px;max-width:860px">
+<h1 style="margin:0;font:700 34px/1.15 var(--font-heading);letter-spacing:-0.01em">Delve sheet: three more ideas, streak always on</h1>
+<p style="margin:0;font:400 16px/1.5 var(--font-text);color:#ABA79E;text-wrap:pretty">Low fidelity, desktop only for now. The streak is always shown here. Each idea is drawn with one extra (the torch) and with every extra. Solid white outlines are new items.</p>
+</header>
+<sc-for list="{{ concepts }}" as="c" hint-placeholder-count="3">
+<div id="{{ c.id }}" style="display:grid;gap:20px">
+<div style="display:flex;gap:12px;align-items:baseline;max-width:1152px"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">{{ c.badge }}</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">{{ c.title }}</h2><p style="margin:0;color:#ABA79E;font-size:14px;text-wrap:pretty">{{ c.say }}</p></div>
+<sc-for list="{{ c.states }}" as="s" hint-placeholder-count="2">
+<div style="display:grid;gap:8px"><span style="font:600 13px/1 var(--font-text);color:#ABA79E">{{ s.label }}</span>
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:20px 24px;box-sizing:border-box;display:grid;gap:16px">
+<sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="1">
+<div style="display:flex;min-width:0;border-top:{{ r.bt }};padding-top:{{ r.pt }}">
+<div style="flex:none;width:150px;display:grid;justify-items:center;align-content:center;gap:4px;padding-right:12px"><sc-if value="{{ r.hero }}" hint-placeholder-val="{{ true }}"><b style="font:700 22px/1.1 var(--font-heading)">Evangeline</b><span style="font:600 14px/1.2 var(--font-text);color:#ABA79E">Rogue</span><sc-if value="{{ s.heroStreak }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><sc-for list="{{ streakSlots }}" as="p" hint-placeholder-count="3"><i style="display:block;width:12px;height:12px;border:1px solid #F0EEE8;background:{{ p.bg }}"></i></sc-for><span style="font:600 12px/1 var(--font-text)">Streak 2 of 3</span></div></sc-if></sc-if></div>
+<sc-for list="{{ r.groups }}" as="g" hint-placeholder-count="5"><div style="flex:1 1 auto;display:grid;justify-items:center;align-content:start;gap:8px;padding:0 8px;border-left:1px solid #37332E"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ g.h }}</span>
+<sc-if value="{{ g.stack }}" hint-placeholder-val="{{ false }}"><div style="display:grid;gap:6px"><sc-for list="{{ g.rows }}" as="m" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:60px 44px auto;align-items:center;gap:6px"><span style="font:600 12px/1 var(--font-text);color:#ABA79E;text-align:right">{{ m.k }}</span><i style="display:block;width:44px;height:6px;background:#37332E;position:relative;outline:{{ m.ol }};outline-offset:2px"><i style="position:absolute;left:0;top:0;bottom:0;width:{{ m.w }}px;background:#F0EEE8"></i></i><span style="font:600 12px/1 var(--font-text);white-space:nowrap">{{ m.v }}</span></div></sc-for></div></sc-if>
+<sc-if value="{{ g.flat }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:6px"><sc-for list="{{ g.cells }}" as="x" hint-placeholder-count="1"><div style="display:grid;justify-items:center;gap:6px"><div style="height:30px;display:grid;place-items:center"><sc-if value="{{ x.box }}" hint-placeholder-val="{{ true }}"><i style="display:block;width:{{ x.w }}px;height:{{ x.ht }}px;background:#37332E;border:{{ x.bd }};box-sizing:border-box"></i></sc-if><sc-if value="{{ x.bar }}" hint-placeholder-val="{{ false }}"><i style="display:block;width:72px;height:8px;background:#37332E;position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:{{ x.fill }}px;background:#F0EEE8"></i></i></sc-if><sc-if value="{{ x.slotsOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:4px"><sc-for list="{{ x.slots }}" as="p" hint-placeholder-count="3"><i style="display:block;width:16px;height:16px;border:1px solid #F0EEE8;background:{{ p.bg }}"></i></sc-for></div></sc-if><sc-if value="{{ x.figOn }}" hint-placeholder-val="{{ false }}"><b style="font:700 24px/1 var(--font-heading)">{{ x.fig }}</b></sc-if></div><span style="font:600 12px/1.2 var(--font-text);color:#ABA79E;text-align:center;text-wrap:balance">{{ x.l }}</span></div></sc-for></div></sc-if>
+</div></sc-for>
+</div>
+</sc-for>
+<sc-if value="{{ s.hasStrip }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;border-top:1px solid #37332E;padding-top:16px"><div style="flex:none;width:150px;display:grid;justify-items:center;padding-right:12px"><span style="font:700 15px/1.2 var(--font-heading)">This run</span></div><div style="display:flex;flex-wrap:wrap;row-gap:8px"><sc-for list="{{ s.strip }}" as="e" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:8px;padding:0 20px;border-left:1px solid #37332E"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ e.h }}</span><sc-if value="{{ e.bar }}" hint-placeholder-val="{{ false }}"><i style="display:block;width:48px;height:6px;background:#37332E;position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:32px;background:#F0EEE8"></i></i></sc-if><span style="font:600 15px/1.2 var(--font-text);white-space:nowrap">{{ e.v }}</span></div></sc-for></div></div></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</section>
+<section id="2" style="padding:48px;display:grid;gap:64px;background:#1B1917">
+<header style="display:flex;gap:48px;align-items:flex-start;flex-wrap:wrap">
+<div style="display:grid;gap:8px;max-width:760px">
+<h1 style="margin:0;font:700 34px/1.15 var(--font-heading);letter-spacing:-0.01em">Delve sheet: the "This run" row, two ways</h1>
+<p style="margin:0;font:400 16px/1.5 var(--font-text);color:#ABA79E;text-wrap:pretty">Low fidelity. 1A only, worked through. Each version is shown with one extra and with every extra, at desktop and phone width. Values are now in the main text colour, so the row reads as content instead of grey placeholders. Tweaks: whether the streak is shown, and whether a roll says where its advantage came from (the box on the right). The torch, the bargain and Sea salt are made up.</p>
+</div>
+<div style="width:300px;border:1px solid #918B80;padding:16px;display:grid;gap:8px;background:#262320">
+<b style="font:700 16px/1.2 var(--font-heading)">Latest roll</b>
+<sc-for list="{{ held }}" as="h" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:84px 1fr;gap:8px;border-top:1px solid #37332E;padding-top:8px"><span style="font:600 12px/1.3 var(--font-text);color:#ABA79E">{{ h.k }}</span><span style="font:600 13px/1.3 var(--font-text)">{{ h.v }}</span></div></sc-for>
+</div>
+</header>
+
+<div id="2a" style="display:grid;gap:20px">
+<div style="display:flex;gap:12px;align-items:baseline;max-width:1600px"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">2A</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">A strip</h2><p style="margin:0;color:#ABA79E;font-size:14px;text-wrap:pretty">One line under a hairline. "This run" sits in the hero's column, and each extra is a label and its value on one line. With one extra it reads as a caption to the sheet, not an empty row. Adds about 44px.</p></div>
+<sc-for list="{{ states }}" as="s" hint-placeholder-count="2">
+<div style="display:grid;gap:8px"><span style="font:600 13px/1 var(--font-text);color:#ABA79E">{{ s.label }}</span>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:20px 24px;box-sizing:border-box;display:grid;gap:16px">
+<div style="display:flex">
+<div style="flex:1 1 auto;display:grid;justify-items:center;align-content:center;gap:4px;padding-right:12px;min-width:110px"><b style="font:700 22px/1.1 var(--font-heading)">Evangeline</b><span style="font:600 14px/1.2 var(--font-text);color:#ABA79E">Rogue</span></div>
+<sc-for list="{{ band }}" as="g" hint-placeholder-count="6"><div style="flex:1 1 auto;display:grid;justify-items:center;align-content:start;gap:8px;padding:0 12px;border-left:1px solid #37332E"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ g.h }}</span><div style="display:flex;gap:8px"><sc-for list="{{ g.cells }}" as="x" hint-placeholder-count="1"><div style="display:grid;justify-items:center;gap:6px;min-width:44px"><div style="height:30px;display:grid;place-items:center"><i style="display:block;width:{{ x.w }}px;height:{{ x.ht }}px;background:#37332E"></i></div><span style="font:600 12px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ x.l }}</span></div></sc-for></div></div></sc-for>
+</div>
+<div style="display:flex;align-items:center;border-top:1px solid #37332E;padding-top:16px">
+<div style="flex:none;width:134px;display:grid;justify-items:center;padding-right:12px"><span style="font:700 15px/1.2 var(--font-heading)">This run</span></div>
+<div style="display:flex;flex-wrap:wrap;row-gap:8px">
+<sc-for list="{{ s.items }}" as="e" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:8px;padding:0 20px;border-left:1px solid #37332E"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ e.h }}</span><sc-if value="{{ e.bar }}" hint-placeholder-val="{{ false }}"><i style="display:block;width:48px;height:6px;background:#37332E;position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:32px;background:#F0EEE8"></i></i></sc-if><span style="font:600 15px/1.2 var(--font-text);white-space:nowrap">{{ e.v }}</span></div></sc-for>
+</div>
+</div>
+</div>
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box"><div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:12px">
+<div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 20px;align-items:center;gap:8px"><div style="display:grid;gap:2px"><b style="font:700 18px/1.1 var(--font-heading)">Evangeline</b><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E">Rogue</span></div><div style="display:grid;gap:6px;justify-items:center;border-left:1px solid #37332E"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Hit points</span><i style="width:56px;height:8px;background:#37332E"></i></div><div style="display:grid;gap:6px;justify-items:center;border-left:1px solid #37332E"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Threat</span><i style="width:56px;height:8px;background:#37332E"></i></div><span style="color:#ABA79E">⌃</span></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Stats</span><i style="width:220px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Pack</span><i style="width:220px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Abilities · Inspiration</span><i style="width:160px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:grid;gap:8px"><span style="font:700 15px/1.2 var(--font-heading)">This run</span>
+<sc-for list="{{ s.items }}" as="e" hint-placeholder-count="3"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><span style="font:600 12px/1.2 var(--font-text);color:#ABA79E">{{ e.h }}</span><span style="font:600 14px/1.3 var(--font-text);text-align:right">{{ e.v }}</span></div></sc-for>
+</div>
+</div></div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div id="2b" style="display:grid;gap:20px">
+<div style="display:flex;gap:12px;align-items:baseline;max-width:1600px"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">2B</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">Centred cells</h2><p style="margin:0;color:#ABA79E;font-size:14px;text-wrap:pretty">The band's cell anatomy (label, figure, caption), with the figures in the main text colour. The group is centred under the whole sheet, so one extra sits in the middle, not stranded at the left. Adds about 96px.</p></div>
+<sc-for list="{{ states }}" as="s" hint-placeholder-count="2">
+<div style="display:grid;gap:8px"><span style="font:600 13px/1 var(--font-text);color:#ABA79E">{{ s.label }}</span>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:20px 24px;box-sizing:border-box;display:grid;gap:20px">
+<div style="display:flex">
+<div style="flex:1 1 auto;display:grid;justify-items:center;align-content:center;gap:4px;padding-right:12px;min-width:110px"><b style="font:700 22px/1.1 var(--font-heading)">Evangeline</b><span style="font:600 14px/1.2 var(--font-text);color:#ABA79E">Rogue</span></div>
+<sc-for list="{{ band }}" as="g" hint-placeholder-count="6"><div style="flex:1 1 auto;display:grid;justify-items:center;align-content:start;gap:8px;padding:0 12px;border-left:1px solid #37332E"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ g.h }}</span><div style="display:flex;gap:8px"><sc-for list="{{ g.cells }}" as="x" hint-placeholder-count="1"><div style="display:grid;justify-items:center;gap:6px;min-width:44px"><div style="height:30px;display:grid;place-items:center"><i style="display:block;width:{{ x.w }}px;height:{{ x.ht }}px;background:#37332E"></i></div><span style="font:600 12px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ x.l }}</span></div></sc-for></div></div></sc-for>
+</div>
+<div style="border-top:1px solid #37332E;padding-top:16px;display:grid;justify-items:center;gap:12px">
+<span style="font:700 15px/1.2 var(--font-heading)">This run</span>
+<div style="display:flex;justify-content:center">
+<sc-for list="{{ s.items }}" as="e" hint-placeholder-count="3"><div style="display:grid;justify-items:center;align-content:start;gap:8px;padding:0 28px;border-left:{{ e.bl }}"><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E;white-space:nowrap">{{ e.h }}</span><div style="height:30px;display:flex;align-items:center"><sc-if value="{{ e.fig }}" hint-placeholder-val="{{ true }}"><b style="font:700 24px/1 var(--font-heading)">{{ e.fig }}</b></sc-if><sc-if value="{{ e.bar }}" hint-placeholder-val="{{ false }}"><i style="display:block;width:72px;height:8px;background:#37332E;position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:48px;background:#F0EEE8"></i></i></sc-if></div><span style="font:600 13px/1.2 var(--font-text);white-space:nowrap">{{ e.l }}</span></div></sc-for>
+</div>
+</div>
+</div>
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box"><div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:12px">
+<div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 20px;align-items:center;gap:8px"><div style="display:grid;gap:2px"><b style="font:700 18px/1.1 var(--font-heading)">Evangeline</b><span style="font:600 13px/1.2 var(--font-text);color:#ABA79E">Rogue</span></div><div style="display:grid;gap:6px;justify-items:center;border-left:1px solid #37332E"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Hit points</span><i style="width:56px;height:8px;background:#37332E"></i></div><div style="display:grid;gap:6px;justify-items:center;border-left:1px solid #37332E"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Threat</span><i style="width:56px;height:8px;background:#37332E"></i></div><span style="color:#ABA79E">⌃</span></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Stats</span><i style="width:220px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Pack</span><i style="width:220px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:flex;justify-content:space-between"><span style="font:600 12px/1 var(--font-text);color:#ABA79E">Abilities · Inspiration</span><i style="width:160px;height:28px;background:#37332E"></i></div>
+<div style="border-top:1px solid #37332E;padding-top:12px;display:grid;gap:12px;justify-items:center"><span style="font:700 15px/1.2 var(--font-heading)">This run</span>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px 0">
+<sc-for list="{{ s.items }}" as="e" hint-placeholder-count="3"><div style="width:50%;box-sizing:border-box;display:grid;justify-items:center;gap:6px;padding:0 8px"><span style="font:600 12px/1.2 var(--font-text);color:#ABA79E">{{ e.h }}</span><div style="height:26px;display:flex;align-items:center"><sc-if value="{{ e.fig }}" hint-placeholder-val="{{ true }}"><b style="font:700 20px/1 var(--font-heading)">{{ e.fig }}</b></sc-if><sc-if value="{{ e.bar }}" hint-placeholder-val="{{ false }}"><i style="display:block;width:56px;height:6px;background:#37332E;position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:37px;background:#F0EEE8"></i></i></sc-if></div><span style="font:600 13px/1.2 var(--font-text);text-align:center">{{ e.l }}</span></div></sc-for>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;streak&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Show the streak&quot;},&quot;rollTag&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Roll says where advantage came from&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const streak = this.props.streak ?? true;
+    const rollTag = this.props.rollTag ?? true;
+    const cell = (l, w = 28, ht = 28) => ({ l, w, ht });
+    const band = [
+      { h: 'Hit points', cells: [cell('11 of 11', 72, 8)] },
+      { h: 'Threat', cells: [cell('3 of 12', 72, 8)] },
+      { h: 'Stats', cells: ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((s) => cell(s)) },
+      { h: 'Pack · 3 of 3', cells: [cell('Leather coat'), cell('Smoke pellet'), cell('Iron key')] },
+      { h: 'Abilities', cells: [cell('Backstab', 14, 14), cell('Vanish', 14, 14)] },
+      { h: 'Inspiration', cells: [cell('Ready')] },
+    ];
+    const all = [];
+    if (streak) all.push({ h: 'Streak', fig: '3', l: 'Strong hits · advantage', v: '3 strong hits · advantage' });
+    all.push(
+      { h: 'The torch', fig: null, bar: true, l: '4 of 6', v: '4 of 6' },
+      { h: 'Clues', fig: '1', l: 'of 2 found', v: '1 of 2 found' },
+      { h: 'Bargain struck', fig: null, l: "The sea witch's salt", v: "The sea witch's salt" },
+      { h: 'Granted', fig: null, l: 'Sea salt · heals 4', v: 'Sea salt · heals 4' },
+    );
+    // Cells with no figure show their caption as the figure line.
+    const shape = (list) => list.map((e, i) => ({ ...e, fig: e.fig ?? (e.bar ? null : '·'), bl: i === 0 ? '0' : '1px solid #37332E' }));
+    const states = [
+      { label: 'One extra', items: shape(all.slice(0, 1)) },
+      { label: 'Every extra', items: shape(all) },
+    ];
+    const held = [
+      { k: 'Roll', v: 'Dexterity 23 vs 12' },
+      { k: 'Two dice', v: 'Kept 20 over 6' },
+      ...(rollTag ? [{ k: 'Advantage', v: streak ? 'From the streak' : 'From Inspiration' }] : []),
+      { k: 'Outcome', v: 'Strong hit' },
+    ];
+    const ON = '#F0EEE8', NEW = '1px solid #F0EEE8';
+    const norm = (c) => ({ box: false, bar: false, slotsOn: false, figOn: false, w: 28, ht: 28, bd: '0', ...c });
+    const bx = (l, bd = '0') => ({ box: true, l, bd });
+    const dt = (l, bd = '0') => ({ box: true, l, bd, w: 14, ht: 14 });
+    const br = (l, fill) => ({ bar: true, l, fill });
+    const sl = (n, l) => ({ slotsOn: true, l, slots: [0, 1, 2].map((i) => ({ bg: i < n ? ON : 'transparent' })) });
+    const fg = (fig, l) => ({ figOn: true, fig, l });
+    const grp = (h, cells) => ({ h, flat: true, stack: false, rows: [], cells: cells.map(norm) });
+    const stk = (h, rows) => ({ h, flat: false, stack: true, cells: [], rows });
+    const hp = grp('Hit points', [br('11 of 11', 72)]), threat = grp('Threat', [br('3 of 12', 18)]);
+    const stats = grp('Stats', ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((s) => bx(s)));
+    const pack = (clue) => grp(clue ? 'Pack · 3 of 3 · clue 1 of 2' : 'Pack · 3 of 3', [bx('Leather coat'), bx('Smoke pellet'), bx('Iron key')].concat(clue ? [bx('Torn map', NEW)] : []));
+    const abil = (g) => grp('Abilities', [dt('Backstab'), dt('Vanish')].concat(g ? [dt('Sea salt · bargain', NEW)] : []));
+    const insp = grp('Inspiration', [bx('Ready')]);
+    const streakG = grp('Streak', [sl(2, '2 of 3')]);
+    const torchG = grp('The torch', [br('4 of 6', 48)]);
+    const cluesG = grp('Clues', [fg('1', 'of 2 found')]);
+    const bargainG = grp('Bargain', [bx("Sea witch's salt", NEW)]);
+    const advG = grp('Advantage', [bx('Inspiration'), sl(2, 'Streak 2 of 3')]);
+    const meters = (torch) => stk('Hit points · Threat', [{ k: 'Hit points', w: 44, v: '11 of 11', ol: '0' }, { k: 'Threat', w: 11, v: '3 of 12', ol: '0' }].concat(torch ? [{ k: 'Torch', w: 29, v: '4 of 6', ol: '1px solid #F0EEE8' }] : []));
+    const row = (groups, first = true) => ({ hero: first, groups, bt: first ? '0' : '1px solid #37332E', pt: first ? '0' : '16px' });
+    const st = (label, rows, extra = {}) => ({ label, rows, heroStreak: false, hasStrip: false, strip: [], ...extra });
+    const v7 = [hp, threat, stats, pack(false), abil(false), insp];
+    const torchS = { h: 'The torch', bar: true, v: '4 of 6' };
+    const restS = [{ h: 'Clues', bar: false, v: '1 of 2 found' }, { h: 'Bargain struck', bar: false, v: "The sea witch's salt" }, { h: 'Granted', bar: false, v: 'Sea salt · heals 4' }];
+    const concepts = [
+      { id: '3a', badge: '3A', title: 'Streak under the hero', say: "The streak belongs to the hero as they stand now: three slots under the class, always there, and no band width spent. The band stays exactly v7. The other extras use 2A's strip, so one extra is a one-line caption under the sheet.",
+        states: [st('One extra', [row(v7)], { heroStreak: true, hasStrip: true, strip: [torchS] }), st('Every extra', [row(v7)], { heroStreak: true, hasStrip: true, strip: [torchS].concat(restS) })] },
+      { id: '3b', badge: '3B', title: 'Extras join their groups', say: "There is never a new row. Hit points and Threat stack in one column, which frees the width. The torch stacks with them as a third meter. Inspiration and the streak become one Advantage group, since both give advantage. A clue goes in the pack, and the bargain's gift goes in Abilities. One extra is one more line on a sheet that already looks full. Cost: the locked band changes shape, and with every extra it only fits by squeezing (tighter cells, captions on two lines), as drawn.",
+        states: [st('One extra', [row([meters(true), stats, pack(false), abil(false), advG])]), st('Every extra', [row([meters(true), stats, pack(true), abil(true), advG])])] },
+      { id: '3c', badge: '3C', title: 'Two rows, by pace', say: 'The band splits into what changes roll by roll (hit points, threat, the torch, the streak, Inspiration) and what you carry (stats, pack, abilities, clues, the bargain). Both rows always exist, so an extra always joins a row that already has things in it. Cost: the sheet is always two rows tall, and the locked band is rearranged.',
+        states: [st('One extra', [row([hp, threat, torchG, streakG, insp]), row([stats, pack(false), abil(false)], false)]), st('Every extra', [row([hp, threat, torchG, streakG, insp]), row([stats, pack(false), abil(true), cluesG, bargainG], false)])] },
+    ];
+    const streakSlots = [ON, ON, 'transparent'].map((bg) => ({ bg }));
+    return { band, states, held, concepts, streakSlots };
+  }
+}
+</script>
+</body>
+</html>

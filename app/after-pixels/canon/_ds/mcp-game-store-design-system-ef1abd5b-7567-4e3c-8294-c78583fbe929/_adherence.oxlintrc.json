@@ -198,6 +198,10 @@
         "message": "<MenuRows> doesn't accept that prop. Declared props: items, search, onSearch, onGo, label, className."
       },
       {
+        "selector": "JSXOpeningElement[name.name='MoveRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|parts|className|key|ref|className|style|children)$/]",
+        "message": "<MoveRow> doesn't accept that prop. Declared props: label, parts, className."
+      },
+      {
         "selector": "JSXOpeningElement[name.name='NavButtons'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|stack|onGo|label|className|key|ref|className|style|children)$/]",
         "message": "<NavButtons> doesn't accept that prop. Declared props: items, stack, onGo, label, className."
       },
@@ -378,6 +382,9 @@
         "replaces": []
       },
       "MenuRows": {
+        "replaces": []
+      },
+      "MoveRow": {
         "replaces": []
       },
       "NavButtons": {

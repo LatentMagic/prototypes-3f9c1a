@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/fonts.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/colors.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/typography.css">
+<link rel="stylesheet" href="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css">
+<script src="../../../../_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js"></script>
+<style>body{margin:0;background:#1B1917;color:#F0EEE8;font-family:var(--font-text)} a{color:#EDE8DF} a:hover{color:#fff}</style>
+</helmet>
+<section id="2" style="padding:48px;display:grid;gap:56px;background:#1B1917;border-bottom:1px solid #37332E">
+<header style="display:grid;gap:8px;max-width:820px">
+<h1 style="margin:0;font:700 34px/1.15 var(--font-heading);letter-spacing:-0.01em">Round 2: two different ways to say how the run ended</h1>
+<p style="margin:0;font:400 16px/1.5 var(--font-text);color:#ABA79E;text-wrap:pretty">Round 1, below, was one idea laid out four ways. These two change where the result lives (A) or what form it takes (B). Each shows desktop on the left and one phone per ending on the right. The rolls and longest streak are hidden; the Tweaks panel's "Show the tally" puts them back where each concept would carry them. delve.md keeps both in the play's record and puts both on the share card; it doesn't ask the session page to show them.</p>
+</header>
+<div id="2a" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline;max-width:1600px"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">A</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">The result is the roll box</h2><p style="margin:0;color:#ABA79E;font-size:14px;text-wrap:pretty">No row above the route. The box on the right, which today shows a roll when you pick one, shows the result when nothing is picked: the word, what happened, and the roll it ended on. Picking a roll swaps the box to that roll; picking it again, or leaving, brings the result back. On a phone the box leads and the route follows. Cost: the result is out of view while a roll is open.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px"><sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:24px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;box-sizing:border-box;align-items:start"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;padding:16px;display:grid;gap:8px;align-content:start;box-sizing:border-box">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text);text-wrap:balance">{{ e.s }}</p><sc-if value="{{ e.tally }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></sc-if></sc-if>
+<div style="border-top:1px solid #37332E;margin-top:8px;padding-top:12px;display:flex;gap:12px;align-items:center"><i style="width:40px;height:40px;background:#37332E"></i><span style="font:600 13px/1.3 var(--font-text);color:#ABA79E">{{ e.last }}</span></div>
+</div></div>
+</sc-for></div>
+<div style="display:grid;gap:16px"><sc-for list="{{ ends }}" as="e" hint-placeholder-count="3"><div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box"><div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:16px"><div style="border:1px solid #918B80;padding:16px;display:grid;gap:8px;align-content:start;box-sizing:border-box">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text);text-wrap:balance">{{ e.s }}</p><sc-if value="{{ e.tally }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></sc-if></sc-if>
+<div style="border-top:1px solid #37332E;margin-top:8px;padding-top:12px;display:flex;gap:12px;align-items:center"><i style="width:40px;height:40px;background:#37332E"></i><span style="font:600 13px/1.3 var(--font-text);color:#ABA79E">{{ e.last }}</span></div>
+</div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div></div></div></sc-for></div>
+</div></div>
+<div id="2b" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline;max-width:1600px"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">B</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">Status strip</h2><p style="margin:0;color:#ABA79E;font-size:14px;text-wrap:pretty">The result stops being a heading and becomes the card's edge: one filled strip across the top, in the ending's status colour with its dark on-colour, the word and what happened on one line. The tone is carried by the fill, so the word can be smaller and the strip is only 48px tall. In progress is a quiet neutral strip. Cost: the word is no longer the biggest thing on the card, and colour does work that size did before.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px"><sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;box-sizing:border-box"><div style="background:{{ e.bg }};color:{{ e.fg }};padding:10px 24px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:16px;row-gap:2px">
+<p style="margin:0;font:700 24px/1.15 var(--font-heading);letter-spacing:-0.01em">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text);flex:1;min-width:0">{{ e.s }}</p><sc-if value="{{ e.tally }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 14px/1.35 var(--font-text)">{{ e.t }}</p></sc-if></sc-if>
+</div>
+<div style="padding:24px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;height:120px;overflow:hidden"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;height:100px"></div></div></div>
+</sc-for></div>
+<div style="display:grid;gap:16px"><sc-for list="{{ ends }}" as="e" hint-placeholder-count="3"><div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box"><div style="background:#262320;border:1px solid #37332E"><div style="background:{{ e.bg }};color:{{ e.fg }};padding:10px 16px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:16px;row-gap:2px">
+<p style="margin:0;font:700 24px/1.15 var(--font-heading);letter-spacing:-0.01em">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text);flex:1;min-width:0">{{ e.s }}</p><sc-if value="{{ e.tally }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 14px/1.35 var(--font-text)">{{ e.t }}</p></sc-if></sc-if>
+</div><div style="padding:16px"><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div></div></div></div></sc-for></div>
+</div></div>
+</section>
+<section id="1" style="padding:48px;display:grid;gap:56px;background:#1B1917">
+<header style="display:grid;gap:8px;max-width:760px">
+<h1 style="margin:0;font:700 34px/1.15 var(--font-heading);letter-spacing:-0.01em">Delve session card: the result row, three ways</h1>
+<p style="margin:0;font:400 16px/1.5 var(--font-text);color:#ABA79E;text-wrap:pretty">Low fidelity. Each row shows the top of the session card at desktop width (1,152px) and on a phone (390px), with a short ending, the longest ending and a run still in progress. The grey boxes are the route, which stays as it is. The figure beside each card is the height the result takes above the route.</p>
+</header>
+
+<!-- 0 Today -->
+<div id="1-0" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">0</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">Today</h2><p style="margin:0;color:#ABA79E;font-size:14px">Three stacked lines on the left; the rest of the row is empty.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:24px;display:grid;gap:24px;box-sizing:border-box">
+<div data-m="1" style="display:grid;gap:6px">
+<p style="margin:0;font:700 44px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text)">{{ e.s }}</p><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;height:72px;overflow:hidden"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;height:100px"></div></div>
+</div>
+<span data-h="1" style="font:600 13px/1 var(--font-text);color:#ABA79E;padding-top:28px;width:48px"></span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box;display:grid;gap:12px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:16px">
+<div style="display:grid;gap:6px">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text);text-wrap:balance">{{ e.s }}</p><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 1 One line -->
+<div id="1-1" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">1</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">One line</h2><p style="margin:0;color:#ABA79E;font-size:14px">Word, what happened and the tally on one baseline. Cost: the word drops to 34px, and the long ending leaves less room at the right.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:24px;display:grid;gap:24px;box-sizing:border-box">
+<div data-m="1" style="display:flex;flex-wrap:wrap;align-items:baseline;column-gap:20px;row-gap:4px">
+<p style="margin:0;font:700 34px/1.1 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:600 16px/1.35 var(--font-text)">{{ e.s }}</p><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;height:72px;overflow:hidden"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;height:100px"></div></div>
+</div>
+<span data-h="1" style="font:600 13px/1 var(--font-text);color:#ABA79E;padding-top:28px;width:48px"></span>
+</div>
+</sc-for>
+</div>
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box;display:grid;gap:12px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:16px">
+<div style="display:grid;gap:4px">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E;text-wrap:pretty"><b style="font-weight:600;color:#F0EEE8;font-size:16px">{{ e.s }}</b> · {{ e.t }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<!-- 3 Band -->
+<div id="1-3" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">3</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">Band</h2><p style="margin:0;color:#ABA79E;font-size:14px">One row split by hairlines, like the character sheet: the word, what happened, then rolls and streak as figures. Cost: the tally reads as stats rather than a sentence.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:24px;display:grid;gap:24px;box-sizing:border-box">
+<div data-m="1" style="display:flex;align-items:center">
+<p style="margin:0;padding-right:24px;font:700 34px/1.1 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}">
+<p style="margin:0;padding:0 24px;border-left:1px solid #37332E;font:600 16px/1.35 var(--font-text);flex:1;align-self:stretch;display:flex;align-items:center">{{ e.s }}</p>
+<div style="display:grid;justify-items:center;gap:2px;padding:0 24px;border-left:1px solid #37332E"><b style="font:700 24px/1 var(--font-heading)">{{ e.n }}</b><span style="font:400 13px/1.3 var(--font-text);color:#ABA79E">rolls</span></div>
+<div style="display:grid;justify-items:center;gap:2px;padding-left:24px;border-left:1px solid #37332E"><b style="font:700 24px/1 var(--font-heading)">{{ e.k }}</b><span style="font:400 13px/1.3 var(--font-text);color:#ABA79E">longest streak</span></div>
+</sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;height:72px;overflow:hidden"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;height:100px"></div></div>
+</div>
+<span data-h="1" style="font:600 13px/1 var(--font-text);color:#ABA79E;padding-top:28px;width:48px"></span>
+</div>
+</sc-for>
+</div>
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box;display:grid;gap:12px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:16px">
+<div style="display:grid;gap:10px">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center">
+<p style="margin:0;padding-right:12px;font:600 15px/1.3 var(--font-text);text-wrap:balance">{{ e.s }}</p>
+<div style="display:grid;justify-items:center;padding:0 12px;border-left:1px solid #37332E"><b style="font:700 20px/1 var(--font-heading)">{{ e.n }}</b><span style="font:400 13px/1.3 var(--font-text);color:#ABA79E">rolls</span></div>
+<div style="display:grid;justify-items:center;padding-left:12px;border-left:1px solid #37332E"><b style="font:700 20px/1 var(--font-heading)">{{ e.k }}</b><span style="font:400 13px/1.3 var(--font-text);color:#ABA79E">streak</span></div>
+</div>
+</sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<!-- 4 Caption beside -->
+<div id="1-4" style="display:grid;gap:16px">
+<div style="display:flex;gap:12px;align-items:baseline"><span style="font:600 13px/1 var(--font-text);background:#EDE8DF;color:#1B1917;padding:4px 8px">4</span><h2 style="margin:0;font:700 24px/1.2 var(--font-heading);flex-shrink:0;white-space:nowrap">Caption beside</h2><p style="margin:0;color:#ABA79E;font-size:14px">The word stays at full size; the two lines under it move beside it, as a caption stacked to the word's height. No dividers, no figures. Cost: the caption is small next to a big word, and on a phone it goes back under the word.</p></div>
+<div style="display:flex;gap:48px;align-items:flex-start">
+<div style="display:grid;gap:16px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div style="width:1152px;background:#262320;border:1px solid #37332E;padding:24px;display:grid;gap:24px;box-sizing:border-box">
+<div data-m="1" style="display:flex;align-items:center;gap:20px">
+<p style="margin:0;font:700 44px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><div style="display:grid;gap:2px"><p style="margin:0;font:600 16px/1.35 var(--font-text)">{{ e.s }}</p><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E">{{ e.t }}</p></div></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 272px;height:72px;overflow:hidden"><sc-for list="{{ rooms }}" as="r" hint-placeholder-count="6"><div style="display:grid;justify-items:center;align-content:start;gap:8px"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:72px;height:8px;background:#37332E"></i><i style="width:28px;height:28px;background:#37332E"></i></div></sc-for><div style="border:1px solid #918B80;height:100px"></div></div>
+</div>
+<span data-h="1" style="font:600 13px/1 var(--font-text);color:#ABA79E;padding-top:28px;width:48px"></span>
+</div>
+</sc-for>
+</div>
+<div style="width:390px;background:#1B1917;border:1px solid #37332E;padding:16px;box-sizing:border-box;display:grid;gap:12px">
+<sc-for list="{{ ends }}" as="e" hint-placeholder-count="3">
+<div style="background:#262320;border:1px solid #37332E;padding:16px;display:grid;gap:16px">
+<div style="display:grid;gap:4px">
+<p style="margin:0;font:700 34px/1.05 var(--font-heading);letter-spacing:-0.01em;color:{{ e.c }}">{{ e.w }}</p>
+<sc-if value="{{ e.s }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font:400 14px/1.4 var(--font-text);color:#ABA79E;text-wrap:pretty"><b style="font-weight:600;color:#F0EEE8;font-size:16px">{{ e.s }}</b> · {{ e.t }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:40px;overflow:hidden"><sc-for list="{{ mrooms }}" as="r" hint-placeholder-count="3"><div style="display:grid;justify-items:center;gap:8px;align-content:start"><i style="width:24px;height:24px;border:1.5px solid #918B80;box-sizing:border-box"></i><i style="width:64px;height:8px;background:#37332E"></i></div></sc-for></div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showTally&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Show the tally (round 2)&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() { this.measure(); setTimeout(() => this.measure(), 600); }
+  componentDidUpdate() { this.measure(); }
+  measure() {
+    document.querySelectorAll('[data-m]').forEach((el) => {
+      const h = el.parentElement.nextElementSibling;
+      if (h && h.dataset.h) h.textContent = Math.round(el.offsetHeight) + 'px';
+    });
+  }
+  renderVals() {
+    const tally = !!this.props.showTally;
+    return {
+      rooms: [1, 2, 3, 4, 5, 6], mrooms: [1, 2, 3],
+      ends: [
+        { w: 'Triumphed', c: '#4CC38A', bg: '#4CC38A', fg: '#10261B', s: 'Elsie rescued', t: '11 rolls · longest streak 5', n: 11, k: 5, last: 'The winning blow', tally },
+        { w: 'Overwhelmed', c: '#FFD23A', bg: '#FFD23A', fg: '#2B2200', s: 'Too late: the ritual was completed', t: '22 rolls · longest streak 3', n: 22, k: 3, last: 'The last roll', tally },
+        { w: 'In progress', c: '#F0EEE8', bg: 'color-mix(in srgb, #F0EEE8 14%, #262320)', fg: '#F0EEE8', s: null, last: 'Latest roll', tally },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

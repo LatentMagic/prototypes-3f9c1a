@@ -1,0 +1,88 @@
+// Session page, Delve, option 3: "The moments". Three things a player retells, picked by a fixed rule and set large; the whole run sits small beneath them.
+// Reuses window.DvModel from delve-model.jsx (the run parsed into rolls, the roll cell, canon's tracks and endings cards, the shared CSS).
+(function () {
+  const h = React.createElement;
+  const M = () => window.DvModel;
+
+  // The pick rules, in order; a roll is used once. The last roll is the end, so the first two are picked from the rolls before it.
+  //   1 the big roll: the first natural 20, else the highest total.  2 the near thing: the smallest gap between total and target, either way (a miss wins a tie).  3 the end: the last roll.
+  function pick(m, session) {
+    const R = m.rolls; if (!R.length) return [];
+    const last = R[R.length - 1], pool = R.length > 1 ? R.slice(0, -1) : [];
+    const out = [];
+    if (pool.length) {
+      const big = pool.find((r) => r.crit) || pool.reduce((a, r) => (r.total > a.total ? r : a), pool[0]);
+      out.push({ r: big, kicker: 'Roll ' + big.n + ' · ' + big.stat, title: big.crit ? 'A natural 20' : 'The highest roll' });
+      const rest = pool.filter((r) => r !== big);
+      if (rest.length) {
+        const near = rest.reduce((a, r) => { const d = Math.abs(r.gap), e = Math.abs(a.gap); return d < e || (d === e && r.gap < a.gap) ? r : a; }, rest[0]);
+        out.push({ r: near, kicker: 'Roll ' + near.n + ' · ' + near.stat, title: near.gap < 0 ? 'Missed by ' + -near.gap : near.gap === 0 ? 'Made it exactly' : 'Made it by ' + near.gap });
+      }
+    }
+    const end = session.live ? 'The latest roll' : session.unfinished ? 'The week ended here' : 'The last roll';
+    out.push({ r: last, kicker: (session.loss ? session.result + ' · ' : '') + 'Roll ' + last.n + ' · ' + last.stat, title: end });
+    return out;
+  }
+  const facts = (r) => {
+    const f = ['Kept ' + r.kept + ' + ' + r.mod + ' = ' + r.total + ' vs ' + r.dc + ' · ' + M().TIER[r.tier] + (r.fumble ? ' · Natural 1' : r.crit ? ' · Natural 20' : '')];
+    if (r.action) f.push(r.action);
+    f.push('In ' + (r.room || 'the room you began in') + (r.harm ? ' · took ' + r.harm + ' harm' : ''));
+    return f;
+  };
+
+  // The die of a moment at the chosen element stop: Store keeps nothing extra (the card as built); Between is one tall amber step; Game is one d20.
+  const Moment = ({ p, element, ia }) => {
+    const D = M(), r = p.r;
+    const picture = element === 'game' ? h(D.BigDie, { r, size: 96, label: 'Kept ' + r.kept + ', ' + D.TIER[r.tier].toLowerCase() })
+      : element === 'between' ? h(D.Steps, { rolls: [r], size: 'xl', label: 'Kept ' + r.kept + ', ' + D.TIER[r.tier].toLowerCase() })
+      : ia ? h(D.Steps, { rolls: [r], size: 'xl', label: 'Kept ' + r.kept }) : null;
+    
+    if (!ia) return h(Ss.Card, { className: 'dv3-card', kicker: p.kicker, title: p.title, facts: facts(r) }, picture ? h('div', { className: 'dv-momentrow' }, picture, h('p', { className: 'dv-target' }, 'vs ' + r.dc)) : null);
+    return h(Ss.Card, { className: 'dv3-card is-ia', kicker: p.kicker, title: p.title },
+      h('div', { className: 'dv-momentrow' }, element === 'store' ? h('span', { className: 'dv3-die t-' + r.tier + (r.crit ? ' is-crit' : '') + (r.fumble ? ' is-fumble' : '') }, r.kept) : picture,
+        h('p', { className: 'dv-target' }, 'vs ' + r.dc, h('span', { className: 'dv3-gap' }, M().TIER[r.tier] + (r.gap >= 0 ? ' ' : ' ') + (r.gap < 0 ? 'by ' + -r.gap + ' short' : r.gap === 0 ? 'on the nose' : 'by ' + r.gap)))));
+  };
+
+  const DelveThree = (props) => {
+    const { session, element, layout } = props; const D = M(), ia = layout === 'ia';
+    const m = D.useModel(session); const out = Ss.useOutcome('delve', session);
+    const picks = pick(m, session);
+    const marks = picks.map((p) => p.r.n);
+    const runLabel = m.rolls.length + ' rolls; the moments are rolls ' + marks.join(', ');
+    const strip = !m.rolls.length ? null : element === 'between'
+      ? h(D.Steps, { rolls: m.rolls, size: 'sm', marks, nums: false, label: runLabel })
+      : h(Ss.Cells, { className: 'dv-mini', rows: [m.rolls.map((r) => D.cell(r, { nums: false, marks }))], label: runLabel });
+    const run = !m.rolls.length ? null : ia ? h(Ss.Card, { key: 'run', className: 'dv3-run', kicker: 'The whole run' }, strip, h(D.Bars, { s: session, m }))
+      : h(Ss.Card, { className: 'dv3-run', kicker: 'The whole run' }, strip);
+    const moments = picks.length ? h('div', { className: 'dv3-moments' }, picks.map((p, i) => h(Moment, { key: i, p, element, ia }))) : h('p', { className: 'ss-say' }, 'No rolls yet.');
+    const hero = h('section', { className: 'ss-hero dv3-hero', 'aria-label': 'Three moments' }, ...(ia ? [run, moments] : [moments, run]));
+    return h(D.Frame, Object.assign({}, props, { m, out, hero }));
+  };
+
+  pgOption('delve', 3, {
+    name: 'The moments',
+    stance: 'Players retell three things, the big roll, the near thing and the end, so the page picks those by a fixed rule and sets them large, with the whole run as a small strip beneath.',
+    cost: 'Between: each moment is one tall amber step, the run a strip of low steps. Game: each moment is one flat d20 (natural 20 gilded, natural 1 cracked) beside its target. IA pass: the whole run first with the three moments pinned on it, each moment a die and its target with one phrase (arithmetic gone), threat and rooms reached as two short bars. Needs the engine to send each roll (stat, kept die, total, target, tier, the room it was in) as data, and the action it was made for; today they arrive only as line text, which the seed is parsed from. The pick rule is mine to name and the owner to rule on.',
+    elements: ['store', 'between', 'game'],
+    layouts: ['built', 'ia'],
+    Component: DelveThree,
+    shareText: (session) => window.SsOutcome.delve(session).lines,
+    css: M().baseCss + `
+      :scope .dv3-hero { display: grid; gap: 12px; }
+      :scope .dv3-moments { display: grid; gap: 12px; }
+      :scope .dv3-card { gap: 8px; }
+      :scope .dv3-card .ss-card-title { font: var(--type-section-title); letter-spacing: var(--tracking-heading); }
+      :scope .dv3-card .ss-card-facts { font: var(--type-caption); color: var(--muted); }
+      :scope .dv3-card .ss-card-facts li { color: var(--muted); }
+      :scope .dv3-run { gap: 12px; }
+      :scope .dv3-card.is-ia { gap: 10px; }
+      :scope .dv3-die { display: grid; place-items: center; width: 72px; height: 72px; box-sizing: border-box; font: 700 28px/1 var(--font-text); border: 1px solid var(--cover-green); background: var(--cover-green); color: var(--success-on); }
+      :scope .dv3-die.t-weak { background: var(--cover-amber); border-color: var(--cover-amber); color: var(--warning-on); }
+      :scope .dv3-die.t-miss { background: var(--ss-cell); border-color: var(--muted); color: var(--text); }
+      :scope .dv3-die.is-crit { box-shadow: inset 0 0 0 4px var(--ss-card); }
+      :scope .dv3-die.is-fumble { background-image: linear-gradient(to top right, transparent calc(50% - 1px), var(--text) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)); }
+      :scope .dv3-gap { display: block; font: var(--type-caption); color: var(--muted); margin-top: 2px; }
+      @container ss (min-width: 680px) { :scope .dv3-moments { grid-template-columns: repeat(3, minmax(0, 1fr)); } :scope .dv3-moments:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } :scope .dv3-moments:has(> :only-child) { grid-template-columns: minmax(0, 1fr); } }
+    `,
+  });
+})();

@@ -42,8 +42,9 @@ const dvRecap = (s) => (s.end
 const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if (p.gid === 'delve' && p.status.kind !== 'live') by[p.ed] = true; });
   return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: !!by[s.id], failed: false })); };
 
+// Delve's own now card (app/gs-delve.jsx, 1236) takes this one's place once it has loaded.
 const DvNow = ({ s }) => {
-  const gs = useGs();
+  const gs = useGs(); if (window.DlNow) return <window.DlNow s={s} />;
   // The one share text for this result: the session page's (gsShareText).
   const lines = s.end && gsShareText(GS_SESSIONS.delve); const bar = dvBar(s);
   return (

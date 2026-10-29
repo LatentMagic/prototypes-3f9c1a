@@ -25,13 +25,13 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn.is-done .mcp-swap .b{opacity:1;transform:none}
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
-/* One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
+/* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
 @media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
 @media (min-width:640px){.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){display:inline-grid;grid-template-columns:repeat(2,1fr);justify-self:start}}
 
 .mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
 @media (hover:hover){.mcp-lnk:hover{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):hover{color:#fff}}
-/* A held link reads as pressed, not disabled: it takes the hover look (text to white, underline moves away) and never fades. */
+/* KEEP: A held link reads as pressed, not disabled: it takes the hover look (text to white, underline moves away) and never fades. */
 .mcp-lnk:active,.mcp-lnk.is-pressed{text-decoration-color:currentColor;text-underline-offset:6px}.mcp-lnk:not(.is-danger):active,.mcp-lnk:not(.is-danger).is-pressed{color:#fff}
 .mcp-lnk.is-danger{color:var(--error)}
 
@@ -62,7 +62,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-tag .mcp-ico{width:14px;height:14px}
 .mcp-tag-free{background:var(--off-white);color:var(--page)}
 .mcp-tag-daily{background:color-mix(in srgb,var(--text) 14%,var(--page));color:var(--text)}
-/* locked: the Secondary button's look (no fill, solid edge, same press) so it reads as the chip you can press. Padding and margins are optical: the lock and chevron drawings carry empty space, so edge-to-ink and ink-to-text gaps match. Press and hover come from the button or link it sits in. */
+/* KEEP: locked: the Secondary button's look (no fill, solid edge, same press) so it reads as the chip you can press. Padding and margins are optical: the lock and chevron drawings carry empty space, so edge-to-ink and ink-to-text gaps match. Press and hover come from the button or link it sits in. */
 .mcp-tag-locked,.mcp-tag-open{background:transparent;color:var(--text);border-color:var(--control-edge);padding-left:8px;transition:background-color var(--time-press) var(--ease),transform var(--time-press) var(--ease),border-color var(--time-swap) var(--ease)}
 .mcp-tag-locked>.mcp-ico:first-child,.mcp-tag-open>.mcp-ico:first-child{margin-top:-1px}
 .mcp-tag-locked.has-go,.mcp-tag-open.has-go{padding-right:5px}.mcp-tag-locked>.mcp-tag-go,.mcp-tag-open>.mcp-tag-go{margin-left:-3px}
@@ -94,7 +94,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-card.is-link:active,.mcp-card.is-link.is-pressed{background:color-mix(in srgb,var(--text) 10%,var(--card));border-color:var(--control-edge);transform:scale(.985)}
 .mcp-card.is-link:focus-visible,.mcp-card.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
 
-/* SoonCard: cover beside the text, the cover extended to the card's height (Cover fill). Text runs from the top; the chips sit on the card's bottom edge, so a pair (one height) has its chips on one line. Chips share one row and wrap only when it is too narrow. The play chip's 44px target reaches past it without making its row taller. */
+/* KEEP: SoonCard: cover beside the text, the cover extended to the card's height (Cover fill). Text runs from the top; the chips sit on the card's bottom edge, so a pair (one height) has its chips on one line. Chips share one row and wrap only when it is too narrow. The play chip's 44px target reaches past it without making its row taller. */
 .mcp-soon{grid-template-columns:minmax(96px,1fr) minmax(0,2fr);gap:var(--space-4);align-items:stretch;justify-items:stretch}
 .mcp-soon-art{display:grid;min-width:0}
 .mcp-soon-body{display:flex;flex-direction:column;gap:var(--space-2);align-items:flex-start;min-width:0}
@@ -106,7 +106,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-soon-tags .mcp-tag{white-space:normal;height:auto;min-height:26px;padding-top:4px;padding-bottom:4px;line-height:1.3}
 .mcp-soon-play{background:none;border:0;padding:0;min-height:44px;margin-block:-9px;display:inline-flex;align-items:center;cursor:pointer;color:inherit;font:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 .mcp-soon-play:focus-visible{outline:none}.mcp-soon-play:focus-visible>.mcp-tag{outline:2px solid var(--off-white);outline-offset:2px}
-/* Needs the Pass: two halves split by one ruled line (the line token), side by side from 640px, stacked under it. Label and foot slots are always laid out so both variants keep one size. */
+/* KEEP: Needs the Pass: two halves split by one ruled line (the line token), side by side from 640px, stacked under it. Label and foot slots are always laid out so both variants keep one size. */
 .mcp-npass{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);min-height:320px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);color:var(--text)}
 .mcp-npass-half{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);padding:var(--space-5);min-width:0}
 .mcp-npass-half+.mcp-npass-half{border-left:1px solid var(--line)}
@@ -168,6 +168,13 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-row.is-slots.is-sub{min-height:44px;padding-top:6px;padding-bottom:6px;padding-left:var(--space-4);grid-template-rows:auto;grid-template-columns:auto minmax(0,1fr) auto 20px;grid-template-areas:"n s w g"}
 .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub{padding-left:calc(var(--space-4) + 68px)}
 .mcp-row.is-sub>.mcp-row-note{justify-self:start}
+/* A move row: ListRow's padding, type and separators; it opens nothing. One line of parts makes it 62px, like a slotted ListRow. */
+.mcp-move{display:grid;row-gap:2px;min-width:0;padding:10px var(--space-4);color:var(--text)}
+.mcp-move-label{font:600 16px/20px var(--font-text);min-width:0;overflow-wrap:break-word}
+.mcp-move-parts{display:flex;flex-wrap:wrap;gap:0 var(--space-3);min-width:0;font:400 14px/20px var(--font-text);font-variant-numeric:tabular-nums}
+.mcp-move-parts>span{min-width:0;max-width:100%;overflow-wrap:break-word;text-wrap:pretty}
+.mcp-move-lead{color:var(--text)}.mcp-move-rest{color:var(--muted)}
+.mcp-move-sep{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 .mcp-panel{position:relative;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);overflow:hidden;color:var(--text)}
 .mcp-panel>.mcp-deco{position:absolute;top:0;right:0;width:120px;height:76px}
@@ -188,6 +195,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-body.is-open{grid-template-rows:1fr;opacity:1}
 .mcp-disc-body>div{overflow:hidden}
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
+/* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
+.mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
 
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
 .mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}
@@ -200,7 +209,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cover.is-fill.from-bottom .mcp-cover-art>*{bottom:0}
 .mcp-cover.is-fill.from-centre .mcp-cover-art>*{top:50%;translate:0 -50%}
 .mcp-cover.is-fill.is-wine .mcp-cover-art{background:var(--cover-bg-wine)}.mcp-cover.is-fill.is-forest .mcp-cover-art{background:var(--cover-bg-forest)}
-/* Cover beside a heading (Cover.prompt.md). The cover and the text share a top and a bottom edge: the title is trimmed to cap height; each link's box runs from cap height to the bottom of its underline (offset 4px + 1.5px), its touch area kept in padding. Shorter text is centred. */
+/* KEEP: Cover beside a heading (Cover.prompt.md). The cover and the text share a top and a bottom edge: the title is trimmed to cap height; each link's box runs from cap height to the bottom of its underline (offset 4px + 1.5px), its touch area kept in padding. Shorter text is centred. */
 .mcp-cover-head{display:grid;grid-template-columns:clamp(112px,26cqi,144px) minmax(0,1fr);column-gap:var(--space-5)}
 .mcp-cover-head-text{align-self:center;display:grid;gap:14px;justify-items:start;min-width:0}
 .mcp-cover-head-text>h1,.mcp-cover-head-text>h2{margin:0;text-box:trim-start cap alphabetic}
@@ -208,7 +217,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cover-head-links>.mcp-lnk{display:inline-block;min-height:0;padding:17px 0;margin:-17px 0 calc(-17px + 5.5px);text-box:trim-both cap alphabetic}
 .mcp-cover-name{font:700 15px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance;color:var(--text)}
 
-/* Overlays (ui-design.md "Only a panel changes shape on a phone").
+/* KEEP: Overlays (ui-design.md "Only a panel changes shape on a phone").
    Dialog: centred window at every width. Panel: bottom sheet below the breakpoint (640px), centred window at and above. The width is the area the popup renders in, not the browser window.
    Menu: opens at its control at every width. */
 .mcp-layer{position:fixed;inset:0;z-index:100;pointer-events:none}
@@ -219,10 +228,12 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-pop{position:absolute;background:var(--popup);color:var(--text);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3);visibility:hidden;box-sizing:border-box}
 .mcp-pop>h3{margin:0}
 .mcp-pop{container-type:inline-size}
+/* KEEP: in a popup under 300px wide the button pair stacks, so neither label is cut. */
 @container (max-width:300px){.mcp-pop .mcp-btn-pair{grid-template-columns:minmax(0,1fr)}}
 .mcp-pop-body{display:grid;gap:var(--space-3);align-content:start}
 .mcp-pop-body>p{margin:0}
 .mcp-pop.is-panel .mcp-pop-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+/* KEEP: the sheet's bottom padding clears the phone's home indicator (the safe area), so its last button stays pressable. */
 .mcp-pop.is-sheet{left:0;right:0;bottom:0;max-height:85%;border-top:1px solid var(--control-edge);box-shadow:var(--shadow-sheet);transform:translateY(100%);transition:transform var(--time-close) var(--ease),visibility 0s linear var(--time-close);padding-bottom:max(var(--space-4),var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}
 .mcp-layer.is-open .mcp-pop.is-sheet{transform:none;visibility:visible;transition:transform var(--time-popup) var(--ease),visibility 0s}
 .mcp-pop.is-window{left:50%;top:50%;width:min(380px,calc(100% - 32px));border:1px solid var(--control-edge);box-shadow:var(--shadow-card);transform:translate(-50%,-46%);opacity:0;transition:transform var(--time-close) var(--ease),opacity var(--time-close) var(--ease),visibility 0s linear var(--time-close)}
@@ -252,7 +263,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-msg{animation:none}
 }
 
-/* Game art (guidelines/game-art-motion.md "When art moves"). A cover moves only as the hover, focus and press response of the pressable thing it sits in: a link or button that is a Card, ListRow, Cover or carries .mcp-art-host; or a card (.mcp-art-host on a non-pressable box) whose one stretched link or button carries .mcp-art-link, so the card can hold a second control. --on is 0 everywhere else, so art outside anything pressable rests and is still. */
+/* KEEP: Game art (guidelines/game-art-motion.md "When art moves"). A cover moves only as the hover, focus and press response of the pressable thing it sits in: a link or button that is a Card, ListRow, Cover or carries .mcp-art-host; or a card (.mcp-art-host on a non-pressable box) whose one stretched link or button carries .mcp-art-link, so the card can hold a second control. --on is 0 everywhere else, so art outside anything pressable rests and is still. */
 @property --on{syntax:"<number>";inherits:true;initial-value:0}
 :is(a[href],button,[role=button],[role=link]):is(.mcp-art-host,.mcp-card,.mcp-row,.mcp-cover):is(:hover,:focus-visible,:active,.is-pressed,.is-on),.mcp-art-host:has(.mcp-art-link:is(:hover,:focus-visible,:active,.is-pressed)),.mcp-art-host.is-on{--on:1; /* @kind other */}
 .mcp-art{position:relative;overflow:hidden;container-type:size;width:100%;background:var(--cover-bg-indigo)}
@@ -282,11 +293,12 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 /* Daily Word and Daily Mystery, from the Game Store prototype. Each is drawn on a centred 4:3 stage so square and wide frames show the whole piece with more ground; --u is 1/160 of the stage. */
 .mcp-art-st{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(100cqw,133.333cqh);aspect-ratio:4/3;container-type:size;--u:.625cqw; /* @kind other */}
 .mcp-art-st>i{left:calc(var(--u)*var(--x));top:calc(var(--u)*var(--y));width:calc(var(--u)*var(--w));height:calc(var(--u)*var(--h))}
-.mcp-art-dw{--y:44; /* @kind other */--w:32; /* @kind other */--h:32; /* @kind other */border-radius:calc(var(--on)*50%)}
-.mcp-art-dw-1{--x:24; /* @kind other */--fill:var(--cover-amber);--s:0; /* @kind other */}
-.mcp-art-dw-2{--x:64; /* @kind other */--fill:var(--cover-cream);--s:40; /* @kind other */}
-.mcp-art-dw-3{--x:104; /* @kind other */--fill:color-mix(in srgb,var(--cover-teal) calc(var(--on)*100%),transparent);--s:20; /* @kind other */box-sizing:border-box;border:solid var(--cover-teal);border-width:calc(var(--u)*(4 + var(--on)*12));background-clip:border-box}
-.mcp-art i.mcp-art-dw-3{transition:border-radius calc(var(--time-art)*.6) var(--ease-art),border-width calc(var(--time-art)*.6) var(--ease-art),background-color calc(var(--time-art)*.6) var(--ease-art)}
+.mcp-art-dw{--y:44; /* @kind other */--w:32; /* @kind other */--h:32; /* @kind other */--s:0; /* @kind other */}
+.mcp-art-dw-1{--x:24; /* @kind other */--fill:var(--cover-green)}
+.mcp-art-dw-2{--x:64; /* @kind other */--fill:var(--cover-amber)}
+/* KEEP: the miss tile rests at .625 of its box with a thin grey outline (2 units once scaled) and grows to full size and fills on host; the fill lags 100ms. The stacked class beats the host rules' single transition-delay. */
+.mcp-art-dw-3{--x:104; /* @kind other */--fill:color-mix(in srgb,var(--control-edge) calc(var(--on)*100%),transparent);box-sizing:border-box;border:solid var(--control-edge);border-width:calc(var(--u)*3.2*(1 - var(--on)));transform:scale(calc(.625 + var(--on)*.375))}
+.mcp-art i.mcp-art-dw-3.mcp-art-dw-3.mcp-art-dw-3.mcp-art-dw-3{transition:transform var(--time-art) var(--ease-art) 0ms,border-width var(--time-art) var(--ease-art) 0ms,background-color 300ms ease-out 100ms}
 .mcp-art-dm-ring{--x:36; /* @kind other */--y:24; /* @kind other */--w:72; /* @kind other */--h:72; /* @kind other */--fill:transparent;--s:0; /* @kind other */box-sizing:border-box;border:calc(var(--u)*12) solid var(--cover-orange);border-radius:50%;transform:scale(calc(1 - var(--on)*.55))}
 .mcp-art-dm-bar{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:72; /* @kind other */--fill:var(--cover-cream);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
 .mcp-art-dm-cap{--x:114; /* @kind other */--y:24; /* @kind other */--w:10; /* @kind other */--h:20; /* @kind other */--fill:var(--cover-amber);--s:50; /* @kind other */border-radius:calc(var(--on)*var(--u)*5) calc(var(--on)*var(--u)*5) 0 0;transform:translateY(max(var(--on)*var(--u)*-8,-12px))}
@@ -305,7 +317,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-body::-webkit-scrollbar-button{display:none;height:0}
 @supports not selector(::-webkit-scrollbar){.mcp-chat-body{scrollbar-width:thin;scrollbar-color:var(--c-send) transparent}}
 .mcp-chat.is-fill{width:100%;height:100%;min-height:0}.mcp-chat.is-fill>.mcp-chat-body{flex:1;min-height:0}
-/* The pill: arrow only, 28px tall, 12px down, centred; ::before keeps the target 44px tall */
+/* KEEP: The pill: arrow only, 28px tall, 12px down, centred; ::before keeps the target 44px tall */
 .mcp-chat-up{position:absolute;z-index:2;top:12px;left:50%;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18);transform:translateX(-50%);-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
 .mcp-chat-up::before{content:"";position:absolute;inset:-8px -2px}
 .mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
@@ -332,7 +344,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-caret{display:inline-block;width:1.5px;height:1.15em;vertical-align:-.2em;margin-left:1px;background:var(--c-fg)}
 .mcp-chat-comp>i{flex:none}
 .mcp-chat-comp>i.is-sent{transform:scale(var(--press-scale))}
-/* The pause control: a square in the chat's send colours, 32px seen, 44px to press. Its 8px corner is the window's 16px corner less its 8px inset, so the two curves run parallel. */
+/* KEEP: The pause control: a square in the chat's send colours, 32px seen, 44px to press. Its 8px corner is the window's 16px corner less its 8px inset, so the two curves run parallel. */
 .mcp-chat-pause{position:absolute;z-index:3;top:8px;left:8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
 .mcp-chat-pause::before{content:"";position:absolute;inset:-6px}
 @media (hover:hover){.mcp-chat-pause:hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg))}}
@@ -353,7 +365,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cb-title{font:700 17px/1.2 var(--font-heading);letter-spacing:-.01em;text-wrap:balance}
 .mcp-cb-note{font-size:13px;line-height:1.35;color:var(--cb-ink2);text-wrap:pretty}
 .mcp-cb-card{display:grid;gap:12px;padding:14px 16px 16px;width:100%}
-/* TileGrid: the tile is 32px, smaller when a long row would not fit its turn; the letter is half the tile. Right place green, wrong place amber, not in it a flat tone */
+/* KEEP: TileGrid: the tile is 32px, smaller when a long row would not fit its turn; the letter is half the tile. Right place green, wrong place amber, not in it a flat tone */
 .mcp-cb-tiles{container-type:inline-size;width:100%}
 .mcp-cb-tiles-in{--t:min(32px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)));display:inline-grid;gap:4px}
 .mcp-cb-tiles-in.mcp-cb-fence{padding:6px}
@@ -372,7 +384,7 @@ button.mcp-cb-chip{cursor:pointer;transition:transform var(--time-press) var(--e
 .mcp-cb-band{display:grid;gap:1px;justify-items:center;text-align:center;padding:6px 8px;color:var(--cb-band-ink);font:600 clamp(10px,3.4cqi,13px)/1.25 var(--font-text)}
 .mcp-cb-band>b{font-weight:700}.mcp-cb-band>span{text-transform:uppercase;font-weight:500}
 .mcp-cb-band.is-amber{background:var(--cover-amber)}.mcp-cb-band.is-teal{background:var(--cover-teal)}.mcp-cb-band.is-orange{background:var(--cover-orange)}.mcp-cb-band.is-lilac{background:var(--cover-lilac)}
-/* ChoiceButtons and NavButtons: a stacked list of full-width rows, 42px tall with 6px between (a 44px+ target), never a ragged wrap.
+/* KEEP: ChoiceButtons and NavButtons: a stacked list of full-width rows, 42px tall with 6px between (a 44px+ target), never a ragged wrap.
    Same shape for both; a move is its words, going somewhere leads with an icon. Picked fills ink; the rest go quiet. */
 .mcp-cb-choices,.mcp-cb-nav{display:grid;gap:6px;width:100%;max-width:26rem}
 .mcp-cb-nav.is-stack{max-width:none}
@@ -387,7 +399,7 @@ button.mcp-cb-chip{cursor:pointer;transition:transform var(--time-press) var(--e
 :is(button,a):is(.mcp-cb-choice,.mcp-cb-go):active{background:var(--cb-tone);transform:scale(.985)}button.mcp-cb-choice.is-main:active{background:var(--cb-soft)}
 @media (hover:hover){:is(button,a):is(.mcp-cb-choice:not(.is-main),.mcp-cb-go):hover{background:color-mix(in srgb,var(--cb-tone) 60%,var(--cb-panel))}}
 :is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip,.mcp-cb-ent):focus-visible{outline:2px solid var(--cb-ink);outline-offset:2px}
-/* ConfirmCard: Cancel and Confirm side by side; stacked with Confirm on top when the card is narrow */
+/* KEEP: ConfirmCard: Cancel and Confirm side by side; stacked with Confirm on top when the card is narrow */
 .mcp-cb-confirm{container-type:inline-size}
 .mcp-cb-confirm>.mcp-cb-facts{border-block:1px solid var(--cb-edge);padding:10px 0;row-gap:6px}
 .mcp-cb-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px}.mcp-cb-pair>*{justify-content:center;text-align:center}
@@ -466,7 +478,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-search input::placeholder{color:var(--cb-ink2)}
 @media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
 
-/* CardRow. The heading line is its own row: title left, arrows right, both centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). The sentence runs under both. */
+/* KEEP: CardRow. The heading line is its own row: title left, arrows right, both centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). The sentence runs under both. */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
 .mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
@@ -475,6 +487,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
 .mcp-crow-btn:active{opacity:.55}
 .mcp-crow-btn:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+/* KEEP: the row shows no scrollbar and its cards snap; the arrows, a swipe or the keyboard move it. */
 .mcp-crow-track{display:grid;gap:var(--space-5);grid-auto-flow:column;grid-auto-columns:min(280px,82%);overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-inline:4px;padding:4px 4px 12px;margin:-4px -4px 0;scrollbar-width:none}
 .mcp-crow-track::-webkit-scrollbar{display:none}
 .mcp-crow-track>*{scroll-snap-align:center;min-width:0}
@@ -492,7 +505,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-chatfig{margin:0;min-width:0;display:grid;gap:12px;align-content:start}
 .mcp-chatfig>.mcp-chat{width:100%!important}
 .mcp-chatfig>figcaption{font:400 13px/1.4 var(--font-text);color:var(--muted);text-wrap:pretty}
-/* GameCard, the one game card: picture, text (name and blurb, snug), chips. Inside a CardRow the row shares these three lines (subgrid): the text line is as tall as the tallest text, the chip line as tall as the tallest chip set, and each card's chips are centred in it, so one row of chips sits level with the middle of another card's two. Don't move chips to the card's bottom edge: that leaves blank space above every one-row set. */
+/* KEEP: GameCard, the one game card: picture, text (name and blurb, snug), chips. Inside a CardRow the row shares these three lines (subgrid): the text line is as tall as the tallest text, the chip line as tall as the tallest chip set, and each card's chips are centred in it, so one row of chips sits level with the middle of another card's two. Don't move chips to the card's bottom edge: that leaves blank space above every one-row set. */
 .mcp-gcard{grid-template-rows:auto 1fr auto;row-gap:var(--space-3);justify-items:stretch;align-content:stretch}
 .mcp-crow-track:has(>.mcp-gcard){grid-template-rows:repeat(3,auto);row-gap:0}
 .mcp-crow-track>.mcp-gcard{grid-row:span 3;grid-template-rows:subgrid}
@@ -527,7 +540,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-gtile-open:active,.mcp-gtile-open.is-pressed{text-decoration-color:currentColor;text-underline-offset:6px;color:#fff}
 .mcp-gtile-kind{font:400 14px/1.4 var(--font-text);color:var(--muted)}
 
-/* Pass mark: GameCard, GamePick and GameTile draw it on the picture when pass is set, and make it a button when onPass is set. Solid page fill and the control edge, so it reads on any picture, dark ground or bright shape. Without onPass it is not a control and sits under the card's stretched link. With onPass (.is-link) it is a button above that link, with the Secondary button's hover, press and focus, and a 44px hit area. */
+/* KEEP: Pass mark: GameCard, GamePick and GameTile draw it on the picture when pass is set, and make it a button when onPass is set. Solid page fill and the control edge, so it reads on any picture, dark ground or bright shape. Without onPass it is not a control and sits under the card's stretched link. With onPass (.is-link) it is a button above that link, with the Secondary button's hover, press and focus, and a 44px hit area. */
 .mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art{position:relative}
 .mcp-passmark{position:absolute;top:var(--space-2);right:var(--space-2);display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;font:600 var(--size-small)/1 var(--font-text);white-space:nowrap;background:var(--page);color:var(--text);border:1.5px solid var(--control-edge);pointer-events:none}
 .mcp-passmark .mcp-ico{width:14px;height:14px;margin-top:-1px}
@@ -538,7 +551,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-passmark.is-link:focus-visible,.mcp-passmark.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.mcp-passmark.is-link{transition:none}.mcp-passmark.is-link:active{transform:none}}
 
-/* Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
+/* KEEP: Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
 .mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-/* A tag keeps its box while its card or row is pressed: its 14% fill matches the 10% press fill exactly, so it lifts a step for the length of the press. */
+/* KEEP: A tag keeps its box while its card or row is pressed: its 14% fill matches the 10% press fill exactly, so it lifts a step for the length of the press. */
 .mcp-card.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-row.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-art-host:is(:active,.is-on) .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}

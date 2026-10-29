@@ -1,0 +1,152 @@
+<!doctype html>
+<!-- Playground (1236): Delve's character sheet, v5. 1 and 3 from v4 tuned, plus 1B and 3B. The main build, loaded live from
+     index.html, with delve-v3.html's and delve-v4.html's styles and pg-dv-seed, pg-dv3, pg-dv4, pg-dv5 before app/main.jsx. -->
+<html lang="en">
+<head>
+<base href="../../../../" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Delve’s character sheet, v5 (playground)</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<style>
+  .dv5 { gap: 12px; }
+  .dv5 .dv4-hero b { font-size: 22px; }
+
+  /* 1 · Strip: a 12-column grid; top row hero, two bars, ability + inspiration; under it pack and stats. */
+  .dv5-s1 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px 32px; align-items: start; }
+  .dv5-c { display: grid; gap: 8px; min-width: 0; align-content: start; }
+  .dv5-c.is-hero, .dv5-c.is-hp, .dv5-c.is-th, .dv5-c.is-ab { grid-column: span 3; }
+  .dv5-c.is-pack, .dv5-c.is-stats { grid-column: span 6; padding-top: 16px; border-top: 1px solid var(--line); }
+  .dv5-c.is-ab { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  .dv5-abl { display: grid; gap: 6px; align-content: start; }
+  .dv5-abr { display: inline-flex; align-items: center; gap: 8px; min-height: 26px; }
+  .dv5-abr small { font: 600 14px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dv5-insw { display: inline-flex; min-height: 26px; align-items: center; }
+  @container dv4 (max-width: 879.98px) {
+    .dv5-c.is-hero { grid-column: 1 / -1; } .dv5-c.is-hp, .dv5-c.is-th { grid-column: span 6; }
+    .dv5-c.is-ab, .dv5-c.is-pack, .dv5-c.is-stats { grid-column: 1 / -1; }
+    .dv5-c.is-ab { justify-content: flex-start; }
+  }
+
+  /* 1B · Tracks first */
+  .dv5-tf { display: grid; grid-template-columns: minmax(180px, auto) minmax(0, 1fr) minmax(0, 1fr); gap: 12px 32px; align-items: end; }
+  .dv5-tfh { display: grid; gap: 4px; min-width: 0; }
+  .dv5-line { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--line); }
+  .dv5-ab6 { margin: 0; display: flex; gap: 16px; }
+  .dv5-ab6 > div { display: grid; gap: 2px; }
+  .dv5-ab6 dt { font: 600 12px/1 var(--font-text); color: var(--muted); letter-spacing: .04em; }
+  .dv5-ab6 abbr { text-decoration: none; }
+  .dv5-ab6 dd { margin: 0; font: 700 18px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
+  .dv5-pk { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .dv5-pki { display: inline-flex; align-items: center; gap: 8px; font: 600 14px/1.2 var(--font-text); color: var(--text); }
+  .dv5-pki.is-used { color: var(--muted); }
+  .dv5-tail { display: flex; gap: 20px; align-items: center; }
+  .dv5-tail .dv5-abl { grid-auto-flow: column; align-items: center; gap: 10px; }
+  @container dv4 (max-width: 719.98px) {
+    .dv5-tf { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dv5-tf > .dv5-tfh { grid-column: 1 / -1; }
+    .dv5-line { justify-content: flex-start; } .dv5-ab6 { width: 100%; justify-content: space-between; }
+  }
+
+  /* 3 · Tokens: one row spread across the width; caption at the heading's right. */
+  .dv5-hd { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 24px; }
+  .dv5-cap { margin: 0; font: 400 14px/1.4 var(--font-text); color: var(--muted); text-align: right; text-wrap: pretty; max-width: 60ch; }
+  .dv5-cap b { font-weight: 600; color: var(--text); }
+  .dv5-tk { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; }
+  .dv5-tg { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .dv5-tg.is-hero { min-width: 140px; }
+  .dv5 .dv4-tok.dv5-tr { min-width: 96px; grid-template-columns: 28px auto; }
+  .dv5 .dv4-tok.dv5-th { grid-auto-flow: column; align-items: center; align-content: center; gap: 6px; }
+  .dv5 .dv4-tok.dv5-sx { gap: 2px; }
+  .dv5 .dv4-sx text { font-size: 14px; }
+  /* KEEP: a free pack slot is a dashed outline, so it reads as room, not as a thing. */
+  .dv5 .dv4-g.is-empty { box-shadow: none; outline: 1.5px dashed var(--control-edge); outline-offset: -1.5px; }
+  @container dv4 (max-width: 559.98px) { .dv5-tk { justify-content: flex-start; } .dv5-cap { text-align: left; } .dv5-tg.is-hero { width: 100%; } }
+
+  /* 3B · Hotbar: equal slots across the card. */
+  .dv5-hb { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-auto-flow: row dense; gap: 4px; }
+  .dv5-sl.is-2 { grid-column: span 2; }
+  @container dv4 (max-width: 719.98px) { .dv5-hb { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .dv5-trk { display: block; width: 72px; max-width: 100%; height: 6px; box-shadow: inset 0 0 0 1px var(--control-edge); }
+  .dv5-trk i { display: block; height: 100%; background: var(--off-white); }
+  .dv5-sl { min-width: 0; min-height: 68px; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; gap: 4px; padding: 8px 4px 6px; background: none; border: 0; box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: inherit; cursor: pointer; }
+  .dv5-sl:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+  .dv5-sl[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--off-white); }
+  @media (hover: hover) { .dv5-sl:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } }
+  .dv5-slf { display: grid; justify-items: center; gap: 4px; }
+  .dv5-slf b { font: 700 18px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
+  .dv5-slf b small { font: 600 13px/1 var(--font-text); color: var(--muted); }
+  /* KEEP: a label may take two lines, so a name is read whole and never cut. */
+  .dv5-sll { max-width: 100%; text-align: center; text-wrap: balance; font: 600 12px/1.2 var(--font-text); color: var(--muted); }
+  .dv5-sl.is-used { color: var(--muted); }
+  .dv5-sl.is-used .dv5-slf { opacity: .55; }
+  .dv5-sl.is-free { box-shadow: none; outline: 1.5px dashed var(--control-edge); outline-offset: -1.5px; }
+  .dv5-sl.is-free[aria-pressed="true"] { outline-style: solid; outline-color: var(--off-white); outline-width: 2px; outline-offset: -2px; }
+  /* 1C · All shown: four labelled groups under 1B's tracks. */
+  .dv5-oc { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+  /* KEEP: ability and inspiration share one cell, so the two-column layout leaves no lone group on a row of its own. */
+  .dv5-op { display: flex; gap: 16px 40px; flex-wrap: wrap; }
+  .dv5-og { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .dv5-hx6 { margin: 0; display: flex; gap: 8px; }
+  .dv5-hx6 > div { display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; }
+  .dv5-hx6 dt { font: 600 12px/1 var(--font-text); color: var(--muted); letter-spacing: .04em; }
+  .dv5-hx6 abbr { text-decoration: none; } .dv5-hx6 dd { margin: 0; }
+  .dv5 .dv5-hx6 .dv4-sx text { font-size: 18px; }
+  .dv5-ol { display: flex; flex-wrap: wrap; gap: 10px 24px; } .dv5-ol.is-col { flex-direction: column; }
+  .dv5-ol .dv5-abr { display: flex; min-height: 0; margin-top: 4px; }
+  @container dv4 (max-width: 879.98px) { .dv5-oc { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dv5-og.is-st { grid-column: 1 / -1; } }
+  @container dv4 (max-width: 559.98px) { .dv5-oc { grid-template-columns: minmax(0, 1fr); } .dv5-hx6 { justify-content: space-between; } }
+
+  /* 1D · Tap for more: one line of equal tokens under 1B's tracks. */
+  .dv5-tl { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 12px 24px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .dv5-tg2 { display: flex; flex-wrap: wrap; gap: 4px; }
+  .dv5-t { min-width: 52px; height: 64px; display: grid; grid-template-rows: 36px auto; justify-items: center; align-items: center; gap: 4px; padding: 6px 8px; background: none; border: 0; box-shadow: none; color: var(--text); font: inherit; cursor: pointer; }
+  .dv5-tf1 { display: inline-flex; align-items: center; gap: 6px; }
+  .dv5-t:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+  .dv5-t[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--off-white); }
+  @media (hover: hover) { .dv5-t:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } }
+  .dv5 .dv5-t .dv4-sx text { font-size: 21px; }
+  .dv5-t.is-used .dv4-ab { color: var(--muted); }
+  /* 1CB, 1DB: the same sheets with less padding and smaller gaps. */
+  .dv4.dv5.is-tight { gap: 8px; padding: 12px 16px; }
+  .dv5.is-tight .dv4-hero b { font-size: 20px; }
+  .dv5.is-tight .dv5-tf { gap: 6px 24px; }
+  .dv5.is-tight .dv5-oc { gap: 8px 32px; padding-top: 10px; }
+  .dv5.is-tight .dv5-op { gap: 8px 32px; }
+  .dv5.is-tight .dv5-og { gap: 6px; }
+  .dv5.is-tight .dv5-ol { gap: 6px 20px; }
+  .dv5.is-tight .dv5-hx6 { gap: 4px; }
+  .dv5.is-tight .dv5-hx6 .dv4-sx text { font-size: 20px; }
+  .dv5.is-tight .dv4-g { width: 28px; height: 28px; }
+  .dv5.is-tight .dv5-tl { padding-top: 8px; gap: 8px 16px; }
+  .dv5.is-tight .dv5-tg2 { gap: 2px; }
+  .dv5.is-tight .dv5-t { height: 54px; min-width: 44px; grid-template-rows: 30px auto; gap: 3px; padding: 4px 6px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+window.DV3_NO_BAR = true; window.DV4_NO_BAR = true;
+(async () => {
+  const D = 'docs/specs/1236-session-pages/playground/';
+  const PG = [D + 'pg-dv-seed.jsx', D + 'pg-dv3.jsx', D + 'pg-dv4.jsx', D + 'pg-dv5.jsx'];
+  const parse = async (u) => new DOMParser().parseFromString(await (await fetch(u, { cache: 'no-store' })).text(), 'text/html');
+  const doc = await parse('index.html');
+  // KEEP: v3's and v4's styles are taken from their own pages, never copied here.
+  const v3 = await parse(D + 'delve-v3.html'); const v4 = await parse(D + 'delve-v4.html');
+  const mine = document.head.querySelector('style');
+  doc.head.querySelectorAll('link[rel="stylesheet"], style').forEach((n) => document.head.insertBefore(n.cloneNode(true), mine));
+  [v3, v4].forEach((d) => d.head.querySelectorAll('style').forEach((n) => document.head.insertBefore(n.cloneNode(true), mine)));
+  const plain = (s) => new Promise((ok, no) => { const e = document.createElement('script');
+    if (s.src) { e.src = s.getAttribute('src'); if (s.integrity) e.integrity = s.integrity; if (s.crossOrigin) e.crossOrigin = s.crossOrigin; e.onload = ok; e.onerror = no; document.body.appendChild(e); }
+    else { e.textContent = s.textContent; document.body.appendChild(e); ok(); } });
+  const babel = async (src) => { const code = await (await fetch(src, { cache: 'no-store' })).text();
+    const e = document.createElement('script'); e.textContent = Babel.transform(code, { presets: ['react'], filename: src }).code + '\n//# sourceURL=' + src; document.body.appendChild(e); };
+  for (const s of doc.body.querySelectorAll('script')) {
+    const src = s.getAttribute('src');
+    if (s.type === 'text/babel') { if (src === 'app/main.jsx') for (const p of PG) await babel(p); await babel(src); }
+    else await plain(s);
+  }
+})();
+</script>
+</body>
+</html>

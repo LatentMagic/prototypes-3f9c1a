@@ -1,54 +1,158 @@
 {
   "note": "Manifest for playgrounds.html. Every entry renders unless it carries \"on\": false — the row stays here for the record and stops appearing on the page. Derived from the file tree; regenerate when a rig is added, moved or archived. Ask for a change; never edited from a UI.",
   "product": "After Pixels",
-  "generated": "2026-10-28",
+  "generated": "2026-10-29",
   "tickets": [
     {
       "id": "1236",
       "slug": "1236-session-pages",
       "name": "Session pages, Escape first",
       "state": "active",
-      "touched": "2026-10-28",
+      "touched": "2026-10-29",
       "entries": [
         {
-          "name": "Daily Word’s session page, v7: the result statement",
-          "path": "docs/specs/1236-session-pages/playground/word-v7.html",
-          "note": "v6’s agreed tiles, hint and numbers, with three designs of the result statement beside them: the row (1), spelt in tiles (2), the winning tile (3)."
+          "name": "Delve sheet · showing a bargain",
+          "path": "docs/specs/1236-session-pages/playground/bargain-canvas.dc.html",
+          "note": "Four ways to show a bargain's cost on 3B's band: a badge on the gift, a filled box, the foe's head start, the deal as a pair."
         },
         {
-          "name": "Daily Word’s session page, v6: designs 1 to 3",
-          "path": "docs/specs/1236-session-pages/playground/word-v6.html",
-          "note": "The main build loaded live, with three designs of Daily Word’s own part: Escape’s frame (1), side by side (2), the whole board with the result beside its row (3). The head carries no result. Solved, Hard, Failed, In progress."
+          "name": "Delve v9 · 3B config",
+          "path": "docs/specs/1236-session-pages/playground/delve-v9.html",
+          "note": "3B only. Bar: Fewest / Most presets, pack 0–3, abilities 1–3, bargain, clues, torch, streak, long names, count form (4 of 6 or 4/6), play."
+        },
+        {
+          "name": "Delve v8 · sheet extras, streak always on",
+          "path": "docs/specs/1236-session-pages/playground/delve-v8.html",
+          "note": "3A, 3B and 3C from the low-fi canvas at full fidelity, on the real session page. Bar: concept, one extra or every extra, play."
+        },
+        {
+          "name": "Delve sheet extras · low-fi canvas v2",
+          "path": "docs/specs/1236-session-pages/playground/sheet-extras-canvas-v2.dc.html",
+          "note": "The \"This run\" row (1A) two ways, a strip and centred cells, each with one extra and every extra. Tweaks: streak on or off, a roll saying where its advantage came from."
+        },
+        {
+          "name": "Delve sheet extras · low-fi canvas",
+          "path": "docs/specs/1236-session-pages/playground/sheet-extras-canvas.dc.html",
+          "note": "Four places for the optional extras (streak, clues, light, bargain, a granted ability): a second band, on the route, in the roll box, the sheet's second face."
+        },
+        {
+          "name": "Delve v7 · result statement",
+          "path": "docs/specs/1236-session-pages/playground/delve-v7.html",
+          "note": "The session card's result four ways (Today, 3 Band, 3 no hairline, 2A Roll box) on the settled sheet: 1H, M1 on a phone."
+        },
+        {
+          "name": "Delve session v6: character sheet",
+          "path": "docs/specs/1236-session-pages/playground/delve-v6.html",
+          "note": "v5’s 1CB reworked as 1E (every group centred) and 1F (every group left). Bar: Play, Concept, Inspiration, Pack, Abilities, Why."
+        },
+        {
+          "name": "Delve’s character sheet on a phone",
+          "path": "docs/specs/1236-session-pages/playground/delve-mobile.html",
+          "note": "1H at 390px beside the desktop screenshot: Today, M1 Rows, M2 Scroll, M3 Switch, each the live page."
+        },
+        {
+          "name": "Delve session v5: character sheet",
+          "path": "docs/specs/1236-session-pages/playground/delve-v5.html",
+          "note": "v4’s 1 (Strip) and 3 (Tokens) tuned to the owner’s notes, plus 1B Tracks first and 3B Hotbar. 2 and 4 dropped.",
+          "on": false,
+          "off": "Superseded by Delve session v6, 2026-10-29 (owner asked to remove old versions). Its files stay: v6 loads v3–v5’s code and styles."
+        },
+        {
+          "name": "Delve session v4: the character sheet",
+          "path": "docs/specs/1236-session-pages/playground/delve-v4.html",
+          "note": "E4. The sheet as its own card over the session card (v3’s concept 1, held fixed). Four concepts: 1 Strip, 2 Rail (beside the card when wide), 3 Tokens, 4 In hand. Bar: Play, Concept, Why.",
+          "on": false,
+          "off": "Superseded by Delve session v6, 2026-10-29 (owner asked to remove old versions). Its files stay: v6 loads v3–v5’s code and styles."
+        },
+        {
+          "name": "Delve session v3: E made better",
+          "path": "docs/specs/1236-session-pages/playground/delve-v3.html",
+          "note": "E only, moment dice untitled. Three whole concepts (1 Ledger, 2 Sum, 3 Scoreboard), each with its own result word, line under it, held roll and column lines. A key moment’s held box carries a diamond in its top right. Bar: Play, Concept, Why.",
+          "on": false,
+          "off": "Superseded by Delve session v6, 2026-10-29 (owner asked to remove old versions). Its files stay: v6 loads v3–v5’s code and styles."
+        },
+        {
+          "name": "Delve’s die v2: every state",
+          "path": "docs/specs/1236-session-pages/playground/delve-dice-v2.html",
+          "note": "One die, two dice keeping the higher, two dice keeping the lower (not in delve.md), each at 30–88px."
+        },
+        {
+          "name": "Delve’s die: legend and two d20",
+          "path": "docs/specs/1236-session-pages/playground/delve-dice.html",
+          "note": "Every state with the weak hit filled yellow and natural 1 two ways (1a, 1b); two d20 three ways (Pair, Pair small, Struck number); inspiration or a streak, in words (A) or drawn (B)."
+        },
+        {
+          "name": "Delve session v2",
+          "path": "docs/specs/1236-session-pages/playground/delve-v2.html",
+          "note": "Result (Word, Word + mark, Sheet) × Concept (A fixed, C fixed, E, F) × five plays; Hex only.",
+          "on": false,
+          "off": "Superseded by Delve session v6, 2026-10-29 (owner asked to remove old versions). Its files stay: v6 loads v3–v5’s code and styles."
+        },
+        {
+          "name": "Delve session page, v1: four concepts",
+          "path": "docs/specs/1236-session-pages/playground/delve-v1.html",
+          "note": "The run's moments joined to its path. Bar: Concept (A Route, B Descent, C Four rolls, D Rooms), Die (Hex, Stone, Mark), Play (Won, Fallen, Overrun · hard, In progress, Week ended), Why.",
+          "on": false,
+          "off": "Superseded by Delve session v6, 2026-10-29 (owner asked to remove old versions). Its files stay: v6 loads v3–v5’s code and styles."
+        },
+        {
+          "name": "Daily Word now card, v11: C2 and three ideas",
+          "path": "docs/specs/1236-session-pages/playground/word-v11.html",
+          "note": "v10's C2 with the plain word. Bar: Concept (Now, D1 count beside the word, D2 six rows and no text, D3 sentence in the head), Tiles (48, 52, 56), Play."
+        },
+        {
+          "name": "Daily Word session card, v9: the main build with Config switches",
+          "path": "docs/specs/1236-session-pages/playground/word-v9.html",
+          "note": "The whole app on the hard play. A fixed bar at the top, in place of the nav links: desktop rule (S, S3, S5, S6), phone spacing (P16 to P32), hint row marks (as built, none, N2)."
         },
         {
           "name": "Escape’s session page, v5: lock detail and result",
           "path": "docs/specs/1236-session-pages/playground/v5.html",
           "note": "Settled and built into the main build (app/gs-escape.jsx), 2026-10-27. Kept as the harness for the next game’s playground. v4 with the open exit door and lift hover fixed. Three lock details on Every lock at once (Columns, Lanes, Scorecard; one lock alone on a phone), three results that leave the minutes to the line, and tiles or marks for a try. Under, on par, over, inside."
+        }
+      ],
+      "archive": [
+        {
+          "name": "Daily Word now card, v10: three concepts",
+          "path": "docs/archive/1236-session-pages/playground/word-v10.html",
+          "note": "Library → Daily Word on the hard play. Bar: Concept (A the board, B six tries, C the word), Result (Tag or plain word), Play (in progress, average, hard, failed). Archived 2026-10-28; it no longer loads from here."
+        },
+        {
+          "name": "Daily Word session card, v8 canvas",
+          "path": "docs/archive/1236-session-pages/playground/word-v8.html",
+          "note": "Phone: chip above or below, with or without a faint rule; desktop chip-vs-tile check. Archived 2026-10-28; it no longer loads from here."
+        },
+        {
+          "name": "Daily Word’s session page, v7: the result statement",
+          "path": "docs/archive/1236-session-pages/playground/word-v7.html",
+          "note": "v6’s agreed tiles, hint and numbers, with three designs of the result statement beside them: the row (1), spelt in tiles (2), the winning tile (3). Archived 2026-10-28; it no longer loads from here."
+        },
+        {
+          "name": "Daily Word’s session page, v6: designs 1 to 3",
+          "path": "docs/archive/1236-session-pages/playground/word-v6.html",
+          "note": "The main build loaded live, with three designs of Daily Word’s own part: Escape’s frame (1), side by side (2), the whole board with the result beside its row (3). The head carries no result. Solved, Hard, Failed, In progress. Archived 2026-10-28; it no longer loads from here."
         },
         {
           "name": "Escape’s session page, v4: result, escape and hover",
-          "path": "docs/specs/1236-session-pages/playground/v4.html",
-          "note": "Rebuilt from v3’s Design 1 to v4-goal.md: three designs each of the result, how the escape is shown and hover, picked independently in the bar; the lock’s tries across the card on desktop."
+          "path": "docs/archive/1236-session-pages/playground/v4.html",
+          "note": "Rebuilt from v3’s Design 1 to v4-goal.md: three designs each of the result, how the escape is shown and hover, picked independently in the bar; the lock’s tries across the card on desktop. Archived 2026-10-28; it no longer loads from here."
         },
         {
           "name": "Escape’s session page, v3: designs 1 to 3",
-          "path": "docs/specs/1236-session-pages/playground/v3.html",
-          "note": "Three designs of the session page’s own part, each with the result designed into it and none in the head: the locks as tumbler rows (1), a square clock face (2), the doorways you came through (3). Under par, over par, in progress. The library card is v2’s Version 1 until one is picked."
+          "path": "docs/archive/1236-session-pages/playground/v3.html",
+          "note": "Three designs of the session page’s own part, each with the result designed into it and none in the head: the locks as tumbler rows (1), a square clock face (2), the doorways you came through (3). Under par, over par, in progress. The library card is v2’s Version 1 until one is picked. Archived 2026-10-28; it no longer loads from here."
         },
         {
           "name": "Escape’s lock row, v2: versions 1 to 3",
-          "path": "docs/specs/1236-session-pages/playground/v2.html",
-          "note": "Option 1’s line, three ways, on the THIS WEEK card (Out above, Named doors, The gap), and the same row at page size on the session page, with Every move as the store’s list, collapsed. Under par, over par, in progress."
+          "path": "docs/archive/1236-session-pages/playground/v2.html",
+          "note": "Option 1’s line, three ways, on the THIS WEEK card (Out above, Named doors, The gap), and the same row at page size on the session page, with Every move as the store’s list, collapsed. Under par, over par, in progress. Archived 2026-10-28; it no longer loads from here."
         },
         {
           "name": "Escape’s session page and library card, options 1 to 3",
-          "path": "docs/specs/1236-session-pages/playground/index.html",
-          "note": "The line (1), the rail (2) and the minutes (3), each on the session page under the shared head and in the THIS WEEK card. Escaped, over par and unfinished; two routes in the panel.",
-          "on": false,
-          "off": "Replaced by v2, owner 2026-10-27: options 2 and 3 dropped, the session page work rejected."
+          "path": "docs/archive/1236-session-pages/playground/index.html",
+          "note": "The line (1), the rail (2) and the minutes (3), each on the session page under the shared head and in the THIS WEEK card. Escaped, over par and unfinished; two routes in the panel. Archived 2026-10-28; it no longer loads from here."
         }
-      ],
-      "archive": []
+      ]
     },
     {
       "id": "kit-v8",
