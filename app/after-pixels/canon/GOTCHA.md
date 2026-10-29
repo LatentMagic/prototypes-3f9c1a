@@ -8,9 +8,8 @@ that cost the most time were not wrong code, they were wrong intent. Read those
 before starting design work, not while debugging it.
 
 Entries 10, 11, 13 and 14 are code or platform traps; they sit after the judgement
-traps because they were found later, not because they matter less. Numbers are
-kept so code and changelog references hold: 2 and 12 were traps of the Claude
-Design preview and upload, retired with it.
+traps because they were found later, not because they matter less. 2 and 12 are
+retired.
 
 ---
 
@@ -209,7 +208,8 @@ border colour — stay on a CSS transition, where a miss is invisible.
 **Rule.** Never gate a transition behind a class you switch on at the moment you
 use it. And when motion matters, drive it — a silent no-op is the worst failure
 mode there is, because the code reads as correct and only the user can see that
-it is not (see entry 2: you cannot verify this from a screenshot).
+it is not. A screenshot of a mount transition proves nothing: measure it
+(computed `transform`, `getBoundingClientRect()`) over time.
 
 ---
 
@@ -253,16 +253,17 @@ not just the page you changed.
 
 ---
 
-## 14. The preview can swallow `history.back()` with no `popstate`
+## 14. A frame can swallow `history.back()` with no `popstate`
 
-**Symptom.** In-app back links ("← History") did nothing in the user's
-preview. No error; the route never changed.
+**Symptom.** In-app back links ("← History") did nothing when the page ran in a
+frame (first seen in Claude Design's preview; the console at the repo root also
+frames canon in an iframe). No error; the route never changed.
 
 **Cause.** Back links called `window.history.back()` and waited for
-`popstate` to set the route. The preview frame can drop the call, so the
+`popstate` to set the route. A framing page can drop the call, so the
 event never arrives.
 
-**Fix.** `gs.back` (`app/main.jsx`) calls `history.back()`, then steps the
+**Fix.** `gs.back` (`app/main.jsx:208-216`) calls `history.back()`, then steps the
 app's own route stack if nothing moved within 120ms. A late `popstate` lands
 on the same index, so nothing goes back twice.
 

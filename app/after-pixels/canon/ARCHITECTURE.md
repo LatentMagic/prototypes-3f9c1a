@@ -20,7 +20,7 @@ Files the app tolerates being **absent**, read once per render off `window` so n
 | `app/config.jsx` | deletable aid | Config pill gone: review settings, the states palette and QA with it. `?state=` and the index survive |
 | `app/states.jsx`, `app/states-ui.jsx` | deletable aids | states register gone: no `?state=`, no palette, no index |
 | `app/qa.jsx` | deletable aid (draft) | QA half of the Config pill gone; the states it points at stay |
-| `app/gs-config.jsx`, `app/gs-pass-aids.jsx` | product's Config rows | no product rows in Config |
+| `app/gs-config.jsx`, `app/gs-pass-aids.jsx` | product's Config rows; `gs-pass-aids.jsx` also republishes `buildStates` so every state first resets the Pass store to its defaults (`:31-32`, `:39`) | no product rows in Config, and states stage without the reset |
 | `app/directory-listings.jsx` | droppable module (review aid) | the routes `directory-claude` and `directory-chatgpt` render nothing, and the register's Store listing entries are not there |
 
 A product's own droppable modules join this table as it adds them: a file the app can run without, guarded where `main.jsx` reads it off `window`.

@@ -10,7 +10,7 @@
 // subscribed) and Pass (active, monthly). It and the Subscription config row
 // always agree, because the view is derived from the subscription.
 //
-// A candidate build (skills/candidate-build) may publish window.KitCandidate; it is
+// A candidate build (the kit's candidate-build skill) may publish window.KitCandidate; it is
 // read below, per render, and absent means the shipped behaviour.
 // ============================================================================
 const { useState, useEffect, useRef } = React;
