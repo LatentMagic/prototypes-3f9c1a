@@ -110,7 +110,7 @@
 }
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
-.dv4-lay { display: grid; gap: 16px; min-width: 0; }
+.dv4-lay { display: grid; gap: var(--gs-sec-gap); min-width: 0; }
 .dv4 { container: dv4 / inline-size; display: grid; gap: 16px; align-content: start; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
 @container gs (min-width: 720px) {
   .dv4 { padding: 24px; }

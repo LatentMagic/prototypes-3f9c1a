@@ -368,6 +368,9 @@
   .gs-root input:focus-visible { outline-offset: 2px; border-color: var(--off-white) !important; }
   .gs-root b { font-weight: 600; }
   .gs-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding-inline: 16px; }
+  /* One gap between stacked sections on a session page (the sheet, the game's card, Every move), whichever game; .gs-main's own 36px stays between the head and the body. */
+  :root { --gs-sec-gap: 16px; }
+  .gs-moves { margin-top: calc(var(--gs-sec-gap) - 36px); }
   .gs-main { display: grid; gap: 36px; padding-top: 36px; padding-bottom: 36px; }
   .gs-backbar + .gs-main { padding-top: 24px; }
   .gs-stack-xs { display: grid; gap: 4px; }
