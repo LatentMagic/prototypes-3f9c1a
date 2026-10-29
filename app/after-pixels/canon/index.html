@@ -1078,6 +1078,10 @@
     .lb-runbody { align-items: center; }
     .lb-runbody .lb-run { grid-template-columns: repeat(10, 32.6px) !important; }
     .lb-runbody .lb-legend { justify-content: center; }
+    /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
+    .lb-runcard { padding: var(--space-4); }
+    .lb-runbody { gap: var(--space-3); padding-block: var(--space-2); }
+    .lb-runbody .lb-wk { grid-template-rows: 17px 30.6px auto; }
   }
   @container gs (max-width: 479px) {
     .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
