@@ -31,7 +31,13 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 ## Styles
 
 - Tokens: the design system's `tokens/*.css` and `components/components.css`, linked from `index.html:17-25` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px.
-- Product CSS: four `<style>` blocks in `index.html`, each section headed by the file it styles (`/* ---- Escape (1236) … (app/gs-escape.jsx) ---- */`). Delve's session page is in `app/gs-delve.css`. Find a rule with `grep -n "<class>" index.html app/*.css`.
+- Product CSS is `app/*.css`, one file per area, all linked from `index.html:26-41` (no inline `<style>`). **Link order is the cascade: a later file wins a tie, so a rule that overrides another sits in a file linked after it.** Each file's first comment says what it holds. Find a rule with `grep -n "<class>" app/*.css`.
+
+Shell and aids: `aids.css` (Config, States and QA palettes, phone frame, base reset), `gs-shell.css` (`.gs-root`, utilities, links, grids, session head, tags, top bar, demo bar), `gs-site.css` (loaders, footer, legal, not found, user menu).
+Screens: `gs-home.css`, `gs-cards.css` (Discover, Library lists, game cards and their motion art), `gs-game.css` (product page), `gs-player.css`, `gs-library-page.css` (cards, streak, now card, editions list), `gs-session-history.css` (session parts every game shares; History), `gs-auth.css` (sign in, username), `gs-connect.css` (How it works, play dialog), `gs-account.css`, `gs-pass.css` (pricing, upsell, Home Pass card).
+Game session bodies: `gs-escape.css`, `gs-word.css`, `gs-delve.css`.
+
+- `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
 - Before adding a class, grep for it: a name already used elsewhere restyles that too (`GOTCHA.md` 13).
 
 ## Reuse before you build
