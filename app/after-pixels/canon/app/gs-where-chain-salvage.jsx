@@ -5,41 +5,26 @@
 // earlier plays are drawn from, and the staged states. Every play is SAMPLE; distances are approximate.
 // Each game is played through text in the player's own AI: the chats carry text and a plain text board, never a picture.
 // ============================================================================
-const DP_IDS = ['where', 'chain', 'salvage'];
+import React from 'react';
+import { GS_NAME, GS_GAMES, gsAccess, GS_GAME_ORDER, GS_ART, GS_SVG, GS_RESULT, GS_SESSIONS, GS, GS_TODAY_PLAYED } from './gs-data.jsx';
+import { GS_ART_LOCAL, I } from './gs-parts.jsx';
+import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
+import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
+import { PZ } from './gs-puzzles-library.jsx';
+
+export const DP_IDS = ['where', 'chain', 'salvage'];
 const DP_NO = 21; // today's edition of each: the three games are three weeks old in the seed
-Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage' }); // working titles
+ // working titles
 
-Object.assign(GS_GAMES, {
-  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
-    blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily', '5 min'] }),
-  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
-    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily', '10 min'] }),
-  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
-    blurb: 'Five wrecks lie under today’s sea. Find them in thirty dives.', tags: ['Daily', '15 min'] }),
-});
-GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
 
-// ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
-// Where: the hint's needle pointing the wrong way, and today's country. Chain: five words, the ends and their links found, the three middle words empty.
-// Salvage: a board mid-hunt, cream misses and two orange hits in a row, one dive from finding a wreck of three. ----
-Object.assign(GS_ART, {
-  where: { ground: 'forest', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><g transform="rotate(45 52 60)"><path d="M52 32L60 60L44 60Z" fill="#D66847"/><path d="M44 60L60 60L52 88Z" fill="#F2EBE0"/></g><rect x="96" y="44" width="32" height="32" fill="#E5A63B"/>') },
-  chain: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="20" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="119" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="11" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="131" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="42.5" y="52.5" width="15" height="15" fill="none" stroke="#D66847" stroke-width="3"/><rect x="72.5" y="52.5" width="15" height="15" fill="none" stroke="#E5A63B" stroke-width="3"/><rect x="102.5" y="52.5" width="15" height="15" fill="none" stroke="#A390B2" stroke-width="3"/>') },
-  salvage: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') },
-});
-Object.assign(GS_ART_LOCAL, {
-  where: { bg: 'is-forest', body: <>{I('ga-wh-needle')}{I('ga-wh-ans')}</> },
-  chain: { bg: 'is-wine', body: <>{I('ga-ch-l ga-ch-l1')}{I('ga-ch-l ga-ch-l2')}{I('ga-ch ga-ch-1')}{I('ga-ch ga-ch-o ga-ch-2')}{I('ga-ch ga-ch-o ga-ch-3')}{I('ga-ch ga-ch-o ga-ch-4')}{I('ga-ch ga-ch-5')}</> },
-  salvage: { bg: '', body: <>{I('ga-sv-p ga-sv-miss ga-sv-m1')}{I('ga-sv-p ga-sv-miss ga-sv-m2')}{I('ga-sv-p ga-sv-miss ga-sv-m3')}{I('ga-sv-p ga-sv-miss ga-sv-m4')}{I('ga-sv-hull')}{I('ga-sv-p ga-sv-hit ga-sv-h1')}{I('ga-sv-p ga-sv-hit ga-sv-h2')}{I('ga-sv-p ga-sv-hit ga-sv-h3')}</> },
-});
+
+
+
+
 
 // ---- Results ----
 const dpWrong = (n) => (n === 0 ? 'no wrong guesses' : n === 1 ? '1 wrong guess' : n + ' wrong guesses');
-Object.assign(GS_RESULT, {
-  where: (r) => (r.ok ? 'Found in ' + r.guesses + ' of 6' : 'Not found'),
-  chain: (r) => (r.given ? r.found + ' of ' + r.of + ' words found' : 'Solved, ' + dpWrong(r.wrong)),
-  salvage: (r) => (r.found === 5 ? 'All 5 wrecks, ' + r.dives + ' of 30 dives' : r.found + ' of 5 wrecks found'),
-});
+
 
 // ---- Where. A play from a template: { a: answer, g: [[country, km]], hint }. Distance is border to border, to the nearest 10 km;
 // 0 means the two share a border. The one hint is the compass direction, centre to centre, from the latest guess. Only UN member states count. ----
@@ -58,21 +43,11 @@ const dpWhere = (t, ok) => {
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
 const dpWhHead = (n, r, ok) => 'Where #' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
-const WH_TODAY = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80]], hint: 'From Poland, the country lies south' };
-const WH_OK = [
-  { a: 'Portugal', g: [['Italy', 1020], ['France', 400], ['Spain', 0]], hint: 'From Spain, the country lies west' },
-  { a: 'Belgium', g: [['Spain', 810], ['Germany', 0]] },
-  { a: 'Austria', g: [['Poland', 170], ['Italy', 0]], hint: 'From Italy, the country lies north' },
-  { a: 'Finland', g: [['Greece', 2000], ['Estonia', 60], ['Sweden', 0]] },
-  { a: 'Czechia', g: [['Hungary', 60], ['Germany', 0]] },
-  { a: 'Ireland', g: [['France', 410], ['United Kingdom', 0]], hint: 'From the United Kingdom, the country lies west' },
-];
-const WH_FAIL = { a: 'Slovenia', g: [['Greece', 720], ['Serbia', 200], ['Hungary', 0], ['Austria', 0], ['Croatia', 0], ['Italy', 0]], hint: 'From Croatia, the country lies north' };
+let WH_TODAY;
+let WH_OK;
+let WH_FAIL;
 
-// ---- Chain. A play from a template: { w: the line, p: [[guess, index of the word it was for]] }. The line is 5 to 7 words; each
-// neighbouring pair makes a compound word or a common two-word phrase. Only the intended word counts; a wrong guess shows that word's
-// next letter, and a word that runs out of letters is given away. Lengths stay hidden. No hint and no overall limit. ----
-const DP_NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
+let DP_NUM;
 const dpChain = (t) => {
   const last = t.w.length - 1; const pre = t.w.map(() => 1); const res = t.w.map(() => null); const miss = t.w.map(() => 0);
   // Ends, then a line per guess: the word it was for, what it was, and what the game showed back. Only the guess's own result is said.
@@ -90,21 +65,11 @@ const dpChain = (t) => {
 };
 const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
 const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
-const CH_TODAY = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'WAGON'], p: [['BALL', 1], ['RACE', 2], ['ROOM', 2], ['STATION', 4], ['SUITE', 3], ['SERVICE', 3]] };
-const CH_OK = [
-  { w: ['RAIN', 'BOW', 'TIE', 'BREAK', 'FAST', 'FOOD'], p: [['BOW', 1], ['TIE', 2], ['FROZEN', 4], ['FAST', 4], ['BREAK', 3]] },
-  { w: ['SEA', 'SHELL', 'FISH', 'CAKE', 'WALK'], p: [['SHORE', 1], ['SHELL', 1], ['FISH', 2], ['CAT', 3], ['CAKE', 3]] },
-  { w: ['HEAD', 'LINE', 'UP', 'TOWN', 'HALL'], p: [['LIGHT', 1], ['LINE', 1], ['TOWN', 3], ['UP', 2]] },
-  { w: ['MOON', 'LIGHT', 'HOUSE', 'BOAT', 'YARD'], p: [['LIGHT', 1], ['BOAT', 3], ['HOUSE', 2]] },
-  { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
-  { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
-];
-const CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
+let CH_TODAY;
+let CH_OK;
+let CH_FAIL;
 
-// ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
-// never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
-// costs no dive: sonar on a row or a column says how many wreck squares it holds. Complete: every wreck found within the dives. ----
-const SV_COLS = 'ABCDEFGH';
+let SV_COLS;
 const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
 const svAt = (ships) => { const at = {}; ships.forEach((s, i) => s.forEach(([x, y]) => { at[x + ',' + y] = i; })); return at; };
 // A play replayed from its dives: [[cell, 'miss' | 'hit' | 'sunk', length]].
@@ -128,11 +93,9 @@ const svBoard = (ships, log) => {
 };
 const svSunk = (log) => log.filter((l) => l[1] === 'sunk').length;
 const dpSvHead = (n, log, hint) => 'Salvage #' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of 30 dives' + (hint ? ' · 1 hint' : '');
-// Today's sea: B2 to E2, G1 to G3, A5 to A7, D5 to E5, G7 to H7.
-const SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
-const SV_TODAY_DIVES = svReplay(SV_TODAY, ['D4', 'E2', 'E3', 'E1', 'F2', 'D2', 'C2', 'B2', 'G2', 'G3', 'G1', 'A6', 'A5', 'A7', 'E6', 'E5', 'F5', 'D5', 'G6', 'H8', 'G7', 'H7']
-  .map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
-const SV_TODAY_HINT = { at: 11, what: 'Sonar on column A', said: '3 wreck squares' };
+let SV_TODAY;
+let SV_TODAY_DIVES;
+let SV_TODAY_HINT;
 // Earlier seas: a seeded layout and a seeded player (checkerboard search, then along each hit), so every record agrees with its rules.
 const svRng = (seed) => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
 const svLayout = (seed) => {
@@ -183,16 +146,122 @@ const svPlay = (ships, seed) => {
   }
   return log;
 };
+let dpSvDay;
+
+let dpWhT; let dpChT;
+let dpChL; let dpSvL;
+
+
+
+// ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
+export const dpSession = (id, c, x, base) => {
+  const n = DP_NO - x.i; const i = x.i;
+  if (id === 'where') {
+    const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
+    return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], listTitle: 'Every guess', share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
+  }
+  if (id === 'chain') {
+    const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
+    return { ...base, number: n, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+  }
+  const d = dpSvDay(i, x.ok);
+  return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], listTitle: 'Every dive', share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+};
+const dpCap = (s) => s.replace(/^./, (ch) => ch.toUpperCase());
+export let DP_PZ;
+
+// ---- Product pages ----
+const dpStep = (b, rest) => <><b>{b}</b>{rest}</>;
+let dpSeeResult;
+
+
+// ---- In your chat: text only, as the player's own AI tells it. Each follows today's play above. ----
+const dpMono = (text) => ({ type: 'mono', text });
+const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), t.w[t.w.length - 1]].join('\n');
+
+
+// ---- Staged states (app/states.jsx spreads them into its register). ----
+// Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Daily Mystery).
+const dpEarlier = (k, ok) => () => { const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok); return x.sid; };
+let DP_SESSION_STATES;
+let DP_PZ_STATES;
+
+export let DP_STATES;
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsWhereChainSalvage() {
+Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage' });
+Object.assign(GS_GAMES, {
+  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
+    blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily', '5 min'] }),
+  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
+    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily', '10 min'] }),
+  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
+    blurb: 'Five wrecks lie under today’s sea. Find them in thirty dives.', tags: ['Daily', '15 min'] }),
+});
+GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
+// ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
+// Where: the hint's needle pointing the wrong way, and today's country. Chain: five words, the ends and their links found, the three middle words empty.
+// Salvage: a board mid-hunt, cream misses and two orange hits in a row, one dive from finding a wreck of three. ----
+Object.assign(GS_ART, {
+  where: { ground: 'forest', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><g transform="rotate(45 52 60)"><path d="M52 32L60 60L44 60Z" fill="#D66847"/><path d="M44 60L60 60L52 88Z" fill="#F2EBE0"/></g><rect x="96" y="44" width="32" height="32" fill="#E5A63B"/>') },
+  chain: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="20" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="119" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="11" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="131" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="42.5" y="52.5" width="15" height="15" fill="none" stroke="#D66847" stroke-width="3"/><rect x="72.5" y="52.5" width="15" height="15" fill="none" stroke="#E5A63B" stroke-width="3"/><rect x="102.5" y="52.5" width="15" height="15" fill="none" stroke="#A390B2" stroke-width="3"/>') },
+  salvage: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') },
+});
+Object.assign(GS_ART_LOCAL, {
+  where: { bg: 'is-forest', body: <>{I('ga-wh-needle')}{I('ga-wh-ans')}</> },
+  chain: { bg: 'is-wine', body: <>{I('ga-ch-l ga-ch-l1')}{I('ga-ch-l ga-ch-l2')}{I('ga-ch ga-ch-1')}{I('ga-ch ga-ch-o ga-ch-2')}{I('ga-ch ga-ch-o ga-ch-3')}{I('ga-ch ga-ch-o ga-ch-4')}{I('ga-ch ga-ch-5')}</> },
+  salvage: { bg: '', body: <>{I('ga-sv-p ga-sv-miss ga-sv-m1')}{I('ga-sv-p ga-sv-miss ga-sv-m2')}{I('ga-sv-p ga-sv-miss ga-sv-m3')}{I('ga-sv-p ga-sv-miss ga-sv-m4')}{I('ga-sv-hull')}{I('ga-sv-p ga-sv-hit ga-sv-h1')}{I('ga-sv-p ga-sv-hit ga-sv-h2')}{I('ga-sv-p ga-sv-hit ga-sv-h3')}</> },
+});
+Object.assign(GS_RESULT, {
+  where: (r) => (r.ok ? 'Found in ' + r.guesses + ' of 6' : 'Not found'),
+  chain: (r) => (r.given ? r.found + ' of ' + r.of + ' words found' : 'Solved, ' + dpWrong(r.wrong)),
+  salvage: (r) => (r.found === 5 ? 'All 5 wrecks, ' + r.dives + ' of 30 dives' : r.found + ' of 5 wrecks found'),
+});
+WH_TODAY = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80]], hint: 'From Poland, the country lies south' };
+WH_OK = [
+  { a: 'Portugal', g: [['Italy', 1020], ['France', 400], ['Spain', 0]], hint: 'From Spain, the country lies west' },
+  { a: 'Belgium', g: [['Spain', 810], ['Germany', 0]] },
+  { a: 'Austria', g: [['Poland', 170], ['Italy', 0]], hint: 'From Italy, the country lies north' },
+  { a: 'Finland', g: [['Greece', 2000], ['Estonia', 60], ['Sweden', 0]] },
+  { a: 'Czechia', g: [['Hungary', 60], ['Germany', 0]] },
+  { a: 'Ireland', g: [['France', 410], ['United Kingdom', 0]], hint: 'From the United Kingdom, the country lies west' },
+];
+WH_FAIL = { a: 'Slovenia', g: [['Greece', 720], ['Serbia', 200], ['Hungary', 0], ['Austria', 0], ['Croatia', 0], ['Italy', 0]], hint: 'From Croatia, the country lies north' };
+// ---- Chain. A play from a template: { w: the line, p: [[guess, index of the word it was for]] }. The line is 5 to 7 words; each
+// neighbouring pair makes a compound word or a common two-word phrase. Only the intended word counts; a wrong guess shows that word's
+// next letter, and a word that runs out of letters is given away. Lengths stay hidden. No hint and no overall limit. ----
+DP_NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
+CH_TODAY = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'WAGON'], p: [['BALL', 1], ['RACE', 2], ['ROOM', 2], ['STATION', 4], ['SUITE', 3], ['SERVICE', 3]] };
+CH_OK = [
+  { w: ['RAIN', 'BOW', 'TIE', 'BREAK', 'FAST', 'FOOD'], p: [['BOW', 1], ['TIE', 2], ['FROZEN', 4], ['FAST', 4], ['BREAK', 3]] },
+  { w: ['SEA', 'SHELL', 'FISH', 'CAKE', 'WALK'], p: [['SHORE', 1], ['SHELL', 1], ['FISH', 2], ['CAT', 3], ['CAKE', 3]] },
+  { w: ['HEAD', 'LINE', 'UP', 'TOWN', 'HALL'], p: [['LIGHT', 1], ['LINE', 1], ['TOWN', 3], ['UP', 2]] },
+  { w: ['MOON', 'LIGHT', 'HOUSE', 'BOAT', 'YARD'], p: [['LIGHT', 1], ['BOAT', 3], ['HOUSE', 2]] },
+  { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
+  { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
+];
+CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
+// ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
+// never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
+// costs no dive: sonar on a row or a column says how many wreck squares it holds. Complete: every wreck found within the dives. ----
+SV_COLS = 'ABCDEFGH';
+// Today's sea: B2 to E2, G1 to G3, A5 to A7, D5 to E5, G7 to H7.
+SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
+SV_TODAY_DIVES = svReplay(SV_TODAY, ['D4', 'E2', 'E3', 'E1', 'F2', 'D2', 'C2', 'B2', 'G2', 'G3', 'G1', 'A6', 'A5', 'A7', 'E6', 'E5', 'F5', 'D5', 'G6', 'H8', 'G7', 'H7']
+  .map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
+SV_TODAY_HINT = { at: 11, what: 'Sonar on column A', said: '3 wreck squares' };
 // Day i's sea: completed days find every wreck within 30 dives; failed days end with 3 found.
-const dpSvDay = (() => { const memo = {}; return (i, ok) => {
+dpSvDay = (() => { const memo = {}; return (i, ok) => {
   const k = i + (ok ? 'y' : 'n'); if (memo[k]) return memo[k];
   for (let s = i * 13 + 1; s < i * 13 + 3000; s++) { const ships = svLayout(s); const log = svPlay(ships, s); if (svSunk(log) === (ok ? 5 : 3)) return (memo[k] = { ships, log }); }
   return (memo[k] = { ships: SV_TODAY, log: SV_TODAY_DIVES });
 }; })();
-
 // ---- Today's plays, and their in-progress forms (Config: today in progress). ----
-const dpWhT = dpWhere(WH_TODAY, true); const dpChT = dpChain(CH_TODAY);
-const dpChL = dpChain({ ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }); const dpSvL = SV_TODAY_DIVES.slice(0, 11);
+dpWhT = dpWhere(WH_TODAY, true);
+dpChT = dpChain(CH_TODAY);
+dpChL = dpChain({ ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) });
+dpSvL = SV_TODAY_DIVES.slice(0, 11);
 Object.assign(GS_SESSIONS, {
   'where-today': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 1, result: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), date: GS.today,
     figures: [dpWhT.guesses + ' of 6 guesses', '1 hint'], listTitle: 'Every guess', share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks], lines: dpWhT.lines },
@@ -209,24 +278,8 @@ Object.assign(GS_SESSIONS, {
     figures: [svSunk(dpSvL) + ' of 5 wrecks', dpSvL.length + ' of 30 dives'], listTitle: 'Every dive', share: null, lines: svLines(dpSvL) },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
-
-// ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
-const dpSession = (id, c, x, base) => {
-  const n = DP_NO - x.i; const i = x.i;
-  if (id === 'where') {
-    const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
-    return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], listTitle: 'Every guess', share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
-  }
-  if (id === 'chain') {
-    const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
-    return { ...base, number: n, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
-  }
-  const d = dpSvDay(i, x.ok);
-  return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], listTitle: 'Every dive', share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
-};
-const dpCap = (s) => s.replace(/^./, (ch) => ch.toUpperCase());
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
-const DP_PZ = {
+DP_PZ = {
   where: {
     count: DP_NO, no: (i) => GS_NAME.where + ' #' + (DP_NO - i), salt: 7, keep: {}, today: 'where-today', liveSid: 'where-live',
     ok: (i) => GS_RESULT.where({ ok: true, guesses: dpWhere(WH_OK[i % WH_OK.length], true).guesses }), bad: GS_RESULT.where({ ok: false }),
@@ -261,10 +314,7 @@ const DP_PZ = {
       { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
   },
 };
-
-// ---- Product pages ----
-const dpStep = (b, rest) => <><b>{b}</b>{rest}</>;
-const dpSeeResult = <><b>See your result</b> on your session page.</>;
+dpSeeResult = <><b>See your result</b> on your session page.</>;
 Object.assign(GS_PAGES, {
   where: {
     rhythm: 'NEW EVERY DAY',
@@ -300,10 +350,6 @@ Object.assign(GS_PAGES, {
     week: { title: 'Today’s sea', line: 'You get thirty dives to find five wrecks.', session: 'salvage-today' },
   },
 });
-
-// ---- In your chat: text only, as the player's own AI tells it. Each follows today's play above. ----
-const dpMono = (text) => ({ type: 'mono', text });
-const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), t.w[t.w.length - 1]].join('\n');
 Object.assign(GS_CHATS, {
   where: [
     { cap: 'Name a country. Everyone hunts the same one today.', turns: [gscU('I want to play Where.'),
@@ -330,18 +376,14 @@ Object.assign(GS_CHATS, {
       gscAi('salvage', 'Sunk: the wreck of 4. ' + (30 - 8) + ' dives left.', null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])] },
   ],
 });
-
-// ---- Staged states (app/states.jsx spreads them into its register). ----
-// Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Daily Mystery).
-const dpEarlier = (k, ok) => () => { const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok); return x.sid; };
-const DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213';
+DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213';
   const open = (id, extra) => (c) => { c.setView('pass'); c.setConnected(true); if (extra) c.setReview(extra); c.go('session', { id: typeof id === 'function' ? id() : id }); };
   return [
     { group: g, id: 'session-' + k + '-in-progress', label: 'Session page: ' + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
     { group: g, id: 'session-' + k + '-failed', label: 'Session page: ' + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
     { group: g, id: 'session-' + k + '-earlier', label: 'Session page: ' + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
   ]; });
-const DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
+DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
   { group: g, id: k + '-signed-out', label: n + ', signed out', stage: (c) => c.go(k) },
   { group: g, id: k + '-free', label: n + ', free account (Get the Pass)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go(k); } },
   { group: g, id: k + '-pass', label: n + ', with the Pass (played today)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k); } },
@@ -351,7 +393,5 @@ const DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Da
   { group: g, id: 'library-' + k + '-editions', label: n + ': every ' + GS_GAMES[k].ed[0] + ' (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k, { page: 'record', list: true }); } },
   { group: g, id: 'session-' + k, label: 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });
-
-const DP_STATES = [...DP_PZ_STATES, ...DP_SESSION_STATES];
-
-Object.assign(window, { DP_IDS, DP_PZ, dpSession, DP_STATES, svBoard });
+DP_STATES = [...DP_PZ_STATES, ...DP_SESSION_STATES];
+}

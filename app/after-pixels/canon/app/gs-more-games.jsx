@@ -1,6 +1,14 @@
 // After Pixels — nine more games, all Pass-only.
 // Loads after gs-pass-store.jsx (reads CPR_STAGE, CPR_SHOWN) and before the other gs-pass-* files. main.jsx adds GS_MORE_IDS to its route lists.
 // Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, player page units.
+import React from 'react';
+import { GS_ART, GS_SVG, GS_GAMES, gsAccess, GS_GAME_ORDER } from './gs-data.jsx';
+import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
+import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
+import { GP_CFG, gpGame } from './gs-player.jsx';
+import { GS_LIB_READY } from './gs-discover.jsx';
+import { CPR_STAGE, CPR_SHOWN } from './gs-pass-store.jsx';
+
 const cprStep = (b, rest) => <><b>{b}</b>{rest}</>;
 const GS_MORE = [
   { k: 'cipher', name: 'Daily Cipher', category: 'PUZZLE', when: 'Daily', ed: ['cipher', 'ciphers'], long: '10 min', units: 'ciphers', once: true,
@@ -76,8 +84,11 @@ const GS_MORE = [
       ai: 'Describes the workbench and what your machine does when it runs.', server: 'Runs every gear and spring, and decides whether the vault opens.' },
     chat: ['Fit a part, set it going, see what moves.', 'Put the large gear on the left spindle and wind it.', ['The large gear turns the small one three times. The lock moves one notch.', 'Ten notches to go.']] },
 ];
-const GS_MORE_IDS = GS_MORE.map((d) => d.k);
-const GS_MORE_SCREENS = {};
+export const GS_MORE_IDS = GS_MORE.map((d) => d.k);
+export const GS_MORE_SCREENS = {};
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsMoreGames() {
 GS_MORE.forEach((d) => {
   const tags = [d.when, d.long].filter(Boolean);
   GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
@@ -100,5 +111,4 @@ GS_MORE.forEach((d) => {
   CPR_SHOWN.push(d.k);
   GS_MORE_SCREENS[d.k] = gpGame(d.k);
 });
-
-Object.assign(window, { GS_MORE, GS_MORE_IDS, GS_MORE_SCREENS });
+}

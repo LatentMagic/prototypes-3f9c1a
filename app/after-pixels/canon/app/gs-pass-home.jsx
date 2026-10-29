@@ -6,9 +6,17 @@
 // The Pass mark is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
 // is set. Set for Pass-only games, for a player without the Pass. The mark is its own control: it opens Pricing (`pass`).
 // The Free and "First … free" chips come off the cards; the Pass is never a tag.
+import React from 'react';
+import { GS_GAMES, useGs, DS, GS_ART, GS, GS_NAME, GS_SOON } from './gs-data.jsx';
+import { GsArt, useGsArtHost, gsKeepLast, GsTagList, GsSoonCard } from './gs-parts.jsx';
+import { GS_HERO_CHAT, GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
+import { GS_HOME_GAMES, GsFeature, GsWhatsNew } from './gs-home.jsx';
+import { GS_PLAN } from './gs-billing.jsx';
+import { cprLocked, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
+
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
 const CprArt = ({ host, id, shape }) => <div ref={host}><GsArt art={GS_GAMES[id].art} shape={shape} /></div>;
-const GsCard = ({ id, mark }) => {
+export const GsCard = ({ id, mark }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GameCard className="mcp-art-host gs-host"
@@ -19,8 +27,8 @@ const GsCard = ({ id, mark }) => {
       tags={<GsTagList tags={cprTags(id)} ed={g.ed} />} />
   );
 };
-const GsGameCard = GsCard;
-const GsPick = ({ id, label }) => {
+export const GsGameCard = GsCard;
+export const GsPick = ({ id, label }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
     <DS.GamePick className="mcp-art-host gs-host"
@@ -50,7 +58,7 @@ const cprMix = (ids) => {
   };
   return fill(0) ? out.slice() : ids;
 };
-const CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === 'pass').map((k) => (k === 'salvage' ? 'word' : k)).slice(0, 8));
+let CPR_MOSAIC;
 const CprPassCard = () => {
   const gs = useGs(); const host = useGsArtHost(); const go = () => gs.go('pass');
   return (
@@ -62,7 +70,7 @@ const CprPassCard = () => {
   );
 };
 
-const GsHome = () => {
+export const GsHome = () => {
   const gs = useGs(); const field = React.useRef(null);
   React.useEffect(() => {
     const f = field.current; if (!f) return undefined;
@@ -116,4 +124,7 @@ const GsHome = () => {
   );
 };
 
-Object.assign(window, { GsHome, GsCard, GsGameCard, GsPick, CprArt, cprTags });
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsPassHome() {
+CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === 'pass').map((k) => (k === 'salvage' ? 'word' : k)).slice(0, 8));
+}

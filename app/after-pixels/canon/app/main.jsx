@@ -13,41 +13,104 @@
 // A candidate build (the kit's candidate-build skill) may publish window.KitCandidate; it is
 // read below, per render, and absent means the shipped behaviour.
 // ============================================================================
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import './canon.css';
+import './primitives.jsx';
+import './gs-data.jsx';
+import './gs-site.jsx';
+import './gs-parts.jsx';
+import { initGsChats } from './gs-chats.jsx';
+import './directory-listings.jsx';
+import './gs-home.jsx';
+import './gs-session.jsx';
+import { initGsGame } from './gs-game.jsx';
+import './gs-library.jsx';
+import { initGsWhereChainSalvage } from './gs-where-chain-salvage.jsx';
+import { initGsCasebookData } from './gs-casebook-data.jsx';
+import { initGsCasebook } from './gs-casebook.jsx';
+import { initGsDelveLibrary } from './gs-delve-library.jsx';
+import { initGsPuzzlesLibrary } from './gs-puzzles-library.jsx';
+import { initGsHunterLibrary } from './gs-hunter-library.jsx';
+import { initGsBarrowLibrary } from './gs-barrow-library.jsx';
+import { initGsPlayer } from './gs-player.jsx';
+import { initGsDiscover } from './gs-discover.jsx';
+import './gs-auth.jsx';
+import './gs-username.jsx';
+import './gs-connect.jsx';
+import './gs-billing.jsx';
+import './gs-account.jsx';
+import { initStates } from './states.jsx';
+import './states-ui.jsx';
+import './config.jsx';
+import './qa.jsx';
+import './gs-config.jsx';
+import { initGsHistory } from './gs-history.jsx';
+import { initGsEditions } from './gs-editions.jsx';
+import { initGsPassStore } from './gs-pass-store.jsx';
+import { initGsMoreGames } from './gs-more-games.jsx';
+import { initGsPassHome } from './gs-pass-home.jsx';
+import './gs-pass-game.jsx';
+import './gs-pass-pricing.jsx';
+import { initGsPassLibrary } from './gs-pass-library.jsx';
+import './gs-pass-discover.jsx';
+import './gs-pass-aids.jsx';
+import './gs-escape.jsx';
+import './gs-word.jsx';
+import { initGsDelve } from './gs-delve.jsx';
+import { useGs, gsScrollTop, GsCtx } from './gs-data.jsx';
+import { GsLegal, GsFullLoader, GsOffline, GsNotFound, GS_LOAD_MS, GsSpin, GsFooter } from './gs-site.jsx';
+import { GsTopBar, GsPlayPopup, GsDemoBar } from './gs-parts.jsx';
+import { DlClaudeListing, DlChatGptListing } from './directory-listings.jsx';
+import { GsSession } from './gs-session.jsx';
+import { DP_IDS } from './gs-where-chain-salvage.jsx';
+import { registerCasebook } from './gs-casebook.jsx';
+import { registerDelveLibrary } from './gs-delve-library.jsx';
+import { registerPuzzlesLibrary } from './gs-puzzles-library.jsx';
+import { registerHunterLibrary } from './gs-hunter-library.jsx';
+import { GsDelve, GsWord, GsGroups, GsMystery, GsWhere, GsChain, GsSalvage, GsEscape, GsCasebook, GsHunter, GsBarrow } from './gs-player.jsx';
+import { GsSignUp, GsSignIn, GsVerify, GsRecover, GsReturning } from './gs-auth.jsx';
+import { GsUsername } from './gs-username.jsx';
+import { GsConnect, gsPlayReq } from './gs-connect.jsx';
+import { GsSubscribe, GsCheckout, GsUpdateCard, GS_SUB_HOLDS, GS_DAY0, GS_PLAN, gsAddMonths } from './gs-billing.jsx';
+import { GsAccount } from './gs-account.jsx';
+import { kitResolveState } from './states.jsx';
+import { StatesIndex } from './states-ui.jsx';
+import { ConfigLauncher } from './config.jsx';
+import { GsHistory } from './gs-history.jsx';
+import { registerEditions } from './gs-editions.jsx';
+import { GS_MORE_IDS, GS_MORE_SCREENS } from './gs-more-games.jsx';
+import { GsHome } from './gs-pass-home.jsx';
+import { GsPass } from './gs-pass-pricing.jsx';
+import { registerPassLibrary, GsLibrary } from './gs-pass-library.jsx';
+import { GsGames } from './gs-pass-discover.jsx';
+import { buildStates } from './gs-pass-aids.jsx';
+import { registerEscape } from './gs-escape.jsx';
+import { registerWord } from './gs-word.jsx';
+import { registerDelve } from './gs-delve.jsx';
+
 const { useState, useEffect, useRef } = React;
 
-// Every registry write, in the order the files load in index.html, before the first render.
-registerCasebook(); registerDelveLibrary(); registerPuzzlesLibrary(); registerHunterLibrary();
-registerEditions(); registerPassLibrary();
-registerEscape(); registerWord(); registerDelve();
+   
+ 
+  
 
-const GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false, escape: 'under', ed: null };
-// first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
-// fresh: an account made in this session (or Config Account: New), with nothing played yet.
-const GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
-// status: none | active | failed | ending. hadPass: has had the Pass before.
-const GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
-// Screens with their own frame (no shared top bar).
-const GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
-// The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar or play pop-up over them.
-const GS_LISTING = ['directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
-// Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
-// Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
-const GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
-// Screens a signed-out view cannot hold.
-GS_FOOTER.push(...(window.GS_MORE_IDS || []));
-const GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
-// Of those, the pages that belong to the player: a signed-out visitor gets Sign in, then the page asked for.
-const GS_GUARDED = ['library', 'history', 'account', 'session'];
+let GS_REVIEW_DEFAULT;
+let GS_USER_DEFAULT;
+let GS_SUB_DEFAULT;
+let GS_BARE;
+let GS_LISTING;
+let GS_FOOTER;
+
+let GS_SIGNED_IN_ONLY;
+let GS_GUARDED;
 const gsSignInFor = (r) => ({ name: 'signin', next: { ...r, prev: undefined, next: undefined } });
-// Screens that make or enter an account. Someone signed in never lands on them.
-const GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'returning'];
+let GS_AUTH_ONLY;
 
-// Every route the app holds. Anything else is not-found, which carries no chrome.
-const GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow',
-  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(window.GS_MORE_IDS || [])];
+let GS_ROUTES;
 
 const GsScreen = ({ name }) => {
-  const More = window.GS_MORE_SCREENS && window.GS_MORE_SCREENS[name]; // the ten games in app/gs-more-games.jsx
+  const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name]; // the ten games in app/gs-more-games.jsx
   if (More) return <More />;
   switch (name) {
     case 'home': return <GsHome />;
@@ -81,15 +144,13 @@ const GsScreen = ({ name }) => {
     case 'legal': return <GsLegal />;
     case 'loading': return <GsFullLoader />;
     case 'offline': return <GsOffline />;
-    case 'directory-claude': return window.DlClaudeListing ? <window.DlClaudeListing /> : null;
-    case 'directory-chatgpt': return window.DlChatGptListing ? <window.DlChatGptListing /> : null;
+    case 'directory-claude': return DlClaudeListing ? <DlClaudeListing /> : null;
+    case 'directory-chatgpt': return DlChatGptListing ? <DlChatGptListing /> : null;
     default: return <GsNotFound />;
   }
 };
 
-// A page loads as a page on arrival: the top bar and footer stand, the content waits.
-// Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
-const GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', ...(window.GS_MORE_IDS || [])];
+let GS_ARRIVES;
 const GsArrival = ({ name, quick }) => {
   const gs = useGs(); const r = gs.route;
   const held = r.hold === 'page';
@@ -134,7 +195,7 @@ const KitApp = () => {
   const [platform, setPlatform] = useState('web');
   const isApp = platform === 'app';
   const forcedMobile = layout === 'mobile' || isApp;
-  const ConfigLauncher = window.ConfigLauncher;
+  
 
   // ---- product state ------------------------------------------------------------
   const [route, setRoute] = useState({ name: 'home' });
@@ -266,13 +327,13 @@ const KitApp = () => {
   window.gsApi = gs;
 
   // ---- the states register (app/states.jsx, a deletable aid) ----------------------
-  const [landing, setLanding] = useState(() => (window.kitResolveState ? window.kitResolveState() : null));
-  const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (window.buildStates
-    ? window.buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform })
+  const [landing, setLanding] = useState(() => (kitResolveState ? kitResolveState() : null));
+  const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (buildStates
+    ? buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform })
     : { byId: {}, groups: [] });
   const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
   window.kitGoState = goState; // opens a state by id from a script (checking a build)
-  const resetAndShow = window.buildStates && (() => { reset(); setLanding(null); });
+  const resetAndShow = buildStates && (() => { reset(); setLanding(null); });
 
   const deepLinked = useRef(false);
   useEffect(() => {
@@ -283,7 +344,7 @@ const KitApp = () => {
     st.go();
   }, [landing]);
 
-  const StatesIndexView = window.StatesIndex;
+  const StatesIndexView = StatesIndex;
   const showIndex = !!StatesIndexView && !!landing && (landing.kind === 'index' || landing.kind === 'unresolved');
 
   // Layouts adapt to the width they are handed (GOTCHA 6): measure the root.
@@ -344,4 +405,64 @@ const KitApp = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<KitApp />);
+// Load-time code, run by main.jsx in index.html's old tag order.
+function initMain() {
+// Every registry write, in the order the files load in index.html, before the first render.
+registerCasebook();
+registerDelveLibrary();
+registerPuzzlesLibrary();
+registerHunterLibrary();
+registerEditions();
+registerPassLibrary();
+registerEscape();
+registerWord();
+registerDelve();
+GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', unfinished: false, several: false, escape: 'under', ed: null };
+// first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
+// fresh: an account made in this session (or Config Account: New), with nothing played yet.
+GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
+// status: none | active | failed | ending. hadPass: has had the Pass before.
+GS_SUB_DEFAULT = { status: 'none', plan: 'monthly', hadPass: false, pending: null, renew: null };
+// Screens with their own frame (no shared top bar).
+GS_BARE = ['signup', 'signin', 'verify', 'username', 'recover', 'returning', 'checkout', 'update-card', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(GS_MORE_IDS || [])];
+// The directory listing mocks (app/directory-listings.jsx, droppable): no demo bar or play pop-up over them.
+GS_LISTING = ['directory-claude', 'directory-chatgpt', ...(GS_MORE_IDS || [])];
+// Screens that carry the site footer: everything except single-purpose screens (sign-in, sign-up, verify, recover, returning, checkout, update-card, loading, offline).
+// Not-found carries it too (KitApp). The auth screens carry the legal links in their own foot (GsAuthFrame).
+GS_FOOTER = ['home', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', 'pass', 'subscribe', 'legal', 'connect', 'history', 'session', 'account'];
+// Screens a signed-out view cannot hold.
+GS_FOOTER.push(...(GS_MORE_IDS || []));
+GS_SIGNED_IN_ONLY = ['library', 'history', 'account', 'update-card', 'checkout', 'session'];
+// Of those, the pages that belong to the player: a signed-out visitor gets Sign in, then the page asked for.
+GS_GUARDED = ['library', 'history', 'account', 'session'];
+// Screens that make or enter an account. Someone signed in never lands on them.
+GS_AUTH_ONLY = ['signup', 'signin', 'verify', 'username', 'recover', 'returning'];
+// Every route the app holds. Anything else is not-found, which carries no chrome.
+GS_ROUTES = ['home', 'signup', 'signin', 'verify', 'username', 'recover', 'returning', 'connect', 'games', 'library', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow',
+  'session', 'history', 'pass', 'subscribe', 'checkout', 'update-card', 'account', 'legal', 'loading', 'offline', 'directory-claude', 'directory-chatgpt', ...(GS_MORE_IDS || [])];
+// A page loads as a page on arrival: the top bar and footer stand, the content waits.
+// Back does not repeat the wait (the page was already loaded). Discover with its own route.load keeps its own states.
+GS_ARRIVES = ['games', 'library', 'history', 'session', 'pass', 'subscribe', 'account', 'delve', 'word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'hunter', 'barrow', ...(GS_MORE_IDS || [])];
+createRoot(document.getElementById('root')).render(<KitApp />);
+}
+
+initGsChats();
+initGsGame();
+initGsWhereChainSalvage();
+initGsCasebookData();
+initGsCasebook();
+initGsDelveLibrary();
+initGsPuzzlesLibrary();
+initGsHunterLibrary();
+initGsBarrowLibrary();
+initGsPlayer();
+initGsDiscover();
+initStates();
+initGsHistory();
+initGsEditions();
+initGsPassStore();
+initGsMoreGames();
+initGsPassHome();
+initGsPassLibrary();
+initGsDelve();
+initMain();

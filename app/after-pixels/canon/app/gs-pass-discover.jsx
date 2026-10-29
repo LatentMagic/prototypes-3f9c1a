@@ -4,6 +4,15 @@
 // Discover doesn't sell the Pass: only a game's product page and its Library page do, so it has no Pass line.
 
 // The picks (seed). Labels name each game's rhythm, never a price or "this week".
+import React from 'react';
+import { useGs, GS_GAMES, gsRhythm, DS, GS_RHYTHMS } from './gs-data.jsx';
+import { useGsPart, GsPart, GsSpin, GsLoadFailed } from './gs-site.jsx';
+import { GsTile } from './gs-parts.jsx';
+import { LbTools, LbChoice } from './gs-library.jsx';
+import { GS_ADDED, gsFind, GS_KINDS, gsKind } from './gs-discover.jsx';
+import { CPR_SHOWN, cprEditions, CPR_STAGE, cprLocked } from './gs-pass-store.jsx';
+import { GsCard, GsPick } from './gs-pass-home.jsx';
+
 const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
 // The selection: Just added (games with editions, not picked), then Free to play (every game with free play, picks
 // included; gone with the Pass). A row with nothing in it isn't shown.
@@ -30,11 +39,11 @@ const CprDiscoverBody = ({ f, setF }) => {
   const cardRow = (title, ks) => (ks.length ? <section className="dc-sec"><DS.CardRow title={title} className="gs-row4">{ks.map((k) => <GsCard key={k} id={k} />)}</DS.CardRow></section> : null);
   return <>
     <div ref={tools}>
-      <window.LbTools>
+      <LbTools>
         <DS.SearchField label="Search" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
         <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
         <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
-      </window.LbTools>
+      </LbTools>
     </div>
     {!filtering && <>
       <div className="mcp-gpicks">{CPR_PICKS.map(([k, l]) => <GsPick key={k} id={k} label={l} />)}</div>
@@ -50,7 +59,7 @@ const CprDiscoverBody = ({ f, setF }) => {
 };
 // The page shell is a copy of canon's old Discover with CprDiscoverBody in place of DcBody (app/gs-discover.jsx).
 // Loading and failed states as canon.
-const GsGames = () => {
+export const GsGames = () => {
   const gs = useGs();
   const [load, setLoad] = React.useState(gs.route.load || null);
   const fOf = (r, prevQ) => { const k = r.dcKeep || {}; return { q: k.q != null ? k.q : prevQ, cat: k.cat || r.kind || 'all', rhy: k.rhy || r.rhythm || 'all' }; };
@@ -72,4 +81,3 @@ const GsGames = () => {
   </>);
 };
 
-Object.assign(window, { GsGames });

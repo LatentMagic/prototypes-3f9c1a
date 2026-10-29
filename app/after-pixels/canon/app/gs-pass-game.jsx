@@ -1,7 +1,14 @@
 // After Pixels — a product page's play box. Re-publishes GsPlayBox, replacing app/gs-game.jsx's: the label and the line under the
 // button are set for the signed-out and free views, and a Pass holder's box has neither. No play box carries the pay line; it lives
 // on Pricing. No links sit under the button. The heading, steps and Works with stay as canon has them.
-const GsPlayBox = ({ id }) => {
+import React from 'react';
+import { useGs, GS_GAMES, DS, GS } from './gs-data.jsx';
+import { GsSteps } from './gs-parts.jsx';
+import { GS_PAGES, gsOr } from './gs-game.jsx';
+import { GsHowLink, gsPlayReq } from './gs-connect.jsx';
+import { cprBoxCopy, CPR_STAGE, CprPassEnd } from './gs-pass-store.jsx';
+
+export const GsPlayBox = ({ id }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const b = GS_PAGES[id].box;
   const paying = gs.view === 'pass';
   const mine = !paying ? cprBoxCopy(id) : null;
@@ -28,4 +35,3 @@ const GsPlayBox = ({ id }) => {
     </DS.Card>
   );
 };
-Object.assign(window, { GsPlayBox });

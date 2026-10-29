@@ -1,3 +1,93 @@
+import React from 'react';
+import { gsMis, GS_RESULT, GS_SESSIONS, GS_GAMES, gsGuessParts, gsEdPick, useGs, gsFresh, GS_ES_WORDS4, gsEsHint } from './gs-data.jsx';
+import { lbDate, lbMonth, lbAutoBadges, lbWeekDone, lbNow, lbStreak, LbHead, LbRun, lbRunOf, LbAch } from './gs-library.jsx';
+import { DP_PZ, dpSession, DP_IDS } from './gs-where-chain-salvage.jsx';
+import { phVisible, phAch, LbRecent } from './gs-history.jsx';
+import { CprPassEnd } from './gs-pass-store.jsx';
+import { PzNow } from './gs-pass-library.jsx';
+import { esFinished } from './gs-escape.jsx';
+import { GS_LIBRARY } from './registry.js';
+
+let pzMis;
+export let PZ;
+let PZ_WORDS;
+let PZ_OPEN;
+let PZ_GROUPS;
+let PZ_SUS;
+let PZ_WPN;
+let PZ_RMS;
+const pzQn = (q) => (q === 0 ? 'No questions' : q === 1 ? '1 question' : q + ' questions');
+const pzAcc = (s, w, r) => s + ', with the ' + w + ', in the ' + r;
+let PZ_MOVES;
+export const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
+const pzSession = (id, c, x) => {
+  const i = x.i; const sid = id + '-e' + i; const base = { kind: 'puzzle', gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
+  let s;
+  if (DP_PZ[id]) s = dpSession(id, c, x, base);
+  else if (id === 'word') {
+    const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
+    const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
+    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
+  } else if (id === 'groups') {
+    const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
+    for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
+      if (m < mis && (k % 2 === 1 || f >= found)) { const g = PZ_GROUPS[f % 4][0]; const o = PZ_GROUPS[(f + 1) % 4][0]; rows.push(g + g + g + o); lines.push(['Try ' + (k + 1), 'Mixed four', m === 0 ? 'One away' : 'Not a group']); m++; }
+      else { const [g, w] = PZ_GROUPS[f]; rows.push(g + g + g + g); lines.push(['Try ' + (k + 1), w.split(': ')[1], 'Found: ' + w.split(': ')[0]]); f++; }
+    }
+    s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], listTitle: 'Every try', share: x.line,
+      shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
+  } else if (id === 'mystery') {
+    const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
+    const qs = Array.from({ length: q }, (_, k) => (k === 0
+      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'The inspector said yes' : 'The inspector said no']
+      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'The inspector said yes' : 'The inspector said no']));
+    const part = i % 3;
+    const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
+      : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
+    s = { ...base, number: 64 - i, q, hints: 0, listTitle: 'Every question', share: x.line, figures: [pzQn(q), 'No hints'],
+      lines: [...qs, x.ok ? ['Accusation', acc, 'Right'] : ['Accusation', acc, 'Wrong', ['The suspect was wrong', 'The weapon was wrong', 'The room was wrong'][part]]] };
+  } else {
+    // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
+    s = { ...GS_SESSIONS['escape-week'], date: base.date };
+  }
+  GS_SESSIONS[sid] = s; return sid;
+};
+
+
+const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
+export const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
+
+// The run, from the record: each edition as this player's play of it stands (completed, failed, in progress or not played).
+export const pzRun = (gs, id) => {
+  const by = {}; phVisible(gs).forEach((p) => { if (p.gid === id && !by[p.ed]) by[p.ed] = p; });
+  return PZ[id].all.map((x) => { const p = by[x.id]; const k = p ? p.status.kind : 'none'; return { ...x, played: !!p, done: k === 'ok', failed: k === 'bad' }; });
+};
+const pzLibrary = (id) => () => {
+  const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
+  const [recent] = c.plays; const allLabel = 'See in History';
+  const never = gs.review.never === id || gsFresh(gs);
+  const now = never ? null : lbNow(gs, id); // The broken streak changes yesterday's play only (phLog); today's head reads today's play.
+  const none = !now;
+  const run = pzRun(gs, id); const n = lbStreak(run);
+  const ach = phAch(gs, id, c.ach, n);
+  return (
+    <main key={k} className="gs-wrap gs-main">
+      <LbHead id={id} />
+      <div className="lb-lay">
+        <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
+        <LbRun n={n} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
+        <LbAch items={ach} badges={c.badges} access="all" />
+        <LbRecent title={recent} allLabel={allLabel}
+          empty={recent + ' appear here once you have played one.'} />
+      </div>
+      {gs.view !== 'pass' && id !== 'escape' && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
+    </main>
+  );
+};
+export const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = pzLibrary(id); }); };
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsPuzzlesLibrary() {
 // ============================================================================
 // After Pixels — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape.
 // Word, Groups and Mystery's pages are replaced by gs-pass-library.jsx in every view (cprPzLibrary), Escape's for a player without
@@ -8,8 +98,8 @@
 // Free: Daily Word and Daily Mystery's current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
-const pzMis = gsMis;
-const PZ = {
+pzMis = gsMis;
+PZ = {
   word: {
     no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
@@ -59,49 +149,14 @@ const PZ = {
   ...DP_PZ,
 };
 // ---- Generated session pages for earlier editions (seed only) ----
-const PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
-const PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
-const PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
+PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
+PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
+PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
 // Earlier Daily Mystery days, in the real grammar: SAMPLES, not real cases. At most two questions; a wrong accusation gets one part wrong.
-const PZ_SUS = ['Ivy Marchbank', 'Colonel Rufus Hale', 'Delphine Rooke', 'Arthur Penhallow', 'Mr Graves', 'Sebastian Wyle', 'Dr Helena Strand', 'Nell Okafor'];
-const PZ_WPN = ['brass candlestick', 'vial of foxglove', 'antique pistol', 'iron poker', 'curtain cord', 'paper knife', 'marble bust', 'hatpin'];
-const PZ_RMS = ['library', 'conservatory', 'butler’s pantry', 'billiard room', 'wine cellar', 'dining room', 'morning room', 'study'];
-const pzQn = (q) => (q === 0 ? 'No questions' : q === 1 ? '1 question' : q + ' questions');
-const pzAcc = (s, w, r) => s + ', with the ' + w + ', in the ' + r;
-const PZ_MOVES = [];
-const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
-const pzSession = (id, c, x) => {
-  const i = x.i; const sid = id + '-e' + i; const base = { kind: 'puzzle', gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
-  let s;
-  if (DP_PZ[id]) s = dpSession(id, c, x, base);
-  else if (id === 'word') {
-    const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
-    const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
-    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
-  } else if (id === 'groups') {
-    const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
-    for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
-      if (m < mis && (k % 2 === 1 || f >= found)) { const g = PZ_GROUPS[f % 4][0]; const o = PZ_GROUPS[(f + 1) % 4][0]; rows.push(g + g + g + o); lines.push(['Try ' + (k + 1), 'Mixed four', m === 0 ? 'One away' : 'Not a group']); m++; }
-      else { const [g, w] = PZ_GROUPS[f]; rows.push(g + g + g + g); lines.push(['Try ' + (k + 1), w.split(': ')[1], 'Found: ' + w.split(': ')[0]]); f++; }
-    }
-    s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], listTitle: 'Every try', share: x.line,
-      shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
-  } else if (id === 'mystery') {
-    const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
-    const qs = Array.from({ length: q }, (_, k) => (k === 0
-      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'The inspector said yes' : 'The inspector said no']
-      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'The inspector said yes' : 'The inspector said no']));
-    const part = i % 3;
-    const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
-      : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
-    s = { ...base, number: 64 - i, q, hints: 0, listTitle: 'Every question', share: x.line, figures: [pzQn(q), 'No hints'],
-      lines: [...qs, x.ok ? ['Accusation', acc, 'Right'] : ['Accusation', acc, 'Wrong', ['The suspect was wrong', 'The weapon was wrong', 'The room was wrong'][part]]] };
-  } else {
-    // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
-    s = { ...GS_SESSIONS['escape-week'], date: base.date };
-  }
-  GS_SESSIONS[sid] = s; return sid;
-};
+PZ_SUS = ['Ivy Marchbank', 'Colonel Rufus Hale', 'Delphine Rooke', 'Arthur Penhallow', 'Mr Graves', 'Sebastian Wyle', 'Dr Helena Strand', 'Nell Okafor'];
+PZ_WPN = ['brass candlestick', 'vial of foxglove', 'antique pistol', 'iron poker', 'curtain cord', 'paper knife', 'marble bust', 'hatpin'];
+PZ_RMS = ['library', 'conservatory', 'butler’s pantry', 'billiard room', 'wine cellar', 'dining room', 'morning room', 'study'];
+PZ_MOVES = [];
 // Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
 Object.entries(PZ).forEach(([id, c]) => {
   c.gid = id;
@@ -126,39 +181,6 @@ Object.entries(PZ).forEach(([id, c]) => {
   pzSession('word', c, { ...y, ok: false, line: c.bad }); GS_SESSIONS['word-broken-first'] = GS_SESSIONS['word-e1'];
   if (keep) GS_SESSIONS['word-e1'] = keep; else delete GS_SESSIONS['word-e1'];
 })();
-const pzGo = (gs, id, sid) => gs.go(GS_GAMES[id].route, sid ? { page: 'record', sid } : { page: 'record' });
-const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not played' } : x.ok ? { kind: 'ok', label: x.line } : { kind: 'bad', label: x.line });
-
-// The run, from the record: each edition as this player's play of it stands (completed, failed, in progress or not played).
-const pzRun = (gs, id) => {
-  const by = {}; phVisible(gs).forEach((p) => { if (p.gid === id && !by[p.ed]) by[p.ed] = p; });
-  return PZ[id].all.map((x) => { const p = by[x.id]; const k = p ? p.status.kind : 'none'; return { ...x, played: !!p, done: k === 'ok', failed: k === 'bad' }; });
-};
-const pzLibrary = (id) => () => {
-  const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
-  const [recent] = c.plays; const allLabel = 'See in History';
-  const never = gs.review.never === id || gsFresh(gs);
-  const now = never ? null : lbNow(gs, id); // The broken streak changes yesterday's play only (phLog); today's head reads today's play.
-  const none = !now;
-  const run = pzRun(gs, id); const n = lbStreak(run);
-  const ach = phAch(gs, id, c.ach, n);
-  return (
-    <main key={k} className="gs-wrap gs-main">
-      <LbHead id={id} />
-      <div className="lb-lay">
-        <PzNow c={c} done={lbWeekDone(gs)} none={none} id={id} />
-        <LbRun n={n} unit={c.weekly ? 'weeks' : 'days'} weeks={lbRunOf(run)} />
-        <LbAch items={ach} badges={c.badges} access="all" />
-        <LbRecent title={recent} allLabel={allLabel}
-          empty={recent + ' appear here once you have played one.'} />
-      </div>
-      {gs.view !== 'pass' && id !== 'escape' && <window.CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
-    </main>
-  );
-};
-const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = pzLibrary(id); }); };
-Object.assign(window, { PZ, pzLong, pzStatus, pzRun });
-
 // ---- Escape's nine earlier rooms (sample, 1236), so the streak card, Your rooms and History read one history. Newest first after
 // this week: five played, one missed, one played, one missed, one played. Every play is escaped (Escape has no losing outcome).
 // History (app/gs-history.jsx, loaded later) builds from PZ.escape.all. ----
@@ -199,3 +221,4 @@ Object.assign(window, { PZ, pzLong, pzStatus, pzRun });
     return x;
   })];
 })();
+}

@@ -34,6 +34,12 @@
 // beside the selected section's rows. Below 640px it is a bottom sheet that
 // drills in: the section list, then one section under a back control.
 // ============================================================================
+import React from 'react';
+import { Icon, kitLockScroll } from './primitives.jsx';
+import { StatesPalette } from './states-ui.jsx';
+import { QaPalette } from './qa.jsx';
+import { ConfigExtra } from './gs-pass-aids.jsx';
+
 const { useState: useCState, useRef: useCRef, useEffect: useCEffect,
         useLayoutEffect: useCLayoutEffect, useContext: useCContext } = React;
 
@@ -41,7 +47,7 @@ const CONFIG_GLOBAL = 'Global';
 const CONFIG_PHONE = '(max-width: 639px)';
 const ConfigCtx = React.createContext(null);
 
-const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
+export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
                          onReset, layout, onLayoutChange, platform, onPlatformChange }) => {
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
@@ -105,10 +111,10 @@ const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   };
   // A drag ends on whichever half it started on; the click that follows is not one.
   const tapped = (fn) => { if (dragRef.current.moved) { dragRef.current.moved = false; return; } fn(); };
-  const StatesPalette = window.StatesPalette;
+  
   const hasStates = !!StatesPalette && !!statesGroups && statesGroups.length > 0;
   // QA (app/qa.jsx): hidden only when the file is absent; an empty list shows its empty state.
-  const QaPalette = window.QaPalette;
+  
   const hasQa = hasStates && !!QaPalette;
 
   return (
@@ -199,7 +205,7 @@ const ConfigInfo = ({ open, onToggle, label }) => (
 
 // ---- Contract: one row of choices ----
 // KEEP: options are separate bordered chips that wrap onto a new line, never a track that scrolls sideways.
-const ConfigRow = ({ label, value, onChange, options, hint }) => {
+export const ConfigRow = ({ label, value, onChange, options, hint }) => {
   const [hintOpen, setHintOpen] = useCState(false);
   return (
     <div className="kit-config-row">
@@ -232,7 +238,7 @@ const ConfigAction = ({ label, onClick }) => (
 const ConfigNote = ({ children }) => <div className="kit-config-note">{children}</div>;
 
 // ---- Contract: a group. Registers its section with the modal; renders only while that section is selected. ----
-const ConfigGroup = ({ title, scope, children }) => {
+export const ConfigGroup = ({ title, scope, children }) => {
   const ctx = useCContext(ConfigCtx);
   const id = React.useId();
   const section = configSectionOf(title, scope);
@@ -345,7 +351,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
     </button>
   );
 
-  const Extra = window.ConfigExtra;
+  const Extra = ConfigExtra;
   return (
     <div className="kit-config-dialog-scrim" style={{ opacity: shown ? 1 : 0 }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -398,4 +404,3 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
   );
 };
 
-Object.assign(window, { ConfigLauncher, ConfigGroup, ConfigRow, ConfigAction, ConfigNote });

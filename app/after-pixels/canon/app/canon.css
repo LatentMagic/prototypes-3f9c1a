@@ -1,0 +1,17 @@
+/* The product's stylesheets, in the order index.html used to link them: a later file wins a tie, so this order is the cascade. */
+@import './gs-delve.css';
+@import './aids.css';
+@import './gs-shell.css';
+@import './gs-player.css';
+@import './gs-library-page.css';
+@import './gs-auth.css';
+@import './gs-account.css';
+@import './gs-site.css';
+@import './gs-session-history.css';
+@import './gs-home.css';
+@import './gs-cards.css';
+@import './gs-connect.css';
+@import './gs-game.css';
+@import './gs-pass.css';
+@import './gs-escape.css';
+@import './gs-word.css';

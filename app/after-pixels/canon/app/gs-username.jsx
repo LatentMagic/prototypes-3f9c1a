@@ -8,8 +8,14 @@
 // any capitals, is taken; your own current name never is.
 // ============================================================================
 
+import React from 'react';
+import { DS, useGs } from './gs-data.jsx';
+import { lbDate } from './gs-library.jsx';
+import { GsLabelled, useGsForm, GsAuthFrame } from './gs-auth.jsx';
+import { gsAddDays, GS_DAY0 } from './gs-billing.jsx';
+
 const GS_TAKEN = 'That username is taken';
-const gsUsernameRules = (current) => {
+export const gsUsernameRules = (current) => {
   const t = (v) => v.trim();
   return [
     ['name', (v) => t(v).length >= 3 && t(v).length <= 16, 'Use 3 to 16 characters.'],
@@ -23,8 +29,8 @@ const gsUsernameRules = (current) => {
 // The day a username can next change: 30 days after it last changed, or after sign-up, counted from the prototype's today.
 const gsUsernameNext = (u) => lbDate(gsAddDays(new Date(u.since || GS_DAY0.getTime()), 30));
 // The field. The rule shows as one hint line under it on the sign-up form and Your username (hint); a failed save replaces it with the error. A taken name is refused with its error; nothing is offered.
-const GS_USERNAME_HINT = 'Use 3 to 16 letters, numbers or underscores, starting with a letter. You can change it once every 30 days.';
-const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder, hint }) => {
+export const GS_USERNAME_HINT = 'Use 3 to 16 letters, numbers or underscores, starting with a letter. You can change it once every 30 days.';
+export const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placeholder, hint }) => {
   const b = form.bind('name');
   return aside
     ? <GsLabelled label={label} aside={aside}>
@@ -35,7 +41,7 @@ const GsUsernameField = ({ form, aside, autoFocus, label = 'Username', placehold
 
 // ---- Your username: a Google or Apple sign-up, straight after the provider (no code: a new account has no device to verify).
 // The account is made only when a name is chosen; leaving first leaves no account. No Skip. Back returns to sign-up, where Google or Apple leads here again.
-const GsUsername = () => {
+export const GsUsername = () => {
   const gs = useGs();
   const { next, provider, preset } = gs.route; // preset 'taken' is staged
   const form = useGsForm({ name: preset === 'taken' ? 'taken' : '' }, gsUsernameRules(null), (f) => gs.accountMade(f.name.trim(), provider || 'google', next), { tried: preset === 'taken' });
@@ -64,7 +70,7 @@ const GsUsernameForm = ({ current }) => {
     </form>
   );
 };
-const GsUsernameCard = () => {
+export const GsUsernameCard = () => {
   const gs = useGs();
   const u = gs.user;
   return (
@@ -76,4 +82,3 @@ const GsUsernameCard = () => {
   );
 };
 
-Object.assign(window, { GsUsername, GsUsernameCard, GsUsernameField, gsUsernameRules, GS_USERNAME_HINT });

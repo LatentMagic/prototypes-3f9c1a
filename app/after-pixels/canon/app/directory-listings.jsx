@@ -5,6 +5,10 @@
 // law for these two routes only).
 // Absent ⇒ the two routes render nothing and the register group is not there.
 // ============================================================================
+import React from 'react';
+import { useGs } from './gs-data.jsx';
+import { GsChatPic, GS_CHATS } from './gs-chats.jsx';
+
 const DL_PHONE = 768;
 const DL_LOGO = 'assets/logo.svg';
 
@@ -180,7 +184,7 @@ const DlcTools = ({ phone }) => (
   </section>
 );
 
-const DlClaudeListing = () => {
+export const DlClaudeListing = () => {
   const phone = useDlPhone();
   const notice = (
     <div style={phone ? { ...dlcS.notice, marginTop: 28, padding: '16px 16px' } : dlcS.notice}>
@@ -355,7 +359,7 @@ const DlgPill = ({ text, phone }) => (
   </div>
 );
 
-const DlChatGptListing = () => {
+export const DlChatGptListing = () => {
   const phone = useDlPhone();
   return (
     <div className="dl-page" style={dlgS.page}>
@@ -399,9 +403,8 @@ const DlChatGptListing = () => {
 
 // Register entries, spread into KIT_STATE_REGISTER by app/states.jsx (absent ⇒ none).
 // Listed under the group Store listing in States.
-const DL_STATES = [
+export const DL_STATES = [
   { group: 'Store listing', id: 'directory-listing-claude', label: 'Directory listing: Claude connector', stage: (c) => c.go('directory-claude') },
   { group: 'Store listing', id: 'directory-listing-chatgpt', label: 'Directory listing: ChatGPT plugin', stage: (c) => c.go('directory-chatgpt') },
 ];
 
-Object.assign(window, { DL_STATES, DlClaudeListing, DlChatGptListing });

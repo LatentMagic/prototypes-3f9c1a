@@ -6,9 +6,24 @@
 // This edition's play has two forms, finished and in progress (Config: This week, or today).
 // ============================================================================
 // ---- Dates ----
+import React from 'react';
+import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEndedOn, gsTodayPlayed, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
+import { useGsPart, GsPart } from './gs-site.jsx';
+import { GsArt } from './gs-parts.jsx';
+import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
+import { DP_IDS } from './gs-where-chain-salvage.jsx';
+import { CB_ALL, CB_DONE, CB_LIVE } from './gs-casebook-data.jsx';
+import { cbStatus, cbGo } from './gs-casebook.jsx';
+import { DV_ALL, dvStatus, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
+import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
+import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
+import { bwEds, BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
+import { GS_KINDS, gsKind } from './gs-discover.jsx';
+import { cprFirstState } from './gs-pass-store.jsx';
+
 const PH_TODAY = new Date(2026, 9, 6);
 const PH_MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const phParse = (s) => { const [d, m, y] = s.split(' '); return new Date(+(y || 2026), PH_MON.indexOf(m), +d); };
+export const phParse = (s) => { const [d, m, y] = s.split(' '); return new Date(+(y || 2026), PH_MON.indexOf(m), +d); };
 const phAt = (d, h, m, plus = 0) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + plus, h, m);
 const phDay0 = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const phDayKey = (d) => d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
@@ -16,17 +31,14 @@ const phDayLabel = (d) => { const n = Math.round((phDay0(d) - PH_TODAY) / 864e5)
 const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 const phShort = (d) => lbShort(lbDate(d));
 
-// ---- Editions ----
-const ED_GAMES = ['word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'delve'];
+export let ED_GAMES;
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
 // the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
 // "Daily Word #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
-const edName = (e) => (e.title ? e.title : '#' + e.n);
-const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
-// A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
-// Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
-const ED_NONE = { kind: 'none', label: 'Not played' };
-const edList = (gs, gid) => {
+export const edName = (e) => (e.title ? e.title : '#' + e.n);
+export const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
+let ED_NONE;
+export const edList = (gs, gid) => {
   const pass = gs.view === 'pass'; const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null;
   if (gid === 'barrow') return bwEds(gs);
   if (PZ[gid]) {
@@ -53,107 +65,53 @@ const edList = (gs, gid) => {
   }));
 };
 // Whether this player needs the Pass for an edition. Every edition can be played; a free game's current one is free, another game's first one is.
-const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].free ? !e.now : !e.free);
-// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Daily Groups day, an edition the seed leaves unplayed.
-// Delve has one run so far, this week's, so no Delve week can have ended unfinished: 'delve-unfinished' reads run 1 in progress.
-const PH_UNF = { kind: 'none', label: 'Not finished' };
-const PH_UNF_EDS = (() => {
-  // The second unplayed earlier day of Daily Groups.
-  const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
-  const gAt = phAt(g.d, 21, 40);
-  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', listTitle: 'Every try', share: null,
-    lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
-  GS_SESSIONS['delve-unfinished'] = GS_SESSIONS['delve-live'];
-  return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt } };
-})();
+export const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].free ? !e.now : !e.free);
+export let PH_UNF;
+let PH_UNF_EDS;
 const phUnf = (gs, key) => { const u = PH_UNF_EDS[key]; return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === 'pass'); };
 // Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Daily Mystery #64"), its title, and its date.
 // Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
 // A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
-const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
+export const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
 const phWords = (s) => s.toLowerCase().replace(/(\d),(?=\d)/g, '$1').replace(/[’'‘]/g, '').split(/[^a-z0-9]+/).filter(Boolean);
 const phIsDate = (s) => phWords(s).some((w) => w.length >= 3 && PH_MON.some((m) => m.toLowerCase().startsWith(w)));
-const phMatch = (hay, s) => {
+export const phMatch = (hay, s) => {
   if (!s) return true;
   hay = hay.toLowerCase();
   if (phIsDate(s)) return new RegExp('(^|[^0-9a-z])' + s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(hay);
   const hw = phWords(hay);
   return phWords(s).every((w) => (/^\d+$/.test(w) ? hw.includes(w) : hw.some((h) => h.startsWith(w))));
 };
-let PH_META = null;
+let PH_META;
 const phMeta = () => { if (!PH_META) { PH_META = {}; ED_GAMES.forEach((k) => edList({ view: 'out', sub: {} }, k).forEach((e) => { PH_META[e.key] = e; })); } return PH_META; };
 // A date finds a play by the day it was played, or the day its edition came out (d).
-const phHay = (gid, ed, title, d) => { const m = phMeta()[ed];
+export const phHay = (gid, ed, title, d) => { const m = phMeta()[ed];
   return [GS_GAMES[gid].name, title || '', m ? m.n + ' ' + (m.title || '') : '', d ? lbDate(d) + ' ' + PH_MON[d.getMonth()] : ''].join(' ').toLowerCase(); };
 
-// ---- The play log. An edition holds its one play. ----
-// A play: { at, status, open(gs), cur (this edition), now? (the in-progress form of this edition's play) }
-const PH_EDS = {}; const PH_PLAYS = [];
+let PH_EDS; let PH_PLAYS;
 const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
   const e = { gid, ed, edTitle, edDate, plays: plays.map((p, n) => ({ ...p, gid, ed, edTitle, edDate, n, cur: !!cur, pid: ed + '-' + n })) };
   PH_EDS[ed] = e; PH_PLAYS.push(...e.plays);
 };
 const phSess = (id) => (gs) => gs.go('session', { id });
-const PH_LIVE = { kind: 'live', label: 'In progress' };
-const PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live', ...Object.fromEntries(DP_IDS.map((k) => [k, k + '-live'])) };
-// ---- Several editions in progress (Escape and Delve only). SAMPLE data: one earlier room and one earlier run,
-// each in progress. They exist only while review.several is on (the two-in-progress states), so everywhere else the game's first
-// edition stays the Clockmaker's Study and run 1. Starting another edition leaves the first where it was; nothing warns about it. ----
-const PH_MORE = {
-  escape: { id: 'escape-r0', gid: 'escape', d: new Date(2026, 8, 28), title: 'The Lighthouse Keeper’s Log', sid: 'escape-r0-live', at: phAt(new Date(2026, 9, 3), 20, 15) },
-  delve: { id: 'dv-r0', gid: 'delve', d: new Date(2026, 8, 28), title: 'The Drowned Chapel under Fenwick Marsh', sid: 'delve-r0-live', at: phAt(new Date(2026, 9, 4), 21, 5) },
-};
-GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
-  lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
-GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
-  figures: ['Threat 2/12', '4 rolls', 'HP 10/11'], threat: 2, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 }, endings: null, reached: null, shareLines: null,
-  lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'Rolled 14 + 2 = 16 against DC 12'], ['Room', 'Entered the bell loft']] };
+let PH_LIVE;
+let PH_LIVE_SID;
+let PH_MORE;
+
+
 const phMoreOn = (gs) => !!(gs && gs.review && gs.review.several) && gs.view === 'pass';
-const PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
+let PH_MORE_PLAYS;
 // The editions list with the earlier edition added: it is the first released, so it takes number 1 and the others move up one.
 const edMore = (gs, gid, list) => { const m = phMoreOn(gs) && PH_MORE[gid]; if (!m) return list;
   return list.map((e) => ({ ...e, n: e.n + 1 })).concat([{ key: m.id, gid, n: 1, title: m.title, date: lbDate(m.d), month: lbMonth(m.d), free: false, now: false, status: PH_LIVE, open: () => gs.go('session', { id: m.sid }) }]); };
-Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
-  if (!x.played) return;
-  const cur = x.i === 0; const sid = cur ? c.today : x.sid;
-  let first;
-  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
-  else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
-  first.open = phSess(sid); first.sid = sid; first.src = x;
-  phEd(id, x.id, x.title, x.d, [first], cur);
-}));
-CB_ALL.forEach((cb, k) => {
-  if (!cb.played) return;
-  const ed = phParse(cb.week); const cur = cb === CB_LIVE;
-  // The log holds the case's finished form (CB_DONE); its in-progress form is `now`.
-  const first = cur ? { at: phAt(ed, 20, 10 + (k % 40)), status: cbStatus(CB_DONE), src: CB_DONE, open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } }
-    : { at: phAt(ed, 20, 10 + (k % 40), k % 3), status: cbStatus(cb), src: cb, open: (gs) => cbGo(gs, cb.id) };
-  phEd('casebook', cb.id, cb.title, ed, [first], cur);
-});
-DV_ALL.forEach((s, i) => {
-  if (!s.played) return;
-  const ed = phParse(s.date); const cur = i === 0;
-  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phSess('delve-live') } }
-    : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
-  phEd('delve', s.id, s.title, ed, [first], cur);
-});
-// No editions: each day is its own entry. A day started over is a new day, listed like any other.
-HG_DAYS.forEach((x, i) => {
-  const d = phParse(x.date);
-  phEd('hunter', x.id, x.title, d, [{ at: phAt(d, 9 + (i % 4), 15), status: hgStatus(x), src: x, sid: hgSid(x), open: phSess(hgSid(x)) }]);
-});
-// The Barrow's Chapter 1, finished: the game's one play record. Every Barrow surface reads it (head card, Your chapters, History,
-// the Library row, the chapters list, the session page, achievements). Shown only while that record stands (phVisible).
-phEd('barrow', 'bw1', BW_T1, PH_TODAY, [{ at: phAt(PH_TODAY, 19, 45), status: { kind: 'ok', label: 'Quest complete' }, src: BW_REC1, sid: 'gs-pu-barrow-ch1', open: phSess('gs-pu-barrow-ch1') }]);
-const PH_ALL = PH_PLAYS.slice().sort((a, b) => b.at - a.at);
-// State library-word-streak-broken (Config-less: review.broken): yesterday's Daily Word was finished in a first play that
-// failed. History shows that play in place of the log's seeded one, as the game page does.
-const PH_BROKEN = (() => {
-  const e = PH_EDS.word1; if (!e) return [];
-  const f = e.plays[0]; const c = PZ.word;
-  return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first') }];
-})();
-const PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + '-unf', at: u.at, status: PH_UNF, open: phSess(u.sid) }));
+
+
+
+
+
+let PH_ALL;
+let PH_BROKEN;
+let PH_UNF_PLAYS;
 // This edition's finished play, as Config → This edition picks it (PZ's c.today).
 const phCur = (p) => { const c = PZ[p.gid]; if (!p.cur || !c || !p.now || c.today === p.sid) return p; const s = GS_SESSIONS[c.today]; return { ...p, sid: c.today, status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: phSess(c.today) }; };
 const phLog = (gs) => {
@@ -161,16 +119,10 @@ const phLog = (gs) => {
   const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
-// Who sees what. A player keeps History for everything they played.
-// Free: Daily Word and Daily Mystery in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
-// ---- The free first edition's one play record (a free first run or room, or chapter). Every surface reads it: the game page's head
-// card, its list of plays, History, the Library row, the editions list, the case or session page and its achievements. Its date is
-// the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play
-// (cprFirstState reads it), or not started. ----
-const PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
-const PH_FIRST_LIVE = { delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
+export let PH_FIRST;
+let PH_FIRST_LIVE;
 // 'none' | 'live' | 'done' for a player without the Pass; null for a Pass holder or a game with no free first edition.
-const phFirstSt = (gs, gid) => (PH_FIRST[gid] && GS_GAMES[gid].first && gs && gs.view && gs.view !== 'pass' && gs.view !== 'out' && window.cprFirstState ? cprFirstState(gs, gid) : null);
+export const phFirstSt = (gs, gid) => (PH_FIRST[gid] && GS_GAMES[gid].first && gs && gs.view && gs.view !== 'pass' && gs.view !== 'out' && cprFirstState ? cprFirstState(gs, gid) : null);
 const phFirstRec = (gs, gid) => {
   const e = PH_EDS[PH_FIRST[gid]]; if (!e) return null;
   const p = e.plays[0]; const st = phFirstSt(gs, gid);
@@ -179,11 +131,11 @@ const phFirstRec = (gs, gid) => {
 // What this player's record holds: every play the app shows of any game, in any view, is read from here.
 // A Pass holder: every play. Free or Pass ended: the free games in full (this edition only once played), a free first edition as
 // its record stands, and for a Pass-ended player every Pass play from before the Pass ended (gsEndedOn), never one after it.
-const phVisible = (gs) => {
+export const phVisible = (gs) => {
   if (gsFresh(gs)) return [];
   const live = !lbWeekDone(gs); const never = gs.review && gs.review.never;
   // The Barrow's chapter play shows only while its record stands finished.
-  const bw = !!(window.cprFirstState && cprFirstState(gs, 'barrow') === 'done');
+  const bw = !!(cprFirstState && cprFirstState(gs, 'barrow') === 'done');
   let all = phLog(gs).filter((p) => (p.gid !== 'barrow' || bw) && p.gid !== never).map((p) => (live && p.now ? { ...p, ...p.now } : p));
   if (gs.view === 'pass') return all;
   // The free first edition as its record stands: hidden until started, in progress, or as logged.
@@ -196,11 +148,11 @@ const phVisible = (gs) => {
     return lapsed && p.at < end; });
 };
 // The one date form a record's day takes in a row: "Today", or "5 Oct".
-const phWhen = (d) => (phDayKey(d) === phDayKey(PH_TODAY) ? 'Today' : phShort(d));
+export const phWhen = (d) => (phDayKey(d) === phDayKey(PH_TODAY) ? 'Today' : phShort(d));
 // Achievements, read from the record. Each has its condition: by (a play that meets it), count (the plays that each add one,
 // oldest first) or, for a streak, the streak shown (streak). Earned is dated by the first play that meets it. Plays in progress meet nothing.
 // A chapter started over is a new session that counts for nothing new: a play marked restart earns nothing.
-const phAch = (gs, gid, items, streak) => {
+export const phAch = (gs, gid, items, streak) => {
   const plays = phVisible(gs).filter((p) => p.gid === gid && p.status.kind !== 'live' && !p.restart).reverse();
   return items.map((a) => {
     let got; let have = a.have;
@@ -210,19 +162,8 @@ const phAch = (gs, gid, items, streak) => {
     return { ...a, have, got };
   });
 };
-// A record shows the time it was played.
-PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
-  let id = null; try { q.open({ go: (n, a) => { if (n === 'session' && a) id = a.id; } }); } catch (e) {}
-  const s = id && GS_SESSIONS[id]; if (!s || s.__dated) return;
-  s.__dated = true; s.phEd = q.ed; s.date = pzLong(q.at) + ', ' + phTime(q.at);
-}));
-// The free first run and room in progress: the same play as this week's, the record so far (one edition each so far).
-(() => {
-  const dv = GS_SESSIONS.delve;
-  GS_SESSIONS['delve-first-live'] = { ...GS_SESSIONS['delve-live'], date: dv.date, __dated: true };
-  const es = GS_SESSIONS['escape-week'];
-  GS_SESSIONS['escape-first-live'] = { ...GS_SESSIONS['escape-live'], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
-})();
+
+
 // A session page is one play: it lists no other plays.
 const phLib = (gs, id) => gs.go(GS_GAMES[id].route, { page: 'record' });
 
@@ -247,7 +188,7 @@ const usePhList = (initial, k0) => {
 // v: { key, title, game?, when (text or forms), status, onOpen, gid?, sub? } ----
 const phTone = (s) => (s.kind === 'ok' || s.kind === 'bad' ? s.kind : 'none');
 // Every game draws its art at the 40 by 30 lead, so it moves with the row.
-const PhLead = ({ gid }) => <GsArt art={GS_GAMES[gid].art} shape="landscape" />;
+export const PhLead = ({ gid }) => <GsArt art={GS_GAMES[gid].art} shape="landscape" />;
 const phRow = (v) => (
   <DS.ListRow key={v.key} sub={!!v.sub} lead={v.gid ? <PhLead gid={v.gid} /> : undefined} title={v.title} game={v.gid ? v.game : undefined}
     result={gsForms(v.status.label)} tone={phTone(v.status)} when={v.when}
@@ -261,7 +202,7 @@ const phRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
 // KEEP: on a phone the card shows the latest four plays; beside achievements, as many as fill it to achievements' height, so the row ends level.
 // A game never played shows the card's empty line only (library-mystery-never-played).
-const LbRecent = (p) => {
+export const LbRecent = (p) => {
   const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
   if (gs.review && gs.review.never === gid) return (
     <section className="lb-card lb-recentcard">
@@ -310,7 +251,7 @@ const LbRecentList = ({ title, allLabel, empty }) => {
 };
 
 // KEEP: the pager shows page numbers when they fit and "Page 3 of 9" when they don't (container query in the page CSS).
-const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
+export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
   <nav className="lb-pages rp-pg" aria-label="Pages">
     {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="next" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}
     <div className="lb-pagenums rp-pg-nums">{Array.from({ length: pages }, (_, x) => <button key={x} type="button" aria-current={x === pg ? 'page' : undefined} onClick={() => go(x)}>{x + 1}</button>)}</div>
@@ -331,7 +272,7 @@ const phParts = (p, one) => { const m = phMeta()[p.ed]; const name = GS_GAMES[p.
   const t = m && ED_GAMES.includes(p.gid) ? edName(m) : p.edTitle;
   // The Barrow names its chapter beside the game, as deployed (“The Barrow of Hollowmere · The Barrow of Hollowmere”).
   return { title: t, game: one ? undefined : p.gid === 'barrow' ? name : t.includes(name) ? undefined : name }; };
-const GsHistory = () => {
+export const GsHistory = () => {
   // r.keep: the list as the player left it, written into this history entry so browser Back returns it.
   const gs = useGs(); const r = gs.route; const k0 = r.keep || {}; const f = usePhList(k0.g || r.game, k0);
   const [rhy, setRhy] = React.useState(k0.rhy || r.rhythm || 'all'); const [cat, setCat] = React.useState(k0.cat || r.kind || 'all');
@@ -355,13 +296,13 @@ const GsHistory = () => {
       <PhHead />
       {!f.all.length ? <PhEmpty /> : (
         <div className="lb-alllay">
-          <window.LbTools>
+          <LbTools>
             <DS.SearchField label="Search" placeholder="A number, name or date" value={q} onChange={(e) => reset(setQ)(e.target.value)} />
             <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={reset(setCat)} />
             <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={reset(setRhy)} />
             <LbChoice label="Game" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />
             <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={f.setSort} />
-          </window.LbTools>
+          </LbTools>
           {/* A filter or search that finds nothing: the design system's line and Clear all, with no box (ui-standard.md, Designed empty states). */}
           {!wait && !groups.length ? <div className="gs-nomatch"><p>Nothing matches that.</p>{anySet && <DS.TextLink onClick={clearAll}>Clear all</DS.TextLink>}</div> : (
             <div className="lb-box lb-results" style={{ maxWidth: 960 }}>
@@ -380,4 +321,105 @@ const GsHistory = () => {
   </>);
 };
 
-Object.assign(window, { PH_FIRST, phFirstSt, phFirstRec, phVisible, phWhen, phAch, phUnf, PH_UNF, PH_UNF_EDS, GsHistory, LbRecent, phShort, phTime, PH_EDS, ED_GAMES, edList, edName, edLabel, edNeedsPass, ED_NONE });
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsHistory() {
+// ---- Editions ----
+ED_GAMES = ['word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'delve'];
+// A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
+// Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
+ED_NONE = { kind: 'none', label: 'Not played' };
+// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Daily Groups day, an edition the seed leaves unplayed.
+// Delve has one run so far, this week's, so no Delve week can have ended unfinished: 'delve-unfinished' reads run 1 in progress.
+PH_UNF = { kind: 'none', label: 'Not finished' };
+PH_UNF_EDS = (() => {
+  // The second unplayed earlier day of Daily Groups.
+  const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
+  const gAt = phAt(g.d, 21, 40);
+  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', listTitle: 'Every try', share: null,
+    lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
+  GS_SESSIONS['delve-unfinished'] = GS_SESSIONS['delve-live'];
+  return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt } };
+})();
+PH_META = null;
+// ---- The play log. An edition holds its one play. ----
+// A play: { at, status, open(gs), cur (this edition), now? (the in-progress form of this edition's play) }
+PH_EDS = {};
+PH_PLAYS = [];
+PH_LIVE = { kind: 'live', label: 'In progress' };
+PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live', ...Object.fromEntries(DP_IDS.map((k) => [k, k + '-live'])) };
+// ---- Several editions in progress (Escape and Delve only). SAMPLE data: one earlier room and one earlier run,
+// each in progress. They exist only while review.several is on (the two-in-progress states), so everywhere else the game's first
+// edition stays the Clockmaker's Study and run 1. Starting another edition leaves the first where it was; nothing warns about it. ----
+PH_MORE = {
+  escape: { id: 'escape-r0', gid: 'escape', d: new Date(2026, 8, 28), title: 'The Lighthouse Keeper’s Log', sid: 'escape-r0-live', at: phAt(new Date(2026, 9, 3), 20, 15) },
+  delve: { id: 'dv-r0', gid: 'delve', d: new Date(2026, 8, 28), title: 'The Drowned Chapel under Fenwick Marsh', sid: 'delve-r0-live', at: phAt(new Date(2026, 9, 4), 21, 5) },
+};
+GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
+  lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
+GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
+  figures: ['Threat 2/12', '4 rolls', 'HP 10/11'], threat: 2, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 }, endings: null, reached: null, shareLines: null,
+  lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'Rolled 14 + 2 = 16 against DC 12'], ['Room', 'Entered the bell loft']] };
+PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
+Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
+  if (!x.played) return;
+  const cur = x.i === 0; const sid = cur ? c.today : x.sid;
+  let first;
+  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
+  else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
+  first.open = phSess(sid); first.sid = sid; first.src = x;
+  phEd(id, x.id, x.title, x.d, [first], cur);
+}));
+CB_ALL.forEach((cb, k) => {
+  if (!cb.played) return;
+  const ed = phParse(cb.week); const cur = cb === CB_LIVE;
+  // The log holds the case's finished form (CB_DONE); its in-progress form is `now`.
+  const first = cur ? { at: phAt(ed, 20, 10 + (k % 40)), status: cbStatus(CB_DONE), src: CB_DONE, open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } }
+    : { at: phAt(ed, 20, 10 + (k % 40), k % 3), status: cbStatus(cb), src: cb, open: (gs) => cbGo(gs, cb.id) };
+  phEd('casebook', cb.id, cb.title, ed, [first], cur);
+});
+DV_ALL.forEach((s, i) => {
+  if (!s.played) return;
+  const ed = phParse(s.date); const cur = i === 0;
+  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phSess('delve-live') } }
+    : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
+  phEd('delve', s.id, s.title, ed, [first], cur);
+});
+// No editions: each day is its own entry. A day started over is a new day, listed like any other.
+HG_DAYS.forEach((x, i) => {
+  const d = phParse(x.date);
+  phEd('hunter', x.id, x.title, d, [{ at: phAt(d, 9 + (i % 4), 15), status: hgStatus(x), src: x, sid: hgSid(x), open: phSess(hgSid(x)) }]);
+});
+// The Barrow's Chapter 1, finished: the game's one play record. Every Barrow surface reads it (head card, Your chapters, History,
+// the Library row, the chapters list, the session page, achievements). Shown only while that record stands (phVisible).
+phEd('barrow', 'bw1', BW_T1, PH_TODAY, [{ at: phAt(PH_TODAY, 19, 45), status: { kind: 'ok', label: 'Quest complete' }, src: BW_REC1, sid: 'gs-pu-barrow-ch1', open: phSess('gs-pu-barrow-ch1') }]);
+PH_ALL = PH_PLAYS.slice().sort((a, b) => b.at - a.at);
+// State library-word-streak-broken (Config-less: review.broken): yesterday's Daily Word was finished in a first play that
+// failed. History shows that play in place of the log's seeded one, as the game page does.
+PH_BROKEN = (() => {
+  const e = PH_EDS.word1; if (!e) return [];
+  const f = e.plays[0]; const c = PZ.word;
+  return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first') }];
+})();
+PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + '-unf', at: u.at, status: PH_UNF, open: phSess(u.sid) }));
+// Who sees what. A player keeps History for everything they played.
+// Free: Daily Word and Daily Mystery in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
+// ---- The free first edition's one play record (a free first run or room, or chapter). Every surface reads it: the game page's head
+// card, its list of plays, History, the Library row, the editions list, the case or session page and its achievements. Its date is
+// the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play
+// (cprFirstState reads it), or not started. ----
+PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
+PH_FIRST_LIVE = { delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
+// A record shows the time it was played.
+PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
+  let id = null; try { q.open({ go: (n, a) => { if (n === 'session' && a) id = a.id; } }); } catch (e) {}
+  const s = id && GS_SESSIONS[id]; if (!s || s.__dated) return;
+  s.__dated = true; s.phEd = q.ed; s.date = pzLong(q.at) + ', ' + phTime(q.at);
+}));
+// The free first run and room in progress: the same play as this week's, the record so far (one edition each so far).
+(() => {
+  const dv = GS_SESSIONS.delve;
+  GS_SESSIONS['delve-first-live'] = { ...GS_SESSIONS['delve-live'], date: dv.date, __dated: true };
+  const es = GS_SESSIONS['escape-week'];
+  GS_SESSIONS['escape-first-live'] = { ...GS_SESSIONS['escape-live'], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
+})();
+}

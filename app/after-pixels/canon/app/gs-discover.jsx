@@ -3,14 +3,18 @@
 // Discover (GsGames) is in gs-pass-discover.jsx and Library (GsLibrary) in gs-pass-library.jsx.
 // Their helpers (gsKind, GS_KINDS, gsFind, GS_ADDED, GS_LIB_READY) are still read.
 // ============================================================================
-const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
-const GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
-const gsFind = (q, k) => { const s = gsNorm(q); return !s || gsNorm(GS_GAMES[k].name).includes(s); };
-// The two picks: chosen by us, not by rule. Seed.
-const GS_PICKS = [['casebook', 'ONE CASE'], ['word', 'FREE EVERY DAY']];
-// Just added: newest first. Seed (the app has no release dates yet).
-const GS_ADDED = ['barrow', 'hunter', 'casebook', 'delve', 'escape'];
-const GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
+import React from 'react';
+import { GS_GAME_ORDER, GS_GAMES, gsNorm, useGs, DS, GS_RHYTHMS, gsRhythm } from './gs-data.jsx';
+import { useGsPart, GsPart } from './gs-site.jsx';
+import { GsTile } from './gs-parts.jsx';
+import { GsPick, GsCard } from './gs-pass-home.jsx';
+
+export const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
+export let GS_KINDS;
+export const gsFind = (q, k) => { const s = gsNorm(q); return !s || gsNorm(GS_GAMES[k].name).includes(s); };
+let GS_PICKS;
+export let GS_ADDED;
+let GS_PASS_BAND;
 
 const DcPassBand = () => {
   const gs = useGs(); if (gs.view === 'pass') return null;
@@ -58,5 +62,16 @@ const DcBody = () => {
     </section>
   </>;
 };
+export let GS_LIB_READY;
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsDiscover() {
+GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
+// The two picks: chosen by us, not by rule. Seed.
+GS_PICKS = [['casebook', 'ONE CASE'], ['word', 'FREE EVERY DAY']];
+// Just added: newest first. Seed (the app has no release dates yet).
+GS_ADDED = ['barrow', 'hunter', 'casebook', 'delve', 'escape'];
+GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
 // ---- Library. GsLibrary is in gs-pass-library.jsx. GS_LIB_READY: each game's ready line, read by its rows.
-const GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', where: 'Today’s country is ready', chain: 'Today’s chain is ready', salvage: 'Today’s sea is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
+GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', where: 'Today’s country is ready', chain: 'Today’s chain is ready', salvage: 'Today’s sea is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };
+}

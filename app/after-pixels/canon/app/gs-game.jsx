@@ -5,13 +5,96 @@
 // The play box at the top is the page's one Play. GsPlayBox is in gs-pass-game.jsx.
 // `week` stays in GS_PAGES: the library game pages read its line.
 // ============================================================================
-const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
-const gsOr = (v) => (v == null ? <GsGap /> : v);
+import React from 'react';
+import { GS_NAME, DS, useGs, GS_GAMES, GS_BARROW_CREDIT, GS_SOON } from './gs-data.jsx';
+import { GsCover, GsWhoCols, GsStat, GsSoonCard } from './gs-parts.jsx';
+import { GsChatRow } from './gs-chats.jsx';
+import { GS_HOME_GAMES } from './gs-home.jsx';
+import { GsGameCard } from './gs-pass-home.jsx';
+import { GsPlayBox } from './gs-pass-game.jsx';
+
+export const GsGap = () => <span className="gs-gap" title="Not decided yet">—</span>;
+export const gsOr = (v) => (v == null ? <GsGap /> : v);
 // The free games' small line under Play: one template, so every free game says it the same way.
 const gsFreeSmall = (edition) => edition + ', your streak and your achievements are free with an account.';
-const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, Claude, OpenClaw and others.</>;
+export const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, Claude, OpenClaw and others.</>;
 
-const GS_PAGES = {
+export let GS_PAGES;
+let GS_FACT_LABELS;
+
+const GsFacts = ({ id }) => {
+  const p = GS_PAGES[id];
+  return (
+    <section className="gs-factband" aria-label="Facts">
+      <dl className="gs-facts">
+        {GS_FACT_LABELS.map(([k, l]) => (
+          <div key={k} className="gs-fact"><dt className="gs-label">{l.toUpperCase()}</dt><dd>{gsOr(p.facts[k])}</dd></div>
+        ))}
+      </dl>
+      {p.tags.length > 0 && <div className="gs-tags gs-fact-tags">{p.tags.map((t) => <DS.Tag key={t} kind="daily">{t}</DS.Tag>)}</div>}
+    </section>
+  );
+};
+
+export const GsGamePage = ({ id, top }) => {
+  const gs = useGs();
+  const g = GS_GAMES[id]; const p = GS_PAGES[id];
+  const others = GS_HOME_GAMES.filter((k) => k !== id);   return (
+    <main className="gs-wrap gs-main">
+      {top}
+
+      <section className="gs-head-split">
+        <div className="gs-hero-cover">
+          <GsCover art={g.art} fit />
+          <div className="gs-cover-over">
+            <span className="gs-label">{g.category + ' · ' + p.rhythm}</span>
+            <h1 className="gs-cover-title">{g.name}</h1>
+          </div>
+        </div>
+        <GsPlayBox id={id} />
+      </section>
+
+      <GsFacts id={id} />
+
+      <section className="gs-pitch">
+        <div className="gs-stack-md gs-measure">
+          <h2 className="mcp-t-sec">{p.pitch.h}</h2>
+          {p.pitch.ps.map((t, i) => <p key={i}>{t}</p>)}
+        </div>
+        <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start', alignSelf: 'center' }}>
+          <span className="gs-label">HOW IT PLAYS</span>
+          <GsWhoCols ai={p.who.ai} server={p.who.server} />
+        </DS.Card>
+      </section>
+
+      <section className="gs-stack-md">
+        <GsChatRow id={id} />
+        {id === 'barrow' && <p className="gs-small gs-muted gs-credit" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
+      </section>
+
+      {id === 'delve' && (
+        <section className="gs-grid3">
+          <GsStat label="IN A RUN" figure="5 rooms" line="This week: flooded tunnel to shrine cavern." />
+          <GsStat label="TYPICAL RUN" figure="10–14 rolls" line="Every one listed on your session page afterwards." />
+          <GsStat label="ENDINGS" figure="4 ways out" line="Win, turn back early, fall, or run out of time." />
+        </section>
+      )}
+
+      {/* More games is the home page's card row (GS_HOME_GAMES) without this game, then the soon cards and a link to the store. */}
+      <section className="gs-stack-md">
+        <DS.CardRow title="More games" className="gs-row4">
+          {others.map((k) => <GsGameCard key={k} id={k} />)}
+        </DS.CardRow>
+        <div className="gs-grid2">{GS_SOON.map((s) => <GsSoonCard key={s.name} g={s} />)}</div>
+        <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
+      </section>
+    </main>
+  );
+};
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsGame() {
+GS_PAGES = {
   word: {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
@@ -114,76 +197,5 @@ const GS_PAGES = {
     week: { title: 'The day', line: 'One day, dawn to firelight. Start it over and it goes differently.', session: 'hunter', unmarked: true },
   },
 };
-const GS_FACT_LABELS = [['long', 'How long'], ['often', 'How often']];
-
-const GsFacts = ({ id }) => {
-  const p = GS_PAGES[id];
-  return (
-    <section className="gs-factband" aria-label="Facts">
-      <dl className="gs-facts">
-        {GS_FACT_LABELS.map(([k, l]) => (
-          <div key={k} className="gs-fact"><dt className="gs-label">{l.toUpperCase()}</dt><dd>{gsOr(p.facts[k])}</dd></div>
-        ))}
-      </dl>
-      {p.tags.length > 0 && <div className="gs-tags gs-fact-tags">{p.tags.map((t) => <DS.Tag key={t} kind="daily">{t}</DS.Tag>)}</div>}
-    </section>
-  );
-};
-
-const GsGamePage = ({ id, top }) => {
-  const gs = useGs();
-  const g = GS_GAMES[id]; const p = GS_PAGES[id];
-  const others = window.GS_HOME_GAMES.filter((k) => k !== id);   return (
-    <main className="gs-wrap gs-main">
-      {top}
-
-      <section className="gs-head-split">
-        <div className="gs-hero-cover">
-          <GsCover art={g.art} fit />
-          <div className="gs-cover-over">
-            <span className="gs-label">{g.category + ' · ' + p.rhythm}</span>
-            <h1 className="gs-cover-title">{g.name}</h1>
-          </div>
-        </div>
-        <GsPlayBox id={id} />
-      </section>
-
-      <GsFacts id={id} />
-
-      <section className="gs-pitch">
-        <div className="gs-stack-md gs-measure">
-          <h2 className="mcp-t-sec">{p.pitch.h}</h2>
-          {p.pitch.ps.map((t, i) => <p key={i}>{t}</p>)}
-        </div>
-        <DS.Card style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start', alignSelf: 'center' }}>
-          <span className="gs-label">HOW IT PLAYS</span>
-          <GsWhoCols ai={p.who.ai} server={p.who.server} />
-        </DS.Card>
-      </section>
-
-      <section className="gs-stack-md">
-        <GsChatRow id={id} />
-        {id === 'barrow' && <p className="gs-small gs-muted gs-credit" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
-      </section>
-
-      {id === 'delve' && (
-        <section className="gs-grid3">
-          <GsStat label="IN A RUN" figure="5 rooms" line="This week: flooded tunnel to shrine cavern." />
-          <GsStat label="TYPICAL RUN" figure="10–14 rolls" line="Every one listed on your session page afterwards." />
-          <GsStat label="ENDINGS" figure="4 ways out" line="Win, turn back early, fall, or run out of time." />
-        </section>
-      )}
-
-      {/* More games is the home page's card row (GS_HOME_GAMES) without this game, then the soon cards and a link to the store. */}
-      <section className="gs-stack-md">
-        <DS.CardRow title="More games" className="gs-row4">
-          {others.map((k) => <GsGameCard key={k} id={k} />)}
-        </DS.CardRow>
-        <div className="gs-grid2">{GS_SOON.map((s) => <GsSoonCard key={s.name} g={s} />)}</div>
-        <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
-      </section>
-    </main>
-  );
-};
-
-Object.assign(window, { GsGap, gsOr, GS_PAGES, GsGamePage });
+GS_FACT_LABELS = [['long', 'How long'], ['often', 'How often']];
+}

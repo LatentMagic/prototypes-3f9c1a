@@ -1,18 +1,27 @@
 // ============================================================================
 // After Pixels — the library game page: the parts every game's page is built from.
 // Order at every width: the now card, the run of editions, achievements, your plays. Two columns from 900px.
-// A game's own file holds its seed and its now card, and registers its page on window.GS_LIBRARY.
+// A game's own file holds its seed and its now card, and registers its page in GS_LIBRARY (registry.js).
 // ============================================================================
 // What this player can play of a game: 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
 // Read from the game's access (gs-data.jsx): a Pass holder or 'daily', 'all'; 'first', 'first'; 'pass', 'none'.
-const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
+import React from 'react';
+import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsTodayPlayed, GS_SESSIONS } from './gs-data.jsx';
+import { GsSharePopup } from './gs-session.jsx';
+import { CB_LIVE } from './gs-casebook-data.jsx';
+import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
+import { dvStatus, DV_DONE, DV_LIVE } from './gs-delve-library.jsx';
+import { PZ } from './gs-puzzles-library.jsx';
+import { ED3, pgeList } from './gs-editions.jsx';
+
+export const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
-const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
+export const lbPast = (gs) => gs.view === 'pass' || gsLapsed(gs);
 // An edition dated before the Pass ended.
-const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < gsEndedOn(gs);
+export const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + ' 2026') < gsEndedOn(gs);
 // Achievements by what the player can do now (items from phAch, dated by the record): earned or still to earn when they can earn it; when they can't play the game any more, only the earned ones,
 // shown as any earned row (state 'kept'). Only progress toward the rest, and the streak, freeze.
-const lbAchView = (items, access, gs) => {
+export const lbAchView = (items, access, gs) => {
   const past = lbPast(gs); const out = [];
   items.forEach((a) => {
     const earn = access === 'all' || (access === 'first' && a.first);
@@ -22,12 +31,12 @@ const lbAchView = (items, access, gs) => {
   });
   return out;
 };
-const lbShort = (d) => { const p = d.split(' '); return p[0] + ' ' + p[1].slice(0, 3) + (p[2] ? ' ' + p[2] : ''); };
+export const lbShort = (d) => { const p = d.split(' '); return p[0] + ' ' + p[1].slice(0, 3) + (p[2] ? ' ' + p[2] : ''); };
 const LbChev = () => <DS.Icon name="back" size={16} className="lb-chev" style={{ transform: 'rotate(180deg)' }} />;
-const LbBack = ({ label, onClick }) => <div><button type="button" className="lb-back" onClick={onClick}><DS.Icon name="back" size={20} />{label}</button></div>;
+export const LbBack = ({ label, onClick }) => <div><button type="button" className="lb-back" onClick={onClick}><DS.Icon name="back" size={20} />{label}</button></div>;
 // Back to where the player came from: History, or the game's library game page. Opened with no earlier page
 // (a states address, a pasted link) or from anywhere else, it goes to the game's library game page.
-const LbBackTo = ({ gid }) => {
+export const LbBackTo = ({ gid }) => {
   const gs = useGs(); const p = gs.route.prev; const g = GS_GAMES[gid];
   if (p && p.name === 'history') return <LbBack label="History" onClick={gs.back} />;
   const fromLib = p && p.name === g.route && p.page === 'record';
@@ -36,16 +45,16 @@ const LbBackTo = ({ gid }) => {
 // The library game page head: the design system's cover beside a heading (Cover.prompt.md).
 // KEEP: the cover fills to the text's height, never below 4:3, and the art keeps its scale on its ground (placed by its extend), so it is never stretched.
 // name and more: a seam for playgrounds (a test name, extra links).
-const LbHead = ({ id, name, more }) => {
+export const LbHead = ({ id, name, more }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const a = GS_ART[g.art] || {};
   // Escape, Casebook and Delve: the way in to the game's editions (app/gs-editions.jsx).
-  const eds = !more && gs.view !== 'out' && window.ED3 && window.ED3.includes(id);
+  const eds = !more && gs.view !== 'out' && ED3 && ED3.includes(id);
   return (
     <section className="mcp-cover-head lb-head">
       <DS.Cover fill ground={a.ground} extend={a.extend}><span dangerouslySetInnerHTML={{ __html: a.svg || '' }} /></DS.Cover>
       <div className="mcp-cover-head-text">
         <h1 className="gs-h1">{name || g.name}</h1>
-        <div className="mcp-cover-head-links"><DS.TextLink onClick={() => gs.go(g.route)}>About this game</DS.TextLink>{more}{eds && <DS.TextLink onClick={() => window.pgeList(gs, id, { fromLib: true })}>{g.edLink || 'Every ' + g.ed[0]}</DS.TextLink>}</div>
+        <div className="mcp-cover-head-links"><DS.TextLink onClick={() => gs.go(g.route)}>About this game</DS.TextLink>{more}{eds && <DS.TextLink onClick={() => pgeList(gs, id, { fromLib: true })}>{g.edLink || 'Every ' + g.ed[0]}</DS.TextLink>}</div>
       </div>
     </section>
   );
@@ -53,7 +62,7 @@ const LbHead = ({ id, name, more }) => {
 
 // A result: { kind: 'ok' | 'bad' | 'live' | 'none', label }.
 const lbIcon = (k) => (k === 'ok' ? 'check' : k === 'bad' ? 'error' : null);
-const LbResult = ({ s }) => (
+export const LbResult = ({ s }) => (
   <span className={'lb-v is-' + s.kind}>{lbIcon(s.kind) && <DS.Icon name={lbIcon(s.kind)} size={20} />}{s.label}</span>
 );
 
@@ -62,7 +71,7 @@ const LbResult = ({ s }) => (
 // weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
 // on / legend: the legend entries. A streak game says Completed / Failed / Not played;
 // 36,000 Summers Ago passes its own two (Played / Not played). failed: played and lost; it breaks the streak as a day not played does.
-const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = 'Completed', legend }) => {
+export const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = 'Completed', legend }) => {
   const gs = useGs();
   // KEEP: always ten slots; days before the player started are empty slots at the old end.
   const weeks = Array.from({ length: Math.max(0, 10 - given.length) }, (_, i) => ({ id: 'empty' + i, day: '', mon: '', month: '', played: false, empty: true })).concat(given);
@@ -93,7 +102,7 @@ const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = 'Completed', 
 
 // The streak card for a free player on a game whose streak comes with the Pass (Casebook, Delve): the same card and place as a Pass holder's, so the page keeps one layout.
 // Its weeks are drawn as the frozen ones are (not playable), and the line replaces the legend.
-const LbRunPass = ({ unit, weeks }) => <LbRun unit={unit} weeks={weeks.map((w) => ({ ...w, played: false, frozen: true, now: false }))} pass />;
+export const LbRunPass = ({ unit, weeks }) => <LbRun unit={unit} weeks={weeks.map((w) => ({ ...w, played: false, frozen: true, now: false }))} pass />;
 
 // ---- Achievements: badges coloured when earned, outlined while still to earn ----------
 // A badge is [ground, [[tag, attrs, fill], ...]] drawn on a 48 grid.
@@ -115,14 +124,14 @@ const LB_SHAPES = [
   (c) => [8, 18, 28, 38].map((x) => ['rect', 'x="' + (x - 3) + '" y="14" width="6" height="20"', c]),
 ];
 const LB_INKS = ['#E5A63B', '#328A88', '#D66847', '#A390B2', '#4CC38A'];
-const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
+export const lbAutoBadges = (items) => Object.fromEntries(items.map((a, i) => [a.k, [LB_GROUNDS[i % 3], LB_SHAPES[i % 4](LB_INKS[i % 5])]]));
 const lbAchLine = (a) => (a.got ? 'Earned ' + a.got : a.of ? a.have + ' of ' + a.of : 'Not earned yet');
 // An achievement counted over many plays: the plays that each add one distinct value (phAch's count).
-const lbDistinct = (f) => (plays) => { const seen = new Set(); return plays.filter((p) => { const v = f(p); if (!v || seen.has(v)) return false; seen.add(v); return true; }); };
+export const lbDistinct = (f) => (plays) => { const seen = new Set(); return plays.filter((p) => { const v = f(p); if (!v || seen.has(v)) return false; seen.add(v); return true; }); };
 // The one count of earned achievements: the Needs the Pass card's foot and the header read it from the same list.
-const lbAchEarned = (list) => list.filter((a) => a.got).length;
+export const lbAchEarned = (list) => list.filter((a) => a.got).length;
 // items: [{ k, n, how, got?, first?, of?, have? }]; badges: { k: art }; access: 'all' | 'first' | 'none'
-const LbAch = ({ items, badges, access, ended, ed }) => {
+export const LbAch = ({ items, badges, access, ended, ed }) => {
   const gs = useGs(); const [open, setOpen] = React.useState(null);
   const list = lbAchView(items, access, gs);
   // A game this player can no longer play shows its earned rows only; the count is of the game's achievements, as the Needs the Pass card's foot.
@@ -146,20 +155,20 @@ const LbAch = ({ items, badges, access, ended, ed }) => {
 };
 
 // Dates for seeds: "5 October", with the year only when it isn't this one.
-const lbDate = (d) => d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
-const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
+export const lbDate = (d) => d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
+export const lbMonth = (d) => d.toLocaleString('en-GB', { month: 'long' }) + (d.getFullYear() !== 2026 ? ' ' + d.getFullYear() : '');
 // A run from a list newest first: [{ id, date, played, done }] → oldest first, with the newest marked as now.
 // A mark is filled only for an edition completed in its first finished play (done); a list without done marks plays.
-const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.done != null ? x.done : x.played, failed: !!x.failed, now: i === a.length - 1 }; });
+export const lbRunOf = (list) => list.slice(0, 10).reverse().map((x, i, a) => { const p = x.date.split(' '); return { id: x.id, day: p[0], mon: p[1].slice(0, 3), month: p[1], played: x.done != null ? x.done : x.played, failed: !!x.failed, now: i === a.length - 1 }; });
 // A player whose Pass ended: weeks dated after it are frozen (not playable), and the streak counts only the weeks before.
 // get(x) gives an edition's date text; returns the run's weeks (oldest first, with frozen set) and the frozen streak.
-const lbFrozen = (weeks, list, get) => ({ weeks: weeks.map((w) => { const frozen = !lbOld(w.day + ' ' + w.month + ' 2026'); return { ...w, frozen, now: frozen ? false : w.now }; }), n: lbStreak(list.filter((x) => lbOld(get(x)))) });
+export const lbFrozen = (weeks, list, get) => ({ weeks: weeks.map((w) => { const frozen = !lbOld(w.day + ' ' + w.month + ' 2026'); return { ...w, frozen, now: frozen ? false : w.now }; }), n: lbStreak(list.filter((x) => lbOld(get(x)))) });
 // The streak, newest first: editions completed, each in its own day or week. Each edition is played once.
 // This edition adds only once completed; until its day or week ends it breaks nothing.
-const lbStreak = (list) => { let n = 0; const l = list[0] && !list[0].done ? list.slice(1) : list; for (const x of l) { if (!x.done) break; n += 1; } return n; };
+export const lbStreak = (list) => { let n = 0; const l = list[0] && !list[0].done ? list.slice(1) : list; for (const x of l) { if (!x.done) break; n += 1; } return n; };
 
 // ---- A row of choices (History's side column) ----
-const LbChoice = ({ label, value, opts, onPick }) => (
+export const LbChoice = ({ label, value, opts, onPick }) => (
   <div className="lb-choicegrp" role="group" aria-label={label}>
     <span className="gs-field-label">{label}</span>
     <div className="lb-choice">{opts.map(([v, l]) => <button key={v} type="button" aria-pressed={value === v} onClick={() => onPick(v)}>{l}</button>)}</div>
@@ -227,11 +236,11 @@ const LbFilters = ({ children }) => {
     </div>
   );
 };
-const LbTools = LbFilters;
+export const LbTools = LbFilters;
 const LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // KEEP: Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
-const lbCopy = (lines) => {
+export const lbCopy = (lines) => {
   // KEEP: after Copy, focus is back on the control pressed, never the page root.
   const was = document.activeElement;
   const t = lines.join('\n'); const ta = document.createElement('textarea');
@@ -248,7 +257,7 @@ const LbCopyBtn = ({ lines }) => {
   return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { lbCopy(lines); setDone(true); }}>Copy</DS.Button>;
 };
 // Share on a library game page: the page's own button, the session page's pop-up (GsSharePopup).
-const LbShare = ({ lines }) => {
+export const LbShare = ({ lines }) => {
   const [open, setOpen] = React.useState(false);
   return <>
     <DS.Button variant="main" onClick={() => setOpen(true)}>Share</DS.Button>
@@ -258,7 +267,7 @@ const LbShare = ({ lines }) => {
 
 // This edition's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
 // label: the card's own label where it isn't THIS WEEK (Casebook's A CASE); span: the card takes the whole row (no streak card beside it).
-const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
+export const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
   <section className="lb-card" style={span ? { gridColumn: '1 / -1' } : undefined}>
     <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{label || 'THIS WEEK'}</span><h2 className="mcp-t-sec">{title}</h2></div></div>
     <p>{line}</p>
@@ -269,18 +278,15 @@ const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
   </section>
 );
 
-// The library game pages, by game id. Each game's file adds its page in its register<File>() (called from main.jsx).
-const GS_LIBRARY = {};
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
-const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
+export const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 // This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).
-const lbNow = (gs, id) => {
+export const lbNow = (gs, id) => {
   const done = lbWeekDone(gs); if (gsFresh(gs)) return null;
   if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
   if (id === 'delve') return gs.view === 'pass' ? { status: dvStatus(done ? DV_DONE : DV_LIVE), open: () => gs.go('session', { id: done ? 'delve' : 'delve-live' }) } : null;
-  const c = window.PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
+  const c = PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
   if (!done) return { status: { kind: 'live', label: 'In progress' }, open: () => gs.go('session', { id: c.liveSid }) };
   const s = GS_SESSIONS[c.today];
   return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
 };
-Object.assign(window, { LbTools, LbToolsColumn, LbRunPass, LbFreshNow, lbFrozen, lbAchEarned, lbDistinct, lbAccess, lbPast, lbOld, lbAchView, lbShort, lbDate, lbMonth, lbRunOf, lbStreak, lbAutoBadges, lbWeekDone, lbNow, LbBack, LbBackTo, LbHead, LbResult, LbRun, LbBadge, LbAch, LbChoice, LbShare });

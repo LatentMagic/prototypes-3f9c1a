@@ -7,7 +7,14 @@
 // ---- Covers and tags ---------------------------------------------------------
 // fit: the art is drawn to whatever frame it is given, the whole picture showing on its ground and placed by its declared extend.
 // fill: the design system's Cover fill, for a cover beside a heading: it takes the height of the text beside it, the art keeps its size and stands where its extend puts it.
-const GsCover = ({ art, fit, fill }) => {
+import React from 'react';
+import { GS_ART, DS, useGs, GS_GAMES, GS_GAME_ORDER, gsGameOfRoute } from './gs-data.jsx';
+import { useGsBusy, GsInkSpin, GsGlyph, GsMark } from './gs-site.jsx';
+import { lbNow } from './gs-library.jsx';
+import { gsKind } from './gs-discover.jsx';
+import { GsPlayDialog } from './gs-connect.jsx';
+
+export const GsCover = ({ art, fit, fill }) => {
   const a = GS_ART[art] || {}; let svg = a.svg || '';
   if (fill) return <DS.Cover fill ground={a.ground || 'indigo'} extend={a.extend || 'centre'}><span style={{ display: 'block' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
   if (fit) svg = svg.replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet');
@@ -16,14 +23,14 @@ const GsCover = ({ art, fit, fill }) => {
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
 // have a motion design yet; every other game keeps its static cover.
 const GS_ART_MOTION = ['groups', 'casebook', 'hunter'];
-const I = (c) => <i className={c} />;
-const GS_ART_LOCAL = {
+export const I = (c) => <i className={c} />;
+export const GS_ART_LOCAL = {
   murder: { bg: 'is-wine', body: <>{I('ga-m-ring')}{I('ga-m-bar')}{I('ga-m-cap')}</> },
   escape: { bg: '', body: <>{I('ga-e-door')}{I('ga-e-knob')}{I('ga-e-win')}</> },
   delve: { bg: 'is-wine', body: <>{I('ga-d-out')}{I('ga-d-in')}{I('ga-d-st')}{I('ga-d-st2')}{I('ga-d-st3')}{I('ga-d-post l')}{I('ga-d-post r')}{I('ga-d-fl l')}{I('ga-d-fl r')}</> },
 };
 const GS_RATIO = { square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
-const GsArt = ({ art, shape }) => {
+export const GsArt = ({ art, shape }) => {
   if (GS_ART_MOTION.includes(art)) return <DS.GameArt art={art} shape={shape} />;
   const p = GS_ART_LOCAL[art];
   // A cover with no drawn motion piece (the Barrow): its 4:3 art at the box's height, centred, on its own ground, so every shape keeps the row's ratio.
@@ -37,7 +44,7 @@ const GsArt = ({ art, shape }) => {
 };
 // KEEP: on touch, the pose plays while a finger is down on the card and stops on release or when a scroll takes over, so scrolling a row never animates it.
 // Put the ref on any element inside the card; the card itself carries .gs-host.
-const useGsArtHost = () => {
+export const useGsArtHost = () => {
   const ref = React.useRef(null);
   React.useEffect(() => {
     const host = ref.current && ref.current.closest('.gs-host'); if (!host) return undefined;
@@ -58,7 +65,7 @@ const GsPassTag = () => {
     </button>
   );
 };
-const GsTagList = ({ tags, ed }) => (
+export const GsTagList = ({ tags, ed }) => (
   <div className="gs-tags">
     {tags.map((t, i) => t === 'FREE' ? <DS.Tag key={i} kind="free">Free</DS.Tag>
       : t === 'FIRST' ? <DS.Tag key={i} kind="free">{'First ' + (ed ? ed[0] : 'edition') + ' free'}</DS.Tag>
@@ -68,12 +75,12 @@ const GsTagList = ({ tags, ed }) => (
 );
 
 // ---- Text blocks ---------------------------------------------------------------
-const GsSteps = ({ items, row }) => (
+export const GsSteps = ({ items, row }) => (
   <ol className={'gs-steps' + (row ? ' is-row' : '')}>
     {items.map((it, i) => <li key={i} className="gs-step"><span className="gs-num">{i + 1}</span><div>{it}</div></li>)}
   </ol>
 );
-const GsWhoCols = ({ ai, server }) => (
+export const GsWhoCols = ({ ai, server }) => (
   <div className="gs-cols2">
     <div className="gs-stack-sm" style={{ alignContent: 'start' }}><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">{ai}</p></div>
     <div className="gs-stack-sm" style={{ alignContent: 'start' }}><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">{server}</p></div>
@@ -93,7 +100,7 @@ const GS_COMPARE = [
 const GsCmpMark = ({ on }) => on
   ? <span className="gs-cmp-cell"><DS.Icon name="check" /><span className="gs-vh">Included</span></span>
   : <span className="gs-cmp-cell gs-muted"><span aria-hidden="true">–</span><span className="gs-vh">Not included</span></span>;
-const GsCompare = ({ foot }) => (
+export const GsCompare = ({ foot }) => (
   <section className="gs-cmp" aria-labelledby="gs-cmp-h">
     <h2 id="gs-cmp-h" className="mcp-t-sec gs-cmp-h">What you get</h2>
     <div role="table" aria-labelledby="gs-cmp-h" className="gs-cmp-t">
@@ -114,14 +121,14 @@ const GsCompare = ({ foot }) => (
     {foot}
   </section>
 );
-const GsStat = ({ label, figure, line }) => (
+export const GsStat = ({ label, figure, line }) => (
   <DS.Card style={{ gap: 8, alignContent: 'start' }}>
     <span className="gs-label">{label}</span>
     <span className="gs-figure">{figure}</span>
     <p className="gs-muted">{line}</p>
   </DS.Card>
 );
-const GsTrack = ({ label, value, max = 6, threat }) => (
+export const GsTrack = ({ label, value, max = 6, threat }) => (
   <div className="gs-stack-sm">
     <span className="gs-num-text gs-strong">{label} {value}/{max}</span>
     <div className="gs-track" role="img" aria-label={label + ' ' + value + ' of ' + max}>
@@ -130,7 +137,7 @@ const GsTrack = ({ label, value, max = 6, threat }) => (
   </div>
 );
 // Coming soon is the design system's SoonCard. A chapter of a game that is out carries label, play and its route.
-const GsSoonCard = ({ g }) => {
+export const GsSoonCard = ({ g }) => {
   const gs = useGs(); const a = GS_ART[g.art] || {};
   return (
     <DS.SoonCard
@@ -144,10 +151,10 @@ const GsSoonCard = ({ g }) => {
 // GsCard, GsGameCard and GsPick are in gs-pass-home.jsx.
 // The whole card is the target and the hover surface: hover, focus and press play the art's motion.
 // KEEP: a blurb's last line is never one word (its last two words stay together), so no card ends on a lone word.
-const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
+export const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
 // The one tile part (design system GameTile): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
 // the same way everywhere. `pass` draws the Pass mark, which opens Pricing; `page` opens that page of the game (Library opens 'record').
-const GsTile = ({ id, pass, page }) => {
+export const GsTile = ({ id, pass, page }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
   return (
     <DS.GameTile className="mcp-art-host gs-host"
@@ -232,7 +239,7 @@ const GsUserMenu = ({ compact }) => {
 };
 
 // ---- Shared top bar -------------------------------------------------------------
-const GsTopBar = () => {
+export const GsTopBar = () => {
   const gs = useGs();
   const [menu, setMenu] = React.useState(false);
   const mwrap = React.useRef(null);
@@ -287,10 +294,10 @@ const gsDailyRoute = (gs) => { const k = gsGameOfRoute(gs.route.name); return !!
 // (its product page or library game page), and History when signed in.
 const gsWeekSwitch = (gs) => {
   const r = gs.route; if (r.name === 'history') return gs.view !== 'out';
-  const k = gsGameOfRoute(r.name); if (!k || !window.lbNow || (r.page === 'record' && r.sid)) return false;
+  const k = gsGameOfRoute(r.name); if (!k || !lbNow || (r.page === 'record' && r.sid)) return false;
   return !!lbNow(gs, k);
 };
-const GsDemoBar = () => {
+export const GsDemoBar = () => {
   const gs = useGs();
   const opts = [['out', 'signed out'], ['free', 'free'], ['pass', 'Pass']];
   const sw = gsWeekSwitch(gs); const daily = gsDailyRoute(gs);
@@ -321,6 +328,5 @@ const GsDemoBar = () => {
 };
 
 // ---- The play dialog lives in gs-connect.jsx with the prompts ----
-const GsPlayPopup = () => <GsPlayDialog />;
+export const GsPlayPopup = () => <GsPlayDialog />;
 
-Object.assign(window, { GsCover, GsArt, useGsArtHost, GsPassTag, GsTagList, GsSteps, GsWhoCols, GsCompare, GsStat, GsTrack, GsSoonCard, GsTile, gsKeepLast, GsUserMenu, GsTopBar, GsDemoBar, GsPlayPopup, gsUseMenuDismiss });

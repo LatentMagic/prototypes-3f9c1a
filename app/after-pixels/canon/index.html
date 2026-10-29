@@ -23,29 +23,13 @@
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/effects.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/tokens/base.css" />
 <link rel="stylesheet" href="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/components/components.css?v=ds-2026-10-20" />
-<link rel="stylesheet" href="app/gs-delve.css" />
-<link rel="stylesheet" href="app/aids.css" />
-<link rel="stylesheet" href="app/gs-shell.css" />
-<link rel="stylesheet" href="app/gs-player.css" />
-<link rel="stylesheet" href="app/gs-library-page.css" />
-<link rel="stylesheet" href="app/gs-auth.css" />
-<link rel="stylesheet" href="app/gs-account.css" />
-<link rel="stylesheet" href="app/gs-site.css" />
-<link rel="stylesheet" href="app/gs-session-history.css" />
-<link rel="stylesheet" href="app/gs-home.css" />
-<link rel="stylesheet" href="app/gs-cards.css" />
-<link rel="stylesheet" href="app/gs-connect.css" />
-<link rel="stylesheet" href="app/gs-game.css" />
-<link rel="stylesheet" href="app/gs-pass.css" />
-<link rel="stylesheet" href="app/gs-escape.css" />
-<link rel="stylesheet" href="app/gs-word.css" />
+<link rel="stylesheet" href="build/canon.css" />
 </head>
 <body>
 <!-- ============================================================================
-     Load order is tag order: files share state through `window`, nothing is
-     imported. primitives first; the aids before main.jsx, which finds them on
-     `window` at render and carries on if any is absent. Each aid is DELETABLE:
-     remove its file and its tag here, nothing else.
+     React and the design system load as page scripts; build/canon.js is the product (app/*.jsx
+     bundled by `npm run build`, never edited here). build/canon.css is app/canon.css's stylesheets
+     in their cascade order. main.jsx finds nothing on `window` except the external interface.
 
      Addresses:
          ?state=<id>     that state (the register is app/states.jsx)
@@ -55,54 +39,11 @@
      ============================================================================ -->
 <div id="root"></div>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
 
 <script src="_ds/mcp-game-store-design-system-ef1abd5b-7567-4e3c-8294-c78583fbe929/_ds_bundle.js?v=ds-2026-10-20"></script>
 
-<script type="text/babel" src="app/primitives.jsx"></script>
-<script type="text/babel" src="app/gs-data.jsx"></script>
-<script type="text/babel" src="app/gs-site.jsx"></script>
-<script type="text/babel" src="app/gs-parts.jsx"></script>
-<script type="text/babel" src="app/gs-chats.jsx"></script>
-<script type="text/babel" src="app/directory-listings.jsx"></script>
-<script type="text/babel" src="app/gs-home.jsx"></script>
-<script type="text/babel" src="app/gs-session.jsx"></script>
-<script type="text/babel" src="app/gs-game.jsx"></script>
-<script type="text/babel" src="app/gs-library.jsx"></script>
-<script type="text/babel" src="app/gs-where-chain-salvage.jsx"></script>
-<script type="text/babel" src="app/gs-casebook-data.jsx"></script>
-<script type="text/babel" src="app/gs-casebook.jsx"></script>
-<script type="text/babel" src="app/gs-delve-library.jsx"></script>
-<script type="text/babel" src="app/gs-puzzles-library.jsx"></script>
-<script type="text/babel" src="app/gs-hunter-library.jsx"></script>
-<script type="text/babel" src="app/gs-barrow-library.jsx"></script>
-<script type="text/babel" src="app/gs-player.jsx"></script>
-<script type="text/babel" src="app/gs-discover.jsx"></script>
-<script type="text/babel" src="app/gs-auth.jsx"></script>
-<script type="text/babel" src="app/gs-username.jsx"></script>
-<script type="text/babel" src="app/gs-connect.jsx"></script>
-<script type="text/babel" src="app/gs-billing.jsx"></script>
-<script type="text/babel" src="app/gs-account.jsx"></script>
-<script type="text/babel" src="app/states.jsx"></script>
-<script type="text/babel" src="app/states-ui.jsx"></script>
-<script type="text/babel" src="app/config.jsx"></script>
-<script type="text/babel" src="app/qa.jsx"></script>
-<script type="text/babel" src="app/gs-config.jsx"></script>
-<script type="text/babel" src="app/gs-history.jsx"></script>
-<script type="text/babel" src="app/gs-editions.jsx"></script>
-<script type="text/babel" src="app/gs-pass-store.jsx"></script>
-<script type="text/babel" src="app/gs-more-games.jsx"></script>
-<script type="text/babel" src="app/gs-pass-home.jsx"></script>
-<script type="text/babel" src="app/gs-pass-game.jsx"></script>
-<script type="text/babel" src="app/gs-pass-pricing.jsx"></script>
-<script type="text/babel" src="app/gs-pass-library.jsx"></script>
-<script type="text/babel" src="app/gs-pass-discover.jsx"></script>
-<script type="text/babel" src="app/gs-pass-aids.jsx"></script>
-<script type="text/babel" src="app/gs-escape.jsx"></script>
-<script type="text/babel" src="app/gs-word.jsx"></script>
-<script type="text/babel" src="app/gs-delve.jsx"></script>
-<script type="text/babel" src="app/main.jsx"></script>
+<script src="build/canon.js"></script>
 </body>
 </html>

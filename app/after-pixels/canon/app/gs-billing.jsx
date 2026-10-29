@@ -3,15 +3,20 @@
 // Cancel sheets, the buying block, checkout, and the update-card page. Prices £3 a
 // month and £30 a year. GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
+import React from 'react';
+import { useGs, DS, gsEndedOn } from './gs-data.jsx';
+import { useGsBusy, gsAnnounce, GsGlyph } from './gs-site.jsx';
+import { GsXLine } from './gs-auth.jsx';
+
 const GS_NB = '\u00A0';
 const GS_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const GS_DAY0 = new Date(2026, 9, 6); // the demo's today, matching GS.today
-const gsAddDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
-const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMonth() + n); return x; };
+export const GS_DAY0 = new Date(2026, 9, 6); // the demo's today, matching GS.today
+export const gsAddDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+export const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMonth() + n); return x; };
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
-const GS_PLAN = {
+export const GS_PLAN = {
   monthly: { name: 'Monthly', price: gsNb('£3 a month'), per: gsNb('£3 / month'), due: '£3.00', months: 1 },
   yearly: { name: 'Yearly', price: gsNb('£30 a year'), per: gsNb('£30 / year'), due: '£30.00', months: 12 },
 };
@@ -23,7 +28,7 @@ const gsSubDate = (sub) => {
   return sub.plan === 'yearly' ? new Date(2027, 8, 18) : new Date(2026, 9, 18);
 };
 const GS_LAPSED_ON = new Date(2026, 8, 18);
-const GS_SUB_HOLDS = ['active', 'failed', 'ending'];
+export const GS_SUB_HOLDS = ['active', 'failed', 'ending'];
 
 // ---- Shared bits ------------------------------------------------------------------
 const GsRows = ({ rows }) => (
@@ -32,9 +37,9 @@ const GsRows = ({ rows }) => (
   </dl>
 );
 // KEEP: two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
-const GsActs = ({ children }) => <div className="gs-acts">{children}</div>;
+export const GsActs = ({ children }) => <div className="gs-acts">{children}</div>;
 // A plain heading for a pop-up (the system's title renders as h3).
-const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
+export const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
 
 // ---- The Pass card: the same card on the Account page and the Pass page ----------
 // What a player keeps and what freezes when a Pass ends (cancel flow, ending and lapsed cards, Pass page).
@@ -48,7 +53,7 @@ const GsKeepLock = ({ lead }) => (
 );
 // A change to the Pass that did not go through (Config "Pass changes: Fail"). The card stays as it was.
 const gsPassFails = (gs) => !!(gs.review && gs.review.passFail);
-const GsPassCard = () => {
+export const GsPassCard = () => {
   const gs = useGs();
   const { sub } = gs;
   const [sheet, setSheet] = React.useState(gs.route.sheet || null); // 'switch' | 'cancel'
@@ -200,7 +205,7 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
 
 // ---- The Pass page and the subscribe page ----------
 // The subscribe page: the plan choice (yearly first), what is due, and the one control (MCPG-012 BF-01, AF-02).
-const GsSubscribe = () => {
+export const GsSubscribe = () => {
   const gs = useGs();
   const plan = GS_PLAN[gs.choice];
   return (
@@ -257,7 +262,7 @@ const GsCardInputs = () => {
     </div>
   );
 };
-const GsCheckout = () => {
+export const GsCheckout = () => {
   const gs = useGs();
   const plan = GS_PLAN[gs.choice];
   const [paying, setPaying] = React.useState(false);
@@ -280,7 +285,7 @@ const GsCheckout = () => {
     </GsProviderFrame>
   );
 };
-const GsUpdateCard = () => {
+export const GsUpdateCard = () => {
   const gs = useGs();
   const [busy, run] = useGsBusy();
   const save = (e) => { e.preventDefault(); run(() => { if (gs.sub.status === 'failed') gs.setSub({ status: 'active' }); gs.go('account'); }); };
@@ -298,7 +303,3 @@ const GsUpdateCard = () => {
   );
 };
 
-Object.assign(window, {
-  GS_DAY0, GS_PLAN, GS_SUB_HOLDS, gsAddDays, gsAddMonths, gsLong, gsShort, gsSubDate,
-  GsRows, GsActs, GsPopTitle, GsKeepLock, GsPassCard, GsSwitchSheet, GsCancelSheet, GsSubscribe, GsCheckout, GsUpdateCard,
-});

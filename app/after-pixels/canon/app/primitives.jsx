@@ -5,6 +5,8 @@
 // ============================================================================
 
 // ---- Inline icon set (24px viewBox, 1.5px stroke, currentColor) ------------
+import React from 'react';
+
 const KIT_ICONS = {
   check: '<polyline points="20 6 9 17 4 12"></polyline>',
   x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
@@ -14,7 +16,7 @@ const KIT_ICONS = {
   list: '<line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><circle cx="4.5" cy="6" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"></circle>',
 };
 
-const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth = 1.5 }) => {
+export const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth = 1.5 }) => {
   return (
     <svg
       width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -30,7 +32,7 @@ const Icon = ({ name, size = 20, color = 'currentColor', style = {}, strokeWidth
 // forced-mobile), and stacked dialogs release it only when the last one closes.
 // Returns the release, so it reads as an effect: useEffect(kitLockScroll, []).
 const kitScrollLocks = new Map();
-const kitLockScroll = () => {
+export const kitLockScroll = () => {
   const scroller = document.querySelector('.kit-phone-screen') || document.scrollingElement || document.documentElement;
   const held = kitScrollLocks.get(scroller) || { count: 0, prevOverflow: scroller.style.overflow };
   held.count += 1;
@@ -44,4 +46,3 @@ const kitLockScroll = () => {
   };
 };
 
-Object.assign(window, { Icon, kitLockScroll });

@@ -4,9 +4,15 @@
 
 // ---- Config. The seed has no played flag per edition, so New for you is empty for most players: New editions stages it full.
 // The other row stages a free account's Word and Escape; the Barrow's chapter 1 is GsBarrowConfigRow, in the Barrow's own section.
+import React from 'react';
+import { buildStatesBase } from './states.jsx';
+import { ConfigRow, ConfigGroup } from './config.jsx';
+import { ConfigExtraBase } from './gs-config.jsx';
+import { useCpr, GsPassStage, CPR_DEFAULTS } from './gs-pass-store.jsx';
+
 const GsPassConfigRows = () => {
   const v = useCpr();
-  const { ConfigGroup: Group, ConfigRow: Row } = window;
+  const Group = ConfigGroup; const Row = ConfigRow;
   return (
     <Group title="Pass upsell">
       <Row label="New editions" value={v.newEds} onChange={(x) => GsPassStage.set({ newEds: x })}
@@ -19,19 +25,18 @@ const GsPassConfigRows = () => {
   );
 };
 // The Barrow's chapter 1, shown in Config's Barrow section (gs-config.jsx).
-const GsBarrowConfigRow = () => {
+export const GsBarrowConfigRow = () => {
   const v = useCpr();
-  const Row = window.ConfigRow;
+  const Row = ConfigRow;
   return <Row label="Chapter 1" value={v.bwDone ? 'done' : 'none'} onChange={(x) => GsPassStage.set({ bwDone: x === 'done' })}
     options={[{ value: 'none', label: 'Not played' }, { value: 'done', label: 'Finished' }]} />;
 };
-const ConfigExtra = () => <React.Fragment><ConfigExtraBase /><GsPassConfigRows /></React.Fragment>;
+export const ConfigExtra = () => <React.Fragment><ConfigExtraBase /><GsPassConfigRows /></React.Fragment>;
 
 // ---- Every state starts from the store's defaults; a state that needs more sets it in its stage.
-const buildStates = (api) => {
+export const buildStates = (api) => {
   const r = buildStatesBase(api);
   r.states.forEach((s) => { const go = s.go; s.go = () => { GsPassStage.set({ ...CPR_DEFAULTS }); go(); }; });
   return r;
 };
 
-Object.assign(window, { GsBarrowConfigRow, ConfigExtra, buildStates });

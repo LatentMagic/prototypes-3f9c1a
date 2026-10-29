@@ -9,9 +9,14 @@
 //   sign in (email, Google or Apple) -> verify this device on a new device only -> games
 //   Forgot password -> email, sent, code, new password -> games
 // ============================================================================
-const GS_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import React from 'react';
+import { DS, useGs } from './gs-data.jsx';
+import { GsMark, GsGlyph, useGsBusy, GsInkSpin, GsFullLoader } from './gs-site.jsx';
+import { gsUsernameRules, GsUsernameField, GS_USERNAME_HINT } from './gs-username.jsx';
 
-const GsAuthFrame = ({ title, subtitle, onBack, children, foot }) => (
+export const GS_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const GsAuthFrame = ({ title, subtitle, onBack, children, foot }) => (
   <div className="gs-auth">
     <div className="gs-auth-bar">
       {onBack
@@ -38,7 +43,7 @@ const GsConsent = ({ lead }) => {
 };
 
 // A line with a red x and ink text: provider failure, expired code.
-const GsXLine = ({ children, center }) => (
+export const GsXLine = ({ children, center }) => (
   <p className={'gs-xline' + (center ? ' is-center' : '')} role="alert"><GsGlyph name="x" size={18} style={{ color: 'var(--error)' }} /><span>{children}</span></p>
 );
 
@@ -58,7 +63,7 @@ const gsCheck = (rules, f) => {
   rules.forEach(([k, ok, msg]) => { if (!out[k] && !ok(f[k] || '', f)) out[k] = msg; });
   return out;
 };
-const useGsForm = (initial, rules, onValid, opts) => {
+export const useGsForm = (initial, rules, onValid, opts) => {
   const [f, setF] = React.useState(initial);
   const [tried, setTried] = React.useState(!!(opts && opts.tried));
   const refs = React.useRef({});
@@ -120,7 +125,7 @@ const gsSignupRules = () => [
   ...gsUsernameRules(null),
   ['pw', (v) => v.length >= 8, 'Use at least 8 characters.'],
 ];
-const GsSignUp = () => {
+export const GsSignUp = () => {
   const gs = useGs();
   const next = gs.route.next;
   const [step, toEmail, back] = useGsStep();
@@ -159,7 +164,7 @@ const GsSignUp = () => {
   );
 };
 // A field label with a small muted note right-aligned beside it.
-const GsLabelled = ({ label, aside, children }) => (
+export const GsLabelled = ({ label, aside, children }) => (
   <div className="gs-stack-sm">
     <div className="gs-label-row"><span className="gs-field-label" aria-hidden="true">{label}</span><span className="gs-small">{aside}</span></div>
     {children}
@@ -173,7 +178,7 @@ const GsCodeField = ({ value, onChange, error, inputRef }) => (
     className="gs-code" value={value} error={error} inputRef={inputRef}
     onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))} />
 );
-const GsVerify = () => {
+export const GsVerify = () => {
   const gs = useGs();
   const { ctx, provider } = gs.route; // ctx: signup | device
   const device = ctx !== 'signup';
@@ -226,7 +231,7 @@ const GsVerify = () => {
 
 // ---- Return from a provider: the spinner alone, "Completing sign-in" as its name.
 // A new account by Google or Apple goes straight to Your username; a returning player on a new device gets Verify this device.
-const GsReturning = () => {
+export const GsReturning = () => {
   const gs = useGs();
   const { mode, next, provider } = gs.route;
   return <GsFullLoader label="Completing sign-in" ms={1500}
@@ -240,7 +245,7 @@ const GS_SIGNIN_RULES = [
   ['email', (v) => GS_EMAIL_RE.test(v.trim()), 'Enter a valid email address.'],
   ['pw', (v) => v.length > 0, 'Enter your password.'],
 ];
-const GsSignIn = () => {
+export const GsSignIn = () => {
   const gs = useGs();
   const [step, toEmail, back] = useGsStep();
   const [failed, setFailed] = React.useState(null);
@@ -277,7 +282,7 @@ const GS_NEWPW_RULES = [
   ['pw', (v) => v.length >= 8, 'Use at least 8 characters.'],
   ['pw2', (v, f) => v === f.pw, 'Passwords don’t match. Re-enter to confirm.'],
 ];
-const GsRecover = () => {
+export const GsRecover = () => {
   const gs = useGs();
   const [step, setStep] = React.useState(gs.route.step || 'email'); // route.step: staged
   const [email, setEmail] = React.useState(gs.route.email || '');
@@ -337,4 +342,3 @@ const GsRecover = () => {
   );
 };
 
-Object.assign(window, { GS_EMAIL_RE, GsAuthFrame, GsXLine, GsSignUp, GsSignIn, GsVerify, GsReturning, GsRecover, gsCheck, useGsForm, GsLabelled });

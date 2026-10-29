@@ -5,21 +5,27 @@
 // a Pass holder and a case page (route.sid) get this one.
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.
 // ============================================================================
-const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
-const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
-// Case 1, read by its finished form: the case a Pass-ended player played before the Pass ended.
-const CB_FIRST = CB_DONE;
+import React from 'react';
+import { GS_RESULT, useGs, DS, GS_ONCE_LINE, gsFresh, GS_NAME, GS_GAMES } from './gs-data.jsx';
+import { lbWeekDone, LbShare, LbBackTo, LbResult, lbAccess, LbHead, LbFreshNow, LbAch } from './gs-library.jsx';
+import { CB_DONE, CB_LIVE, cbShareLines, CB_ACH, CB_BADGES } from './gs-casebook-data.jsx';
+import { phFirstSt, edList, phAch, LbRecent } from './gs-history.jsx';
+import { CbNow } from './gs-pass-library.jsx';
+import { GS_LIBRARY } from './registry.js';
+
+export const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
+export const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
+let CB_FIRST;
 // Casebook has no free first case, so phFirstSt gives null and Case 1 reads as played.
 const cbFirstOf = (gs) => {
-  const st = window.phFirstSt ? phFirstSt(gs, 'casebook') : 'done';
+  const st = phFirstSt ? phFirstSt(gs, 'casebook') : 'done';
   if (st === 'none') return null;
   return st === 'live' ? CB_LIVE : CB_DONE;
 };
-const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
+export const cbStatus = (c) => (!c.played ? { kind: 'none', label: 'Not played' } : c.live ? { kind: 'live', label: 'In progress' }
   : { kind: c.verdict === 'right' ? 'ok' : 'bad', label: GS_RESULT.casebook({ ok: c.verdict === 'right' }) });
 
-// The case page: turns grouped by kind. Not designed further yet: left as built until the game itself is.
-const CB_KINDS = [['Show evidence', 'Evidence shown'], ['Search', 'Searches'], ['Question', 'Questions']];
+let CB_KINDS;
 const cbCap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const CbOut = ({ r }) => {
   if (r.act === 'Show evidence') return <span className={'lb-out' + (r.c === 'B' ? ' is-hit' : '')}>{r.out}</span>;
@@ -86,5 +92,12 @@ const CbLibrary = () => {
   );
 };
 
-const registerCasebook = () => { GS_LIBRARY.casebook = CbLibrary; };
-Object.assign(window, { cbGo, cbWeek, cbStatus, cbFirstOf, CB_FIRST });
+export const registerCasebook = () => { GS_LIBRARY.casebook = CbLibrary; };
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsCasebook() {
+// Case 1, read by its finished form: the case a Pass-ended player played before the Pass ended.
+CB_FIRST = CB_DONE;
+// The case page: turns grouped by kind. Not designed further yet: left as built until the game itself is.
+CB_KINDS = [['Show evidence', 'Evidence shown'], ['Search', 'Searches'], ['Question', 'Questions']];
+}

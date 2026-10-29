@@ -17,6 +17,9 @@
 // Entry shape: { key, title, note?, only?, steps: ['state-id', ...] }
 // `only` names a window handle; the entry shows only when it is present, so a
 // candidate build's walk-through stays out of the main build.
+import React from 'react';
+import { kitLockScroll, Icon } from './primitives.jsx';
+
 const KIT_QA = [
   { key: 'loading-on-action', title: 'Loading on action',
     note: 'On each, press the action: its control shows the spinner for about a second and ignores a second press (and Enter). Sign out is in the account menu. Check at phone and desktop width.',
@@ -112,7 +115,7 @@ const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
 
 const { useState: useQaState, useEffect: useQaEffect } = React;
 
-const QaPalette = ({ statesGroups, onGo, onClose }) => {
+export const QaPalette = ({ statesGroups, onGo, onClose }) => {
   const [shown, setShown] = useQaState(false);
   const labels = {};
   (statesGroups || []).forEach((g) => g.items.forEach((s) => { [s.id, ...(s.aliases || [])].forEach((id) => { labels[id] = s.label; }); }));
@@ -179,7 +182,6 @@ const QaPalette = ({ statesGroups, onGo, onClose }) => {
   );
 };
 
-Object.assign(window, { KIT_QA, QaPalette });
 KIT_QA.unshift({ key: 'delve-1236', title: 'Delve: session page and now card (1236, not signed off)',
   note: 'Each at desktop and phone width. The sheet in one row on desktop (3B); on a phone folded to the hero and meters, the whole hero row opens it. The run card: the ending word, a hairline, its line; the route; the held roll. Every move collapsed. Now card: the ending word top right, the route at card size; a die opens the session page on that roll.',
   steps: ['library-delve', 'library-delve-in-progress', 'session-delve', 'session-delve-fallen', 'session-delve-hard', 'session-delve-in-progress'] });

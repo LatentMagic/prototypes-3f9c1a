@@ -13,13 +13,17 @@
 // Deleting this file (with app/states.jsx) removes both; main.jsx guards on
 // window.StatesIndex and config.jsx on window.StatesPalette.
 // ============================================================================
+import React from 'react';
+import { Icon, kitLockScroll } from './primitives.jsx';
+import { kitStateLink } from './states.jsx';
+
 const { useState: useStState, useEffect: useStEffect, useMemo: useStMemo, useRef: useStRef } = React;
 
 // ---- one row, shared by both views -----------------------------------------
 const StatesRow = ({ state, onGo }) => {
   const [copied, setCopied] = useStState(null);
   const copy = async () => {
-    const url = window.kitStateLink(state.id);
+    const url = kitStateLink(state.id);
     let ok = false;
     try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
       try {
@@ -106,7 +110,7 @@ const kitFilterGroups = (groups, q) => {
 };
 
 // ---- the palette -----------------------------------------------------------
-const StatesPalette = ({ groups, onGo, onOpenIndex, onClose }) => {
+export const StatesPalette = ({ groups, onGo, onOpenIndex, onClose }) => {
   const [q, setQ] = useStState('');
   const [shown, setShown] = useStState(false);
   const fieldRef = useStRef(null);
@@ -157,7 +161,7 @@ const StatesPalette = ({ groups, onGo, onOpenIndex, onClose }) => {
 };
 
 // ---- the index -------------------------------------------------------------
-const StatesIndex = ({ reason, groups, onGo, onDismiss }) => {
+export const StatesIndex = ({ reason, groups, onGo, onDismiss }) => {
   const [q, setQ] = useStState('');
   const filtered = useStMemo(() => kitFilterGroups(groups, q), [groups, q]);
   const unresolved = reason && reason.kind === 'unresolved' ? reason.name : null;
@@ -189,4 +193,3 @@ const StatesIndex = ({ reason, groups, onGo, onDismiss }) => {
   );
 };
 
-Object.assign(window, { StatesPalette, StatesIndex, StatesRow, StatesGroups });

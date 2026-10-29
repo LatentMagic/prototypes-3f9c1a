@@ -5,6 +5,13 @@
 // ============================================================================
 
 // A tick and a short line beside the button for a few seconds after a change.
+import React from 'react';
+import { DS, useGs } from './gs-data.jsx';
+import { useGsBusy, GsInkSpin, GS_SUPPORT } from './gs-site.jsx';
+import { useGsForm, GS_EMAIL_RE } from './gs-auth.jsx';
+import { GsUsernameCard } from './gs-username.jsx';
+import { GsPopTitle, GsActs, GS_SUB_HOLDS, GsPassCard } from './gs-billing.jsx';
+
 const useGsDone = (ms) => {
   const [on, setOn] = React.useState(false);
   React.useEffect(() => { if (!on) return undefined; const t = setTimeout(() => setOn(false), ms); return () => clearTimeout(t); }, [on]);
@@ -172,7 +179,7 @@ const GsDeleteAccount = () => {
   );
 };
 
-const GsAccount = () => {
+export const GsAccount = () => {
   const gs = useGs();
   const providerAcct = gs.provider !== 'email';
   return (
@@ -199,4 +206,3 @@ const GsAccount = () => {
   );
 };
 
-Object.assign(window, { GsIdentity, GsAccount });

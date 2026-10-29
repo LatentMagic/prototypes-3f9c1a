@@ -9,10 +9,20 @@
 // ============================================================================
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
-// Each game's session body and quiet head, by game id; the game's file fills them in its register<File>() (called from main.jsx).
-const GS_SESSION_BODY = {};
-const GS_SESSION_QUIET = {};
-const GsNeedsPass = ({ gid, text }) => {
+import React from 'react';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsStartsOver, gsSessDate, gsRhythm, GS_BARROW_CREDIT } from './gs-data.jsx';
+import { GsNotFound } from './gs-site.jsx';
+import { GsCover, GsTrack } from './gs-parts.jsx';
+import { GsGap, gsOr } from './gs-game.jsx';
+import { lbCopy, LbBackTo } from './gs-library.jsx';
+import { DP_PZ } from './gs-where-chain-salvage.jsx';
+import { PZ } from './gs-puzzles-library.jsx';
+import { gsSessEd } from './gs-connect.jsx';
+import { PH_FIRST, PH_UNF } from './gs-history.jsx';
+import { ES_SIDS } from './gs-escape.jsx';
+import { GS_SESSION_BODY } from './registry.js';
+
+export const GsNeedsPass = ({ gid, text }) => {
   const gs = useGs();
   return (
     <div className="gs-stack-sm" style={{ justifyItems: 'start' }}>
@@ -31,7 +41,7 @@ const gsWordRow = (guess, answer) => {
 };
 // The session's date box is one button wide, so its weekday is shortened: Tuesday → Tue.
 const gsShortDay = (d) => (typeof d === 'string' ? d.replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*day\b/, '$1') : d);
-const gsShareText = (s) => {
+export const gsShareText = (s) => {
   if (s.share == null) return null;
   const link = gsLink(s.gid);
   // A result whose card is written out in full (Casebook, Escape, Delve, the Barrow), with the product link last.
@@ -66,11 +76,11 @@ const GsShareText = ({ lines }) => {
 
 // The one Share pop-up, opened from the session page and every library game page.
 // A panel by ui-design.md: it is neither one question nor a short list of commands, so it is a bottom sheet on a phone.
-const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
+export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   const [copied, setCopied] = React.useState(false);
   React.useEffect(() => { if (!open) setCopied(false); }, [open]);
   const copy = () => {
-    if (window.lbCopy) lbCopy(lines);
+    if (lbCopy) lbCopy(lines);
     else { try { navigator.clipboard && navigator.clipboard.writeText(lines.join('\n')); } catch (e) {} }
     setCopied(true);
   };
@@ -83,7 +93,7 @@ const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
 };
 
 // Every move: the game's list as the design system's MoveList, closed, below the game's own section; the same for every game.
-const GsMoves = ({ s }) => (
+export const GsMoves = ({ s }) => (
   <section className="gs-moves">
     <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
       <DS.MoveList label={gsOr(s.listTitle)}>
@@ -124,7 +134,7 @@ const gsThisEdSid = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid; const live = gs.review && gs.review.week === 'live';
   if (gid === 'delve') return sid === 'delve' || sid === 'delve-live' ? (live ? 'delve-live' : 'delve') : sid;
   const c = gid && ((typeof PZ !== 'undefined' && PZ[gid]) || (typeof DP_PZ !== 'undefined' && DP_PZ[gid])); if (!c) return sid;
-  const mine = [c.todayBase || c.today, c.liveSid, ...Object.values((window.GS_ED_SIDS || {})[gid] || {}), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])];
+  const mine = [c.todayBase || c.today, c.liveSid, ...Object.values((GS_ED_SIDS || {})[gid] || {}), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])];
   if (!mine.includes(sid)) return sid;
   const to = live ? c.liveSid : c.today;
   return GS_SESSIONS[to] ? to : sid;
@@ -140,18 +150,18 @@ const GsSessionRecord = () => {
   const closeShare = () => setShare(false);
   const delve = s.kind === 'delve';
   // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once.
-  const ed = window.gsSessEd ? gsSessEd(gs, sid) : null;
+  const ed = gsSessEd ? gsSessEd(gs, sid) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
   // Controls only where they work: a player without the Pass can carry on or start over only a free game or its free first edition.
   // A Pass-ended player's unfinished Pass-only session is kept: it says so, with the Pass page, and no Play.
-  const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!window.PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
+  const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
   const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
   const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, sid)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   // A game's own session body: GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
   // A game without one shows the result and the closed list.
   const list = s.lines.length > 0 ? <GsMoves s={s} /> : null;
-  const Body = window.GS_SESSION_BODY && window.GS_SESSION_BODY[s.gid];
+  const Body = GS_SESSION_BODY && GS_SESSION_BODY[s.gid];
   const body = Body ? <Body s={s} sid={sid} /> : list;
   const title = gsHeadTitle(s, ed);
   const label = gsHeadGame(s) + ' · ' + gsHeadDay(gsSessDate(s, gs));
@@ -206,6 +216,5 @@ const GsSessionRecord = () => {
   </>);
 };
 
-const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
+export const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
 
-Object.assign(window, { GsNeedsPass, GsSession, GsSharePopup, gsShareText, GsMoves });

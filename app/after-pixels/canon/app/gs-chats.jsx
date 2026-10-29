@@ -2,10 +2,13 @@
 // After Pixels — "In your chat": three DS ChatPictures per game, and the home hero's.
 // Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, which are deployed.
 // ============================================================================
-const GS_CHAT_BY = 'After Pixels';
-const GS_CHAT_MARK = 'assets/logo.svg';
-const gscU = (text) => ({ from: 'user', text });
-const gscAi = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, after });
+import React from 'react';
+import { GS_ES1, DS, GS_GAMES } from './gs-data.jsx';
+
+export const GS_CHAT_BY = 'After Pixels';
+export const GS_CHAT_MARK = 'assets/logo.svg';
+export const gscU = (text) => ({ from: 'user', text });
+export const gscAi = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, after });
 const GSC_WIN = [{ label: 'Share result', icon: 'share' }, { label: 'Back to the games', icon: 'list' }];
 
 const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten.'),
@@ -15,7 +18,31 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten.'),
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
 
-const GS_CHATS = {
+export let GS_CHATS;
+export let GS_HERO_CHAT;
+
+export const GsChatPic = ({ turns, height, width, label }) => (
+  <DS.ChatPicture turns={turns} mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={height} width={width} label={label} />
+);
+// KEEP: the product page's chat row (the design system's CardRow kind="chat") shares the width when the pictures fit and scrolls sideways
+// with Previous and Next when they don't. Each ChatPicture scrolls itself, opens on its latest turn and has its own "Back to the start" pill.
+export const GsChatRow = ({ id }) => {
+  const name = GS_GAMES[id].name;
+  return (
+    <DS.CardRow kind="chat" title="In your chat">
+      {(GS_CHATS[id] || []).map((x, i) => (
+        <figure key={i} className="mcp-chatfig">
+          <GsChatPic turns={x.turns} label={name + ' being played in a chat'} />
+          <figcaption>{x.cap}</figcaption>
+        </figure>
+      ))}
+    </DS.CardRow>
+  );
+};
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsChats() {
+GS_CHATS = {
   word: [
     { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('I want to play Daily Word.'),
       gscAi('daily-word', ['Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
@@ -84,25 +111,5 @@ const GS_CHATS = {
   ],
 };
 // The home hero's chat is the whole Casebook conversation from its product page; the hero scrolls it (gs-home.jsx).
-const GS_HERO_CHAT = GS_CHATS.casebook.flatMap((c) => c.turns);
-
-const GsChatPic = ({ turns, height, width, label }) => (
-  <DS.ChatPicture turns={turns} mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={height} width={width} label={label} />
-);
-// KEEP: the product page's chat row (the design system's CardRow kind="chat") shares the width when the pictures fit and scrolls sideways
-// with Previous and Next when they don't. Each ChatPicture scrolls itself, opens on its latest turn and has its own "Back to the start" pill.
-const GsChatRow = ({ id }) => {
-  const name = GS_GAMES[id].name;
-  return (
-    <DS.CardRow kind="chat" title="In your chat">
-      {(GS_CHATS[id] || []).map((x, i) => (
-        <figure key={i} className="mcp-chatfig">
-          <GsChatPic turns={x.turns} label={name + ' being played in a chat'} />
-          <figcaption>{x.cap}</figcaption>
-        </figure>
-      ))}
-    </DS.CardRow>
-  );
-};
-
-Object.assign(window, { GS_CHATS, GS_HERO_CHAT, GsChatPic, GsChatRow });
+GS_HERO_CHAT = GS_CHATS.casebook.flatMap((c) => c.turns);
+}

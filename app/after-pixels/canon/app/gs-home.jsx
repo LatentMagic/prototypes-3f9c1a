@@ -2,12 +2,16 @@
 // After Pixels — Home (screen 1). GsHome is replaced by gs-pass-home.jsx (CprHome); GsWhatsNew, GsFeature and
 // GS_HOME_GAMES are still read. The Pass page is in gs-billing.jsx.
 // ============================================================================
-const GsFeature = ({ id }) => <GsCard id={id} />;
+import React from 'react';
+import { DS } from './gs-data.jsx';
+import { GsCard } from './gs-pass-home.jsx';
+
+export const GsFeature = ({ id }) => <GsCard id={id} />;
 // NOTE: Available games is NOT meant to hold every game. It is a small, chosen sample so a visitor gets a sense
 // of what exists; the whole library is on Discover. A game is added here only on the owner's approval: this row is what we highlight.
 // More games on each game's page uses this same list, minus the page's own game.
 // It already holds too much and needs revisiting.
-const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
+export const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
 
 const GS_WHATSNEW = [
   { v: '1.9', d: '1 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },
@@ -20,7 +24,7 @@ const GS_WHATSNEW = [
   { v: '1.2', d: '2 July 2026', t: 'Search and filters in the library', x: 'Find a game by name, genre or how often it releases.' },
   { v: '1.1', d: '18 June 2026', t: 'Free daily puzzles', x: 'Today’s Daily Puzzles are free with an account.' },
 ];
-const GsWhatsNew = () => {
+export const GsWhatsNew = () => {
   const row = (e, i) => (
     <li key={e.v} className={'wn-e' + (i === 0 ? ' is-latest' : '')}>
       <div className="wn-body"><h3 className="wn-t">{e.t}</h3><p className="wn-d">{e.x}</p></div>
@@ -45,4 +49,3 @@ const GsWhatsNew = () => {
     </section>
   );
 };
-Object.assign(window, { GsFeature, GS_HOME_GAMES });

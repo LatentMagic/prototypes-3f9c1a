@@ -46,6 +46,14 @@
 // TODO(product): replace with the product's own stagers, built on its seed.
 // After Pixels: api = { reset, setView, setConnected, setReview, go, setSub, setProvider, setChoice } from main.jsx.
 // api also carries setUser.
+import { DL_STATES } from './directory-listings.jsx';
+import { DP_STATES } from './gs-where-chain-salvage.jsx';
+import { CB_ID, CB_ALL } from './gs-casebook-data.jsx';
+import { DV_ALL } from './gs-delve-library.jsx';
+import { PZ } from './gs-puzzles-library.jsx';
+import { GS_DAY0 } from './gs-billing.jsx';
+import { GsPassStage } from './gs-pass-store.jsx';
+
 function kitStateContext(api) {
   const reseed = () => api.reset();
   const reset = () => reseed();
@@ -56,8 +64,99 @@ function kitStateContext(api) {
 // Order here does not matter: the palette and the index read alphabetically
 // (sorted in buildStates). Group titles are plain strings; a new group is
 // simply a new title.
-const gsPassSet = (p) => window.GsPassStage && window.GsPassStage.set(p);
-const KIT_STATE_REGISTER = [
+const gsPassSet = (p) => GsPassStage && GsPassStage.set(p);
+let KIT_STATE_REGISTER;
+
+let KIT_STATE_GROUP_NOTES;
+
+
+let KIT_STATE_INDEX_NAMES;
+
+let KIT_STATE_ID_RULE;
+const kitRefuseState = (id, why) => console.error('[kit states] refused state id ' + JSON.stringify(id) + ': ' + why + '. Fix it in KIT_STATE_REGISTER (app/states.jsx).');
+const kitIdsOf = (s) => [s.id, ...(s.aliases || [])];
+let KIT_STATES_ACCEPTED;
+
+
+
+// ---- derived: the bound register main.jsx renders from ---------------------
+export function buildStatesBase(api) {
+  const ctx = kitStateContext(api);
+  // Reseed, then stage, so a state opens the same way whatever came before it.
+  const states = KIT_STATES_ACCEPTED.map((s) => ({
+    id: s.id, aliases: s.aliases || [], label: s.label, group: s.group,
+    go: () => {
+      // An entry's `platform: 'app' | 'web'` sets Config → Platform before it
+      // stages, so its address opens in the right posture. No platform: left as is.
+      if (s.platform && api.setPlatform) api.setPlatform(s.platform);
+      const c = kitStateContext(api);
+      c.reseed();
+      s.stage(c);
+    },
+  }));
+  const byId = {};
+  const groups = [];
+  states.forEach((s) => {
+    byId[s.id] = s; s.aliases.forEach((a) => { byId[a] = s; });
+    let g = groups.find((x) => x.title === s.group);
+    if (!g) { g = { title: s.group, notes: KIT_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
+    g.items.push(s);
+  });
+  // Alphabetical, always, so a state can be found by name. A leading "App: "
+  // is skipped, so an app-only state sorts beside its web twin.
+  const kitSortKey = (t) => t.replace(/^App:\s*/i, '');
+  const kitCompare = (a, b) => kitSortKey(a).localeCompare(kitSortKey(b), undefined, { sensitivity: 'base', numeric: true });
+  groups.sort((a, b) => kitCompare(a.title, b.title));
+  groups.forEach((g) => g.items.sort((a, b) => kitCompare(a.label, b.label)));
+  return { states, byId, groups, reset: ctx.reset };
+}
+
+// ---- derived: the address ---------------------------------------------------
+// `?state=<id>`  → that state, overriding whatever local state was restored.
+// `?state=index` → the states index (the catalogue, linkable in its own right).
+// a name not in the register → the index, which is how a stale ticket link shows
+//   itself: the reader sees a list that does not contain the name they came for.
+// nothing at all → null, and the app opens as the real app does.
+export function kitResolveState() {
+  let raw = null;
+  try { raw = new URLSearchParams(window.location.search).get('state'); } catch (e) { return null; }
+  const name = (raw || '').trim().toLowerCase();
+  if (!name) return null;
+  if (KIT_STATE_INDEX_NAMES.includes(name)) return { kind: 'index', name };
+  if (KIT_STATES_ACCEPTED.some((s) => kitIdsOf(s).includes(name))) return { kind: 'state', id: name };
+  return { kind: 'unresolved', name };
+}
+
+// A link someone can be handed. Framed in a hosted console, this page's own
+// address is not one anyone can open: the console is, and it addresses a
+// prototype by its URL hash (#<app>/<slug>), which a referrer never carries.
+// So when framed, rebuild the console's address with that hash and this page's
+// ?state= after it. Order of attempts: the parent's own hash (same origin),
+// else the referrer plus the app and slug read from this page's path
+// (.../app/<app>/<slug>/<file>). Unframed, or if neither works, this page's own
+// address.
+export function kitStateLink(id) {
+  const q = '?state=' + encodeURIComponent(id);
+  const own = window.location.origin + window.location.pathname + q;
+  if (window.parent === window) return own;
+  try {
+    const p = window.parent.location;
+    const route = p.hash.replace(/^#/, '').split('?')[0];
+    if (route) return p.origin + p.pathname + '#' + route + q;
+  } catch (e) {}
+  try {
+    const m = window.location.pathname.match(/\/app\/([^/]+)\/([^/]+)\/[^/]*$/);
+    if (m && document.referrer) {
+      const u = new URL(document.referrer);
+      return u.origin + u.pathname + '#' + m[1] + '/' + m[2] + q;
+    }
+  } catch (e) {}
+  return own;
+}
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initStates() {
+KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'home', label: '1. Home, signed out', stage: (c) => c.go('home') },
   { group: 'Screens', id: 'sign-up', label: '2. Sign up', stage: (c) => c.go('signup') },
   { group: 'Screens', id: 'sign-in', label: '2. Sign in', stage: (c) => c.go('signin') },
@@ -245,16 +344,15 @@ const KIT_STATE_REGISTER = [
   { group: 'Site', id: 'sign-in-return-library', label: 'Signed out, opened the Library: Sign in, then the Library', stage: (c) => c.go('signin', { next: { name: 'library' } }) },
   { group: 'Site', id: 'session-unknown', label: 'A session address that doesn’t exist (not found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'nowhere' }); } },
   // Where, Chain and Salvage: held in app/gs-where-chain-salvage.jsx.
-  ...(window.DP_STATES || []),
+  ...(DP_STATES || []),
   // Directory listing mocks: held in app/directory-listings.jsx (droppable); absent ⇒ none.
-  ...(window.DL_STATES || []),
+  ...(DL_STATES || []),
 ];
-
 // Notes, per group: how to exercise what a staged state
 // can't hold still — a search term, a sequence of taps. Each line names the
 // state it serves. Shown at the foot of the group on the states page and
 // palette, and readable off window.KIT_STATE_NOTES.
-const KIT_STATE_GROUP_NOTES = {
+KIT_STATE_GROUP_NOTES = {
   'Ended unfinished': [
     'Or set Config “Ended unfinished” to A day: the Daily Groups day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress.',
   ],
@@ -276,19 +374,15 @@ const KIT_STATE_GROUP_NOTES = {
   ],
 };
 window.KIT_STATE_NOTES = KIT_STATE_GROUP_NOTES;
-
 // The catalogue's own address. Not a state, so it is not in the register.
-const KIT_STATE_INDEX_NAMES = ['index', 'states'];
-
+KIT_STATE_INDEX_NAMES = ['index', 'states'];
 // ---- derived: the entries whose id can be an address -------------------------
 // An id travels in a URL and is matched lowercased, so one that is not lowercase
 // and URL-safe, is the catalogue's own name, or is already taken would show in
 // the palette and still give a dead link. Such an entry is refused here, loudly,
 // and everything below reads this list.
-const KIT_STATE_ID_RULE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const kitRefuseState = (id, why) => console.error('[kit states] refused state id ' + JSON.stringify(id) + ': ' + why + '. Fix it in KIT_STATE_REGISTER (app/states.jsx).');
-const kitIdsOf = (s) => [s.id, ...(s.aliases || [])];
-const KIT_STATES_ACCEPTED = KIT_STATE_REGISTER.filter((s, i) => {
+KIT_STATE_ID_RULE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+KIT_STATES_ACCEPTED = KIT_STATE_REGISTER.filter((s, i) => {
   for (const id of kitIdsOf(s)) {
     if (typeof id !== 'string' || !KIT_STATE_ID_RULE.test(id)) { kitRefuseState(id, 'an id is lowercase letters, digits and single hyphens'); return false; }
     if (KIT_STATE_INDEX_NAMES.includes(id)) { kitRefuseState(id, 'that name opens the states index'); return false; }
@@ -296,84 +390,7 @@ const KIT_STATES_ACCEPTED = KIT_STATE_REGISTER.filter((s, i) => {
   }
   return true;
 });
-
 // ---- derived: what an agent or a script can read off the page --------------
 // Names and labels only. Nothing runnable, so reading it can't stage anything.
 window.KIT_STATES = KIT_STATES_ACCEPTED.map(({ id, aliases, label, group }) => ({ id, aliases: aliases || [], label, group }));
-
-// ---- derived: the bound register main.jsx renders from ---------------------
-function buildStatesBase(api) {
-  const ctx = kitStateContext(api);
-  // Reseed, then stage, so a state opens the same way whatever came before it.
-  const states = KIT_STATES_ACCEPTED.map((s) => ({
-    id: s.id, aliases: s.aliases || [], label: s.label, group: s.group,
-    go: () => {
-      // An entry's `platform: 'app' | 'web'` sets Config → Platform before it
-      // stages, so its address opens in the right posture. No platform: left as is.
-      if (s.platform && api.setPlatform) api.setPlatform(s.platform);
-      const c = kitStateContext(api);
-      c.reseed();
-      s.stage(c);
-    },
-  }));
-  const byId = {};
-  const groups = [];
-  states.forEach((s) => {
-    byId[s.id] = s; s.aliases.forEach((a) => { byId[a] = s; });
-    let g = groups.find((x) => x.title === s.group);
-    if (!g) { g = { title: s.group, notes: KIT_STATE_GROUP_NOTES[s.group] || null, items: [] }; groups.push(g); }
-    g.items.push(s);
-  });
-  // Alphabetical, always, so a state can be found by name. A leading "App: "
-  // is skipped, so an app-only state sorts beside its web twin.
-  const kitSortKey = (t) => t.replace(/^App:\s*/i, '');
-  const kitCompare = (a, b) => kitSortKey(a).localeCompare(kitSortKey(b), undefined, { sensitivity: 'base', numeric: true });
-  groups.sort((a, b) => kitCompare(a.title, b.title));
-  groups.forEach((g) => g.items.sort((a, b) => kitCompare(a.label, b.label)));
-  return { states, byId, groups, reset: ctx.reset };
 }
-
-// ---- derived: the address ---------------------------------------------------
-// `?state=<id>`  → that state, overriding whatever local state was restored.
-// `?state=index` → the states index (the catalogue, linkable in its own right).
-// a name not in the register → the index, which is how a stale ticket link shows
-//   itself: the reader sees a list that does not contain the name they came for.
-// nothing at all → null, and the app opens as the real app does.
-function kitResolveState() {
-  let raw = null;
-  try { raw = new URLSearchParams(window.location.search).get('state'); } catch (e) { return null; }
-  const name = (raw || '').trim().toLowerCase();
-  if (!name) return null;
-  if (KIT_STATE_INDEX_NAMES.includes(name)) return { kind: 'index', name };
-  if (KIT_STATES_ACCEPTED.some((s) => kitIdsOf(s).includes(name))) return { kind: 'state', id: name };
-  return { kind: 'unresolved', name };
-}
-
-// A link someone can be handed. Framed in a hosted console, this page's own
-// address is not one anyone can open: the console is, and it addresses a
-// prototype by its URL hash (#<app>/<slug>), which a referrer never carries.
-// So when framed, rebuild the console's address with that hash and this page's
-// ?state= after it. Order of attempts: the parent's own hash (same origin),
-// else the referrer plus the app and slug read from this page's path
-// (.../app/<app>/<slug>/<file>). Unframed, or if neither works, this page's own
-// address.
-function kitStateLink(id) {
-  const q = '?state=' + encodeURIComponent(id);
-  const own = window.location.origin + window.location.pathname + q;
-  if (window.parent === window) return own;
-  try {
-    const p = window.parent.location;
-    const route = p.hash.replace(/^#/, '').split('?')[0];
-    if (route) return p.origin + p.pathname + '#' + route + q;
-  } catch (e) {}
-  try {
-    const m = window.location.pathname.match(/\/app\/([^/]+)\/([^/]+)\/[^/]*$/);
-    if (m && document.referrer) {
-      const u = new URL(document.referrer);
-      return u.origin + u.pathname + '#' + m[1] + '/' + m[2] + q;
-    }
-  } catch (e) {}
-  return own;
-}
-
-Object.assign(window, { buildStatesBase, kitResolveState, kitStateLink });

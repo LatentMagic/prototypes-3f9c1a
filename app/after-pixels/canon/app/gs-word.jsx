@@ -8,6 +8,13 @@
 
 // ---- The model: the record's lines read as guesses (with the engine's marks) and the hint, in the order they came. ----
 // The engine's marking: greens first, then each remaining letter of the answer lights at most one amber, left to right.
+import React from 'react';
+import { DS, useGs, GS_SESSIONS } from './gs-data.jsx';
+import { GsMoves, gsShareText } from './gs-session.jsx';
+import { LbResult, LbShare } from './gs-library.jsx';
+import { GsNextLink } from './gs-pass-library.jsx';
+import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
+
 const wdScore = (word, answer) => {
   const w = word.split(''); const a = answer.split(''); const marks = w.map(() => 'miss'); const left = {};
   a.forEach((ch, i) => { if (w[i] === ch) marks[i] = 'hit'; else left[ch] = (left[ch] || 0) + 1; });
@@ -61,7 +68,7 @@ const WdSessBody = ({ s }) => <>
 </>;
 
 // The head carries no result: the game's part has it (as Escape's).
-const registerWord = () => {
+export const registerWord = () => {
   GS_SESSION_BODY.word = WdSessBody;
   GS_SESSION_QUIET.word = (s) => ({ label: s.game, h1: 'No. ' + s.number });
 };
@@ -79,7 +86,7 @@ const WdNowResult = ({ s }) => { const r = wdResult(s);
   return r.tone === 'live'
     ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
     : <p className={'es-vd is-' + (r.tone === 'ok' ? 'ok' : 'over')}>{r.word}</p>; };
-const WdNow = ({ c, done }) => {
+export const WdNow = ({ c, done }) => {
   const gs = useGs(); const sid = done ? c.today : c.liveSid; const s = GS_SESSIONS[sid];
   const ev = React.useMemo(() => wdRead(s).events, [s]);
   const gsv = ev.filter((e) => e.kind === 'guess'); const last = gsv[gsv.length - 1];
@@ -105,4 +112,3 @@ const WdNow = ({ c, done }) => {
       {done && <GsNextLink />}
     </div></section>);
 };
-Object.assign(window, { wdRead, wdScore, WdBoard, wdResult, WdNow });

@@ -2,13 +2,18 @@
 // After Pixels — review settings in Config (PROTOTYPE AID). Published as
 // window.ConfigExtra; reads and writes the app through window.gsApi.
 // ============================================================================
-const ConfigExtraBase = () => {
+import React from 'react';
+import { GS_DAY0 } from './gs-billing.jsx';
+import { ConfigGroup, ConfigRow } from './config.jsx';
+import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
+
+export const ConfigExtraBase = () => {
   const api = window.gsApi || {};
   const r = api.review || {};
   const sub = api.sub || {};
   const [, bump] = React.useState(0);
   const set = (fn) => { fn(); setTimeout(() => bump((n) => n + 1), 0); };
-  const { ConfigGroup: Group, ConfigRow: Row } = window;
+  const Group = ConfigGroup; const Row = ConfigRow;
   const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
   // Changing the subscription signs in, so the demo bar moves with it.
   // This edition: one pick over the old week (in progress), today (a free account's not played) and ed (the finished play).
@@ -53,7 +58,7 @@ const ConfigExtraBase = () => {
           'The finished play when This edition is Average or nothing is picked.')}
       </Group>
 
-      {window.GsBarrowConfigRow ? <Group title="The Barrow of Hollowmere"><window.GsBarrowConfigRow /></Group> : null}
+      {GsBarrowConfigRow ? <Group title="The Barrow of Hollowmere"><GsBarrowConfigRow /></Group> : null}
 
       <Group title="Pass changes">
         {R('Pass changes', r.passFail ? 'fail' : 'work', (v) => set(() => api.setReview({ passFail: v === 'fail' })), o([['work', 'Work'], ['fail', 'Fail']]),
@@ -65,4 +70,3 @@ const ConfigExtraBase = () => {
   );
 };
 
-Object.assign(window, { ConfigExtraBase });

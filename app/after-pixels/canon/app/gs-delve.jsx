@@ -8,6 +8,14 @@
 
 // SAMPLE: the stats a check adds are read from the records (Bryn Str +3, Dex +1, Wis 0; Wren Dex +3, Int +1, Wis +1, Str 0);
 // Con and Cha, the abilities and the starting gear are invented. The Warren's carry limit is three.
+import React from 'react';
+import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
+import { GsMoves, gsShareText } from './gs-session.jsx';
+import { LbResult, LbShare } from './gs-library.jsx';
+import { DV_NEXT } from './gs-delve-library.jsx';
+import { GsNextLink } from './gs-pass-library.jsx';
+import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
+
 const DL_CARRY = 3;
 const DL_HEROES = {
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
@@ -193,7 +201,7 @@ const DlBody = ({ s }) => {
 // session page's ending word as its result and the route at the card's size in place of the line and bar. No sheet, no held roll.
 // KEEP: every die is a button that opens the session page with that roll held, as Escape's doors open their lock.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and its Pass line.
-const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, noNext, children }) => {
+export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, noNext, children }) => {
   const gs = useGs(); const sid = wk.end ? sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
   return (
@@ -212,11 +220,22 @@ const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], nex
         {next && <span className="gs-muted">{next}</span>}
       </div>
       {children}
-      {m.end !== 'live' && !noNext && window.GsNextLink && <window.GsNextLink />}
+      {m.end !== 'live' && !noNext && GsNextLink && <GsNextLink />}
     </section>
   );
 };
 
+
+
+
+// ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx). The head names the run's setting. ----
+export const registerDelve = () => {
+  GS_SESSION_BODY.delve = (p) => <DlBody key={p.sid} {...p} />;
+  GS_SESSION_QUIET.delve = (s, ed) => ({ label: s.game, h1: (ed && ed.title) || s.setting || s.game });
+};
+
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
 // (every room, going back three times, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
@@ -241,11 +260,4 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, end: 'overrun', result: 'Too
   ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'HP 3/11'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12'],
   ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 1/11']] };
-
-// ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx). The head names the run's setting. ----
-const registerDelve = () => {
-  GS_SESSION_BODY.delve = (p) => <DlBody key={p.sid} {...p} />;
-  GS_SESSION_QUIET.delve = (s, ed) => ({ label: s.game, h1: (ed && ed.title) || s.setting || s.game });
-};
-
-Object.assign(window, { DlNow, dlBuild, dlSheet, dlWord, dlTone, DlDie, DlResult });
+}

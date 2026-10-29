@@ -5,8 +5,15 @@
 // ============================================================================
 
 // This week's play: in progress, else the finished play Config picks (This edition: Hard; Escape: par), else the seeded one.
-const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
-const esFinished = (gs) => gsEdPick('escape', gs) || ES_SIDS[gs.review.escape] || 'escape-week';
+import React from 'react';
+import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs } from './gs-data.jsx';
+import { GsMoves, gsShareText } from './gs-session.jsx';
+import { LbResult, LbShare } from './gs-library.jsx';
+import { GsNextLink } from './gs-pass-library.jsx';
+import { GS_SESSION_BODY } from './registry.js';
+
+export const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
+export const esFinished = (gs) => gsEdPick('escape', gs) || ES_SIDS[gs.review.escape] || 'escape-week';
 const esSid = (gs) => (gs.review.week === 'live' ? 'escape-live' : esFinished(gs));
 
 // ---- The model: the record's lines read as locks, each with its tries and hints in order. A typed lock answers Open or
@@ -192,7 +199,7 @@ const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 // ---- The now card, once this week's room is played or started: the store's frame (label, title, result at the right, Share, the
 // record link, the next room, and once finished "See what's out for you to play"), with the verdict as its result and the
 // session page's line at the card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
-const EsNow = ({ label, title, next, noNext, children }) => {
+export const EsNow = ({ label, title, next, noNext, children }) => {
   const gs = useGs(); const sid = esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
   const open = (lock) => gs.go('session', lock ? { id: sid, lock } : { id: sid });
   return (
@@ -217,6 +224,5 @@ const EsNow = ({ label, title, next, noNext, children }) => {
 
 // ---- Hooks into the app: the session page's body (app/gs-session.jsx; the head is the shared GsSessHead), and the Pass holder's now card
 // (PzNow in gs-pass-library.jsx). A free player's first-room card reads EsNow in app/gs-pass-library.jsx (CprFirst). ----
-const registerEscape = () => { GS_SESSION_BODY.escape = EsSessBody; };
+export const registerEscape = () => { GS_SESSION_BODY.escape = EsSessBody; };
 
-Object.assign(window, { esSid, esBuild, EsNow, EsLine, EsResult });

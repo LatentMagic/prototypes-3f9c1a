@@ -5,10 +5,32 @@
 // Each page body is canon's composition with the first-part card (CprFirst) or the design system's Needs the Pass card (LbNeedsPass)
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 // Canon's library pages for the games a Pass holder still gets them for: copied from GS_LIBRARY in registerPassLibrary().
+import React from 'react';
+import { useGs, DS, GS_SESSIONS, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsTodayPlayed, gsRhythm, gsForms, GS_RHYTHMS } from './gs-data.jsx';
+import { useGsPart, GsPart } from './gs-site.jsx';
+import { GsTile } from './gs-parts.jsx';
+import { gsShareText } from './gs-session.jsx';
+import { GS_PAGES } from './gs-game.jsx';
+import { LbResult, LbShare, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch, LbRunPass, lbRunOf, lbFrozen, LbRun, lbNow, lbStreak, lbPast, LbTools, LbChoice } from './gs-library.jsx';
+import { DP_IDS } from './gs-where-chain-salvage.jsx';
+import { CB_ACH, CB_BADGES, cbRecap, cbShareLines } from './gs-casebook-data.jsx';
+import { cbStatus, cbGo } from './gs-casebook.jsx';
+import { DV_FIRST, dvRecap, DV_LIVE, dvBar, DV_DONE, dvStatus, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
+import { PZ, pzRun } from './gs-puzzles-library.jsx';
+import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
+import { GS_LIB_READY, gsFind, GS_KINDS, gsKind } from './gs-discover.jsx';
+import { phVisible, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } from './gs-history.jsx';
+import { PgeListPage } from './gs-editions.jsx';
+import { useCpr, cprFirstState, CprPassEnd, cprEditions, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
+import { EsNow } from './gs-escape.jsx';
+import { WdNow } from './gs-word.jsx';
+import { DlNow } from './gs-delve.jsx';
+import { GS_LIBRARY } from './registry.js';
+
 const CPR_SHIP_LIB = {};
 
 // The link under a finished daily or weekly game: Library as it is, New for you on top, never filtered.
-const GsNextLink = () => {
+export const GsNextLink = () => {
   const gs = useGs(); if (gs.view === 'out') return null;
   return <div className="gs-pu-nextlink"><DS.TextLink onClick={() => gs.go('library')}>See what’s out for you to play</DS.TextLink></div>;
 };
@@ -18,35 +40,14 @@ const GsNextLink = () => {
 // One edition each so far: Run 1 and Room 1 are each the free first edition and the current
 // one, so these cards print the same recaps as the Pass holder's.
 const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
-const CPR_FIRST = {
-  delve: (gs) => ({
-    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, weekly: true,
-    none: 'The game’s very first run, the same for everyone. Play it free.',
-    live: dvRecap(DV_LIVE), liveBar: dvBar(DV_LIVE),
-    done: dvRecap(DV_DONE), doneBar: dvBar(DV_DONE),
-    result: dvStatus(DV_DONE), share: gsShareText(GS_SESSIONS['delve-first']), rec: 'See every roll', open: () => gs.go('session', { id: 'delve-first' }), play: () => gs.play('Delve') }),
-  escape: (gs) => { const x = cprEscFirst(); return {
-    label: 'THE FIRST ROOM · FREE', title: x.title, weekly: true,
-    none: 'The game’s very first room, the same for everyone. Play it free.',
-    live: PZ.escape.live.line,
-    done: PZ.escape.done.line,
-    result: PZ.escape.done.st, share: gsShareText(GS_SESSIONS['escape-week']), rec: 'See every move', open: () => gs.go('session', { id: 'escape-week' }), play: () => gs.play('Escape') }; },
-  // The Barrow: Chapter 1's card. A Pass holder's reads A QUEST, a free player's keeps its free label. Finished, it shows the
-  // chapter's now line (the record holds no recap of its own) and no bar.
-  barrow: (gs) => ({
-    label: gs.view === 'pass' ? GS_PAGES.barrow.week.label : 'CHAPTER 1 · FREE', title: BW_CH1.title,
-    none: BW_CH1.line,
-    done: BW_CH1.line,
-    result: { kind: 'ok', label: 'Quest complete' }, share: gsShareText(GS_SESSIONS['gs-pu-barrow-ch1']), rec: 'See every turn', open: () => gs.go('session', { id: 'gs-pu-barrow-ch1' }),
-    play: () => gs.playReq({ kind: 'edition', e: bwEds(gs)[1] }), over: true }),
-};
+let CPR_FIRST;
 const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none' && window.EsNow) return <EsNow label={f.label} title={f.title} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
+  if (id === 'escape' && st !== 'none' && EsNow) return <EsNow label={f.label} title={f.title} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none' && window.DlNow) return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
+  if (id === 'delve' && st !== 'none' && DlNow) return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-muted gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? <span className="gs-muted gs-pu-soon">Chapter 3: coming soon</span> : null;
@@ -87,7 +88,7 @@ const CprFirst = ({ id }) => {
 // A game with editions passes its edition word; a standalone (36,000 Summers Ago) passes none, so the card reads "Last played"
 // and "Play the whole game." The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
 const cprIso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-const LbNeedsPass = ({ id, had, ach, access }) => {
+export const LbNeedsPass = ({ id, had, ach, access }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const items = ach || [];
   const word = cprEditions(id) && g.ed ? g.ed[0] : undefined; const words = word ? g.ed[1] : undefined;
   let record = null;
@@ -220,9 +221,8 @@ const cprPzLibrary = (id) => () => {
 // and the row's line says what that play left: in progress, done, or what is ready next. A game whose next play needs the Pass
 // keeps its last-play date. One date form (phWhen). ----
 const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
-// A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (proposed, not ratified).
-const CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', delve: 'Your free run is ready' };
-const CPR_PASS_READY = { casebook: 'Case 1 is ready', delve: 'This week’s run is ready' };
+let CPR_FREE_READY;
+let CPR_PASS_READY;
 const gsLibRow = (gs, k) => {
   const pass = gs.view === 'pass';
   if (GS_GAMES[k].added) return cprRow(pass ? GS_LIB_READY[k] : 'Pass only', null, '', 0);
@@ -253,7 +253,7 @@ const cprNewFor = (gs, k) => {
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
   return false;
 };
-const GsLibrary = () => {
+export const GsLibrary = () => {
   const gs = useGs(); useCpr();
   const [q, setQ] = React.useState(''); const [cat, setCat] = React.useState(gs.route.kind || 'all'); const [sort, setSort] = React.useState('last');
   const [rhy, setRhy] = React.useState(gs.route.rhythm || 'all');
@@ -277,12 +277,12 @@ const GsLibrary = () => {
     <main className="gs-wrap gs-main">
       <h1 className="gs-h1">Library</h1>
       <div className="lb-alllay" ref={lay}>
-        <window.LbTools>
+        <LbTools>
           <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
           <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
           <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
           <LbChoice label="Order" value={sort} opts={[['last', 'Last played'], ['az', 'A to Z']]} onPick={setSort} />
-        </window.LbTools>
+        </LbTools>
         <div className="gs-pu-libbody">
           {wait ? <GsPart label="Loading games" /> : !ids.length ? empty : fresh.length ? <>
             <section className="gs-pu-libgrp"><DS.CardRow title="New for you" kind="tiles">{fresh.map(tile)}</DS.CardRow></section>
@@ -308,7 +308,7 @@ const CprPzNow = ({ c, done, none, id }) => {
       </div>
     </section>
   );
-  const lines = done && window.gsShareText ? window.gsShareText(GS_SESSIONS[c.today]) : null;
+  const lines = done && gsShareText ? gsShareText(GS_SESSIONS[c.today]) : null;
   return (
     <section className="lb-card">
       <div className="lb-top">
@@ -328,7 +328,7 @@ const CprPzNow = ({ c, done, none, id }) => {
     </section>
   );
 };
-const CbNow = ({ c }) => {
+export const CbNow = ({ c }) => {
   const gs = useGs();
   return (
     <section className="lb-card" style={{ gridColumn: '1 / -1' }}>
@@ -351,15 +351,42 @@ const CbNow = ({ c }) => {
 
 // The now card of a library game page. Daily Word's and Escape's own cards (WdNow in gs-word.jsx, EsNow in gs-escape.jsx) take it once
 // there is a play, Word's first; every other card is CprPzNow.
-const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
+export const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
   : props.id === 'escape' && !props.none ? <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />
   : <CprPzNow {...props} />);
 
 // Takes the snapshot, then replaces the game pages: main.jsx calls it after every earlier file has registered its own.
-const registerPassLibrary = () => {
+export const registerPassLibrary = () => {
   Object.assign(CPR_SHIP_LIB, GS_LIBRARY);
   Object.assign(GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
   ['word', 'groups', 'mystery', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = cprPzLibrary(id); });
 };
 
-Object.assign(window, { LbNeedsPass, GsLibrary, gsLibRow, PzNow, CbNow, GsNextLink });
+// Load-time code, run by main.jsx in index.html's old tag order.
+export function initGsPassLibrary() {
+CPR_FIRST = {
+  delve: (gs) => ({
+    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, weekly: true,
+    none: 'The game’s very first run, the same for everyone. Play it free.',
+    live: dvRecap(DV_LIVE), liveBar: dvBar(DV_LIVE),
+    done: dvRecap(DV_DONE), doneBar: dvBar(DV_DONE),
+    result: dvStatus(DV_DONE), share: gsShareText(GS_SESSIONS['delve-first']), rec: 'See every roll', open: () => gs.go('session', { id: 'delve-first' }), play: () => gs.play('Delve') }),
+  escape: (gs) => { const x = cprEscFirst(); return {
+    label: 'THE FIRST ROOM · FREE', title: x.title, weekly: true,
+    none: 'The game’s very first room, the same for everyone. Play it free.',
+    live: PZ.escape.live.line,
+    done: PZ.escape.done.line,
+    result: PZ.escape.done.st, share: gsShareText(GS_SESSIONS['escape-week']), rec: 'See every move', open: () => gs.go('session', { id: 'escape-week' }), play: () => gs.play('Escape') }; },
+  // The Barrow: Chapter 1's card. A Pass holder's reads A QUEST, a free player's keeps its free label. Finished, it shows the
+  // chapter's now line (the record holds no recap of its own) and no bar.
+  barrow: (gs) => ({
+    label: gs.view === 'pass' ? GS_PAGES.barrow.week.label : 'CHAPTER 1 · FREE', title: BW_CH1.title,
+    none: BW_CH1.line,
+    done: BW_CH1.line,
+    result: { kind: 'ok', label: 'Quest complete' }, share: gsShareText(GS_SESSIONS['gs-pu-barrow-ch1']), rec: 'See every turn', open: () => gs.go('session', { id: 'gs-pu-barrow-ch1' }),
+    play: () => gs.playReq({ kind: 'edition', e: bwEds(gs)[1] }), over: true }),
+};
+// A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (proposed, not ratified).
+CPR_FREE_READY = { escape: 'Your free room is ready', barrow: 'Chapter 1 is ready', delve: 'Your free run is ready' };
+CPR_PASS_READY = { casebook: 'Case 1 is ready', delve: 'This week’s run is ready' };
+}
