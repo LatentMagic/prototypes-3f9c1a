@@ -13,7 +13,7 @@
 
 ## Code
 
-- **Comments carry intent and mapping, and flag the special; nothing else** (`ARCHITECTURE.md` § Conventions). Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
+- **Comments carry intent and mapping, and flag the special; nothing else**. Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
 
 ## Replying in chat (not product copy)
 
@@ -44,7 +44,7 @@
 
 ## Ratification - the standing rule
 
-- **Never make a decision without the user ratifying it.** Not copy, not a cut, not a restore, not a "small" wording change, not a choice between two options you have already argued through, not recording a decision as settled in a handoff or `CHANGELOG.md`. **Present the options, state your recommendation, then stop and wait.**
+- **Never make a decision without the user ratifying it.** Not copy, not a cut, not a restore, not a "small" wording change, not a choice between two options you have already argued through, not recording a decision as settled in a handoff. **Present the options, state your recommendation, then stop and wait.**
 - Agreement to one thing is agreement to **that thing only**. Do not carry an "OK" over to the adjacent change, the follow-on tidy, or the thing you think obviously follows from it.
 - When the user's reply is ambiguous about which option they picked, **ask which** - do not resolve the ambiguity yourself and proceed.
 - **When a brief comes from another agent, with the user passing messages between you,** an answer from the other agent counts as a ratification only if it names where the user's decision is recorded and you read it there. Anything else, ask the user.
