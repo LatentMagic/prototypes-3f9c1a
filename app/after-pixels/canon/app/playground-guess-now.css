@@ -94,7 +94,18 @@
   .pgn-d2 .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
   .pgn-d2 .pgn-dx-head, .pgn-d2 .pgn-dx-res, .pgn-d2 .pgn-dx-pic { grid-area: all; }
   .pgn-d2 .pgn-dx-res { justify-self: end; }
+  /* KEEP (Joe): the picture is centred in the card's height, never pinned to its top: the tiles a size down (48px), the ring 30px
+     and the action row's top padding dropped, so there is room above and below the picture inside the streak card's height. */
+  .pgn-d2 .pgn-dx-pic { --t: 48px; gap: 8px; }
+  .pgn-d2 .pgn-ring { --r: 30px; }
+  .pgn-d2 .pgn-ring-n { font-size: 13px; }
+  .pgn-d2 .lb-foot { padding-top: 0; }
+  .pgn-d2 .pgn-dx-pic { transform: translateY(-4px); }
 }
+/* D2: the ring and the hint box either side of the card's centre line, so the ring never shifts as the hint's words change. */
+.pgn-d2 .pgn-dx-facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.pgn-d2 .pgn-dx-facts > .pgn-ring { justify-self: end; }
+.pgn-d2 .pgn-dx-facts > .pgn-hint { justify-self: start; }
 /* D3: the tiles centred in the main column; the ring over the hint box in a panel under the result, ruled off at its left. */
 .pgn-d3 .pgn-dx-body { grid-template-areas: "head res" "pic panel"; }
 .pgn-dx-panel { grid-area: panel; display: grid; justify-items: center; align-content: center; gap: 12px; padding-left: 24px; border-left: 1px solid var(--line); }
