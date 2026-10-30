@@ -3475,8 +3475,8 @@
     const gs = useGs();
     const g = GS_GAMES[id];
     const items = ach || [];
-    const word = g.ed[0];
-    const words = g.ed[1];
+    let word = g.ed[0];
+    let words = g.ed[1];
     let record = null;
     if (had) {
       const earned = lbAchEarned(lbAchView(items, access || lbAccess(gs, id), gs));
@@ -3487,6 +3487,10 @@
         const ch = Math.max(1, ...plays.map((p) => +p.ed.replace(/\D/g, "") || 1));
         record = { chapter: ch, played: eds.size, earned };
       } else record = { last: plays[0] ? cprIso(plays[0].at) : "", played: eds.size, earned };
+      if (!eds.size) {
+        word = void 0;
+        words = void 0;
+      }
     }
     return /* @__PURE__ */ React$1.createElement(DS.NeedsPass, { game: GS_NAME[id] || g.name, word, words, record, total: items.length, onGet: () => gs.go("pass"), style: id === "barrow" || id === "casebook" ? { gridColumn: "1 / -1" } : void 0 });
   };
@@ -9133,6 +9137,7 @@
   const gsSignInFor = (r) => ({ name: "signin", next: { ...r, prev: void 0, next: void 0 } });
   let GS_AUTH_ONLY;
   let GS_ROUTES;
+  const gsWithout = (list, r) => list.includes(r.name) && r.page !== "record";
   const GsScreen = ({ name }) => {
     const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name];
     if (More) return /* @__PURE__ */ React$1.createElement(More, null);
@@ -9453,7 +9458,7 @@
     }, [forcedMobile, showIndex]);
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
-    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && /* @__PURE__ */ React$1.createElement(GsTopBar, null), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !GS_LISTING.includes(route.name) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
+    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && /* @__PURE__ */ React$1.createElement(GsTopBar, null), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {

@@ -108,6 +108,9 @@ const gsSignInFor = (r) => ({ name: 'signin', next: { ...r, prev: undefined, nex
 let GS_AUTH_ONLY;
 
 let GS_ROUTES;
+// A route left without the top bar (GS_BARE) or without the play pop-up and demo bar (GS_LISTING). A game's library game page
+// and editions list (page: 'record') always carry both, so for a game in those lists only its product page goes without.
+const gsWithout = (list, r) => list.includes(r.name) && r.page !== 'record';
 
 const GsScreen = ({ name }) => {
   const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name]; // the games in app/gs-more-games.jsx
@@ -365,13 +368,13 @@ const KitApp = () => {
   const appTree = (
     <GsCtx.Provider value={gs}>
       <div className="gs-root" ref={rootRef}>
-        {GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && <GsTopBar />}
+        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && <GsTopBar />}
         {Cand && Cand.Screen
           ? <Cand.Screen api={gs} />
           : <GsArrival key={idx.current} name={route.name} quick={backNav.current} />}
         {(GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && <GsFooter />}
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
-        {!GS_LISTING.includes(route.name) && <>
+        {!gsWithout(GS_LISTING, route) && <>
           <GsPlayPopup />
           <GsDemoBar />
         </>}

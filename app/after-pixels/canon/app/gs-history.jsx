@@ -14,7 +14,7 @@ import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, Lb
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ALL, CB_DONE, CB_LIVE } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_ALL, dvStatus, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
+import { DV_ALL, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
 import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
 import { BW_T1, BW_REC1 } from './gs-barrow-library.jsx';

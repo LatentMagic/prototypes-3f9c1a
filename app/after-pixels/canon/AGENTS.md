@@ -30,6 +30,8 @@ A library game page is set by the game's file (`gs-puzzles-library.jsx` for the 
 
 Every game has editions. Its word for one is `GS_GAMES[gid].ed`, and its editions are `GS_EDITIONS[gid]` (`app/registry.js`), which the game's file registers beside its library game page; every page reads them through `edList` (`gs-history.jsx`). Never gate editions on a list of games: where a game differs (daily or weekly, chapters), the difference is data on the game. The editions list (`gs-editions.jsx`) opens from `LbHead`'s link on the library game page's route with `list: true`, routed in `gpGame` (`gs-player.jsx`).
 
+A route in `GS_BARE` (`main.jsx`) shows no top bar, and a route in `GS_LISTING` shows no play pop-up or demo bar. For a game's route, both hold only on its product page: its library game page and editions list (`page: 'record'`) always carry them, so Play works there.
+
 Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen shows is held once there and read from it, never retyped. Who can play what is each game's `access` in `GS_GAMES`, derived by `gsAccess` in `gs-data.jsx`. Each session's moves are `GS_SESSIONS[sid].lines`, titled by that session's own `listTitle`.
 
 ## Styles

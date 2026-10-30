@@ -84,11 +84,12 @@ const CprFirst = ({ id }) => {
 // ---- Needs the Pass: the design system's card wherever the play control would be and this player can't play without the Pass.
 // had: the player played this game with a Pass that has ended; otherwise the never-had form. Every slot is filled by the system's
 // rule (NeedsPass.prompt.md) from the game's facts and the player's own record: the play record (phVisible), never typed text.
-// Every game passes its edition word. The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
+// The card takes the game's edition word, except for a record whose plays belong to none of the game's editions (36,000 Summers
+// Ago's days): that card reads "Last played" and "Play the whole game." The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
 const cprIso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 export const LbNeedsPass = ({ id, had, ach, access }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const items = ach || [];
-  const word = g.ed[0]; const words = g.ed[1];
+  let word = g.ed[0]; let words = g.ed[1];
   let record = null;
   if (had) {
     const earned = lbAchEarned(lbAchView(items, access || lbAccess(gs, id), gs));
@@ -98,6 +99,7 @@ export const LbNeedsPass = ({ id, had, ach, access }) => {
     // The Barrow: the chapters in the record (Your chapters), the latest by number.
     if (id === 'barrow') { const ch = Math.max(1, ...plays.map((p) => +p.ed.replace(/\D/g, '') || 1)); record = { chapter: ch, played: eds.size, earned }; }
     else record = { last: plays[0] ? cprIso(plays[0].at) : '', played: eds.size, earned };
+    if (!eds.size) { word = undefined; words = undefined; }
   }
   return <DS.NeedsPass game={GS_NAME[id] || g.name} word={word} words={words} record={record} total={items.length} onGet={() => gs.go('pass')} style={id === 'barrow' || id === 'casebook' ? { gridColumn: '1 / -1' } : undefined} />;
 };
