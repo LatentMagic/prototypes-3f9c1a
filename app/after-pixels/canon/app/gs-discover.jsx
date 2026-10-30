@@ -70,7 +70,7 @@ export function initGsDiscover() {
 // The two picks: chosen by us, not by rule. Seed.
 GS_PICKS = [['casebook', 'ONE CASE'], ['word', 'FREE EVERY DAY']];
 // Just added: newest first. Seed (the app has no release dates yet).
-GS_ADDED = ['barrow', 'hunter', 'casebook', 'delve', 'escape'];
+GS_ADDED = ['barrow', 'casebook', 'delve', 'escape'];
 GS_PASS_BAND = 'The Pass opens every game here in full, and every new game on its release day.';
 // ---- Library. GsLibrary is in gs-pass-library.jsx. GS_LIB_READY: each game's ready line, read by its rows.
 GS_LIB_READY = { barrow: 'Chapter 1 is ready', word: 'Today’s word is ready', groups: 'Today’s groups are ready', mystery: 'Today’s case is ready', where: 'Today’s country is ready', chain: 'Today’s chain is ready', salvage: 'Today’s sea is ready', escape: 'This week’s room is ready', hunter: 'Today’s hunt is ready' };

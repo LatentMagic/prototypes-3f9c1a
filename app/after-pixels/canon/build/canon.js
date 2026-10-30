@@ -2899,7 +2899,7 @@
   let GS_ADDED;
   let GS_LIB_READY;
   function initGsDiscover() {
-    GS_ADDED = ["barrow", "hunter", "casebook", "delve", "escape"];
+    GS_ADDED = ["barrow", "casebook", "delve", "escape"];
     GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
   }
   const ES_SIDS = { under: "escape-week", par: "escape-par", over: "escape-over", hard: "escape-hard" };
