@@ -1,0 +1,40 @@
+#!/bin/sh
+# Keeps the After Pixels builds fresh: rebuilds and stages them when their inputs are in the commit.
+# Installed by `npm ci` / `npm install` (the `prepare` script points git's hooks path at .githooks).
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+AP=app/after-pixels
+staged=$(git diff --cached --name-only --diff-filter=ACMRD)
+
+# Design-system build inputs: its components, its Vite config, the lockfile.
+ds_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/design-system/components/.*\.jsx?|$AP/design-system/vite\.config\.mjs|package-lock\.json)$" || true)
+
+# Canon build inputs: its sources and config, the checks the build runs, and what it imports
+# (the design-system bundle, styles.css and the tokens styles.css pulls in).
+canon_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/canon/app/.*|$AP/canon/vite\.config\.mjs|tools/ap-(names|modules)\.mjs|$AP/design-system/(_ds_bundle\.js|styles\.css|tokens/.*)|package-lock\.json)$" || true)
+
+if [ -z "$ds_changed" ] && [ -z "$canon_changed" ]; then
+  exit 0
+fi
+
+if [ ! -d node_modules ]; then
+  echo "pre-commit: node_modules is missing, so the After Pixels builds cannot run. Run 'npm ci', then commit again." >&2
+  exit 1
+fi
+
+run() {
+  echo "pre-commit: $1"
+  if ! sh -c "$1" >/dev/null 2>&1; then
+    echo "pre-commit: '$1' failed, so the commit is refused. Run it to see the error." >&2
+    exit 1
+  fi
+}
+
+# A design-system rebuild always feeds the canon build, so the canon build runs after it.
+if [ -n "$ds_changed" ]; then
+  run "npm run build:ds"
+  git add "$AP/design-system/_ds_bundle.js"
+fi
+run "npm run build"
+git add -A "$AP/canon/build"

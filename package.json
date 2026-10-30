@@ -5,7 +5,8 @@
   "description": "Console for browsing LatentMagic prototypes (Circlists and others).",
   "scripts": {
     "start": "node server.js",
-    "check": "node tools/check.js",
+    "prepare": "git config core.hooksPath .githooks",
+    "check":"node tools/check.js",
     "diff": "node tools/diff.js",
     "build:ds": "vite build --config app/after-pixels/design-system/vite.config.mjs",
     "build": "node tools/ap-names.mjs --check && vite build --config app/after-pixels/canon/vite.config.mjs"
