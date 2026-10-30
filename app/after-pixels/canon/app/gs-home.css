@@ -36,10 +36,6 @@
 .gs-hero-cover { position: relative; }
 .gs-cover-over { position: absolute; left: 0; bottom: 0; padding: 16px; display: grid; gap: 4px; }
 .gs-cover-title { margin: 0; font: 700 34px/1.08 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
-.gs-track { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-.gs-track > i { height: 12px; background: var(--line); }
-.gs-track > i.is-on { background: var(--off-white); }
-.gs-track > i.is-threat { background: var(--error); }
 
 /* puzzles */
 
@@ -69,7 +65,6 @@
 .gs-row4 .mcp-crow-track { --n: 4 !important; }
 .gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
 .gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
-.gs-card-eq .gs-plain { align-content: start; }
 .gs-today-list > li + li { border-top: 1px solid var(--line); }
 .gs-gdaily { display: grid; gap: 16px; }
 .gs-gdaily .mcp-cover-art { aspect-ratio: 2 / 1; }

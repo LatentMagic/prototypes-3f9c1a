@@ -57,7 +57,7 @@ const CprDiscoverBody = ({ f, setF }) => {
     </section>
   </>;
 };
-// The page shell is a copy of canon's old Discover with CprDiscoverBody in place of DcBody (app/gs-discover.jsx).
+// Discover's page shell around CprDiscoverBody.
 // Loading and failed states as canon.
 export const GsGames = () => {
   const gs = useGs();

@@ -8,7 +8,7 @@
 import React from 'react';
 import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
-import { LbResult, LbActions } from './gs-library.jsx';
+import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
 export const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
@@ -148,18 +148,15 @@ const EsResult = ({ m, card }) => (
     <div className="es-rest">
       <div className="es-resh">
         {card ? <p className="es-h">{m.live ? 'Still inside' : 'Escaped'}</p> : <h2 className="es-h">{m.live ? 'Still inside' : 'Escaped'}</h2>}
-        {!m.live && <p className={'es-vd is-' + (m.over ? 'over' : 'ok')}><DS.Icon name={m.over ? 'close' : 'check'} size={20} />{esSpare(m)}</p>}
+        {!m.live && <p className={'gs-vd is-' + (m.over ? 'over' : 'ok')}><DS.Icon name={m.over ? 'close' : 'check'} size={20} />{esSpare(m)}</p>}
       </div>
       {!card && <p className="es-cap">{esFigs(m).join(' · ')}</p>}
     </div>
   </div>);
 
-// The now card's result, where the store's now card puts its result. In progress: the store's In progress.
-const EsVerdict = ({ m }) => (m.live
-  ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
-  // One word, coloured by how it stands against par (green under or on par, amber over); no icon. The line's "Out 28 min" and par
-  // tick give the minutes.
-  : <p className={'es-vd is-' + (m.over ? 'over' : 'ok')}>Escaped</p>);
+// The now card's result: one word, coloured by how it stands against par (green under or on par, amber over). The line's
+// "Out 28 min" and par tick give the minutes.
+const esNowResult = (m) => (m.live ? { kind: 'live', label: 'In progress' } : { kind: m.over ? 'bad' : 'ok', label: 'Escaped' });
 
 // ---- Lanes: one per lock, each a small line: its tries and hints left to right, running on to the lock's door at the right edge.
 // A typed lock's wrong try has no word under its mark. ----
@@ -195,21 +192,15 @@ const EsBody = ({ s, sid }) => {
 };
 const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 
-// ---- The now card, once this week's room is played or started: the store's frame (label, title, result at the right, the
-// button into the session and the next room), with the verdict as its result and the
-// session page's line at the card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
-export const EsNow = ({ label, title, next, children }) => {
+// ---- The now card, once this week's room is played or started: the shared frame (LbNowCard), with the session page's line at the
+// card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
+export const EsNow = ({ label, title, next, pass }) => {
   const gs = useGs(); const sid = esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
   const open = (lock) => gs.go('session', lock ? { id: sid, lock } : { id: sid });
   return (
-    <section className="lb-card es-now">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{label}</span><h2 className="mcp-t-sec">{title}</h2></div>
-        <EsVerdict m={m} />
-      </div>
+    <LbNowCard gid="escape" className="es-now" label={label} title={title} result={esNowResult(m)} open={() => open()} next={next} pass={pass}>
       <EsLine m={m} onSel={open} card />
-      <LbActions onClick={() => open()} slot={children || next} />
-    </section>
+    </LbNowCard>
   );
 };
 

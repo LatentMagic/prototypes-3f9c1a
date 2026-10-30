@@ -9,7 +9,7 @@
 // holds two games. false: both played, as the seed had them.
 import React from 'react';
 import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';
-import { lbWeekDone } from './gs-library.jsx';
+import { lbWeekDone, CprPassEnd } from './gs-library.jsx';
 
 export const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed', freeNew: true };
 let CPR_WORD_PLAY;
@@ -61,11 +61,8 @@ const CprPassPara = ({ className }) => {
   const gs = useGs(); const c = cprPassLine();
   return <p className={className}>{c.p1}{c.lead}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>;
 };
-// A sentence ending "…the Pass." with "the Pass" linked.
-export const CprPassEnd = ({ text, className }) => {
-  const gs = useGs(); const head = text.slice(0, -'the Pass.'.length);
-  return <p className={className}>{head}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>;
-};
+// CprPassEnd lives in gs-library.jsx (the now card's Pass line uses it); re-exported for this file's readers.
+export { CprPassEnd };
 
 // ---- The play box's label and line, in the game's own word. ----
 export const cprBoxCopy = (id) => {

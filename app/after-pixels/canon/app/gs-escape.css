@@ -20,14 +20,12 @@
 .es-rest { display: grid; gap: 8px; min-width: 0; }
 .es-resh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .es-h { margin: 0; font: 700 34px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
-.es-vd { margin: 0; display: flex; align-items: center; gap: 6px; font: 600 18px/1.35 var(--font-text); }
-.es-vd.is-ok { color: var(--success); } .es-vd.is-over { color: var(--warning); }
 /* the now card's result (EsResult card; unused while the card shows "Escaped" alone) */
 .es-res.is-card { flex: none; gap: 12px; }
 .es-res.is-card > .es-od { margin-right: 10px; }
 .es-res.is-card .es-resh { gap: 4px 12px; }
 .es-res.is-card .es-h { font: 700 20px/1.25 var(--font-heading); }
-.es-res.is-card .es-vd { font-size: 16px; }
+.es-res.is-card .gs-vd { font-size: 16px; }
 
 /* the line */
 .es-line { position: relative; width: 100%; }

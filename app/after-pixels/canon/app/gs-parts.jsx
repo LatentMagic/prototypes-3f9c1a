@@ -128,14 +128,6 @@ export const GsStat = ({ label, figure, line }) => (
     <p className="gs-muted">{line}</p>
   </DS.Card>
 );
-export const GsTrack = ({ label, value, max = 6, threat }) => (
-  <div className="gs-stack-sm">
-    <span className="gs-num-text gs-strong">{label} {value}/{max}</span>
-    <div className="gs-track" role="img" aria-label={label + ' ' + value + ' of ' + max}>
-      {Array.from({ length: max }, (_, i) => <i key={i} className={i < value ? (threat ? 'is-threat' : 'is-on') : ''} />)}
-    </div>
-  </div>
-);
 // Coming soon is the design system's SoonCard. A chapter of a game that is out carries label, play and its route.
 export const GsSoonCard = ({ g }) => {
   const gs = useGs(); const a = GS_ART[g.art] || {};

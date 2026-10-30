@@ -1,4 +1,4 @@
-/* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, top bar, demo bar, phone-wide press and cover rules.
+/* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, the result word, top bar, demo bar, phone-wide press and cover rules.
    Imported by canon.css in the order listed there; later files win ties. */
 
 /* ==== After Pixels product. Values come from the design system's tokens; layout
@@ -45,10 +45,6 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 @media (hover: hover) { .gs-ft-link:hover { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; } }
 @media (prefers-reduced-motion: reduce) { a, .gs-ft-link, .gs-ft-mail, .gs-support, .mcp-lnk, .mcp-gtile-open { transition: none; } }
 .gs-pz-item, .gs-hrow, .lb-tile, .lb-achbtn, .dc-chips > button, .lb-choice > button, .gs-plan { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-.gs-plain { list-style: none; padding: 0; display: grid; }
-.gs-plain > li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--line); }
-.gs-plain > li:first-child { border-top: 0; }
-.gs-reached { font-weight: 600; }
 
 /* grids */
 .gs-grid2, .gs-grid3 { display: grid; gap: 16px; }
@@ -75,6 +71,9 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .gs-tagbtn { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; color: inherit; }
 /* KEEP: The 44px target reaches past the tag without making its row taller, so a card with the Pass tag ends where the others do (2026-10-12) */
 .gs-tagbtn { margin-block: -9px; }
+/* The result as a plain coloured word: a now card's finished result (LbNowCard) and Escape's session result line. */
+.gs-vd { margin: 0; display: flex; align-items: center; gap: 6px; font: 600 18px/1.35 var(--font-text); }
+.gs-vd.is-ok { color: var(--success); } .gs-vd.is-over { color: var(--warning); }
 .gs-dot { width: 6px; height: 6px; background: var(--off-white); flex: none; }
 .gs-coverbtn, .gs-titlebtn { background: none; border: 0; padding: 0; margin: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; display: block; width: 100%; }
 .gs-coverbtn:active, .gs-titlebtn:active { opacity: .55; }

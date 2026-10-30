@@ -3,7 +3,6 @@ import { gsMis, GS_RESULT, GS_SESSIONS, GS_GAMES, gsGuessParts, gsEdPick, useGs,
 import { lbDate, lbMonth, lbAutoBadges, lbWeekDone, lbNow, lbStreak, LbHead, LbRun, lbRunOf, LbAch } from './gs-library.jsx';
 import { DP_PZ, dpSession, DP_IDS } from './gs-where-chain-salvage.jsx';
 import { phVisible, phAch, LbRecent, edPuzzle } from './gs-history.jsx';
-import { CprPassEnd } from './gs-pass-store.jsx';
 import { PzNow } from './gs-pass-library.jsx';
 import { esFinished } from './gs-escape.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
@@ -64,7 +63,7 @@ export const pzRun = (gs, id) => {
 };
 const pzLibrary = (id) => () => {
   const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
-  const [recent] = c.plays; const allLabel = 'See in History';
+  const { recent } = c; const allLabel = 'See in History';
   const never = gs.review.never === id || gsFresh(gs);
   const now = never ? null : lbNow(gs, id); // The broken streak changes yesterday's play only (phLog); today's head reads today's play.
   const none = !now;
@@ -80,7 +79,6 @@ const pzLibrary = (id) => () => {
         <LbRecent title={recent} allLabel={allLabel}
           empty={recent + ' appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && id !== 'escape' && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
     </main>
   );
 };
@@ -103,9 +101,9 @@ PZ = {
   word: {
     no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
-    title: 'Today’s word', next: 'Next word: tomorrow', links: ['See every guess', 'See your guesses so far'],
+    title: 'Today’s word', next: 'Next word: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
-    done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with one hint.', bar: ['Guess 3 of 6', 3, 6] }, plays: ['Your words', 'All words'],
+    done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with one hint.', bar: ['Guess 3 of 6', 3, 6] }, recent: 'Your words',
     ach: [{ k: 'w1', n: 'Solved', how: 'Solve a Daily Word.', by: (p) => p.status.kind === 'ok' },
       { k: 'w2', n: 'Solved in two', how: 'Solve a Daily Word in two guesses.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
       { k: 'w7', n: 'Seven days in a row', how: 'Solve Daily Word seven days running.', of: 7 }],
@@ -113,9 +111,10 @@ PZ = {
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
     ok: (i) => GS_RESULT.groups({ found: 4, mistakes: i === 1 ? 0 : i % 4 }), bad: GS_RESULT.groups({ found: 2 }),
-    title: 'Today’s groups', next: 'Next groups: tomorrow', links: ['See every try', 'See your tries so far'],
+    // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
+    title: 'Today’s groups', next: 'Next groups: tomorrow', tag: true,
     live: { line: 'You’ve found 2 of the 4 groups, with 1 mistake so far.', bar: ['2 of 4 groups', 2, 4] },
-    done: { st: { kind: 'ok', label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] }, plays: ['Your groups', 'All groups'],
+    done: { st: { kind: 'ok', label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] }, recent: 'Your groups',
     ach: [{ k: 'g1', n: 'Solved', how: 'Find all four groups in a Daily Groups.', by: (p) => p.status.kind === 'ok' },
       { k: 'g0', n: 'Solved with no mistakes', how: 'Find all four groups without a mistake.', by: (p) => p.status.label === GS_RESULT.groups({ found: 4, mistakes: 0 }) },
       { k: 'g7', n: 'Seven days in a row', how: 'Play Daily Groups seven days running.', of: 7 }],
@@ -123,9 +122,9 @@ PZ = {
   mystery: {
     no: (i) => 'Daily Mystery #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
-    title: 'Today’s case', next: 'Next case: tomorrow', links: ['See every question', 'See your questions so far'],
+    title: 'Today’s case', next: 'Next case: tomorrow',
     live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
-    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after two questions, and the weapon was wrong.' }, plays: ['Your cases', 'All cases'],
+    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after two questions, and the weapon was wrong.' }, recent: 'Your cases',
     ach: [{ k: 'm1', n: 'Case closed', how: 'Solve a Daily Mystery case.', by: (p) => p.status.kind === 'ok' },
       { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && s.q === 0 && !s.hints; } },
       { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7 }],
@@ -135,9 +134,9 @@ PZ = {
     weekly: true, count: 1, rooms: ['The Clockmaker’s Study'],
     no: (i) => PZ.escape.rooms[i] || PZ.escape.rooms[0], salt: 3, keep: {}, past: 'escape-week', today: 'escape-week', liveSid: 'escape-live',
     ok: () => GS_RESULT.escape({ min: 28, par: 'under par' }), bad: GS_RESULT.escape({ min: 28, par: 'under par' }),
-    title: 'The Clockmaker’s Study', next: 'Next room: Monday 12 October', links: ['See every move', 'See your moves so far'],
+    title: 'The Clockmaker’s Study', next: 'Next room: Monday 12 October',
     live: { line: 'You’ve made three moves.' },
-    done: { st: { kind: 'ok', label: GS_RESULT.escape({ min: 28, par: 'under par' }) }, line: 'You got out in 13 moves, with one hint.' }, plays: ['Your rooms', 'All rooms'],
+    done: { st: { kind: 'ok', label: GS_RESULT.escape({ min: 28, par: 'under par' }) }, line: 'You got out in 13 moves, with one hint.' }, recent: 'Your rooms',
     // The game's five achievements (verbatim). This room's finished play (1 hint, 2 wrong tries, under par) meets Beat the Clock only.
     ach: [{ k: 'e1', n: 'Clean Getaway', how: 'Escape without a hint or a wrong try.', by: (p) => { const s = GS_SESSIONS[p.sid]; return !!s && (s.figures || []).includes('No hints') && (s.figures || []).includes('No wrong tries'); } },
       { k: 'e2', n: 'Beat the Clock', how: 'Escape under par.', by: (p) => /under par/.test(p.status.label) },

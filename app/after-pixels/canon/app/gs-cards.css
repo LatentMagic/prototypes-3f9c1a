@@ -10,7 +10,6 @@
 .dc-chips > button:active { transform: scale(.97); }
 .dc-empty { display: grid; gap: 8px; justify-items: start; padding: 24px 16px; }
 .dc-empty .mcp-lnk { min-height: 44px; }
-.dc-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; width: 100%; }
 @container gs (min-width: 720px) {
   .dc-tools { grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); align-items: end; }
 }
