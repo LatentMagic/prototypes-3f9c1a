@@ -1,6 +1,7 @@
 // Builds the After Pixels design system: every components/**/*.{jsx,js} file, as one script
 // (_ds_bundle.js) that sets window.MCPGameStoreDesignSystem_ef1abd. Run with `npm run build:ds`.
 // React stays a page global. Consumers: canon (imports the bundle) and the .card.html / find.html pages (script tag).
+// It also rewrites the `components` list in _ds_manifest.json (which find.html reads) from the same exposed list.
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -55,6 +56,13 @@ const virtualEntry = {
     for (const chunk of Object.values(bundle)) {
       if (chunk.type === 'chunk') chunk.code = `/* @ds-bundle: ${JSON.stringify(header)} */\n${chunk.code}`;
     }
+  },
+  // The manifest's other keys (cards, tokens, fonts...) are kept as they are; it is one line, no trailing newline.
+  writeBundle() {
+    const file = path.join(root, '_ds_manifest.json');
+    const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
+    manifest.components = exposed;
+    fs.writeFileSync(file, JSON.stringify(manifest));
   },
 };
 

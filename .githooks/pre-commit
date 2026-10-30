@@ -7,15 +7,31 @@ cd "$(git rev-parse --show-toplevel)"
 AP=app/after-pixels
 staged=$(git diff --cached --name-only --diff-filter=ACMRD)
 
-# Design-system build inputs: its components, its Vite config, the lockfile.
-ds_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/design-system/components/.*\.jsx?|$AP/design-system/vite\.config\.mjs|package-lock\.json)$" || true)
+# Design-system build inputs: its components, its Vite config, the lockfile and package.json.
+DS_INPUTS="^($AP/design-system/components/.*\.jsx?|$AP/design-system/vite\.config\.mjs|package-lock\.json|package\.json)$"
+# Canon build inputs: its sources and config, the checks the build runs (tools/ap-*.mjs), what it imports
+# (the design-system bundle and every stylesheet styles.css pulls in), the lockfile and package.json.
+CANON_INPUTS="^($AP/canon/app/.*|$AP/canon/vite\.config\.mjs|tools/ap-[a-z-]+\.mjs|$AP/design-system/(_ds_bundle\.js|.*\.css)|package-lock\.json|package\.json)$"
 
-# Canon build inputs: its sources and config, the checks the build runs, and what it imports
-# (the design-system bundle and every stylesheet styles.css pulls in).
-canon_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/canon/app/.*|$AP/canon/vite\.config\.mjs|tools/ap-(names|modules)\.mjs|$AP/design-system/(_ds_bundle\.js|.*\.css)|package-lock\.json)$" || true)
+ds_changed=$(printf '%s\n' "$staged" | grep -E "$DS_INPUTS" || true)
+canon_changed=$(printf '%s\n' "$staged" | grep -E "$CANON_INPUTS" || true)
 
 if [ -z "$ds_changed" ] && [ -z "$canon_changed" ]; then
   exit 0
+fi
+
+# The builds read the working tree, so an input changed there but not staged would go into build/ without its
+# source going into the commit. Untracked files count: the design-system build bundles every component file.
+inputs="$CANON_INPUTS"
+[ -n "$ds_changed" ] && inputs="$DS_INPUTS|$CANON_INPUTS"
+unstaged=$( { git diff --name-only; git ls-files --others --exclude-standard; } | grep -E "$inputs" | sort -u || true)
+# The design-system build rewrites the bundle and manifest itself, so their unstaged state does not matter then.
+[ -n "$ds_changed" ] && unstaged=$(printf '%s\n' "$unstaged" | grep -vE "^$AP/design-system/(_ds_bundle\.js|_ds_manifest\.json)$" || true)
+if [ -n "$unstaged" ]; then
+  echo "pre-commit: these After Pixels build inputs have changes that are not staged, so the build would not match the commit:" >&2
+  printf '  %s\n' $unstaged >&2
+  echo "pre-commit: stage them (git add) or set them aside, then commit again." >&2
+  exit 1
 fi
 
 if [ ! -d node_modules ]; then
@@ -31,10 +47,19 @@ run() {
   fi
 }
 
+outputs="$AP/canon/build"
 # A design-system rebuild always feeds the canon build, so the canon build runs after it.
 if [ -n "$ds_changed" ]; then
   run "npm run build:ds"
-  git add "$AP/design-system/_ds_bundle.js"
+  outputs="$AP/design-system/_ds_bundle.js $AP/design-system/_ds_manifest.json $outputs"
 fi
 run "npm run build"
-git add -A "$AP/canon/build"
+git add -A $outputs
+
+# `git commit -- <paths>` commits from a temporary index (GIT_INDEX_FILE) and writes only those paths to the
+# real index, which git holds locked as index.lock until the commit lands. Stage the outputs there too, or the
+# real index keeps the old build and `git status` shows it staged against the new commit.
+real_lock="$(git rev-parse --git-path index.lock)"
+if [ -n "$GIT_INDEX_FILE" ] && [ -f "$real_lock" ] && [ "$(cd "$(dirname "$GIT_INDEX_FILE")" && pwd)/$(basename "$GIT_INDEX_FILE")" != "$(cd "$(dirname "$real_lock")" && pwd)/index.lock" ]; then
+  GIT_INDEX_FILE="$real_lock" git add -A $outputs
+fi
