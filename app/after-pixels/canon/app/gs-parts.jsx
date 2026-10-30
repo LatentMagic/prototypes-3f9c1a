@@ -202,7 +202,7 @@ const GsUserItems = ({ pick, role }) => {
 };
 // A menu opens at its control at every width: outside press and Escape close it,
 // and focus goes back to the control.
-const gsUseMenuDismiss = (open, setOpen, wrap) => React.useEffect(() => {
+export const gsUseMenuDismiss = (open, setOpen, wrap) => React.useEffect(() => {
   if (!open) return undefined;
   const back = () => { const b = wrap.current && wrap.current.querySelector('button'); b && b.focus(); };
   const onDoc = (e) => { if (wrap.current && !wrap.current.contains(e.target)) { setOpen(false); back(); } };

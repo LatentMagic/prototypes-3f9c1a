@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = Number(process.env.PORT) || 4321;
-const HOST = '127.0.0.1';
+const HOST = process.env.HOST || '127.0.0.1'; // HOST=0.0.0.0 serves to other devices on the network (a phone)
 const ROOT = __dirname;
 
 const MIME = {

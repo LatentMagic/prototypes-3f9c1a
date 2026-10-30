@@ -9125,6 +9125,65 @@
     }, [load]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
+  const PG = {};
+  const pgQuery = () => new URLSearchParams(window.location.search);
+  const pgActive = () => {
+    const id = pgQuery().get("pg");
+    return id && PG[id] ? PG[id] : null;
+  };
+  const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
+  const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
+  const pgSubs = /* @__PURE__ */ new Set();
+  const pgOpen = (o, url, arriving) => {
+    if (o.state) {
+      const had = url.searchParams.get("state") === o.state;
+      url.searchParams.set("state", o.state);
+      if (!(arriving && had) && window.kitGoState) window.kitGoState(o.state);
+    }
+    if (o.go) pgPending = o.go;
+  };
+  let pgPending = null;
+  const pgSet = (s, v) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set(s.key, v);
+    pgOpen(pgOption(s, v), url);
+    window.history.replaceState(null, "", url);
+    pgSubs.forEach((f) => f());
+  };
+  const PgPick = ({ s, v }) => {
+    const [open, setOpen] = React$1.useState(false);
+    const wrap = React$1.useRef(null);
+    gsUseMenuDismiss(open, setOpen, wrap);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pg-pick gs-menu-anchor", ref: wrap }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-pick-btn", "aria-label": s.label + ": " + pgOption(s, v).label, "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, pgOption(s, v).label), open && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop pg-pop", role: "menu", "aria-label": s.label }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", role: "menuitemradio", "aria-checked": o.value === v, className: "gs-menu-item", onClick: () => {
+      setOpen(false);
+      pgSet(s, o.value);
+    } }, o.label))));
+  };
+  const PgBar = () => {
+    const def = pgActive();
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    React$1.useEffect(() => {
+      if (pgPending) {
+        const f = pgPending;
+        pgPending = null;
+        f(window.gsApi);
+      }
+    });
+    React$1.useEffect(() => {
+      const url = new URL(window.location.href);
+      def.settings.forEach((s) => pgOpen(pgOption(s, pgValue(s)), url, true));
+      window.history.replaceState(null, "", url);
+    }, []);
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
+      const v = pgValue(s);
+      return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", "aria-pressed": v === o.value, onClick: () => pgSet(s, o.value) }, o.label))));
+    })));
+  };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
@@ -9458,7 +9517,7 @@
     }, [forcedMobile, showIndex]);
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
-    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && /* @__PURE__ */ React$1.createElement(GsTopBar, null), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
+    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : /* @__PURE__ */ React$1.createElement(GsTopBar, null)), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {

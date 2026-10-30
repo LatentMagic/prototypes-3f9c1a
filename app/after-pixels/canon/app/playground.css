@@ -1,0 +1,28 @@
+/* Playgrounds (prototype aid): the settings bar that replaces the top bar under ?pg=<id> (app/playground.jsx).
+   Imported by canon.css after gs-shell.css, whose .gs-top it builds on. */
+
+/* The top bar's frame (gs-shell.css .gs-top) with a dashed foot, so it never reads as the product's own bar. */
+.pg-top { border-bottom-style: dashed; border-bottom-color: var(--control-edge); }
+.pg-top-in { display: flex; align-items: center; gap: 12px; min-height: 64px; }
+.pg-title { display: none; font: 600 12px/1.2 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.pg-set { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 0; }
+.pg-label { display: none; font: 600 13px/1.2 var(--font-text); color: var(--muted); white-space: nowrap; }
+/* Phone: a button per setting, sharing the row, opening canon's menu (gs-shell.css .gs-pop) with no motion. */
+.pg-pick { flex: 1 1 0; min-width: 0; }
+.pg-pick-btn { width: 100%; min-height: 44px; padding: 0 28px 0 12px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); text-align: left;
+  font: 600 14px/1.2 var(--font-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+.pg-pop { left: 0; right: auto; min-width: 100%; }
+.pg-pop .gs-menu-item[aria-checked="true"] { background: color-mix(in srgb, var(--text) 10%, var(--popup)); }
+.pg-opts { display: none; }
+/* From 640px: each setting's options as buttons in a row (canon's choice buttons, gs-library-page.css .lb-choice, a size down). */
+@container gs (min-width: 640px) {
+  .pg-top-in { gap: 24px; }
+  .pg-title, .pg-label { display: block; }
+  .pg-set { flex: 0 1 auto; }
+  .pg-pick { display: none; }
+  .pg-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pg-opts > button { min-height: 36px; padding: 0 12px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 13px/1.2 var(--font-text); cursor: pointer; }
+  .pg-opts > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+}

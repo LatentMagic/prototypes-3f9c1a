@@ -88,6 +88,7 @@ import { buildStates } from './gs-pass-aids.jsx';
 import { registerEscape } from './gs-escape.jsx';
 import { registerWord } from './gs-word.jsx';
 import { registerDelve } from './gs-delve.jsx';
+import { PgBar, pgActive } from './playground.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -368,7 +369,7 @@ const KitApp = () => {
   const appTree = (
     <GsCtx.Provider value={gs}>
       <div className="gs-root" ref={rootRef}>
-        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && <GsTopBar />}
+        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? <PgBar /> : <GsTopBar />)}
         {Cand && Cand.Screen
           ? <Cand.Screen api={gs} />
           : <GsArrival key={idx.current} name={route.name} quick={backNav.current} />}

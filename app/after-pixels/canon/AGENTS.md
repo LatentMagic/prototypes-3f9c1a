@@ -84,6 +84,10 @@ Build from the design system's components (`DS.<Name>`) and canon's shared parts
 - Changing a component is a design-system change: do it only when the brief asks.
 </important>
 
+<important if="you are building or changing a playground (options for a page, compared under ?pg=)">
+A playground lives on its own `candidate/<name>` branch, never on `main`; `app/playground.jsx` (the settings bar that replaces the top bar under `?pg=<id>`) is the only part on `main`, and its header says how to build one.
+</important>
+
 <important if="you are writing a product string">
 Read `../design-system/guidelines/voice.md` first.
 </important>
