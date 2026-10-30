@@ -109,7 +109,7 @@ const ChlGuessChain = ({ p, across }) => {
       {p.g.map((t, i) => (across ? <ChlLoop key={i} t={t} across x={3 + i * 20} /> : <ChlLoop key={i} t={t} y={3 + i * 20} />))}
     </svg>);
 };
-const ChlC1 = ({ p }) => { const down = usePgSetting('orient') === 'v'; return (
+const ChlC1 = ({ p }) => { const down = usePgSetting('orient') !== 'h'; return (
   <ChlCard p={p} say={chlSay(p)} figure={<span className={'chl1-fig' + (down ? ' is-down' : '')}><ChlGuessChain p={p} across />{down && <ChlGuessChain p={p} />}</span>} board={
     <div className="chl1-board">{p.w.map((x, i) => (
       <React.Fragment key={i}>
@@ -196,7 +196,7 @@ export const initPlaygroundChainLofi = () => {
   const go = (k) => (gs) => gs.go('session', { id: 'pgc-' + k });
   pgRegister('chain-lofi', { title: 'Chain, low fi', settings: [
     { key: 'c', label: 'Concept', options: [{ value: 'c1', label: '1 Linked rows' }, { value: 'c2', label: '2 The chain across' }, { value: 'c3', label: '3 Inward' }] },
-    { key: 'orient', label: 'C1 guesses', options: [{ value: 'h', label: 'Horizontal' }, { value: 'v', label: 'Vertical' }] },
+    { key: 'orient', label: 'C1 guesses', options: [{ value: 'v', label: 'Vertical' }, { value: 'h', label: 'Horizontal' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'clean', label: 'Solved, none wrong', state: 'session-chain', go: go('clean') },
       { value: 'today', label: 'Solved, 2 wrong', state: 'session-chain', go: go('today') },

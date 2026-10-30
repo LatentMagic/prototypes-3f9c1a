@@ -9585,7 +9585,7 @@
     return /* @__PURE__ */ React$1.createElement("svg", { className: "chl1-hang " + (across ? "is-across" : "is-down"), width: across ? len : 20, height: across ? 20 : len, viewBox: across ? "0 0 " + len + " 20" : "0 0 20 " + len, role: "img", "aria-label": chlSay(p) }, p.g.map((t, i) => across ? /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, across: true, x: 3 + i * 20 }) : /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, y: 3 + i * 20 })));
   };
   const ChlC1 = ({ p }) => {
-    const down = usePgSetting("orient") === "v";
+    const down = usePgSetting("orient") !== "h";
     return /* @__PURE__ */ React$1.createElement(ChlCard, { p, say: chlSay(p), figure: /* @__PURE__ */ React$1.createElement("span", { className: "chl1-fig" + (down ? " is-down" : "") }, /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p, across: true }), down && /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p })), board: /* @__PURE__ */ React$1.createElement("div", { className: "chl1-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement("div", { className: "chl1-row is-" + x.state }, /* @__PURE__ */ React$1.createElement(ChlTiles, { x })), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChlJoint, null)))) });
   };
   const ChlDrop = ({ t }) => /* @__PURE__ */ React$1.createElement("div", { className: "chl2-drop is-" + (t.near ? "near" : t.res) }, /* @__PURE__ */ React$1.createElement("svg", { width: "14", height: "22", viewBox: "0 0 20 32", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(ChlLoop, { t })), /* @__PURE__ */ React$1.createElement("span", null, t.g, t.near ? " · " + t.near : ""));
@@ -9661,7 +9661,7 @@
     const go = (k) => (gs) => gs.go("session", { id: "pgc-" + k });
     pgRegister("chain-lofi", { title: "Chain, low fi", settings: [
       { key: "c", label: "Concept", options: [{ value: "c1", label: "1 Linked rows" }, { value: "c2", label: "2 The chain across" }, { value: "c3", label: "3 Inward" }] },
-      { key: "orient", label: "C1 guesses", options: [{ value: "h", label: "Horizontal" }, { value: "v", label: "Vertical" }] },
+      { key: "orient", label: "C1 guesses", options: [{ value: "v", label: "Vertical" }, { value: "h", label: "Horizontal" }] },
       { key: "play", label: "Play", options: [
         { value: "clean", label: "Solved, none wrong", state: "session-chain", go: go("clean") },
         { value: "today", label: "Solved, 2 wrong", state: "session-chain", go: go("today") },
