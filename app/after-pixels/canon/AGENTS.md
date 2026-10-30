@@ -24,9 +24,11 @@ Source is ES modules: `app/main.jsx` imports every `app/*.jsx`, and `npm run bui
 | `pass` / `subscribe`, `checkout`, `update-card` | `gs-pass-pricing.jsx` / `gs-billing.jsx` |
 | Auth, `username`, `connect`, `account` | `gs-auth.jsx`, `gs-username.jsx`, `gs-connect.jsx`, `gs-account.jsx` |
 | Top bar, footer, loaders, `legal`, `offline` | `gs-parts.jsx`, `gs-site.jsx` |
-| Where, Chain, Salvage; ten more Pass-only games | `gs-where-chain-salvage.jsx`; `gs-more-games.jsx` |
+| Where, Chain, Salvage; the Pass-only games with sample content | `gs-where-chain-salvage.jsx`; `gs-more-games.jsx` |
 
-A library game page is set by the game's file (`gs-puzzles-library.jsx` for the daily puzzles and Escape, `gs-casebook.jsx`, `gs-delve-library.jsx`, `gs-hunter-library.jsx`). `initGsPassLibrary()` then wraps every game but hunter per the player's view and adds the Barrow, and `initGsEditions()` wraps each game with editions to show its editions list. Card parts are in `gs-library.jsx`.
+A library game page is set by the game's file (`gs-puzzles-library.jsx` for the daily puzzles and Escape, `gs-casebook.jsx`, `gs-delve-library.jsx`, `gs-hunter-library.jsx`, `gs-more-games.jsx`). `registerPassLibrary()` then replaces the daily puzzles', Escape's, Casebook's and Delve's per the player's view, and adds the Barrow's. Card parts are in `gs-library.jsx`.
+
+Every game has editions. Its word for one is `GS_GAMES[gid].ed`, and its editions are `GS_EDITIONS[gid]` (`app/registry.js`), which the game's file registers beside its library game page; every page reads them through `edList` (`gs-history.jsx`). Never gate editions on a list of games: where a game differs (daily or weekly, chapters), the difference is data on the game. The editions list (`gs-editions.jsx`) opens from `LbHead`'s link on the library game page's route with `list: true`, routed in `gpGame` (`gs-player.jsx`).
 
 Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen shows is held once there and read from it, never retyped. Who can play what is each game's `access` in `GS_GAMES`, derived by `gsAccess` in `gs-data.jsx`. Each session's moves are `GS_SESSIONS[sid].lines`, titled by that session's own `listTitle`.
 

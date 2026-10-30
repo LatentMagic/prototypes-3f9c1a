@@ -32,7 +32,6 @@ const phDayLabel = (d) => { const n = Math.round((phDay0(d) - PH_TODAY) / 864e5)
 const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 const phShort = (d) => lbShort(lbDate(d));
 
-export let ED_GAMES;
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
 // the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
 // "Daily Word #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
@@ -95,7 +94,7 @@ export const phMatch = (hay, s) => {
   return phWords(s).every((w) => (/^\d+$/.test(w) ? hw.includes(w) : hw.some((h) => h.startsWith(w))));
 };
 let PH_META;
-const phMeta = () => { if (!PH_META) { PH_META = {}; ED_GAMES.forEach((k) => edList({ view: 'out', sub: {} }, k).forEach((e) => { PH_META[e.key] = e; })); } return PH_META; };
+const phMeta = () => { if (!PH_META) { PH_META = {}; GS_GAME_ORDER.forEach((k) => edList({ view: 'out', sub: {} }, k).forEach((e) => { PH_META[e.key] = e; })); } return PH_META; };
 // A date finds a play by the day it was played, or the day its edition came out (d).
 export const phHay = (gid, ed, title, d) => { const m = phMeta()[ed];
   return [GS_GAMES[gid].name, title || '', m ? m.n + ' ' + (m.title || '') : '', d ? lbDate(d) + ' ' + PH_MON[d.getMonth()] : ''].join(' ').toLowerCase(); };
@@ -187,7 +186,7 @@ const PhEmpty = () => {
 };
 const usePhList = (initial, k0) => {
   const gs = useGs(); const all = phVisible(gs); k0 = k0 || {};
-  const [g, setG0] = React.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : 'all'); const [pg, setPg] = React.useState(k0.pg || 0);
+  const [g, setG0] = React.useState(initial && (all.some((p) => p.gid === initial) || !!GS_GAMES[initial]) ? initial : 'all'); const [pg, setPg] = React.useState(k0.pg || 0);
   const games = GS_GAME_ORDER.filter((k) => all.some((p) => p.gid === k));
   const setG = (v) => { setG0(v); setPg(0); };
   const go = (x) => { setPg(x); gsScrollTop(); };
@@ -277,11 +276,11 @@ export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
 // When nothing matches, Clear all clears search and narrowing. Narrowed to a game when the library game page's "See in History" opens it.
 // Every row opens its session page. No Pass mark on any row or filter.
 // A row's title comes from its edition: edLabel ("Daily Word #212"), or edName in a one-game list ("#212").
-const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m && ED_GAMES.includes(p.gid)) return one ? edName(m) : edLabel(m);
+const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m) return one ? edName(m) : edLabel(m);
   return one || (p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== 'barrow') ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle; };
 // A row's parts: the edition's own name, and the game's name for a list that mixes games (ListRow joins them).
 const phParts = (p, one) => { const m = phMeta()[p.ed]; const name = GS_GAMES[p.gid].name;
-  const t = m && ED_GAMES.includes(p.gid) ? edName(m) : p.edTitle;
+  const t = m ? edName(m) : p.edTitle;
   // The Barrow names its chapter beside the game, as deployed (“The Barrow of Hollowmere · The Barrow of Hollowmere”).
   return { title: t, game: one ? undefined : p.gid === 'barrow' ? name : t.includes(name) ? undefined : name }; };
 export const GsHistory = () => {
@@ -336,7 +335,6 @@ export const GsHistory = () => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsHistory() {
 // ---- Editions ----
-ED_GAMES = ['word', 'groups', 'mystery', ...DP_IDS, 'escape', 'casebook', 'delve'];
 // A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
 // Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
 ED_NONE = { kind: 'none', label: 'Not played' };

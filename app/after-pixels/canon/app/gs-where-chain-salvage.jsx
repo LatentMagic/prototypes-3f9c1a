@@ -192,11 +192,11 @@ export let DP_STATES;
 export function initGsWhereChainSalvage() {
 Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage' });
 Object.assign(GS_GAMES, {
-  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
+  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
     blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily', '5 min'] }),
-  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
+  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], edLine: 'You get both ends. Find the words between.', daily: true, once: true,
     blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily', '10 min'] }),
-  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
+  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get thirty dives to find five wrecks.', daily: true, once: true,
     blurb: 'Five wrecks lie under today’s sea. Find them in thirty dives.', tags: ['Daily', '15 min'] }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);

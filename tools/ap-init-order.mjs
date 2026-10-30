@@ -39,11 +39,9 @@ const SAFE_METHODS = new Set([...ITER, 'join', 'includes', 'slice', 'concat', 'k
 const ACCEPTED = [
   // initGsGame reads GS_NAME.casebook; initGsWhereChainSalvage's Object.assign adds only where/chain/salvage.
   { reader: 'initGsGame', setter: 'initGsWhereChainSalvage', name: 'GS_NAME.*' },
-  // The splice finds 'mystery', which is in the base order; the ten more games are pushed after it.
+  // The splice finds 'mystery', which is in the base order; the games in gs-more-games.jsx are pushed after it.
   { reader: 'initGsWhereChainSalvage', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
-  // ED3 is built before the ten more games are pushed, so their editions lists are not in it.
-  { reader: 'initGsEditions', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
-  // CPR_STAGE and CPR_SHOWN are built before the ten more games are pushed; initGsMoreGames then extends them.
+  // CPR_STAGE and CPR_SHOWN are built before the games in gs-more-games.jsx are pushed; initGsMoreGames then extends them.
   { reader: 'initGsPassStore', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*', both: true },
 ];
 const accepted = (reader, setter, name, both = false) => ACCEPTED.some((x) => x.reader === reader && x.setter === setter && x.name === name && !!x.both === both);

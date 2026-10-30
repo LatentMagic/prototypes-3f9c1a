@@ -8,7 +8,7 @@
 // freeNew: the seeded free player hasn't played today's Daily Word or Escape's first room, so their New for you
 // holds two games. false: both played, as the seed had them.
 import React from 'react';
-import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsRhythm, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';
+import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';
 import { lbWeekDone } from './gs-library.jsx';
 
 export const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed', freeNew: true };
@@ -24,8 +24,6 @@ export const useCpr = () => {
 
 export let CPR_STAGE;
 export let CPR_SHOWN;
-// A game with editions (daily, weekly, chapters). A standalone such as 36,000 Summers Ago has none.
-export const cprEditions = (k) => k === 'barrow' || !!gsRhythm(k) || !!GS_GAMES[k].eds;
 export const cprLocked = (gs, k) => CPR_STAGE[k] === 'pass' && gs.view !== 'pass';
 let CPR_LAPSED;
 export const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
@@ -41,7 +39,7 @@ export const cprFirstState = (gs, id) => {
 };
 // Has this player played the game at all. The seed has no played flag per edition, so New for you reads this.
 export const cprPlayed = (gs, k) => {
-  if (GS_GAMES[k].added) return false; // the ten games in gs-more-games.jsx: nobody has played them
+  if (GS_GAMES[k].added) return false; // the games in gs-more-games.jsx: nobody has played them
   if (cprStore.get().newEds === 'most' && !gsFresh(gs)) return k === 'word';
   if (gsFresh(gs)) return false;
   if (k === 'barrow') { const s = cprFirstState(gs, 'barrow'); return s === 'live' || s === 'done'; }
@@ -71,7 +69,7 @@ export const CprPassEnd = ({ text, className }) => {
 
 // ---- The play box's label and line, in the game's own word. ----
 export const cprBoxCopy = (id) => {
-  const k = CPR_STAGE[id]; const u = (GS_GAMES[id].ed || ['edition'])[0]; const U = u.toUpperCase();
+  const k = CPR_STAGE[id]; const u = GS_GAMES[id].ed[0]; const U = u.toUpperCase();
   if (k === 'daily' && id === 'groups') return null; // not reached while Daily Groups is staged 'pass'; "a new groups" doesn't read, so canon's copy stays until worded
   if (k === 'daily') { const no = { word: 212, mystery: 64 }[id]; return ['TODAY’S ' + U + ' · #' + no, 'Free with an account. A new ' + u + ' every day.']; }
   if (k === 'first') return [id === 'barrow' ? 'CHAPTER 1' : 'THE FIRST ' + U, 'Free with an account. Every other ' + u + ' comes with the Pass.'];

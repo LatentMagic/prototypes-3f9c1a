@@ -43,25 +43,25 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
-// eds: the game has editions but no schedule (the Barrow's chapters), so it has an editions list without a Daily or Weekly filter.
+// edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 export const GS_GAMES = {
-  word: { access: 'daily', name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily', '10 min'] },
-  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
-  mystery: { access: 'daily', name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily', '10 min'] },
+  word: { access: 'daily', name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily', '10 min'] },
+  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
+  mystery: { access: 'daily', name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily', '10 min'] },
   escape: { access: 'first', name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly', 'About 30 min'] },
-  // Casebook is episodic: cases are its editions, with no schedule, so it lists them through eds.
-  casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], eds: true, once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
+  // Casebook is episodic: cases are its editions, with no schedule.
+  casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
   delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly', '25–40 min'] },
   // Chapters are its editions; a free player gets chapter 1. Sample content.
-  barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
+  barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
   hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
 };
 // Derives a game's free, first and its access tag ('FREE' | 'FIRST' | 'PASS', first in tags) from access.
 export const gsAccess = (g) => { g.free = g.access === 'daily'; g.first = g.access === 'first'; g.tags = [{ daily: 'FREE', first: 'FIRST', pass: 'PASS' }[g.access], ...g.tags.filter((t) => !['FREE', 'FIRST', 'PASS'].includes(t))]; return g; };
 Object.values(GS_GAMES).forEach(gsAccess);
 export const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
-// How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no editions). The Daily / Weekly filters use it.
+// How often a game releases an edition, read from its card tags: 'daily', 'weekly', or null (no schedule). The Daily / Weekly filters use it.
 export const gsRhythm = (k) => { const t = GS_GAMES[k].tags; return t.includes('Daily') ? 'daily' : t.includes('Weekly') ? 'weekly' : null; };
 export const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
 // Every earlier edition of every game that releases them can be played; the Pass decides who.

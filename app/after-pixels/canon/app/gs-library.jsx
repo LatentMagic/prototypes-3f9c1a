@@ -12,7 +12,7 @@ import { CB_LIVE } from './gs-casebook-data.jsx';
 import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
 import { dvStatus, DV_DONE, DV_LIVE } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
-import { ED3, pgeList } from './gs-editions.jsx';
+import { pgeList } from './gs-editions.jsx';
 
 export const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
@@ -47,8 +47,8 @@ export const LbBackTo = ({ gid }) => {
 // name and more: a seam for playgrounds (a test name, extra links).
 export const LbHead = ({ id, name, more }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const a = GS_ART[g.art] || {};
-  // Escape, Casebook and Delve: the way in to the game's editions (app/gs-editions.jsx).
-  const eds = !more && gs.view !== 'out' && ED3 && ED3.includes(id);
+  // Every game's way in to its editions (app/gs-editions.jsx), for a signed-in player.
+  const eds = !more && gs.view !== 'out';
   return (
     <section className="mcp-cover-head lb-head">
       <DS.Cover fill ground={a.ground} extend={a.extend}><span dangerouslySetInnerHTML={{ __html: a.svg || '' }} /></DS.Cover>

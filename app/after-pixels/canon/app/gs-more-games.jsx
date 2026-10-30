@@ -1,16 +1,18 @@
 // After Pixels — nine more games, all Pass-only.
 // Loads after gs-pass-store.jsx (reads CPR_STAGE, CPR_SHOWN) and before the other gs-pass-* files. main.jsx adds GS_MORE_IDS to its route lists.
-// Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, player page units,
+// Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, the product page card's unit (GP_CFG),
 // and its editions (GS_EDITIONS): SAMPLE titles and dates, newest first (edSample in gs-history.jsx); a daily's are numbered.
 import React from 'react';
-import { GS_ART, GS_SVG, GS_GAMES, gsAccess, GS_GAME_ORDER } from './gs-data.jsx';
+import { GS_ART, GS_SVG, GS_GAMES, gsAccess, GS_GAME_ORDER, gsRhythm, useGs } from './gs-data.jsx';
+import { LbHead, LbFreshNow } from './gs-library.jsx';
+import { LbNeedsPass } from './gs-pass-library.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
 import { GP_CFG, gpGame } from './gs-player.jsx';
 import { GS_LIB_READY } from './gs-discover.jsx';
-import { CPR_STAGE, CPR_SHOWN } from './gs-pass-store.jsx';
-import { edSample } from './gs-history.jsx';
-import { GS_EDITIONS } from './registry.js';
+import { CPR_STAGE, CPR_SHOWN, cprLocked } from './gs-pass-store.jsx';
+import { edSample, edList, edLabel } from './gs-history.jsx';
+import { GS_EDITIONS, GS_LIBRARY } from './registry.js';
 
 const cprStep = (b, rest) => <><b>{b}</b>{rest}</>;
 const GS_MORE = [
@@ -50,7 +52,7 @@ const GS_MORE = [
       ps: ['You get the floor plan, the guard rota and a crew of three. Decide who goes where and when. Something will slip, and you’ll have one move to fix it.', 'Your AI briefs you and plays the crew. The game engine runs the guards to the second. Pick your way in.'],
       ai: 'Briefs you on the job and plays your crew.', server: 'Runs the guards and the clock, and decides what each move does.' },
     chat: ['One floor plan, three crew, one way out.', 'Send Ines to the loading bay at 2.10.', ['Ines is in. The guard is early: he’s back at 2.14, not 2.20.', 'You have one move before he turns the corner.']] },
-  { k: 'winter', name: 'The Long Winter', category: 'ADVENTURE', eds: true, ed: ['chapter', 'chapters'], long: '45–60 min', units: 'chapters',
+  { k: 'winter', name: 'The Long Winter', category: 'ADVENTURE', ed: ['chapter', 'chapters'], long: '45–60 min', units: 'chapters',
     editions: [['Wolves at the Gate', '5 October'], ['The Frozen Mill', '28 September'], ['First Snow', '21 September']],
     blurb: 'Keep the settlement fed until the thaw.', ready: 'Chapter 1 is ready',
     art: ['indigo', 'bottom', '<rect width="160" height="120" fill="#1D1B3A"/><rect x="0" y="92" width="160" height="28" fill="#F2EBE0"/><rect x="58" y="60" width="44" height="32" fill="#D66847"/><path d="M52 62L80 38L108 62Z" fill="#E5A63B"/><circle cx="30" cy="30" r="4" fill="#A390B2"/><circle cx="130" cy="22" r="4" fill="#A390B2"/><circle cx="118" cy="48" r="4" fill="#A390B2"/>'],
@@ -59,7 +61,7 @@ const GS_MORE = [
       ps: ['Twelve families, one store of grain and a winter that came a month early. Each chapter is a stretch of weeks: who hunts, who mends, who goes without.', 'Your AI speaks for the settlement. The game engine keeps the stores, the weather and everyone’s strength. Open the grain store.'],
       ai: 'Speaks for the settlement and tells you how each week went.', server: 'Keeps the stores, the weather and everyone’s strength, and carries them between chapters.' },
     chat: ['What you ration now decides who sees the thaw.', 'Send the two eldest sons to hunt.', ['They come back on the third day with a deer and frostbitten hands.', 'Grain: 41 days. Firewood: 18 days.']] },
-  { k: 'farside', name: 'Far Side', category: 'LEARNING', eds: true, ed: ['mission', 'missions'], long: '30 min', units: 'missions',
+  { k: 'farside', name: 'Far Side', category: 'LEARNING', ed: ['mission', 'missions'], long: '30 min', units: 'missions',
     editions: [['Landing at Shackleton', '5 October'], ['Around the Far Side', '28 September'], ['Leaving Earth Orbit', '21 September']],
     blurb: 'Bring the crew home from behind the Moon.', ready: 'Mission 1 is ready',
     art: ['indigo', 'centre', '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="62" cy="66" r="38" fill="#F2EBE0"/><circle cx="128" cy="28" r="12" fill="#328A88"/><rect x="108" y="74" width="12" height="12" fill="#E5A63B"/>'],
@@ -97,6 +99,22 @@ const GS_MORE = [
     chat: ['Fit a part, set it going, see what moves.', 'Put the large gear on the left spindle and wind it.', ['The large gear turns the small one three times. The lock moves one notch.', 'Ten notches to go.']] },
 ];
 export const GS_MORE_IDS = GS_MORE.map((d) => d.k);
+// A game's library game page here, from the parts every game's is built from: the head (with the editions link), then the current
+// edition to play for a Pass holder, or Needs the Pass. Nobody has played these games, so there is no streak, achievement or play.
+// The card's label follows the schedule: TODAY, THIS WEEK, else the game's word ("A CHAPTER"), as Casebook's "A CASE".
+const MgLibrary = ({ id }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const e = edList(gs, id)[0]; const r = gsRhythm(id);
+  const label = r === 'daily' ? 'TODAY' : r === 'weekly' ? 'THIS WEEK' : 'A ' + g.ed[0].toUpperCase();
+  return (
+    <main key={gs.view} className="gs-wrap gs-main">
+      <LbHead id={id} />
+      <div className="lb-lay">
+        {cprLocked(gs, id) ? <LbNeedsPass id={id} access="none" />
+          : <LbFreshNow label={label} title={e.title || edLabel(e)} line={g.blurb} span onPlay={() => gs.playReq({ kind: 'edition', e })} />}
+      </div>
+    </main>
+  );
+};
 export const GS_MORE_SCREENS = {};
 
 // Load-time code, run by main.jsx in index.html's old tag order.
@@ -104,7 +122,7 @@ export function initGsMoreGames() {
 GS_MORE.forEach((d) => {
   const tags = [d.when, d.long].filter(Boolean);
   GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-  GS_GAMES[d.k] = gsAccess({ access: 'pass', name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags });
+  GS_GAMES[d.k] = gsAccess({ access: 'pass', name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
   GS_PAGES[d.k] = {
     rhythm: d.page.rhythm,
     box: { label: 'ONLY WITH THE PASS', heading: d.page.heading, session: null,
@@ -118,7 +136,8 @@ GS_MORE.forEach((d) => {
   GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
   GS_LIB_READY[d.k] = d.ready;
   GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
-  GP_CFG[d.k] = { units: d.units, run: null, strip: null, ends: null, recent: [] };
+  GS_LIBRARY[d.k] = () => <MgLibrary id={d.k} />;
+  GP_CFG[d.k] = { units: d.units };
   GS_GAME_ORDER.push(d.k);
   CPR_STAGE[d.k] = GS_GAMES[d.k].access;
   CPR_SHOWN.push(d.k);

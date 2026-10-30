@@ -20,8 +20,7 @@ import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
 import { phVisible, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } from './gs-history.jsx';
-import { PgeListPage } from './gs-editions.jsx';
-import { useCpr, cprFirstState, CprPassEnd, cprEditions, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
+import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
 import { DlNow } from './gs-delve.jsx';
@@ -85,16 +84,17 @@ const CprFirst = ({ id }) => {
 // ---- Needs the Pass: the design system's card wherever the play control would be and this player can't play without the Pass.
 // had: the player played this game with a Pass that has ended; otherwise the never-had form. Every slot is filled by the system's
 // rule (NeedsPass.prompt.md) from the game's facts and the player's own record: the play record (phVisible), never typed text.
-// A game with editions passes its edition word; a standalone (36,000 Summers Ago) passes none, so the card reads "Last played"
-// and "Play the whole game." The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
+// Every game passes its edition word. The card takes the now card's place and size; the Barrow's spans the row, as its chapter card does. ----
 const cprIso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 export const LbNeedsPass = ({ id, had, ach, access }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const items = ach || [];
-  const word = cprEditions(id) && g.ed ? g.ed[0] : undefined; const words = word ? g.ed[1] : undefined;
+  const word = g.ed[0]; const words = g.ed[1];
   let record = null;
   if (had) {
     const earned = lbAchEarned(lbAchView(items, access || lbAccess(gs, id), gs));
-    const plays = phVisible(gs).filter((p) => p.gid === id); const eds = new Set(plays.map((p) => p.ed));
+    // Editions played: the plays that belong to one of the game's editions (36,000 Summers Ago's days belong to none).
+    const keys = new Set(edList(gs, id).map((e) => e.key));
+    const plays = phVisible(gs).filter((p) => p.gid === id); const eds = new Set(plays.map((p) => p.ed).filter((k) => keys.has(k)));
     // The Barrow: the chapters in the record (Your chapters), the latest by number.
     if (id === 'barrow') { const ch = Math.max(1, ...plays.map((p) => +p.ed.replace(/\D/g, '') || 1)); record = { chapter: ch, played: eds.size, earned }; }
     else record = { last: plays[0] ? cprIso(plays[0].at) : '', played: eds.size, earned };
@@ -108,7 +108,6 @@ const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ?
 // never played, the never-had Needs the Pass card alone; played before the Pass ended, that card with the record. ----
 const CprCbLibrary = () => {
   const gs = useGs();
-  if (gs.route.list && !gs.route.sid) return <PgeListPage key="casebook" gid="casebook" />;
   if (gs.view === 'pass' || gs.route.sid) return <CPR_SHIP_LIB.casebook />;
   const had = gsLapsed(gs) && phVisible(gs).some((p) => p.gid === 'casebook');
   const ach = phAch(gs, 'casebook', CB_ACH);
@@ -126,7 +125,6 @@ const CprCbLibrary = () => {
 };
 const CprDvLibrary = () => {
   const gs = useGs();
-  if (gs.route.list && !gs.route.sid) return <PgeListPage key="delve" gid="delve" />;
   if (gs.view === 'pass') return <CPR_SHIP_LIB.delve />;
   const access = lbAccess(gs, 'delve'); const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
   const ach = phAch(gs, 'delve', DV_ACH);
@@ -148,7 +146,6 @@ const CprDvLibrary = () => {
 // Escape as a free first edition (staging): its first room's achievements are the ones a free player can earn.
 const CprEsLibrary = () => {
   const gs = useGs();
-  if (gs.route.list && !gs.route.sid) return <PgeListPage key="escape" gid="escape" />;
   if (gs.view === 'pass') return <CPR_SHIP_LIB.escape />;
   const c = PZ.escape; const lapsed = gsLapsed(gs);
   // The first room's achievements are the ones a free player can earn; Regular and Ten Rooms need more rooms (the Pass).
@@ -171,8 +168,6 @@ const CprEsLibrary = () => {
 // The Barrow, every view. Achievements and Your chapters read the chapter's record.
 const CprBwLibrary = () => {
   const gs = useGs(); useCpr(); const st = cprFirstState(gs, 'barrow');
-  // The chapters list sits inside the game's library route (gs-editions.jsx), as every game's does.
-  if (gs.route.list && !gs.route.sid) return <PgeListPage key="barrow" gid="barrow" />;
   const ach = phAch(gs, 'barrow', BW_ACH);
   return (
     <main key={cprKey(gs) + st} className="gs-wrap gs-main">
@@ -187,10 +182,9 @@ const CprBwLibrary = () => {
 };
 
 // ---- The daily games' Library pages: canon's (app/gs-puzzles-library.jsx pzLibrary), in every view, with "the Pass"
-// as the line's only link in place of the separate About the Pass. The editions list stays where gs-editions.jsx puts it. ----
+// as the line's only link in place of the separate About the Pass. ----
 const cprPzLibrary = (id) => () => {
   const gs = useGs(); const r = gs.route;
-  if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
   const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
   const [recent] = c.plays;
   const locked = cprLocked(gs, id); const had = locked && gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id);
@@ -241,12 +235,11 @@ const gsLibRow = (gs, k) => {
 };
 
 // ---- Library (route `library`): canon's search, filters and rows, with New for you on top and Your games under it.
-// New for you: games with editions whose current edition you haven't played, as tiles in one sideways row. A standalone never
-// goes in it. Not shown when there is nothing new. Every free player (Pass ended included) gets one Pass line under the list. ----
+// New for you: games whose current edition you haven't played, as tiles in one sideways row. Not shown when there is nothing new. Every free player (Pass ended included) gets one Pass line under the list. ----
 // New for you: only what the player can play now. A free player: today's free dailies not yet played and any
 // free first part not yet started. A Pass holder: as before.
 const cprNewFor = (gs, k) => {
-  if (!cprEditions(k) || cprLocked(gs, k)) return false;
+  if (cprLocked(gs, k)) return false;
   if (gs.view === 'pass') return !cprPlayed(gs, k);
   // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides.
   if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !gsTodayPlayed(gs)[k]);

@@ -1,24 +1,22 @@
 import React from 'react';
-import { GS_GAME_ORDER, gsRhythm, GS_GAMES, gsStartsOver, GS_ONCE_LINE, gsScrollTop, useGs, DS } from './gs-data.jsx';
+import { gsRhythm, GS_GAMES, gsStartsOver, GS_ONCE_LINE, gsScrollTop, useGs, DS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsNeedsPass } from './gs-session.jsx';
 import { lbShort, LbBack, LbTools, LbChoice, LbResult } from './gs-library.jsx';
 import { gsPromptText, GsCopyPrompt, GsHowLink, GsPrompt } from './gs-connect.jsx';
 import { edList, edName, edNeedsPass, phHay, phParse, phNorm, phMatch, PhPages, edLabel } from './gs-history.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_PAGES } from './gs-game.jsx';
 
-export let ED3;
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
 // Only the dailies go by number. A game whose editions are named scenarios shows the name alone, no number anywhere.
 const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== 'daily';
-let PGE_INFO;
-let PGE_LEN;
-let PGE_WORDNUM;
-const pgeRowTitle = (gid, e) => (PGE_WORDNUM.includes(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + ' ' + e.n + ' · ' + e.title : e.title && !pgeNoNum(gid) ? '#' + e.n + ' · ' + e.name : e.name);
+// A named edition carries the game's word and number beside its title: “Room 1 · The Clockmaker’s Study”. A daily's is its number.
+const pgeRowTitle = (gid, e) => (pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + ' ' + e.n + ' · ' + e.title : e.title ? '#' + e.n + ' · ' + e.name : e.name);
 const pgeAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
-const pgeInfo = (e) => ({ line: typeof PGE_INFO[e.gid] === 'string' ? PGE_INFO[e.gid] : '', len: PGE_LEN[e.gid], who: null });
-// A game with no schedule prints no edition date (Casebook, the Barrow).
-const pgeDated = (gid) => !GS_GAMES[gid].eds;
+// What an edition says about itself: the game's edLine (SAMPLE, gs-data.jsx), and how long a play takes (the product page's facts.long).
+const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || '', len: GS_PAGES[e.gid].facts.long, who: null });
+// Only a game with a schedule (gsRhythm) prints an edition's date.
+const pgeDated = (gid) => !!gsRhythm(gid);
 
 // ---- One game's editions, newest first, each once. No result: those are History's. ----
 // Played: a finished play. Not played, in progress and not finished carry no mark.
@@ -121,39 +119,14 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
   );
 };
 
-// The list sits inside the game's library route, as a case page does.
-export const registerEditions = () => {
-  ED3.forEach((id) => {
-    const L0 = GS_LIBRARY[id];
-    GS_LIBRARY[id] = () => { const gs = useGs(); const r = gs.route;
-      if (r.list && !r.sid) return <PgeListPage key={id} gid={id} />;
-      return <L0 />; };
-  });
-};
-
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsEditions() {
 // ============================================================================
-// After Pixels — a game's editions.
-// Every game that releases editions (gsRhythm): "Every word / room / case / run" under the library game page's title opens the list
-// (route { page: 'record', list: true }); each row opens the edition in a panel over the list, its prompt inside.
-// No route leads to one edition. The list is settled; the panel is not ratified yet.
-// What an edition says about itself is SAMPLE text (PGE_INFO). Loads after gs-history.jsx, before main.jsx.
+// After Pixels — a game's editions. Every game has them (its word for one: GS_GAMES[gid].ed).
+// "Every word / room / case / run" under the library game page's title opens the list (route { page: 'record', list: true },
+// routed in gpGame, gs-player.jsx); each row opens the edition in a panel over the list, its prompt inside.
+// No route leads to one edition. The list is settled; the panel is not ratified yet. The rows come from edList (gs-history.jsx).
 // ============================================================================
-ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
-// ---- SAMPLE: what an edition says about itself. The app holds only number, title and date. No source has a per-edition line
-// for the four story games, so their editions carry none. ----
-PGE_INFO = {
-  word: 'Five letters. Six guesses.',
-  groups: 'Sixteen words hide four groups. Find all four.',
-  mystery: 'One suspect, one weapon, one room. One accusation.',
-  where: 'You get six guesses to find the country.',
-  chain: 'You get both ends. Find the words between.',
-  salvage: 'You get thirty dives to find five wrecks.',
-};
-PGE_LEN = { word: '10 min', groups: '10 min', mystery: '10 min', where: '5 min', chain: '10 min', salvage: '15 min', escape: 'About 30 min', casebook: '25–40 min', delve: '25–40 min', barrow: 'Several sessions' };
-// Escape, Casebook, Delve and the Barrow name an edition by its word and number beside its title: “Room 1 · The Clockmaker’s Study”.
-PGE_WORDNUM = ['escape', 'casebook', 'delve', 'barrow'];
 // A finished edition of a game played once: what it was, and the played-once line (GS_ONCE_LINE).
 pgeOnceText = GS_ONCE_LINE;
 }

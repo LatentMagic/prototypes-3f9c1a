@@ -1023,15 +1023,15 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Daily Word", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
-    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Daily Mystery", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
+    word: { access: "daily", name: "Daily Word", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
+    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
+    mystery: { access: "daily", name: "Daily Mystery", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
     escape: { access: "first", name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly", "About 30 min"] },
-    // Casebook is episodic: cases are its editions, with no schedule, so it lists them through eds.
-    casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], eds: true, once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
+    // Casebook is episodic: cases are its editions, with no schedule.
+    casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
     delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly", "25–40 min"] },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
-    barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], eds: true, edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
+    barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
   };
   const gsAccess = (g) => {
@@ -2526,7 +2526,6 @@
   };
   let CPR_STAGE;
   let CPR_SHOWN;
-  const cprEditions = (k) => k === "barrow" || !!gsRhythm(k) || !!GS_GAMES[k].eds;
   const cprLocked = (gs, k) => CPR_STAGE[k] === "pass" && gs.view !== "pass";
   let CPR_LAPSED;
   const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
@@ -2568,7 +2567,7 @@
   };
   const cprBoxCopy = (id) => {
     const k = CPR_STAGE[id];
-    const u = (GS_GAMES[id].ed || ["edition"])[0];
+    const u = GS_GAMES[id].ed[0];
     const U = u.toUpperCase();
     if (k === "daily" && id === "groups") return null;
     if (k === "daily") {
@@ -2902,117 +2901,6 @@
   function initGsDiscover() {
     GS_ADDED = ["barrow", "hunter", "casebook", "delve", "escape"];
     GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
-  }
-  let ED3;
-  const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
-  const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
-  let PGE_INFO;
-  let PGE_LEN;
-  let PGE_WORDNUM;
-  const pgeRowTitle = (gid, e) => PGE_WORDNUM.includes(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title && !pgeNoNum(gid) ? "#" + e.n + " · " + e.name : e.name;
-  const pgeInfo = (e) => ({ line: typeof PGE_INFO[e.gid] === "string" ? PGE_INFO[e.gid] : "", len: PGE_LEN[e.gid], who: null });
-  const pgeDated = (gid) => !GS_GAMES[gid].eds;
-  const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
-  const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
-    ...e,
-    name: edName(e),
-    when: pgeDated(gid) && e.date ? lbShort(e.date) : void 0,
-    played: pgePlayed(e),
-    live: !!e.status && e.status.kind === "live",
-    held: edNeedsPass(gs, e),
-    info: pgeInfo(e),
-    hay: phHay(gid, e.key, e.title, pgeDated(gid) && e.date ? phParse(e.date) : null) + " " + pgeRowTitle(gid, { ...e, name: edName(e) }).toLowerCase()
-  }));
-  const pgePlayedText = (e) => e.live ? "You’re partway through this " + pgeW(e.gid) + "." : "You’ve played this " + pgeW(e.gid) + "." + (gsStartsOver(e.gid) && !e.held ? " To start it over, paste this into your AI." : "");
-  let pgeOnceText;
-  const pgeScroll = (el) => {
-    for (let n = el && el.parentElement; n; n = n.parentElement) {
-      const o = getComputedStyle(n).overflowY;
-      if ((o === "auto" || o === "scroll") && n.scrollHeight > n.clientHeight) {
-        n.scrollTop = 0;
-        return;
-      }
-    }
-    gsScrollTop();
-  };
-  const usePgeList = (gid) => {
-    const gs = useGs();
-    const k0 = gs.route.pgeList && gs.route.pgeList.gid === gid && gs.route.pgeList || {};
-    const [st, setSt] = React$1.useState({ q: k0.q || "", show: k0.show || "all", sort: k0.sort || "new", pg: k0.pg || 0, open: k0.open || gs.route.pgeOpen || null });
-    React$1.useEffect(() => {
-      gs.keep({ pgeList: { gid, ...st } });
-    }, [st]);
-    const wait = useGsPart([st.q, st.show, st.sort, st.pg]);
-    const box = React$1.useRef(null);
-    const set = (k, v) => setSt((p) => ({ ...p, [k]: v, pg: k === "pg" ? v : k === "open" ? p.pg : 0 }));
-    const clear = () => setSt((p) => ({ ...p, q: "", show: "all", pg: 0 }));
-    const s = phNorm(st.q);
-    const all = pgeEds(gs, gid);
-    let items = all.filter((x) => (st.show === "all" || st.show === "played" && x.played || st.show === "none" && !x.played || st.show === "can" && !x.held) && phMatch(x.hay, s));
-    if (st.sort === "old") items = items.reverse();
-    const size = 24;
-    const pages = Math.max(1, Math.ceil(items.length / size));
-    let pg = Math.min(st.pg, pages - 1);
-    if (!k0.pg && st.open && st.pg === 0) {
-      const i = items.findIndex((x) => x.key === st.open);
-      if (i >= size) pg = Math.floor(i / size);
-    }
-    return { ...st, s, wait, box, set, clear, pages, pg, rows: items.slice(pg * size, pg * size + size), go: (x) => {
-      set("pg", x);
-      pgeScroll(box.current);
-    } };
-  };
-  const PgeEmpty = ({ f }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: f.clear }, "Clear all"));
-  const pgeList = (gs, gid, extra) => gs.go(GS_GAMES[gid].route, { page: "record", list: true, ...extra || {} });
-  const pgeHistory = (gs, gid, e) => gs.go("history", e ? { game: gid, q: pgeNoNum(gid) ? e.title : "#" + e.n, from: gid } : { game: gid, from: gid });
-  const PgeListPage = ({ gid }) => {
-    const gs = useGs();
-    const g = GS_GAMES[gid];
-    const f = usePgeList(gid);
-    const fromLib = !!gs.route.fromLib;
-    const title = g.edAll || "Every " + pgeW(gid);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) }), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, title), /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: !pgeDated(gid) ? "A name" : pgeNoNum(gid) ? "A name or date" : "A number, name or date", value: f.q, onChange: (e) => f.set("q", e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Show", value: f.show, opts: [["all", title], ["none", "Not played"]], onPick: (v) => f.set("show", v) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: (v) => f.set("sort", v) })), !f.wait && !f.rows.length ? /* @__PURE__ */ React$1.createElement(PgeEmpty, { f }) : /* @__PURE__ */ React$1.createElement("div", { ref: f.box, className: "lb-box lb-results ed-results", style: { maxWidth: 960, minWidth: 0 } }, f.wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.RowList, { label: title }, f.rows.map((e) => /* @__PURE__ */ React$1.createElement(DS.ListRow, { key: e.key, title: pgeRowTitle(gid, e), when: e.when, result: e.played ? "Played" : void 0, onClick: () => f.set("open", e.key) }))), /* @__PURE__ */ React$1.createElement(PhPages, { pg: f.pg, pages: f.pages, go: f.go })))), /* @__PURE__ */ React$1.createElement(PgeEdPanel, { gid, k: f.open, onClose: () => f.set("open", null) }));
-  };
-  const PgeEdPanel = ({ gid, k, onClose }) => {
-    const gs = useGs();
-    const g = GS_GAMES[gid];
-    const last = React$1.useRef(null);
-    const e0 = k ? pgeEds(gs, gid).find((x) => x.key === k) : null;
-    if (e0) last.current = e0;
-    const e = last.current;
-    if (!e) return null;
-    const text = gsPromptText({ kind: "edition", e });
-    const done = e.played && !gsStartsOver(gid);
-    const prompt = !done && !e.held;
-    const when = !pgeDated(gid) ? null : gsRhythm(gid) === "weekly" ? "week of " + e.date : e.date;
-    const hist = e.played && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
-    const acts = prompt && e.played ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }) : void 0;
-    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
-  };
-  const registerEditions = () => {
-    ED3.forEach((id) => {
-      const L0 = GS_LIBRARY[id];
-      GS_LIBRARY[id] = () => {
-        const gs = useGs();
-        const r = gs.route;
-        if (r.list && !r.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: id, gid: id });
-        return /* @__PURE__ */ React$1.createElement(L0, null);
-      };
-    });
-  };
-  function initGsEditions() {
-    ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
-    PGE_INFO = {
-      word: "Five letters. Six guesses.",
-      groups: "Sixteen words hide four groups. Find all four.",
-      mystery: "One suspect, one weapon, one room. One accusation.",
-      where: "You get six guesses to find the country.",
-      chain: "You get both ends. Find the words between.",
-      salvage: "You get thirty dives to find five wrecks."
-    };
-    PGE_LEN = { word: "10 min", groups: "10 min", mystery: "10 min", where: "5 min", chain: "10 min", salvage: "15 min", escape: "About 30 min", casebook: "25–40 min", delve: "25–40 min", barrow: "Several sessions" };
-    PGE_WORDNUM = ["escape", "casebook", "delve", "barrow"];
-    pgeOnceText = GS_ONCE_LINE;
   }
   const ES_SIDS = { under: "escape-week", par: "escape-par", over: "escape-over", hard: "escape-hard" };
   const esFinished = (gs) => gsEdPick("escape", gs) || ES_SIDS[gs.review.escape] || "escape-week";
@@ -3587,13 +3475,14 @@
     const gs = useGs();
     const g = GS_GAMES[id];
     const items = ach || [];
-    const word = cprEditions(id) && g.ed ? g.ed[0] : void 0;
-    const words = word ? g.ed[1] : void 0;
+    const word = g.ed[0];
+    const words = g.ed[1];
     let record = null;
     if (had) {
       const earned = lbAchEarned(lbAchView(items, access || lbAccess(gs, id), gs));
+      const keys = new Set(edList(gs, id).map((e) => e.key));
       const plays = phVisible(gs).filter((p) => p.gid === id);
-      const eds = new Set(plays.map((p) => p.ed));
+      const eds = new Set(plays.map((p) => p.ed).filter((k) => keys.has(k)));
       if (id === "barrow") {
         const ch = Math.max(1, ...plays.map((p) => +p.ed.replace(/\D/g, "") || 1));
         record = { chapter: ch, played: eds.size, earned };
@@ -3608,7 +3497,6 @@
   const cprKey = (gs) => gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gsFresh(gs) ? "f" : "") + cprStore.get().lapsed;
   const CprCbLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "casebook", gid: "casebook" });
     if (gs.view === "pass" || gs.route.sid) return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.casebook, null);
     const had = gsLapsed(gs) && phVisible(gs).some((p) => p.gid === "casebook");
     const ach = phAch(gs, "casebook", CB_ACH);
@@ -3617,7 +3505,6 @@
   };
   const CprDvLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "delve", gid: "delve" });
     if (gs.view === "pass") return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.delve, null);
     const access = lbAccess(gs, "delve");
     const lapsed = gsLapsed(gs);
@@ -3631,7 +3518,6 @@
   };
   const CprEsLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "escape", gid: "escape" });
     if (gs.view === "pass") return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.escape, null);
     const c = PZ.escape;
     const lapsed = gsLapsed(gs);
@@ -3646,14 +3532,12 @@
     const gs = useGs();
     useCpr();
     const st = cprFirstState(gs, "barrow");
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "barrow", gid: "barrow" });
     const ach = phAch(gs, "barrow", BW_ACH);
     return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs) + st, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "barrow" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, gs.view === "pass" ? /* @__PURE__ */ React$1.createElement(CprFirst, { id: "barrow" }) : cprNowCard(gs, "barrow", ach), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: BW_BADGES, access: lbAccess(gs, "barrow"), ed: GS_GAMES.barrow.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your chapters", allLabel: "See in History", empty: "Your chapters appear here once you have played one." })));
   };
   const cprPzLibrary = (id) => () => {
     const gs = useGs();
-    const r = gs.route;
-    if (r.list && !r.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: id, gid: id });
+    gs.route;
     const c = PZ[id];
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gs.review.today || "");
     const [recent] = c.plays;
@@ -3689,7 +3573,7 @@
     return row(GS_LIB_READY[k] || CPR_PASS_READY[k] || null);
   };
   const cprNewFor = (gs, k) => {
-    if (!cprEditions(k) || cprLocked(gs, k)) return false;
+    if (cprLocked(gs, k)) return false;
     if (gs.view === "pass") return !cprPlayed(gs, k);
     if (CPR_STAGE[k] === "daily") return gsFresh(gs) || (cprStore.get().newEds === "most" ? k !== "word" : !gsTodayPlayed(gs)[k]);
     if (CPR_STAGE[k] === "first") return cprFirstState(gs, k) === "none";
@@ -4345,6 +4229,7 @@
         art: "where",
         route: "where",
         ed: ["country", "countries"],
+        edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
         blurb: "Today’s country is somewhere on the map. Find it in six guesses.",
@@ -4357,6 +4242,7 @@
         art: "chain",
         route: "chain",
         ed: ["chain", "chains"],
+        edLine: "You get both ends. Find the words between.",
         daily: true,
         once: true,
         blurb: "Every word in the line joins the next. Find the ones in between.",
@@ -4369,6 +4255,7 @@
         art: "salvage",
         route: "salvage",
         ed: ["sea", "seas"],
+        edLine: "You get thirty dives to find five wrecks.",
         daily: true,
         once: true,
         blurb: "Five wrecks lie under today’s sea. Find them in thirty dives.",
@@ -4840,6 +4727,7 @@
       GS_SESSIONS[hgSid(x)] = {
         kind: "day",
         gid: "hunter",
+        noEd: true,
         game: GS_NAME.hunter,
         art: "hunter",
         title: x.title,
@@ -4891,7 +4779,6 @@
   };
   const phTime = (d) => String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   const phShort = (d) => lbShort(lbDate(d));
-  let ED_GAMES;
   const edName = (e) => e.title ? e.title : "#" + e.n;
   const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? " · " + e.title : " #" + e.n);
   let ED_NONE;
@@ -4973,7 +4860,7 @@
   const phMeta = () => {
     if (!PH_META) {
       PH_META = {};
-      ED_GAMES.forEach((k) => edList({ view: "out", sub: {} }, k).forEach((e) => {
+      GS_GAME_ORDER.forEach((k) => edList({ view: "out", sub: {} }, k).forEach((e) => {
         PH_META[e.key] = e;
       }));
     }
@@ -5073,7 +4960,7 @@
     const gs = useGs();
     const all = phVisible(gs);
     k0 = k0 || {};
-    const [g, setG0] = React$1.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : "all");
+    const [g, setG0] = React$1.useState(initial && (all.some((p) => p.gid === initial) || !!GS_GAMES[initial]) ? initial : "all");
     const [pg, setPg] = React$1.useState(k0.pg || 0);
     const games = GS_GAME_ORDER.filter((k) => all.some((p) => p.gid === k));
     const setG = (v) => {
@@ -5166,13 +5053,13 @@
   const PhPages = ({ pg, pages, go }) => pages > 1 ? /* @__PURE__ */ React$1.createElement("nav", { className: "lb-pages rp-pg", "aria-label": "Pages" }, pg > 0 ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Previous page", onClick: () => go(pg - 1) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", style: { transform: "rotate(180deg)" } })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-pagenums rp-pg-nums" }, Array.from({ length: pages }, (_, x) => /* @__PURE__ */ React$1.createElement("button", { key: x, type: "button", "aria-current": x === pg ? "page" : void 0, onClick: () => go(x) }, x + 1))), /* @__PURE__ */ React$1.createElement("span", { className: "rp-pg-of gs-strong gs-num-text" }, "Page " + (pg + 1) + " of " + pages), pg < pages - 1 ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Next page", onClick: () => go(pg + 1) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next" })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" })) : null;
   const phTitle = (p, one) => {
     const m = phMeta()[p.ed];
-    if (m && ED_GAMES.includes(p.gid)) return one ? edName(m) : edLabel(m);
+    if (m) return one ? edName(m) : edLabel(m);
     return one || p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== "barrow" ? p.edTitle : GS_GAMES[p.gid].name + " · " + p.edTitle;
   };
   const phParts = (p, one) => {
     const m = phMeta()[p.ed];
     const name = GS_GAMES[p.gid].name;
-    const t = m && ED_GAMES.includes(p.gid) ? edName(m) : p.edTitle;
+    const t = m ? edName(m) : p.edTitle;
     return { title: t, game: one ? void 0 : p.gid === "barrow" ? name : t.includes(name) ? void 0 : name };
   };
   const GsHistory = () => {
@@ -5218,7 +5105,6 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, r.from && /* @__PURE__ */ React$1.createElement(LbBack, { label: GS_GAMES[r.from].name, onClick: () => phLib(gs, r.from) }), /* @__PURE__ */ React$1.createElement(PhHead, null), !f.all.length ? /* @__PURE__ */ React$1.createElement(PhEmpty, null) : /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: "A number, name or date", value: q, onChange: (e) => reset(setQ)(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...gsKinds().map((c) => [c, gsKind(c)])], onPick: reset(setCat) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: reset(setRhy) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Game", value: f.g, opts: [["all", "All games"], ...games.map((k) => [k, GS_GAMES[k].name])], onPick: f.setG }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: f.setSort })), !wait && !groups.length ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), anySet && /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: clearAll }, "Clear all")) : /* @__PURE__ */ React$1.createElement("div", { className: "lb-box lb-results", style: { maxWidth: 960 } }, wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading plays" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, groups.map(([k, label, ps]) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: k + pg }, /* @__PURE__ */ React$1.createElement("h2", { className: "ph-day" }, label), /* @__PURE__ */ React$1.createElement(DS.RowList, { label }, ps.map((p) => phRow(view(p)))))), /* @__PURE__ */ React$1.createElement(PhPages, { pg, pages, go: f.go }))))));
   };
   function initGsHistory() {
-    ED_GAMES = ["word", "groups", "mystery", ...DP_IDS, "escape", "casebook", "delve"];
     ED_NONE = { kind: "none", label: "Not played" };
     PH_UNF = { kind: "none", label: "Not finished" };
     PH_UNF_EDS = (() => {
@@ -5420,7 +5306,7 @@
       const l = bwEds(gs);
       return l.find((e) => e.key === (s.edKey || "bw1")) || l[l.length - 1];
     }
-    if (!gid || !ED_GAMES || !ED_GAMES.includes(gid)) return null;
+    if (!gid || s.noEd) return null;
     const list = edList(gs, gid);
     if (s.edKey) return list.find((e) => e.key === s.edKey) || list[0];
     if (PZ && PZ[gid]) {
@@ -5478,7 +5364,7 @@
     const o = GS_AI_OTHERS.find((x) => x[0] === id);
     return /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Copy the After Pixels address."), /* @__PURE__ */ React$1.createElement(GsAddress, null)), ...o[2]] });
   };
-  const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === "game" && gs.view !== "out" && ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
+  const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === "game" && gs.view !== "out" ? edList(gs, r.gid)[0] : null);
   const gsReqDone = (gs, r) => {
     const e = gsReqEd(gs, r);
     return !!e && !gsStartsOver(e.gid) && !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
@@ -5808,6 +5694,91 @@
     const r = useGs().route;
     return GS_SESSIONS[r.id] ? /* @__PURE__ */ React$1.createElement(GsSessionRecord, null) : /* @__PURE__ */ React$1.createElement(GsNotFound, null);
   };
+  const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
+  const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
+  const pgeRowTitle = (gid, e) => pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title ? "#" + e.n + " · " + e.name : e.name;
+  const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || "", len: GS_PAGES[e.gid].facts.long, who: null });
+  const pgeDated = (gid) => !!gsRhythm(gid);
+  const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
+  const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
+    ...e,
+    name: edName(e),
+    when: pgeDated(gid) && e.date ? lbShort(e.date) : void 0,
+    played: pgePlayed(e),
+    live: !!e.status && e.status.kind === "live",
+    held: edNeedsPass(gs, e),
+    info: pgeInfo(e),
+    hay: phHay(gid, e.key, e.title, pgeDated(gid) && e.date ? phParse(e.date) : null) + " " + pgeRowTitle(gid, { ...e, name: edName(e) }).toLowerCase()
+  }));
+  const pgePlayedText = (e) => e.live ? "You’re partway through this " + pgeW(e.gid) + "." : "You’ve played this " + pgeW(e.gid) + "." + (gsStartsOver(e.gid) && !e.held ? " To start it over, paste this into your AI." : "");
+  let pgeOnceText;
+  const pgeScroll = (el) => {
+    for (let n = el && el.parentElement; n; n = n.parentElement) {
+      const o = getComputedStyle(n).overflowY;
+      if ((o === "auto" || o === "scroll") && n.scrollHeight > n.clientHeight) {
+        n.scrollTop = 0;
+        return;
+      }
+    }
+    gsScrollTop();
+  };
+  const usePgeList = (gid) => {
+    const gs = useGs();
+    const k0 = gs.route.pgeList && gs.route.pgeList.gid === gid && gs.route.pgeList || {};
+    const [st, setSt] = React$1.useState({ q: k0.q || "", show: k0.show || "all", sort: k0.sort || "new", pg: k0.pg || 0, open: k0.open || gs.route.pgeOpen || null });
+    React$1.useEffect(() => {
+      gs.keep({ pgeList: { gid, ...st } });
+    }, [st]);
+    const wait = useGsPart([st.q, st.show, st.sort, st.pg]);
+    const box = React$1.useRef(null);
+    const set = (k, v) => setSt((p) => ({ ...p, [k]: v, pg: k === "pg" ? v : k === "open" ? p.pg : 0 }));
+    const clear = () => setSt((p) => ({ ...p, q: "", show: "all", pg: 0 }));
+    const s = phNorm(st.q);
+    const all = pgeEds(gs, gid);
+    let items = all.filter((x) => (st.show === "all" || st.show === "played" && x.played || st.show === "none" && !x.played || st.show === "can" && !x.held) && phMatch(x.hay, s));
+    if (st.sort === "old") items = items.reverse();
+    const size = 24;
+    const pages = Math.max(1, Math.ceil(items.length / size));
+    let pg = Math.min(st.pg, pages - 1);
+    if (!k0.pg && st.open && st.pg === 0) {
+      const i = items.findIndex((x) => x.key === st.open);
+      if (i >= size) pg = Math.floor(i / size);
+    }
+    return { ...st, s, wait, box, set, clear, pages, pg, rows: items.slice(pg * size, pg * size + size), go: (x) => {
+      set("pg", x);
+      pgeScroll(box.current);
+    } };
+  };
+  const PgeEmpty = ({ f }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: f.clear }, "Clear all"));
+  const pgeList = (gs, gid, extra) => gs.go(GS_GAMES[gid].route, { page: "record", list: true, ...extra || {} });
+  const pgeHistory = (gs, gid, e) => gs.go("history", e ? { game: gid, q: pgeNoNum(gid) ? e.title : "#" + e.n, from: gid } : { game: gid, from: gid });
+  const PgeListPage = ({ gid }) => {
+    const gs = useGs();
+    const g = GS_GAMES[gid];
+    const f = usePgeList(gid);
+    const fromLib = !!gs.route.fromLib;
+    const title = g.edAll || "Every " + pgeW(gid);
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) }), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, title), /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: !pgeDated(gid) ? "A name" : pgeNoNum(gid) ? "A name or date" : "A number, name or date", value: f.q, onChange: (e) => f.set("q", e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Show", value: f.show, opts: [["all", title], ["none", "Not played"]], onPick: (v) => f.set("show", v) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: (v) => f.set("sort", v) })), !f.wait && !f.rows.length ? /* @__PURE__ */ React$1.createElement(PgeEmpty, { f }) : /* @__PURE__ */ React$1.createElement("div", { ref: f.box, className: "lb-box lb-results ed-results", style: { maxWidth: 960, minWidth: 0 } }, f.wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.RowList, { label: title }, f.rows.map((e) => /* @__PURE__ */ React$1.createElement(DS.ListRow, { key: e.key, title: pgeRowTitle(gid, e), when: e.when, result: e.played ? "Played" : void 0, onClick: () => f.set("open", e.key) }))), /* @__PURE__ */ React$1.createElement(PhPages, { pg: f.pg, pages: f.pages, go: f.go })))), /* @__PURE__ */ React$1.createElement(PgeEdPanel, { gid, k: f.open, onClose: () => f.set("open", null) }));
+  };
+  const PgeEdPanel = ({ gid, k, onClose }) => {
+    const gs = useGs();
+    const g = GS_GAMES[gid];
+    const last = React$1.useRef(null);
+    const e0 = k ? pgeEds(gs, gid).find((x) => x.key === k) : null;
+    if (e0) last.current = e0;
+    const e = last.current;
+    if (!e) return null;
+    const text = gsPromptText({ kind: "edition", e });
+    const done = e.played && !gsStartsOver(gid);
+    const prompt = !done && !e.held;
+    const when = !pgeDated(gid) ? null : gsRhythm(gid) === "weekly" ? "week of " + e.date : e.date;
+    const hist = e.played && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
+    const acts = prompt && e.played ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }) : void 0;
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
+  };
+  function initGsEditions() {
+    pgeOnceText = GS_ONCE_LINE;
+  }
   const lbAccess = (gs, id) => gs.view === "pass" || GS_GAMES[id].free ? "all" : GS_GAMES[id].first ? "first" : "none";
   const lbPast = (gs) => gs.view === "pass" || gsLapsed(gs);
   const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + " 2026") < gsEndedOn(gs);
@@ -5840,7 +5811,7 @@
     const gs = useGs();
     const g = GS_GAMES[id];
     const a = GS_ART[g.art] || {};
-    const eds = !more && gs.view !== "out" && ED3 && ED3.includes(id);
+    const eds = !more && gs.view !== "out";
     return /* @__PURE__ */ React$1.createElement("section", { className: "mcp-cover-head lb-head" }, /* @__PURE__ */ React$1.createElement(DS.Cover, { fill: true, ground: a.ground, extend: a.extend }, /* @__PURE__ */ React$1.createElement("span", { dangerouslySetInnerHTML: { __html: a.svg || "" } })), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cover-head-text" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, name || g.name), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cover-head-links" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About this game"), more, eds && /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => pgeList(gs, id, { fromLib: true }) }, g.edLink || "Every " + g.ed[0]))));
   };
   const lbIcon = (k) => k === "ok" ? "check" : k === "bad" ? "error" : null;
@@ -6419,61 +6390,20 @@
     { group: "Store listing", id: "directory-listing-claude", label: "Directory listing: Claude connector", stage: (c) => c.go("directory-claude") },
     { group: "Store listing", id: "directory-listing-chatgpt", label: "Directory listing: ChatGPT plugin", stage: (c) => c.go("directory-chatgpt") }
   ];
-  const GP_RECENT = [
-    { date: "5 October", ending: "Elsie rescued" }
-  ];
-  const GP_WEEKS = [["5 Oct", true]];
-  let GP_ENDINGS;
-  let GP_ACH;
   const GpMini = ({ art, sm }) => /* @__PURE__ */ React$1.createElement("span", { className: "pg-mini" + (sm ? " is-sm" : ""), "aria-hidden": "true", dangerouslySetInnerHTML: { __html: (GS_ART[art] || {}).svg } });
-  const GpThisWeek = ({ who }) => {
-    const gs = useGs();
-    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch", alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK’S RUN"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, GS_PAGES.delve.week.line), who === "played" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags" }, /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily", icon: "check" }, "Played · Elsie rescued")), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: "delve" }) }, "See this week’s session"))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Next run: Monday 12 October"));
-  };
   let GP_CFG;
   let GP_LINE;
-  const gpUp = (t) => t.toUpperCase();
-  const GpRecord = ({ id }) => {
-    const c = GP_CFG[id];
-    const n = c.recent.length;
-    const count = (e) => c.recent.filter((r) => (r.k || r.ending) === e).length;
-    const on = c.strip ? c.strip[2].filter(([, v]) => v).length : 0;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Your ", c.units), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, gpUp(c.units), " PLAYED"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, n)), c.run && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.run), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, "1")), c.strip && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.strip[0]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-days", role: "img", "aria-label": "Played " + on + " of the last " + c.strip[2].length + " " + c.strip[1] }, c.strip[2].map(([d, v]) => /* @__PURE__ */ React$1.createElement("i", { key: d, title: d, className: v ? "is-on" : "" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW YOUR ", gpUp(c.units), " ENDED"), c.ends ? /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, c.ends.map((e) => {
-      const k = count(e);
-      return /* @__PURE__ */ React$1.createElement("li", { key: e, className: "pg-kv" }, /* @__PURE__ */ React$1.createElement("span", { className: k ? "gs-strong" : "gs-muted" }, e), /* @__PURE__ */ React$1.createElement("span", { className: "gs-num-text " + (k ? "gs-strong" : "gs-muted") }, k ? k + (k > 1 ? " times" : " time") : "Not yet"));
-    })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, "—")));
-  };
-  const GpRecent = ({ id }) => {
-    const gs = useGs();
-    const c = GP_CFG[id];
-    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Recent ", c.units), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-hist" }, c.recent.map((r, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hrow mcp-art-host", onClick: () => gs.go("session", { id: r.sid }) }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-mini-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: r.art || GS_GAMES[id].art, shape: "landscape" })), /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: r.ending ? "gs-strong" : "gs-muted" }, r.ending || "—"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, r.when)), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back", size: 16, style: { transform: "rotate(180deg)" } }))))));
-  };
-  const GpAch = ({ who }) => {
-    const played = who === "played";
-    const earned = played ? GP_ACH.flatMap((g) => g.items.filter((i) => i.got).map((i) => i.n)) : [];
-    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sec-head" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, played ? "Still to earn" : "What you can earn"), played && /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, earned.length, " earned")), GP_ACH.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.cls, className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.cls.toUpperCase(), " · ", /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted", style: { letterSpacing: 0, fontWeight: 400 } }, g.line)), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, g.items.filter((i) => !(played && i.got)).map((i) => /* @__PURE__ */ React$1.createElement("li", { key: i.n, className: "pg-ach" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-strong" }, i.n), i.how && /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, i.how)), i.of && /* @__PURE__ */ React$1.createElement("span", { className: "pg-ach-bar" }, /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: (played ? i.have : 0) + " of " + i.of, value: played ? i.have : 0, max: i.of }))))))), played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Earned: ", earned.join(", "), "."));
-  };
-  const GpYoursBody = ({ id }) => {
-    const a = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, id === "delve" && /* @__PURE__ */ React$1.createElement(GpThisWeek, { who: "played" }), /* @__PURE__ */ React$1.createElement(GpRecord, { id }), /* @__PURE__ */ React$1.createElement(GpRecent, { id }));
-    if (id !== "delve") return a;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-pitch" }, a, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, /* @__PURE__ */ React$1.createElement(GpAch, { who: "played" })));
-  };
   const gpToRecord = (gs, id) => gs.go(GS_GAMES[id].route, { page: "record" });
   const GpCard = ({ id }) => {
     const gs = useGs();
     const g = GS_GAMES[id];
     return /* @__PURE__ */ React$1.createElement("section", { className: "pg-band", "aria-label": "In your library" }, /* @__PURE__ */ React$1.createElement(GpMini, { art: g.art }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "IN YOUR LIBRARY"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, GP_LINE[id] || "See every " + GP_CFG[id].units.replace(/s$/, "") + " you’ve played and how each one ended.")), /* @__PURE__ */ React$1.createElement("div", { className: "pg-band-link" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gpToRecord(gs, id) }, "Go to your " + g.name.replace(/^The /, ""))));
   };
-  const GpPlayer = ({ id }) => {
-    const gs = useGs();
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "rf-head" }, /* @__PURE__ */ React$1.createElement("span", null, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art })), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, g.name), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About " + g.name))), /* @__PURE__ */ React$1.createElement(GpYoursBody, { id }));
-  };
   const gpGame = (id) => () => {
     const gs = useGs();
     if (gs.view !== "out" && gs.route.page === "record") {
-      const L = GS_LIBRARY && GS_LIBRARY[id];
-      return L ? /* @__PURE__ */ React$1.createElement(L, null) : /* @__PURE__ */ React$1.createElement(GpPlayer, { id });
+      const L = GS_LIBRARY[id];
+      return gs.route.list && !gs.route.sid ? /* @__PURE__ */ React$1.createElement(PgeListPage, { key: id, gid: id }) : /* @__PURE__ */ React$1.createElement(L, null);
     }
     const canPlay = gs.view === "pass" || !!(GS_GAMES[id].free || GS_GAMES[id].first);
     return /* @__PURE__ */ React$1.createElement(GsGamePage, { id, top: gs.view !== "out" && canPlay ? /* @__PURE__ */ React$1.createElement(GpCard, { id }) : null });
@@ -6490,28 +6420,8 @@
   let GsHunter;
   let GsBarrow;
   function initGsPlayer() {
-    GP_ENDINGS = GS_DV_ENDINGS;
-    GP_ACH = [
-      { cls: "Discovery", line: "Find something", items: [
-        { n: "Know Thy Enemy", how: "Bring down a foe by what it fears." }
-      ] },
-      { cls: "Mastery", line: "Do it well", items: [
-        { n: "Untouched", how: "Win a run without losing a hit point." },
-        { n: "Hot Streak", got: true }
-      ] },
-      { cls: "Completion", line: "Do all of it, over many plays", items: [
-        { n: "Regular", of: 4, have: 1 },
-        { n: "Ten Runs", of: 10, have: 1 }
-      ] }
-    ];
     GP_CFG = {
-      delve: {
-        units: "runs",
-        run: "WEEKS RUNNING",
-        strip: ["THE LAST WEEK", "weeks", GP_WEEKS],
-        ends: GP_ENDINGS,
-        recent: GP_RECENT.map((r) => ({ ...r, when: r.date, sid: "delve" }))
-      },
+      delve: { units: "runs" },
       word: { units: "words" },
       groups: { units: "groups" },
       mystery: { units: "cases" },
@@ -6519,14 +6429,8 @@
       chain: { units: "chains" },
       salvage: { units: "seas" },
       escape: { units: "rooms" },
-      casebook: {
-        units: "cases",
-        run: null,
-        strip: null,
-        ends: ["Solved", "Wrong accusation"],
-        recent: [{ ending: "Solved", when: "5 October", sid: "casebook" }]
-      },
-      hunter: { units: "days", run: null, strip: null, ends: null, recent: [{ ending: null, when: "5 October", sid: "hunter" }] }
+      casebook: { units: "cases" },
+      hunter: { units: "days" }
     };
     GP_LINE = {
       word: "See every day’s word and how many guesses it took you.",
@@ -7686,6 +7590,32 @@
         c.setConnected(true);
         c.go("word", { page: "record", list: true });
       } },
+      // A game added with sample editions (app/gs-more-games.jsx) and 36,000 Summers Ago: the library game page and the editions list every game has.
+      { group: "Library", id: "library-cipher", label: "Daily Cipher in your library (sample editions)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("cipher", { page: "record" });
+      } },
+      { group: "Library", id: "library-cipher-free", label: "Daily Cipher in your library, free account: needs the Pass", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.go("cipher", { page: "record" });
+      } },
+      { group: "Library", id: "editions-cipher", label: "Daily Cipher: every cipher (sample editions, numbered)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("cipher", { page: "record", list: true });
+      } },
+      { group: "Library", id: "editions-winter", label: "The Long Winter: every chapter (sample editions, named, no dates)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("winter", { page: "record", list: true });
+      } },
+      { group: "Library", id: "editions-hunter", label: "36,000 Summers Ago: every summer (sample editions)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("hunter", { page: "record", list: true });
+      } },
       { group: "History", id: "session-word-earlier", label: "Session page, an earlier Daily Word played (played once)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -7696,7 +7626,7 @@
         c.setConnected(true);
         c.go("session", { id: PZ.mystery.all[2].sid });
       } },
-      { group: "History", id: "history-hunter", label: "History, 36,000 Summers Ago (no editions)", stage: (c) => {
+      { group: "History", id: "history-hunter", label: "History, 36,000 Summers Ago (its days)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("history", { game: "hunter", from: "hunter" });
@@ -8978,7 +8908,6 @@
       k: "winter",
       name: "The Long Winter",
       category: "ADVENTURE",
-      eds: true,
       ed: ["chapter", "chapters"],
       long: "45–60 min",
       units: "chapters",
@@ -9002,7 +8931,6 @@
       k: "farside",
       name: "Far Side",
       category: "LEARNING",
-      eds: true,
       ed: ["mission", "missions"],
       long: "30 min",
       units: "missions",
@@ -9093,12 +9021,20 @@
     }
   ];
   const GS_MORE_IDS = GS_MORE.map((d) => d.k);
+  const MgLibrary = ({ id }) => {
+    const gs = useGs();
+    const g = GS_GAMES[id];
+    const e = edList(gs, id)[0];
+    const r = gsRhythm(id);
+    const label = r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + g.ed[0].toUpperCase();
+    return /* @__PURE__ */ React$1.createElement("main", { key: gs.view, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprLocked(gs, id) ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, access: "none" }) : /* @__PURE__ */ React$1.createElement(LbFreshNow, { label, title: e.title || edLabel(e), line: g.blurb, span: true, onPlay: () => gs.playReq({ kind: "edition", e }) })));
+  };
   const GS_MORE_SCREENS = {};
   function initGsMoreGames() {
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
       GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-      GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags });
+      GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
       GS_PAGES[d.k] = {
         rhythm: d.page.rhythm,
         box: {
@@ -9117,7 +9053,8 @@
       GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
-      GP_CFG[d.k] = { units: d.units, run: null, strip: null, ends: null, recent: [] };
+      GS_LIBRARY[d.k] = () => /* @__PURE__ */ React$1.createElement(MgLibrary, { id: d.k });
+      GP_CFG[d.k] = { units: d.units };
       GS_GAME_ORDER.push(d.k);
       CPR_STAGE[d.k] = GS_GAMES[d.k].access;
       CPR_SHOWN.push(d.k);
@@ -9137,7 +9074,7 @@
       shown.push(...out);
       return out;
     };
-    const added = take(GS_ADDED.filter(cprEditions));
+    const added = take(GS_ADDED);
     const free = gs.view === "pass" ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== "pass");
     return { added, free };
   };
@@ -9537,7 +9474,6 @@
     registerPuzzlesLibrary();
     registerHunterLibrary();
     registerBarrowLibrary();
-    registerEditions();
     registerPassLibrary();
     registerEscape();
     registerWord();

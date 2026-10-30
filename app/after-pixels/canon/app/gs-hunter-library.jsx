@@ -108,8 +108,9 @@ HG_DAYS = Array.from({ length: 18 }, (_, i) => {
 });
 HG_LATEST = HG_DAYS[0];
 // A session page for every day: the result matches its row; the record is what happened in the day. Share carries the product page link only (MCPG-030 AF-04).
+// noEd: a day names no summer, so its page and its Play name the day, not an edition (which summer a day falls in is not decided).
 HG_DAYS.forEach((x) => {
-  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', game: GS_NAME.hunter, art: 'hunter', title: x.title, result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
+  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', noEd: true, game: GS_NAME.hunter, art: 'hunter', title: x.title, result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
     figures: x.end ? [x.title, x.end] : [x.title], listTitle: 'The day', share: null, lines: x.facts };
 });
 GS_SESSIONS.hunter = GS_SESSIONS[hgSid(HG_LATEST)];

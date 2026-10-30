@@ -79,7 +79,6 @@ import { kitResolveState } from './states.jsx';
 import { StatesIndex } from './states-ui.jsx';
 import { ConfigLauncher } from './config.jsx';
 import { GsHistory } from './gs-history.jsx';
-import { registerEditions } from './gs-editions.jsx';
 import { GS_MORE_IDS, GS_MORE_SCREENS } from './gs-more-games.jsx';
 import { GsHome } from './gs-pass-home.jsx';
 import { GsPass } from './gs-pass-pricing.jsx';
@@ -111,7 +110,7 @@ let GS_AUTH_ONLY;
 let GS_ROUTES;
 
 const GsScreen = ({ name }) => {
-  const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name]; // the ten games in app/gs-more-games.jsx
+  const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name]; // the games in app/gs-more-games.jsx
   if (More) return <More />;
   switch (name) {
     case 'home': return <GsHome />;
@@ -414,7 +413,6 @@ registerDelveLibrary();
 registerPuzzlesLibrary();
 registerHunterLibrary();
 registerBarrowLibrary();
-registerEditions();
 registerPassLibrary();
 registerEscape();
 registerWord();

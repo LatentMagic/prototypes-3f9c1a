@@ -10,16 +10,16 @@ import { useGsPart, GsPart, GsSpin, GsLoadFailed } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { LbTools, LbChoice } from './gs-library.jsx';
 import { GS_ADDED, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
-import { CPR_SHOWN, cprEditions, CPR_STAGE, cprLocked } from './gs-pass-store.jsx';
+import { CPR_SHOWN, CPR_STAGE, cprLocked } from './gs-pass-store.jsx';
 import { GsCard, GsPick } from './gs-pass-home.jsx';
 
 const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
-// The selection: Just added (games with editions, not picked), then Free to play (every game with free play, picks
+// The selection: Just added (not picked), then Free to play (every game with free play, picks
 // included; gone with the Pass). A row with nothing in it isn't shown.
 const cprSelection = (gs) => {
   const shown = CPR_PICKS.map((p) => p[0]);
   const take = (ks) => { const out = ks.filter((k) => CPR_SHOWN.includes(k) && !shown.includes(k)); shown.push(...out); return out; };
-  const added = take(GS_ADDED.filter(cprEditions));
+  const added = take(GS_ADDED);
   const free = gs.view === 'pass' ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== 'pass');
   return { added, free };
 };
