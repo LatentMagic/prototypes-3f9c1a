@@ -4,7 +4,7 @@ After Pixels (afterpixels.com) is a library of games played by talking to your o
 
 Paths below are relative to this folder (`app/after-pixels/canon/`); run commands from the repo root.
 Source is ES modules: `app/main.jsx` imports every `app/*.jsx`, and `npm run build` bundles them into `build/canon.js` and `build/canon.css`, which `index.html` loads (React loads as a page script first; the design system's bundle and stylesheet are built in). Edit `app/`, then rebuild; never edit `build/`.
-- **Build:** `npm run build` (`tools/ap-names.mjs --check`, then Vite). **Never push to `main` without running it and committing `build/`**: Pages serves the committed files, no hook enforces it, and a second build must leave `git status` clean. `npm run build -- --watch` rebuilds on save.
+- **Build:** `npm run build` (`tools/ap-names.mjs --check`, then Vite). Any change requires a build: a design-system change runs `npm run build:ds` first. **Never push to `main` without running it and committing `build/`**: Pages serves the committed files, no hook enforces it, and a second build must leave `git status` clean. `npm run build -- --watch` rebuilds on save.
 - **Add a file or name:** declare a name in one file only (a second declaration fails the build), `export` it, `import` it where used, and `import` a new `app/<name>.jsx` from `main.jsx` (a CSS file: `@import` in `app/canon.css`, after any file it must beat). `window` carries only `KIT_STATES`, `KIT_STATE_NOTES`, `kitGoState`, `gsApi`, `KitCandidate`, `__gsTrap` and the design system. `node tools/ap-names.mjs --check` fails on a missing import (otherwise it throws only when that screen renders); without `--check` it lists each file's imports.
 - **Load-time code:** a file whose top level writes to or reads another file's data (the registries in `app/registry.js`, seed objects) does it inside an exported `init<File>()` that `main.jsx` calls, in order: a read before the file it reads from has run gets `undefined`. Keep that order when adding one.
 
@@ -46,7 +46,7 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-data.jsx`), and canon's shared parts. Never build a one-off where one of these fits; if none does, say so in your report.
 - Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`. Guidelines (voice, layout, overlays, loading): `../design-system/guidelines/`.
 - Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, `GsTrack`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsSessHead`, `GsSessResult`, `GsMoves`, share pop-up), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts).
-- Canon builds the design system from `../design-system/` (its `styles.css` and `_ds_bundle.js`); there is no copy. Changing a component is a design-system change: do it only when the brief asks, then rebuild.
+- Canon builds the design system from `../design-system/` (its `styles.css` and `_ds_bundle.js`); there is no copy. Changing a component is a design-system change: do it only when the brief asks, then run `npm run build:ds` (writes `_ds_bundle.js`) and `npm run build`.
 
 ## Serve and check
 
