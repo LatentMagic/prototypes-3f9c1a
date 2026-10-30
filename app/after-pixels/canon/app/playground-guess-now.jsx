@@ -148,10 +148,10 @@ const PgnD = ({ c, sid }) => {
 // the title and result in its top corners. D2: the tiles centred, the ring and the hint box a small row under them. D3: the
 // tiles centred in the card's main column, the ring over the hint box in a panel ruled off at the right, under the result.
 const PgnDx = ({ c, sid, v }) => {
-  const gs = useGs(); const s = GS_SESSIONS[sid]; const p = React.useMemo(() => pgnPlay(s), [s]);
+  const gs = useGs(); const s = GS_SESSIONS[sid]; const p = React.useMemo(() => pgnPlay(s), [s]); const drop = usePgSetting('drop');
   const facts = <><PgnRing s={s} p={p} /><PgnHintBox s={s} p={p} /></>;
   return (
-    <section className={'lb-card pgn-dx pgn-' + v}><div className="pgn-dx-body">
+    <section className={'lb-card pgn-dx pgn-' + v} style={{ '--pgn-drop': (drop || 0) + 'px' }}><div className="pgn-dx-body">
       <div className="gs-stack-xs pgn-dx-head"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">{'#' + s.number}</h2></div>
       <div className="pgn-dx-res"><WdNowResult s={s} /></div>
       {v === 'd3'
@@ -187,6 +187,7 @@ export const initPlaygroundGuessNow = () => {
       { value: 'failed', label: 'Failed', state: 'library-word', go: played('failed') },
       { value: 'live', label: 'In progress', state: 'library-word-in-progress' },
       { value: 'fresh', label: 'Not yet played', state: 'free-not-played-today' }] },
+    { key: 'drop', label: 'D1 lower by', options: [{ value: '0', label: '0' }, { value: '8', label: '8px' }, { value: '16', label: '16px' }, { value: '24', label: '24px' }] },
     { key: 'ans', label: 'On a loss', options: [{ value: 'last', label: 'Last guess' }, { value: 'word', label: 'The word' }] },
   ] });
   if (pgActive()) GS_NOW.word = PgnCard;

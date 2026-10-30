@@ -2705,6 +2705,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgn-d1 .pgn-dx-head, .pgn-d1 .pgn-dx-res, .pgn-d1 .pgn-dx-pic { grid-area: all; }
   .pgn-d1 .pgn-dx-res { justify-self: end; }
   .pgn-d1 .pgn-dx-pic { --t: 52px; }
+  /* Joe finds it high: the setting lowers the picture by 0-24px to find the point that reads centred. */
+  .pgn-d1 .pgn-dx-pic { transform: translateY(var(--pgn-drop, 0px)); }
 }
 /* D2: the tiles, then the ring and the hint box as one small centred row under them. Tightened (Joe: too much padding): from
    600px the picture shares the head's row, centred on the card with the title and result in its top corners (as D1), so the card

@@ -9336,8 +9336,9 @@
     const gs = useGs();
     const s = GS_SESSIONS[sid];
     const p = React$1.useMemo(() => pgnPlay(s), [s]);
+    const drop = usePgSetting("drop");
     const facts = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnHintBox, { s, p }));
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn-dx pgn-" + v }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs pgn-dx-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-res" }, /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), v === "d3" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-panel" }, facts)) : v === "d2" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-facts" }, facts)) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), facts)), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn-dx pgn-" + v, style: { "--pgn-drop": (drop || 0) + "px" } }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs pgn-dx-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-res" }, /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), v === "d3" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-panel" }, facts)) : v === "d2" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-facts" }, facts)) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), facts)), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
   const PgnCard = ({ children, ...props }) => {
     const dir = usePgSetting("dir");
@@ -9361,6 +9362,7 @@
         { value: "live", label: "In progress", state: "library-word-in-progress" },
         { value: "fresh", label: "Not yet played", state: "free-not-played-today" }
       ] },
+      { key: "drop", label: "D1 lower by", options: [{ value: "0", label: "0" }, { value: "8", label: "8px" }, { value: "16", label: "16px" }, { value: "24", label: "24px" }] },
       { key: "ans", label: "On a loss", options: [{ value: "last", label: "Last guess" }, { value: "word", label: "The word" }] }
     ] });
     if (pgActive()) GS_NOW.word = PgnCard;
