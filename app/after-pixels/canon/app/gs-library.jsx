@@ -13,7 +13,6 @@ import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
 import { dvStatus, DV_DONE, DV_LIVE } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { pgeList } from './gs-editions.jsx';
-import { CprPassEnd } from './gs-pass-store.jsx';
 
 export const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
@@ -274,6 +273,12 @@ export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
     {slot && <div className="lb-slot gs-muted">{slot}</div>}
   </div>
 );
+
+// A sentence ending "…the Pass." with "the Pass" linked.
+export const CprPassEnd = ({ text, className }) => {
+  const gs = useGs(); const head = text.slice(0, -'the Pass.'.length);
+  return <p className={className}>{head}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>;
+};
 
 // ---- The now card: the frame every game's now card is built on. A game passes data and its picture (children); the frame draws the
 // label, the title, the result at the top right, and the action row. ----

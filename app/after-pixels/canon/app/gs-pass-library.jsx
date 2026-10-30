@@ -14,7 +14,7 @@ import { LbNowCard, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch,
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ACH, CB_BADGES, cbRecap } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_FIRST, dvRecap, DV_LIVE, dvBar, DV_DONE, dvStatus, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
+import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
@@ -310,18 +310,13 @@ export const registerPassLibrary = () => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsPassLibrary() {
 CPR_FIRST = {
+  // Delve's and Escape's first parts: this card only before a play (Play); once played or started, DlNow and EsNow take over.
   delve: (gs) => ({
-    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, weekly: true,
-    none: 'The game’s very first run, the same for everyone. Play it free.',
-    live: dvRecap(DV_LIVE), liveBar: dvBar(DV_LIVE),
-    done: dvRecap(DV_DONE), doneBar: dvBar(DV_DONE),
-    result: dvStatus(DV_DONE), open: () => gs.go('session', { id: 'delve-first' }), play: () => gs.play('Delve') }),
-  escape: (gs) => { const x = cprEscFirst(); return {
-    label: 'THE FIRST ROOM · FREE', title: x.title, weekly: true,
-    none: 'The game’s very first room, the same for everyone. Play it free.',
-    live: PZ.escape.live.line,
-    done: PZ.escape.done.line,
-    result: PZ.escape.done.st, open: () => gs.go('session', { id: 'escape-week' }), play: () => gs.play('Escape') }; },
+    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title,
+    none: 'The game’s very first run, the same for everyone. Play it free.', play: () => gs.play('Delve') }),
+  escape: (gs) => ({
+    label: 'THE FIRST ROOM · FREE', title: cprEscFirst().title,
+    none: 'The game’s very first room, the same for everyone. Play it free.', play: () => gs.play('Escape') }),
   // The Barrow: Chapter 1's card. A Pass holder's reads A QUEST, a free player's keeps its free label. Finished, it shows the
   // chapter's now line (the record holds no recap of its own) and no bar.
   barrow: (gs) => ({

@@ -1331,10 +1331,6 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 @media (hover: hover) { .gs-ft-link:hover { color: var(--text); text-decoration-color: currentColor; text-underline-offset: 6px; } }
 @media (prefers-reduced-motion: reduce) { a, .gs-ft-link, .gs-ft-mail, .gs-support, .mcp-lnk, .mcp-gtile-open { transition: none; } }
 .gs-pz-item, .gs-hrow, .lb-tile, .lb-achbtn, .dc-chips > button, .lb-choice > button, .gs-plan { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-.gs-plain { list-style: none; padding: 0; display: grid; }
-.gs-plain > li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--line); }
-.gs-plain > li:first-child { border-top: 0; }
-.gs-reached { font-weight: 600; }
 
 /* grids */
 .gs-grid2, .gs-grid3 { display: grid; gap: 16px; }
@@ -1452,7 +1448,7 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
 .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
 /* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
-.lb-now-in { display: grid; gap: 16px; min-width: 0; }
+.lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 /* KEEP: a now card's result never wraps under the title: it holds the top right at every width and the title wraps beside it.
    A long result takes at most half the head and wraps itself, right-aligned. Heads with a link or buttons still wrap.
    Known problem, unsolved: Delve's long endings ("Too late: the ritual was completed") crowd a phone; solve when Delve's page is designed. */
@@ -1963,10 +1959,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-hero-cover { position: relative; }
 .gs-cover-over { position: absolute; left: 0; bottom: 0; padding: 16px; display: grid; gap: 4px; }
 .gs-cover-title { margin: 0; font: 700 34px/1.08 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
-.gs-track { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-.gs-track > i { height: 12px; background: var(--line); }
-.gs-track > i.is-on { background: var(--off-white); }
-.gs-track > i.is-threat { background: var(--error); }
 
 /* puzzles */
 
@@ -1996,7 +1988,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-row4 .mcp-crow-track { --n: 4 !important; }
 .gs-today { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
 .gs-today-list { list-style: none; padding: 0; display: grid; grid-auto-rows: 1fr; }
-.gs-card-eq .gs-plain { align-content: start; }
 .gs-today-list > li + li { border-top: 1px solid var(--line); }
 .gs-gdaily { display: grid; gap: 16px; }
 .gs-gdaily .mcp-cover-art { aspect-ratio: 2 / 1; }
@@ -2138,7 +2129,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .dc-chips > button:active { transform: scale(.97); }
 .dc-empty { display: grid; gap: 8px; justify-items: start; padding: 24px 16px; }
 .dc-empty .mcp-lnk { min-height: 44px; }
-.dc-band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; width: 100%; }
 @container gs (min-width: 720px) {
   .dc-tools { grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); align-items: end; }
 }

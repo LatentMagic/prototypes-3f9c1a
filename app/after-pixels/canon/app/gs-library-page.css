@@ -11,7 +11,7 @@
 .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
 .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
 /* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
-.lb-now-in { display: grid; gap: 16px; min-width: 0; }
+.lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 /* KEEP: a now card's result never wraps under the title: it holds the top right at every width and the title wraps beside it.
    A long result takes at most half the head and wraps itself, right-aligned. Heads with a link or buttons still wrap.
    Known problem, unsolved: Delve's long endings ("Too late: the ritual was completed") crowd a phone; solve when Delve's page is designed. */

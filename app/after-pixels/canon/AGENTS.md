@@ -80,7 +80,7 @@ Every game has editions. Its word for one is `GS_GAMES[gid].ed`; its editions ar
 <important if="you are building or changing UI">
 Build from the design system's components (`DS.<Name>`) and canon's shared parts. Never build a one-off where one of these fits; if none does, say so in your report.
 - Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`; guidelines (layout, overlays, loading) are in `../design-system/guidelines/`.
-- Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, `GsTrack`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsMoves`, share pop-up; `GsSessHead` and `GsSessResult` are used only inside it, so export one before reusing it), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts). A now card is built on `LbNowCard`, which draws the label, title, result and action row (`LbActions`); a game passes its data and its picture.
+- Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsMoves`, share pop-up; `GsSessHead` and `GsSessResult` are used only inside it, so export one before reusing it), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts). A now card is built on `LbNowCard`, which draws the label, title, result and action row (`LbActions`); a game passes its data and its picture.
 - Changing a component is a design-system change: do it only when the brief asks.
 </important>
 

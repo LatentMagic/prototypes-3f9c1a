@@ -2560,11 +2560,6 @@
     const p1 = parts.length ? parts.join(" and ") + (parts.length > 1 || n > 1 ? " come" : " comes") + " with your account. " : "";
     return { p1, lead: (parts.length ? "Everything else" : "Everything") + " comes with " };
   };
-  const CprPassEnd = ({ text, className }) => {
-    const gs = useGs();
-    const head = text.slice(0, -"the Pass.".length);
-    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
-  };
   const cprBoxCopy = (id) => {
     const k = CPR_STAGE[id];
     const u = GS_GAMES[id].ed[0];
@@ -3655,33 +3650,19 @@
   };
   function initGsPassLibrary() {
     CPR_FIRST = {
+      // Delve's and Escape's first parts: this card only before a play (Play); once played or started, DlNow and EsNow take over.
       delve: (gs) => ({
         label: "THE FIRST RUN · FREE",
         title: DV_FIRST.title,
-        weekly: true,
         none: "The game’s very first run, the same for everyone. Play it free.",
-        live: dvRecap(DV_LIVE),
-        liveBar: dvBar(DV_LIVE),
-        done: dvRecap(DV_DONE),
-        doneBar: dvBar(DV_DONE),
-        result: dvStatus(DV_DONE),
-        open: () => gs.go("session", { id: "delve-first" }),
         play: () => gs.play("Delve")
       }),
-      escape: (gs) => {
-        const x = cprEscFirst();
-        return {
-          label: "THE FIRST ROOM · FREE",
-          title: x.title,
-          weekly: true,
-          none: "The game’s very first room, the same for everyone. Play it free.",
-          live: PZ.escape.live.line,
-          done: PZ.escape.done.line,
-          result: PZ.escape.done.st,
-          open: () => gs.go("session", { id: "escape-week" }),
-          play: () => gs.play("Escape")
-        };
-      },
+      escape: (gs) => ({
+        label: "THE FIRST ROOM · FREE",
+        title: cprEscFirst().title,
+        none: "The game’s very first room, the same for everyone. Play it free.",
+        play: () => gs.play("Escape")
+      }),
       // The Barrow: Chapter 1's card. A Pass holder's reads A QUEST, a free player's keeps its free label. Finished, it shows the
       // chapter's now line (the record holds no recap of its own) and no bar.
       barrow: (gs) => ({
@@ -5231,8 +5212,6 @@
   let DV_ALL;
   let DV_LIVE;
   let DV_DONE;
-  let DV_ROOMS;
-  let DV_RITUAL;
   let DV_NEXT;
   const dvEnded = (ps) => ps.filter((p) => !!p.src.end);
   let DV_ACH;
@@ -5240,8 +5219,6 @@
   const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
   let DV_FIRST;
   const dvSid = (s) => s === DV_FIRST || s && s.id === DV_FIRST.id ? "delve-first" : "delve-" + s.id;
-  const dvBar = (s) => [s.rooms + " of " + DV_ROOMS + " rooms reached", s.rooms, DV_ROOMS];
-  const dvRecap = (s) => s.end ? "You played " + s.hero + " and won in " + s.rolls + " rolls, with the ritual " + s.ritual + " of " + DV_RITUAL + " along." : "You’re playing " + s.hero + ", " + s.rooms + " of " + DV_ROOMS + " rooms in, with the ritual " + s.ritual + " of " + DV_RITUAL + ".";
   const dvRun = (gs) => {
     const by = {};
     phVisible(gs).forEach((p) => {
@@ -5268,8 +5245,6 @@
     DV_ALL = [DV_RUN1];
     DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
     DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 5 };
-    DV_ROOMS = 5;
-    DV_RITUAL = 12;
     DV_NEXT = "Monday 12 October";
     DV_ACH = [
       { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
@@ -5962,6 +5937,11 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
   const LbActions = ({ label = "Go to session", onClick, slot }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
+  const CprPassEnd = ({ text, className }) => {
+    const gs = useGs();
+    const head = text.slice(0, -"the Pass.".length);
+    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+  };
   const lbNowLabel = (gid) => {
     const r = gsRhythm(gid);
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
