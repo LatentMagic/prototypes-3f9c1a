@@ -17,7 +17,7 @@
 // setting's value is kept in the URL (&<key>=<value>), so a link opens exactly the view it was copied from; the first
 // option is the default. Styles: app/playground.css.
 //
-// Fit (app/fit.jsx, a button on the Config pill) works under a playground too: the bar stays outside, at phone size, and
+// Fit (app/fit.jsx, a Config → Global setting) works under a playground too: the bar stays outside, at phone size, and
 // drives the framed page. The keys `fit` and `pgframe` are reserved: a setting must never use them.
 // ============================================================================
 import React from 'react';

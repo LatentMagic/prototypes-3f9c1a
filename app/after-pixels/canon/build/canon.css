@@ -2604,13 +2604,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-root.fitted { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .fit { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; background: var(--page); }
 .fit-frame { display: block; border: 0; transform-origin: 0 0; }
-/* The Config pill's Fit half (config.jsx), a word where the other halves hold a glyph. */
-.kit-launcher-fit { width: auto; padding: 0 12px; font: 700 13px/1 var(--font-text); }
-.kit-launcher-fit[aria-pressed="true"] { background: rgba(27,25,23,0.18); }
-/* KEEP: Fit is a phone's button (Joe): from 640px it is hidden, unless fitted already, so it can be pressed off. */
-@media (min-width: 640px) {
-  .kit-launcher-fit:not([aria-pressed="true"]) { display: none; }
-}
 /* Playgrounds (prototype aid): the settings bar that replaces the top bar under ?pg=<id> (app/playground.jsx).
    Imported by canon.css after gs-shell.css, whose .gs-top it builds on. */
 

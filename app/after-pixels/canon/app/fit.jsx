@@ -1,9 +1,9 @@
 // ============================================================================
-// After Pixels — Fit (PROTOTYPE AID). A button on the Config pill (config.jsx) that shows the current page laid out
+// After Pixels — Fit (PROTOTYPE AID). A Config → Global setting (config.jsx) that shows the current page laid out
 // 1280px wide, scaled to the window, in an iframe of this URL (&fit=1), so a phone shows how the page looks as a desktop.
 // It works on every page. Under a playground (?pg=, app/playground.jsx) the settings bar stays outside, at phone size, and
 // drives the framed page. The keys `fit` and `pgframe` are reserved: a playground setting must never use them.
-// Inside the frame (&pgframe=1) neither the pill nor a second Fit appears.
+// Inside the frame (&pgframe=1) there is no Config pill. While fitted the outer pill holds only the Config half, to set Fit Off.
 // ============================================================================
 import React from 'react';
 

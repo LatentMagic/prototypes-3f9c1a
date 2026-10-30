@@ -8603,7 +8603,7 @@
     };
     const hasStates = !!StatesPalette && !!statesGroups && statesGroups.length > 0;
     const hasQa = hasStates && !!QaPalette;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-wrap", ref: wrapRef, style: wrapStyle }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-launcher", style: { cursor: "grab", touchAction: "none" } }, !fitted && /* @__PURE__ */ React$1.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-wrap", ref: wrapRef, style: wrapStyle }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-launcher", style: { cursor: "grab", touchAction: "none" } }, /* @__PURE__ */ React$1.createElement(
       "button",
       {
         className: "kit-launcher-half",
@@ -8642,17 +8642,6 @@
         title: "QA — drag to move"
       },
       /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 20 })
-    ), /* @__PURE__ */ React$1.createElement(
-      "button",
-      {
-        className: "kit-launcher-half kit-launcher-fit",
-        onPointerDown,
-        onClick: () => tapped(() => setFit(!fitted)),
-        "aria-pressed": fitted,
-        "aria-label": "Fit",
-        title: "Fit — the page as a desktop, scaled to the window"
-      },
-      "Fit"
     )), !fitted && hasQa && qaOpen && /* @__PURE__ */ React$1.createElement(
       QaPalette,
       {
@@ -8677,7 +8666,7 @@
         },
         onClose: () => closeAt(setStatesOpen)
       }
-    ), !fitted && open && /* @__PURE__ */ React$1.createElement(
+    ), open && /* @__PURE__ */ React$1.createElement(
       ConfigModal,
       {
         onReset,
@@ -8685,6 +8674,7 @@
         onLayoutChange,
         platform,
         onPlatformChange,
+        fitted,
         onClose: () => closeAt(setOpen)
       }
     ));
@@ -8773,7 +8763,7 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-events-title" }, "Events"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-events-sub" }, "Fires once, then closes Config"), hints.length > 0 && /* @__PURE__ */ React$1.createElement(ConfigInfo, { open: hintOpen, onToggle: () => setHintOpen((v) => !v), label: "About these events" })), hintOpen && hints.map((a) => /* @__PURE__ */ React$1.createElement("div", { key: a.key, className: "kit-config-tip" }, /* @__PURE__ */ React$1.createElement("b", null, a.props.label, ":"), " ", a.props.hint)), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events-list" }, actions));
   };
   let configLastSection = null;
-  const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, onClose }) => {
+  const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, fitted, onClose }) => {
     const isApp = platform === "app";
     const phone = useConfigPhone();
     const [shown, setShown] = useCState(false);
@@ -8881,7 +8871,7 @@
           "data-view": inSection ? "section" : "list"
         },
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React$1.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React$1.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React$1.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React$1.createElement(ConfigGroup, { title: "Review", scope: "global" }, onPlatformChange && /* @__PURE__ */ React$1.createElement(
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React$1.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React$1.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React$1.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React$1.createElement(ConfigGroup, { title: "Review", scope: "global" }, !fitted && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, onPlatformChange && /* @__PURE__ */ React$1.createElement(
           ConfigRow,
           {
             label: "Platform",
@@ -8899,7 +8889,16 @@
             options: [{ value: "auto", label: "Auto" }, { value: "desktop", label: "Desktop" }, { value: "mobile", label: "Mobile" }],
             hint: "Mobile frames every screen in a phone bezel, with no status bar."
           }
-        ), onReset && /* @__PURE__ */ React$1.createElement(ConfigAction, { label: "Reset to seeded data", onClick: onReset })), Extra && /* @__PURE__ */ React$1.createElement(Extra, { onClose }))))
+        )), (phone || fitted) && /* @__PURE__ */ React$1.createElement(
+          ConfigRow,
+          {
+            label: "Fit",
+            value: fitted ? "on" : "off",
+            onChange: (v) => setFit(v === "on"),
+            options: [{ value: "off", label: "Off" }, { value: "on", label: "On" }],
+            hint: "Shows this page laid out as a desktop, scaled to the phone's width."
+          }
+        ), !fitted && onReset && /* @__PURE__ */ React$1.createElement(ConfigAction, { label: "Reset to seeded data", onClick: onReset })), !fitted && Extra && /* @__PURE__ */ React$1.createElement(Extra, { onClose }))))
       )
     );
   };

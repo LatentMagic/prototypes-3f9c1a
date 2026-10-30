@@ -7,8 +7,8 @@
 //   list glyph     → States (app/states-ui.jsx). Where you GO — a state to jump
 //                    to, and a link to hand someone.
 //   check glyph    → QA (app/qa.jsx). The states to check for work in flight.
-//   Fit            → the page as a desktop, scaled to the window (app/fit.jsx). On a phone only,
-//                    or once fitted so it can be pressed off; while fitted the pill holds only Fit.
+//   While the page is fitted (Config → Global → Fit, app/fit.jsx) the pill holds only the Config half,
+//   so Fit can be set Off; the other halves would act on the hidden outer page.
 //
 // The split is the point: a setting is a mode you hold, a state is an address you
 // open. An address needs a register of its own (app/states.jsx) before
@@ -120,12 +120,12 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   return (
     <div className="kit-config-wrap" ref={wrapRef} style={wrapStyle}>
       <div className="kit-launcher" style={{ cursor: 'grab', touchAction: 'none' }}>
-        {!fitted && <button className="kit-launcher-half" onPointerDown={onPointerDown}
+        <button className="kit-launcher-half" onPointerDown={onPointerDown}
           onClick={() => tapped(() => openAt(setOpen))}
           aria-haspopup="dialog" aria-expanded={open} data-open={open ? '1' : undefined}
           aria-label="Config" title="Config — drag to move">
           <Icon name="settings" size={20} />
-        </button>}
+        </button>
         {!fitted && hasStates && (
           <button className="kit-launcher-half" onPointerDown={onPointerDown}
             onClick={() => tapped(() => openAt(setStatesOpen))}
@@ -142,9 +142,6 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             <Icon name="check" size={20} />
           </button>
         )}
-        <button className="kit-launcher-half kit-launcher-fit" onPointerDown={onPointerDown}
-          onClick={() => tapped(() => setFit(!fitted))}
-          aria-pressed={fitted} aria-label="Fit" title="Fit — the page as a desktop, scaled to the window">Fit</button>
       </div>
       {!fitted && hasQa && qaOpen && (
         <QaPalette statesGroups={statesGroups}
@@ -157,11 +154,11 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
           onOpenIndex={() => { closeAt(setStatesOpen); onOpenStatesIndex(); }}
           onClose={() => closeAt(setStatesOpen)} />
       )}
-      {!fitted && open && (
+      {open && (
         <ConfigModal
           onReset={onReset}
           layout={layout} onLayoutChange={onLayoutChange}
-          platform={platform} onPlatformChange={onPlatformChange}
+          platform={platform} onPlatformChange={onPlatformChange} fitted={fitted}
           onClose={() => closeAt(setOpen)}
         />
       )}
@@ -284,7 +281,7 @@ const ConfigEvents = ({ actions }) => {
 // The section open last time; null until one is chosen this page load, so the phone sheet first opens on its section list.
 let configLastSection = null;
 
-const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, onClose }) => {
+const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, fitted, onClose }) => {
   const isApp = platform === 'app';
   const phone = useConfigPhone();
   const [shown, setShown] = useCState(false);
@@ -385,6 +382,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
             <h2 className="kit-config-pane-title">{active}</h2>
             <ConfigCtx.Provider value={ctx}>
               <ConfigGroup title="Review" scope="global">
+                {!fitted && <>
                 {onPlatformChange && (
                   <ConfigRow label="Platform" value={platform || 'web'} onChange={onPlatformChange}
                     options={[{ value: 'web', label: 'Web' }, { value: 'app', label: 'Mobile' }]}
@@ -396,9 +394,16 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
                   : <ConfigRow label="Viewport" value={layout} onChange={onLayoutChange}
                       options={[{ value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' }]}
                       hint="Mobile frames every screen in a phone bezel, with no status bar." />}
-                {onReset && <ConfigAction label="Reset to seeded data" onClick={onReset} />}
+                </>}
+                {/* KEEP: Fit is a phone's setting (Joe): its row shows under 640px, or whenever Fit is on so it can be set Off. While fitted it is the only row: the others act on the hidden outer page. */}
+                {(phone || fitted) && (
+                  <ConfigRow label="Fit" value={fitted ? 'on' : 'off'} onChange={(v) => setFit(v === 'on')}
+                    options={[{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }]}
+                    hint="Shows this page laid out as a desktop, scaled to the phone's width." />
+                )}
+                {!fitted && onReset && <ConfigAction label="Reset to seeded data" onClick={onReset} />}
               </ConfigGroup>
-              {Extra && <Extra onClose={onClose} />}
+              {!fitted && Extra && <Extra onClose={onClose} />}
             </ConfigCtx.Provider>
           </div>
         </div>
