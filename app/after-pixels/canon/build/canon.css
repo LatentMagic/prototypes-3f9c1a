@@ -2745,3 +2745,18 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgn-d3 .pgn-dx-body { grid-template-columns: 1fr auto; grid-template-areas: "head res" "pic pic" "panel panel"; }
   .pgn-dx-panel { grid-auto-flow: column; justify-content: center; gap: 16px; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line); }
 }
+
+/* ---- D2 centring (Joe: D2 must evoke being centred vertically), three ways, from 600px. The card's padding is 24px, its body runs
+   to 16px above the action row, the button is 48px tall. ----
+   Tiles centred: the tiles' middle sits halfway between the card's top edge and the button's top; the ring row hangs below them.
+   Room around: the card grows 20px and the tiles are centred as in "Tiles centred", so the ring row has room under them.
+   Facts in the foot: the tiles alone, centred as in "Tiles centred"; the ring and hint box move into the action row's middle. */
+@container pgndx (min-width: 600px) {
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { transform: none; align-self: start; }
+  .pgn-vc-tiles .pgn-dx-pic, .pgn-vc-foot .pgn-dx-pic { margin-top: calc((24px + 124px + 16px) / 2 - 24px - 24px); }
+  .pgn-vc-room .pgn-dx-body { min-height: 144px; }
+  .pgn-vc-room .pgn-dx-pic { margin-top: calc((24px + 144px + 16px) / 2 - 24px - 24px); }
+
+  .pgn-vc-foot .pgn-dx-facts { position: absolute; left: 50%; bottom: 48px; width: auto; display: flex; gap: 16px; transform: translate(-50%, 50%); }
+}
+.pgn-vc-foot { position: relative; }

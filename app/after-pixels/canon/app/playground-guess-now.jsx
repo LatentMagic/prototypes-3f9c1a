@@ -149,10 +149,10 @@ const PgnD = ({ c, sid }) => {
 // tiles centred in the card's main column, the ring over the hint box in a panel ruled off at the right, under the result.
 const PgnDx = ({ c, sid, v, fresh }) => {
   const gs = useGs(); const s0 = GS_SESSIONS[sid]; const s = fresh ? { ...s0, live: true, loss: false } : s0;
-  const p = React.useMemo(() => (fresh ? { n: 0, hint: null, won: false, last: { word: '     ', marks: ['empty', 'empty', 'empty', 'empty', 'empty'] } } : pgnPlay(s)), [s, fresh]); const drop = usePgSetting('drop');
+  const p = React.useMemo(() => (fresh ? { n: 0, hint: null, won: false, last: { word: '     ', marks: ['empty', 'empty', 'empty', 'empty', 'empty'] } } : pgnPlay(s)), [s, fresh]); const drop = usePgSetting('drop'); const vc = usePgSetting('vc');
   const facts = <><PgnRing s={s} p={p} /><PgnHintBox s={s} p={p} /></>;
   return (
-    <section className={'lb-card pgn-dx pgn-' + v} style={{ '--pgn-drop': (drop || 0) + 'px' }}><div className="pgn-dx-body">
+    <section className={'lb-card pgn-dx pgn-' + v + (v === 'd2' ? ' pgn-vc-' + vc : '')} style={{ '--pgn-drop': (drop || 0) + 'px' }}><div className="pgn-dx-body">
       <div className="gs-stack-xs pgn-dx-head"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">{'#' + s.number}</h2></div>
       <div className="pgn-dx-res">{!fresh && <WdNowResult s={s} />}</div>
       {v === 'd3'
@@ -190,6 +190,7 @@ export const initPlaygroundGuessNow = () => {
       { value: 'failed', label: 'Failed', state: 'library-word', go: played('failed') },
       { value: 'live', label: 'In progress', state: 'library-word-in-progress' },
       { value: 'fresh', label: 'Not yet played', state: 'free-not-played-today' }] },
+    { key: 'vc', label: 'D2 centring', options: [{ value: 'tiles', label: 'Tiles centred' }, { value: 'room', label: 'Room around' }, { value: 'foot', label: 'Facts in the foot' }] },
     { key: 'drop', label: 'D1 lower by', options: [{ value: '0', label: '0' }, { value: '8', label: '8px' }, { value: '16', label: '16px' }, { value: '24', label: '24px' }] },
     { key: 'ans', label: 'On a loss', options: [{ value: 'last', label: 'Last guess' }, { value: 'word', label: 'The word' }] },
   ] });
