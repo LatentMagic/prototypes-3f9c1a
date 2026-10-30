@@ -4237,6 +4237,7 @@
   let dpSeeResult;
   const dpMono = (text) => ({ type: "mono", text });
   const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + " …"), t.w[t.w.length - 1]].join("\n");
+  const dpSessAt = (k) => k === "chain" ? ["Screens", "7. Session page: "] : ["Daily puzzles 1213", "Session page: "];
   const dpEarlier = (k, ok) => () => {
     const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok);
     return x.sid;
@@ -4620,7 +4621,7 @@
     });
     DP_SESSION_STATES = ["where", "chain"].flatMap((k) => {
       const n = GS_NAME[k];
-      const g = "Daily puzzles 1213";
+      const [g, sp] = dpSessAt(k);
       const open = (id, extra) => (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -4628,9 +4629,9 @@
         c.go("session", { id: typeof id === "function" ? id() : id });
       };
       return [
-        { group: g, id: "session-" + k + "-in-progress", label: "Session page: " + n + " in progress", stage: open(k + "-live", { week: "live" }) },
-        { group: g, id: "session-" + k + "-failed", label: "Session page: " + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
-        { group: g, id: "session-" + k + "-earlier", label: "Session page: " + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }
+        { group: g, id: "session-" + k + "-in-progress", label: sp + n + " in progress", stage: open(k + "-live", { week: "live" }) },
+        { group: g, id: "session-" + k + "-failed", label: sp + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
+        { group: g, id: "session-" + k + "-earlier", label: sp + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }
       ];
     });
     DP_PZ_STATES = DP_IDS.flatMap((k) => {
@@ -4669,7 +4670,7 @@
           c.setConnected(true);
           c.go(k, { page: "record", list: true });
         } },
-        { group: g, id: "session-" + k, label: "Session page: " + n + " today, with Share", stage: (c) => {
+        { group: dpSessAt(k)[0], id: "session-" + k, label: k === "chain" ? dpSessAt(k)[1] + n : "Session page: " + n + " today, with Share", stage: (c) => {
           c.setView("pass");
           c.setConnected(true);
           c.go("session", { id: k + "-today" });
@@ -9546,7 +9547,7 @@
   );
   const ChnChain = ({ g, across }) => {
     const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
-    return across ? /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n))) : /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
+    return across ? /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", style: { "--cw": len, "--ch": 46 }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n))) : /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, style: { "--cw": 56, "--ch": len }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
   };
   const CHN_KINDS = [["right", "Right"], ["wrong", "Wrong"], ["near", "Near miss"], ["given", "Given away"]];
   const ChnGuesses = ({ g }) => {
@@ -9556,18 +9557,34 @@
   const ChnSessBody = ({ s }) => {
     if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
     const p = chnRead(s);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a pgr-lift chn-card", style: { "--chn-n": p.long }, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement("div", { className: "chn-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(ChnTiles, { x }), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChnJoint, null))))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel chn-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g }))))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a pgr-lift chn-card", style: { "--chn-n": p.long, "--chn-rows": p.w.length }, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement("div", { className: "chn-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(ChnTiles, { x }), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChnJoint, null))))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel chn-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g }))))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const initGsChain = () => {
     GS_SESSION_BODY.chain = ChnSessBody;
-    pgRegister("chain", { title: "Chain", settings: [
-      { key: "play", label: "Play", options: [
-        { value: "solved", label: "Solved", state: "session-chain" },
-        { value: "live", label: "In progress", state: "session-chain-in-progress" },
-        { value: "failed", label: "Failed", state: "session-chain-failed" },
-        { value: "earlier", label: "Earlier", state: "session-chain-earlier" }
-      ] }
-    ] });
+  };
+  const ChsBody = ({ s }) => {
+    const dir = usePgSetting("dir");
+    return /* @__PURE__ */ React$1.createElement("div", { className: "chs chs-" + dir }, /* @__PURE__ */ React$1.createElement(ChnSessBody, { s }));
+  };
+  const CHS = { title: "Chain size", settings: [
+    { key: "dir", label: "Direction", options: [
+      { value: "rebalance", label: "A Rebalanced" },
+      { value: "fluid", label: "B Fluid" },
+      { value: "tied", label: "C Links as tiles" },
+      { value: "capped", label: "D Fits the screen" },
+      { value: "matched", label: "E Chain as long as the board" },
+      { value: "canon", label: "As built" }
+    ] },
+    { key: "play", label: "Play", options: [
+      { value: "solved", label: "Solved", state: "session-chain" },
+      { value: "live", label: "In progress", state: "session-chain-in-progress" },
+      { value: "failed", label: "Failed", state: "session-chain-failed" },
+      { value: "earlier", label: "Earlier", state: "session-chain-earlier" }
+    ] }
+  ] };
+  const initPlaygroundChainSize = () => {
+    pgRegister("chain-size", CHS);
+    if (pgActive() === CHS) GS_SESSION_BODY.chain = ChsBody;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -9998,4 +10015,5 @@
   initMain();
   initPlaygroundGuessResult();
   initPlaygroundGuessNow();
+  initPlaygroundChainSize();
 })(React, ReactDOM);

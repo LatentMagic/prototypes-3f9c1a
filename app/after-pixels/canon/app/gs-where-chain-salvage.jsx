@@ -183,6 +183,9 @@ const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), 
 
 // ---- Staged states (app/states.jsx spreads them into its register). ----
 // Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Daily Mystery).
+// Chain's session states sit with every other game's session page (Screens, "7. Session page: …"), so the States half of the
+// Config pill lists its four together, beside the rest.
+const dpSessAt = (k) => (k === 'chain' ? ['Screens', '7. Session page: '] : ['Daily puzzles 1213', 'Session page: ']);
 const dpEarlier = (k, ok) => () => { const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok); return x.sid; };
 let DP_SESSION_STATES;
 let DP_PZ_STATES;
@@ -378,12 +381,12 @@ Object.assign(GS_CHATS, {
       gscAi('salvage', 'Sunk: the wreck of 4. ' + (30 - 8) + ' dives left.', null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])] },
   ],
 });
-DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213';
+DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);
   const open = (id, extra) => (c) => { c.setView('pass'); c.setConnected(true); if (extra) c.setReview(extra); c.go('session', { id: typeof id === 'function' ? id() : id }); };
   return [
-    { group: g, id: 'session-' + k + '-in-progress', label: 'Session page: ' + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
-    { group: g, id: 'session-' + k + '-failed', label: 'Session page: ' + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
-    { group: g, id: 'session-' + k + '-earlier', label: 'Session page: ' + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
+    { group: g, id: 'session-' + k + '-in-progress', label: sp + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
+    { group: g, id: 'session-' + k + '-failed', label: sp + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
+    { group: g, id: 'session-' + k + '-earlier', label: sp + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
   ]; });
 DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
   { group: g, id: k + '-signed-out', label: n + ', signed out', stage: (c) => c.go(k) },
@@ -393,7 +396,7 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
   { group: g, id: 'library-' + k + '-in-progress', label: n + ' in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go(k, { page: 'record' }); } },
   { group: g, id: 'library-' + k + '-free', label: n + ' in your library, free account (Needs the Pass)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go(k, { page: 'record' }); } },
   { group: g, id: 'library-' + k + '-editions', label: n + ': every ' + GS_GAMES[k].ed[0] + ' (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k, { page: 'record', list: true }); } },
-  { group: g, id: 'session-' + k, label: 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
+  { group: dpSessAt(k)[0], id: 'session-' + k, label: k === 'chain' ? dpSessAt(k)[1] + n : 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });
 DP_STATES = [...DP_PZ_STATES, ...DP_SESSION_STATES];
 }

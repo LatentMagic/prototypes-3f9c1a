@@ -11,7 +11,6 @@ import React from 'react';
 import { GsMoves } from './gs-session.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 import { PgrTop } from './playground-guess-result.jsx';
-import { pgRegister } from './playground.jsx';
 
 // ---- The model: per word its state (end, found, given, hidden) and letters shown; per guess its result, in order. ----
 const chnRead = (s) => {
@@ -58,11 +57,11 @@ const ChnLoop = ({ res, x, y, across }) => (
 const ChnChain = ({ g, across }) => {
   const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
   return across
-    ? <svg className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} aria-hidden="true">
+    ? <svg className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} style={{ '--cw': len, '--ch': 46 }} aria-hidden="true">
       {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={4 + i * CHN_STEP + CHN_H} y1={4 + CHN_W / 2} x2={4 + (i + 1) * CHN_STEP} y2={4 + CHN_W / 2} />)}
       {g.map((t, i) => <ChnLoop key={i} res={t.res} across x={4 + i * CHN_STEP} y={4} />)}
       {g.map((t, i) => <text key={'n' + i} x={4 + i * CHN_STEP + CHN_H / 2} y="42" textAnchor="middle">{t.n}</text>)}</svg>
-    : <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} aria-hidden="true">
+    : <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} style={{ '--cw': 56, '--ch': len }} aria-hidden="true">
       {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={32 + CHN_W / 2} y1={4 + i * CHN_STEP + CHN_H} x2={32 + CHN_W / 2} y2={4 + (i + 1) * CHN_STEP} />)}
       {g.map((t, i) => <ChnLoop key={i} res={t.res} x={32} y={4 + i * CHN_STEP} />)}
       {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + 4} textAnchor="end">{t.n}</text>)}</svg>;
@@ -78,11 +77,12 @@ const ChnGuesses = ({ g }) => {
     </div>);
 };
 
-const ChnSessBody = ({ s }) => {
+// --cw and --ch (each chain's drawn size) and --chn-rows (the board's rows) are for a playground to size by; canon does not read them.
+export const ChnSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = chnRead(s);
   return <>
-    <section className="dv2 pgr-card pgr-6a pgr-lift chn-card" style={{ '--chn-n': p.long }} aria-label="How it went">
+    <section className="dv2 pgr-card pgr-6a pgr-lift chn-card" style={{ '--chn-n': p.long, '--chn-rows': p.w.length }} aria-label="How it went">
       <PgrTop p={p} />
       <div className="pgr-duo">
         <div className="pgr-boardcol"><div className="chn-board">{p.w.map((x, i) => (
@@ -94,13 +94,4 @@ const ChnSessBody = ({ s }) => {
   </>;
 };
 
-// Open with ?pg=chain for a settings bar that switches between Chain's session states.
-export const initGsChain = () => {
-  GS_SESSION_BODY.chain = ChnSessBody;
-  pgRegister('chain', { title: 'Chain', settings: [
-    { key: 'play', label: 'Play', options: [
-      { value: 'solved', label: 'Solved', state: 'session-chain' },
-      { value: 'live', label: 'In progress', state: 'session-chain-in-progress' },
-      { value: 'failed', label: 'Failed', state: 'session-chain-failed' },
-      { value: 'earlier', label: 'Earlier', state: 'session-chain-earlier' }] }] });
-};
+export const initGsChain = () => { GS_SESSION_BODY.chain = ChnSessBody; };
