@@ -94,23 +94,54 @@ const CnwCount = ({ p }) => { const [first, ...more] = cnwSaid(p);
 // A, Route: every word a box in one line across the card, joined, its state by outline (end filled, found green, given away
 // amber, hidden dashed with its first letters); a word is one line of text, so every box is one size. On a phone, three to a row,
 // the row joined to the next by a joint dropped from its end. The guesses' links under it.
-const CnwBox = ({ x, out, back }) => (
-  <span className={'cnw-box is-' + (x ? x.state : 'blank')} aria-hidden="true">
-    {back && <CnwJoint cls="cnw-stub is-in" />}
-    {x ? (x.state === 'hidden' ? x.word.slice(0, x.shown) + '\u2009' + '\u00B7'.repeat(x.word.length - x.shown) : x.word) : ''}
-    {out && <CnwJoint cls="cnw-stub is-out" />}</span>);
-// Three words to a row on a phone: the row's last word carries a joint stub at its right edge, the next row's first word one at its
-// left, and the joint between them is dropped, so both rows read left to right in chain order.
-const CnwRoute = ({ w, n }) => {
-  const list = w || Array.from({ length: n }, () => null);
+// The unfound word's look (the Unfound setting): dashed the first letters then dots; session the session page's tiles, the letters shown
+// grey and one dashed tile for the rest; link an open link with the first letter; unlit a dark empty slot with the first letter.
+const CNW_LW = 56; const CNW_LH = 28;
+const CnwOpenLink = ({ ch, w = CNW_LW, h = CNW_LH }) => (
+  <svg className="cnw-lk" width={w + 4} height={h + 4} viewBox={'0 0 ' + (w + 4) + ' ' + (h + 4)} aria-hidden="true">
+    <rect x="2" y="2" width={w} height={h} rx={h / 2} className="cnw-loop is-wrong" {...cnwLoop('wrong', w, h)} />
+    {ch && <text x={(w + 4) / 2} y={h / 2 + 7} textAnchor="middle">{ch}</text>}</svg>);
+const cnwUnfound = (x, unf) => {
+  const letters = x ? x.word.slice(0, x.shown) : '';
+  if (unf === 'session') return <span className="cnw-ses">{letters.split('').filter(Boolean).map((ch, j) => <span key={j} className="wd-t cnw-st is-shown">{ch}</span>)}<span className="wd-t cnw-st is-more" /></span>;
+  if (unf === 'link') return <CnwOpenLink ch={letters[0]} />;
+  if (unf === 'unlit') return letters[0] || '';
+  return letters ? letters + '\u2009' + '\u00B7'.repeat(x.word.length - x.shown) : '';
+};
+const CnwBox = ({ x, unf, out, back }) => { const hid = !x || x.state === 'hidden';
   return (
+    <span className={'cnw-box is-' + (x ? x.state : 'blank') + (hid ? ' is-unf-' + unf : '')} aria-hidden="true">
+      {back && <CnwJoint cls="cnw-stub is-in" />}
+      {hid ? cnwUnfound(x, unf) : x.word}
+      {out && <CnwJoint cls="cnw-stub is-out" />}</span>); };
+// Fit (a phone, one line): every word one square tile of one size; the ends their first three letters, the words between their first
+// letter in their state.
+const CnwTile = ({ x, end, unf }) => {
+  if (!x) return <span className="wd-t cnw-t is-more" />;
+  if (end) return <span className="wd-t cnw-t is-end is-three">{x.word.slice(0, 3)}</span>;
+  if (x.state === 'hidden' && unf === 'link') return <CnwOpenLink ch={x.word[0]} w={34} h={26} />;
+  const cls = x.state === 'found' ? 'is-found' : x.state === 'given' ? 'is-given' : unf === 'session' ? 'is-shown' : unf === 'unlit' ? 'is-unlit' : 'is-more is-dim';
+  return <span className={'wd-t cnw-t ' + cls}>{x.word[0]}</span>;
+};
+// Phone layouts (the Wrap setting), all drawn and shown by css: rows three to a row with joint stubs at the break; down one word per
+// row; fit one line of tiles; bend two rows as one chain, the second running right to left, joined at the turn.
+const CnwRoute = ({ w, n, unf }) => {
+  const list = w || Array.from({ length: n }, () => null); const last = list.length - 1;
+  const rows = []; list.forEach((x, i) => { if (i % 3 === 0) rows.push([]); rows[rows.length - 1].push({ x, i }); });
+  return <>
     <div className="cnw-route" role="img" aria-label={w ? w.map((x) => (x.state === 'hidden' ? 'a word starting ' + x.word.slice(0, x.shown) : x.word + (x.state === 'given' ? ' (given away)' : ''))).join(', ') : n + ' words to link'}>
       {list.map((x, i) => <React.Fragment key={i}>
-        <CnwBox x={x} out={i % 3 === 2 && i < list.length - 1} back={i % 3 === 0 && i > 0} />
-        {i < list.length - 1 && <CnwJoint cls={i % 3 === 2 ? 'is-brk' : ''} />}</React.Fragment>)}</div>);
+        <CnwBox x={x} unf={unf} out={i % 3 === 2 && i < last} back={i % 3 === 0 && i > 0} />
+        {i < last && <CnwJoint cls={i % 3 === 2 ? 'is-brk' : ''} />}</React.Fragment>)}</div>
+    <div className="cnw-bend" aria-hidden="true">{rows.map((row, r) => <React.Fragment key={r}>
+      <div className={'cnw-bend-row' + (r % 2 ? ' is-rev' : '')}>{row.map(({ x, i }, k) => <React.Fragment key={i}><CnwBox x={x} unf={unf} />{k < row.length - 1 && <CnwJoint />}</React.Fragment>)}</div>
+      {r < rows.length - 1 && <div className={'cnw-turn' + (r % 2 ? ' is-left' : '')}><CnwJoint /></div>}</React.Fragment>)}</div>
+    <div className="cnw-fit" aria-hidden="true" style={{ '--n': list.length }}>{list.map((x, i) => <React.Fragment key={i}>
+      <CnwTile x={x} end={x && (i === 0 || i === last)} unf={unf} />{i < last && <CnwJoint />}</React.Fragment>)}</div>
+  </>;
 };
-const CnwA = ({ p }) => (
-  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} />{p.g.length > 0 && <CnwLinks g={p.g} />}</div>);
+const CnwA = ({ p, unf }) => (
+  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} unf={unf} />{p.g.length > 0 && <CnwLinks g={p.g} />}</div>);
 
 // B, Today's link: one word large and centred: the latest word found (the first after the start, still hidden, before any); on
 // a failed chain the word that broke; on a solved one the two ends with the words between them collapsed to joints. Under it
@@ -148,7 +179,7 @@ const CnwC = ({ p, fresh }) => {
 // Not yet played: each concept's picture, empty, so nothing of today's words shows before Play.
 const CNW_FRESH_PLAY = { w: ['', '', '', '', '', ''].map((_, i) => ({ i, word: '', state: i === 0 || i === 5 ? 'end' : 'hidden', shown: 0 })), g: [], r: { kind: 'live' }, last: null, found: 0 };
 CNW_FRESH_PLAY.mid = CNW_FRESH_PLAY.w.slice(1, 5);
-const CnwFresh = ({ dir }) => (dir === 'c1' ? <div className="cnw-pic cnw-stack"><CnwRoute n={6} /><span className="cnw-cap">No guesses yet</span></div>
+const CnwFresh = ({ dir, unf }) => (dir === 'c1' ? <div className="cnw-pic cnw-stack"><CnwRoute n={6} unf={unf} /><span className="cnw-cap">No guesses yet</span></div>
   : dir === 'c2' ? <div className="cnw-pic cnw-stack"><div className="cnw-focus"><CnwWord n={5} /></div><div className="cnw-under"><CnwCount p={CNW_FRESH_PLAY} /></div></div>
     : <CnwC p={CNW_FRESH_PLAY} fresh />);
 
@@ -156,19 +187,19 @@ const CNW_PIC = { c1: CnwA, c2: CnwB, c3: CnwC };
 
 // Replaces Chain's now card under ?pg=chain-now; the Concept setting picks the picture, the Play setting the play.
 const CnwCard = ({ c }) => {
-  const gs = useGs(); const dir = usePgSetting('dir'); const play = usePgSetting('play'); const away = usePgSetting('away');
+  const gs = useGs(); const dir = usePgSetting('dir'); const play = usePgSetting('play'); const away = usePgSetting('away'); const wrap = usePgSetting('wrap'); const unf = usePgSetting('unfound');
   const title = '#' + GS_SESSIONS[c.today].number;
   if (play === 'fresh') return (
-    <LbNowCard gid="chain" title={title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'chain')[0] })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away}>
-      <CnwFresh dir={dir} />
+    <LbNowCard gid="chain" title={title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'chain')[0] })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away + ' cnw-wrap-' + wrap + ' cnw-unf-' + unf}>
+      <CnwFresh dir={dir} unf={unf} />
     </LbNowCard>);
   const p = cnwRead(CNW_PLAYS[play]); const Pic = CNW_PIC[dir];
   // A failed today has no session of its own in canon: Go to session opens an earlier failed Chain.
   const sid = play === 'live' ? c.liveSid : play === 'solved' ? c.today
     : Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === 'chain' && / found/.test(GS_SESSIONS[k].result || '')) || c.today;
   return (
-    <LbNowCard gid="chain" title={title} result={p.r} open={() => gs.go('session', { id: sid })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away}>
-      <Pic p={p} />
+    <LbNowCard gid="chain" title={title} result={p.r} open={() => gs.go('session', { id: sid })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away + ' cnw-wrap-' + wrap + ' cnw-unf-' + unf}>
+      <Pic p={p} unf={unf} />
     </LbNowCard>);
 };
 
@@ -176,6 +207,8 @@ export const initPlaygroundChainNow = () => {
   pgRegister('chain-now', { title: 'Chain now card', settings: [
     { key: 'dir', label: 'Concept', options: [{ value: 'c1', label: 'A Route' }, { value: 'c2', label: "B Today's link" }, { value: 'c3', label: 'C Two ends' }] },
     { key: 'away', label: 'Given away', options: [{ value: 'amber', label: 'Amber' }, { value: 'grey', label: 'Grey, as Where' }] },
+    { key: 'wrap', label: 'Phone wrap (A)', options: [{ value: 'rows', label: 'Rows' }, { value: 'down', label: 'Down' }, { value: 'fit', label: 'Fit one line' }, { value: 'bend', label: 'Bend' }] },
+    { key: 'unfound', label: 'Unfound (A)', options: [{ value: 'dashed', label: 'Dashed' }, { value: 'session', label: 'Session tiles' }, { value: 'link', label: 'Open link' }, { value: 'unlit', label: 'Unlit' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'fresh', label: 'Not yet played', state: 'library-chain', go: (gs) => gs.setReview({ never: 'chain' }) },
       { value: 'live', label: 'In progress', state: 'library-chain-in-progress' },

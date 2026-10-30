@@ -53,10 +53,34 @@
 .cnw-away-grey .cnw-box.is-given, .cnw-away-grey .cnw-t.is-given { border-color: transparent; background: #4A453E; color: #ABA79E; }
 .cnw-away-grey .cnw-loop.is-given { stroke: #746E65; }
 
-/* The stubs of a phone's row break: hidden until then. */
+/* Unfound words (the Unfound setting): session tiles, an open link, or a dark unlit slot, in place of the dashed box. */
+.cnw-box.is-unf-session, .cnw-box.is-unf-link { background: none; }
+.cnw-box.is-unf-unlit { background: #2D2A26; color: var(--muted); }
+.cnw-ses { display: flex; justify-content: center; gap: 2px; width: 100%; }
+.cnw-ses > .cnw-st { flex: 0 1 26px; min-width: 0; width: auto; height: 26px; font-size: 13px; }
+.cnw-ses > .cnw-st.is-more { background: var(--wd-dash); }
+.cnw-ses > .cnw-st.is-shown { background: #918B80; color: var(--page); }
+.cnw-lk { display: block; overflow: visible; }
+.cnw-lk text { font: 700 14px/1 var(--font-text); text-transform: uppercase; fill: var(--muted); }
+.cnw-t.is-unlit { background: #2D2A26; color: var(--muted); }
+.cnw-t.is-dim { color: var(--muted); }
+
+/* The stubs of a phone's row break, and the layouts the Wrap setting swaps in on a phone: hidden until then. */
 .cnw-stub { display: none; position: absolute; top: 50%; translate: 0 -50%; }
 .cnw-stub.is-in { left: -11px; }
 .cnw-stub.is-out { right: -11px; }
+.cnw-bend, .cnw-fit { display: none; width: 100%; }
+.cnw-bend-row { display: flex; align-items: center; }
+.cnw-bend-row.is-rev { flex-direction: row-reverse; }
+.cnw-bend-row > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
+.cnw-turn { display: flex; justify-content: flex-end; height: 24px; padding-right: calc((100% - 44px) / 6 - 8px); }
+.cnw-turn.is-left { justify-content: flex-start; padding: 0 0 0 calc((100% - 44px) / 6 - 8px); }
+.cnw-turn svg { transform: rotate(90deg); }
+.cnw-fit { --t: min(36px, calc((100cqi - (var(--n) - 1) * 14px) / var(--n))); align-items: center; justify-content: center; }
+.cnw-fit .cnw-joint { width: 14px; }
+.cnw-fit .cnw-joint svg { width: 14px; height: 10px; }
+.cnw-fit .cnw-t { flex: none; font-size: 16px; }
+.cnw-fit .cnw-t.is-three { font-size: 13px; }
 
 /* B, Today's link: the word large, the guesses and the count in one row under it. */
 .cnw-c2 { --t: 48px; }
@@ -75,10 +99,17 @@
 
 /* Phone (card under 640px): A three to a row, a joint dropped from the first row's end; B shrinks to fit; C's nodes under the ends. */
 @container cnw (max-width: 639.98px) {
-  .cnw-route { flex-wrap: wrap; row-gap: 8px; justify-content: flex-end; }
-  .cnw-route > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
-  .cnw-route > .cnw-joint.is-brk { display: none; }
-  .cnw-stub { display: grid; }
+  .cnw-wrap-rows .cnw-route { flex-wrap: wrap; row-gap: 8px; justify-content: flex-end; }
+  .cnw-wrap-rows .cnw-route > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
+  .cnw-wrap-rows .cnw-route > .cnw-joint.is-brk { display: none; }
+  .cnw-wrap-rows .cnw-stub { display: grid; }
+  .cnw-wrap-down .cnw-route { flex-direction: column; }
+  .cnw-wrap-down .cnw-route > .cnw-box { flex: none; width: min(100%, 240px); height: 28px; }
+  .cnw-wrap-down .cnw-route > .cnw-joint { height: 20px; }
+  .cnw-wrap-down .cnw-route > .cnw-joint svg { transform: rotate(90deg); }
+  .cnw-wrap-bend .cnw-route, .cnw-wrap-fit .cnw-route { display: none; }
+  .cnw-wrap-bend .cnw-bend { display: block; }
+  .cnw-wrap-fit .cnw-fit { display: flex; }
   .cnw-c2 { --t: min(44px, calc((100cqi - 24px) / 7)); }
   .cnw-c2 .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
   .cnw-under { flex-direction: column; gap: 8px; }
