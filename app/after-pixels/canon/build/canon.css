@@ -2940,7 +2940,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* Phone (card under 640px): A three to a row, a joint dropped from the first row's end; B shrinks to fit; C's nodes under the ends. */
 @container cnw (max-width: 639.98px) {
-  .cnw-route { flex-wrap: wrap; row-gap: 8px; }
+  .cnw-route { flex-wrap: wrap; row-gap: 8px; justify-content: flex-end; }
   .cnw-route > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
   .cnw-route > .cnw-joint.is-brk { display: none; }
   .cnw-stub { display: grid; }
