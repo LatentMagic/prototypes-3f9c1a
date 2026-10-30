@@ -40,13 +40,18 @@
 
 /* A, Route: words as boxes of one size, flex across the full width, joints between. */
 .cnw-route { display: flex; align-items: center; width: 100%; }
-.cnw-box { box-sizing: border-box; flex: 1 1 0; min-width: 0; height: 36px; display: grid; place-items: center; overflow: hidden; white-space: nowrap;
+.cnw-box { box-sizing: border-box; flex: 1 1 0; min-width: 0; height: 36px; position: relative; display: grid; place-items: center; white-space: nowrap;
   font: 600 14px/1 var(--font-text); letter-spacing: .03em; text-transform: uppercase; border: 2px solid transparent; }
 .cnw-box.is-end { background: var(--off-white); color: var(--page); }
 .cnw-box.is-found { border-color: var(--success); color: var(--text); }
 .cnw-box.is-given { border-color: #E5A63B; color: #E5A63B; }
 .cnw-box.is-hidden { background: var(--wd-dash); background-origin: border-box; color: var(--muted); }
 .cnw-box.is-blank { background: var(--wd-dash); background-origin: border-box; }
+
+/* The stubs of a phone's row break: hidden until then. */
+.cnw-stub { display: none; position: absolute; top: 50%; translate: 0 -50%; }
+.cnw-stub.is-in { left: -11px; }
+.cnw-stub.is-out { right: -11px; }
 
 /* B, Today's link: the word large, the guesses and the count in one row under it. */
 .cnw-c2 { --t: 48px; }
@@ -67,8 +72,8 @@
 @container cnw (max-width: 639.98px) {
   .cnw-route { flex-wrap: wrap; row-gap: 8px; }
   .cnw-route > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
-  .cnw-route > .cnw-joint:nth-child(6) { flex: 0 0 100%; height: 22px; justify-content: end; padding-right: calc((100% - 44px) / 6 - 11px); }
-  .cnw-route > .cnw-joint:nth-child(6) svg { transform: rotate(90deg); }
+  .cnw-route > .cnw-joint.is-brk { display: none; }
+  .cnw-stub { display: grid; }
   .cnw-c2 { --t: min(44px, calc((100cqi - 24px) / 7)); }
   .cnw-c2 .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
   .cnw-under { flex-direction: column; gap: 8px; }

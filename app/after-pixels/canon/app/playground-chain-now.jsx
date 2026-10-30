@@ -55,8 +55,8 @@ const CnwWord = ({ x, n, cls = '' }) => (n
     : <span className={'cnw-word ' + cls} role="img" aria-label={x.word + (x.state === 'given' ? ', given away' : '')}>
       {x.word.split('').map((ch, j) => <span key={j} aria-hidden="true"
         className={'wd-t cnw-t is-' + (x.state === 'end' ? 'end' : x.state === 'given' ? 'given' : j < x.shown ? 'shown' : 'found')}>{ch}</span>)}</span>);
-const CnwJoint = () => (
-  <span className="cnw-joint" aria-hidden="true"><svg width="22" height="16" viewBox="0 0 22 16"><rect x="1.5" y="1.5" width="12" height="8" rx="4" /><rect x="8.5" y="6.5" width="12" height="8" rx="4" /></svg></span>);
+const CnwJoint = ({ cls = '' }) => (
+  <span className={'cnw-joint ' + cls} aria-hidden="true"><svg width="22" height="16" viewBox="0 0 22 16"><rect x="1.5" y="1.5" width="12" height="8" rx="4" /><rect x="8.5" y="6.5" width="12" height="8" rx="4" /></svg></span>);
 
 // ---- The guesses as the session page's chain of links, across, each numbered: right a closed green link, wrong a grey link open
 // on its side, given away an amber link broken in two. At most CNW_MAX links; earlier ones are counted before the chain. ----
@@ -94,14 +94,20 @@ const CnwCount = ({ p }) => { const [first, ...more] = cnwSaid(p);
 // A, Route: every word a box in one line across the card, joined, its state by outline (end filled, found green, given away
 // amber, hidden dashed with its first letters); a word is one line of text, so every box is one size. On a phone, three to a row,
 // the row joined to the next by a joint dropped from its end. The guesses' links and the count under it.
-const CnwBox = ({ x }) => (
+const CnwBox = ({ x, out, back }) => (
   <span className={'cnw-box is-' + (x ? x.state : 'blank')} aria-hidden="true">
-    {x ? (x.state === 'hidden' ? x.word.slice(0, x.shown) + '\u2009' + '\u00B7'.repeat(x.word.length - x.shown) : x.word) : ''}</span>);
+    {back && <CnwJoint cls="cnw-stub is-in" />}
+    {x ? (x.state === 'hidden' ? x.word.slice(0, x.shown) + '\u2009' + '\u00B7'.repeat(x.word.length - x.shown) : x.word) : ''}
+    {out && <CnwJoint cls="cnw-stub is-out" />}</span>);
+// Three words to a row on a phone: the row's last word carries a joint stub at its right edge, the next row's first word one at its
+// left, and the joint between them is dropped, so both rows read left to right in chain order.
 const CnwRoute = ({ w, n }) => {
   const list = w || Array.from({ length: n }, () => null);
   return (
     <div className="cnw-route" role="img" aria-label={w ? w.map((x) => (x.state === 'hidden' ? 'a word starting ' + x.word.slice(0, x.shown) : x.word + (x.state === 'given' ? ' (given away)' : ''))).join(', ') : n + ' words to link'}>
-      {list.map((x, i) => <React.Fragment key={i}><CnwBox x={x} />{i < list.length - 1 && <CnwJoint />}</React.Fragment>)}</div>);
+      {list.map((x, i) => <React.Fragment key={i}>
+        <CnwBox x={x} out={i % 3 === 2 && i < list.length - 1} back={i % 3 === 0 && i > 0} />
+        {i < list.length - 1 && <CnwJoint cls={i % 3 === 2 ? 'is-brk' : ''} />}</React.Fragment>)}</div>);
 };
 const CnwA = ({ p }) => (
   <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} /><div className="cnw-under">{p.g.length > 0 && <CnwLinks g={p.g} />}<CnwCount p={p} /></div></div>);

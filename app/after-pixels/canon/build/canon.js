@@ -9527,7 +9527,7 @@
     },
     ch
   )));
-  const CnwJoint = () => /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "22", height: "16", viewBox: "0 0 22 16" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "12", height: "8", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "8.5", y: "6.5", width: "12", height: "8", rx: "4" })));
+  const CnwJoint = ({ cls = "" }) => /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joint " + cls, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "22", height: "16", viewBox: "0 0 22 16" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "12", height: "8", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "8.5", y: "6.5", width: "12", height: "8", rx: "4" })));
   const CNW_W = 16;
   const CNW_H = 30;
   const CNW_STEP = CNW_H + 8;
@@ -9553,10 +9553,10 @@
     const [first, ...more] = cnwSaid(p);
     return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap", role: "img", "aria-label": cnwSaid(p).join(", ") }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, first.slice(String(p.found).length) + more.map((m) => " · " + m).join("")));
   };
-  const CnwBox = ({ x }) => /* @__PURE__ */ React$1.createElement("span", { className: "cnw-box is-" + (x ? x.state : "blank"), "aria-hidden": "true" }, x ? x.state === "hidden" ? x.word.slice(0, x.shown) + " " + "·".repeat(x.word.length - x.shown) : x.word : "");
+  const CnwBox = ({ x, out, back }) => /* @__PURE__ */ React$1.createElement("span", { className: "cnw-box is-" + (x ? x.state : "blank"), "aria-hidden": "true" }, back && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: "cnw-stub is-in" }), x ? x.state === "hidden" ? x.word.slice(0, x.shown) + " " + "·".repeat(x.word.length - x.shown) : x.word : "", out && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: "cnw-stub is-out" }));
   const CnwRoute = ({ w, n }) => {
     const list = w || Array.from({ length: n }, () => null);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x }), i < list.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, out: i % 3 === 2 && i < list.length - 1, back: i % 3 === 0 && i > 0 }), i < list.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" }))));
   };
   const CnwA = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w }), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnwCount, { p })));
   const CnwB = ({ p }) => {
