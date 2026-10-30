@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
         send(res, 500, 'Internal Server Error', { 'Content-Type': 'text/plain; charset=utf-8' });
         return;
       }
-      send(res, 200, data, { 'Content-Type': contentType(resolved) });
+      send(res, 200, data, { 'Content-Type': contentType(resolved), 'Cache-Control': 'no-store' });
     });
   });
 });
