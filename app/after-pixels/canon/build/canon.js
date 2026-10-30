@@ -3365,7 +3365,6 @@
   const DL_NO_HOVER = () => {
   };
   const DL_NOW_COL = 44;
-  const DL_NOW_PHONE = 480;
   const useDlNowCols = (n) => {
     const ref = React$1.useRef(null);
     const [cols, setCols] = React$1.useState(n);
@@ -3373,7 +3372,7 @@
       const el = ref.current;
       if (!el) return;
       const read = () => {
-        const fit = el.clientWidth < DL_NOW_PHONE ? 3 : Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
+        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
         setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
       };
       read();
