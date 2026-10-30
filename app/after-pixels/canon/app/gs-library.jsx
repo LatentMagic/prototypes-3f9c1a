@@ -13,6 +13,7 @@ import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
 import { dvStatus, DV_DONE, DV_LIVE } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { pgeList } from './gs-editions.jsx';
+import { CprPassEnd } from './gs-pass-store.jsx';
 
 export const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
@@ -265,7 +266,7 @@ export const LbShare = ({ lines }) => {
   </>;
 };
 
-// The now card's action row, shared by every game's now card: the one main button at the left (Play before a play; "Go to session" while one is under way
+// The now card's action row: the one main button at the left (Play before a play; "Go to session" while one is under way
 // and once it is done) and the slot at the right (the next-time line, or the free player's Pass line). Its card pins it to the card's foot (css: .lb-foot).
 export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
   <div className="lb-foot">
@@ -274,14 +275,35 @@ export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
   </div>
 );
 
-// This edition's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
-// label: the card's own label where it isn't THIS WEEK (Casebook's A CASE); span: the card takes the whole row (no streak card beside it).
-export const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
-  <section className="lb-card" style={span ? { gridColumn: '1 / -1' } : undefined}>
-    <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{label || 'THIS WEEK'}</span><h2 className="mcp-t-sec">{title}</h2></div></div>
-    <p>{line}</p>
-    <LbActions label="Play" onClick={onPlay} slot={next} />
+// ---- The now card: the frame every game's now card is built on. A game passes data and its picture (children); the frame draws the
+// label, the title, the result at the top right, and the action row. ----
+// The label follows the game's schedule: TODAY, THIS WEEK, else the game's edition word ("A CASE"). A free first part passes its own.
+export const lbNowLabel = (gid) => { const r = gsRhythm(gid); return r === 'daily' ? 'TODAY' : r === 'weekly' ? 'THIS WEEK' : 'A ' + GS_GAMES[gid].ed[0].toUpperCase(); };
+// The result: the In progress tag while live; once finished the plain word, green for a win and amber for a miss (owner, 2026-10-30).
+// tag: a game whose card is not yet ruled keeps the finished result as the tag with its icon.
+const LbNowResult = ({ s, tag }) => (s.kind === 'live' || tag
+  ? <span className="lb-big"><LbResult s={s} /></span>
+  : <p className={'gs-vd is-' + (s.kind === 'ok' ? 'ok' : 'over')}>{s.label}</p>);
+// gid; label: overrides the schedule's; title; result: { kind, label } or none (not shown); play: the button reads Play, else open
+// and "Go to session"; next: the next-time line; pass: the free player's first part is done, and the Pass line takes the next-time
+// line's place; span: the card takes the whole row; className: the game's hook for laying out its picture.
+export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => (
+  <section className={'lb-card' + (className ? ' ' + className : '')} style={span ? { gridColumn: '1 / -1' } : undefined}>
+    <div className="lb-now-in">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">{label || lbNowLabel(gid)}</span><h2 className="mcp-t-sec">{title}</h2></div>
+        {result && <LbNowResult s={result} tag={tag} />}
+      </div>
+      {children}
+    </div>
+    <LbActions label={play ? 'Play' : undefined} onClick={play || open} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." /> : next} />
   </section>
+);
+
+// This edition's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
+// span: the card takes the whole row (no streak card beside it).
+export const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => (
+  <LbNowCard gid={gid} title={title} play={onPlay} next={next} span={span}><p>{line}</p></LbNowCard>
 );
 
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.

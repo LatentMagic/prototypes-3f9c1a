@@ -1284,7 +1284,7 @@ input:focus-visible {
 .kit-phone-island { position: absolute; top: 11px; left: 50%; width: 120px; height: 35px; margin-left: -60px; border-radius: 20px; background: #000; }
 .kit-phone-home { bottom: 0; height: var(--safe-area-inset-bottom); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
 .kit-phone-home::after { content: ''; width: 134px; height: 5px; border-radius: 3px; background: currentColor; }
-/* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, top bar, demo bar, phone-wide press and cover rules.
+/* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, the result word, top bar, demo bar, phone-wide press and cover rules.
    Imported by canon.css in the order listed there; later files win ties. */
 
 /* ==== After Pixels product. Values come from the design system's tokens; layout
@@ -1361,6 +1361,9 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .gs-tagbtn { background: none; border: 0; padding: 0; min-height: 44px; display: inline-flex; align-items: center; cursor: pointer; color: inherit; }
 /* KEEP: The 44px target reaches past the tag without making its row taller, so a card with the Pass tag ends where the others do (2026-10-12) */
 .gs-tagbtn { margin-block: -9px; }
+/* The result as a plain coloured word: a now card's finished result (LbNowCard) and Escape's session result line. */
+.gs-vd { margin: 0; display: flex; align-items: center; gap: 6px; font: 600 18px/1.35 var(--font-text); }
+.gs-vd.is-ok { color: var(--success); } .gs-vd.is-over { color: var(--warning); }
 .gs-dot { width: 6px; height: 6px; background: var(--off-white); flex: none; }
 .gs-coverbtn, .gs-titlebtn { background: none; border: 0; padding: 0; margin: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; display: block; width: 100%; }
 .gs-coverbtn:active, .gs-titlebtn:active { opacity: .55; }
@@ -1448,12 +1451,14 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-box { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); display: grid; align-content: start; min-width: 0; --lb-pad: 16px; }
 .lb-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
 .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
+/* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
+.lb-now-in { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: a now card's result never wraps under the title: it holds the top right at every width and the title wraps beside it.
    A long result takes at most half the head and wraps itself, right-aligned. Heads with a link or buttons still wrap.
    Known problem, unsolved: Delve's long endings ("Too late: the ritual was completed") crowd a phone; solve when Delve's page is designed. */
-.lb-card > .lb-top:has(> .lb-big, > .es-vd) { flex-wrap: nowrap; }
-.lb-card > .lb-top:has(> .lb-big, > .es-vd) > .gs-stack-xs { flex: 1 1 0; }
-.lb-card > .lb-top > .lb-big, .lb-card > .lb-top > .es-vd { flex: 0 1 auto; max-width: 50%; text-align: right; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { flex-wrap: nowrap; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { flex: 1 1 0; }
+.lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { flex: 0 1 auto; max-width: 50%; text-align: right; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 /* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
 .lb-sechead > .mcp-lnk { margin-block: -12px; }
@@ -2357,7 +2362,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: At phone width no Library heading or line ends on one or two words alone. */
 @container gs (max-width: 559px) {
   .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }
-  .lb-lay .lb-card > p, .lb-lay .lb-card .gs-stack-xs > p { text-wrap: balance; }
+  .lb-lay .lb-card > p, .lb-lay .lb-now-in > p, .lb-lay .lb-card .gs-stack-xs > p { text-wrap: balance; }
 }
 /* KEEP: One button width (design system Layout), keyed to the width the page is handed so the phone frame gets it too: the system's own rule
    reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
@@ -2411,14 +2416,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .es-rest { display: grid; gap: 8px; min-width: 0; }
 .es-resh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .es-h { margin: 0; font: 700 34px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
-.es-vd { margin: 0; display: flex; align-items: center; gap: 6px; font: 600 18px/1.35 var(--font-text); }
-.es-vd.is-ok { color: var(--success); } .es-vd.is-over { color: var(--warning); }
 /* the now card's result (EsResult card; unused while the card shows "Escaped" alone) */
 .es-res.is-card { flex: none; gap: 12px; }
 .es-res.is-card > .es-od { margin-right: 10px; }
 .es-res.is-card .es-resh { gap: 4px 12px; }
 .es-res.is-card .es-h { font: 700 20px/1.25 var(--font-heading); }
-.es-res.is-card .es-vd { font-size: 16px; }
+.es-res.is-card .gs-vd { font-size: 16px; }
 
 /* the line */
 .es-line { position: relative; width: 100%; }
@@ -2537,10 +2540,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; }
-.wd-now-in { display: grid; gap: 16px; min-width: 0; }
-.wd-now-in > .lb-top { flex-wrap: nowrap; }
-.wd-now-in > .lb-top > .gs-stack-xs { flex: 1 1 0; }
-.wd-now-in > .lb-top > .lb-big, .wd-now-in > .lb-top > .es-vd { flex: 0 1 auto; max-width: 50%; text-align: right; }
 .wd-now-pic { display: grid; justify-self: center; }
 .wd-now-line { --t: 56px; --g: 6px; display: flex; align-items: center; gap: 16px; }
 .wd-now-row { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
@@ -2563,16 +2562,16 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: stacked (a card under 600px): the gap below the picture matches the gap above it as seen. The title's line box ends about
    6px under its figures, so the picture gets 6px more below it. Under 480px the trail's gap is 12px and the tiles fit the card
    (44px at most), so the row never runs past the card's right padding. */
-@container wdnow (max-width: 599.98px) { .wd-now-in > .wd-now-pic { margin-bottom: 6px; } }
+@container wdnow (max-width: 599.98px) { .lb-now-in > .wd-now-pic { margin-bottom: 6px; } }
 @container wdnow (max-width: 479.98px) { .wd-now-line { gap: 12px; --t: min(44px, calc((100cqi - 96px) / 5)); } }
 /* KEEP: on a card 600px wide or more, the label and title, the picture and the result share the top row (the result stays top
    right) and the foot runs below. The head gives way before the picture, so the tiles never spill into the gutters. */
 @container wdnow (min-width: 600px) {
-  .wd-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
-  .wd-now-in > .lb-top { display: contents; }
-  .wd-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
-  .wd-now-in > .lb-top > :is(.lb-big, .es-vd) { grid-area: res; align-self: start; max-width: none; }
-  .wd-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
+  .wd-now > .lb-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
+  .wd-now > .lb-now-in > .lb-top { display: contents; }
+  .wd-now > .lb-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
+  .wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { grid-area: res; align-self: start; max-width: none; }
+  .lb-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
 }
 /* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's

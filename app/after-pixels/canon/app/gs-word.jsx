@@ -11,7 +11,7 @@
 import React from 'react';
 import { DS, useGs, GS_SESSIONS } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
-import { LbResult, LbActions } from './gs-library.jsx';
+import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
 const wdScore = (word, answer) => {
@@ -72,8 +72,8 @@ export const registerWord = () => {
   GS_SESSION_QUIET.word = (s) => ({ label: s.game, h1: 'No. ' + s.number });
 };
 
-// ---- The now card (owner, 2026-10-28; v11 D2): canon's frame with the edition as its title ("#212", as Escape's room name), the
-// result as Escape's plain word, and in place of canon's line and bar the play as a picture: the guess it ended on at full tile
+// ---- The now card (owner, 2026-10-28; v11 D2): the shared frame (LbNowCard) with the edition as its title ("#212", as Escape's room
+// name), and in place of canon's line and bar the play as a picture: the guess it ended on at full tile
 // size, the others a trail of six small rows beside it (a guess not used stays flat, so the card holds one height). No sentence:
 // the rows carry the count and the hint. ----
 const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');
@@ -81,27 +81,18 @@ const WdTr = ({ e }) => (e.kind === 'guess'
   ? <div className="wd-tr">{e.marks.map((m, j) => <i key={j} className={'is-' + m} />)}</div>
   : e.kind === 'hint' ? <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className={j === e.pos ? 'is-hint' : 'is-none'} />)}</div>
   : <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className="is-empty" />)}</div>);
-const WdNowResult = ({ s }) => { const r = wdResult(s);
-  return r.tone === 'live'
-    ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
-    : <p className={'es-vd is-' + (r.tone === 'ok' ? 'ok' : 'over')}>{r.word}</p>; };
 export const WdNow = ({ c, done }) => {
   const gs = useGs(); const sid = done ? c.today : c.liveSid; const s = GS_SESSIONS[sid];
   const ev = React.useMemo(() => wdRead(s).events, [s]);
   const gsv = ev.filter((e) => e.kind === 'guess'); const last = gsv[gsv.length - 1];
   const trail = last ? [...ev.filter((e) => e !== last), ...Array.from({ length: 6 - gsv.length }, () => ({ kind: 'empty' }))] : [];
   const said = trail.map((e) => (e.kind === 'guess' ? wdSay(e) : e.kind === 'hint' ? 'Hint, ' + e.text : 'Not used')).join('. ');
+  const r = wdResult(s);
   return (
-    <section className="lb-card wd-now"><div className="wd-now-in">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">{'#' + s.number}</h2></div>
-        <WdNowResult s={s} />
-      </div>
+    <LbNowCard gid="word" className="wd-now" title={'#' + s.number} result={{ kind: r.tone, label: r.word }} open={() => gs.go('session', { id: sid })} next={c.next}>
       {last && <div className="wd-now-pic"><div className="wd-now-line">
         <div className="wd-trail" role="img" aria-label={said}>{trail.map((e, i) => <WdTr key={i} e={e} />)}</div>
         <div className="wd-now-row" role="img" aria-label={wdSay(last)}>{last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + last.marks[j]} aria-hidden="true">{ch}</span>)}</div>
       </div></div>}
-    </div>
-      <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
-    </section>);
+    </LbNowCard>);
 };

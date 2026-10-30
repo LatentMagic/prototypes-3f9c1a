@@ -305,7 +305,8 @@ DP_PZ = {
   salvage: {
     count: DP_NO, no: (i) => GS_NAME.salvage + ' #' + (DP_NO - i), salt: 12, keep: {}, today: 'salvage-today', liveSid: 'salvage-live',
     ok: (i) => GS_RESULT.salvage({ found: 5, dives: dpSvDay(i, true).log.length }), bad: GS_RESULT.salvage({ found: 3 }),
-    title: 'Today’s sea', next: 'Next sea: tomorrow',
+    // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
+    title: 'Today’s sea', next: 'Next sea: tomorrow', tag: true,
     live: { line: 'You’ve found ' + svSunk(dpSvL) + ' of the 5 wrecks in ' + dpSvL.length + ' dives.', bar: [dpSvL.length + ' of 30 dives', dpSvL.length, 30] },
     done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (30 - SV_TODAY_DIVES.length) + ' dives to spare, and one hint.', bar: [SV_TODAY_DIVES.length + ' of 30 dives', SV_TODAY_DIVES.length, 30] },
     recent: 'Your seas',

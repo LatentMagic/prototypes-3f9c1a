@@ -111,7 +111,8 @@ PZ = {
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
     ok: (i) => GS_RESULT.groups({ found: 4, mistakes: i === 1 ? 0 : i % 4 }), bad: GS_RESULT.groups({ found: 2 }),
-    title: 'Today’s groups', next: 'Next groups: tomorrow',
+    // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
+    title: 'Today’s groups', next: 'Next groups: tomorrow', tag: true,
     live: { line: 'You’ve found 2 of the 4 groups, with 1 mistake so far.', bar: ['2 of 4 groups', 2, 4] },
     done: { st: { kind: 'ok', label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] }, recent: 'Your groups',
     ach: [{ k: 'g1', n: 'Solved', how: 'Find all four groups in a Daily Groups.', by: (p) => p.status.kind === 'ok' },

@@ -1,7 +1,7 @@
 // After Pixels — Library and the library game pages.
 // Declares GsLibrary (Library, with New for you, Your games and the free player's Pass line),
-// gsLibRow (every row read from the play record), PzNow (the daily games' now card) and CbNow (Casebook's), each plus
-// the link once finished, GS_LIBRARY.word / groups / mystery in every view, and GS_LIBRARY.casebook / delve / escape / barrow.
+// gsLibRow (every row read from the play record), PzNow (the daily games' now card) and CbNow (Casebook's), each on the shared
+// frame (LbNowCard), GS_LIBRARY.word / groups / mystery in every view, and GS_LIBRARY.casebook / delve / escape / barrow.
 // Each page body is canon's composition with the first-part card (CprFirst) or the design system's Needs the Pass card (LbNeedsPass)
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 // Canon's library pages for the games a Pass holder still gets them for: copied from GS_LIBRARY in registerPassLibrary().
@@ -10,7 +10,7 @@ import { useGs, DS, GS_SESSIONS, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsTodayPl
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { GS_PAGES } from './gs-game.jsx';
-import { LbResult, LbActions, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch, LbRunPass, lbRunOf, lbFrozen, LbRun, lbNow, lbStreak, lbPast, LbTools, LbChoice } from './gs-library.jsx';
+import { LbNowCard, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch, LbRunPass, lbRunOf, lbFrozen, LbRun, lbNow, lbStreak, lbPast, LbTools, LbChoice } from './gs-library.jsx';
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ACH, CB_BADGES, cbRecap } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
@@ -36,32 +36,26 @@ let CPR_FIRST;
 const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
+  const pass = done && gs.view !== 'pass';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
+  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
+  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;
   // A Pass holder past Chapter 1 sees Chapter 2 ready: its own card, with Play (no Chapter 2 play is staged).
   if (id === 'barrow' && gs.view === 'pass' && done) return (
-    <section className="lb-card gs-pu-first" style={{ gridColumn: '1 / -1' }}>
-      <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{GS_PAGES.barrow.week2.label}</span><h2 className="mcp-t-sec">{BW_CH2.title}</h2></div></div>
+    <LbNowCard gid="barrow" label={GS_PAGES.barrow.week2.label} title={BW_CH2.title} play={() => gs.playReq({ kind: 'edition', e: bwEds(gs)[0] })} next={soon} span>
       <p>{BW_CH2.line}</p>
-      <LbActions label="Play" onClick={() => gs.playReq({ kind: 'edition', e: bwEds(gs)[0] })} slot={soon} />
-    </section>
+    </LbNowCard>
   );
   return (
-    <section className={'lb-card gs-pu-first' + (done ? ' is-done' : '')} style={id === 'barrow' || id === 'casebook' ? { gridColumn: '1 / -1' } : undefined}>
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{f.label}</span><h2 className="mcp-t-sec">{f.title}</h2></div>
-        {(st === 'live' || done) && <span className="lb-big"><LbResult s={st === 'live' ? { kind: 'live', label: 'In progress' } : f.result} /></span>}
-      </div>
+    <LbNowCard gid={id} label={f.label} title={f.title} result={st === 'live' ? { kind: 'live', label: 'In progress' } : done ? f.result : null} tag={f.tag}
+      play={st === 'none' ? f.play : null} open={f.open} next={soon} pass={pass} span={id === 'barrow' || id === 'casebook'}>
       <p>{st === 'live' ? f.live : done ? f.done : f.none}</p>
       {bar && <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />}
-      <LbActions label={st === 'none' ? 'Play' : 'Go to session'} onClick={st === 'none' ? f.play : f.open}
-        slot={done && gs.view !== 'pass' ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." /> : soon} />
-    </section>
+    </LbNowCard>
   );
 };
 
@@ -274,47 +268,36 @@ export const GsLibrary = () => {
   </>);
 };
 
-// ---- Canon's now cards, with the link once finished. ----
+// ---- The daily games' now card, and Casebook's. While a play is under way they show no result. ----
 const CprPzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const st = done ? c.done : c.live;
   if (none) return (
-    <section className="lb-card">
-      <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div></div>
+    <LbNowCard gid={id} title={c.title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })} next={c.next}>
       <p>{GS_PAGES[id].week.line}</p>
-      <LbActions label="Play" onClick={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })} slot={c.next} />
-    </section>
+    </LbNowCard>
   );
   return (
-    <section className="lb-card">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{c.weekly ? 'THIS WEEK' : 'TODAY'}</span><h2 className="mcp-t-sec">{c.title}</h2></div>
-        {done && <span className="lb-big"><LbResult s={c.done.st} /></span>}
-      </div>
+    <LbNowCard gid={id} title={c.title} result={done && c.done.st} tag={c.tag} open={() => gs.go('session', { id: done ? c.today : c.liveSid })} next={c.next}>
       <p>{st.line}</p>
       {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
-      <LbActions onClick={() => gs.go('session', { id: done ? c.today : c.liveSid })} slot={c.next} />
-    </section>
+    </LbNowCard>
   );
 };
+// Casebook's card is not yet ruled: its finished result keeps the tag.
 export const CbNow = ({ c }) => {
   const gs = useGs();
   return (
-    <section className="lb-card" style={{ gridColumn: '1 / -1' }}>
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">A CASE</span><h2 className="mcp-t-sec">{c.title}</h2></div>
-        {!c.live && <span className="lb-big"><LbResult s={cbStatus(c)} /></span>}
-      </div>
+    <LbNowCard gid="casebook" title={c.title} result={!c.live && cbStatus(c)} tag open={() => cbGo(gs, c.id)} span>
       <p>{cbRecap(c)}</p>
       <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
-      <LbActions onClick={() => cbGo(gs, c.id)} />
-    </section>
+    </LbNowCard>
   );
 };
 
 // The now card of a library game page. Daily Word's and Escape's own cards (WdNow in gs-word.jsx, EsNow in gs-escape.jsx) take it once
 // there is a play, Word's first; every other card is CprPzNow.
 export const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
-  : props.id === 'escape' && !props.none ? <EsNow label="THIS WEEK" title={props.c.title} next={props.c.next} />
+  : props.id === 'escape' && !props.none ? <EsNow title={props.c.title} next={props.c.next} />
   : <CprPzNow {...props} />);
 
 // Takes the snapshot, then replaces the game pages: main.jsx calls it after every earlier file has registered its own.
@@ -345,7 +328,7 @@ CPR_FIRST = {
     label: gs.view === 'pass' ? GS_PAGES.barrow.week.label : 'CHAPTER 1 · FREE', title: BW_CH1.title,
     none: BW_CH1.line,
     done: BW_CH1.line,
-    result: { kind: 'ok', label: 'Quest complete' }, open: () => gs.go('session', { id: 'gs-pu-barrow-ch1' }),
+    result: { kind: 'ok', label: 'Quest complete' }, tag: true, open: () => gs.go('session', { id: 'gs-pu-barrow-ch1' }),
     play: () => gs.playReq({ kind: 'edition', e: bwEds(gs)[1] }) }),
 };
 // A Pass-ended player's row for a game with a free first part says what a free player's says, never "Pass only" (proposed, not ratified).

@@ -3,7 +3,7 @@
 // Each game: card (GS_GAMES), cover (GS_ART), product page (GS_PAGES), one chat (GS_CHATS), Library row text, the product page card's unit (GP_CFG),
 // and its editions (GS_EDITIONS): SAMPLE titles and dates, newest first (edSample in gs-history.jsx); a daily's are numbered.
 import React from 'react';
-import { GS_ART, GS_SVG, GS_GAMES, gsAccess, GS_GAME_ORDER, gsRhythm, useGs } from './gs-data.jsx';
+import { GS_ART, GS_SVG, GS_GAMES, gsAccess, GS_GAME_ORDER, useGs } from './gs-data.jsx';
 import { LbHead, LbFreshNow } from './gs-library.jsx';
 import { LbNeedsPass } from './gs-pass-library.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
@@ -101,16 +101,14 @@ const GS_MORE = [
 export const GS_MORE_IDS = GS_MORE.map((d) => d.k);
 // A game's library game page here, from the parts every game's is built from: the head (with the editions link), then the current
 // edition to play for a Pass holder, or Needs the Pass. Nobody has played these games, so there is no streak, achievement or play.
-// The card's label follows the schedule: TODAY, THIS WEEK, else the game's word ("A CHAPTER"), as Casebook's "A CASE".
 const MgLibrary = ({ id }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const e = edList(gs, id)[0]; const r = gsRhythm(id);
-  const label = r === 'daily' ? 'TODAY' : r === 'weekly' ? 'THIS WEEK' : 'A ' + g.ed[0].toUpperCase();
+  const gs = useGs(); const g = GS_GAMES[id]; const e = edList(gs, id)[0];
   return (
     <main key={gs.view} className="gs-wrap gs-main">
       <LbHead id={id} />
       <div className="lb-lay">
         {cprLocked(gs, id) ? <LbNeedsPass id={id} access="none" />
-          : <LbFreshNow label={label} title={e.title || edLabel(e)} line={g.blurb} span onPlay={() => gs.playReq({ kind: 'edition', e })} />}
+          : <LbFreshNow gid={id} title={e.title || edLabel(e)} line={g.blurb} span onPlay={() => gs.playReq({ kind: 'edition', e })} />}
       </div>
     </main>
   );

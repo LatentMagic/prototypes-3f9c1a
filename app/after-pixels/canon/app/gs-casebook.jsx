@@ -84,7 +84,7 @@ const CbLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="casebook" />
       <div className="lb-lay">
-        {pass ? (gsFresh(gs) ? <LbFreshNow label="A CASE" title={CB_LIVE.title} line="You haven’t opened the case yet. Ask the question they haven’t prepared for." span onPlay={() => gs.play(GS_NAME.casebook)} /> : <CbNow c={cbWeek(gs)} />) : null}
+        {pass ? (gsFresh(gs) ? <LbFreshNow gid="casebook" title={CB_LIVE.title} line="You haven’t opened the case yet. Ask the question they haven’t prepared for." span onPlay={() => gs.play(GS_NAME.casebook)} /> : <CbNow c={cbWeek(gs)} />) : null}
         <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />
       </div>

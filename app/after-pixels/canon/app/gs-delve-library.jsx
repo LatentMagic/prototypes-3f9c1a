@@ -41,7 +41,7 @@ const DvLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        {fresh ? <LbFreshNow title={DV_RUN1.title} line="You haven’t started this week’s run yet. Get her out before the ritual is complete." next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
+        {fresh ? <LbFreshNow gid="delve" title={DV_RUN1.title} line="You haven’t started this week’s run yet. Get her out before the ritual is complete." next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
         <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />

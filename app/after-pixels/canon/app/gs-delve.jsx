@@ -11,7 +11,7 @@
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
-import { LbResult, LbActions } from './gs-library.jsx';
+import { LbNowCard } from './gs-library.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
@@ -195,24 +195,18 @@ const DlBody = ({ s }) => {
   </>;
 };
 
-// ---- The now card on Delve's library game page, once this week's run is played or started: the store's frame (label, title,
-// result at the top right, the button into the session and the next run), with the
+// ---- The now card on Delve's library game page, once this week's run is played or started: the shared frame (LbNowCard), with the
 // session page's ending word as its result and the route at the card's size in place of the line and bar. No sheet, no held roll.
 // KEEP: every die is a button that opens the session page with that roll held, as Escape's doors open their lock.
-// A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and its Pass line.
-export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, children }) => {
+// A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
+export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
   const gs = useGs(); const sid = wk.end ? sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
+  const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
-    <section className="lb-card dl-now">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">{label}</span><h2 className="mcp-t-sec">{wk.title}</h2></div>
-        {m.end === 'live' ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
-          : <p className={'es-vd is-' + (m.end === 'won' ? 'ok' : 'over')}>{dlWord(m)}</p>}
-      </div>
+    <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
       <div className="dl-now-route"><DlRoute m={m} act={null} on={{ sel: open, hov: () => {} }} card /></div>
-      <LbActions onClick={() => open()} slot={children || next} />
-    </section>
+    </LbNowCard>
   );
 };
 

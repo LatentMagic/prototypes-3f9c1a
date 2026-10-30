@@ -60,10 +60,6 @@
 /* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; }
-.wd-now-in { display: grid; gap: 16px; min-width: 0; }
-.wd-now-in > .lb-top { flex-wrap: nowrap; }
-.wd-now-in > .lb-top > .gs-stack-xs { flex: 1 1 0; }
-.wd-now-in > .lb-top > .lb-big, .wd-now-in > .lb-top > .es-vd { flex: 0 1 auto; max-width: 50%; text-align: right; }
 .wd-now-pic { display: grid; justify-self: center; }
 .wd-now-line { --t: 56px; --g: 6px; display: flex; align-items: center; gap: 16px; }
 .wd-now-row { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
@@ -86,16 +82,16 @@
 /* KEEP: stacked (a card under 600px): the gap below the picture matches the gap above it as seen. The title's line box ends about
    6px under its figures, so the picture gets 6px more below it. Under 480px the trail's gap is 12px and the tiles fit the card
    (44px at most), so the row never runs past the card's right padding. */
-@container wdnow (max-width: 599.98px) { .wd-now-in > .wd-now-pic { margin-bottom: 6px; } }
+@container wdnow (max-width: 599.98px) { .lb-now-in > .wd-now-pic { margin-bottom: 6px; } }
 @container wdnow (max-width: 479.98px) { .wd-now-line { gap: 12px; --t: min(44px, calc((100cqi - 96px) / 5)); } }
 /* KEEP: on a card 600px wide or more, the label and title, the picture and the result share the top row (the result stays top
    right) and the foot runs below. The head gives way before the picture, so the tiles never spill into the gutters. */
 @container wdnow (min-width: 600px) {
-  .wd-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
-  .wd-now-in > .lb-top { display: contents; }
-  .wd-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
-  .wd-now-in > .lb-top > :is(.lb-big, .es-vd) { grid-area: res; align-self: start; max-width: none; }
-  .wd-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
+  .wd-now > .lb-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
+  .wd-now > .lb-now-in > .lb-top { display: contents; }
+  .wd-now > .lb-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
+  .wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { grid-area: res; align-self: start; max-width: none; }
+  .lb-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
 }
 /* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's
