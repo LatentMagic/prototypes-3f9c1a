@@ -2706,11 +2706,19 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgn-d1 .pgn-dx-res { justify-self: end; }
   .pgn-d1 .pgn-dx-pic { --t: 52px; }
 }
-/* D2: the tiles, then the ring and the hint box as one small centred row under them. */
-.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
-.pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
-.pgn-d2 .pgn-ring { --r: 40px; }
-.pgn-d2 .pgn-ring-n { font-size: 15px; }
+/* D2: the tiles, then the ring and the hint box as one small centred row under them. Tightened (Joe: too much padding): from
+   600px the picture shares the head's row, centred on the card with the title and result in its top corners (as D1), so the card
+   is no taller than the streak card beside it; the gaps are trimmed and the ring is 36px. */
+.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 10px; }
+.pgn-dx-facts { display: flex; align-items: center; gap: 16px; }
+.pgn-d2 .pgn-ring { --r: 36px; }
+.pgn-d2 .pgn-ring-n { font-size: 14px; }
+.pgn-d2 .pgn-dx-body { row-gap: 8px; }
+@container pgndx (min-width: 600px) {
+  .pgn-d2 .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
+  .pgn-d2 .pgn-dx-head, .pgn-d2 .pgn-dx-res, .pgn-d2 .pgn-dx-pic { grid-area: all; }
+  .pgn-d2 .pgn-dx-res { justify-self: end; }
+}
 /* D3: the tiles centred in the main column; the ring over the hint box in a panel under the result, ruled off at its left. */
 .pgn-d3 .pgn-dx-body { grid-template-areas: "head res" "pic panel"; }
 .pgn-dx-panel { grid-area: panel; display: grid; justify-items: center; align-content: center; gap: 12px; padding-left: 24px; border-left: 1px solid var(--line); }
