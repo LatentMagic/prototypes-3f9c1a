@@ -118,7 +118,7 @@ export const gsGuessParts = (word, answer) => {
   return [say('hit', 'in place'), say('near', 'in the word'), say('miss', 'not in the word')].filter(Boolean);
 };
 // A Daily Word play: each entry is a guess (a word) or a line passed through (the hint, as ['Hint', 'Letter 2 is T.']).
-const gsWordLines = (answer, seq) => { let n = 0; return seq.map((x) => (typeof x === 'string' ? ['Guess ' + (n += 1), x, ...gsGuessParts(x, answer)] : x)); };
+export const gsWordLines = (answer, seq) => { let n = 0; return seq.map((x) => (typeof x === 'string' ? ['Guess ' + (n += 1), x, ...gsGuessParts(x, answer)] : x)); };
 // Escape: moves are numbered across moves only (hints and items are not moves). A name sits mid-sentence in lower case.
 const gsEsLines = (steps) => { let n = 0; return steps.map((x) => (x[0] === 'Hint' || x[0] === 'Item' ? x : ['Move ' + (n += 1), ...x])); };
 export const gsEsHint = (lock, rung, text) => ['Hint', 'The ' + lock, 'Hint ' + rung + ' of 3', text];

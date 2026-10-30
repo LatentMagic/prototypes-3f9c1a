@@ -2611,3 +2611,82 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pg-opts > button { min-height: 36px; padding: 0 12px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 13px/1.2 var(--font-text); cursor: pointer; }
   .pg-opts > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 }
+/* PLAYGROUND, not canon: Daily Word result directions (app/playground-guess-result.jsx).
+   Imported after gs-word.css and gs-delve.css, whose board, tiles, card (.dv2) and result band (.dv7r-band) it builds on. */
+
+/* ---- Shared ---- */
+.pgr-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.pgr-facts { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; }
+.pgr-facts > span + span::before { content: '·'; margin-right: 10px; color: var(--control-edge); }
+.pgr-answ { font: 700 17px/1 var(--font-heading); letter-spacing: .12em; }
+
+/* ---- The full-width card (6a, 7a): Delve's card; the board's tile size and gap as canon's Daily Word card sets them. ---- */
+/* KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
+   gutters either side (2 x 28px): about 49px at 390px wide, as on canon's card. */
+.pgr-card { --g: 6px; --t: min(64px, calc((100cqi - 2 * 28px - 4 * var(--g)) / 5)); }
+@container gs (min-width: 640px) { .pgr-card { --g: 8px; --t: clamp(56px, calc((100vh - 560px) / 5), 72px); } }
+.pgr-boardc { display: grid; justify-content: center; }
+
+/* ---- 6a. Phone: the word, the board, then the guesses and the hint side by side under a rule, each centred in half the card.
+   From a 672px card: the board and the panel side by side, centred in the card, the panel ruled off at its left. ---- */
+.pgr-duo { display: grid; gap: 24px; justify-items: center; }
+.pgr-boardcol { display: grid; gap: 20px; justify-items: center; }
+.pgr-panel { display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding-top: 20px; border-top: 1px solid var(--line); }
+.pgr-prow { display: grid; justify-items: center; align-content: start; gap: 12px; }
+@container dv2 (min-width: 672px) {
+  .pgr-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }
+  .pgr-panel { grid-template-columns: auto; align-self: stretch; align-content: center; gap: 32px; width: auto; padding: 0 0 0 64px; border-top: 0; border-left: 1px solid var(--line); }
+}
+
+.pgr-ring { position: relative; width: 104px; height: 104px; }
+.pgr-ring svg { display: block; width: 100%; height: 100%; }
+.pgr-ring circle { fill: none; stroke-width: 12; stroke: var(--line); }
+.pgr-ring circle.is-used { stroke: #918B80; }
+.pgr-ring circle.is-win { stroke: var(--success); }
+.pgr-ring circle.is-lost { stroke: var(--warning); }
+.pgr-ring-n { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 2px; }
+.pgr-ring-n b { font: 700 36px/1 var(--font-heading); color: var(--text); }
+.pgr-ring-n span { font: 600 11px/1 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+@container dv2 (min-width: 672px) { .pgr-ring { width: 128px; height: 128px; } .pgr-ring-n b { font-size: 44px; } }
+
+/* The hint among five places: equal squares; the hint's in canon's dashed hint edge with its letter, the rest flat in the line
+   colour (as canon's now card draws nothing there), so the hint is the only thing that reads. */
+.pgr-places { --pt: 30px; display: grid; justify-items: center; gap: 10px; }
+.pgr-places-row { display: flex; gap: 4px; }
+.pgr-place { box-sizing: border-box; width: var(--pt); height: var(--pt); display: grid; place-items: center; background: var(--line); }
+.pgr-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
+.pgr-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+@container dv2 (min-width: 672px) { .pgr-places { --pt: 36px; } }
+
+/* A loss: the word under the board, tiles at .6 of the board's, outlined in off-white. */
+.pgr-ans { display: grid; justify-items: center; gap: 8px; width: 100%; padding-top: 16px; border-top: 1px dashed var(--line); }
+.pgr-ans-row { display: flex; gap: 4px; }
+/* 6a lifted: from 672px the panel (and its rule) rises past the band and the card's gap, so it centres on the whole card and
+   fills the space beside the word on top; the word on a loss in the ring's grey, thinner and a size down, not off-white. */
+@container dv2 (min-width: 672px) { .pgr-lift .pgr-panel { margin-top: calc(-1 * (29px + 24px)); } }
+.pgr-lift .pgr-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
+
+/* 6a: the word as the panel's last row, like Guesses and Hint (full width under them on a phone). */
+.pgr-panel { row-gap: 20px; }
+.pgr-panel > .pgr-ans { grid-column: 1 / -1; padding-top: 0; border-top: 0; }
+.pgr-ans-t { width: calc(var(--t) * .6); height: calc(var(--t) * .6); font-size: calc(var(--t) * .3); border: 2px solid var(--off-white); color: var(--text); }
+
+/* ---- 7a beside and 6a beside: the result (left) and the board (right) side by side, each as wide as what it holds, the pair
+   centred in the card with a rule between, as 6a's board and panel. Phone: the result above the board, ruled off under it.
+   The grid is inside the card, since the card is the container its width is read from. ---- */
+.pgr-split { display: grid; gap: 20px; }
+.pgr-split-res { display: grid; place-items: center; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.pgr-split-figs { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+@container dv2 (min-width: 672px) {
+  .pgr-split { grid-template-columns: auto auto; justify-content: center; align-items: center; gap: 0; }
+  .pgr-split-res { align-self: stretch; align-content: center; padding: 0 64px 0 0; border-bottom: 0; border-right: 1px solid var(--line); }
+  .pgr-split-6 { gap: 32px; }
+  .pgr-split-figs { grid-template-columns: auto; justify-items: center; gap: 32px; width: auto; }
+  .pgr-split > .pgr-boardc, .pgr-split > .pgr-boardcol { padding-left: 64px; }
+}
+.pgr-band { flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.pgr-band .dv7r-word { padding-right: 0; }
+.pgr-band .dv7r-line { align-self: auto; display: block; }
+.pgr-band .pgr-facts { justify-content: center; }
+.pgr-word { font-weight: 400; color: var(--muted); }
+.pgr-word b { font: 700 17px/1 var(--font-heading); letter-spacing: .12em; color: var(--text); }

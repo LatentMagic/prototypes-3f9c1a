@@ -3150,9 +3150,9 @@
   const WD_SAY = { hit: "in place", near: "in the word", miss: "not in the word" };
   const WdRow = ({ g }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-row", role: "img", "aria-label": "Guess " + g.n + ", " + g.word + ": " + g.word.split("").map((ch, i) => ch + " " + WD_SAY[g.marks[i]]).join(", ") }, g.word.split("").map((ch, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "wd-t is-" + g.marks[i], "aria-hidden": "true" }, ch)));
   const WdHint = ({ h }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-hrow", role: "img", "aria-label": "Hint, after guess " + h.after + ": " + h.text, style: { "--p": h.pos } }, h.pos > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "wd-dots is-l", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t is-hint", "aria-hidden": "true" }, h.letter), /* @__PURE__ */ React$1.createElement("span", { className: "wd-dots", "aria-hidden": "true" }));
-  const WdBoard = ({ s }) => {
+  const WdBoard = ({ s, guessesOnly }) => {
     const p = React$1.useMemo(() => wdRead(s), [s]);
-    const rows = p.events.map((e, i) => [e.kind === "guess" ? e.n : null, e.kind === "guess" ? /* @__PURE__ */ React$1.createElement(WdRow, { g: e }) : /* @__PURE__ */ React$1.createElement(WdHint, { h: e }), i]);
+    const rows = p.events.filter((e) => !guessesOnly || e.kind === "guess").map((e, i) => [e.kind === "guess" ? e.n : null, e.kind === "guess" ? /* @__PURE__ */ React$1.createElement(WdRow, { g: e }) : /* @__PURE__ */ React$1.createElement(WdHint, { h: e }), i]);
     return /* @__PURE__ */ React$1.createElement("div", { className: "wd-board" }, rows.map(([num, el, key]) => /* @__PURE__ */ React$1.createElement("div", { key, className: "wd-nrow" }, /* @__PURE__ */ React$1.createElement("span", { className: "wd-n", "aria-hidden": "true" }, num), el, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }))));
   };
   const wdResult = (s) => s.live ? { tone: "live", word: "In progress" } : s.loss ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
@@ -9120,6 +9120,9 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
   const PG = {};
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -9128,6 +9131,17 @@
   const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
   const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
   const pgSubs = /* @__PURE__ */ new Set();
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
+  };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
       const had = url.searchParams.get("state") === o.state;
@@ -9177,6 +9191,81 @@
       const v = pgValue(s);
       return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", "aria-pressed": v === o.value, onClick: () => pgSet(s, o.value) }, o.label))));
     })));
+  };
+  const pgrPlay = (s) => {
+    const ev = wdRead(s).events;
+    const guesses = ev.filter((e) => e.kind === "guess");
+    return { n: guesses.length, hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss, r: wdResult(s) };
+  };
+  const PgrBand = ({ p, lines }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band pgr-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + p.r.tone }, p.r.word), (lines || []).filter(Boolean).map((l, i) => /* @__PURE__ */ React$1.createElement("p", { key: i, className: "dv7r-line" }, l)));
+  const RING_R = 52;
+  const RING_C = 2 * Math.PI * RING_R;
+  const RING_SEG = RING_C / 6;
+  const RING_GAP = 7;
+  const PgrRing = ({ s, p, label }) => {
+    const seg = (i) => i <= p.n ? p.won && i === p.n ? "win" : s.loss ? "lost" : "used" : "spare";
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgr-ring", role: "img", "aria-label": p.n + (p.n === 1 ? " guess" : " guesses") + " of six" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 128 128", "aria-hidden": "true" }, [1, 2, 3, 4, 5, 6].map((i) => /* @__PURE__ */ React$1.createElement(
+      "circle",
+      {
+        key: i,
+        className: "is-" + seg(i),
+        cx: "64",
+        cy: "64",
+        r: RING_R,
+        strokeDasharray: RING_SEG - RING_GAP + " " + (RING_C - RING_SEG + RING_GAP),
+        transform: "rotate(" + (-90 + (i - 1) * 60 + RING_GAP / RING_C * 180) + " 64 64)"
+      }
+    ))), /* @__PURE__ */ React$1.createElement("span", { className: "pgr-ring-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.n), !label && /* @__PURE__ */ React$1.createElement("span", null, p.n === 1 ? "guess" : "guesses")));
+  };
+  const PgrPlaces = ({ s, p }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgr-places" + (p.hint ? "" : " is-none"), role: "img", "aria-label": p.hint ? "Hint: " + p.hint.text : s.live ? "Hint not used yet" : "No hint" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-places-row", "aria-hidden": "true" }, [0, 1, 2, 3, 4].map((j) => p.hint && p.hint.pos === j ? /* @__PURE__ */ React$1.createElement("span", { key: j, className: "pgr-place is-hint" }, p.hint.letter) : /* @__PURE__ */ React$1.createElement("span", { key: j, className: "pgr-place" }))), !p.hint && /* @__PURE__ */ React$1.createElement("span", { className: "pgr-note", "aria-hidden": "true" }, s.live ? "Not used yet" : "None taken"));
+  const PgrAnswer = ({ s }) => s.loss && s.answer ? /* @__PURE__ */ React$1.createElement("div", { className: "pgr-ans", role: "img", "aria-label": "The word was " + s.answer }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap", "aria-hidden": "true" }, "The word"), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-ans-row", "aria-hidden": "true" }, s.answer.split("").map((ch, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "wd-t pgr-ans-t" }, ch)))) : null;
+  const pgrFacts = (s, p) => [p.n + (p.n === 1 ? " guess" : " guesses"), p.hint ? "1 hint" : s.live ? "hint not used" : "no hint"];
+  const PgrTop = ({ p, line }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + p.r.tone }, p.r.word), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
+  const Pgr6a = ({ s, lift }) => {
+    const p = pgrPlay(s);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a" + (lift ? " pgr-lift" : ""), "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s, guessesOnly: true })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(PgrRing, { s, p, label: true })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Hint"), /* @__PURE__ */ React$1.createElement(PgrPlaces, { s, p })), /* @__PURE__ */ React$1.createElement(PgrAnswer, { s }))));
+  };
+  const Pgr7a = ({ s }) => {
+    const p = pgrPlay(s);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-7a", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p, line: /* @__PURE__ */ React$1.createElement("span", { className: "pgr-facts" }, pgrFacts(s, p).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i }, f)), s.loss && s.answer && /* @__PURE__ */ React$1.createElement("span", null, "The word was ", /* @__PURE__ */ React$1.createElement("b", { className: "pgr-answ" }, s.answer))) }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardc" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s })));
+  };
+  const Pgr7aBeside = ({ s }) => {
+    const p = pgrPlay(s);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split-res" }, /* @__PURE__ */ React$1.createElement(PgrBand, { p, lines: [
+      /* @__PURE__ */ React$1.createElement("span", { key: "f", className: "pgr-facts" }, pgrFacts(s, p).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i }, f))),
+      s.loss && s.answer ? /* @__PURE__ */ React$1.createElement("span", { key: "w", className: "pgr-word" }, "The word was ", /* @__PURE__ */ React$1.createElement("b", null, s.answer)) : null
+    ] })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardc" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s }))));
+  };
+  const Pgr6aBeside = ({ s }) => {
+    const p = pgrPlay(s);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split-res pgr-split-6" }, /* @__PURE__ */ React$1.createElement(PgrBand, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split-figs" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(PgrRing, { s, p, label: true })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Hint"), /* @__PURE__ */ React$1.createElement(PgrPlaces, { s, p })))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s, guessesOnly: true }), /* @__PURE__ */ React$1.createElement(PgrAnswer, { s }))));
+  };
+  const PgrBody = ({ s }) => {
+    const dir = usePgSetting("dir");
+    if (dir === "canon") return /* @__PURE__ */ React$1.createElement(WdSessBody, { s });
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, dir === "6a" ? /* @__PURE__ */ React$1.createElement(Pgr6a, { s }) : dir === "6a-lift" ? /* @__PURE__ */ React$1.createElement(Pgr6a, { s, lift: true }) : dir === "6a-beside" ? /* @__PURE__ */ React$1.createElement(Pgr6aBeside, { s }) : dir === "7a-beside" ? /* @__PURE__ */ React$1.createElement(Pgr7aBeside, { s }) : /* @__PURE__ */ React$1.createElement(Pgr7a, { s }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const initPlaygroundGuessResult = () => {
+    GS_SESSIONS["pgr-word-nohint"] = {
+      ...GS_SESSIONS["word-today"],
+      number: 211,
+      hints: 0,
+      result: "Solved in 4 of 6",
+      share: "Solved in 4 of 6",
+      date: "Monday 5 October",
+      lines: gsWordLines("STILL", ["CRANE", "SLATE", "STALL", "STILL"])
+    };
+    pgRegister("guess-result", { title: "Guess result", settings: [
+      { key: "dir", label: "Direction", options: [{ value: "6a", label: "6a Ring" }, { value: "6a-lift", label: "6a Ring lifted" }, { value: "6a-beside", label: "6a beside" }, { value: "7a", label: "7a Short line" }, { value: "7a-beside", label: "7a beside" }, { value: "canon", label: "Canon" }] },
+      { key: "play", label: "Play", options: [
+        { value: "solved", label: "Solved in 3", state: "session-puzzle" },
+        { value: "hard", label: "Solved in 5", state: "session-word-hard" },
+        { value: "nohint", label: "No hint", state: "session-puzzle", go: (gs) => gs.go("session", { id: "pgr-word-nohint" }) },
+        { value: "failed", label: "Failed", state: "session-word-failed" },
+        { value: "live", label: "In progress", state: "session-word-in-progress" }
+      ] }
+    ] });
+    if (pgActive()) GS_SESSION_BODY.word = PgrBody;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -9603,4 +9692,5 @@
   initGsPassLibrary();
   initGsDelve();
   initMain();
+  initPlaygroundGuessResult();
 })(React, ReactDOM);

@@ -20,7 +20,7 @@ const wdScore = (word, answer) => {
   w.forEach((ch, i) => { if (marks[i] !== 'hit' && left[ch]) { marks[i] = 'near'; left[ch] -= 1; } });
   return marks;
 };
-const wdRead = (s) => {
+export const wdRead = (s) => {
   const events = []; let n = 0;
   (s.lines || []).forEach((l) => {
     if (/^Guess/.test(l[0])) { n += 1; events.push({ kind: 'guess', n, word: l[1], marks: wdScore(l[1], s.answer || l[1]) }); }
@@ -33,7 +33,7 @@ const WD_SAY = { hit: 'in place', near: 'in the word', miss: 'not in the word' }
 // ---- The board (playground v6, agreed 2026-10-28): square tiles, each guess row numbered at its left; the hint a half-height
 // row where it was taken, its letter and "Hint" in a dashed grey tile at its letter's column, the rest of the row empty. In
 // progress shows only the rows played; the "In progress" tag carries the rest (owner, 2026-10-28). Tiles have no hover. ----
-const WdRow = ({ g }) => (
+export const WdRow = ({ g }) => (
   <div className="wd-row" role="img" aria-label={'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ')}>
     {g.word.split('').map((ch, i) => <span key={i} className={'wd-t is-' + g.marks[i]} aria-hidden="true">{ch}</span>)}
   </div>);
@@ -44,9 +44,10 @@ const WdHint = ({ h }) => (
     <span className="wd-t is-hint" aria-hidden="true">{h.letter}</span>
     <span className="wd-dots" aria-hidden="true" />
   </div>);
-const WdBoard = ({ s }) => {
+// guessesOnly: the board without its hint row, for a result that draws the hint itself.
+export const WdBoard = ({ s, guessesOnly }) => {
   const p = React.useMemo(() => wdRead(s), [s]);
-  const rows = p.events.map((e, i) => [e.kind === 'guess' ? e.n : null, e.kind === 'guess' ? <WdRow g={e} /> : <WdHint h={e} />, i]);
+  const rows = p.events.filter((e) => !guessesOnly || e.kind === 'guess').map((e, i) => [e.kind === 'guess' ? e.n : null, e.kind === 'guess' ? <WdRow g={e} /> : <WdHint h={e} />, i]);
   return (
     <div className="wd-board">
       {rows.map(([num, el, key]) => <div key={key} className="wd-nrow"><span className="wd-n" aria-hidden="true">{num}</span>{el}<span aria-hidden="true" /></div>)}
@@ -55,13 +56,13 @@ const WdBoard = ({ s }) => {
 
 // ---- The result statement (owner, 2026-10-28): the store's status Tag at heading size, centred on the board's height: Solved
 // (green), Failed (amber), In progress (the neutral fill). It is the element every game's session page has. ----
-const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } : s.loss ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' });
-const WdResult = ({ s }) => { const r = wdResult(s); return (
+export const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } : s.loss ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' });
+export const WdResult = ({ s }) => { const r = wdResult(s); return (
   <div className="wd-res"><h2 className={'wd-tag is-' + r.tone}>{r.tone !== 'live' && <DS.Icon name={r.tone === 'ok' ? 'check' : 'close'} size={24} />}{r.word}</h2></div>); };
 
 // ---- The session page's own part, under the shared head: one card holding the board and the result. Every guess is the store's
 // plain list, collapsed. ----
-const WdSessBody = ({ s }) => <>
+export const WdSessBody = ({ s }) => <>
   <div className="wd-play"><section className="wd-card" aria-label="How it went"><WdBoard s={s} /><WdResult s={s} /></section></div>
   <GsMoves s={s} />
 </>;
