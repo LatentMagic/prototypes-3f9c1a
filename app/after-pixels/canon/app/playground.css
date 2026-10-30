@@ -26,16 +26,3 @@
   .pg-opts > button { min-height: 36px; padding: 0 12px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 13px/1.2 var(--font-text); cursor: pointer; }
   .pg-opts > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 }
-
-/* Fit (see playground.jsx): the page in an iframe 1280px wide, scaled to the window; only the frame scrolls. */
-.gs-root.pg-fitted { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
-.pg-fit { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; background: var(--page); }
-.pg-fit-frame { display: block; border: 0; transform-origin: 0 0; }
-.pg-fit-btn { flex: none; min-height: 44px; padding: 0 12px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge);
-  font: 600 14px/1.2 var(--font-text); cursor: pointer; }
-.pg-fit-btn[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
-/* KEEP: Fit is a phone's button (Joe): from 640px it is hidden, unless fitted already, so it can be pressed off. */
-@container gs (min-width: 640px) {
-  .pg-fit-btn { min-height: 36px; font-size: 13px; }
-  .pg-fit-btn:not([aria-pressed="true"]) { display: none; }
-}

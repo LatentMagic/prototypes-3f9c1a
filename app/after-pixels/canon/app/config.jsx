@@ -7,6 +7,8 @@
 //   list glyph     → States (app/states-ui.jsx). Where you GO — a state to jump
 //                    to, and a link to hand someone.
 //   check glyph    → QA (app/qa.jsx). The states to check for work in flight.
+//   Fit            → the page as a desktop, scaled to the window (app/fit.jsx). On a phone only,
+//                    or once fitted so it can be pressed off; while fitted the pill holds only Fit.
 //
 // The split is the point: a setting is a mode you hold, a state is an address you
 // open. An address needs a register of its own (app/states.jsx) before
@@ -35,6 +37,7 @@ import { Icon, kitLockScroll } from './primitives.jsx';
 import { StatesPalette } from './states-ui.jsx';
 import { QaPalette } from './qa.jsx';
 import { ConfigExtra } from './gs-pass-aids.jsx';
+import { useFit, setFit } from './fit.jsx';
 
 const { useState: useCState, useRef: useCRef, useEffect: useCEffect,
         useLayoutEffect: useCLayoutEffect, useContext: useCContext } = React;
@@ -45,6 +48,7 @@ const ConfigCtx = React.createContext(null);
 
 export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
                          onReset, layout, onLayoutChange, platform, onPlatformChange }) => {
+  const fitted = useFit();
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   const [qaOpen, setQaOpen] = useCState(false);
@@ -116,13 +120,13 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   return (
     <div className="kit-config-wrap" ref={wrapRef} style={wrapStyle}>
       <div className="kit-launcher" style={{ cursor: 'grab', touchAction: 'none' }}>
-        <button className="kit-launcher-half" onPointerDown={onPointerDown}
+        {!fitted && <button className="kit-launcher-half" onPointerDown={onPointerDown}
           onClick={() => tapped(() => openAt(setOpen))}
           aria-haspopup="dialog" aria-expanded={open} data-open={open ? '1' : undefined}
           aria-label="Config" title="Config — drag to move">
           <Icon name="settings" size={20} />
-        </button>
-        {hasStates && (
+        </button>}
+        {!fitted && hasStates && (
           <button className="kit-launcher-half" onPointerDown={onPointerDown}
             onClick={() => tapped(() => openAt(setStatesOpen))}
             aria-haspopup="dialog" aria-expanded={statesOpen} data-open={statesOpen ? '1' : undefined}
@@ -130,7 +134,7 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             <Icon name="list" size={20} />
           </button>
         )}
-        {hasQa && (
+        {!fitted && hasQa && (
           <button className="kit-launcher-half" onPointerDown={onPointerDown}
             onClick={() => tapped(() => openAt(setQaOpen))}
             aria-haspopup="dialog" aria-expanded={qaOpen} data-open={qaOpen ? '1' : undefined}
@@ -138,19 +142,22 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             <Icon name="check" size={20} />
           </button>
         )}
+        <button className="kit-launcher-half kit-launcher-fit" onPointerDown={onPointerDown}
+          onClick={() => tapped(() => setFit(!fitted))}
+          aria-pressed={fitted} aria-label="Fit" title="Fit — the page as a desktop, scaled to the window">Fit</button>
       </div>
-      {hasQa && qaOpen && (
+      {!fitted && hasQa && qaOpen && (
         <QaPalette statesGroups={statesGroups}
           onGo={(id) => { onGoState(id); closeAt(setQaOpen); }}
           onClose={() => closeAt(setQaOpen)} />
       )}
-      {hasStates && statesOpen && (
+      {!fitted && hasStates && statesOpen && (
         <StatesPalette groups={statesGroups}
           onGo={(id) => { onGoState(id); closeAt(setStatesOpen); }}
           onOpenIndex={() => { closeAt(setStatesOpen); onOpenStatesIndex(); }}
           onClose={() => closeAt(setStatesOpen)} />
       )}
-      {open && (
+      {!fitted && open && (
         <ConfigModal
           onReset={onReset}
           layout={layout} onLayoutChange={onLayoutChange}

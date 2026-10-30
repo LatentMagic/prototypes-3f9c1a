@@ -88,7 +88,8 @@ import { buildStates } from './gs-pass-aids.jsx';
 import { registerEscape } from './gs-escape.jsx';
 import { registerWord } from './gs-word.jsx';
 import { registerDelve } from './gs-delve.jsx';
-import { PgBar, PgFit, pgActive, pgFramed, usePgFit } from './playground.jsx';
+import { PgBar, pgActive } from './playground.jsx';
+import { FitView, isFramed, useFit } from './fit.jsx';
 import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
 import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
 
@@ -192,7 +193,7 @@ const KitPhoneBars = () => (
 );
 
 const KitApp = () => {
-  const fitted = usePgFit();
+  const fitted = useFit();
   // viewport / layout posture: 'auto' | 'desktop' | 'mobile', set from Config.
   const [layout, setLayout] = useState('auto');
   // Platform posture: 'web' | 'app', set from Config. Session-only like the
@@ -371,9 +372,9 @@ const KitApp = () => {
 
   const appTree = (
     <GsCtx.Provider value={gs}>
-      <div className={'gs-root' + (fitted ? ' pg-fitted' : '')} ref={rootRef}>
-        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? <PgBar /> : <GsTopBar />)}
-        {fitted ? <PgFit /> : <>
+      <div className={'gs-root' + (fitted ? ' fitted' : '')} ref={rootRef}>
+        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? <PgBar /> : !fitted && <GsTopBar />)}
+        {fitted ? <FitView /> : <>
         {Cand && Cand.Screen
           ? <Cand.Screen api={gs} />
           : <GsArrival key={idx.current} name={route.name} quick={backNav.current} />}
@@ -404,7 +405,7 @@ const KitApp = () => {
       ) : appTree}
 
       {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
-      {ConfigLauncher && !fitted && !pgFramed() && <ConfigLauncher
+      {ConfigLauncher && !isFramed() && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
         onReset={resetAndShow}

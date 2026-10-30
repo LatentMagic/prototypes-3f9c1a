@@ -85,7 +85,7 @@ Build from the design system's components (`DS.<Name>`) and canon's shared parts
 </important>
 
 <important if="you are building or changing a playground (options for a page, compared under ?pg=)">
-A playground lives on its own `candidate/<name>` branch, never on `main`; `app/playground.jsx` (the settings bar that replaces the top bar under `?pg=<id>`) is the only part on `main`, and its header says how to build one.
+A playground lives on its own `candidate/<name>` branch, never on `main`; `app/playground.jsx` (the settings bar that replaces the top bar under `?pg=<id>`) is the only part on `main`, and its header says how to build one. Fit (the Config pill's button, `app/fit.jsx`, phone width only) shows any page, a playground's included, as a desktop; a playground's settings reach the framed page without code of its own.
 </important>
 
 <important if="you are writing a product string">
