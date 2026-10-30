@@ -143,12 +143,34 @@ const PgnD = ({ c, sid }) => {
     </section>);
 };
 
+// D1-D3 (Joe, after D): D's parts (the last guess, the ring, the hint box) with canon's title top left and result top right,
+// each a different way of centring the picture in the card's height and width. D1: the picture centred on the whole card,
+// the title and result in its top corners. D2: the tiles centred, the ring and the hint box a small row under them. D3: the
+// tiles centred in the card's main column, the ring over the hint box in a panel ruled off at the right, under the result.
+const PgnDx = ({ c, sid, v }) => {
+  const gs = useGs(); const s = GS_SESSIONS[sid]; const p = React.useMemo(() => pgnPlay(s), [s]);
+  const facts = <><PgnRing s={s} p={p} /><PgnHintBox s={s} p={p} /></>;
+  return (
+    <section className={'lb-card pgn-dx pgn-' + v}><div className="pgn-dx-body">
+      <div className="gs-stack-xs pgn-dx-head"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">{'#' + s.number}</h2></div>
+      <div className="pgn-dx-res"><WdNowResult s={s} /></div>
+      {v === 'd3'
+        ? <><div className="pgn-dx-pic"><PgnLast s={s} p={p} /></div><div className="pgn-dx-panel">{facts}</div></>
+        : v === 'd2'
+          ? <div className="pgn-dx-pic"><PgnLast s={s} p={p} /><div className="pgn-dx-facts">{facts}</div></div>
+          : <div className="pgn-dx-pic"><PgnLast s={s} p={p} />{facts}</div>}
+    </div>
+      <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
+    </section>);
+};
+
 const PgnCard = ({ children, ...props }) => {
   const dir = usePgSetting('dir'); const gs = useGs();
   if (dir === 'canon') return children;
   if (props.none) return <PgnFresh c={props.c} dir={dir} />;
   if (dir === 'a-space') return <PgnA {...props} sid={props.done ? props.c.today : props.c.liveSid} />;
   if (dir === 'd-c-in-a') return <PgnD c={props.c} sid={props.done ? props.c.today : props.c.liveSid} />;
+  if (['d1', 'd2', 'd3'].includes(dir)) return <PgnDx c={props.c} sid={props.done ? props.c.today : props.c.liveSid} v={dir} />;
   const sid = props.done ? props.c.today : props.c.liveSid;
   return dir === 'b-rows' ? <PgnB c={props.c} sid={sid} /> : <PgnC c={props.c} sid={sid} />;
 };
@@ -158,7 +180,7 @@ const PgnCard = ({ children, ...props }) => {
 const played = (ed) => (gs) => gs.setReview({ today: 'played', week: 'done', ed });
 export const initPlaygroundGuessNow = () => {
   pgRegister('guess-now', { title: 'Guess now card', settings: [
-    { key: 'dir', label: 'Direction', options: [{ value: 'a-space', label: 'A Space' }, { value: 'b-rows', label: 'B Second row' }, { value: 'c-ring', label: 'C Ring and places' }, { value: 'd-c-in-a', label: 'D C in A spacing' }, { value: 'canon', label: 'Canon' }] },
+    { key: 'dir', label: 'Direction', options: [{ value: 'a-space', label: 'A Space' }, { value: 'b-rows', label: 'B Second row' }, { value: 'c-ring', label: 'C Ring and places' }, { value: 'd-c-in-a', label: 'D C in A spacing' }, { value: 'd1', label: 'D1 Centred on the card' }, { value: 'd2', label: 'D2 Tiles over facts' }, { value: 'd3', label: 'D3 Facts panel' }, { value: 'canon', label: 'Canon' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'solved', label: 'Solved in 3', state: 'library-word', go: played(null) },
       { value: 'hard', label: 'Solved in 5', state: 'library-word', go: played('hard') },

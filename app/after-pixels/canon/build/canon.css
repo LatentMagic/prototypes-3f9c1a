@@ -2686,3 +2686,41 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    its own row, centred, and the ring keeps the trail's place beside the tiles. */
 .pgn-d .wd-now-line { gap: 24px; }
 @container wdnow (max-width: 599.98px) { .pgn-d .wd-now-line { gap: 12px; flex-wrap: wrap; justify-content: center; } .pgn-d .pgn-ring { --r: 44px; } .pgn-d .pgn-ring-n { font-size: 16px; } .pgn-d .pgn-hint { flex-basis: 100%; justify-content: center; } }
+
+/* KEEP: the result never wraps ("In progress" broke onto two lines beside the picture). */
+.pgn-d .wd-now-in > .lb-top > :is(.lb-big, .es-vd), .pgn-dx-res :is(.lb-big, .es-vd) { white-space: nowrap; }
+
+/* ---- D1-D3: D's parts, centred in the card. The body takes the card's spare height (the card is a flex column, its foot pinned). ---- */
+.pgn-dx { container: pgndx / inline-size; }
+.pgn-dx-body { flex: 1 1 auto; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; grid-template-areas: "head res" "pic pic"; gap: 16px 24px; min-width: 0; }
+.pgn-dx-head { grid-area: head; align-self: start; }
+.pgn-dx-res { grid-area: res; align-self: start; text-align: right; }
+.pgn-dx-res > * { margin: 0; }
+.pgn-dx-pic { grid-area: pic; --t: 56px; --g: 6px; display: flex; align-items: center; justify-content: center; align-self: center; gap: 24px; min-width: 0; }
+.pgn-dx-pic .pgn-tiles { flex: none; }
+
+/* D1: one cell for all three from 600px: the picture centred on the whole card, the title and result in its top corners. */
+@container pgndx (min-width: 600px) {
+  .pgn-d1 .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
+  .pgn-d1 .pgn-dx-head, .pgn-d1 .pgn-dx-res, .pgn-d1 .pgn-dx-pic { grid-area: all; }
+  .pgn-d1 .pgn-dx-res { justify-self: end; }
+  .pgn-d1 .pgn-dx-pic { --t: 52px; }
+}
+/* D2: the tiles, then the ring and the hint box as one small centred row under them. */
+.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
+.pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
+.pgn-d2 .pgn-ring { --r: 40px; }
+.pgn-d2 .pgn-ring-n { font-size: 15px; }
+/* D3: the tiles centred in the main column; the ring over the hint box in a panel under the result, ruled off at its left. */
+.pgn-d3 .pgn-dx-body { grid-template-areas: "head res" "pic panel"; }
+.pgn-dx-panel { grid-area: panel; display: grid; justify-items: center; align-content: center; gap: 12px; padding-left: 24px; border-left: 1px solid var(--line); }
+
+/* Phone: the tiles fit the card; the ring and the hint box sit in a centred row under them. */
+@container pgndx (max-width: 479.98px) {
+  .pgn-dx-pic { --t: min(44px, calc((100cqi - 24px) / 5)); flex-wrap: wrap; gap: 12px 16px; }
+  .pgn-d1 .pgn-dx-pic .pgn-tiles { flex-basis: 100%; display: flex; justify-content: center; }
+  .pgn-dx .pgn-ring { --r: 40px; }
+  .pgn-dx .pgn-ring-n { font-size: 15px; }
+  .pgn-d3 .pgn-dx-body { grid-template-columns: 1fr auto; grid-template-areas: "head res" "pic pic" "panel panel"; }
+  .pgn-dx-panel { grid-auto-flow: column; justify-content: center; gap: 16px; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+}
