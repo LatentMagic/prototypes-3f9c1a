@@ -2658,3 +2658,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgn-places { flex-basis: 100%; justify-items: center; }
   .pgn-line { text-align: center; }
 }
+
+/* On a loss with "The word": the answer in tiles outlined in off-white, as the session page's (playground-guess-result.css .pgr-ans-t). */
+.pgn-ans-t { border: 2px solid var(--off-white); color: var(--text); background: none; }

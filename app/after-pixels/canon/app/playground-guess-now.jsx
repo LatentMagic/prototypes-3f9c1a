@@ -23,8 +23,13 @@ const pgnSaid = (trail) => trail.map((e) => (e.kind === 'guess' ? wdSay(e) : e.k
 
 const PgnTrail = ({ p }) => { const trail = pgnTrail(p);
   return <div className="wd-trail" role="img" aria-label={pgnSaid(trail)}>{trail.map((e, i) => <WdTr key={i} e={e} />)}</div>; };
-const PgnLast = ({ p }) => (
-  <div className="pgn-tiles" role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>);
+// The big tiles: the last guess, or on a loss with Answer set to "The word", the answer in outlined tiles (as the session page's).
+const PgnLast = ({ s, p, cls = 'pgn-tiles' }) => {
+  const ans = usePgSetting('ans');
+  if (ans === 'word' && s && s.loss && s.answer) return (
+    <div className={cls + ' pgn-ans'} role="img" aria-label={'The word was ' + s.answer}>{s.answer.split('').map((ch, j) => <span key={j} className="wd-t pgn-ans-t" aria-hidden="true">{ch}</span>)}</div>);
+  return <div className={cls} role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>;
+};
 
 // The session page's ring (playground-guess-result), smaller: six segments, one per guess, the count inside, no caption.
 const RING_R = 52; const RING_C = 2 * Math.PI * RING_R; const RING_SEG = RING_C / 6; const RING_GAP = 7;
@@ -83,7 +88,7 @@ const PgnA = ({ c, done, sid }) => {
         <WdNowResult s={s} />
       </div>
       {p.last && <div className="wd-now-pic"><div className="wd-now-line"><PgnTrail p={p} />
-        <div className="wd-now-row" role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>
+        <PgnLast s={s} p={p} cls="wd-now-row" />
       </div></div>}
     </div>
       <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
@@ -97,7 +102,7 @@ const PgnB = ({ c, sid }) => {
     <section className="lb-card pgn pgn-b-rows">
       <PgnHead number={s.number} s={s} />
       <div className="pgn-row">
-        <PgnTrail p={p} /><PgnLast p={p} />
+        <PgnTrail p={p} /><PgnLast s={s} p={p} />
         <div className="pgn-facts"><span>{p.n + ' of 6 guesses'}</span><span>{p.hint ? '1 hint' : s.live ? 'Hint not used' : 'No hint'}</span></div>
       </div>
       <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
@@ -110,7 +115,7 @@ const PgnC = ({ c, sid }) => {
   return (
     <section className="lb-card pgn pgn-c-ring">
       <PgnHead number={s.number} s={s} />
-      <div className="pgn-row"><PgnLast p={p} /><PgnRing s={s} p={p} /><PgnPlaces s={s} p={p} /></div>
+      <div className="pgn-row"><PgnLast s={s} p={p} /><PgnRing s={s} p={p} /><PgnPlaces s={s} p={p} /></div>
       <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
     </section>);
 };
@@ -136,6 +141,7 @@ export const initPlaygroundGuessNow = () => {
       { value: 'failed', label: 'Failed', state: 'library-word', go: played('failed') },
       { value: 'live', label: 'In progress', state: 'library-word-in-progress' },
       { value: 'fresh', label: 'Not yet played', state: 'free-not-played-today' }] },
+    { key: 'ans', label: 'On a loss', options: [{ value: 'last', label: 'Last guess' }, { value: 'word', label: 'The word' }] },
   ] });
   if (pgActive()) GS_NOW.word = PgnCard;
 };
