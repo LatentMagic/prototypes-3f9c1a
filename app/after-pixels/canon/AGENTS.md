@@ -99,6 +99,7 @@ Read `../design-system/guidelines/voice.md` first.
 - Before adding a class, grep `app/` for it: a name already used elsewhere restyles that too. After a change to shared styles, check the home page and one page you did not touch.
 - `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
 - If spacing needs a negative margin or a nudge value to look right, fix the structure instead.
+- Centre by default: a short or lone row (dice, marks, tiles, a last row that does not fill) is centred on its row, and content is centred on the cross axis, unless the design says otherwise. Grid and flex start at the left and top; set the centring.
 - Never draw a dashed edge with `border` or `outline` `dashed` on a small box: iPhone Safari drops its side dashes, leaving only the top and bottom. Draw the dashes with four `linear-gradient` backgrounds, as `.wd-t.is-hint` (`gs-word.css`) and Delve's free pack slot (`gs-delve.css`) do.
 - Content in the app posture reads its insets as `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`; only the app posture (Config → Platform, `isApp`) sets them.
 </important>
