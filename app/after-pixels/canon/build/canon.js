@@ -8468,7 +8468,7 @@
     } else url.searchParams.delete("fit");
     window.history.replaceState(null, "", url);
     fitSubs.forEach((f) => f());
-    if (!on) requestAnimationFrame(() => window.scrollTo(0, fitScrollY));
+    if (!on) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, fitScrollY)));
   };
   const fitForward = (key, v) => {
     const fr = document.querySelector(".fit-frame");

@@ -26,7 +26,8 @@ export const setFit = (on) => {
   if (on) { fitScrollY = window.scrollY; url.searchParams.set('fit', '1'); } else url.searchParams.delete('fit');
   window.history.replaceState(null, '', url);
   fitSubs.forEach((f) => f());
-  if (!on) requestAnimationFrame(() => window.scrollTo(0, fitScrollY));
+  // The page is back in the document only after React has rendered it, so the scroll waits for that.
+  if (!on) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, fitScrollY)));
 };
 
 // Fitted: a playground bar's change reaches the framed page, which runs the setting's state and go in its own app. A frame
