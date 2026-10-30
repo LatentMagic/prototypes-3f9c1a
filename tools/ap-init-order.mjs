@@ -8,13 +8,16 @@
 //   init A needs init B   when A reads a name B sets, and B does not read anything A sets.
 //
 // A name is a shared binding, narrowed to its first static key: `GS_LIBRARY.delve` and `GS_LIBRARY.word` do
-// not meet, `GS_LIBRARY[id]` (a computed key) meets every key of GS_LIBRARY.
+// not meet, `GS_LIBRARY[id]` (a computed key) meets every key of GS_LIBRARY. `Object.assign(X, …)` and
+// `Object.defineProperties(X, …)` set every key of X (`X.*`, certain to meet any read of X). A method call on
+// the binding itself (`X.map(…)`, `X.includes(…)`) or `X.length` reads the whole value, so it meets `X.push(…)`.
 //
 // What it cannot decide is reported, never guessed:
 //   - two inits that both read and set overlapping names (a wrap of a wrap): the order matters, direction unknown;
 //   - two inits that set overlapping names and read nothing of each other's (last write wins): direction unknown;
 //   - a shared binding passed as an argument to a call the analysis cannot follow;
 //   - a local alias taken from a shared object more than five hops deep.
+// `--check` fails on any of these, and on any init that runs before one it needs, except the pairs in ACCEPTED.
 // Not analysed: top-level code outside an init (the codemod left only function-like declarations there),
 // functions reached through values rather than names, and runtime-computed property names beyond `*`.
 
@@ -24,8 +27,28 @@ const traverse = _traverse.default || _traverse;
 const ITER = new Set(['forEach', 'map', 'filter', 'reduce', 'some', 'every', 'flatMap', 'find', 'findIndex', 'sort']);
 const MUTATORS = new Set(['push', 'unshift', 'splice', 'set', 'add', 'pop', 'shift', 'sort', 'reverse', 'fill', 'delete', 'clear']);
 const OBJECT_WRITERS = new Set(['assign', 'defineProperty', 'defineProperties', 'setPrototypeOf']);
+// Writers that may set any key of their target, so a set through them meets every read of it.
+const ALL_KEY_WRITERS = new Set(['assign', 'defineProperties']);
 const GLOBALS = new Set(['Object', 'Array', 'Math', 'JSON', 'console', 'String', 'Number', 'Boolean', 'Date', 'Set', 'Map', 'Promise', 'Reflect', 'Symbol', 'RegExp', 'Intl']);
 const SAFE_METHODS = new Set([...ITER, 'join', 'includes', 'slice', 'concat', 'keys', 'values', 'entries', 'indexOf', 'at', 'get', 'has', 'toString', 'startsWith', 'endsWith', 'replace', 'split', 'trim', 'toLowerCase', 'toUpperCase']);
+
+// Accepted, pre-existing: pairs where main.jsx's order has a reader run before a writer of the same name. Each
+// was there when the check learned to see it, and the live page depends on the order as it stands, so `--check`
+// passes these and `--order` prints them. Never add one to get a build through: fix the order instead.
+//   reader: runs first and reads `name`; setter: runs later and sets it. `both`: each reads what the other sets.
+const ACCEPTED = [
+  // initGsGame reads GS_NAME.casebook; initGsWhereChainSalvage's Object.assign adds only where/chain/salvage.
+  { reader: 'initGsGame', setter: 'initGsWhereChainSalvage', name: 'GS_NAME.*' },
+  // The splice finds 'mystery', which is in the base order; the ten more games are pushed after it.
+  { reader: 'initGsWhereChainSalvage', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
+  // ED3 is built before the ten more games are pushed, so their editions lists are not in it.
+  { reader: 'initGsEditions', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
+  // GS_KINDS is built before the ten more games are pushed; initGsMoreGames then extends Discover's GS_LIB_READY.
+  { reader: 'initGsDiscover', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*', both: true },
+  // CPR_STAGE and CPR_SHOWN are built before the ten more games are pushed; initGsMoreGames then extends them.
+  { reader: 'initGsPassStore', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*', both: true },
+];
+const accepted = (reader, setter, name, both = false) => ACCEPTED.some((x) => x.reader === reader && x.setter === setter && x.name === name && !!x.both === both);
 
 const isFn = (n) => n && ['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression'].includes(n.type);
 // A read meets a set of the same shared name when: the set replaced the whole binding; or the read takes the
@@ -34,7 +57,8 @@ const isFn = (n) => n && ['FunctionDeclaration', 'FunctionExpression', 'ArrowFun
 const overlap = (r, s) => r.root === s.root && (s.whole || (r.key !== '#' && (r.key === null || r.key === '*' || s.key === '*' || r.key === s.key)));
 // A strong meet is certain: the set replaced the binding, the read takes the whole value, or both name the same
 // literal key. A meet through a computed key (`X[id]`) on either side may or may not be the same entry.
-const strong = (r, s) => overlap(r, s) && (s.whole || r.key === null || (r.key !== '#' && r.key !== '*' && r.key === s.key));
+// A set through Object.assign / defineProperties (`all`) is treated as certain to meet any keyed read.
+const strong = (r, s) => overlap(r, s) && (s.whole || r.key === null || (s.all && r.key !== '#') || (r.key !== '#' && r.key !== '*' && r.key === s.key));
 const label = (k) => (k.key === null || k.key === '#' ? k.root : `${k.root}.${k.key}`);
 const sameWrite = (a, b) => a.root === b.root && ((a.whole && b.whole) || (a.key !== null && a.key !== '*' && a.key === b.key));
 
@@ -76,7 +100,7 @@ export function analyzeInitOrder({ ast, files }) {
     const def = initDefs.get(name);
     const sets = []; const reads = []; const unknown = []; const seen = new Set();
     // Events arrive in run order. A read is the init's own need only if nothing it set earlier meets it.
-    const setIt = (k, line, file, whole = false) => { if (!sets.some((x) => x.root === k.root && x.key === k.key && x.whole === whole)) sets.push({ ...k, whole, line, file }); };
+    const setIt = (k, line, file, whole = false) => { if (!sets.some((x) => x.root === k.root && x.key === k.key && x.whole === whole && !!x.all === !!k.all)) sets.push({ ...k, whole, line, file }); };
     const readIt = (k, line, file) => { if (!sets.some((x) => overlap(k, x)) && !reads.some((x) => x.root === k.root && x.key === k.key)) reads.push({ ...k, line, file }); };
     const pending = new Map();
     const defer = (node, fn) => { if (!pending.has(node)) pending.set(node, []); pending.get(node).push(fn); };
@@ -116,7 +140,9 @@ export function analyzeInitOrder({ ast, files }) {
         const root = sharedRoot(p.node, p.scope); if (!root) return null;
         const { props, top } = chainOf(p);
         if (root.window) { const first = props[0]; if (first === undefined) return null; return { k: { root: `window.${first}`, key: props[1] ?? null }, props, top, window: true }; }
-        return { k: { root: root.root, key: root.key ?? props[0] ?? null }, props, top };
+        // `X.length` or a method called on X itself (`X.map(…)`) reads the whole value, not a key named after it.
+        const wholeRead = root.key === null && props.length === 1 && (props[0] === 'length' || (top.parentPath.isCallExpression() && top.parent.callee === top.node));
+        return { k: { root: root.root, key: wholeRead ? null : root.key ?? props[0] ?? null }, props, top };
       };
       const visitor = {
         Function(p) {
@@ -187,7 +213,8 @@ export function analyzeInitOrder({ ast, files }) {
           if (mut) { const own = t.props.length === 1; const k = own ? { root: t.k.root, key: '*' } : t.k; defer(top.parent, () => { exist(); setIt(k, line, file); }); return; }
           if (isLeft || isUpdate || objWrite) {
             const whole = t.window && t.props.length === 1;
-            const k = t.window ? { root: t.k.root, key: whole ? null : t.k.key } : t.k;
+            const allKeys = objWrite && ALL_KEY_WRITERS.has(top.parent.callee.property.name) && !whole;
+            const k = allKeys ? { root: t.k.root, key: t.k.key ?? '*', all: true } : t.window ? { root: t.k.root, key: whole ? null : t.k.key } : t.k;
             const at = objWrite ? top.parent : isLeft ? tp : null;
             if ((isLeft && tp.operator !== '=') || tp.type === 'UpdateExpression') readIt(k, line, file);
             const doSet = () => { if (!whole) exist(); setIt(k, line, file, whole); };
@@ -216,6 +243,8 @@ export function analyzeInitOrder({ ast, files }) {
     for (const r of reads) for (const s of sets) if (test(r, s)) return { r, s };
     return null;
   };
+  // Every name through which A's reads meet B's sets.
+  const meets = (reads, sets) => [...new Set(reads.flatMap((r) => sets.filter((s) => strong(r, s)).map(label)))];
 
   const needs = new Map(order.map((o) => [o.name, []])); const sensitive = []; const computed = [];
   for (const a of order) for (const b of order) {
@@ -223,7 +252,10 @@ export function analyzeInitOrder({ ast, files }) {
     const A = info.get(a.name); const B = info.get(b.name);
     const ab = hit(A.reads, B.sets); const ba = hit(B.reads, A.sets);
     if (ab && !ba) needs.get(a.name).push({ on: b.name, via: ab.s, line: ab.s.line, file: ab.s.file });
-    else if (ab && ba && pos.get(a.name) < pos.get(b.name)) sensitive.push({ a: a.name, b: b.name, via: label(ab.s) });
+    else if (ab && ba && pos.get(a.name) < pos.get(b.name)) {
+      const open = meets(A.reads, B.sets).filter((n) => !accepted(a.name, b.name, n, true));
+      sensitive.push({ a: a.name, b: b.name, via: open.length ? open.join(', ') : meets(A.reads, B.sets).join(', '), accepted: !open.length });
+    }
     else if (!ab && !ba && pos.get(a.name) < pos.get(b.name)) {
       const w = A.sets.flatMap((x) => B.sets.filter((y) => sameWrite(x, y)).map((y) => ({ s: y })))[0];
       if (w) sensitive.push({ a: a.name, b: b.name, via: label(w.s), writeOnly: true });
@@ -233,10 +265,24 @@ export function analyzeInitOrder({ ast, files }) {
       if (weak && !(weak.r.key === '#')) computed.push({ reader: a.name, setter: b.name, name: label(weak.s) });
     }
   }
-  for (const a of order) for (const n of needs.get(a.name)) {
-    if (pos.get(n.on) > pos.get(a.name)) {
-      problems.push(`main.jsx:${a.line} ${a.name}() runs before ${n.on}(), which it needs: it reads ${label(n.via)}, set by ${n.on} (${n.file}:${n.line})`);
-    }
+  const pre = [];
+  for (const a of order) for (const on of new Set(needs.get(a.name).map((n) => n.on))) {
+    if (pos.get(on) < pos.get(a.name)) continue;
+    const all = meets(info.get(a.name).reads, info.get(on).sets);
+    const open = all.filter((n) => !accepted(a.name, on, n));
+    const n = needs.get(a.name).find((x) => x.on === on && (!open.length || open.includes(label(x.via)))) || needs.get(a.name).find((x) => x.on === on);
+    if (open.length) problems.push(`main.jsx:${a.line} ${a.name}() runs before ${on}(), which it needs: it reads ${open.join(', ')}, set by ${on} (${n.file}:${n.line})`);
+    else pre.push(`  ${a.name}() runs before ${on}(): reads ${all.join(', ')}`);
+  }
+  for (const s of sensitive) {
+    if (s.accepted) pre.push(`  ${s.a}() then ${s.b}(): both read and set ${s.via}`);
+    else problems.push(`main.jsx: order matters between ${s.a}() and ${s.b}() (${s.writeOnly ? 'both set' : 'both read and set'} ${s.via}), direction not determined; make one depend on the other`);
+  }
+  for (const o of order) for (const u of info.get(o.name).unknown) problems.push(`${o.name}(): UNKNOWN: ${u}`);
+  // An accepted pair the code no longer has is stale, so the list cannot hide a new pair under an old name.
+  for (const x of ACCEPTED) {
+    const live = x.both ? sensitive.some((s) => s.accepted && s.a === x.reader && s.b === x.setter && s.via.split(', ').includes(x.name)) : pre.some((l) => l.startsWith(`  ${x.reader}() runs before ${x.setter}(): `) && l.split(': reads ')[1].split(', ').includes(x.name));
+    if (!live) problems.push(`tools/ap-init-order.mjs: ACCEPTED lists ${x.reader}() before ${x.setter}() on ${x.name}, which the code no longer has; remove it`);
   }
 
   const report = [];
@@ -248,10 +294,12 @@ export function analyzeInitOrder({ ast, files }) {
     report.push(`      needs:  ${nd.length ? [...new Map(nd.map((n) => [n.on, n])).values()].map((n) => `${n.on} (${nd.filter((x) => x.on === n.on).map((x) => label(x.via)).filter((v, j, arr) => arr.indexOf(v) === j).join(', ')})`).join('; ') : '(none)'}`);
     for (const u of I.unknown) report.push(`      UNKNOWN: ${u}`);
   });
-  if (sensitive.length) {
-    report.push('', 'Order matters between these pairs, direction not determined statically (keep the current order):');
-    for (const s of sensitive) report.push(`  ${s.a}() then ${s.b}(): ${s.writeOnly ? 'both set' : 'both read and set'} ${s.via}`);
+  const open = sensitive.filter((s) => !s.accepted);
+  if (open.length) {
+    report.push('', 'Order matters between these pairs, direction not determined statically (fails --check):');
+    for (const s of open) report.push(`  ${s.a}() then ${s.b}(): ${s.writeOnly ? 'both set' : 'both read and set'} ${s.via}`);
   }
+  if (pre.length) report.push('', 'Reader before writer, accepted, pre-existing (ACCEPTED in tools/ap-init-order.mjs; keep the current order):', ...pre);
   if (computed.length) {
     report.push('', 'Reads and sets through a computed key (X[id]) may or may not meet; not decided statically, not checked:');
     const by = new Map();
