@@ -2746,17 +2746,17 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgn-dx-panel { grid-auto-flow: column; justify-content: center; gap: 16px; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line); }
 }
 
-/* ---- D2 centring (Joe: D2 must evoke being centred vertically), three ways, from 600px. The card's padding is 24px, its body runs
-   to 16px above the action row, the button is 48px tall. ----
-   Tiles centred: the tiles' middle sits halfway between the card's top edge and the button's top; the ring row hangs below them.
-   Room around: the card grows 20px and the tiles are centred as in "Tiles centred", so the ring row has room under them.
-   Facts in the foot: the tiles alone, centred as in "Tiles centred"; the ring and hint box move into the action row's middle. */
+/* ---- D2a-c (Joe: D2 must evoke being centred vertically), from 600px: the tiles' middle sits halfway between the card's top edge
+   and the button's top, the ring row hangs under them. The card's padding is 24px, its body ends 16px above the action row.
+   D2a: the card keeps the streak card's height. D2b: the card grows 20px, giving the ring row room. D2c: as D2b, 40px taller, the
+   tiles back at 56px and the ring at 36px. ---- */
 @container pgndx (min-width: 600px) {
   .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { transform: none; align-self: start; }
-  .pgn-vc-tiles .pgn-dx-pic, .pgn-vc-foot .pgn-dx-pic { margin-top: calc((24px + 124px + 16px) / 2 - 24px - 24px); }
+  .pgn-vc-tiles .pgn-dx-pic { margin-top: calc((24px + 124px + 16px) / 2 - 24px - 24px); }
   .pgn-vc-room .pgn-dx-body { min-height: 144px; }
   .pgn-vc-room .pgn-dx-pic { margin-top: calc((24px + 144px + 16px) / 2 - 24px - 24px); }
-
-  .pgn-vc-foot .pgn-dx-facts { position: absolute; left: 50%; bottom: 48px; width: auto; display: flex; gap: 16px; transform: translate(-50%, 50%); }
+  .pgn-vc-big .pgn-dx-body { min-height: 164px; }
+  .pgn-vc-big .pgn-dx-pic { --t: 56px; gap: 10px; margin-top: calc((24px + 164px + 16px) / 2 - 24px - 28px); }
+  .pgn-vc-big .pgn-ring { --r: 36px; }
+  .pgn-vc-big .pgn-ring-n { font-size: 14px; }
 }
-.pgn-vc-foot { position: relative; }

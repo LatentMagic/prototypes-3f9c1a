@@ -9332,20 +9332,21 @@
     const p = React$1.useMemo(() => pgnPlay(s), [s]);
     return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now pgn-a pgn-d" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), p.last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p, cls: "wd-now-row" }), /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnHintBox, { s, p })))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
-  const PgnDx = ({ c, sid, v, fresh }) => {
+  const PgnDx = ({ c, sid, v, vc, fresh }) => {
     const gs = useGs();
     const s0 = GS_SESSIONS[sid];
     const s = fresh ? { ...s0, live: true, loss: false } : s0;
     const p = React$1.useMemo(() => fresh ? { n: 0, hint: null, won: false, last: { word: "     ", marks: ["empty", "empty", "empty", "empty", "empty"] } } : pgnPlay(s), [s, fresh]);
     const drop = usePgSetting("drop");
-    const vc = usePgSetting("vc");
     const facts = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnHintBox, { s, p }));
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn-dx pgn-" + v + (v === "d2" ? " pgn-vc-" + vc : ""), style: { "--pgn-drop": (drop || 0) + "px" } }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs pgn-dx-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-res" }, !fresh && /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), v === "d3" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-panel" }, facts)) : v === "d2" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-facts" }, facts)) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), facts)), fresh ? /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: edList(gs, "word")[0] }), slot: c.next }) : /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn-dx pgn-" + v + (vc ? " pgn-vc-" + vc : ""), style: { "--pgn-drop": (drop || 0) + "px" } }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs pgn-dx-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-res" }, !fresh && /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), v === "d3" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-panel" }, facts)) : v === "d2" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-facts" }, facts)) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), facts)), fresh ? /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: edList(gs, "word")[0] }), slot: c.next }) : /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
   const PgnCard = ({ children, ...props }) => {
     const dir = usePgSetting("dir");
     useGs();
     if (dir === "canon") return children;
+    const VC = { d2a: "tiles", d2b: "room", d2c: "big" };
+    if (VC[dir]) return /* @__PURE__ */ React$1.createElement(PgnDx, { c: props.c, sid: props.none ? props.c.today : props.done ? props.c.today : props.c.liveSid, v: "d2", vc: VC[dir], fresh: !!props.none });
     if (props.none && ["d1", "d2", "d3"].includes(dir)) return /* @__PURE__ */ React$1.createElement(PgnDx, { c: props.c, sid: props.c.today, v: dir, fresh: true });
     if (props.none) return /* @__PURE__ */ React$1.createElement(PgnFresh, { c: props.c, dir });
     if (dir === "a-space") return /* @__PURE__ */ React$1.createElement(PgnA, { ...props, sid: props.done ? props.c.today : props.c.liveSid });
@@ -9357,7 +9358,7 @@
   const played = (ed) => (gs) => gs.setReview({ today: "played", week: "done", ed });
   const initPlaygroundGuessNow = () => {
     pgRegister("guess-now", { title: "Guess now card", settings: [
-      { key: "dir", label: "Direction", options: [{ value: "a-space", label: "A Space" }, { value: "b-rows", label: "B Second row" }, { value: "c-ring", label: "C Ring and places" }, { value: "d-c-in-a", label: "D C in A spacing" }, { value: "d1", label: "D1 Centred on the card" }, { value: "d2", label: "D2 Tiles over facts" }, { value: "d3", label: "D3 Facts panel" }, { value: "canon", label: "Canon" }] },
+      { key: "dir", label: "Direction", options: [{ value: "a-space", label: "A Space" }, { value: "b-rows", label: "B Second row" }, { value: "c-ring", label: "C Ring and places" }, { value: "d-c-in-a", label: "D C in A spacing" }, { value: "d1", label: "D1 Centred on the card" }, { value: "d2", label: "D2 Tiles over facts" }, { value: "d2a", label: "D2a Tiles centred" }, { value: "d2b", label: "D2b Taller card" }, { value: "d2c", label: "D2c Taller, big tiles" }, { value: "d3", label: "D3 Facts panel" }, { value: "canon", label: "Canon" }] },
       { key: "play", label: "Play", options: [
         { value: "solved", label: "Solved in 3", state: "library-word", go: played(null) },
         { value: "hard", label: "Solved in 5", state: "library-word", go: played("hard") },
@@ -9365,7 +9366,6 @@
         { value: "live", label: "In progress", state: "library-word-in-progress" },
         { value: "fresh", label: "Not yet played", state: "free-not-played-today" }
       ] },
-      { key: "vc", label: "D2 centring", options: [{ value: "tiles", label: "Tiles centred" }, { value: "room", label: "Room around" }, { value: "foot", label: "Facts in the foot" }] },
       { key: "drop", label: "D1 lower by", options: [{ value: "0", label: "0" }, { value: "8", label: "8px" }, { value: "16", label: "16px" }, { value: "24", label: "24px" }] },
       { key: "ans", label: "On a loss", options: [{ value: "last", label: "Last guess" }, { value: "word", label: "The word" }] }
     ] });
