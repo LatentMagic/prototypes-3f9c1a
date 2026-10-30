@@ -9135,6 +9135,8 @@
   };
   const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
   const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
+  const pgFitted = () => !!pgActive() && pgQuery().get("fit") === "1";
+  const pgFramed = () => pgQuery().get("pgframe") === "1";
   const pgSubs = /* @__PURE__ */ new Set();
   const usePgSetting = (key) => {
     const [, bump] = React$1.useState(0);
@@ -9146,6 +9148,15 @@
     const def = pgActive();
     const s = def && def.settings.find((x) => x.key === key);
     return s ? pgValue(s) : null;
+  };
+  const usePgFit = () => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    return pgFitted();
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -9162,6 +9173,60 @@
     pgOpen(pgOption(s, v), url);
     window.history.replaceState(null, "", url);
     pgSubs.forEach((f) => f());
+    if (pgFitted()) pgForward(s.key, v);
+  };
+  const pgForward = (key, v) => {
+    const fr = document.querySelector(".pg-fit-frame");
+    if (!fr) return;
+    const w = fr.contentWindow;
+    if (w && w.pgSetFromParent) w.pgSetFromParent(key, v);
+    else fr.src = pgFrameUrl();
+  };
+  window.pgSetFromParent = (key, v) => {
+    var _a;
+    const s = (_a = pgActive()) == null ? void 0 : _a.settings.find((x) => x.key === key);
+    if (s) pgSet(s, v);
+  };
+  const pgFrameUrl = () => {
+    const u = new URL(window.location.href);
+    u.searchParams.delete("fit");
+    u.searchParams.set("pgframe", "1");
+    return u.toString();
+  };
+  let pgScrollY = 0;
+  const pgSetFit = (on) => {
+    const url = new URL(window.location.href);
+    if (on) {
+      pgScrollY = window.scrollY;
+      url.searchParams.set("fit", "1");
+    } else url.searchParams.delete("fit");
+    window.history.replaceState(null, "", url);
+    pgSubs.forEach((f) => f());
+    if (!on) requestAnimationFrame(() => window.scrollTo(0, pgScrollY));
+  };
+  const PG_FIT_WIDTH = 1280;
+  const PgFit = () => {
+    const box = React$1.useRef(null);
+    const [size, setSize] = React$1.useState({ w: 0, h: 0 });
+    const [src] = React$1.useState(pgFrameUrl);
+    React$1.useEffect(() => {
+      const el = box.current;
+      const read = () => setSize({ w: el.clientWidth, h: el.clientHeight });
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    const sc = size.w ? Math.min(1, size.w / PG_FIT_WIDTH) : 1;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pg-fit", ref: box }, /* @__PURE__ */ React$1.createElement(
+      "iframe",
+      {
+        className: "pg-fit-frame",
+        title: "Desktop view",
+        src,
+        style: { width: PG_FIT_WIDTH, height: Math.round(size.h / sc), transform: "scale(" + sc + ")" }
+      }
+    ));
   };
   const PgPick = ({ s, v }) => {
     const [open, setOpen] = React$1.useState(false);
@@ -9192,10 +9257,12 @@
       def.settings.forEach((s) => pgOpen(pgOption(s, pgValue(s)), url, true));
       window.history.replaceState(null, "", url);
     }, []);
-    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
+    const fitted = pgFitted();
+    const framed = pgFramed();
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
       const v = pgValue(s);
       return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", "aria-pressed": v === o.value, onClick: () => pgSet(s, o.value) }, o.label))));
-    })));
+    }), !framed && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => pgSetFit(!fitted) }, "Fit")));
   };
   const pgnPlay = (s) => {
     const ev = wdRead(s).events;
@@ -9387,6 +9454,7 @@
   };
   const KitPhoneBars = () => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-status", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", null, "9:41"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-phone-island" }), /* @__PURE__ */ React$1.createElement("svg", { width: "27", height: "13", viewBox: "0 0 27 13", fill: "none" }, /* @__PURE__ */ React$1.createElement("rect", { x: "0.5", y: "0.5", width: "23", height: "12", rx: "3.5", stroke: "currentColor", opacity: "0.4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "2", y: "2", width: "20", height: "9", rx: "2", fill: "currentColor" }), /* @__PURE__ */ React$1.createElement("path", { d: "M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z", fill: "currentColor", opacity: "0.4" }))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-home", "aria-hidden": "true" }));
   const KitApp = () => {
+    const fitted = usePgFit();
     const [layout, setLayout] = useState("auto");
     const [platform, setPlatform] = useState("web");
     const isApp = platform === "app";
@@ -9616,8 +9684,8 @@
     }, [forcedMobile, showIndex]);
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
-    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : /* @__PURE__ */ React$1.createElement(GsTopBar, null)), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && /* @__PURE__ */ React$1.createElement(
+    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root" + (fitted ? " pg-fitted" : ""), ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : /* @__PURE__ */ React$1.createElement(GsTopBar, null)), fitted ? /* @__PURE__ */ React$1.createElement(PgFit, null) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null)))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && !fitted && !pgFramed() && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {
         statesGroups: STATE_GROUPS,
