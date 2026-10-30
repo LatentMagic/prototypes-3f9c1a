@@ -81,19 +81,19 @@ const CnwLinks = ({ g }) => {
     </span>);
 };
 
-// ---- Counts, as words: found of total, and what the wrong guesses cost. ----
+// ---- Counts, as words: found of total, then what the guesses cost: wrong guesses, and words given away. ----
 const cnwSaid = (p) => {
   const wrong = p.g.filter((t) => t.res === 'wrong').length; const given = p.g.filter((t) => t.res === 'given').length;
-  return [p.found + ' of ' + p.mid.length + ' words', wrong ? wrong + (wrong === 1 ? ' wrong guess' : ' wrong guesses') : '', given ? given + ' given away' : ''].filter(Boolean);
+  return [p.found + ' of ' + p.mid.length + ' words', wrong ? wrong + ' wrong' : '', given ? given + ' given away' : ''].filter(Boolean);
 };
-const CnwCount = ({ p }) => (
-  <span className="cnw-cap" role="img" aria-label={cnwSaid(p).join(', ')}><b aria-hidden="true">{p.found}</b>
-    <span aria-hidden="true">{' of ' + p.mid.length + ' words'}</span></span>);
-const CnwSummary = ({ p }) => <span className="cnw-cap" aria-hidden="true">{cnwSaid(p).join(' \u00B7 ')}</span>;
+const CnwCount = ({ p }) => { const [first, ...more] = cnwSaid(p);
+  return (
+    <span className="cnw-cap" role="img" aria-label={cnwSaid(p).join(', ')}><b aria-hidden="true">{p.found}</b>
+      <span aria-hidden="true">{first.slice(String(p.found).length) + more.map((m) => ' \u00B7 ' + m).join('')}</span></span>); };
 
 // A, Route: every word a box in one line across the card, joined, its state by outline (end filled, found green, given away
 // amber, hidden dashed with its first letters); a word is one line of text, so every box is one size. On a phone, three to a row,
-// the row joined to the next by a joint dropped from its end. The guesses' links under it.
+// the row joined to the next by a joint dropped from its end. The guesses' links and the count under it.
 const CnwBox = ({ x }) => (
   <span className={'cnw-box is-' + (x ? x.state : 'blank')} aria-hidden="true">
     {x ? (x.state === 'hidden' ? x.word.slice(0, x.shown) + '\u2009' + '\u00B7'.repeat(x.word.length - x.shown) : x.word) : ''}</span>);
@@ -104,7 +104,7 @@ const CnwRoute = ({ w, n }) => {
       {list.map((x, i) => <React.Fragment key={i}><CnwBox x={x} />{i < list.length - 1 && <CnwJoint />}</React.Fragment>)}</div>);
 };
 const CnwA = ({ p }) => (
-  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} />{p.g.length > 0 && <CnwLinks g={p.g} />}</div>);
+  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} /><div className="cnw-under">{p.g.length > 0 && <CnwLinks g={p.g} />}<CnwCount p={p} /></div></div>);
 
 // B, Today's link: one word large and centred: the latest word found (the first after the start, still hidden, before any); on
 // a failed chain the word that broke; on a solved one the two ends with the words between them collapsed to joints. Under it
@@ -120,29 +120,22 @@ const CnwB = ({ p }) => {
     </div>);
 };
 
-// C, Two ends: the two end words at the edges in big tiles, the words between as link nodes on a line from one to the other:
-// found a closed green link with the word's first letter, not yet found an open grey one, given away an amber one broken in
-// two. A phone drops the nodes to a row under the ends, which a dashed line joins.
-const CNW_NW = 44; const CNW_NH = 28;
-const CnwNode = ({ x }) => {
-  const res = x && x.state === 'found' ? 'right' : x && x.state === 'given' ? 'given' : 'wrong';
-  return (
-    <svg className="cnw-node" width={CNW_NW + 4} height={CNW_NH + 4} viewBox={'0 0 ' + (CNW_NW + 4) + ' ' + (CNW_NH + 4)} aria-hidden="true">
-      <rect x="2" y="2" width={CNW_NW} height={CNW_NH} rx={CNW_NH / 2} className={'cnw-loop is-' + res} {...cnwLoop(res, CNW_NW, CNW_NH)} />
-      {x && x.state !== 'hidden' && <text x={(CNW_NW + 4) / 2} y={CNW_NH / 2 + 7} textAnchor="middle" className={'is-' + res}>{x.word[0]}</text>}
-    </svg>);
-};
+// C, Two ends: the two end words at the edges, the words between as tiles of the same size on a line from one to the other:
+// found outlined green with the word's first letter, not yet found dashed, given away outlined amber. A phone stacks them: the
+// first end, the nodes spread across, the last end at the right.
+const CnwNode = ({ x }) => (
+  <span className={'wd-t cnw-t ' + (x && x.state === 'found' ? 'is-found' : x && x.state === 'given' ? 'is-given' : 'is-more')} aria-hidden="true">
+    {x && x.state !== 'hidden' ? x.word[0] : ''}</span>);
 const CnwC = ({ p, fresh }) => {
   const first = p.w[0]; const last = p.w[p.w.length - 1];
   return (
     <div className="cnw-pic cnw-stack">
       <div className="cnw-ends" role="img" aria-label={(fresh ? 'The two end words, not yet seen' : first.word + ' to ' + last.word) + ', ' + p.mid.length + ' words between'}>
         {fresh ? <CnwWord n={4} cls="is-first" /> : <CnwWord x={first} cls="is-first" />}
-        <i className="cnw-gap" />
         <span className="cnw-mid">{p.mid.map((x) => <CnwNode key={x.i} x={fresh ? null : x} />)}</span>
         {fresh ? <CnwWord n={5} cls="is-last" /> : <CnwWord x={last} cls="is-last" />}
       </div>
-      {fresh ? <span className="cnw-cap" aria-hidden="true">{'0 of ' + p.mid.length + ' words'}</span> : <CnwSummary p={p} />}
+      <CnwCount p={p} />
     </div>);
 };
 
