@@ -1460,7 +1460,8 @@
     word: { average: "word-today", hard: "word-today-hard", failed: "word-today-failed" },
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
-    escape: { hard: "escape-hard" }
+    escape: { hard: "escape-hard" },
+    delve: { hard: "delve-hard" }
   };
   const gsEdPick = (gid, gs) => {
     gs = gs || window.gsApi;
@@ -3287,9 +3288,10 @@
     const tcls = r.fumble ? "fumble" : r.tier;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.harm > 0 && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")))));
   };
-  const DlRoute = ({ m, act, on, card }) => {
+  const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement("i", { "aria-hidden": "true" }, "↩"), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
+  const DlRoute = ({ m, act, on }) => {
     const sel = act ? m.rolls[act - 1].stop : null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement("i", { "aria-hidden": "true" }, "↩"), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.rolls.length ? st.rolls.map((r) => m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), !card && /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.rolls.length ? st.rolls.map((r) => m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
   const DlCard = ({ s, m, roll }) => {
     const [sel, setSel] = React$1.useState(() => roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null);
@@ -3359,15 +3361,24 @@
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
+  const DL_NO_HOVER = () => {
+  };
+  const DlNowRoute = ({ m, open }) => {
+    const on = { sel: open, hov: DL_NO_HOVER };
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", "aria-label": "The way you went" }, m.stops.map((st) => {
+      const keys = st.rolls.filter((r) => m.mom[r.n]);
+      const rest = st.rolls.filter((r) => !m.mom[r.n]);
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
+    }));
+  };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
-    const sid = wk.end ? sids[0] : sids[1];
+    const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : sids[1];
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
     const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlRoute, { m, act: null, on: { sel: open, hov: () => {
-    } }, card: true })));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open })));
   };
   const registerDelve = () => {
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
@@ -7005,6 +7016,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-hard", label: "Delve in your library, the hard play (overrun, going back three times)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-word", label: "Daily Word in your library, with the Pass", stage: (c) => {

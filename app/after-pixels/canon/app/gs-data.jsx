@@ -330,6 +330,7 @@ export const GS_ED_SIDS = {
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
+  delve: { hard: 'delve-hard' },
 };
 // The finished play Config → This edition picks for a game, or null to keep the seeded one.
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };

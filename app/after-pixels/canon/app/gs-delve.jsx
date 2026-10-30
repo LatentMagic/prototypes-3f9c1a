@@ -9,7 +9,7 @@
 // SAMPLE: the stats a check adds are read from the records (Bryn Str +3, Dex +1, Wis 0; Wren Dex +3, Int +1, Wis +1, Str 0);
 // Con and Cha, the abilities and the starting gear are invented. The Warren's carry limit is three.
 import React from 'react';
-import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
+import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
@@ -112,18 +112,19 @@ const DlHeld = ({ m, act }) => { const r = act ? m.rolls[act - 1] : null; if (!r
   </div></div>); };
 
 // ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----
-// card: the now card's copy, with no held roll beside it.
-const DlRoute = ({ m, act, on, card }) => { const sel = act ? m.rolls[act - 1].stop : null;
+const DlStopHead = ({ st, named }) => (
+  <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
+    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <i aria-hidden="true">↩</i>}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
+const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
   return (<div className="dvE-main">
     <div className="dvA2-route is-e is-cols-between" aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
-        <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
-          <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <i aria-hidden="true">↩</i>}{st.num}</span><span className="dv2-sname">{st.name}</span></span>
+        <DlStopHead st={st} named />
         <div className="dvA2-dice">{st.rolls.length ? st.rolls.map((r) => (m.mom[r.n]
           ? <span key={r.n} className="dvE-mom"><DlDieBtn r={r} act={act} on={on} size={52} /></span>
           : <DlDieBtn key={r.n} r={r} act={act} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
       </div>))}</div>
-    {!card && <div className="dvE-side"><DlHeld m={m} act={act} /></div>}
+    <div className="dvE-side"><DlHeld m={m} act={act} /></div>
   </div>); };
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
 // now card), else the last roll.
@@ -196,22 +197,34 @@ const DlBody = ({ s }) => {
 };
 
 // ---- The now card on Delve's library game page, once this week's run is played or started: the shared frame (LbNowCard), with the
-// session page's ending word as its result and the route at the card's size in place of the line and bar. No sheet, no held roll.
-// KEEP: every die is a button that opens the session page with that roll held, as Escape's doors open their lock.
+// session page's ending word as its result and the run's route at the card's size in place of the line and bar. No sheet, no held roll.
+// KEEP: only a key moment is a button (it keeps its number and opens the session page with that roll held, as Escape's doors open
+// their lock); every other roll is a small outcome mark with no number, not focusable, so it never reads as pressable (owner, 2026-10-30).
+// Rooms wrap onto further rows when the card is too narrow for them in one, and the dice of a room wrap inside its column, so nothing overlaps.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
+const DL_NO_HOVER = () => {};
+const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER };
+  return (<div className="dl-now-stops" aria-label="The way you went">{m.stops.map((st) => {
+    const keys = st.rolls.filter((r) => m.mom[r.n]); const rest = st.rolls.filter((r) => !m.mom[r.n]);
+    return (<div key={st.i} className="dl-now-stop">
+      <DlStopHead st={st} />
+      {!st.rolls.length && <i className="dv2-pass" aria-label="No rolls" />}
+      {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} />)}</div>}
+      {rest.length > 0 && <span className="dl-now-marks" role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(', ')}>
+        {rest.map((r) => <i key={r.n} className={'dl-now-mark is-' + r.tier} />)}</span>}
+    </div>);
+  })}</div>);
+};
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
-  const gs = useGs(); const sid = wk.end ? sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
+  const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
-      <div className="dl-now-route"><DlRoute m={m} act={null} on={{ sel: open, hov: () => {} }} card /></div>
+      <div className="dl-now-route"><DlNowRoute m={m} open={open} /></div>
     </LbNowCard>
   );
 };
-
-
-
 
 // ---- Hooks into the app: the session page's body and quiet head (app/gs-session.jsx). The head names the run's setting. ----
 export const registerDelve = () => {

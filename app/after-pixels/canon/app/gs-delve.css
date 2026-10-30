@@ -285,18 +285,23 @@ the two end groups grow by half as much and hug the card's edge, so their one in
 @container dv4 (min-width: 560px) {
   .dv8.is-3b .dv8-meters { grid-template-columns: max-content minmax(32px, 160px) max-content; justify-content: center; }
 }
-/* The now card's route: its own dv2 container, so the route takes the session page's narrow-card form (numbers, no room names) at the card's width. */
-.dl-now-route { container: dv2 / inline-size; min-width: 0; }
-/* KEEP: the now card's route is the session page's phone form a step smaller (owner, 2026-10-29: "just a bit smaller"): room numbers,
-no room names, 26px dice, 34px key moments, a 36px row slot per die (the phone's 30, 40 and 46). Every die is a button: hover or focus
-rings it as the session page rings the held roll, and a press opens the session page on that roll. */
-.dl-now-route .dvA2-head .dv2-sname { display: none; }
-.dl-now-route .dvA2-dice svg { width: 26px; height: 28px; }
-.dl-now-route .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
-.dl-now-route .dvA2-head::before { top: 10px; }
-.dl-now-route .dvE-mom svg { width: 34px; height: 37px; }
-.dl-now-route .dvA2-route.is-e .dvA2-dice { grid-auto-rows: 36px; gap: 2px; align-items: center; }
-.dl-now-route .dvA2-route.is-e .dvE-mom { margin: 0; }
+/* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
+moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
+.dl-now-route { min-width: 0; }
+/* KEEP: a room's column is at least 44px wide, so a 34px die and four marks fit it; rooms that do not fit in one row go on the next, never over each other. No line joins the rooms: a wrapped row would end in a stub. */
+.dl-now-stops { display: grid; grid-template-columns: repeat(auto-fit, minmax(44px, 1fr)); gap: 8px 0; min-width: 0; }
+.dl-now-stop { display: grid; justify-items: center; align-content: start; gap: 8px; padding: 8px 0 9px; min-width: 0; }
+.dl-now-stop .dvA2-head::before { display: none; }
+.dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
+/* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
+.dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }
+/* KEEP: the other rolls are 8px marks with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring. */
+.dl-now-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; max-width: 100%; cursor: default; }
+.dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
+.dl-now-mark.is-strong { background: var(--success); }
+.dl-now-mark.is-weak { background: var(--warning); }
+.dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+/* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .sl { display: inline; }
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .gh { display: none; }
