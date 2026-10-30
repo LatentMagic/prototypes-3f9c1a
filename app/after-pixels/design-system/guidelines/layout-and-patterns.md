@@ -27,6 +27,7 @@ Reach for these when they fit; don't bend a problem to fit them.
 - **Coming soon is a pair of `SoonCard`s** under a row of games, two columns from 720px. Every card carries the Coming soon chip. A game that is out with a chapter coming keeps the pair's shape: a CHAPTER label and one "Play chapter 1" chip as its only way in.
 - **Needs the Pass takes the play control's place** when the player cannot play without the Pass: `NeedsPass`, "What stays, what returns". Two halves split by one ruled line; side by side from 640px, stacked under it. One size and one grid place in both variants (had the Pass, never had it). Every line is filled by rule from platform facts, never per game
 - **A row of games ends with "All games".** Every `CardRow` of games is followed by an "All games" `TextLink` to the store, on its own line under the row, and under the Coming soon cards when they follow the row.
+- **A now card ends in one action row.** A main `Button` at the left (Play before a play; "Go to session" while one is under way and once it is done) and one slot line at the right (the next-time line, or the free player's "Keep playing with the Pass."). No rule or band above it: 24px of space (`--space-5`), the card's 16px gap plus 8px. The row is pinned to the card's foot with `margin-top: auto`, so a card stretched beside a taller one opens its extra space above the row. Under 640px the button runs full width and the line sits centred under it. Share is not on the card.
 
 ## Adaptive patterns (from ui-design.md)
 

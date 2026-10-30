@@ -1,7 +1,6 @@
 import React from 'react';
 import { GS_RESULT, GS_SESSIONS, useGs, DS, gsFresh, GS_GAMES } from './gs-data.jsx';
-import { gsShareText } from './gs-session.jsx';
-import { lbAutoBadges, LbResult, LbShare, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
+import { lbAutoBadges, LbResult, LbActions, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
 import { GsNextLink } from './gs-pass-library.jsx';
 import { DlNow } from './gs-delve.jsx';
@@ -37,8 +36,7 @@ export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if 
 // Delve's own now card (app/gs-delve.jsx, 1236) takes this one's place once it has loaded.
 const DvNow = ({ s }) => {
   const gs = useGs(); if (DlNow) return <DlNow s={s} />;
-  // The one share text for this result: the session page's (gsShareText).
-  const lines = s.end && gsShareText(GS_SESSIONS.delve); const bar = dvBar(s);
+  const bar = dvBar(s);
   return (
     <section className="lb-card">
       <div className="lb-top">
@@ -47,13 +45,7 @@ const DvNow = ({ s }) => {
       </div>
       <p>{dvRecap(s)}</p>
       <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {lines && <LbShare lines={lines} />}
-          <DS.TextLink onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })}>{s.end ? 'See every roll' : 'See your rolls so far'}</DS.TextLink>
-        </div>
-        <span className="gs-muted">{'Next run: ' + DV_NEXT}</span>
-      </div>
+      <LbActions onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })} slot={'Next run: ' + DV_NEXT} />
       {s.end && GsNextLink && <GsNextLink />}
     </section>
   );

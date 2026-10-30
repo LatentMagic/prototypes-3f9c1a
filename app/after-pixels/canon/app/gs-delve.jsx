@@ -10,8 +10,8 @@
 // Con and Cha, the abilities and the starting gear are invented. The Warren's carry limit is three.
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
-import { GsMoves, gsShareText } from './gs-session.jsx';
-import { LbResult, LbShare } from './gs-library.jsx';
+import { GsMoves } from './gs-session.jsx';
+import { LbResult, LbActions } from './gs-library.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
 import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
@@ -212,14 +212,7 @@ export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live
           : <p className={'es-vd is-' + (m.end === 'won' ? 'ok' : 'over')}>{dlWord(m)}</p>}
       </div>
       <div className="dl-now-route"><DlRoute m={m} act={null} on={{ sel: open, hov: () => {} }} card /></div>
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {m.end !== 'live' && <LbShare lines={gsShareText(s)} />}
-          <DS.TextLink onClick={() => open()}>{m.end === 'live' ? 'See your rolls so far' : 'See every roll'}</DS.TextLink>
-        </div>
-        {next && <span className="gs-muted">{next}</span>}
-      </div>
-      {children}
+      <LbActions onClick={() => open()} slot={children || next} />
       {m.end !== 'live' && !noNext && GsNextLink && <GsNextLink />}
     </section>
   );

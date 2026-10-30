@@ -10,8 +10,8 @@
 // The engine's marking: greens first, then each remaining letter of the answer lights at most one amber, left to right.
 import React from 'react';
 import { DS, useGs, GS_SESSIONS } from './gs-data.jsx';
-import { GsMoves, gsShareText } from './gs-session.jsx';
-import { LbResult, LbShare } from './gs-library.jsx';
+import { GsMoves } from './gs-session.jsx';
+import { LbResult, LbActions } from './gs-library.jsx';
 import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
@@ -102,13 +102,8 @@ export const WdNow = ({ c, done }) => {
         <div className="wd-trail" role="img" aria-label={said}>{trail.map((e, i) => <WdTr key={i} e={e} />)}</div>
         <div className="wd-now-row" role="img" aria-label={wdSay(last)}>{last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + last.marks[j]} aria-hidden="true">{ch}</span>)}</div>
       </div></div>}
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {done && <LbShare lines={gsShareText(s)} />}
-          <DS.TextLink onClick={() => gs.go('session', { id: sid })}>{done ? c.links[0] : c.links[1]}</DS.TextLink>
-        </div>
-        <span className="gs-muted">{c.next}</span>
-      </div>
+    </div>
+      <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
       {done && <GsNextLink />}
-    </div></section>);
+    </section>);
 };

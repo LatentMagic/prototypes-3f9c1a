@@ -23,25 +23,23 @@
 .lb-v.is-ok { color: var(--success); }
 .lb-v.is-bad { color: var(--error); }
 .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
-.lb-foot { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 24px; }
-.lb-foot > .gs-muted { min-height: 48px; display: flex; align-items: center; }
-/* KEEP: A button and its link share one row from 640px; under 640px the button is full width and the link sits on its own line beneath it (design system Layout). */
-.lb-acts { display: flex; flex-wrap: nowrap; align-items: center; gap: 24px; min-width: 0; }
+/* KEEP: A now card's action row (LbActions): the main button at the left, the slot line at the right; on a phone the button runs full width and the line sits centred under it.
+   The row is pinned to the card's foot with margin-top: auto, so a card stretched beside a taller one opens its extra space above the row, and it sits 24px below the content (the card's 16px gap plus 8px). */
+.lb-card:has(> .lb-foot) { display: flex; flex-direction: column; }
+.lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); margin-top: auto; padding-top: var(--space-2); }
+.lb-foot > .lb-slot { min-width: 0; text-wrap: pretty; }
+.lb-foot > .lb-slot > p { margin: 0; }
 @container gs (max-width: 639.98px) {
-  .lb-foot > .lb-acts { flex: 1 1 100%; }
-  .lb-acts { flex-direction: column; align-items: stretch; gap: 4px; }
-  .lb-acts > .mcp-lnk { align-self: flex-start; }
+  .lb-foot { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+  .lb-foot > .lb-slot { text-align: center; }
   .lb-pass { flex-direction: column; align-items: stretch; gap: 8px; flex: 1 1 100%; }
   .lbf-bar { flex-wrap: wrap; }
   .lbf-search { flex: 1 1 100%; max-width: none; }
 }
-.lb-acts > .mcp-lnk { min-height: 44px; }
 /* KEEP: The Pass offer on a free first-edition card: its line and Get the Pass on one row, wrapping under the actions when narrow */
 .lb-pass { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .lb-pass > .gs-muted { flex: 0 1 auto; min-width: 0; text-wrap: pretty; }
 .lb-pass > *:first-child { flex: none; }
-/* KEEP: Every button in a first-edition card's foot is one width, so stacked buttons line up */
-.lb-foot .mcp-btn { min-width: 8.5em; }
 /* KEEP: The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
 .lb-head { margin-bottom: -12px; }
 .pge-panel { display: grid; gap: 16px; min-width: 0; }

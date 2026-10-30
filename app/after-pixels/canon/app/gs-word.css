@@ -91,13 +91,11 @@
 /* KEEP: on a card 600px wide or more, the label and title, the picture and the result share the top row (the result stays top
    right) and the foot runs below. The head gives way before the picture, so the tiles never spill into the gutters. */
 @container wdnow (min-width: 600px) {
-  .wd-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res" "foot foot foot" "next next next"; column-gap: 24px; row-gap: 24px; }
+  .wd-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
   .wd-now-in > .lb-top { display: contents; }
   .wd-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
   .wd-now-in > .lb-top > :is(.lb-big, .es-vd) { grid-area: res; align-self: start; max-width: none; }
   .wd-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
-  .wd-now-in > .lb-foot { grid-area: foot; }
-  .wd-now-in > .gs-pu-nextlink { grid-area: next; }
 }
 /* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's

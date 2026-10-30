@@ -265,16 +265,22 @@ export const LbShare = ({ lines }) => {
   </>;
 };
 
+// The now card's action row, shared by every game's now card: the one main button at the left (Play before a play; "Go to session" while one is under way
+// and once it is done) and the slot at the right (the next-time line, or the free player's Pass line). Its card pins it to the card's foot (css: .lb-foot).
+export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
+  <div className="lb-foot">
+    <DS.Button onClick={onClick}>{label}</DS.Button>
+    {slot && <div className="lb-slot gs-muted">{slot}</div>}
+  </div>
+);
+
 // This edition's card for a game never played (a new account with the Pass): the edition, a line, Play, and when the next one comes.
 // label: the card's own label where it isn't THIS WEEK (Casebook's A CASE); span: the card takes the whole row (no streak card beside it).
 export const LbFreshNow = ({ title, line, next, onPlay, label, span }) => (
   <section className="lb-card" style={span ? { gridColumn: '1 / -1' } : undefined}>
     <div className="lb-top"><div className="gs-stack-xs"><span className="gs-label">{label || 'THIS WEEK'}</span><h2 className="mcp-t-sec">{title}</h2></div></div>
     <p>{line}</p>
-    <div className="lb-foot">
-      <div className="lb-acts"><DS.Button onClick={onPlay}>Play</DS.Button></div>
-      {next && <span className="gs-muted">{next}</span>}
-    </div>
+    <LbActions label="Play" onClick={onPlay} slot={next} />
   </section>
 );
 

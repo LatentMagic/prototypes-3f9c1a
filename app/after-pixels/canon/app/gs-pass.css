@@ -68,10 +68,6 @@
 .gs-pu-libgrp { display: grid; gap: 12px; min-width: 0; }
 .gs-pu-nextlink { padding-top: 12px; border-top: 1px solid var(--line); }
 .gs-pu-nextlink .mcp-lnk { min-height: 44px; }
-.lb-foot > .gs-pu-soon { min-height: 0; }
-@container gs (max-width: 639.98px) {
-  .gs-pu-first.is-done .lb-foot { display: grid; gap: 12px; justify-content: stretch; }
-}
 /* KEEP: At phone width no Library heading or line ends on one or two words alone. */
 @container gs (max-width: 559px) {
   .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }

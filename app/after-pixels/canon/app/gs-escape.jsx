@@ -7,8 +7,8 @@
 // This week's play: in progress, else the finished play Config picks (This edition: Hard; Escape: par), else the seeded one.
 import React from 'react';
 import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs } from './gs-data.jsx';
-import { GsMoves, gsShareText } from './gs-session.jsx';
-import { LbResult, LbShare } from './gs-library.jsx';
+import { GsMoves } from './gs-session.jsx';
+import { LbResult, LbActions } from './gs-library.jsx';
 import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
@@ -209,14 +209,7 @@ export const EsNow = ({ label, title, next, noNext, children }) => {
         <EsVerdict m={m} />
       </div>
       <EsLine m={m} onSel={open} card />
-      <div className="lb-foot">
-        <div className="lb-acts">
-          {!m.live && <LbShare lines={gsShareText(s)} />}
-          <DS.TextLink onClick={() => open()}>{m.live ? 'See your moves so far' : 'See every move'}</DS.TextLink>
-        </div>
-        {next && <span className="gs-muted">{next}</span>}
-      </div>
-      {children}
+      <LbActions onClick={() => open()} slot={children || next} />
       {!m.live && !noNext && <GsNextLink />}
     </section>
   );
