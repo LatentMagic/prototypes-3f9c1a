@@ -11,8 +11,8 @@ staged=$(git diff --cached --name-only --diff-filter=ACMRD)
 ds_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/design-system/components/.*\.jsx?|$AP/design-system/vite\.config\.mjs|package-lock\.json)$" || true)
 
 # Canon build inputs: its sources and config, the checks the build runs, and what it imports
-# (the design-system bundle, styles.css and the tokens styles.css pulls in).
-canon_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/canon/app/.*|$AP/canon/vite\.config\.mjs|tools/ap-(names|modules)\.mjs|$AP/design-system/(_ds_bundle\.js|styles\.css|tokens/.*)|package-lock\.json)$" || true)
+# (the design-system bundle and every stylesheet styles.css pulls in).
+canon_changed=$(printf '%s\n' "$staged" | grep -E "^($AP/canon/app/.*|$AP/canon/vite\.config\.mjs|tools/ap-(names|modules)\.mjs|$AP/design-system/(_ds_bundle\.js|.*\.css)|package-lock\.json)$" || true)
 
 if [ -z "$ds_changed" ] && [ -z "$canon_changed" ]; then
   exit 0
