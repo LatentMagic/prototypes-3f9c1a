@@ -2867,15 +2867,16 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    in the session page's tiles, joints and links (gs-chain.css on candidate/chain-session-lofi), on Guess's tiles (gs-word.css:
    .wd-t, --wd-dash). Imported last by canon.css. Low fi: structure and what is shown. */
 
-/* The card: the body takes the spare height above the pinned action row, and the picture centres in it; nothing stretches it. */
+/* The card: the body takes the spare height above the pinned action row, and the picture centres in it, full width, in its own
+   band under the head; nothing stretches the card. */
 .cnw { container: cnw / inline-size; }
 .cnw .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
 .cnw .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
-.cnw-pic { align-self: center; justify-self: center; min-width: 0; max-width: 100%; }
+.cnw-pic { align-self: center; justify-self: stretch; min-width: 0; }
+.cnw-stack { display: grid; justify-items: center; gap: 16px; }
 
-/* Tiles: 24px (letters 13px), the big word 44px. */
-.cnw-word { --t: 24px; --g: 2px; display: inline-flex; gap: var(--g); flex: none; }
-.cnw-word.is-big { --t: 44px; --g: 4px; }
+/* Tiles: one size per picture (--t), letters at half, never under 13px. */
+.cnw-word { --t: 40px; --g: 3px; display: inline-flex; gap: var(--g); flex: none; }
 .cnw-t { width: var(--t); height: var(--t); font-size: max(13px, calc(var(--t) * .5)); }
 .cnw-t.is-end { background: var(--off-white); color: var(--page); }
 .cnw-t.is-shown { background: #918B80; color: var(--page); }
@@ -2886,17 +2887,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cnw-joint svg { display: block; }
 .cnw-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
 
-/* 1's rows and the not-yet-played card: words and joints in a line, centred. */
-.cnw-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; row-gap: 8px; }
-.cnw-rows { display: grid; justify-items: center; gap: 8px; }
-.cnw-rows.is-narrow { display: none; }
-
-/* 2: the three words in a row, and the guesses. */
-.cnw-three { display: flex; align-items: center; justify-content: center; }
-.cnw-c2 .cnw-links { justify-self: center; }
-
-/* The guesses' chain of links. */
-.cnw-links { display: inline-flex; align-items: flex-start; gap: 8px; }
+/* The guesses' chain of links, numbered. */
+.cnw-links { display: inline-flex; align-items: flex-start; gap: 8px; max-width: 100%; }
 .cnw-links svg { display: block; overflow: visible; }
 .cnw-links text { font: 600 13px/1 var(--font-text); fill: var(--muted); }
 .cnw-more { font: 600 13px/16px var(--font-text); color: var(--muted); padding-top: 4px; }
@@ -2906,37 +2898,51 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cnw-loop.is-wrong { stroke: #918B80; }
 .cnw-loop.is-given { stroke: #E5A63B; }
 
-/* 3: the links, then after a rule the words found: a square per word and the count. */
-.cnw-duo { display: flex; align-items: center; justify-content: center; gap: 24px; }
-.cnw-found { display: grid; justify-items: center; gap: 8px; }
-.cnw-duo > .cnw-links + .cnw-found { padding-left: 24px; border-left: 1px solid var(--line); }
-.cnw-sq-row { display: flex; gap: 4px; }
-.cnw-sq { box-sizing: border-box; width: 20px; height: 20px; }
-.cnw-sq.is-found { border: 2px solid var(--success); }
-.cnw-sq.is-given { border: 2px solid #E5A63B; }
-.cnw-sq.is-hidden { background: var(--wd-dash); }
-.cnw-cap { font: 600 14px/1.2 var(--font-text); color: var(--muted); white-space: nowrap; }
+/* The count under a picture. */
+.cnw-cap { font: 400 14px/1.3 var(--font-text); color: var(--muted); text-align: center; }
 .cnw-cap b { font: 700 20px/1 var(--font-heading); color: var(--text); margin-right: 4px; }
 
-/* From 600px the title, the picture and the result share one row, the picture centred in the body's height between them, so the
-   card stays the streak card's height. 2: the guesses take that middle place in the head's row, the three words the row under. */
-@container cnw (min-width: 600px) {
-  .cnw .lb-now-in { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 24px; }
-  .cnw .lb-now-in > .lb-top { display: contents; }
-  .cnw .lb-now-in > .lb-top > .gs-stack-xs { grid-area: 1 / 1; align-self: start; }
-  .cnw .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { grid-area: 1 / 3; align-self: start; max-width: none; margin: 0; }
-  .cnw .lb-now-in > .cnw-pic { grid-area: 1 / 2 / 3 / 3; }
-  .cnw-c2 .lb-now-in > .cnw-links { grid-area: 1 / 2; align-self: start; }
-  .cnw-c2 .lb-now-in > .cnw-three { grid-area: 2 / 1 / 3 / 4; }
-}
+/* A, Route: words as boxes of one size, flex across the full width, joints between. */
+.cnw-route { display: flex; align-items: center; width: 100%; }
+.cnw-box { box-sizing: border-box; flex: 1 1 0; min-width: 0; height: 36px; display: grid; place-items: center; overflow: hidden; white-space: nowrap;
+  font: 600 14px/1 var(--font-text); letter-spacing: .03em; text-transform: uppercase; border: 2px solid transparent; }
+.cnw-box.is-end { background: var(--off-white); color: var(--page); }
+.cnw-box.is-found { border-color: var(--success); color: var(--text); }
+.cnw-box.is-given { border-color: #E5A63B; color: #E5A63B; }
+.cnw-box.is-hidden { background: var(--wd-dash); color: var(--muted); }
+.cnw-box.is-blank { background: var(--wd-dash); }
 
-/* Phone: 2 stands its three words in a column, joined downwards; 3 puts the words found under the links. */
-@container cnw (max-width: 479.98px) {
-  .cnw-rows.is-wide { display: none; }
-  .cnw-rows.is-narrow { display: grid; }
-  .cnw-three { flex-direction: column; }
-  .cnw-three > .cnw-joint { width: auto; height: 22px; transform: rotate(90deg); }
-  .cnw-word.is-big { --t: min(44px, calc((100cqi - 24px) / 7)); }
-  .cnw-duo { flex-direction: column; gap: 16px; }
-  .cnw-duo > .cnw-links + .cnw-found { padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+/* B, Today's link: the word large, the guesses and the count in one row under it. */
+.cnw-c2 .cnw-word { --t: 48px; --g: 4px; }
+.cnw-focus { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; }
+.cnw-joints { display: inline-flex; gap: 4px; }
+.cnw-under { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 100%; }
+
+/* C, Two ends: the end words at the edges, the nodes spread between them on a line. */
+.cnw-ends { display: flex; align-items: center; width: 100%; gap: 16px; }
+.cnw-ends > .is-first { order: 1; }
+.cnw-ends > .is-last { order: 3; }
+.cnw-ends > .cnw-gap { display: none; order: 2; flex: 1 1 0; border-top: 2px dashed #746E65; }
+.cnw-mid { order: 2; flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; position: relative; }
+.cnw-mid::before { content: ''; position: absolute; left: -16px; right: -16px; top: 50%; border-top: 2px solid #918B80; }
+.cnw-node { position: relative; flex: none; display: block; overflow: visible; }
+.cnw-node .cnw-loop { fill: var(--card); }
+.cnw-node text { font: 700 14px/1 var(--font-text); text-transform: uppercase; fill: var(--text); }
+.cnw-node text.is-given { fill: #E5A63B; }
+
+/* Phone (card under 640px): A three to a row, a joint dropped from the first row's end; B shrinks to fit; C's nodes under the ends. */
+@container cnw (max-width: 639.98px) {
+  .cnw-route { flex-wrap: wrap; row-gap: 8px; }
+  .cnw-route > .cnw-box { flex: 0 0 calc((100% - 44px) / 3); }
+  .cnw-route > .cnw-joint:nth-child(6) { flex: 0 0 100%; height: 22px; justify-content: end; padding-right: calc((100% - 44px) / 6 - 11px); }
+  .cnw-route > .cnw-joint:nth-child(6) svg { transform: rotate(90deg); }
+  .cnw-c2 .cnw-word { --t: min(48px, calc((100cqi - 32px - 6 * 4px) / 7)); }
+  .cnw-c2 .is-ends { flex-direction: column; gap: 8px; }
+  .cnw-c2 .is-ends .cnw-word { --t: 36px; }
+  .cnw-under { flex-direction: column; gap: 8px; }
+  .cnw-c3 .cnw-word { --t: min(36px, calc((100cqi - 32px - 16px - 8 * 3px) / 11)); }
+  .cnw-ends { flex-wrap: wrap; row-gap: 16px; }
+  .cnw-ends > .cnw-gap { display: block; }
+  .cnw-mid { order: 4; flex: 0 0 100%; }
+  .cnw-mid::before { left: 0; right: 0; }
 }
