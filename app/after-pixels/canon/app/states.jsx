@@ -29,15 +29,9 @@
 // resolver below, window.KIT_STATES (ids + labels only, for anything reading
 // the page), and the palette + index in app/states-ui.jsx.
 //
-// A deletable aid, in two files (this + app/states-ui.jsx). main.jsx guards on
-// window.buildStates / window.StatesIndex, so absent ⇒ no register, no palette,
-// no address reading, and the app behaves exactly as it ships. A build that
-// omits the aids simply does not list them.
-//
-// NOTE ON PREVIEW: the resolver reads location.search, and nothing in the design
-// tool can hand this page a URL — so `?state=` looks INERT here, in every
-// posture, however correct it is. It is exercised by driving the register
-// directly (window.buildStates, the palette, the index).
+// The register is two files (this + app/states-ui.jsx), both imported by
+// main.jsx (buildStates comes from app/gs-pass-aids.jsx, which adds the reset).
+// The resolver reads location.search, so `?state=<id>` opens a state.
 // ============================================================================
 
 // ---- The stager library ------------------------------------------------------

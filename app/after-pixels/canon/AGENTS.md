@@ -32,19 +32,20 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 
 ## Styles
 
-- Tokens: the design system's `tokens/*.css` and `components/components.css`, imported through `../design-system/styles.css` by `app/canon.css` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px.
+- Tokens: the design system's `tokens/*.css` and `components/components.css`, imported through `../design-system/styles.css` by `app/canon.css` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px. Content in the app posture reads its insets as `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`; only the app posture (Config → Platform, `isApp`) sets them.
 - Product CSS is `app/*.css`, one file per area, imported by `app/canon.css` and built into `build/canon.css` (no inline `<style>`). **Import order is the cascade: a later file wins a tie, so a rule that overrides another sits in a file imported after it.** Each file's first comment says what it holds. Find a rule with `grep -n "<class>" app/*.css`.
 - Shell and aids: `aids.css` (Config, States and QA palettes, phone frame, base reset), `gs-shell.css` (`.gs-root`, utilities, links, grids, session head, tags, top bar, demo bar), `gs-site.css` (loaders, footer, legal, not found, user menu).
 - Screens: `gs-home.css`, `gs-cards.css` (Discover, Library lists, game cards and their motion art), `gs-game.css` (product page), `gs-player.css`, `gs-library-page.css` (cards, streak, now card, editions list), `gs-session-history.css` (session parts every game shares; History), `gs-auth.css` (sign in, username), `gs-connect.css` (How it works, play dialog), `gs-account.css`, `gs-pass.css` (pricing, upsell, Home Pass card).
 - Game session bodies: `gs-escape.css`, `gs-word.css`, `gs-delve.css`.
 
 - `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
-- Before adding a class, grep for it: a name already used elsewhere restyles that too (`GOTCHA.md` 13).
+- Before adding a class, grep `app/` for it: a name already used elsewhere restyles that too. After a change to shared styles, check the home page and one page you did not touch.
+- If spacing needs a negative margin or a nudge value to look right, fix the structure instead.
 
 ## Reuse before you build
 
 Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-data.jsx`), and canon's shared parts. Never build a one-off where one of these fits; if none does, say so in your report.
-- Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`. Guidelines (voice, layout, overlays, loading): `../design-system/guidelines/`.
+- Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`. Guidelines (voice, layout, overlays, loading): `../design-system/guidelines/`. Read `guidelines/voice.md` before you write any product string.
 - Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, `GsTrack`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsSessHead`, `GsSessResult`, `GsMoves`, share pop-up), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts).
 - Canon builds the design system from `../design-system/` (its `styles.css` and `_ds_bundle.js`); there is no copy. Changing a component is a design-system change: do it only when the brief asks, then run `npm run build:ds` (writes `_ds_bundle.js`) and `npm run build`.
 
@@ -58,7 +59,7 @@ Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-da
 - To prove a refactor changed nothing, run `--states all` (about 90 s) before and after, then `npm run diff -- <dirA> <dirB>` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; that is not a finding.
-- A change that makes a situation hard to reach (an account state, a failed play, a game mid-run) adds its state in the same change: read `ARCHITECTURE.md` § Addressable states first.
+- A change that makes a situation hard to reach (an account state, a failed play, a game mid-run) adds its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none. Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
 
 ## Owner rulings that bind every change
 
@@ -67,10 +68,10 @@ Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-da
 - **Library game page:** four cards on one grid: the **now card** (the current or latest edition, carrying the result statement down) and the **streak card** (the run of days or weeks played) above Achievements and Your plays. Never break, reorder or restack the rows on desktop. Cards in a row end level by arranging what is inside, never by stretching; check each card with its fewest and most items. On a phone they stack in the same order.
 - **Product page:** it tells a stranger what they will do and why they would want it, using only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
 
-## Code and record
+## Code
 
-- Before writing a comment, a style object or a new module, read `ARCHITECTURE.md` § Conventions.
-- `CHANGELOG.md`: one short entry per step that changes the product's shape, never for tweaks or fixes.
-- Never add a `GOTCHA.md` entry without the owner's yes; propose it in your report.
-
-Read on demand: `ARCHITECTURE.md` (postures, deletable aids, states, conventions); `GOTCHA.md` before animated overlays, `position: fixed` inside a transform, or moving styles in; `app/README.md` before adding a Config row or QA entry.
+- A comment states a rule the code keeps, with its reason, or says where a part sits in the product. Never narrate what the code plainly does, and never cite a task folder, handoff or ticket folder.
+- Mark behaviour that a rebuild from screenshots would get wrong (adaptive styling, overlap or overflow handling, a value chosen against the default) with `// KEEP:`. State the outcome to keep in plain words, numbers included, then one clause of why. The agent that builds the product reads each `KEEP:` as "preserve this". If you change that behaviour, update or remove its `KEEP:` in the same edit.
+- A `.focus()` inside an overlay that slides in from off-screen must pass `{ preventScroll: true }`, or the screen behind it jumps.
+- `position: fixed` pins to the nearest ancestor with any transform, `translateX(0)` included. Only `.kit-phone-clip` keeps a transform at rest; remove any other once its transition ends.
+- A CSS transition never runs if its `transition` property arrives in the same render as the new value. Keep the property on the element at all times, or drive the motion with `element.animate()`. Prove motion by measuring it over time, never by one screenshot.

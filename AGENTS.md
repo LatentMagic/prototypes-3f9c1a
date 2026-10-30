@@ -30,7 +30,7 @@ Commit messages stay feature-flavoured (`feat(circlists): <feature>`) when natur
 - **`desc` says what a node *is* — never what it carries; anything appended there is stage space taken from the prototype.** Feature history goes in the `changelog` array only — leave `desc` alone when a fresh export lands.
 - Each prototype's `changelog` array renders in a per-slug "recent changes" drawer. `README.md`'s one-liner is documentation, not the changelog — don't confuse the two.
 - Deep-linkable at `#<app>/<slug>` (e.g. `#circlists/canon`; a bare `#<slug>` still resolves as a legacy form); an unknown or empty hash lands on the working line (the last node without a `kind`), never on a reference or candidate node.
-- Anything after `?` in the hash is handed to the iframe `src` untouched — that is how canon's `?state=<id>` addressing works, and canon's `ARCHITECTURE.md` depends on it. Keep `parseHash`/`srcFor` forwarding the query.
+- Anything after `?` in the hash is handed to the iframe `src` untouched — that is how canon's `?state=<id>` addressing works, and canon's copied state links (`kitStateLink`) depend on it. Keep `parseHash`/`srcFor` forwarding the query.
 - A node may set `path` to serve from outside `app/`. The Golden Sample App (`#gsa/canon`) is served this way from `kit/project/`.
 - Responsive shell (rail collapses to an off-canvas drawer at ≤640px) lives in `index.html` only, never in a prototype's own layout handling.
 

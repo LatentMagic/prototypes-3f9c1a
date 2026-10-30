@@ -9,7 +9,7 @@
 // subscribed) and Pass (active, monthly). It and the Subscription config row
 // always agree, because the view is derived from the subscription.
 //
-// A candidate build (the kit's candidate-build skill) may publish window.KitCandidate; it is
+// A candidate build may publish window.KitCandidate; it is
 // read below, per render, and absent means the shipped behaviour.
 // ============================================================================
 import React from 'react';
@@ -348,7 +348,7 @@ const KitApp = () => {
   const StatesIndexView = StatesIndex;
   const showIndex = !!StatesIndexView && !!landing && (landing.kind === 'index' || landing.kind === 'unresolved');
 
-  // Layouts adapt to the width they are handed (GOTCHA 6): measure the root.
+  // Layouts adapt to the width they are handed: measure the root.
   useEffect(() => {
     const el = rootRef.current;
     if (!el || !window.ResizeObserver) return undefined;

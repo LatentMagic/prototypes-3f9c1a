@@ -12,23 +12,19 @@
 // open. An address needs a register of its own (app/states.jsx) before
 // `?state=` can mean anything.
 //
-// Extracted to its own file so a build can drop the whole aid by leaving THIS
-// one file out — main.jsx guards on
-// window.ConfigLauncher and renders nothing when it's absent. The States half
-// only appears when window.StatesPalette is loaded too.
+// Extracted to its own file; main.jsx imports ConfigLauncher and renders it. The
+// States half appears only when there are state groups to list.
 //
 // Owns its own open state + the pill's drag position; everything the modal
 // controls is handed in as props from main.jsx, where the real state lives. The
-// .kit-config-* / .kit-launcher-* styles live in index.html.
+// .kit-config-* / .kit-launcher-* styles live in app/aids.css.
 //
-// PRODUCT ROWS do not go in this file. A product publishes window.ConfigExtra
-// (here app/gs-config.jsx), built from the contract published below:
+// PRODUCT ROWS do not go in this file. A product supplies ConfigExtra
+// (here app/gs-pass-aids.jsx, built on app/gs-config.jsx), from the exported parts:
 //
 //   ConfigGroup({ title, scope, children })  scope="global" joins the Global
 //                                            section; omitted = its own section
 //   ConfigRow({ label, value, onChange, options: [{ value, label }], hint })
-//   ConfigAction({ label, onClick, hint })   a one-shot event
-//   ConfigNote({ children })                 a short "does not apply" line
 //
 // The modal: a rail of sections (Global first, then one per feature group)
 // beside the selected section's rows. Below 640px it is a bottom sheet that

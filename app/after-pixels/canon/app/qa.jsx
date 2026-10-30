@@ -12,7 +12,7 @@
 // When the list is empty the button stays and the panel shows its empty state.
 //
 // A step whose id is not in the register shows as stale rather than failing
-// silently. Deletable: config.jsx guards on window.QaPalette.
+// silently. The palette (QaPalette) is imported by config.jsx.
 // ============================================================================
 // Entry shape: { key, title, note?, only?, steps: ['state-id', ...] }
 // `only` names a window handle; the entry shows only when it is present, so a

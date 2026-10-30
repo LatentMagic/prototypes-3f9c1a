@@ -1,6 +1,6 @@
 // ============================================================================
-// After Pixels — review settings in Config (PROTOTYPE AID). Published as
-// window.ConfigExtra; reads and writes the app through window.gsApi.
+// After Pixels — review settings in Config (PROTOTYPE AID). Exported as
+// ConfigExtraBase (wrapped by ConfigExtra in gs-pass-aids.jsx); reads and writes the app through window.gsApi.
 // ============================================================================
 import React from 'react';
 import { GS_DAY0 } from './gs-billing.jsx';
