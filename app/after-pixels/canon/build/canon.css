@@ -2636,6 +2636,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pg-pop { max-width: 100%; }
   .pg-pop .gs-menu-item { white-space: normal; text-align: left; overflow-wrap: anywhere; }
 }
+
+/* Fit (fit.jsx) in the bar: a phone's button (Joe). From 640px it is hidden, unless fitted already, so it can be pressed off. */
+.pg-fit-btn { flex: none; min-height: 44px; padding: 0 12px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge);
+  font: 600 14px/1.2 var(--font-text); cursor: pointer; }
+.pg-fit-btn[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+@container gs (min-width: 640px) {
+  .pg-fit-btn { min-height: 36px; font-size: 13px; }
+  .pg-fit-btn:not([aria-pressed="true"]) { display: none; }
+}
 /* PLAYGROUND, not canon: Daily Word result directions (app/playground-guess-result.jsx).
    Imported after gs-word.css and gs-delve.css, whose board, tiles, card (.dv2) and result band (.dv7r-band) it builds on. */
 

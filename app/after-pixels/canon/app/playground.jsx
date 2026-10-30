@@ -17,12 +17,12 @@
 // setting's value is kept in the URL (&<key>=<value>), so a link opens exactly the view it was copied from; the first
 // option is the default. Styles: app/playground.css.
 //
-// Fit (app/fit.jsx, a Config → Global setting) works under a playground too: the bar stays outside, at phone size, and
-// drives the framed page. The keys `fit` and `pgframe` are reserved: a setting must never use them.
+// Every playground's bar has a Fit button (app/fit.jsx; also Config → Global → Fit): it shows the same page laid out 1280px
+// wide, scaled to the window, so a phone shows the desktop. The bar stays outside, at phone size, and drives the framed page. The keys `fit` and `pgframe` are reserved: a setting must never use them.
 // ============================================================================
 import React from 'react';
 import { gsUseMenuDismiss } from './gs-parts.jsx';
-import { isFitted, isFramed, fitForward } from './fit.jsx';
+import { isFitted, isFramed, fitForward, useFit, setFit } from './fit.jsx';
 
 const PG = {};
 export const pgRegister = (id, def) => { PG[id] = def; };
@@ -85,7 +85,7 @@ export const PgBar = () => {
     def.settings.forEach((s) => pgOpen(pgOption(s, pgValue(s)), url, true));
     window.history.replaceState(null, '', url);
   }, []);
-  const framed = isFramed();
+  const framed = isFramed(); const fitted = useFit();
   return (
     <header className="gs-top pg-top" aria-label={'Playground: ' + def.title} {...(framed ? { inert: '', 'aria-hidden': 'true' } : {})}>
       <div className="gs-wrap pg-top-in">
@@ -95,6 +95,7 @@ export const PgBar = () => {
             <span className="pg-label">{s.label}</span>
             <PgPick s={s} v={v} />
           </div>); })}
+        <button type="button" className="pg-fit-btn" aria-pressed={fitted} onClick={() => setFit(!fitted)}>Fit</button>
       </div>
     </header>);
 };
