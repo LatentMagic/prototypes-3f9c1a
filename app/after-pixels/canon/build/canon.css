@@ -2709,12 +2709,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* D2: the tiles, then the ring and the hint box as one small centred row under them (the original D2, restored: Joe). */
 .pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
 /* D2's tiles, ring and hint box are D1's sizes (Joe: "as big as it is on D1"). */
-/* Thinner (Joe): from 600px the tiles sit level with TODAY, between the title and the result, not in a row of their own. */
+/* KEEP (Joe): the tiles and the ring row are one block centred on the whole card's height and width, the same gap above as
+   below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. From 600px. */
+.pgn-d2:not([class*="pgn-vc-"]) { position: relative; }
 @container pgndx (min-width: 600px) {
-  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: "all"; }
-  .pgn-d2:not([class*="pgn-vc-"]) :is(.pgn-dx-head, .pgn-dx-res, .pgn-dx-pic) { grid-area: all; }
-  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-res { justify-self: end; }
-  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; align-self: start; }
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-body { grid-template-areas: "head res"; grid-template-rows: auto; min-height: 132px; }
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
 /* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe). */
 .pgn-dx-res .es-vd { font: 700 20px/1.35 var(--font-heading); }
