@@ -22,6 +22,10 @@ const CNW_TODAY = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'WAGON'], 
 const CNW_PLAYS = {
   live: { ...CNW_TODAY, p: CNW_TODAY.p.slice(0, 3), live: true },
   solved: CNW_TODAY,
+  // A hard day: Chain has no guess limit, so seven words (five hidden) can take 21 guesses: three words found, two given away.
+  hard: { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BAIL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROBE', 2],
+    ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SEVERE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
+    ['TRAM', 5], ['TRAIL', 5], ['TRAIN', 5]] },
   failed: { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] },
 };
 
@@ -59,8 +63,8 @@ const CnwJoint = ({ cls = '' }) => (
   <span className={'cnw-joint ' + cls} aria-hidden="true"><svg width="22" height="16" viewBox="0 0 22 16"><rect x="1.5" y="1.5" width="12" height="8" rx="4" /><rect x="8.5" y="6.5" width="12" height="8" rx="4" /></svg></span>);
 
 // ---- The guesses as the session page's chain of links, across, each numbered: right a closed green link, wrong a grey link open
-// on its side, given away an amber link broken in two. At most CNW_MAX links; earlier ones are counted before the chain. ----
-const CNW_W = 16; const CNW_H = 30; const CNW_STEP = CNW_H + 8; const CNW_MAX = 8;
+// on its side, given away an amber link broken in two. ----
+const CNW_W = 16; const CNW_H = 30; const CNW_STEP = CNW_H + 8;
 const CNW_GAP = { wrong: 14, given: 8 };
 // The dash that opens a rounded link of length len and thickness th: wrong a gap on its side, given away a gap breaking it in two.
 const cnwLoop = (res, len, th) => {
@@ -68,16 +72,32 @@ const cnwLoop = (res, len, th) => {
   return res === 'right' ? {} : { strokeDasharray: (res === 'given' ? per / 2 - gap : per - gap) + ' ' + gap, strokeDashoffset: per - gap / 2 - (len - th) / 2 };
 };
 const CNW_SAY = { right: 'right', wrong: 'wrong', given: 'given away' };
-const CnwLinks = ({ g }) => {
-  const shown = g.slice(-CNW_MAX); const before = g.length - shown.length; const len = 8 + (shown.length - 1) * CNW_STEP + CNW_H;
+// Folded into balanced rows so no link shrinks and none stands alone: the card's width fixes how many links a row holds, the rows
+// share the guesses as evenly as they can (a hard day of 20+ guesses is two or three rows). The numbers run on across rows.
+const CnwLinkRow = ({ items }) => {
+  const len = 8 + (items.length - 1) * CNW_STEP + CNW_H;
   return (
-    <span className="cnw-links" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + g.map((t) => CNW_SAY[t.res]).join(', ')}>
-      {before > 0 && <span className="cnw-more" aria-hidden="true">{'+' + before}</span>}
-      <svg width={len} height="48" viewBox={'0 0 ' + len + ' 48'} aria-hidden="true">
-        {shown.slice(1).map((t, i) => <line key={'b' + i} className="cnw-bar" x1={4 + i * CNW_STEP + CNW_H} y1={4 + CNW_W / 2} x2={4 + (i + 1) * CNW_STEP} y2={4 + CNW_W / 2} />)}
-        {shown.map((t, i) => <rect key={i} x={4 + i * CNW_STEP} y={4} width={CNW_H} height={CNW_W} rx={CNW_W / 2} className={'cnw-loop is-' + t.res} {...cnwLoop(t.res, CNW_H, CNW_W)} />)}
-        {shown.map((t, i) => <text key={'n' + i} x={4 + i * CNW_STEP + CNW_H / 2} y="44" textAnchor="middle">{t.n}</text>)}
-      </svg>
+    <svg width={len} height="48" viewBox={'0 0 ' + len + ' 48'} aria-hidden="true">
+      {items.slice(1).map((t, i) => <line key={'b' + i} className="cnw-bar" x1={4 + i * CNW_STEP + CNW_H} y1={4 + CNW_W / 2} x2={4 + (i + 1) * CNW_STEP} y2={4 + CNW_W / 2} />)}
+      {items.map((t, i) => <rect key={i} x={4 + i * CNW_STEP} y={4} width={CNW_H} height={CNW_W} rx={CNW_W / 2} className={'cnw-loop is-' + t.res} {...cnwLoop(t.res, CNW_H, CNW_W)} />)}
+      {items.map((t, i) => <text key={'n' + i} x={4 + i * CNW_STEP + CNW_H / 2} y="44" textAnchor="middle">{t.n}</text>)}
+    </svg>);
+};
+const cnwFold = (g, per) => { const rows = Math.ceil(g.length / per); const size = Math.ceil(g.length / rows); const out = [];
+  for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
+  return out; };
+const CnwLinks = ({ g }) => {
+  const ref = React.useRef(null); const [per, setPer] = React.useState(8);
+  React.useLayoutEffect(() => {
+    const me = ref.current; const pic = me.closest('.cnw-pic'); if (!pic) return undefined;
+    const fit = () => { let room = pic.clientWidth; const par = me.parentElement;
+      if (par.classList.contains('cnw-under') && getComputedStyle(par).flexDirection === 'row') room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
+      setPer(Math.max(1, Math.floor((room - 8 - CNW_H) / CNW_STEP) + 1)); };
+    fit(); const ro = new ResizeObserver(fit); ro.observe(pic); return () => ro.disconnect();
+  }, []);
+  return (
+    <span ref={ref} className="cnw-links" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + g.map((t) => CNW_SAY[t.res]).join(', ')}>
+      {cnwFold(g, per).map((row, r) => <CnwLinkRow key={r} items={row} />)}
     </span>);
 };
 
@@ -213,7 +233,8 @@ export const initPlaygroundChainNow = () => {
       { value: 'fresh', label: 'Not yet played', state: 'library-chain', go: (gs) => gs.setReview({ never: 'chain' }) },
       { value: 'live', label: 'In progress', state: 'library-chain-in-progress' },
       { value: 'solved', label: 'Solved', state: 'library-chain' },
-      { value: 'failed', label: 'Failed', state: 'library-chain' }] },
+      { value: 'failed', label: 'Failed', state: 'library-chain' },
+      { value: 'hard', label: 'Hard day, 21 guesses', state: 'library-chain' }] },
   ] });
   if (cnwHere()) GS_NOW.chain = CnwCard;
 };

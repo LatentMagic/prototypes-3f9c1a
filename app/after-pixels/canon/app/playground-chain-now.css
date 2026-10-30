@@ -24,10 +24,9 @@
 .cnw-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
 
 /* The guesses' chain of links, numbered. */
-.cnw-links { display: inline-flex; align-items: flex-start; gap: 8px; max-width: 100%; }
+.cnw-links { display: grid; justify-items: center; gap: 4px; max-width: 100%; }
 .cnw-links svg { display: block; overflow: visible; }
 .cnw-links text { font: 600 13px/1 var(--font-text); fill: var(--muted); }
-.cnw-more { font: 600 13px/16px var(--font-text); color: var(--muted); padding-top: 4px; }
 .cnw-loop { fill: none; stroke-width: 3.5; }
 .cnw-bar { stroke: #918B80; stroke-width: 2; }
 .cnw-loop.is-right { stroke: var(--success); }
