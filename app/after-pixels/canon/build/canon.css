@@ -787,7 +787,13 @@ button.mcp-cb-ent{cursor:pointer}
 .dv5-insw { display: inline-flex; min-height: 26px; align-items: center; }
 .dv5 .dv4-sx text { font-size: 14px; }
 /* KEEP: a free pack slot is a dashed outline, so it reads as room, not as a thing. */
-.dv5 .dv4-g.is-empty { box-shadow: none; outline: 1.5px dashed var(--control-edge); outline-offset: -1.5px; }
+/* KEEP: the dashes are drawn, not a dashed outline or border: iPhone Safari drops the side dashes of a thin dashed edge on a
+   small box, leaving only the top and bottom (Joe, 2026-10-30). 1.5px dashes 4px long, 3px apart, on all four sides. */
+.dv5 .dv4-g.is-empty { box-shadow: none;
+  background: linear-gradient(90deg, var(--control-edge) 4px, transparent 0) top / 7px 1.5px repeat-x,
+    linear-gradient(90deg, var(--control-edge) 4px, transparent 0) bottom / 7px 1.5px repeat-x,
+    linear-gradient(180deg, var(--control-edge) 4px, transparent 0) left / 1.5px 7px repeat-y,
+    linear-gradient(180deg, var(--control-edge) 4px, transparent 0) right / 1.5px 7px repeat-y; }
 /* 1CB, 1DB: the same sheets with less padding and smaller gaps. */
 .dv4.dv5.is-tight { gap: 8px; padding: 12px 16px; }
 .dv5.is-tight .dv4-g { width: 28px; height: 28px; }
@@ -1555,7 +1561,11 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-runbody .lb-wk { grid-template-rows: 17px 48px auto; }
 .lb-runbody .lb-wk > i { height: auto; }
 .lb-runbody .lb-legend { flex-wrap: wrap; gap: 4px 12px; white-space: normal; }
-.lb-wk.is-empty > i { box-shadow: none; border: 1px dashed var(--line); }
+.lb-wk.is-empty > i { box-shadow: none; /* dashes drawn, not a dashed border, which iPhone Safari drops at the sides */
+  background: linear-gradient(90deg, var(--line) 3px, transparent 0) top / 5px 1px repeat-x,
+    linear-gradient(90deg, var(--line) 3px, transparent 0) bottom / 5px 1px repeat-x,
+    linear-gradient(180deg, var(--line) 3px, transparent 0) left / 1px 5px repeat-y,
+    linear-gradient(180deg, var(--line) 3px, transparent 0) right / 1px 5px repeat-y; }
 .lb-card > .lb-tiles:last-child, .lb-card > .lb-facts:last-child { margin-bottom: calc(-1 * var(--lb-pad)); border-bottom: 0; }
 .lb-recentcard { position: relative; }
 .lb-card > .lb-tiles { list-style: none; padding: 0; margin: 0 calc(-1 * var(--lb-pad)); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
