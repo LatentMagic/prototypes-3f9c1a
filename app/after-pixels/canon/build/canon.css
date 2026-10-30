@@ -942,7 +942,10 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 /* KEEP: a room's column is at least 44px wide, so a 34px die and four marks fit it; rooms that do not fit in one row go on the next, never over each other. No line joins the rooms: a wrapped row would end in a stub. */
 .dl-now-stops { display: grid; grid-template-columns: repeat(var(--dl-cols, 1), minmax(0, 1fr)); gap: 8px 0; min-width: 0; }
 .dl-now-stop { display: grid; justify-items: center; align-content: start; gap: 8px; padding: 8px 0 9px; min-width: 0; }
-.dl-now-stop .dvA2-head::before { display: none; }
+.dl-now-stop .dvA2-head { justify-self: stretch; }
+.dl-now-stop .dvA2-head::before { top: 10px; }
+.dl-now-stop.is-row-start .dvA2-head::before { left: 50%; }
+.dl-now-stop.is-row-end .dvA2-head::before { right: 50%; }
 .dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
 /* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
 .dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }

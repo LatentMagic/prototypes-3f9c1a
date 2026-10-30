@@ -207,7 +207,8 @@ const DlBody = ({ s }) => {
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
 const DL_NO_HOVER = () => {};
 // KEEP: rows are balanced, never one room left alone: n rooms in r rows take ceil(n / r) columns, r as few as fit 44px columns
-// (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30).
+// (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30). The line joining the rooms runs along each row and
+// stops at its ends, so a wrapped row never leaves a stub.
 const DL_NOW_COL = 44;
 const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
@@ -215,9 +216,10 @@ const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCo
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
   return [ref, cols]; };
 const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
-  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st) => {
+  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st, i) => {
     const keys = st.rolls.filter((r) => m.mom[r.n]); const rest = st.rolls.filter((r) => !m.mom[r.n]);
-    return (<div key={st.i} className="dl-now-stop">
+    const edge = (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === m.stops.length - 1 ? ' is-row-end' : '');
+    return (<div key={st.i} className={'dl-now-stop' + edge}>
       <DlStopHead st={st} />
       {!st.rolls.length && <i className="dv2-pass" aria-label="No rolls" />}
       {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} />)}</div>}
