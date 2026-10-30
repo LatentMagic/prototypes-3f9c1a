@@ -1,9 +1,0 @@
-<!doctype html><html><head><link rel="stylesheet" href="../../../styles.css"></head><body style="background:#fff;color:#000;font:14px monospace">
-<div id="a"><div class="mcp-art"><i class="mcp-art-hu-sun"></i></div></div>
-<div id="b" class="mcp-art-host is-on"><div class="mcp-art"><i class="mcp-art-hu-sun"></i></div></div>
-<a id="c" href="#" class="mcp-art-host is-on"><div class="mcp-art"><i class="mcp-art-hu-sun"></i></div></a>
-<div id="d" class="mcp-card is-pressed"><div class="mcp-art"><i class="mcp-art-hu-sun"></i></div></div>
-<button id="e" class="mcp-row is-link is-pressed"><span class="mcp-art"><i class="mcp-art-hu-sun"></i></span></button>
-<pre id="out"></pre>
-<script>setTimeout(()=>{out.textContent=['a','b','c','d','e'].map(k=>k+' --on='+getComputedStyle(document.querySelector('#'+k+' i')).getPropertyValue('--on')).join('\n')+'\nreduced='+matchMedia('(prefers-reduced-motion:reduce)').matches},300)</script>
-</body></html>

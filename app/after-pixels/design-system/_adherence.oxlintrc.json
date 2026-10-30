@@ -24,10 +24,6 @@
               "components/media/**",
               "components/media/playback/**",
               "components/surfaces/**",
-              "docs/archive/rows-and-history/playground/**",
-              "docs/specs/canonical-row/playground/**",
-              "docs/specs/card-chip-alignment/playground/**",
-              "docs/specs/card-snug-title/playground/**",
               "ui_kits/shop/**"
             ],
             "message": "Import design-system components from 'index.js', not component internals."

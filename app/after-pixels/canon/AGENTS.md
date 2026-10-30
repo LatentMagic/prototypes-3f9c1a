@@ -66,13 +66,11 @@ Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-da
 - **Session page:** the top section is the platform's and the same for every game; below it the play is told in the game's own terms, on the store's background and chrome. Each game's part has a **result statement**, the element that states the outcome outright (Escape: the open door and "Escaped").
 - **Library game page:** four cards on one grid: the **now card** (the current or latest edition, carrying the result statement down) and the **streak card** (the run of days or weeks played) above Achievements and Your plays. Never break, reorder or restack the rows on desktop. Cards in a row end level by arranging what is inside, never by stretching; check each card with its fewest and most items. On a phone they stack in the same order.
 - **Product page:** it tells a stranger what they will do and why they would want it, using only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
-- Earlier rulings and handoffs: `docs/specs/<ticket>/` (e.g. `docs/specs/1236-session-pages/README.md`).
 
 ## Code and record
 
 - Before writing a comment, a style object or a new module, read `ARCHITECTURE.md` § Conventions.
 - `CHANGELOG.md`: one short entry per step that changes the product's shape, never for tweaks or fixes.
 - Never add a `GOTCHA.md` entry without the owner's yes; propose it in your report.
-- Playgrounds that loaded canon's `app/*.jsx` are gone (git has them). A new playground is a Design artifact on claude.ai, not a page here.
 
 Read on demand: `ARCHITECTURE.md` (postures, deletable aids, states, conventions); `GOTCHA.md` before animated overlays, `position: fixed` inside a transform, or moving styles in; `app/README.md` before adding a Config row or QA entry.

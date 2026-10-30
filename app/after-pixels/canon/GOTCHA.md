@@ -213,26 +213,6 @@ it is not. A screenshot of a mount transition proves nothing: measure it
 
 ---
 
-## 11. A nested entry's `<base>` depth counts its own folder
-
-**Symptom.** A whiteboard in `docs/specs/<ticket>/playground/` was handed over
-with no tokens at all — no fonts, no accent, no spacing. The user opened it and
-saw black-and-white unstyled text. It was defended in chat as "the usual
-base-relative false positive" and shipped twice that way.
-
-**Cause.** The entry was copied from a rig that sits at `docs/specs/<ticket>/`
-(three levels deep) and kept its `<base href="../../../" />`. The new file is
-**four** levels deep, so `<base>` resolved to `docs/` and `tokens.css` 404'd. The
-count is levels *of the file's own folder*, not a constant: `playground/` adds
-one.
-
-**Fix and rule.** A nested entry needs `<base href>` with one `../` per level of
-its own folder, and every path in it written root-relative. Count the `../`
-against the file's own depth and confirm one token-driven thing rendered before
-handing it over.
-
----
-
 ## 13. A class name moved from a rig into the app can already exist there
 
 **Symptom.** After a rig's styles were moved into `index.html`, the home page
