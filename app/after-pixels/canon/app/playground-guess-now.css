@@ -33,7 +33,7 @@
 .pgn-places { display: grid; justify-items: start; gap: 6px; }
 .pgn-places-row { display: flex; gap: 4px; }
 .pgn-place { box-sizing: border-box; width: 16px; height: 16px; display: grid; place-items: center; background: var(--line); }
-.pgn-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 10px/1 var(--font-heading); }
+.pgn-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 10px/1 var(--font-heading); }
 .pgn-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); }
 
 /* C's hint: one small box, the word Hint beside it. */

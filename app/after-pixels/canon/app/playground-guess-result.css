@@ -41,7 +41,7 @@
 .pgr-places { --pt: 30px; display: grid; justify-items: center; gap: 10px; }
 .pgr-places-row { display: flex; gap: 4px; }
 .pgr-place { box-sizing: border-box; width: var(--pt); height: var(--pt); display: grid; place-items: center; background: var(--line); }
-.pgr-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
+.pgr-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
 .pgr-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
 @container dv2 (min-width: 672px) { .pgr-places { --pt: 36px; } }
 
