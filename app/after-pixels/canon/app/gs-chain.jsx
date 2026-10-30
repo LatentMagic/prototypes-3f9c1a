@@ -11,6 +11,7 @@ import React from 'react';
 import { GsMoves } from './gs-session.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 import { PgrTop } from './playground-guess-result.jsx';
+import { pgRegister } from './playground.jsx';
 
 // ---- The model: per word its state (end, found, given, hidden) and letters shown; per guess its result, in order. ----
 const chnRead = (s) => {
@@ -93,4 +94,13 @@ const ChnSessBody = ({ s }) => {
   </>;
 };
 
-export const initGsChain = () => { GS_SESSION_BODY.chain = ChnSessBody; };
+// Open with ?pg=chain for a settings bar that switches between Chain's session states.
+export const initGsChain = () => {
+  GS_SESSION_BODY.chain = ChnSessBody;
+  pgRegister('chain', { title: 'Chain', settings: [
+    { key: 'play', label: 'Play', options: [
+      { value: 'solved', label: 'Solved', state: 'session-chain' },
+      { value: 'live', label: 'In progress', state: 'session-chain-in-progress' },
+      { value: 'failed', label: 'Failed', state: 'session-chain-failed' },
+      { value: 'earlier', label: 'Earlier', state: 'session-chain-earlier' }] }] });
+};

@@ -9560,6 +9560,14 @@
   };
   const initGsChain = () => {
     GS_SESSION_BODY.chain = ChnSessBody;
+    pgRegister("chain", { title: "Chain", settings: [
+      { key: "play", label: "Play", options: [
+        { value: "solved", label: "Solved", state: "session-chain" },
+        { value: "live", label: "In progress", state: "session-chain-in-progress" },
+        { value: "failed", label: "Failed", state: "session-chain-failed" },
+        { value: "earlier", label: "Earlier", state: "session-chain-earlier" }
+      ] }
+    ] });
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
