@@ -9566,13 +9566,28 @@
   };
   const CHL_LP = 2 * (26 - 14) + Math.PI * 14;
   const chlDash = (res, near) => res === "right" ? null : res === "given" ? CHL_LP / 2 - 7 + " 7" : near ? CHL_LP - 5 + " 5" : CHL_LP - 13 + " 13";
-  const ChlLoop = ({ t, x = 3, y = 3 }) => /* @__PURE__ */ React$1.createElement("rect", { x, y, width: "14", height: "26", rx: "7", className: "chl-loop is-" + (t.near ? "near" : t.res), strokeDasharray: chlDash(t.res, t.near) || void 0, strokeDashoffset: CHL_LP - 23.5 });
-  const ChlJoint = ({ text }) => /* @__PURE__ */ React$1.createElement("div", { className: "chl1-joint", "aria-hidden": !text }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })), /* @__PURE__ */ React$1.createElement("span", null, text || ""));
-  const ChlHanging = ({ p }) => {
-    const h = p.g.length * 20 + 12;
-    return /* @__PURE__ */ React$1.createElement("svg", { className: "chl1-hang", width: "20", height: h, viewBox: "0 0 20 " + h, role: "img", "aria-label": chlSay(p) }, p.g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, y: 3 + i * 20 })));
+  const ChlLoop = ({ t, x = 3, y = 3, across }) => /* @__PURE__ */ React$1.createElement(
+    "rect",
+    {
+      x,
+      y,
+      width: across ? 26 : 14,
+      height: across ? 14 : 26,
+      rx: "7",
+      className: "chl-loop is-" + (t.near ? "near" : t.res),
+      strokeDasharray: chlDash(t.res, t.near) || void 0,
+      strokeDashoffset: CHL_LP - (across ? 12.5 : 23.5)
+    }
+  );
+  const ChlJoint = () => /* @__PURE__ */ React$1.createElement("div", { className: "chl-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })));
+  const ChlGuessChain = ({ p, across }) => {
+    const len = p.g.length * 20 + 12;
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "chl1-hang " + (across ? "is-across" : "is-down"), width: across ? len : 20, height: across ? 20 : len, viewBox: across ? "0 0 " + len + " 20" : "0 0 20 " + len, role: "img", "aria-label": chlSay(p) }, p.g.map((t, i) => across ? /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, across: true, x: 3 + i * 20 }) : /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, y: 3 + i * 20 })));
   };
-  const ChlC1 = ({ p }) => /* @__PURE__ */ React$1.createElement(ChlCard, { p, say: chlSay(p), figure: /* @__PURE__ */ React$1.createElement(ChlHanging, { p }), board: /* @__PURE__ */ React$1.createElement("div", { className: "chl1-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement("div", { className: "chl1-row is-" + x.state }, /* @__PURE__ */ React$1.createElement(ChlTiles, { x })), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChlJoint, { text: p.links[i] })))) });
+  const ChlC1 = ({ p }) => {
+    const down = usePgSetting("orient") === "v";
+    return /* @__PURE__ */ React$1.createElement(ChlCard, { p, say: chlSay(p), figure: /* @__PURE__ */ React$1.createElement("span", { className: "chl1-fig" + (down ? " is-down" : "") }, /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p, across: true }), down && /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p })), board: /* @__PURE__ */ React$1.createElement("div", { className: "chl1-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement("div", { className: "chl1-row is-" + x.state }, /* @__PURE__ */ React$1.createElement(ChlTiles, { x })), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChlJoint, null)))) });
+  };
   const ChlDrop = ({ t }) => /* @__PURE__ */ React$1.createElement("div", { className: "chl2-drop is-" + (t.near ? "near" : t.res) }, /* @__PURE__ */ React$1.createElement("svg", { width: "14", height: "22", viewBox: "0 0 20 32", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(ChlLoop, { t })), /* @__PURE__ */ React$1.createElement("span", null, t.g, t.near ? " · " + t.near : ""));
   const ChlC2 = ({ p }) => /* @__PURE__ */ React$1.createElement(
     ChlCard,
@@ -9589,23 +9604,27 @@
   );
   const ChlArrow = ({ from }) => /* @__PURE__ */ React$1.createElement("svg", { className: "chl3-arrow is-from-" + from, width: "10", height: "10", viewBox: "0 0 10 10", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 1 L8 5 L2 9" }));
   const ChlC3Word = ({ x }) => {
-    if (x.state === "end") return /* @__PURE__ */ React$1.createElement("li", { className: "chl3-w is-end" }, /* @__PURE__ */ React$1.createElement("span", { className: "chl3-anchor", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("b", null, x.word));
-    const label = x.state === "hidden" ? x.open ? "Open" : "" : x.rank;
-    return /* @__PURE__ */ React$1.createElement("li", { className: "chl3-w is-" + x.state + (x.open ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "chl3-rank" }, x.rank != null && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.from }), x.open && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.openFrom }), /* @__PURE__ */ React$1.createElement("span", null, label)), /* @__PURE__ */ React$1.createElement("b", null, x.state === "hidden" ? x.word.slice(0, x.shown) + "…" : x.word));
+    const label = x.state === "end" ? "End" : x.state === "hidden" ? x.open ? "Open" : "" : x.rank;
+    return /* @__PURE__ */ React$1.createElement("li", { className: "chl3-w is-" + x.state + (x.open ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "chl3-rank" }, x.rank != null && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.from }), x.open && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.openFrom }), /* @__PURE__ */ React$1.createElement("span", null, label)), /* @__PURE__ */ React$1.createElement(ChlTiles, { x }));
   };
   const chlArc = (c, R, a0, a1) => "M " + (c + R * Math.cos(a0)) + " " + (c + R * Math.sin(a0)) + " A " + R + " " + R + " 0 " + (a1 - a0 > Math.PI ? 1 : 0) + " 1 " + (c + R * Math.cos(a1)) + " " + (c + R * Math.sin(a1));
+  const CHL_RING_LINK = 40;
+  const CHL_RING_STEP = 44;
   const ChlRing = ({ p }) => {
-    const c = 64;
-    const R = 46;
     const closed = p.r.tone === "ok";
     const slots = p.g.length + (closed ? 0 : 1);
+    const R = slots * CHL_RING_STEP / (2 * Math.PI);
+    const c = R + 10;
+    const size = 2 * c;
     const span = 2 * Math.PI / slots;
-    const half = span * 0.62;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "chl3-ring", role: "img", "aria-label": chlSay(p) + (closed ? ", the ring closed" : ", the ring open") }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 128 128", "aria-hidden": "true" }, p.g.map((t, i) => {
+    const half = CHL_RING_LINK / 2 / R;
+    const trim = 3 / R;
+    const cut = (px) => px / 2 / R;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "chl3-ring", style: { width: size, height: size }, role: "img", "aria-label": chlSay(p) + (closed ? ", the ring closed" : ", the ring open") }, /* @__PURE__ */ React$1.createElement("svg", { width: size, height: size, viewBox: "0 0 " + size + " " + size, "aria-hidden": "true" }, p.g.map((t, i) => {
       const m = -Math.PI / 2 + (i + (closed ? 0 : 1)) * span;
       const k = t.near ? "near" : t.res;
-      return /* @__PURE__ */ React$1.createElement("g", { key: i, className: "chl3-link is-" + k }, /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half, m + half), className: "chl3-out" }), /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half + 0.07, m + half - 0.07), className: "chl3-in" }), t.res !== "right" && /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, t.near ? R + 4 : R, m - (t.res === "given" ? 0.12 : 0.07), m + (t.res === "given" ? 0.12 : 0.07)), className: "chl3-cut" + (t.near ? " is-half" : "") }));
-    })), /* @__PURE__ */ React$1.createElement("span", { className: "chl3-ring-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.g.length)));
+      return /* @__PURE__ */ React$1.createElement("g", { key: i, className: "chl3-link is-" + k }, /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half, m + half), className: "chl3-out" }), /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half + trim, m + half - trim), className: "chl3-in" }), t.res !== "right" && /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, t.near ? R + 4 : R, m - cut(t.res === "given" ? 10 : 6), m + cut(t.res === "given" ? 10 : 6)), className: "chl3-cut" + (t.near ? " is-half" : "") }));
+    })), /* @__PURE__ */ React$1.createElement("span", { className: "chl3-ring-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", { style: { fontSize: Math.round(Math.min(32, R * 0.75)) } }, p.g.length)));
   };
   const ChlC3 = ({ p }) => /* @__PURE__ */ React$1.createElement(
     ChlCard,
@@ -9614,7 +9633,7 @@
       say: p.wrong + " wrong" + (p.r.tone === "ok" ? ", ring closed" : ""),
       figure: /* @__PURE__ */ React$1.createElement(ChlRing, { p }),
       wide: true,
-      board: /* @__PURE__ */ React$1.createElement("ol", { className: "chl3-line" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i > 0 && /* @__PURE__ */ React$1.createElement("li", { className: "chl3-bar", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(ChlC3Word, { x }))))
+      board: /* @__PURE__ */ React$1.createElement("ol", { className: "chl3-line" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i > 0 && /* @__PURE__ */ React$1.createElement("li", { className: "chl3-bar" }, /* @__PURE__ */ React$1.createElement(ChlJoint, null)), /* @__PURE__ */ React$1.createElement(ChlC3Word, { x }))))
     }
   );
   const ChlCONCEPTS = { c1: ChlC1, c2: ChlC2, c3: ChlC3 };
@@ -9642,6 +9661,7 @@
     const go = (k) => (gs) => gs.go("session", { id: "pgc-" + k });
     pgRegister("chain-lofi", { title: "Chain, low fi", settings: [
       { key: "c", label: "Concept", options: [{ value: "c1", label: "1 Linked rows" }, { value: "c2", label: "2 The chain across" }, { value: "c3", label: "3 Inward" }] },
+      { key: "orient", label: "C1 guesses", options: [{ value: "h", label: "Horizontal" }, { value: "v", label: "Vertical" }] },
       { key: "play", label: "Play", options: [
         { value: "clean", label: "Solved, none wrong", state: "session-chain", go: go("clean") },
         { value: "today", label: "Solved, 2 wrong", state: "session-chain", go: go("today") },

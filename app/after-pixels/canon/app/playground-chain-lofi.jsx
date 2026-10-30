@@ -90,31 +90,33 @@ const ChlTiles = ({ x }) => {
 // loop's right side (and, for the give-away, its left too), clear of the links it overlaps.
 const CHL_LP = 2 * (26 - 14) + Math.PI * 14;
 const chlDash = (res, near) => (res === 'right' ? null : res === 'given' ? (CHL_LP / 2 - 7) + ' 7' : near ? (CHL_LP - 5) + ' 5' : (CHL_LP - 13) + ' 13');
-const ChlLoop = ({ t, x = 3, y = 3 }) => (
-  <rect x={x} y={y} width="14" height="26" rx="7" className={'chl-loop is-' + (t.near ? 'near' : t.res)} strokeDasharray={chlDash(t.res, t.near) || undefined} strokeDashoffset={CHL_LP - 23.5} />);
+// across: the loop lies on its side (26 wide, 14 high), its cut on top.
+const ChlLoop = ({ t, x = 3, y = 3, across }) => (
+  <rect x={x} y={y} width={across ? 26 : 14} height={across ? 14 : 26} rx="7" className={'chl-loop is-' + (t.near ? 'near' : t.res)}
+    strokeDasharray={chlDash(t.res, t.near) || undefined} strokeDashoffset={CHL_LP - (across ? 12.5 : 23.5)} />);
 
-// ---- 1. Linked rows. Board: a row per word, top to bottom, letters as tiles; between rows a small pair of links, and once both
-// neighbours are known the compound written faint beside it. Guesses: a hanging chain, a link per guess in order. ----
-const ChlJoint = ({ text }) => (
-  <div className="chl1-joint" aria-hidden={!text}>
-    <svg width="16" height="22" viewBox="0 0 16 22" aria-hidden="true"><rect x="1.5" y="1.5" width="8" height="12" rx="4" /><rect x="6.5" y="8.5" width="8" height="12" rx="4" /></svg>
-    <span>{text || ''}</span>
+// ---- 1. Linked rows. Board: a row per word, top to bottom, letters as tiles; between rows a small pair of links (no compound
+// labels, Joe, round 2). Guesses: a chain, a link per guess in order, across (default) or, on desktop only, hanging down
+// (setting `orient`); on a phone always across. ----
+const ChlJoint = () => (
+  <div className="chl-joint" aria-hidden="true">
+    <svg width="16" height="22" viewBox="0 0 16 22"><rect x="1.5" y="1.5" width="8" height="12" rx="4" /><rect x="6.5" y="8.5" width="8" height="12" rx="4" /></svg>
   </div>);
-const ChlHanging = ({ p }) => {
-  const h = p.g.length * 20 + 12;
+const ChlGuessChain = ({ p, across }) => {
+  const len = p.g.length * 20 + 12;
   return (
-    <svg className="chl1-hang" width="20" height={h} viewBox={'0 0 20 ' + h} role="img" aria-label={chlSay(p)}>
-      {p.g.map((t, i) => <ChlLoop key={i} t={t} y={3 + i * 20} />)}
+    <svg className={'chl1-hang ' + (across ? 'is-across' : 'is-down')} width={across ? len : 20} height={across ? 20 : len} viewBox={across ? '0 0 ' + len + ' 20' : '0 0 20 ' + len} role="img" aria-label={chlSay(p)}>
+      {p.g.map((t, i) => (across ? <ChlLoop key={i} t={t} across x={3 + i * 20} /> : <ChlLoop key={i} t={t} y={3 + i * 20} />))}
     </svg>);
 };
-const ChlC1 = ({ p }) => (
-  <ChlCard p={p} say={chlSay(p)} figure={<ChlHanging p={p} />} board={
+const ChlC1 = ({ p }) => { const down = usePgSetting('orient') === 'v'; return (
+  <ChlCard p={p} say={chlSay(p)} figure={<span className={'chl1-fig' + (down ? ' is-down' : '')}><ChlGuessChain p={p} across />{down && <ChlGuessChain p={p} />}</span>} board={
     <div className="chl1-board">{p.w.map((x, i) => (
       <React.Fragment key={i}>
         <div className={'chl1-row is-' + x.state}><ChlTiles x={x} /></div>
-        {i < p.w.length - 1 && <ChlJoint text={p.links[i]} />}
+        {i < p.w.length - 1 && <ChlJoint />}
       </React.Fragment>))}
-    </div>} />);
+    </div>} />); };
 
 // ---- 2. The chain across. Board: each word a link-shaped pill, left to right, joined by a small link, wrapping into rows on a
 // phone. Each wrong guess hangs as a small link under the word it was aimed at, its word beside it, so the hard words visibly
@@ -142,36 +144,40 @@ const ChlC2 = ({ p }) => (
 // closes only when the chain is solved. ----
 const ChlArrow = ({ from }) => (
   <svg className={'chl3-arrow is-from-' + from} width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1 L8 5 L2 9" /></svg>);
+// Round 2 (Joe): the words in concept 1's tiles, joined by its link joints; the order number and arrow kept over each word.
 const ChlC3Word = ({ x }) => {
-  if (x.state === 'end') return <li className="chl3-w is-end"><span className="chl3-anchor" aria-hidden="true" /><b>{x.word}</b></li>;
-  const label = x.state === 'hidden' ? (x.open ? 'Open' : '') : x.rank;
+  const label = x.state === 'end' ? 'End' : x.state === 'hidden' ? (x.open ? 'Open' : '') : x.rank;
   return (
     <li className={'chl3-w is-' + x.state + (x.open ? ' is-open' : '')}>
       <span className="chl3-rank">{x.rank != null && <ChlArrow from={x.from} />}{x.open && <ChlArrow from={x.openFrom} />}<span>{label}</span></span>
-      <b>{x.state === 'hidden' ? x.word.slice(0, x.shown) + '…' : x.word}</b>
+      <ChlTiles x={x} />
     </li>);
 };
 const chlArc = (c, R, a0, a1) => 'M ' + (c + R * Math.cos(a0)) + ' ' + (c + R * Math.sin(a0)) + ' A ' + R + ' ' + R + ' 0 ' + (a1 - a0 > Math.PI ? 1 : 0) + ' 1 ' + (c + R * Math.cos(a1)) + ' ' + (c + R * Math.sin(a1));
+// Round 2 (Joe): a fixed link size and step, so neighbouring links always interlock; the ring's circumference follows the number
+// of slots (one per guess, plus one empty slot while the ring is open), never the other way round.
+const CHL_RING_LINK = 40; const CHL_RING_STEP = 44;
 const ChlRing = ({ p }) => {
-  const c = 64; const R = 46; const closed = p.r.tone === 'ok'; const slots = p.g.length + (closed ? 0 : 1);
-  const span = (2 * Math.PI) / slots; const half = span * 0.62;
+  const closed = p.r.tone === 'ok'; const slots = p.g.length + (closed ? 0 : 1);
+  const R = (slots * CHL_RING_STEP) / (2 * Math.PI); const c = R + 10; const size = 2 * c;
+  const span = (2 * Math.PI) / slots; const half = CHL_RING_LINK / 2 / R; const trim = 3 / R; const cut = (px) => px / 2 / R;
   return (
-    <div className="chl3-ring" role="img" aria-label={chlSay(p) + (closed ? ', the ring closed' : ', the ring open')}>
-      <svg viewBox="0 0 128 128" aria-hidden="true">
+    <div className="chl3-ring" style={{ width: size, height: size }} role="img" aria-label={chlSay(p) + (closed ? ', the ring closed' : ', the ring open')}>
+      <svg width={size} height={size} viewBox={'0 0 ' + size + ' ' + size} aria-hidden="true">
         {p.g.map((t, i) => { const m = -Math.PI / 2 + (i + (closed ? 0 : 1)) * span; const k = t.near ? 'near' : t.res;
           return (
             <g key={i} className={'chl3-link is-' + k}>
               <path d={chlArc(c, R, m - half, m + half)} className="chl3-out" />
-              <path d={chlArc(c, R, m - half + 0.07, m + half - 0.07)} className="chl3-in" />
-              {t.res !== 'right' && <path d={chlArc(c, t.near ? R + 4 : R, m - (t.res === 'given' ? 0.12 : 0.07), m + (t.res === 'given' ? 0.12 : 0.07))} className={'chl3-cut' + (t.near ? ' is-half' : '')} />}
+              <path d={chlArc(c, R, m - half + trim, m + half - trim)} className="chl3-in" />
+              {t.res !== 'right' && <path d={chlArc(c, t.near ? R + 4 : R, m - cut(t.res === 'given' ? 10 : 6), m + cut(t.res === 'given' ? 10 : 6))} className={'chl3-cut' + (t.near ? ' is-half' : '')} />}
             </g>); })}
       </svg>
-      <span className="chl3-ring-n" aria-hidden="true"><b>{p.g.length}</b></span>
+      <span className="chl3-ring-n" aria-hidden="true"><b style={{ fontSize: Math.round(Math.min(32, R * 0.75)) }}>{p.g.length}</b></span>
     </div>);
 };
 const ChlC3 = ({ p }) => (
   <ChlCard p={p} say={p.wrong + ' wrong' + (p.r.tone === 'ok' ? ', ring closed' : '')} figure={<ChlRing p={p} />} wide
-    board={<ol className="chl3-line">{p.w.map((x, i) => <React.Fragment key={i}>{i > 0 && <li className="chl3-bar" aria-hidden="true" />}<ChlC3Word x={x} /></React.Fragment>)}</ol>} />);
+    board={<ol className="chl3-line">{p.w.map((x, i) => <React.Fragment key={i}>{i > 0 && <li className="chl3-bar"><ChlJoint /></li>}<ChlC3Word x={x} /></React.Fragment>)}</ol>} />);
 
 const ChlCONCEPTS = { c1: ChlC1, c2: ChlC2, c3: ChlC3 };
 const ChlBody = () => {
@@ -190,6 +196,7 @@ export const initPlaygroundChainLofi = () => {
   const go = (k) => (gs) => gs.go('session', { id: 'pgc-' + k });
   pgRegister('chain-lofi', { title: 'Chain, low fi', settings: [
     { key: 'c', label: 'Concept', options: [{ value: 'c1', label: '1 Linked rows' }, { value: 'c2', label: '2 The chain across' }, { value: 'c3', label: '3 Inward' }] },
+    { key: 'orient', label: 'C1 guesses', options: [{ value: 'h', label: 'Horizontal' }, { value: 'v', label: 'Vertical' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'clean', label: 'Solved, none wrong', state: 'session-chain', go: go('clean') },
       { value: 'today', label: 'Solved, 2 wrong', state: 'session-chain', go: go('today') },
