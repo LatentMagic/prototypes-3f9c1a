@@ -840,9 +840,9 @@
         return { label: null, heading: game + " comes only with the Pass.", foot: null, rightLabel: "WHAT YOU GET", lines: [cadence, total ? "Earn " + count(total, "achievement", "achievements") + "." : null].filter(Boolean), action: "Get the Pass" };
       }
       const label = !word ? "LAST PLAYED · " + fmt(record.last) : "YOUR LAST " + word.toUpperCase() + " · " + (record.chapter != null ? record.chapter : fmt(record.last));
-      const played = word && record.played ? "played " + count(record.played, word, many) : null;
+      const played2 = word && record.played ? "played " + count(record.played, word, many) : null;
       const earned = record.earned ? "earned " + count(record.earned, "achievement", "achievements") : null;
-      const foot = played || earned ? "You " + [played, earned].filter(Boolean).join(" and ") + "." : null;
+      const foot = played2 || earned ? "You " + [played2, earned].filter(Boolean).join(" and ") + "." : null;
       return { label, heading: "You stopped here. Everything you earned is still yours.", foot, rightLabel: "WHAT COMES BACK", lines: [cadence, "Pick up where you stopped."], action: "Get the Pass again" };
     }
     function NeedsPass({ game, word, words, record, total = 0, onGet, className = "", style }) {
@@ -2721,10 +2721,10 @@
     const now = GS_WHATSNEW.slice(0, 3), earlier = GS_WHATSNEW.slice(3);
     return /* @__PURE__ */ React$1.createElement("section", { className: "gs-band", "aria-labelledby": "gs-wn-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-wn-h" }, "What’s new"), /* @__PURE__ */ React$1.createElement("div", { className: "wn-panel" }, /* @__PURE__ */ React$1.createElement("ul", { className: "wn-list has-fold" }, now.map(row), /* @__PURE__ */ React$1.createElement("li", { className: "wn-e wn-foldrow" }, /* @__PURE__ */ React$1.createElement("details", null, /* @__PURE__ */ React$1.createElement("summary", { className: "wn-sum" }, /* @__PURE__ */ React$1.createElement("span", { className: "wn-caret" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 16, style: { transform: "rotate(-90deg)" } })), "earlier updates"), /* @__PURE__ */ React$1.createElement("div", { className: "wn-wrap", tabIndex: 0, role: "region", "aria-label": "Earlier updates" }, /* @__PURE__ */ React$1.createElement("ul", { className: "wn-nest" }, earlier.map((e) => row(e, -1)))))))));
   };
-  const cbMake = (id, week, month, title, played, verdict, total, rec) => {
+  const cbMake = (id, week, month, title, played2, verdict, total, rec) => {
     const turns = rec.filter((r) => r.c !== "A");
     const lies = turns.filter((r) => r.c === "B").length;
-    return { id, week, month, title, played, live: played && !verdict, verdict, total, turns: turns.length, lies, searched: turns.filter((r) => r.c === "F").length, seq: turns.map((r) => r.c).join(""), rec };
+    return { id, week, month, title, played: played2, live: played2 && !verdict, verdict, total, turns: turns.length, lies, searched: turns.filter((r) => r.c === "F").length, seq: turns.map((r) => r.c).join(""), rec };
   };
   const CB_ID = "gull";
   const CB_TITLE = "The Last Night at Gull Point";
@@ -2766,6 +2766,7 @@
   const GS_LIBRARY = {};
   const GS_EDITIONS = {};
   const GS_SESSION_BODY = {};
+  const GS_NOW = {};
   const cbGo = (gs, sid) => gs.go("casebook", sid ? { page: "record", sid } : { page: "record" });
   const cbWeek = (gs) => lbWeekDone(gs) ? CB_DONE : CB_LIVE;
   let CB_FIRST;
@@ -3637,7 +3638,11 @@
     const gs = useGs();
     return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), !c.live && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => cbGo(gs, c.id) }));
   };
-  const PzNow = (props) => props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { label: "THIS WEEK", title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+  const PzNow = (props) => {
+    const own = props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { label: "THIS WEEK", title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+    const Pg = GS_NOW[props.id];
+    return Pg ? /* @__PURE__ */ React$1.createElement(Pg, { ...props }, own) : own;
+  };
   const registerPassLibrary = () => {
     Object.assign(CPR_SHIP_LIB, GS_LIBRARY);
     Object.assign(GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
@@ -3916,9 +3921,9 @@
       c.gid = id;
       c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {
         const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
-        const played = i === 0 || !!c.keep[i] || (i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6;
-        const ok = played && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
-        return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, done: played && ok, line: ok ? c.ok(i) : c.bad };
+        const played2 = i === 0 || !!c.keep[i] || (i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6;
+        const ok = played2 && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
+        return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played: played2, ok, done: played2 && ok, line: ok ? c.ok(i) : c.bad };
       });
       c.all.slice(1).forEach((x) => {
         if (x.played) x.sid = c.keep[x.i] ? c.past : pzSession(id, c, x);
@@ -3963,10 +3968,10 @@
       c.all = [cur, ...PAST.map((p, k) => {
         const i = k + 1;
         const d = new Date(2026, 9, 5 - 7 * i);
-        const [title, played, min, par, wrong, hints] = p;
-        const line = played ? GS_RESULT.escape({ min, par }) : c.bad;
-        const x = { id: "escape" + i, i, d, date: lbDate(d), month: lbMonth(d), title, played, ok: played, done: played, line };
-        if (played) {
+        const [title, played2, min, par, wrong, hints] = p;
+        const line = played2 ? GS_RESULT.escape({ min, par }) : c.bad;
+        const x = { id: "escape" + i, i, d, date: lbDate(d), month: lbMonth(d), title, played: played2, ok: played2, done: played2, line };
+        if (played2) {
           const sid = "escape-e" + i;
           const lines = [["Move 1", "Examined the room", "Two locks stand between you and the way out."]];
           let n = 1;
@@ -4811,8 +4816,8 @@
     return all.map((x, i) => {
       const curOld = i === 0 && !now && signed && lapsed && mine(x);
       const unf = signed && i > 0 && phUnf(gs, x.id);
-      const played = i === 0 ? !!now || curOld : signed && mine(x);
-      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
+      const played2 = i === 0 ? !!now || curOld : signed && mine(x);
+      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.status(src.done) : ED_NONE : played2 ? src.status(x) : ED_NONE;
       const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
       if (fr && !fresh) {
         st = fr.status;
@@ -4828,7 +4833,7 @@
         free: x === first && !!PH_FIRST[gid],
         now: i === 0,
         status: st,
-        open: unf ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? now ? now.open : () => src.openCur(gs, x) : () => src.open(gs, x)
+        open: unf ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : !played2 ? null : i === 0 ? now ? now.open : () => src.openCur(gs, x) : () => src.open(gs, x)
       };
     });
   };
@@ -9120,6 +9125,9 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
   const PG = {};
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -9128,6 +9136,17 @@
   const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
   const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
   const pgSubs = /* @__PURE__ */ new Set();
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
+  };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
       const had = url.searchParams.get("state") === o.state;
@@ -9177,6 +9196,87 @@
       const v = pgValue(s);
       return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", "aria-pressed": v === o.value, onClick: () => pgSet(s, o.value) }, o.label))));
     })));
+  };
+  const pgnPlay = (s) => {
+    const ev = wdRead(s).events;
+    const gsv = ev.filter((e) => e.kind === "guess");
+    return { ev, n: gsv.length, last: gsv[gsv.length - 1], hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss };
+  };
+  const pgnTrail = (p) => [...p.ev.filter((e) => e !== p.last), ...Array.from({ length: 6 - p.n }, () => ({ kind: "empty" }))];
+  const pgnSaid = (trail) => trail.map((e) => e.kind === "guess" ? wdSay(e) : e.kind === "hint" ? "Hint, " + e.text : "Not used").join(". ");
+  const PgnTrail = ({ p }) => {
+    const trail = pgnTrail(p);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wd-trail", role: "img", "aria-label": pgnSaid(trail) }, trail.map((e, i) => /* @__PURE__ */ React$1.createElement(WdTr, { key: i, e })));
+  };
+  const PgnLast = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgn-tiles", role: "img", "aria-label": wdSay(p.last) }, p.last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + p.last.marks[j], "aria-hidden": "true" }, ch)));
+  const RING_R = 52;
+  const RING_C = 2 * Math.PI * RING_R;
+  const RING_SEG = RING_C / 6;
+  const RING_GAP = 7;
+  const PgnRing = ({ s, p }) => {
+    const seg = (i) => i <= p.n ? p.won && i === p.n ? "win" : s.loss ? "lost" : "used" : "spare";
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgn-ring", role: "img", "aria-label": p.n + (p.n === 1 ? " guess" : " guesses") + " of six" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 128 128", "aria-hidden": "true" }, [1, 2, 3, 4, 5, 6].map((i) => /* @__PURE__ */ React$1.createElement(
+      "circle",
+      {
+        key: i,
+        className: "is-" + seg(i),
+        cx: "64",
+        cy: "64",
+        r: RING_R,
+        strokeDasharray: RING_SEG - RING_GAP + " " + (RING_C - RING_SEG + RING_GAP),
+        transform: "rotate(" + (-90 + (i - 1) * 60 + RING_GAP / RING_C * 180) + " 64 64)"
+      }
+    ))), /* @__PURE__ */ React$1.createElement("span", { className: "pgn-ring-n", "aria-hidden": "true" }, p.n));
+  };
+  const PgnPlaces = ({ s, p }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgn-places", role: "img", "aria-label": p.hint ? "Hint: " + p.hint.text : s.live ? "Hint not used yet" : "No hint" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-places-row", "aria-hidden": "true" }, [0, 1, 2, 3, 4].map((j) => p.hint && p.hint.pos === j ? /* @__PURE__ */ React$1.createElement("span", { key: j, className: "pgn-place is-hint" }, p.hint.letter) : /* @__PURE__ */ React$1.createElement("span", { key: j, className: "pgn-place" }))), /* @__PURE__ */ React$1.createElement("span", { className: "pgn-cap", "aria-hidden": "true" }, p.hint ? "Hint" : s.live ? "Hint: not used yet" : "Hint: none taken"));
+  const PgnHead = ({ number, s }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + number)), s && /* @__PURE__ */ React$1.createElement(WdNowResult, { s }));
+  const PgnFresh = ({ c, dir }) => {
+    const gs = useGs();
+    const number = GS_SESSIONS[c.today].number;
+    const p = { n: 0, hint: null, won: false };
+    const empty = { loss: false, live: true };
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn pgn-" + dir }, /* @__PURE__ */ React$1.createElement(PgnHead, { number }), dir === "b-rows" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-row" }, /* @__PURE__ */ React$1.createElement("p", { className: "pgn-line" }, "Five letters. Six guesses.")) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-tiles", role: "img", "aria-label": "Five empty tiles" }, [0, 1, 2, 3, 4].map((j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-empty", "aria-hidden": "true" }))), /* @__PURE__ */ React$1.createElement(PgnRing, { s: empty, p }), /* @__PURE__ */ React$1.createElement(PgnPlaces, { s: empty, p })), /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: edList(gs, "word")[0] }), slot: c.next }));
+  };
+  const PgnA = ({ c, done, sid }) => {
+    const gs = useGs();
+    const s = GS_SESSIONS[sid];
+    const p = React$1.useMemo(() => pgnPlay(s), [s]);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now pgn-a" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), p.last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement(PgnTrail, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-row", role: "img", "aria-label": wdSay(p.last) }, p.last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + p.last.marks[j], "aria-hidden": "true" }, ch)))))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+  };
+  const PgnB = ({ c, sid }) => {
+    const gs = useGs();
+    const s = GS_SESSIONS[sid];
+    const p = React$1.useMemo(() => pgnPlay(s), [s]);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn pgn-b-rows" }, /* @__PURE__ */ React$1.createElement(PgnHead, { number: s.number, s }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-row" }, /* @__PURE__ */ React$1.createElement(PgnTrail, { p }), /* @__PURE__ */ React$1.createElement(PgnLast, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-facts" }, /* @__PURE__ */ React$1.createElement("span", null, p.n + " of 6 guesses"), /* @__PURE__ */ React$1.createElement("span", null, p.hint ? "1 hint" : s.live ? "Hint not used" : "No hint"))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+  };
+  const PgnC = ({ c, sid }) => {
+    const gs = useGs();
+    const s = GS_SESSIONS[sid];
+    const p = React$1.useMemo(() => pgnPlay(s), [s]);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn pgn-c-ring" }, /* @__PURE__ */ React$1.createElement(PgnHead, { number: s.number, s }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-row" }, /* @__PURE__ */ React$1.createElement(PgnLast, { p }), /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnPlaces, { s, p })), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+  };
+  const PgnCard = ({ children, ...props }) => {
+    const dir = usePgSetting("dir");
+    useGs();
+    if (dir === "canon") return children;
+    if (props.none) return /* @__PURE__ */ React$1.createElement(PgnFresh, { c: props.c, dir });
+    if (dir === "a-space") return /* @__PURE__ */ React$1.createElement(PgnA, { ...props, sid: props.done ? props.c.today : props.c.liveSid });
+    const sid = props.done ? props.c.today : props.c.liveSid;
+    return dir === "b-rows" ? /* @__PURE__ */ React$1.createElement(PgnB, { c: props.c, sid }) : /* @__PURE__ */ React$1.createElement(PgnC, { c: props.c, sid });
+  };
+  const played = (ed) => (gs) => gs.setReview({ today: "played", week: "done", ed });
+  const initPlaygroundGuessNow = () => {
+    pgRegister("guess-now", { title: "Guess now card", settings: [
+      { key: "dir", label: "Direction", options: [{ value: "a-space", label: "A Space" }, { value: "b-rows", label: "B Second row" }, { value: "c-ring", label: "C Ring and places" }, { value: "canon", label: "Canon" }] },
+      { key: "play", label: "Play", options: [
+        { value: "solved", label: "Solved in 3", state: "library-word", go: played(null) },
+        { value: "hard", label: "Solved in 5", state: "library-word", go: played("hard") },
+        { value: "failed", label: "Failed", state: "library-word", go: played("failed") },
+        { value: "live", label: "In progress", state: "library-word-in-progress" },
+        { value: "fresh", label: "Not yet played", state: "free-not-played-today" }
+      ] }
+    ] });
+    if (pgActive()) GS_NOW.word = PgnCard;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -9603,4 +9703,5 @@
   initGsPassLibrary();
   initGsDelve();
   initMain();
+  initPlaygroundGuessNow();
 })(React, ReactDOM);

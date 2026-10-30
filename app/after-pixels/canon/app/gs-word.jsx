@@ -20,7 +20,7 @@ const wdScore = (word, answer) => {
   w.forEach((ch, i) => { if (marks[i] !== 'hit' && left[ch]) { marks[i] = 'near'; left[ch] -= 1; } });
   return marks;
 };
-const wdRead = (s) => {
+export const wdRead = (s) => {
   const events = []; let n = 0;
   (s.lines || []).forEach((l) => {
     if (/^Guess/.test(l[0])) { n += 1; events.push({ kind: 'guess', n, word: l[1], marks: wdScore(l[1], s.answer || l[1]) }); }
@@ -55,7 +55,7 @@ const WdBoard = ({ s }) => {
 
 // ---- The result statement (owner, 2026-10-28): the store's status Tag at heading size, centred on the board's height: Solved
 // (green), Failed (amber), In progress (the neutral fill). It is the element every game's session page has. ----
-const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } : s.loss ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' });
+export const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } : s.loss ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' });
 const WdResult = ({ s }) => { const r = wdResult(s); return (
   <div className="wd-res"><h2 className={'wd-tag is-' + r.tone}>{r.tone !== 'live' && <DS.Icon name={r.tone === 'ok' ? 'check' : 'close'} size={24} />}{r.word}</h2></div>); };
 
@@ -76,12 +76,12 @@ export const registerWord = () => {
 // result as Escape's plain word, and in place of canon's line and bar the play as a picture: the guess it ended on at full tile
 // size, the others a trail of six small rows beside it (a guess not used stays flat, so the card holds one height). No sentence:
 // the rows carry the count and the hint. ----
-const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');
-const WdTr = ({ e }) => (e.kind === 'guess'
+export const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');
+export const WdTr = ({ e }) => (e.kind === 'guess'
   ? <div className="wd-tr">{e.marks.map((m, j) => <i key={j} className={'is-' + m} />)}</div>
   : e.kind === 'hint' ? <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className={j === e.pos ? 'is-hint' : 'is-none'} />)}</div>
   : <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className="is-empty" />)}</div>);
-const WdNowResult = ({ s }) => { const r = wdResult(s);
+export const WdNowResult = ({ s }) => { const r = wdResult(s);
   return r.tone === 'live'
     ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
     : <p className={'es-vd is-' + (r.tone === 'ok' ? 'ok' : 'over')}>{r.word}</p>; };

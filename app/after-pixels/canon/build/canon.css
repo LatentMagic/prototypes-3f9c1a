@@ -2611,3 +2611,50 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pg-opts > button { min-height: 36px; padding: 0 12px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 13px/1.2 var(--font-text); cursor: pointer; }
   .pg-opts > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 }
+/* PLAYGROUND, not canon (branch candidate/guess-now-card-lofi): the three directions for Daily Word's now card
+   (app/playground-guess-now.jsx). Imported last by canon.css. Low fi: structure and what is shown. */
+
+/* ---- A: canon's strip with its space shared out. The card is a flex column (its foot is pinned), so the strip takes the spare
+   height and centres the picture in it. Trail blocks 12px with 3px gaps; more air in the picture and between its parts. ---- */
+.pgn-a .wd-now-in { flex: 1 1 auto; align-content: center; }
+.pgn-a .wd-tr { grid-template-columns: repeat(5, 12px); gap: 3px; }
+.pgn-a .wd-trail { gap: 3px; }
+.pgn-a .wd-now-line { gap: 24px; }
+@container wdnow (min-width: 600px) { .pgn-a .wd-now-in { column-gap: 32px; align-items: center; } .pgn-a .wd-now-in > .wd-now-pic { align-self: center; } }
+/* Phone: the trail stays 10px (no width to spare). */
+@container wdnow (max-width: 599.98px) { .pgn-a .wd-tr { grid-template-columns: repeat(5, 10px); gap: 2px; } .pgn-a .wd-now-line { gap: 12px; } }
+
+/* ---- B and C: head, one row for the play, the action row. ---- */
+.pgn { container: pgn / inline-size; }
+.pgn-row { --t: 56px; --g: 6px; display: flex; align-items: center; justify-self: start; gap: 24px; min-width: 0; }
+.pgn-tiles { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
+.pgn-row > .wd-trail { gap: 3px; }
+.pgn-line { margin: 0; }
+
+/* B: after a 1px rule, the count and the hint stacked. */
+.pgn-facts { display: grid; gap: 4px; padding-left: 24px; border-left: 1px solid var(--line); font: 600 14px/1.3 var(--font-text); }
+
+/* C: the ring (56px), then the hint's five places (16px squares) under a caption. */
+.pgn-ring { --r: 56px; position: relative; flex: none; width: var(--r); height: var(--r); }
+.pgn-ring svg { display: block; width: 100%; height: 100%; }
+.pgn-ring circle { fill: none; stroke-width: 12; stroke: var(--line); }
+.pgn-ring circle.is-used { stroke: #918B80; }
+.pgn-ring circle.is-win { stroke: var(--success); }
+.pgn-ring circle.is-lost { stroke: var(--warning); }
+.pgn-ring-n { position: absolute; inset: 0; display: grid; place-items: center; font: 700 20px/1 var(--font-heading); color: var(--text); }
+.pgn-places { display: grid; justify-items: start; gap: 6px; }
+.pgn-places-row { display: flex; gap: 4px; }
+.pgn-place { box-sizing: border-box; width: 16px; height: 16px; display: grid; place-items: center; background: var(--line); }
+.pgn-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 10px/1 var(--font-heading); }
+.pgn-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); }
+
+/* Phone: the tiles shrink to fit (44px at most); B's words become one line under the picture, C's hint sits on its own row. */
+@container pgn (max-width: 479.98px) {
+  .pgn-row { --t: min(44px, calc((100cqi - 96px) / 5)); gap: 12px; flex-wrap: wrap; justify-self: stretch; justify-content: center; }
+  .pgn-facts { flex-basis: 100%; display: flex; justify-content: center; gap: 0; padding-left: 0; border-left: 0; }
+  .pgn-facts > span + span::before { content: ' · '; white-space: pre; }
+  .pgn-ring { --r: 44px; }
+  .pgn-ring-n { font-size: 16px; }
+  .pgn-places { flex-basis: 100%; justify-items: center; }
+  .pgn-line { text-align: center; }
+}
