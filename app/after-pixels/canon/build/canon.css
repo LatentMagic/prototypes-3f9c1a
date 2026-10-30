@@ -2913,6 +2913,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cnw-box.is-hidden { background: var(--wd-dash); background-origin: border-box; color: var(--muted); }
 .cnw-box.is-blank { background: var(--wd-dash); background-origin: border-box; }
 
+/* Given away in grey (the Given away setting), as Where's now card shows what was not found: a solid grey tile, and a link broken in
+   two in a darker grey than the wrong guesses' open links. Unfound stays dashed. */
+.cnw-away-grey .cnw-box.is-given, .cnw-away-grey .cnw-t.is-given { border-color: transparent; background: #4A453E; color: #ABA79E; }
+.cnw-away-grey .cnw-loop.is-given { stroke: #746E65; }
+
 /* The stubs of a phone's row break: hidden until then. */
 .cnw-stub { display: none; position: absolute; top: 50%; translate: 0 -50%; }
 .cnw-stub.is-in { left: -11px; }

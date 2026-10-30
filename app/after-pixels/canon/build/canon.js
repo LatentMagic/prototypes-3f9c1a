@@ -9558,7 +9558,7 @@
     const list = w || Array.from({ length: n }, () => null);
     return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, out: i % 3 === 2 && i < list.length - 1, back: i % 3 === 0 && i > 0 }), i < list.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" }))));
   };
-  const CnwA = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w }), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnwCount, { p })));
+  const CnwA = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w }), p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }));
   const CnwB = ({ p }) => {
     const solved = p.r.kind === "ok";
     const k = p.last == null ? 1 : p.last;
@@ -9579,16 +9579,18 @@
     const gs = useGs();
     const dir = usePgSetting("dir");
     const play = usePgSetting("play");
+    const away = usePgSetting("away");
     const title = "#" + GS_SESSIONS[c.today].number;
-    if (play === "fresh") return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cnw cnw-" + dir }, /* @__PURE__ */ React$1.createElement(CnwFresh, { dir }));
+    if (play === "fresh") return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cnw cnw-" + dir + " cnw-away-" + away }, /* @__PURE__ */ React$1.createElement(CnwFresh, { dir }));
     const p = cnwRead(CNW_PLAYS[play]);
     const Pic = CNW_PIC[dir];
     const sid = play === "live" ? c.liveSid : play === "solved" ? c.today : Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today;
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cnw cnw-" + dir }, /* @__PURE__ */ React$1.createElement(Pic, { p }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cnw cnw-" + dir + " cnw-away-" + away }, /* @__PURE__ */ React$1.createElement(Pic, { p }));
   };
   const initPlaygroundChainNow = () => {
     pgRegister("chain-now", { title: "Chain now card", settings: [
       { key: "dir", label: "Concept", options: [{ value: "c1", label: "A Route" }, { value: "c2", label: "B Today's link" }, { value: "c3", label: "C Two ends" }] },
+      { key: "away", label: "Given away", options: [{ value: "amber", label: "Amber" }, { value: "grey", label: "Grey, as Where" }] },
       { key: "play", label: "Play", options: [
         { value: "fresh", label: "Not yet played", state: "library-chain", go: (gs) => gs.setReview({ never: "chain" }) },
         { value: "live", label: "In progress", state: "library-chain-in-progress" },

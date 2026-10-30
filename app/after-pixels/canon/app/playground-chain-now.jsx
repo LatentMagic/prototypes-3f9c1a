@@ -93,7 +93,7 @@ const CnwCount = ({ p }) => { const [first, ...more] = cnwSaid(p);
 
 // A, Route: every word a box in one line across the card, joined, its state by outline (end filled, found green, given away
 // amber, hidden dashed with its first letters); a word is one line of text, so every box is one size. On a phone, three to a row,
-// the row joined to the next by a joint dropped from its end. The guesses' links and the count under it.
+// the row joined to the next by a joint dropped from its end. The guesses' links under it.
 const CnwBox = ({ x, out, back }) => (
   <span className={'cnw-box is-' + (x ? x.state : 'blank')} aria-hidden="true">
     {back && <CnwJoint cls="cnw-stub is-in" />}
@@ -110,7 +110,7 @@ const CnwRoute = ({ w, n }) => {
         {i < list.length - 1 && <CnwJoint cls={i % 3 === 2 ? 'is-brk' : ''} />}</React.Fragment>)}</div>);
 };
 const CnwA = ({ p }) => (
-  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} /><div className="cnw-under">{p.g.length > 0 && <CnwLinks g={p.g} />}<CnwCount p={p} /></div></div>);
+  <div className="cnw-pic cnw-stack"><CnwRoute w={p.w} />{p.g.length > 0 && <CnwLinks g={p.g} />}</div>);
 
 // B, Today's link: one word large and centred: the latest word found (the first after the start, still hidden, before any); on
 // a failed chain the word that broke; on a solved one the two ends with the words between them collapsed to joints. Under it
@@ -156,10 +156,10 @@ const CNW_PIC = { c1: CnwA, c2: CnwB, c3: CnwC };
 
 // Replaces Chain's now card under ?pg=chain-now; the Concept setting picks the picture, the Play setting the play.
 const CnwCard = ({ c }) => {
-  const gs = useGs(); const dir = usePgSetting('dir'); const play = usePgSetting('play');
+  const gs = useGs(); const dir = usePgSetting('dir'); const play = usePgSetting('play'); const away = usePgSetting('away');
   const title = '#' + GS_SESSIONS[c.today].number;
   if (play === 'fresh') return (
-    <LbNowCard gid="chain" title={title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'chain')[0] })} next={c.next} className={'cnw cnw-' + dir}>
+    <LbNowCard gid="chain" title={title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'chain')[0] })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away}>
       <CnwFresh dir={dir} />
     </LbNowCard>);
   const p = cnwRead(CNW_PLAYS[play]); const Pic = CNW_PIC[dir];
@@ -167,7 +167,7 @@ const CnwCard = ({ c }) => {
   const sid = play === 'live' ? c.liveSid : play === 'solved' ? c.today
     : Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === 'chain' && / found/.test(GS_SESSIONS[k].result || '')) || c.today;
   return (
-    <LbNowCard gid="chain" title={title} result={p.r} open={() => gs.go('session', { id: sid })} next={c.next} className={'cnw cnw-' + dir}>
+    <LbNowCard gid="chain" title={title} result={p.r} open={() => gs.go('session', { id: sid })} next={c.next} className={'cnw cnw-' + dir + ' cnw-away-' + away}>
       <Pic p={p} />
     </LbNowCard>);
 };
@@ -175,6 +175,7 @@ const CnwCard = ({ c }) => {
 export const initPlaygroundChainNow = () => {
   pgRegister('chain-now', { title: 'Chain now card', settings: [
     { key: 'dir', label: 'Concept', options: [{ value: 'c1', label: 'A Route' }, { value: 'c2', label: "B Today's link" }, { value: 'c3', label: 'C Two ends' }] },
+    { key: 'away', label: 'Given away', options: [{ value: 'amber', label: 'Amber' }, { value: 'grey', label: 'Grey, as Where' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'fresh', label: 'Not yet played', state: 'library-chain', go: (gs) => gs.setReview({ never: 'chain' }) },
       { value: 'live', label: 'In progress', state: 'library-chain-in-progress' },
