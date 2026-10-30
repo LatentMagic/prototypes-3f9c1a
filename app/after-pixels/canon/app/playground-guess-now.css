@@ -83,7 +83,15 @@
 /* D2: the tiles, then the ring and the hint box as one small centred row under them (the original D2, restored: Joe). */
 .pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
 /* D2's tiles, ring and hint box are D1's sizes (Joe: "as big as it is on D1"). */
-@container pgndx (min-width: 600px) { .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; } }
+/* Thinner (Joe): from 600px the tiles sit level with TODAY, between the title and the result, not in a row of their own. */
+@container pgndx (min-width: 600px) {
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: auto; grid-template-areas: "all"; }
+  .pgn-d2:not([class*="pgn-vc-"]) :is(.pgn-dx-head, .pgn-dx-res, .pgn-dx-pic) { grid-area: all; }
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-res { justify-self: end; }
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; align-self: start; }
+}
+/* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe). */
+.pgn-dx-res .es-vd { font: 700 20px/1.35 var(--font-heading); }
 .pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
 /* D2a-c keep the tightened D2: from 600px the picture shares the head's row, centred on the card with the title and result in
    its top corners, the tiles 48px and the ring 30px, so the card is no taller than the streak card beside it. */
