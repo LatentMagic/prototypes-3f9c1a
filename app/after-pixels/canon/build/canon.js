@@ -3634,7 +3634,7 @@
     const gs = useGs();
     const st = done ? c.done : c.live;
     if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, play: () => gs.playReq({ kind: "edition", e: edList(gs, id)[0] }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, GS_PAGES[id].week.line));
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, result: done && c.done.st, tag: c.tag, open: () => gs.go("session", { id: done ? c.today : c.liveSid }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, result: done ? c.done.st : !c.tag && { kind: "live", label: "In progress" }, tag: c.tag, open: () => gs.go("session", { id: done ? c.today : c.liveSid }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }));
   };
   const CbNow = ({ c }) => {
     const gs = useGs();

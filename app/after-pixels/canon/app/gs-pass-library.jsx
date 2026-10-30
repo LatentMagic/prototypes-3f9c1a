@@ -268,7 +268,8 @@ export const GsLibrary = () => {
   </>);
 };
 
-// ---- The daily games' now card, and Casebook's. While a play is under way they show no result. ----
+// ---- The daily games' now card, and Casebook's. While a play is under way the In progress tag (owner, 2026-10-30); a card
+// not yet ruled (tag: Groups, Salvage, Casebook) shows no result until finished. ----
 const CprPzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const st = done ? c.done : c.live;
   if (none) return (
@@ -277,7 +278,7 @@ const CprPzNow = ({ c, done, none, id }) => {
     </LbNowCard>
   );
   return (
-    <LbNowCard gid={id} title={c.title} result={done && c.done.st} tag={c.tag} open={() => gs.go('session', { id: done ? c.today : c.liveSid })} next={c.next}>
+    <LbNowCard gid={id} title={c.title} result={done ? c.done.st : !c.tag && { kind: 'live', label: 'In progress' }} tag={c.tag} open={() => gs.go('session', { id: done ? c.today : c.liveSid })} next={c.next}>
       <p>{st.line}</p>
       {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
     </LbNowCard>
