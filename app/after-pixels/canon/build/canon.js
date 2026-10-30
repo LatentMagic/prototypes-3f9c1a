@@ -4225,8 +4225,9 @@
       return { ...base, number: n, hints: r.hints, figures: [r.guesses + " of 6 guesses", r.hints ? "1 hint" : "No hints"], listTitle: "Every guess", share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
     }
     if (id === "chain") {
-      const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
-      return { ...base, number: n, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: "Every guess", share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+      const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
+      const r = dpChain(play);
+      return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: "Every guess", share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
     }
     const d = dpSvDay(i, x.ok);
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], listTitle: "Every dive", share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -4381,6 +4382,7 @@
         game: GS_NAME.chain,
         art: "chain",
         number: DP_NO,
+        play: CH_TODAY,
         result: dpChResult(dpChT),
         date: GS.today,
         figures: [dpChT.words + " words", dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())],
@@ -4395,6 +4397,7 @@
         game: GS_NAME.chain,
         art: "chain",
         number: DP_NO,
+        play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) },
         live: true,
         result: "In progress",
         date: GS.today,
@@ -9485,192 +9488,78 @@
     ] });
     GS_NOW.word = PgnCard;
   };
-  const ChlTODAY = {
-    w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "WAGON"],
-    p: [["BALL", 1], ["RACE", 2], ["ROOM", 2], ["STATION", 4], ["SUITE", 3], ["SERVICE", 3]],
-    links: ["snowball", "ballroom", "room service", "service station", "station wagon"]
-  };
-  const ChlPLAYS = {
-    clean: { w: ["MOON", "LIGHT", "HOUSE", "BOAT", "YARD"], p: [["LIGHT", 1], ["BOAT", 3], ["HOUSE", 2]], links: ["moonlight", "lighthouse", "houseboat", "boatyard"] },
-    today: ChlTODAY,
-    failed: {
-      w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"],
-      p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]],
-      links: ["goldfish", "fishbone", "bone dry", "dry clean"]
-    },
-    live: { ...ChlTODAY, p: ChlTODAY.p.slice(0, 3), live: true },
-    seven: {
-      w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "WAGON", "WHEEL"],
-      p: [["BALL", 1], ["ROOM", 2], ["WATER", 5, "waterwheel"], ["WAGON", 5], ["STATION", 4], ["SERVICE", 3]],
-      links: [...ChlTODAY.links, "wagon wheel"]
-    }
-  };
-  const CHL_NUM = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"];
-  const chlWrong = (n) => n === 0 ? "no wrong guesses" : n === 1 ? "1 wrong guess" : n + " wrong guesses";
-  const chlRead = (P) => {
+  const chnRead = (s) => {
+    const P = s.play;
     const last = P.w.length - 1;
-    const w = P.w.map((word, i) => ({ i, word, state: i === 0 || i === last ? "end" : "hidden", shown: i === 0 || i === last ? word.length : 1, tried: [], wrong: 0, rank: null, from: null }));
-    const known = (i) => i >= 0 && i <= last && w[i].state !== "hidden";
-    const order = [];
+    const w = P.w.map((word, i) => {
+      const end = i === 0 || i === last;
+      return { i, word, state: end ? "end" : "hidden", shown: end ? word.length : 1 };
+    });
     const g = P.p.map(([guess, k, near], j) => {
       const x = w[k];
-      const from = known(k - 1) ? "l" : "r";
       let res;
       if (guess === x.word) {
         res = "right";
         x.state = "found";
       } else {
-        x.wrong += 1;
         x.shown += 1;
-        res = x.shown >= x.word.length ? "given" : "wrong";
+        res = x.shown >= x.word.length ? "given" : near ? "near" : "wrong";
         if (res === "given") {
           x.state = "given";
           x.shown = x.word.length;
         }
       }
-      if (res !== "wrong") {
-        order.push(k);
-        x.rank = order.length;
-        x.from = from;
-      }
-      const t = { n: j + 1, g: guess, k, res, near: res === "wrong" && near ? near : null };
-      x.tried.push(t);
-      return t;
+      return { n: j + 1, res };
     });
-    w.forEach((x) => {
-      x.open = !!P.live && x.state === "hidden" && (known(x.i - 1) || known(x.i + 1));
-      x.openFrom = known(x.i - 1) ? "l" : "r";
-    });
-    const given = w.filter((x) => x.state === "given").length;
-    const wrong = g.filter((t) => t.res !== "right").length;
-    const r = P.live ? { tone: "live", word: "In progress" } : given ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
-    const links = P.links.map((l, i) => known(i) && known(i + 1) ? l : null);
-    return { ...P, w, g, order, links, given, wrong, r, hidden: P.w.length - 2, found: w.filter((x) => x.state === "found").length };
+    const r = s.live ? { tone: "live", word: "In progress" } : w.some((x) => x.state === "given") ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    return { w, g, r, long: Math.max(...w.map((x) => x.state === "hidden" ? x.shown + 1 : x.word.length)) };
   };
-  const chlLines = (P) => {
-    const p = chlRead(P);
-    const last = P.w.length - 1;
-    const shown = P.w.map(() => 1);
-    return [["Ends", P.w[0] + " to " + P.w[last], CHL_NUM[P.w.length] + " words in all"], ...p.g.map((t) => {
-      const word = P.w[t.k];
-      if (t.res !== "right") shown[t.k] += 1;
-      const note = t.res === "right" ? ["Right"] : t.res === "given" ? ["Wrong, so it was given away", "The word was " + word] : [t.near ? "Wrong, though " + t.near + " is a real link" : "Wrong", "Now shows " + word.slice(0, shown[t.k])];
-      return ["Guess " + t.n, t.g, "Word " + (t.k + 1), ...note];
-    })];
-  };
-  const ChlCard = ({ p, board, figure, say, wide }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 chl-card" + (wide ? " chl-wide" : ""), "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + p.r.tone }, p.r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "chl-duo" }, board, /* @__PURE__ */ React$1.createElement("div", { className: "chl-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "chl-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "chl-cap" }, "Guesses"), figure, /* @__PURE__ */ React$1.createElement("span", { className: "chl-say" }, say)))));
-  const chlSay = (p) => p.g.length + (p.g.length === 1 ? " guess, " : " guesses, ") + p.wrong + " wrong";
-  const ChlTiles = ({ x }) => {
-    if (x.state === "hidden") return /* @__PURE__ */ React$1.createElement("span", { className: "chl-tiles" }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "chl-t is-shown" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "chl-t is-more", "aria-label": "more letters" }));
-    return /* @__PURE__ */ React$1.createElement("span", { className: "chl-tiles", "aria-label": x.word }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "chl-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found") }, ch)));
-  };
-  const CHL_LP = 2 * (26 - 14) + Math.PI * 14;
-  const chlDash = (res, near) => res === "right" ? null : res === "given" ? CHL_LP / 2 - 7 + " 7" : near ? CHL_LP - 5 + " 5" : CHL_LP - 13 + " 13";
-  const ChlLoop = ({ t, x = 3, y = 3, across }) => /* @__PURE__ */ React$1.createElement(
+  const ChnTiles = ({ x }) => x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t chn-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t chn-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(
+    "span",
+    {
+      key: j,
+      "aria-hidden": "true",
+      className: "wd-t chn-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found")
+    },
+    ch
+  )));
+  const ChnJoint = () => /* @__PURE__ */ React$1.createElement("div", { className: "chn-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })));
+  const CHN_W = 16;
+  const CHN_H = 30;
+  const CHN_STEP = CHN_H + 8;
+  const CHN_P = 2 * (CHN_H - CHN_W) + Math.PI * CHN_W;
+  const CHN_GAP = { wrong: 14, near: 6, given: 8 };
+  const chnDash = (res) => res === "right" ? void 0 : res === "given" ? CHN_P / 2 - CHN_GAP.given + " " + CHN_GAP.given : CHN_P - CHN_GAP[res] + " " + CHN_GAP[res];
+  const chnOffset = (res, across) => res === "right" ? void 0 : CHN_P - CHN_GAP[res] / 2 - (across ? (CHN_H - CHN_W) / 2 : Math.PI * CHN_W / 4 + (CHN_H - CHN_W) / 2);
+  const ChnLoop = ({ res, x, y, across }) => /* @__PURE__ */ React$1.createElement(
     "rect",
     {
       x,
       y,
-      width: across ? 26 : 14,
-      height: across ? 14 : 26,
-      rx: "7",
-      className: "chl-loop is-" + (t.near ? "near" : t.res),
-      strokeDasharray: chlDash(t.res, t.near) || void 0,
-      strokeDashoffset: CHL_LP - (across ? 12.5 : 23.5)
+      width: across ? CHN_H : CHN_W,
+      height: across ? CHN_W : CHN_H,
+      rx: CHN_W / 2,
+      className: "chn-loop is-" + res,
+      strokeDasharray: chnDash(res),
+      strokeDashoffset: chnOffset(res, across)
     }
   );
-  const ChlJoint = () => /* @__PURE__ */ React$1.createElement("div", { className: "chl-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })));
-  const ChlGuessChain = ({ p, across }) => {
-    const len = p.g.length * 20 + 12;
-    return /* @__PURE__ */ React$1.createElement("svg", { className: "chl1-hang " + (across ? "is-across" : "is-down"), width: across ? len : 20, height: across ? 20 : len, viewBox: across ? "0 0 " + len + " 20" : "0 0 20 " + len, role: "img", "aria-label": chlSay(p) }, p.g.map((t, i) => across ? /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, across: true, x: 3 + i * 20 }) : /* @__PURE__ */ React$1.createElement(ChlLoop, { key: i, t, y: 3 + i * 20 })));
+  const ChnChain = ({ g, across }) => {
+    const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
+    return across ? /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n))) : /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
   };
-  const ChlC1 = ({ p }) => {
-    const down = usePgSetting("orient") !== "h";
-    return /* @__PURE__ */ React$1.createElement(ChlCard, { p, say: chlSay(p), figure: /* @__PURE__ */ React$1.createElement("span", { className: "chl1-fig" + (down ? " is-down" : "") }, /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p, across: true }), down && /* @__PURE__ */ React$1.createElement(ChlGuessChain, { p })), board: /* @__PURE__ */ React$1.createElement("div", { className: "chl1-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement("div", { className: "chl1-row is-" + x.state }, /* @__PURE__ */ React$1.createElement(ChlTiles, { x })), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChlJoint, null)))) });
+  const CHN_KINDS = [["right", "Right"], ["wrong", "Wrong"], ["near", "Near miss"], ["given", "Given away"]];
+  const ChnGuesses = ({ g }) => {
+    const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, /* @__PURE__ */ React$1.createElement(ChnChain, { g, across: true }), /* @__PURE__ */ React$1.createElement(ChnChain, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
   };
-  const ChlDrop = ({ t }) => /* @__PURE__ */ React$1.createElement("div", { className: "chl2-drop is-" + (t.near ? "near" : t.res) }, /* @__PURE__ */ React$1.createElement("svg", { width: "14", height: "22", viewBox: "0 0 20 32", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(ChlLoop, { t })), /* @__PURE__ */ React$1.createElement("span", null, t.g, t.near ? " · " + t.near : ""));
-  const ChlC2 = ({ p }) => /* @__PURE__ */ React$1.createElement(
-    ChlCard,
-    {
-      p,
-      say: "of " + p.g.length + (p.g.length === 1 ? " guess" : " guesses"),
-      wide: true,
-      figure: /* @__PURE__ */ React$1.createElement("div", { className: "chl2-count" }, /* @__PURE__ */ React$1.createElement("b", null, p.wrong), /* @__PURE__ */ React$1.createElement("span", null, p.wrong === 1 ? "wrong guess" : "wrong guesses")),
-      board: /* @__PURE__ */ React$1.createElement("div", { className: "chl2-chain" }, p.w.map((x, i) => {
-        const misses = x.tried.filter((t) => t.res !== "right");
-        return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "chl2-cell" }, /* @__PURE__ */ React$1.createElement("div", { className: "chl2-pill is-" + x.state }, /* @__PURE__ */ React$1.createElement(ChlTiles, { x })), misses.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "chl2-hang" }, misses.map((t) => /* @__PURE__ */ React$1.createElement(ChlDrop, { key: t.n, t }))));
-      }))
-    }
-  );
-  const ChlArrow = ({ from }) => /* @__PURE__ */ React$1.createElement("svg", { className: "chl3-arrow is-from-" + from, width: "10", height: "10", viewBox: "0 0 10 10", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 1 L8 5 L2 9" }));
-  const ChlC3Word = ({ x }) => {
-    const label = x.state === "end" ? "End" : x.state === "hidden" ? x.open ? "Open" : "" : x.rank;
-    return /* @__PURE__ */ React$1.createElement("li", { className: "chl3-w is-" + x.state + (x.open ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "chl3-rank" }, x.rank != null && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.from }), x.open && /* @__PURE__ */ React$1.createElement(ChlArrow, { from: x.openFrom }), /* @__PURE__ */ React$1.createElement("span", null, label)), /* @__PURE__ */ React$1.createElement(ChlTiles, { x }));
+  const ChnSessBody = ({ s }) => {
+    if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
+    const p = chnRead(s);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a pgr-lift chn-card", style: { "--chn-n": p.long }, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement("div", { className: "chn-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(ChnTiles, { x }), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChnJoint, null))))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel chn-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g }))))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
-  const chlArc = (c, R, a0, a1) => "M " + (c + R * Math.cos(a0)) + " " + (c + R * Math.sin(a0)) + " A " + R + " " + R + " 0 " + (a1 - a0 > Math.PI ? 1 : 0) + " 1 " + (c + R * Math.cos(a1)) + " " + (c + R * Math.sin(a1));
-  const CHL_RING_LINK = 40;
-  const CHL_RING_STEP = 44;
-  const ChlRing = ({ p }) => {
-    const closed = p.r.tone === "ok";
-    const slots = p.g.length + (closed ? 0 : 1);
-    const R = slots * CHL_RING_STEP / (2 * Math.PI);
-    const c = R + 10;
-    const size = 2 * c;
-    const span = 2 * Math.PI / slots;
-    const half = CHL_RING_LINK / 2 / R;
-    const trim = 3 / R;
-    const cut = (px) => px / 2 / R;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "chl3-ring", style: { width: size, height: size }, role: "img", "aria-label": chlSay(p) + (closed ? ", the ring closed" : ", the ring open") }, /* @__PURE__ */ React$1.createElement("svg", { width: size, height: size, viewBox: "0 0 " + size + " " + size, "aria-hidden": "true" }, p.g.map((t, i) => {
-      const m = -Math.PI / 2 + (i + (closed ? 0 : 1)) * span;
-      const k = t.near ? "near" : t.res;
-      return /* @__PURE__ */ React$1.createElement("g", { key: i, className: "chl3-link is-" + k }, /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half, m + half), className: "chl3-out" }), /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, R, m - half + trim, m + half - trim), className: "chl3-in" }), t.res !== "right" && /* @__PURE__ */ React$1.createElement("path", { d: chlArc(c, t.near ? R + 4 : R, m - cut(t.res === "given" ? 10 : 6), m + cut(t.res === "given" ? 10 : 6)), className: "chl3-cut" + (t.near ? " is-half" : "") }));
-    })), /* @__PURE__ */ React$1.createElement("span", { className: "chl3-ring-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", { style: { fontSize: Math.round(Math.min(32, R * 0.75)) } }, p.g.length)));
-  };
-  const ChlC3 = ({ p }) => /* @__PURE__ */ React$1.createElement(
-    ChlCard,
-    {
-      p,
-      say: p.wrong + " wrong" + (p.r.tone === "ok" ? ", ring closed" : ""),
-      figure: /* @__PURE__ */ React$1.createElement(ChlRing, { p }),
-      wide: true,
-      board: /* @__PURE__ */ React$1.createElement("ol", { className: "chl3-line" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i > 0 && /* @__PURE__ */ React$1.createElement("li", { className: "chl3-bar" }, /* @__PURE__ */ React$1.createElement(ChlJoint, null)), /* @__PURE__ */ React$1.createElement(ChlC3Word, { x }))))
-    }
-  );
-  const ChlCONCEPTS = { c1: ChlC1, c2: ChlC2, c3: ChlC3 };
-  const ChlBody = () => {
-    const c = usePgSetting("c");
-    const play = usePgSetting("play");
-    const P = ChlPLAYS[play] || ChlPLAYS.clean;
-    const C = ChlCONCEPTS[c] || ChlC1;
-    const s = GS_SESSIONS["pgc-" + play];
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(C, { p: chlRead(P) }), s && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
-  };
-  const initPlaygroundChainLofi = () => {
-    Object.keys(ChlPLAYS).forEach((k) => {
-      const P = ChlPLAYS[k];
-      const p = chlRead(P);
-      const result = P.live ? "In progress" : GS_RESULT.chain(p.given ? { given: true, found: p.found, of: p.hidden } : { wrong: p.wrong });
-      GS_SESSIONS["pgc-" + k] = {
-        ...GS_SESSIONS[P.live ? "chain-live" : "chain-today"],
-        result,
-        share: P.live ? null : result,
-        lines: chlLines(P),
-        figures: P.live ? [p.found + " of " + p.hidden + " words", chlWrong(p.wrong).replace(/^./, (ch) => ch.toUpperCase())] : [P.w.length + " words", chlWrong(p.wrong).replace(/^./, (ch) => ch.toUpperCase())]
-      };
-    });
-    const go = (k) => (gs) => gs.go("session", { id: "pgc-" + k });
-    pgRegister("chain-lofi", { title: "Chain, low fi", settings: [
-      { key: "c", label: "Concept", options: [{ value: "c1", label: "1 Linked rows" }, { value: "c2", label: "2 The chain across" }, { value: "c3", label: "3 Inward" }] },
-      { key: "orient", label: "C1 guesses", options: [{ value: "v", label: "Vertical" }, { value: "h", label: "Horizontal" }] },
-      { key: "play", label: "Play", options: [
-        { value: "clean", label: "Solved, none wrong", state: "session-chain", go: go("clean") },
-        { value: "today", label: "Solved, 2 wrong", state: "session-chain", go: go("today") },
-        { value: "failed", label: "Failed, BONE given", state: "session-chain", go: go("failed") },
-        { value: "live", label: "In progress", state: "session-chain-in-progress", go: go("live") },
-        { value: "seven", label: "7 words, near miss", state: "session-chain", go: go("seven") }
-      ] }
-    ] });
-    if (pgActive() && new URLSearchParams(window.location.search).get("pg") === "chain-lofi") GS_SESSION_BODY.chain = ChlBody;
+  const initGsChain = () => {
+    GS_SESSION_BODY.chain = ChnSessBody;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -10081,6 +9970,7 @@
   initGsChats();
   initGsGame();
   initGsWhereChainSalvage();
+  initGsChain();
   initGsCasebookData();
   initGsCasebook();
   initGsDelveLibrary();
@@ -10100,5 +9990,4 @@
   initMain();
   initPlaygroundGuessResult();
   initPlaygroundGuessNow();
-  initPlaygroundChainLofi();
 })(React, ReactDOM);

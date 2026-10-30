@@ -1,0 +1,38 @@
+/* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on Guess's card
+   and layout (playground-guess-result.css: .pgr-card, .pgr-duo, .pgr-panel) and its tiles (gs-word.css: .wd-t, --wd-dash), so it
+   is imported after both. */
+
+/* The tiles at Guess's size, shrunk only when the longest row (--chn-n tiles) would not fit the card. */
+.chn-board { --tc: min(var(--t), calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n))); display: grid; justify-items: center; }
+.chn-row { display: flex; justify-content: center; gap: var(--g); }
+.chn-t { width: var(--tc); height: var(--tc); font-size: calc(var(--tc) * .5); }
+.chn-t.is-end { background: var(--off-white); color: var(--page); }
+.chn-t.is-shown { background: #918B80; color: var(--page); }
+.chn-t.is-found { border: 2px solid #4CC38A; color: var(--text); }
+.chn-t.is-given { border: 2px solid #E5A63B; color: #E5A63B; }
+.chn-t.is-more { background: var(--wd-dash); }
+.chn-joint { display: grid; place-items: center; height: 24px; }
+.chn-joint svg { display: block; }
+.chn-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
+
+/* The guesses: one prow, full width on a phone (Guess's panel splits in two for its ring and hint). */
+.chn-panel { grid-template-columns: 1fr; }
+.chn-guesses { display: grid; justify-items: center; gap: 16px; }
+.chn-chain { display: block; overflow: visible; }
+.chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
+.chn-chain.is-down { display: none; }
+@container dv2 (min-width: 672px) {
+  .chn-chain.is-down { display: block; }
+  .chn-chain.is-across { display: none; }
+}
+.chn-loop { fill: none; stroke-width: 3.5; }
+.chn-bar { stroke: #918B80; stroke-width: 2; }
+.chn-loop.is-right { stroke: #4CC38A; }
+.chn-loop.is-wrong { stroke: #918B80; }
+.chn-loop.is-near { stroke: var(--off-white); }
+.chn-loop.is-given { stroke: #E5A63B; }
+.chn-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
+@container dv2 (min-width: 672px) { .chn-key { flex-direction: column; align-items: flex-start; } }
+.chn-key li { display: flex; align-items: center; gap: 6px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+.chn-key b { color: var(--text); font-variant-numeric: tabular-nums; }
+.chn-key svg { flex: none; }

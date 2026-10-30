@@ -58,7 +58,7 @@ const PgrAnswer = ({ s }) => (s.loss && s.answer ? (
 // ---- The full-width card (Delve's and Escape's, settled): Delve's card and its result band at the top left, the word in its
 // outcome's colour and the line beside it (under it on a phone), as the low-fi round drew it. ----
 const pgrFacts = (s, p) => [p.n + (p.n === 1 ? ' guess' : ' guesses'), p.hint ? '1 hint' : s.live ? 'hint not used' : 'no hint'];
-const PgrTop = ({ p, line }) => (
+export const PgrTop = ({ p, line }) => (
   <div className="dv7r-band"><h2 className={'dv7r-word is-' + p.r.tone}>{p.r.word}</h2>{line && <p className="dv7r-line">{line}</p>}</div>);
 
 // 6a: the word alone on top; below, the board (guesses only) and beside it a panel: the guesses as a ring, the hint in its place

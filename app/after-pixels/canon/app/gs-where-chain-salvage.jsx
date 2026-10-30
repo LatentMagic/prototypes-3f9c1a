@@ -65,9 +65,10 @@ const dpChain = (t) => {
 };
 const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
 const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
-let CH_TODAY;
-let CH_OK;
-let CH_FAIL;
+// Chain's sample plays, read by its session body (gs-chain.jsx) too.
+export let CH_TODAY;
+export let CH_OK;
+export let CH_FAIL;
 
 let SV_COLS;
 const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
@@ -161,8 +162,8 @@ export const dpSession = (id, c, x, base) => {
     return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], listTitle: 'Every guess', share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
   }
   if (id === 'chain') {
-    const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
-    return { ...base, number: n, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+    const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL; const r = dpChain(play);
+    return { ...base, number: n, play, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
   }
   const d = dpSvDay(i, x.ok);
   return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], listTitle: 'Every dive', share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -267,9 +268,9 @@ Object.assign(GS_SESSIONS, {
     figures: [dpWhT.guesses + ' of 6 guesses', '1 hint'], listTitle: 'Every guess', share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks], lines: dpWhT.lines },
   'where-live': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 0, live: true, result: 'In progress', date: GS.today,
     figures: ['2 of 6 guesses', 'No hints'], listTitle: 'Every guess', share: null, lines: dpWhT.lines.slice(0, 2) },
-  'chain-today': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, result: dpChResult(dpChT), date: GS.today,
+  'chain-today': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: CH_TODAY, result: dpChResult(dpChT), date: GS.today,
     figures: [dpChT.words + ' words', dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())], listTitle: 'Every guess', share: dpChResult(dpChT), shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks], lines: dpChT.lines },
-  'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, live: true, result: 'In progress', date: GS.today,
+  'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }, live: true, result: 'In progress', date: GS.today,
     figures: [dpChL.found + ' of ' + dpChL.hidden + ' words', dpWrong(dpChL.wrong).replace(/^./, (c) => c.toUpperCase())], listTitle: 'Every guess', share: null, lines: dpChL.lines },
   'salvage-today': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, hints: 1, result: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), date: GS.today,
     figures: ['5 of 5 wrecks', SV_TODAY_DIVES.length + ' of 30 dives', '1 hint'], listTitle: 'Every dive', share: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), shareLines: [dpSvHead(DP_NO, SV_TODAY_DIVES, true), ...svMarks(SV_TODAY_DIVES)],

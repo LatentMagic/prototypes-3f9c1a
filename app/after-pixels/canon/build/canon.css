@@ -2863,102 +2863,41 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    half the box; set above), the label in capitals, and a note in its place when there was no hint; the word on a loss in quiet outlined tiles (set above). */
 .pgn-cap.is-label { letter-spacing: .04em; text-transform: uppercase; }
 .pgn-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
-/* PLAYGROUND, not canon: Chain's card, low fi (app/playground-chain-lofi.jsx). Builds on gs-delve.css's card (.dv2) and result
-   band (.dv7r-band), and gs-word.css's dashed edge (--wd-dash). Low fi: greys and placeholder drawing; green only where found,
-   amber only where given away. */
+/* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on Guess's card
+   and layout (playground-guess-result.css: .pgr-card, .pgr-duo, .pgr-panel) and its tiles (gs-word.css: .wd-t, --wd-dash), so it
+   is imported after both. */
 
-/* ---- Shared: Guess 6a lifted. Phone: the board, then the panel under a rule. From a 672px card: side by side, centred, the
-   panel ruled off at its left and lifted level with the word on top. ---- */
-.chl-card { --g: 4px; --t: min(40px, calc((100cqi - 6 * var(--g)) / 7)); gap: 24px; }
-@container dv2 (min-width: 672px) { .chl-card { --t: 44px; } }
-.chl-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.chl-say { font: 600 13px/1.2 var(--font-text); color: var(--muted); text-align: center; }
-.chl-duo { display: grid; gap: 24px; justify-items: center; min-width: 0; }
-.chl-panel { display: grid; justify-items: center; width: 100%; padding-top: 20px; border-top: 1px solid var(--line); }
-.chl-prow { display: grid; justify-items: center; align-content: start; gap: 12px; }
+/* The tiles at Guess's size, shrunk only when the longest row (--chn-n tiles) would not fit the card. */
+.chn-board { --tc: min(var(--t), calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n))); display: grid; justify-items: center; }
+.chn-row { display: flex; justify-content: center; gap: var(--g); }
+.chn-t { width: var(--tc); height: var(--tc); font-size: calc(var(--tc) * .5); }
+.chn-t.is-end { background: var(--off-white); color: var(--page); }
+.chn-t.is-shown { background: #918B80; color: var(--page); }
+.chn-t.is-found { border: 2px solid #4CC38A; color: var(--text); }
+.chn-t.is-given { border: 2px solid #E5A63B; color: #E5A63B; }
+.chn-t.is-more { background: var(--wd-dash); }
+.chn-joint { display: grid; place-items: center; height: 24px; }
+.chn-joint svg { display: block; }
+.chn-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
+
+/* The guesses: one prow, full width on a phone (Guess's panel splits in two for its ring and hint). */
+.chn-panel { grid-template-columns: 1fr; }
+.chn-guesses { display: grid; justify-items: center; gap: 16px; }
+.chn-chain { display: block; overflow: visible; }
+.chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
+.chn-chain.is-down { display: none; }
 @container dv2 (min-width: 672px) {
-  .chl-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }
-  .chl-panel { align-self: stretch; align-content: center; width: auto; padding: 0 0 0 64px; border-top: 0; border-left: 1px solid var(--line); margin-top: calc(-1 * (29px + 24px)); }
-  .chl-wide .chl-duo { grid-template-columns: minmax(0, auto) auto; column-gap: 48px; }
-  .chl-wide .chl-panel { padding-left: 48px; }
+  .chn-chain.is-down { display: block; }
+  .chn-chain.is-across { display: none; }
 }
-
-/* Tiles: an end filled light; shown letters filled grey; the rest of a found word outlined green; given away outlined amber;
-   "more" a dashed tile (drawn, never a dashed border: iPhone Safari drops the side dashes). */
-.chl-tiles { display: inline-flex; gap: var(--g); }
-.chl-t { box-sizing: border-box; display: grid; place-items: center; width: var(--t); height: var(--t); font: 700 calc(var(--t) * .5)/1 var(--font-heading); text-transform: uppercase; }
-.chl-t.is-end { background: var(--off-white); color: var(--page); }
-.chl-t.is-shown { background: #918B80; color: var(--page); }
-.chl-t.is-found { border: 2px solid var(--success); color: var(--text); }
-.chl-t.is-given { border: 2px solid var(--warning); color: var(--warning); }
-.chl-t.is-more { background: var(--wd-dash); }
-
-/* A guess's link: right closed, wrong open, a near miss half closed, the give-away broken and amber. */
-.chl-loop { fill: none; stroke-width: 3; stroke: #918B80; }
-.chl-loop.is-right { stroke: var(--text); }
-.chl-loop.is-given { stroke: var(--warning); }
-
-/* ---- 1. Linked rows ---- */
-.chl1-board { display: grid; justify-items: center; }
-.chl1-row { display: flex; justify-content: center; }
-.chl-joint { display: grid; place-items: center; height: 22px; }
-.chl-joint svg { display: block; }
-.chl-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
-/* The guesses' chain: across by default; hanging down (the `orient` setting) only from a 672px card, across on a phone. */
-.chl1-fig { display: grid; justify-items: center; }
-.chl1-hang { display: block; }
-.chl1-fig.is-down .chl1-hang.is-down { display: none; }
-@container dv2 (min-width: 672px) {
-  .chl1-fig.is-down .chl1-hang.is-down { display: block; }
-  .chl1-fig.is-down .chl1-hang.is-across { display: none; }
-}
-
-/* ---- 2. The chain across ---- */
-.chl2-chain { --t: 26px; --g: 3px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 16px 22px; max-width: 100%; }
-.chl2-cell { display: grid; justify-items: center; gap: 2px; }
-.chl2-pill { position: relative; padding: 8px 14px; border: 3px solid #918B80; border-radius: 999px; }
-.chl2-pill.is-end { border-color: var(--off-white); }
-.chl2-pill.is-given { border-color: var(--warning); }
-.chl2-pill.is-hidden { border-color: var(--line); }
-/* The link that joins a pill to the next, straddling the gap. */
-.chl2-cell:not(:last-child) .chl2-pill::after { content: ''; position: absolute; top: 50%; right: -17px; width: 18px; height: 10px; margin-top: -8px;
-  border: 3px solid #918B80; border-radius: 999px; }
-.chl2-hang { display: grid; justify-items: start; }
-.chl2-drop { display: flex; align-items: center; gap: 4px; font: 600 11px/1 var(--font-text); letter-spacing: .04em; color: var(--muted); }
-.chl2-drop.is-given span { color: var(--warning); }
-.chl2-count { display: grid; justify-items: center; gap: 4px; }
-.chl2-count b { font: 700 44px/1 var(--font-heading); color: var(--text); }
-.chl2-count span { font: 600 11px/1 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-@container dv2 (min-width: 672px) { .chl2-chain { --t: 30px; } }
-
-/* ---- 3. Inward. Concept 1's tiles and link joints (round 2). Phone: one column, the ends at top and bottom, the order number at
-   each word's left. From a 672px card: one row (wrapping only when it cannot fit), the number over each word. ---- */
-.chl3-line { --t: 32px; --g: 3px; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; list-style: none; }
-.chl3-bar { display: grid; place-items: center; }
-.chl3-w { display: grid; grid-template-columns: 44px auto 44px; align-items: center; }
-.chl3-w .chl-tiles { grid-column: 2; }
-.chl3-rank { grid-column: 1; display: inline-flex; align-items: center; justify-content: flex-end; gap: 2px; padding-right: 8px; font: 700 12px/1 var(--font-text); color: var(--muted); }
-.chl3-w.is-given .chl3-rank { color: var(--warning); }
-.chl3-w.is-open .chl3-rank, .chl3-w.is-end .chl3-rank { color: var(--text); text-transform: uppercase; letter-spacing: .04em; font-size: 10px; }
-.chl3-arrow { fill: none; stroke: currentColor; stroke-width: 2; transform: rotate(90deg); }
-.chl3-arrow.is-from-r { transform: rotate(-90deg); }
-@container dv2 (min-width: 672px) {
-  .chl3-line { --t: 24px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: flex-end; row-gap: 12px; }
-  .chl3-bar { width: 26px; height: var(--t); }
-  .chl3-bar svg { transform: rotate(90deg); }
-  .chl3-w { grid-template-columns: auto; justify-items: center; row-gap: 6px; }
-  .chl3-w .chl-tiles { grid-column: auto; }
-  .chl3-rank { grid-column: auto; justify-content: center; padding-right: 0; min-height: 12px; }
-  .chl3-arrow { transform: none; }
-  .chl3-arrow.is-from-r { transform: rotate(180deg); }
-}
-.chl3-ring { position: relative; }
-.chl3-ring svg { display: block; }
-.chl3-out { fill: none; stroke-width: 14; stroke-linecap: round; stroke: #918B80; }
-.chl3-in, .chl3-cut { fill: none; stroke-width: 6; stroke-linecap: round; stroke: var(--card); }
-.chl3-cut { stroke-width: 18; stroke-linecap: butt; }
-.chl3-cut.is-half { stroke-width: 7; }
-.chl3-link.is-right .chl3-out { stroke: var(--text); }
-.chl3-link.is-given .chl3-out { stroke: var(--warning); }
-.chl3-ring-n { position: absolute; inset: 0; display: grid; place-content: center; }
-.chl3-ring-n b { font: 700 32px/1 var(--font-heading); color: var(--text); }
+.chn-loop { fill: none; stroke-width: 3.5; }
+.chn-bar { stroke: #918B80; stroke-width: 2; }
+.chn-loop.is-right { stroke: #4CC38A; }
+.chn-loop.is-wrong { stroke: #918B80; }
+.chn-loop.is-near { stroke: var(--off-white); }
+.chn-loop.is-given { stroke: #E5A63B; }
+.chn-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
+@container dv2 (min-width: 672px) { .chn-key { flex-direction: column; align-items: flex-start; } }
+.chn-key li { display: flex; align-items: center; gap: 6px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+.chn-key b { color: var(--text); font-variant-numeric: tabular-nums; }
+.chn-key svg { flex: none; }
