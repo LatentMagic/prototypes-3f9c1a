@@ -19,6 +19,9 @@ const WdNowResult = ({ s }) => { const r = wdResult(s);
     ? <span className="lb-big"><LbResult s={{ kind: 'live', label: 'In progress' }} /></span>
     : <p className={'gs-vd is-' + (r.tone === 'ok' ? 'ok' : 'over')}>{r.word}</p>; };
 
+// True only under ?pg=guess-now; elsewhere the card is Joe's pick (D2, the word on a loss).
+const pgnHere = () => new URLSearchParams(window.location.search).get('pg') === 'guess-now';
+
 // What every direction reads from the play: its guesses, the last one, the hint, and the count.
 const pgnPlay = (s) => {
   const ev = wdRead(s).events; const gsv = ev.filter((e) => e.kind === 'guess');
@@ -31,7 +34,7 @@ const PgnTrail = ({ p }) => { const trail = pgnTrail(p);
   return <div className="wd-trail" role="img" aria-label={pgnSaid(trail)}>{trail.map((e, i) => <WdTr key={i} e={e} />)}</div>; };
 // The big tiles: the last guess, or on a loss with Answer set to "The word", the answer in outlined tiles (as the session page's).
 const PgnLast = ({ s, p, cls = 'pgn-tiles' }) => {
-  const ans = usePgSetting('ans');
+  const ansSet = usePgSetting('ans'); const ans = pgnHere() ? ansSet : 'word';
   if (ans === 'word' && s && s.loss && s.answer) return (
     <div className={cls + ' pgn-ans'} role="img" aria-label={'The word was ' + s.answer}>{s.answer.split('').map((ch, j) => <span key={j} className="wd-t pgn-ans-t" aria-hidden="true">{ch}</span>)}</div>);
   return <div className={cls} role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>;
@@ -174,7 +177,7 @@ const PgnDx = ({ c, sid, v, vc, fresh }) => {
 };
 
 const PgnCard = ({ children, ...props }) => {
-  const dir = usePgSetting('dir'); const gs = useGs();
+  const dirSet = usePgSetting('dir'); const dir = pgnHere() ? dirSet : 'd2'; const gs = useGs();
   if (dir === 'canon') return children;
   // D2a-c: D2 with its tiles centred three ways (Joe), as their own directions so each is one tap away.
   const VC = { d2a: 'tiles', d2b: 'room', d2c: 'big' };
@@ -202,5 +205,6 @@ export const initPlaygroundGuessNow = () => {
       { value: 'fresh', label: 'Not yet played', state: 'free-not-played-today' }] },
     { key: 'ans', label: 'On a loss', options: [{ value: 'last', label: 'Last guess' }, { value: 'word', label: 'The word' }] },
   ] });
-  if (pgActive()) GS_NOW.word = PgnCard;
+  // Joe's pick, on the real library page too: D2, the word on a loss. Under ?pg=guess-now the settings bar picks instead.
+  GS_NOW.word = PgnCard;
 };

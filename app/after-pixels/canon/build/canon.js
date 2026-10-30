@@ -9294,6 +9294,7 @@
     const p = pgrPlay(s);
     return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split-res pgr-split-6" }, /* @__PURE__ */ React$1.createElement(PgrBand, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-split-figs" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(PgrRing, { s, p, label: true })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Hint"), /* @__PURE__ */ React$1.createElement(PgrPlaces, { s, p })))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s, guessesOnly: true }), /* @__PURE__ */ React$1.createElement(PgrAnswer, { s }))));
   };
+  const PgrPicked = ({ s }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(Pgr6a, { s, lift: true }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   const PgrBody = ({ s }) => {
     const dir = usePgSetting("dir");
     if (dir === "canon") return /* @__PURE__ */ React$1.createElement(WdSessBody, { s });
@@ -9319,12 +9320,13 @@
         { value: "live", label: "In progress", state: "session-word-in-progress" }
       ] }
     ] });
-    if (pgActive()) GS_SESSION_BODY.word = PgrBody;
+    GS_SESSION_BODY.word = pgActive() ? PgrBody : PgrPicked;
   };
   const WdNowResult = ({ s }) => {
     const r = wdResult(s);
     return r.tone === "live" ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (r.tone === "ok" ? "ok" : "over") }, r.word);
   };
+  const pgnHere = () => new URLSearchParams(window.location.search).get("pg") === "guess-now";
   const pgnPlay = (s) => {
     const ev = wdRead(s).events;
     const gsv = ev.filter((e) => e.kind === "guess");
@@ -9337,7 +9339,8 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "wd-trail", role: "img", "aria-label": pgnSaid(trail) }, trail.map((e, i) => /* @__PURE__ */ React$1.createElement(WdTr, { key: i, e })));
   };
   const PgnLast = ({ s, p, cls = "pgn-tiles" }) => {
-    const ans = usePgSetting("ans");
+    const ansSet = usePgSetting("ans");
+    const ans = pgnHere() ? ansSet : "word";
     if (ans === "word" && s && s.loss && s.answer) return /* @__PURE__ */ React$1.createElement("div", { className: cls + " pgn-ans", role: "img", "aria-label": "The word was " + s.answer }, s.answer.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t pgn-ans-t", "aria-hidden": "true" }, ch)));
     return /* @__PURE__ */ React$1.createElement("div", { className: cls, role: "img", "aria-label": wdSay(p.last) }, p.last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + p.last.marks[j], "aria-hidden": "true" }, ch)));
   };
@@ -9402,7 +9405,8 @@
     return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn-dx pgn-" + v + (vc ? " pgn-vc-" + vc : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs pgn-dx-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-res" }, !fresh && /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), v === "d3" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-panel" }, facts)) : v === "d2" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-facts" }, facts)) : /* @__PURE__ */ React$1.createElement("div", { className: "pgn-dx-pic" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), facts)), fresh ? /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: edList(gs, "word")[0] }), slot: c.next }) : /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
   const PgnCard = ({ children, ...props }) => {
-    const dir = usePgSetting("dir");
+    const dirSet = usePgSetting("dir");
+    const dir = pgnHere() ? dirSet : "d2";
     useGs();
     if (dir === "canon") return children;
     const VC = { d2a: "tiles", d2b: "room", d2c: "big" };
@@ -9428,7 +9432,7 @@
       ] },
       { key: "ans", label: "On a loss", options: [{ value: "last", label: "Last guess" }, { value: "word", label: "The word" }] }
     ] });
-    if (pgActive()) GS_NOW.word = PgnCard;
+    GS_NOW.word = PgnCard;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;

@@ -109,6 +109,8 @@ const Pgr6aBeside = ({ s }) => { const p = pgrPlay(s); return (
     <div className="pgr-boardcol"><WdBoard s={s} guessesOnly /><PgrAnswer s={s} /></div>
   </div></section>); };
 
+const PgrPicked = ({ s }) => <><Pgr6a s={s} lift /><GsMoves s={s} /></>;
+
 const PgrBody = ({ s }) => {
   const dir = usePgSetting('dir');
   if (dir === 'canon') return <WdSessBody s={s} />;
@@ -132,5 +134,6 @@ export const initPlaygroundGuessResult = () => {
       { value: 'failed', label: 'Failed', state: 'session-word-failed' },
       { value: 'live', label: 'In progress', state: 'session-word-in-progress' }] },
   ] });
-  if (pgActive()) GS_SESSION_BODY.word = PgrBody;
+  // Joe's pick, on the real session page too: 6a Ring lifted. Under ?pg=guess-result the settings bar picks instead.
+  GS_SESSION_BODY.word = pgActive() ? PgrBody : PgrPicked;
 };
