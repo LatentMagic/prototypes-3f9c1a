@@ -953,7 +953,7 @@ rings it as the session page rings the held roll, and a press opens the session 
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .gh { display: none; }
 .dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
 /* Prototype aids and kit scaffolding: base reset, focus rings, placeholder screen, Config pill and modal, States and QA palettes, phone frame, app posture.
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }
@@ -1285,7 +1285,7 @@ input:focus-visible {
 .kit-phone-home { bottom: 0; height: var(--safe-area-inset-bottom); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
 .kit-phone-home::after { content: ''; width: 134px; height: 5px; border-radius: 3px; background: currentColor; }
 /* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, top bar, demo bar, phone-wide press and cover rules.
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* ==== After Pixels product. Values come from the design system's tokens; layout
    adapts to the width it is handed (container queries on .gs-root). ==== */
@@ -1416,7 +1416,7 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 :where(button, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="switch"], [role="tab"], [role="option"], [role="radio"], [role="checkbox"], summary, .gs-host, .mcp-art-host, .mcp-art, .mcp-cover, .gs-hero-field, .mcp-chat, .pg-mini) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 :where(input, textarea, [contenteditable="true"]) { -webkit-user-select: text; user-select: text; }
 /* Player page (app/gs-player.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* player page (app/gs-player.jsx) */
 .pg-mini svg { width: 64px; height: 48px; display: block; }
@@ -1437,7 +1437,7 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 /* KEEP: a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
 .mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }
 /* Library game page: the cards, streak card, now card, Achievements, Your plays, editions list (app/gs-library.jsx, app/gs-casebook.jsx, app/gs-pass-library.jsx, app/gs-editions.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* library game page (app/gs-library.jsx, app/gs-casebook.jsx), option 16 */
 .lb-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.2 var(--font-text); cursor: pointer; }
@@ -1713,7 +1713,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .ed-results .mcp-rows > * { min-height: 0; }
 .ed-results .mcp-rows > * > .mcp-row, .ed-results .mcp-rows > .mcp-row { height: 100%; }
 /* Sign in, username and connect-your-AI screens (app/gs-auth.jsx, app/gs-username.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* auth, connect, checkout */
 .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
@@ -1752,7 +1752,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-field-label { font: 600 14px/1.2 var(--font-text); color: var(--text); }
 .gs-link-slot { min-height: 48px; align-items: center; }
 /* Account and billing screens (app/gs-account.jsx, app/gs-billing.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* account */
 .gs-subbar { justify-content: flex-start; gap: 8px; }
@@ -1778,7 +1778,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-ba-side { display: grid; gap: 2px; padding: 8px; border: 1.5px solid transparent; }
 .gs-ba-side.is-hi { border-color: var(--off-white); }
 /* Site chrome: loaders, load failed, footer, legal, not found, user menu (app/gs-site.jsx, app/gs-parts.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* loader + load failed */
 .gs-full { min-height: 100vh; display: grid; place-items: center; align-content: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 24px; background: var(--page); }
@@ -1866,7 +1866,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 /* Phone account button: a person icon, shaped like the Menu button beside it */
 .mcp-btn.gs-acct-ico { width: 48px; padding-left: 0; padding-right: 0; justify-content: center; }
 /* Session page parts shared by every game (note, figures, share card) and the History page with its play rows (app/gs-session.jsx, app/gs-history.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* session + history */
 .gs-note { padding: 12px; border: 1px solid var(--control-edge); background: var(--card); }
@@ -1923,7 +1923,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 /* KEEP: a list of plays: columns set on the list and shared by every row (subgrid), so results and dates line up; the edition wraps, nothing is cut */
 /* Home: hero, how-it-works band, chat window, Delve tiles, puzzles, hero proposal, game-card rows, Today list, hero cover field, What is new feed.
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* home */
 .gs-home { padding-top: 0; }
@@ -2124,7 +2124,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* Discover and Library (app/gs-discover.jsx) */
 .dc-sec { display: grid; gap: 16px; }
@@ -2216,7 +2216,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art > * { width: auto; height: 100%; top: 0; bottom: auto; left: 50%; translate: -50% 0; }
 }
 /* How it works and the play dialog (app/gs-connect.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* How it works and the play dialog (app/gs-connect.jsx) */
 .hw-head .gs-lead { max-width: none; }
@@ -2238,7 +2238,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .hw-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 }
 /* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* game page: facts, finished play, gaps */
 .gs-gap { color: var(--muted); font-weight: 400; }
@@ -2289,7 +2289,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 .gs-pitch h2 { text-wrap: pretty; }
 /* The Pass: pricing page, comparison, plan picker, Home Pass card, upsell (app/gs-pass-*.jsx, app/gs-billing.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* pass page comparison */
 .gs-cmp { width: 100%; max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
@@ -2398,7 +2398,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-cover-fit.is-wine .mcp-cover-art { background: var(--cover-bg-wine); }
 .gs-cover-fit.is-forest .mcp-cover-art { background: var(--cover-bg-forest); }
 /* Escape: the session page body and the now card (app/gs-escape.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* ---- Escape (1236): the session page's body and the now card (app/gs-escape.jsx) ---- */
 /* the cover's door, shut: its teal leaf and amber knob */
@@ -2484,7 +2484,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 @media (prefers-reduced-motion: reduce) { .es-lane { transition: none; } .es-lane:active { transform: none; } }
 /* Daily Word: the session page board and cover, the now card (app/gs-word.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
 /* KEEP: the card is exactly as wide as what it holds and centred in the column: no stretch of card with nothing in it. */

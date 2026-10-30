@@ -1,5 +1,5 @@
 /* Player page (app/gs-player.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* player page (app/gs-player.jsx) */
 .pg-mini svg { width: 64px; height: 48px; display: block; }

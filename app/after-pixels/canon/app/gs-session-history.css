@@ -1,5 +1,5 @@
 /* Session page parts shared by every game (note, figures, share card) and the History page with its play rows (app/gs-session.jsx, app/gs-history.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* session + history */
 .gs-note { padding: 12px; border: 1px solid var(--control-edge); background: var(--card); }

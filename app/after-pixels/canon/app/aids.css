@@ -1,5 +1,5 @@
 /* Prototype aids and kit scaffolding: base reset, focus rings, placeholder screen, Config pill and modal, States and QA palettes, phone frame, app posture.
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--color-canvas); color: var(--color-fg-1); font-family: var(--font-sans); }

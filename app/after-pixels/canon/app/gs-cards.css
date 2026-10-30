@@ -1,5 +1,5 @@
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* Discover and Library (app/gs-discover.jsx) */
 .dc-sec { display: grid; gap: 16px; }

@@ -1,5 +1,5 @@
 /* Daily Word: the session page board and cover, the now card (app/gs-word.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
 /* KEEP: the card is exactly as wide as what it holds and centred in the column: no stretch of card with nothing in it. */

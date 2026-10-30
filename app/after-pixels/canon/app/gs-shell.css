@@ -1,5 +1,5 @@
 /* Shared product shell: .gs-root, utilities, one-gap rhythm, links, grids, session head, tags, top bar, demo bar, phone-wide press and cover rules.
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* ==== After Pixels product. Values come from the design system's tokens; layout
    adapts to the width it is handed (container queries on .gs-root). ==== */

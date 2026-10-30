@@ -1,5 +1,5 @@
 /* Sign in, username and connect-your-AI screens (app/gs-auth.jsx, app/gs-username.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* auth, connect, checkout */
 .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }

@@ -1,5 +1,5 @@
 /* How it works and the play dialog (app/gs-connect.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* How it works and the play dialog (app/gs-connect.jsx) */
 .hw-head .gs-lead { max-width: none; }

@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — Home (screen 1). GsHome is replaced by gs-pass-home.jsx (CprHome); GsWhatsNew, GsFeature and
-// GS_HOME_GAMES are still read. The Pass page is in gs-billing.jsx.
+// GS_HOME_GAMES are still read. The Pass page is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
 import { DS } from './gs-data.jsx';

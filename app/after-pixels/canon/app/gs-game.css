@@ -1,5 +1,5 @@
 /* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* game page: facts, finished play, gaps */
 .gs-gap { color: var(--muted); font-weight: 400; }

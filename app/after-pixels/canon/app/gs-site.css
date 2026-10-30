@@ -1,5 +1,5 @@
 /* Site chrome: loaders, load failed, footer, legal, not found, user menu (app/gs-site.jsx, app/gs-parts.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* loader + load failed */
 .gs-full { min-height: 100vh; display: grid; place-items: center; align-content: center; padding: calc(24px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 16px 24px; background: var(--page); }

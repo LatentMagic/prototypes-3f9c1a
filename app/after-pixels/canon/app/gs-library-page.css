@@ -1,5 +1,5 @@
 /* Library game page: the cards, streak card, now card, Achievements, Your plays, editions list (app/gs-library.jsx, app/gs-casebook.jsx, app/gs-pass-library.jsx, app/gs-editions.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* library game page (app/gs-library.jsx, app/gs-casebook.jsx), option 16 */
 .lb-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: 0; padding: 0; color: var(--text); font: 600 16px/1.2 var(--font-text); cursor: pointer; }

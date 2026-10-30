@@ -1,5 +1,5 @@
 /* The Pass: pricing page, comparison, plan picker, Home Pass card, upsell (app/gs-pass-*.jsx, app/gs-billing.jsx).
-   Linked from index.html in the order listed there; later files win ties. */
+   Imported by canon.css in the order listed there; later files win ties. */
 
 /* pass page comparison */
 .gs-cmp { width: 100%; max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
