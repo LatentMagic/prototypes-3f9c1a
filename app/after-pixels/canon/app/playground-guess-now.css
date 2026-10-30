@@ -79,28 +79,27 @@
   .pgn-d1 .pgn-dx-head, .pgn-d1 .pgn-dx-res, .pgn-d1 .pgn-dx-pic { grid-area: all; }
   .pgn-d1 .pgn-dx-res { justify-self: end; }
   .pgn-d1 .pgn-dx-pic { --t: 52px; }
-  /* Joe finds it high: the setting lowers the picture by 0-24px to find the point that reads centred. */
-  .pgn-d1 .pgn-dx-pic { transform: translateY(var(--pgn-drop, 0px)); }
 }
-/* D2: the tiles, then the ring and the hint box as one small centred row under them. Tightened (Joe: too much padding): from
-   600px the picture shares the head's row, centred on the card with the title and result in its top corners (as D1), so the card
-   is no taller than the streak card beside it; the gaps are trimmed and the ring is 36px. */
-.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 10px; }
-.pgn-dx-facts { display: flex; align-items: center; gap: 16px; }
-.pgn-d2 .pgn-ring { --r: 36px; }
-.pgn-d2 .pgn-ring-n { font-size: 14px; }
-.pgn-d2 .pgn-dx-body { row-gap: 8px; }
+/* D2: the tiles, then the ring and the hint box as one small centred row under them (the original D2, restored: Joe). */
+.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
+.pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
+.pgn-d2 .pgn-ring { --r: 40px; }
+.pgn-d2 .pgn-ring-n { font-size: 15px; }
+/* D2a-c keep the tightened D2: from 600px the picture shares the head's row, centred on the card with the title and result in
+   its top corners, the tiles 48px and the ring 30px, so the card is no taller than the streak card beside it. */
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { gap: 10px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-facts { gap: 16px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-ring { --r: 36px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-ring-n { font-size: 14px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-body { row-gap: 8px; }
 @container pgndx (min-width: 600px) {
-  .pgn-d2 .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
-  .pgn-d2 .pgn-dx-head, .pgn-d2 .pgn-dx-res, .pgn-d2 .pgn-dx-pic { grid-area: all; }
-  .pgn-d2 .pgn-dx-res { justify-self: end; }
-  /* KEEP (Joe): the picture is centred in the card's height, never pinned to its top: the tiles a size down (48px), the ring 30px
-     and the action row's top padding dropped, so there is room above and below the picture inside the streak card's height. */
-  .pgn-d2 .pgn-dx-pic { --t: 48px; gap: 8px; }
-  .pgn-d2 .pgn-ring { --r: 30px; }
-  .pgn-d2 .pgn-ring-n { font-size: 13px; }
-  .pgn-d2 .lb-foot { padding-top: 0; }
-  .pgn-d2 .pgn-dx-pic { transform: translateY(-4px); }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-head, .pgn-d2[class*='pgn-vc-'] .pgn-dx-res, .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { grid-area: all; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-res { justify-self: end; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { --t: 48px; gap: 8px; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-ring { --r: 30px; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-ring-n { font-size: 13px; }
+  .pgn-d2[class*='pgn-vc-'] .lb-foot { padding-top: 0; }
 }
 /* D2: the ring and the hint box either side of the card's centre line, so the ring never shifts as the hint's words change. */
 .pgn-d2 .pgn-dx-facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
