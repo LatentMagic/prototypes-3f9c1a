@@ -1,0 +1,94 @@
+/* PLAYGROUND, not canon: Chain's card, low fi (app/playground-chain-lofi.jsx). Builds on gs-delve.css's card (.dv2) and result
+   band (.dv7r-band), and gs-word.css's dashed edge (--wd-dash). Low fi: greys and placeholder drawing; green only where found,
+   amber only where given away. */
+
+/* ---- Shared: Guess 6a lifted. Phone: the board, then the panel under a rule. From a 672px card: side by side, centred, the
+   panel ruled off at its left and lifted level with the word on top. ---- */
+.chl-card { --g: 4px; --t: min(40px, calc((100cqi - 6 * var(--g)) / 7)); gap: 24px; }
+@container dv2 (min-width: 672px) { .chl-card { --t: 44px; } }
+.chl-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.chl-say { font: 600 13px/1.2 var(--font-text); color: var(--muted); text-align: center; }
+.chl-duo { display: grid; gap: 24px; justify-items: center; min-width: 0; }
+.chl-panel { display: grid; justify-items: center; width: 100%; padding-top: 20px; border-top: 1px solid var(--line); }
+.chl-prow { display: grid; justify-items: center; align-content: start; gap: 12px; }
+@container dv2 (min-width: 672px) {
+  .chl-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }
+  .chl-panel { align-self: stretch; align-content: center; width: auto; padding: 0 0 0 64px; border-top: 0; border-left: 1px solid var(--line); margin-top: calc(-1 * (29px + 24px)); }
+  .chl-wide .chl-duo { grid-template-columns: minmax(0, auto) auto; column-gap: 48px; }
+  .chl-wide .chl-panel { padding-left: 48px; }
+}
+
+/* Tiles: an end filled light; shown letters filled grey; the rest of a found word outlined green; given away outlined amber;
+   "more" a dashed tile (drawn, never a dashed border: iPhone Safari drops the side dashes). */
+.chl-tiles { display: inline-flex; gap: var(--g); }
+.chl-t { box-sizing: border-box; display: grid; place-items: center; width: var(--t); height: var(--t); font: 700 calc(var(--t) * .5)/1 var(--font-heading); text-transform: uppercase; }
+.chl-t.is-end { background: var(--off-white); color: var(--page); }
+.chl-t.is-shown { background: #918B80; color: var(--page); }
+.chl-t.is-found { border: 2px solid var(--success); color: var(--text); }
+.chl-t.is-given { border: 2px solid var(--warning); color: var(--warning); }
+.chl-t.is-more { background: var(--wd-dash); }
+
+/* A guess's link: right closed, wrong open, a near miss half closed, the give-away broken and amber. */
+.chl-loop { fill: none; stroke-width: 3; stroke: #918B80; }
+.chl-loop.is-right { stroke: var(--text); }
+.chl-loop.is-given { stroke: var(--warning); }
+
+/* ---- 1. Linked rows ---- */
+.chl1-board { display: grid; justify-items: center; }
+.chl1-row { display: flex; justify-content: center; }
+.chl1-joint { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; column-gap: 8px; width: 100%; height: 22px; }
+.chl1-joint svg { grid-column: 2; }
+.chl1-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
+.chl1-joint span { grid-column: 3; font: 400 12px/1 var(--font-text); color: var(--muted); white-space: nowrap; }
+.chl1-hang { display: block; }
+
+/* ---- 2. The chain across ---- */
+.chl2-chain { --t: 26px; --g: 3px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 16px 22px; max-width: 100%; }
+.chl2-cell { display: grid; justify-items: center; gap: 2px; }
+.chl2-pill { position: relative; padding: 8px 14px; border: 3px solid #918B80; border-radius: 999px; }
+.chl2-pill.is-end { border-color: var(--off-white); }
+.chl2-pill.is-given { border-color: var(--warning); }
+.chl2-pill.is-hidden { border-color: var(--line); }
+/* The link that joins a pill to the next, straddling the gap. */
+.chl2-cell:not(:last-child) .chl2-pill::after { content: ''; position: absolute; top: 50%; right: -17px; width: 18px; height: 10px; margin-top: -8px;
+  border: 3px solid #918B80; border-radius: 999px; }
+.chl2-hang { display: grid; justify-items: start; }
+.chl2-drop { display: flex; align-items: center; gap: 4px; font: 600 11px/1 var(--font-text); letter-spacing: .04em; color: var(--muted); }
+.chl2-drop.is-given span { color: var(--warning); }
+.chl2-count { display: grid; justify-items: center; gap: 4px; }
+.chl2-count b { font: 700 44px/1 var(--font-heading); color: var(--text); }
+.chl2-count span { font: 600 11px/1 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+@container dv2 (min-width: 672px) { .chl2-chain { --t: 30px; } }
+
+/* ---- 3. Inward. Phone: one column, the ends anchored top and bottom. From a 672px card: one row, the ends at either side. ---- */
+.chl3-line { display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; list-style: none; }
+.chl3-bar { width: 2px; height: 12px; background: #918B80; }
+.chl3-w { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px; border: 2px solid #918B80; font: 700 17px/1 var(--font-heading); letter-spacing: .06em; }
+.chl3-w.is-end { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.chl3-w.is-found b { color: var(--text); }
+.chl3-w.is-given { border-color: var(--warning); color: var(--warning); }
+.chl3-w.is-hidden { border-color: var(--line); color: var(--muted); }
+.chl3-w.is-open { border-color: var(--text); color: var(--text); }
+.chl3-anchor { width: 8px; height: 8px; background: var(--page); }
+.chl3-rank { display: inline-flex; align-items: center; gap: 2px; min-width: 22px; font: 700 12px/1 var(--font-text); color: var(--muted); }
+.chl3-w.is-open .chl3-rank { color: var(--text); text-transform: uppercase; letter-spacing: .04em; font-size: 10px; }
+.chl3-arrow { fill: none; stroke: currentColor; stroke-width: 2; transform: rotate(90deg); }
+.chl3-arrow.is-from-r { transform: rotate(-90deg); }
+@container dv2 (min-width: 672px) {
+  .chl3-line { flex-direction: row; flex-wrap: wrap; justify-content: center; row-gap: 8px; }
+  .chl3-bar { width: 12px; height: 2px; }
+  .chl3-w { flex-direction: column; gap: 4px; padding: 6px 10px; font-size: 15px; }
+  .chl3-arrow { transform: none; }
+  .chl3-arrow.is-from-r { transform: rotate(180deg); }
+}
+.chl3-ring { position: relative; width: 112px; height: 112px; }
+.chl3-ring svg { display: block; width: 100%; height: 100%; }
+.chl3-out { fill: none; stroke-width: 14; stroke-linecap: round; stroke: #918B80; }
+.chl3-in, .chl3-cut { fill: none; stroke-width: 6; stroke-linecap: round; stroke: var(--card); }
+.chl3-cut { stroke-width: 18; stroke-linecap: butt; }
+.chl3-cut.is-half { stroke-width: 7; }
+.chl3-link.is-right .chl3-out { stroke: var(--text); }
+.chl3-link.is-given .chl3-out { stroke: var(--warning); }
+.chl3-ring-n { position: absolute; inset: 0; display: grid; place-content: center; }
+.chl3-ring-n b { font: 700 32px/1 var(--font-heading); color: var(--text); }
+@container dv2 (min-width: 672px) { .chl3-ring { width: 128px; height: 128px; } }
