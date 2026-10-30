@@ -14,6 +14,8 @@
 // ============================================================================
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+// The design system's component bundle sets window.MCPGameStoreDesignSystem_ef1abd; it must run before any file reads DS.
+import '../../design-system/_ds_bundle.js';
 import './canon.css';
 import './primitives.jsx';
 import './gs-data.jsx';

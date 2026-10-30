@@ -1,5 +1,7871 @@
-(function(React2, client) {
+(function(React$1, client) {
   "use strict";
+  (() => {
+    const __ds_ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
+    const __ds_scope = {};
+    __ds_ns.__errors = __ds_ns.__errors || [];
+    try {
+      (() => {
+        function StatRow({
+          items = [],
+          grid = false,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("dl", {
+            className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(),
+            "aria-label": label,
+            style: grid ? {
+              "--cols": items.length === 3 ? 3 : Math.min(items.length, 2)
+            } : void 0
+          }, items.map((s, i) => /* @__PURE__ */ React.createElement("div", {
+            key: i,
+            className: "mcp-cb-stat"
+          }, /* @__PURE__ */ React.createElement("dt", null, s.label), /* @__PURE__ */ React.createElement("dd", null, s.value))));
+        }
+        Object.assign(__ds_scope, { StatRow });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/StatRow.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function StatusTag({
+          tone = "live",
+          label,
+          children,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("span", {
+            className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim()
+          }, label ?? children);
+        }
+        Object.assign(__ds_scope, { StatusTag });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/StatusTag.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const TONE = {
+          hit: "won",
+          weak: "warn",
+          miss: "lost"
+        };
+        const WORD = {
+          hit: "Hit",
+          weak: "Weak hit",
+          miss: "Miss"
+        };
+        function RollLine({
+          label,
+          die = "d20",
+          roll,
+          mod = 0,
+          total,
+          target,
+          result = "hit",
+          outcome,
+          className = ""
+        }) {
+          const sum = total ?? roll + mod;
+          const text = outcome || WORD[result] || "";
+          const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
+          return /* @__PURE__ */ React.createElement("p", {
+            className: ("mcp-cb mcp-cb-roll " + className).trim()
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-sr"
+          }, say), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-roll-in",
+            "aria-hidden": "true"
+          }, label && /* @__PURE__ */ React.createElement("b", null, label), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-die"
+          }, die), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-pip"
+          }, roll), mod !== 0 && /* @__PURE__ */ React.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React.createElement("span", null, "= ", /* @__PURE__ */ React.createElement("b", null, sum)), target != null && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-roll-vs"
+          }, "vs ", target)), /* @__PURE__ */ React.createElement(__ds_scope.StatusTag, {
+            tone: TONE[result] || "idle",
+            className: "mcp-cb-roll-out"
+          }, text));
+        }
+        Object.assign(__ds_scope, { RollLine });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/RollLine.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const MARK = {
+          h: "hit",
+          n: "near",
+          x: "miss"
+        };
+        const SAY = {
+          hit: "right place",
+          near: "in it, wrong place",
+          miss: "not in it",
+          filled: ""
+        };
+        function TileGrid({
+          rows = [],
+          length,
+          count,
+          label,
+          className = ""
+        }) {
+          const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
+          const all = [...rows];
+          while (count && all.length < count) all.push({
+            letters: ""
+          });
+          const grid = all.map((r) => Array.from({
+            length: n
+          }, (_, i) => {
+            const c = ((r.letters || "")[i] || " ").trim();
+            const s = c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+            return {
+              c,
+              s
+            };
+          }));
+          const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty") ? " empty" : ": " + row.map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-tiles " + className).trim(),
+            role: "img",
+            "aria-label": say
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""),
+            style: {
+              "--n": n
+            }
+          }, grid.map((row, i) => /* @__PURE__ */ React.createElement("div", {
+            key: i,
+            className: "mcp-cb-tiles-row"
+          }, row.map((x, k) => /* @__PURE__ */ React.createElement("span", {
+            key: k,
+            className: "mcp-cb-tile is-" + x.s
+          }, x.c))))));
+        }
+        Object.assign(__ds_scope, { TileGrid });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/TileGrid.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function Track({
+          items = [],
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-track " + className).trim()
+          }, items.map((t, i) => {
+            const max = t.max || 6;
+            const v = Math.max(0, Math.min(max, t.value || 0));
+            const steps = t.steps ?? max <= 12;
+            return /* @__PURE__ */ React.createElement("div", {
+              key: i,
+              className: "mcp-cb-track-row is-" + (t.tone || "progress"),
+              role: "meter",
+              "aria-label": t.label,
+              "aria-valuemin": 0,
+              "aria-valuemax": max,
+              "aria-valuenow": v,
+              "aria-valuetext": v + " of " + max
+            }, /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-track-l"
+            }, t.label), steps ? /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-steps",
+              "aria-hidden": "true"
+            }, Array.from({
+              length: max
+            }, (_, k) => /* @__PURE__ */ React.createElement("i", {
+              key: k,
+              className: k < v ? "is-on" : void 0
+            }))) : /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-bar",
+              "aria-hidden": "true"
+            }, /* @__PURE__ */ React.createElement("i", {
+              style: {
+                width: v / max * 100 + "%"
+              }
+            })), /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-track-n"
+            }, v, " of ", max));
+          }));
+        }
+        Object.assign(__ds_scope, { Track });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/Track.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function cbPress(on, props, children) {
+          if (on) return React.createElement("button", {
+            type: "button",
+            onClick: on,
+            ...props
+          }, children);
+          const {
+            ["aria-pressed"]: _p,
+            disabled: _d,
+            ...rest
+          } = props;
+          return React.createElement("span", rest, children);
+        }
+        function cbRich(t) {
+          if (typeof t !== "string") return t;
+          return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React.createElement("b", {
+            key: i
+          }, s) : s);
+        }
+        Object.assign(__ds_scope, { cbPress, cbRich });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/chat-press.js", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function ClueCards({
+          groups = [],
+          newLabel = "New",
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim()
+          }, groups.map((g, i) => /* @__PURE__ */ React.createElement("section", {
+            key: i,
+            className: "mcp-cb-clue",
+            "aria-label": g.kind
+          }, /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-clue-h"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-kind"
+          }, g.kind), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cb-clue-n"
+          }, g.facts.length)), /* @__PURE__ */ React.createElement("ul", null, g.facts.map((f, k) => {
+            const t = typeof f === "string" ? {
+              text: f
+            } : f;
+            return /* @__PURE__ */ React.createElement("li", {
+              key: k,
+              className: t.new ? "is-new" : void 0
+            }, /* @__PURE__ */ React.createElement("span", null, __ds_scope.cbRich(t.text)), t.new && /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-new"
+            }, newLabel));
+          })))));
+        }
+        Object.assign(__ds_scope, { ClueCards });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/ClueCards.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function FactRows({
+          items = [],
+          plain = false,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("dl", {
+            className: ("mcp-cb mcp-cb-facts" + (plain ? "" : " mcp-cb-fence") + " " + className).trim(),
+            "aria-label": label
+          }, items.map((f, i) => /* @__PURE__ */ React.createElement("div", {
+            key: i
+          }, /* @__PURE__ */ React.createElement("dt", null, f.label), /* @__PURE__ */ React.createElement("dd", null, __ds_scope.cbRich(f.value)))));
+        }
+        Object.assign(__ds_scope, { FactRows });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/FactRows.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const TONES = ["amber", "teal", "orange", "lilac"];
+        function WordBoard({
+          words = [],
+          solved = [],
+          picked = [],
+          cols = 4,
+          onPick,
+          label,
+          className = ""
+        }) {
+          const on = new Set(picked.map((w) => String(w).toUpperCase()));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(),
+            style: {
+              "--cols": cols
+            },
+            role: "group",
+            "aria-label": label || "Word board"
+          }, solved.map((g, i) => /* @__PURE__ */ React.createElement("div", {
+            key: "s" + i,
+            className: "mcp-cb-band is-" + (g.tone || TONES[i % 4])
+          }, /* @__PURE__ */ React.createElement("b", null, g.label), /* @__PURE__ */ React.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cb-chips"
+          }, words.map((w) => {
+            const p = on.has(w.toUpperCase());
+            return __ds_scope.cbPress(onPick && (() => onPick(w)), {
+              key: w,
+              className: "mcp-cb-chip" + (p ? " is-picked" : ""),
+              "aria-pressed": p
+            }, w);
+          })));
+        }
+        Object.assign(__ds_scope, { WordBoard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/WordBoard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function Loader({
+          size = 64,
+          label = "Loading"
+        }) {
+          return /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-loader",
+            role: "status",
+            "aria-label": label,
+            style: {
+              width: size,
+              height: size
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-loader-m",
+            style: {
+              zoom: size / 120
+            }
+          }, /* @__PURE__ */ React.createElement("i", {
+            className: "tl"
+          }), /* @__PURE__ */ React.createElement("i", {
+            className: "tr"
+          }), /* @__PURE__ */ React.createElement("i", {
+            className: "br"
+          }), /* @__PURE__ */ React.createElement("i", {
+            className: "bl"
+          })));
+        }
+        Object.assign(__ds_scope, { Loader });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/feedback/Loader.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function ProgressBar({
+          label,
+          value = 0,
+          max = 100,
+          showValue = true
+        }) {
+          const pct = Math.max(0, Math.min(100, Math.round(value / max * 100)));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-prog"
+          }, (label || showValue) && /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-prog-top"
+          }, /* @__PURE__ */ React.createElement("span", null, label), showValue && /* @__PURE__ */ React.createElement("span", null, pct, "%")), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-track",
+            role: "progressbar",
+            "aria-valuenow": pct,
+            "aria-valuemin": 0,
+            "aria-valuemax": 100,
+            "aria-label": label || "Progress"
+          }, /* @__PURE__ */ React.createElement("i", {
+            style: {
+              width: pct + "%"
+            }
+          })));
+        }
+        Object.assign(__ds_scope, { ProgressBar });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/feedback/ProgressBar.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function Checkbox({
+          label,
+          checked,
+          defaultChecked,
+          onChange,
+          className = "",
+          ...rest
+        }) {
+          return /* @__PURE__ */ React.createElement("label", {
+            className: ("mcp-check " + className).trim()
+          }, /* @__PURE__ */ React.createElement("input", _extends({
+            type: "checkbox",
+            checked,
+            defaultChecked,
+            onChange
+          }, rest)), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-box"
+          }, /* @__PURE__ */ React.createElement("svg", {
+            viewBox: "0 0 24 24",
+            "aria-hidden": "true"
+          }, /* @__PURE__ */ React.createElement("g", {
+            fill: "none",
+            stroke: "currentColor",
+            strokeWidth: "2.25",
+            strokeLinecap: "square",
+            strokeLinejoin: "miter"
+          }, /* @__PURE__ */ React.createElement("path", {
+            d: "M4.5 12.5L9.5 17.5L19.5 6.5"
+          })))), /* @__PURE__ */ React.createElement("span", null, label));
+        }
+        Object.assign(__ds_scope, { Checkbox });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/forms/Checkbox.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const ART = {
+          "daily-puzzles": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
+          "daily-puzzles-diagonal": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="64" width="22" height="22" fill="#328A88"/></svg>',
+          "weekly-interrogation": '<svg viewBox="0 0 171 108" preserveAspectRatio="xMidYMid slice"><rect width="171" height="108" fill="#421A28"/><circle cx="72" cy="54" r="36" fill="none" stroke="#D66847" stroke-width="14"/><rect x="104" y="20" width="14" height="68" fill="#F2EBE0"/><rect x="104" y="20" width="14" height="22" fill="#E5A63B"/></svg>',
+          "dungeon-quest": '<svg viewBox="0 0 171 108" preserveAspectRatio="xMidYMid slice"><rect width="171" height="108" fill="#163328"/><path d="M20,108 L62,36 L104,108Z" fill="#E5A63B"/><path d="M66,108 L112,22 L158,108Z" fill="#A390B2"/><path d="M66,108 L85,72.5 L104,108Z" fill="#328A88"/></svg>',
+          "dungeon-quest-single": '<svg viewBox="0 0 171 108" preserveAspectRatio="xMidYMid slice"><rect width="171" height="108" fill="#163328"/><path d="M66,108 L112,22 L158,108Z" fill="#A390B2"/></svg>'
+        };
+        const META = {
+          "daily-puzzles": ["indigo", "centre"],
+          "daily-puzzles-diagonal": ["indigo", "centre"],
+          "weekly-interrogation": ["wine", "centre"],
+          "dungeon-quest": ["forest", "bottom"],
+          "dungeon-quest-single": ["forest", "bottom"]
+        };
+        function Cover({
+          name,
+          art,
+          src,
+          children,
+          onClick,
+          fill = false,
+          ground,
+          extend,
+          className = ""
+        }) {
+          const m = META[art] || [];
+          const g = ground || m[0] || "indigo";
+          const x = extend || m[1];
+          if (fill && !x && typeof console !== "undefined") console.warn('Cover: fill needs the asset to declare extend ("bottom" or "centre").');
+          const cls = "mcp-cover" + (fill ? " is-fill is-" + g + " from-" + (x || "centre") : "") + (className ? " " + className : "");
+          const inner = children ? children : src ? /* @__PURE__ */ React.createElement("img", {
+            src,
+            alt: ""
+          }) : ART[art] ? /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "contents"
+            },
+            dangerouslySetInnerHTML: {
+              __html: ART[art]
+            }
+          }) : null;
+          const Tag = onClick ? "button" : "figure";
+          return /* @__PURE__ */ React.createElement(Tag, {
+            className: cls,
+            onClick,
+            type: onClick ? "button" : void 0,
+            style: onClick ? {
+              background: "none",
+              border: 0,
+              padding: 0,
+              cursor: "pointer",
+              textAlign: "left",
+              color: "inherit",
+              font: "inherit"
+            } : void 0
+          }, !children && !src && ART[art] ? /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cover-art",
+            "aria-hidden": "true",
+            dangerouslySetInnerHTML: {
+              __html: ART[art]
+            }
+          }) : /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cover-art",
+            "aria-hidden": "true"
+          }, inner), name && (onClick ? /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-cover-name"
+          }, name) : /* @__PURE__ */ React.createElement("figcaption", {
+            className: "mcp-cover-name"
+          }, name)));
+        }
+        Object.assign(__ds_scope, { Cover });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/media/Cover.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const dg = () => /* @__PURE__ */ React.createElement("div", {
+          className: "mcp-art-dg"
+        }, [0, 1, 2, 3].map((r) => /* @__PURE__ */ React.createElement("div", {
+          key: r
+        }, [0, 1, 2, 3].map((c) => /* @__PURE__ */ React.createElement("b", {
+          key: c,
+          style: {
+            "--s": (r + 3 - c) * 20
+          }
+        })))));
+        const cb = () => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-cb-bar mcp-art-cb-1"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-cb-bar mcp-art-cb-2"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-cb-bar mcp-art-cb-3"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-cb-sun"
+        }));
+        const hu = () => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-hu-sun"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-hu-peak"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-hu-teal"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-hu-cream"
+        }));
+        const dm = () => /* @__PURE__ */ React.createElement("div", {
+          className: "mcp-art-st"
+        }, /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dm-ring"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dm-bar"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dm-cap"
+        }));
+        const dw = () => /* @__PURE__ */ React.createElement("div", {
+          className: "mcp-art-st"
+        }, /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dw mcp-art-dw-1"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dw mcp-art-dw-2"
+        }), /* @__PURE__ */ React.createElement("i", {
+          className: "mcp-art-dw mcp-art-dw-3"
+        }));
+        const PIECES = {
+          groups: {
+            body: dg
+          },
+          casebook: {
+            body: cb
+          },
+          hunter: {
+            body: hu,
+            bg: "forest"
+          },
+          mystery: {
+            body: dm,
+            bg: "wine"
+          },
+          word: {
+            body: dw,
+            bg: "forest"
+          }
+        };
+        const RATIO = {
+          square: "mcp-art-1",
+          landscape: "mcp-art-43",
+          wide: "mcp-art-3"
+        };
+        function GameArt({
+          art,
+          shape = "landscape",
+          className = ""
+        }) {
+          const p = PIECES[art];
+          if (!p) return null;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-art " + RATIO[shape] + (p.bg ? " is-" + p.bg + " " : " ") + className).trim(),
+            "aria-hidden": "true"
+          }, p.body());
+        }
+        Object.assign(__ds_scope, { GameArt });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/media/GameArt.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const A = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
+        const LINE = {
+          search: "<g " + A + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
+          back: "<g " + A + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
+          close: "<g " + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
+          lock: "<g " + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
+          play: "<g " + A + '><path d="M7 4L19 12L7 20Z"/></g>',
+          pause: "<g " + A + '><path d="M8 5V19M16 5V19"/></g>',
+          settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
+          mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
+          logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
+          card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>'
+        };
+        const UI = {
+          check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
+          warn: "<g " + A + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
+          error: "<g " + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
+          down: "<g " + A + '><path d="M5 9L12 16L19 9"/></g>',
+          send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
+          next: "<g " + A + '><path d="M9 5L16 12L9 19"/></g>',
+          out: "<g " + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+          share: "<g " + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+          list: "<g " + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
+        };
+        const ICON_NAMES = [...Object.keys(LINE), ...Object.keys(UI)];
+        function Icon2({
+          name,
+          size = 20,
+          className = "",
+          style,
+          label
+        }) {
+          const body = UI[name] || LINE[name];
+          if (!body) return null;
+          return /* @__PURE__ */ React.createElement("svg", {
+            className: ("mcp-ico " + className).trim(),
+            viewBox: "0 0 24 24",
+            width: size,
+            height: size,
+            style: {
+              width: size,
+              height: size,
+              ...style
+            },
+            role: label ? "img" : void 0,
+            "aria-label": label,
+            "aria-hidden": label ? void 0 : true,
+            focusable: "false",
+            dangerouslySetInnerHTML: {
+              __html: body
+            }
+          });
+        }
+        Object.assign(__ds_scope, { ICON_NAMES, Icon: Icon2 });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/media/Icon.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function ChoiceButtons({
+          items = [],
+          picked,
+          onChoose,
+          label,
+          className = ""
+        }) {
+          const done = picked != null;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-choices " + className).trim(),
+            role: "group",
+            "aria-label": label || "Moves"
+          }, items.map((it, i) => {
+            const t = typeof it === "string" ? it : it.label;
+            const p = done && (picked === i || picked === t);
+            return __ds_scope.cbPress(onChoose && !done && (() => onChoose(t, i)), {
+              key: i,
+              className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""),
+              "aria-pressed": p
+            }, /* @__PURE__ */ React.createElement(React.Fragment, null, p && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: "check",
+              size: 14
+            }), t));
+          }));
+        }
+        Object.assign(__ds_scope, { ChoiceButtons });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/ChoiceButtons.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function ConfirmCard({
+          title,
+          question,
+          facts,
+          note,
+          confirm = "Confirm",
+          cancel = "Cancel",
+          answer,
+          onConfirm,
+          onCancel,
+          className = ""
+        }) {
+          const done = answer === "confirm" || answer === "cancel";
+          const btn = (k, text, on, main) => {
+            const p = answer === k;
+            return __ds_scope.cbPress(!done && on, {
+              className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""),
+              "aria-pressed": p
+            }, /* @__PURE__ */ React.createElement(React.Fragment, null, p && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: "check",
+              size: 14
+            }), text));
+          };
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(),
+            role: "group",
+            "aria-label": title || "Confirm"
+          }, title && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-title"
+          }, title), question && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-q"
+          }, __ds_scope.cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React.createElement(__ds_scope.FactRows, {
+            items: facts,
+            plain: true
+          }), note && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-note"
+          }, note), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cb-pair"
+          }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+        }
+        Object.assign(__ds_scope, { ConfirmCard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/ConfirmCard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function EntityCards({
+          title,
+          items = [],
+          onPick,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-ents " + className).trim(),
+            role: "group",
+            "aria-label": title || "In the game"
+          }, title && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-kind"
+          }, title), /* @__PURE__ */ React.createElement("ul", {
+            className: "mcp-cb-ents-list"
+          }, items.map((it, i) => {
+            const pic = it.pic ? /* @__PURE__ */ React.createElement("img", {
+              src: it.pic,
+              alt: ""
+            }) : it.icon ? /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: it.icon,
+              size: 16
+            }) : null;
+            return /* @__PURE__ */ React.createElement("li", {
+              key: i
+            }, __ds_scope.cbPress(onPick && (() => onPick(it, i)), {
+              className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""),
+              "aria-pressed": it.state === "picked"
+            }, /* @__PURE__ */ React.createElement(React.Fragment, null, pic && /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"),
+              "aria-hidden": "true"
+            }, pic), /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-ent-t"
+            }, /* @__PURE__ */ React.createElement("b", null, it.name), it.line && /* @__PURE__ */ React.createElement("small", null, it.line)))));
+          })));
+        }
+        Object.assign(__ds_scope, { EntityCards });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/EntityCards.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const Art = ({
+          art,
+          icon
+        }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React.createElement("span", {
+          className: "mcp-cb-mart",
+          "aria-hidden": "true",
+          dangerouslySetInnerHTML: {
+            __html: art
+          }
+        }) : /* @__PURE__ */ React.createElement("span", {
+          className: "mcp-cb-mart",
+          "aria-hidden": "true"
+        }, /* @__PURE__ */ React.createElement("img", {
+          src: art,
+          alt: ""
+        })) : /* @__PURE__ */ React.createElement("span", {
+          className: "mcp-cb-mart" + (art ? "" : " is-icon"),
+          "aria-hidden": "true"
+        }, art || icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+          name: icon,
+          size: 18
+        }));
+        function MenuRows({
+          items = [],
+          search,
+          onGo,
+          onSearch,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-fence mcp-cb-menu " + className).trim(),
+            role: "group",
+            "aria-label": label || "Menu"
+          }, search && /* @__PURE__ */ React.createElement("label", {
+            className: "mcp-cb-search"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "search",
+            size: 16
+          }), /* @__PURE__ */ React.createElement("input", {
+            type: "search",
+            placeholder: search,
+            "aria-label": search,
+            readOnly: !onSearch,
+            tabIndex: onSearch ? void 0 : -1,
+            onChange: onSearch ? (e) => onSearch(e.target.value) : void 0
+          })), /* @__PURE__ */ React.createElement("ul", null, items.map((it, i) => {
+            const act = typeof it.action === "string" ? {
+              label: it.action
+            } : it.action;
+            const st = typeof it.status === "string" ? {
+              label: it.status,
+              tone: "idle"
+            } : it.status;
+            return /* @__PURE__ */ React.createElement("li", {
+              key: i,
+              className: "mcp-cb-mrow"
+            }, /* @__PURE__ */ React.createElement(Art, {
+              art: it.art,
+              icon: it.icon
+            }), /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-mtext"
+            }, /* @__PURE__ */ React.createElement("b", null, it.name), it.line && /* @__PURE__ */ React.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-mmeta"
+            }, st && /* @__PURE__ */ React.createElement(__ds_scope.StatusTag, {
+              tone: st.tone || "idle"
+            }, st.label), it.meta && /* @__PURE__ */ React.createElement("span", null, it.meta))), act && __ds_scope.cbPress(onGo && (() => onGo(it, i)), {
+              className: "mcp-cb-go"
+            }, /* @__PURE__ */ React.createElement(React.Fragment, null, act.icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: act.icon,
+              size: 16
+            }), /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-go-t"
+            }, act.label))));
+          })));
+        }
+        Object.assign(__ds_scope, { MenuRows });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/MenuRows.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function NavButtons({
+          items = [],
+          stack = false,
+          onGo,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-nav" + (stack ? " is-stack" : "") + " " + className).trim(),
+            role: "group",
+            "aria-label": label || "Go to"
+          }, items.map((it, i) => {
+            const cls = "mcp-cb-go" + (it.out ? " is-out" : "");
+            const body = /* @__PURE__ */ React.createElement(React.Fragment, null, it.icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: it.icon,
+              size: 16
+            }), /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-cb-go-t"
+            }, it.label, it.out && /* @__PURE__ */ React.createElement("small", null, it.note || "Opens in your browser")), it.out && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: "out",
+              size: 16,
+              className: "mcp-cb-go-out"
+            }));
+            if (it.href) return /* @__PURE__ */ React.createElement("a", {
+              key: i,
+              className: cls,
+              href: it.href,
+              target: it.out ? "_blank" : void 0,
+              rel: it.out ? "noopener" : void 0
+            }, body);
+            return __ds_scope.cbPress(onGo && (() => onGo(it, i)), {
+              key: i,
+              className: cls
+            }, body);
+          }));
+        }
+        Object.assign(__ds_scope, { NavButtons });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/NavButtons.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function ResultCard({
+          title,
+          status,
+          line,
+          stats = [],
+          actions = [],
+          onGo,
+          className = ""
+        }) {
+          const st = typeof status === "string" ? {
+            label: status,
+            tone: "won"
+          } : status;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(),
+            role: "group",
+            "aria-label": title || "Result"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-cb-result-head"
+          }, title && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-title"
+          }, title), st && /* @__PURE__ */ React.createElement(__ds_scope.StatusTag, {
+            tone: st.tone || "won"
+          }, st.label)), line && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-cb-note"
+          }, line), stats.length > 0 && /* @__PURE__ */ React.createElement(__ds_scope.StatRow, {
+            items: stats,
+            grid: true
+          }), actions.length > 0 && /* @__PURE__ */ React.createElement(__ds_scope.NavButtons, {
+            items: actions,
+            onGo,
+            stack: true
+          }));
+        }
+        Object.assign(__ds_scope, { ResultCard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/chat/ResultCard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const G = {
+          success: "check",
+          warning: "warn",
+          error: "error"
+        };
+        function StatusMessage({
+          kind = "success",
+          children
+        }) {
+          return /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-msg mcp-msg-" + kind,
+            role: kind === "error" ? "alert" : "status"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: G[kind]
+          }), /* @__PURE__ */ React.createElement("span", null, children));
+        }
+        Object.assign(__ds_scope, { StatusMessage });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/feedback/StatusMessage.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function Tag({
+          kind = "daily",
+          children,
+          icon,
+          go
+        }) {
+          const ic = icon || (kind === "locked" ? "lock" : null);
+          const g = go ?? (kind === "locked" || kind === "open");
+          return /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-tag mcp-tag-" + kind + (g ? " has-go" : "")
+          }, ic && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: ic,
+            size: 14
+          }), children, g && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "next",
+            size: 14,
+            className: "mcp-tag-go"
+          }));
+        }
+        Object.assign(__ds_scope, { Tag });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/feedback/Tag.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function TextField({
+          label,
+          id,
+          error,
+          hint,
+          type = "text",
+          value,
+          defaultValue,
+          placeholder,
+          onChange,
+          inputRef,
+          autoComplete,
+          className = "",
+          ...rest
+        }) {
+          const auto = React.useId ? React.useId() : "f";
+          const fid = id || "mcp-" + auto;
+          const eid = fid + "-err";
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-fld " + className).trim()
+          }, label && /* @__PURE__ */ React.createElement("label", {
+            htmlFor: fid
+          }, label), /* @__PURE__ */ React.createElement("input", _extends({
+            ref: inputRef,
+            className: "mcp-in" + (error ? " is-bad" : ""),
+            id: fid,
+            type,
+            value,
+            defaultValue,
+            placeholder,
+            onChange,
+            autoComplete,
+            "aria-invalid": error ? true : void 0,
+            "aria-describedby": error ? eid : void 0
+          }, rest)), error && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-fmsg",
+            id: eid
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "error"
+          }), error), hint && !error && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-hint"
+          }, hint));
+        }
+        function SearchField({
+          label,
+          id,
+          placeholder = "Find a game",
+          value,
+          onChange,
+          className = "",
+          ...rest
+        }) {
+          const auto = React.useId ? React.useId() : "s";
+          const fid = id || "mcp-" + auto;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-fld " + className).trim()
+          }, label && /* @__PURE__ */ React.createElement("label", {
+            htmlFor: fid
+          }, label), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-srch"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "search"
+          }), /* @__PURE__ */ React.createElement("input", _extends({
+            className: "mcp-in",
+            id: fid,
+            type: "search",
+            placeholder,
+            value,
+            onChange,
+            "aria-label": label ? void 0 : placeholder
+          }, rest))));
+        }
+        Object.assign(__ds_scope, { TextField, SearchField });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/forms/TextField.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const PARTS = {
+          tilegrid: __ds_scope.TileGrid,
+          wordboard: __ds_scope.WordBoard,
+          choices: __ds_scope.ChoiceButtons,
+          confirm: __ds_scope.ConfirmCard,
+          facts: __ds_scope.FactRows,
+          stats: __ds_scope.StatRow,
+          status: __ds_scope.StatusTag,
+          entities: __ds_scope.EntityCards,
+          clues: __ds_scope.ClueCards,
+          result: __ds_scope.ResultCard,
+          track: __ds_scope.Track,
+          roll: __ds_scope.RollLine,
+          nav: __ds_scope.NavButtons,
+          menu: __ds_scope.MenuRows
+        };
+        const WHO = {
+          x: "not in the word",
+          y: "in the word",
+          g: "right spot"
+        };
+        function Tiles({
+          rows
+        }) {
+          const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-chat-board",
+            role: "img",
+            "aria-label": label
+          }, rows.map((r, i) => /* @__PURE__ */ React.createElement("div", {
+            key: i,
+            className: "mcp-chat-row"
+          }, r.word.split("").map((c, k) => /* @__PURE__ */ React.createElement("span", {
+            key: k,
+            className: "is-" + r.marks[k]
+          }, c)))));
+        }
+        function Block({
+          b
+        }) {
+          if (b.type === "tiles") return /* @__PURE__ */ React.createElement(Tiles, {
+            rows: b.rows
+          });
+          if (b.type === "list") return /* @__PURE__ */ React.createElement("ul", {
+            className: "mcp-chat-list"
+          }, b.items.map((t, i) => /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, t)));
+          if (b.type === "mono") return /* @__PURE__ */ React.createElement("pre", {
+            className: "mcp-chat-mono"
+          }, b.text);
+          const P = PARTS[b.type];
+          if (P) {
+            const {
+              type,
+              ...p
+            } = b;
+            return /* @__PURE__ */ React.createElement(P, p);
+          }
+          return null;
+        }
+        const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+        function useChatScroll(body, turns) {
+          const [up, setUp] = React.useState(false);
+          React.useEffect(() => {
+            const b = body.current;
+            if (!b) return void 0;
+            let moved = false;
+            const mark = () => {
+              const u = b.scrollTop > 4;
+              b.dataset.more = u ? "up" : "";
+              setUp(u);
+            };
+            const end = () => {
+              if (!moved) b.scrollTop = b.scrollHeight;
+              mark();
+            };
+            const stop = () => {
+              moved = true;
+            };
+            b.addEventListener("scroll", mark, {
+              passive: true
+            });
+            ["wheel", "touchstart", "keydown"].forEach((t2) => b.addEventListener(t2, stop, {
+              passive: true
+            }));
+            const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(end) : null;
+            if (ro) {
+              ro.observe(b);
+              [...b.children].forEach((c) => ro.observe(c));
+            }
+            end();
+            const t = setTimeout(end, 600);
+            return () => {
+              clearTimeout(t);
+              if (ro) ro.disconnect();
+              b.removeEventListener("scroll", mark);
+              ["wheel", "touchstart", "keydown"].forEach((t2) => b.removeEventListener(t2, stop));
+            };
+          }, [turns]);
+          const toStart = () => {
+            const b = body.current;
+            if (b) b.scrollTo({
+              top: 0,
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+            });
+          };
+          return [up, toStart];
+        }
+        function chatTurn(t, i, {
+          mark,
+          toolBy,
+          fx
+        }) {
+          if (t.from === "user") {
+            if (!fx) return /* @__PURE__ */ React.createElement("p", {
+              key: i,
+              className: "mcp-chat-me"
+            }, paras(t.text));
+            const st = fx.piece(i, "u");
+            return st && /* @__PURE__ */ React.createElement("p", {
+              key: i,
+              className: "mcp-chat-me",
+              style: st
+            }, paras(t.text));
+          }
+          if (!fx) return /* @__PURE__ */ React.createElement("div", {
+            key: i,
+            className: "mcp-chat-ai"
+          }, t.tool && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-chat-call"
+          }, mark && /* @__PURE__ */ React.createElement("img", {
+            src: mark,
+            alt: "",
+            width: "16",
+            height: "16"
+          }), "Called ", t.tool, toolBy && /* @__PURE__ */ React.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React.createElement(Block, {
+            key: k,
+            b
+          })), paras(t.text).map((p, k) => /* @__PURE__ */ React.createElement("p", {
+            key: k
+          }, p)), (t.after || []).map((b, k) => /* @__PURE__ */ React.createElement(Block, {
+            key: "a" + k,
+            b
+          })));
+          const blk = (list, pre) => (list || []).map((b, k) => {
+            const st = fx.piece(i, pre + k);
+            return st && /* @__PURE__ */ React.createElement("div", {
+              key: pre + k,
+              className: "mcp-chat-fx",
+              style: st
+            }, /* @__PURE__ */ React.createElement(Block, {
+              b
+            }));
+          });
+          const call = t.tool && fx.piece(i, "c");
+          const kids = [call && /* @__PURE__ */ React.createElement("span", {
+            key: "c",
+            className: "mcp-chat-call",
+            style: call
+          }, mark && /* @__PURE__ */ React.createElement("img", {
+            src: mark,
+            alt: "",
+            width: "16",
+            height: "16"
+          }), "Called ", t.tool, toolBy && /* @__PURE__ */ React.createElement("em", null, toolBy)), ...blk(t.blocks, "b"), ...paras(t.text).map((p, k) => {
+            const st = fx.piece(i, "p" + k);
+            return st && /* @__PURE__ */ React.createElement("p", {
+              key: "p" + k,
+              style: st
+            }, fx.words(i, "p" + k, p));
+          }), ...blk(t.after, "a")].filter(Boolean);
+          return kids.length ? /* @__PURE__ */ React.createElement("div", {
+            key: i,
+            className: "mcp-chat-ai"
+          }, kids) : null;
+        }
+        function chatShell({
+          body,
+          bodyRef,
+          up,
+          toStart,
+          title,
+          height,
+          width,
+          fill,
+          label,
+          more,
+          className,
+          comp,
+          control,
+          extraClass
+        }) {
+          const name = label || "A game being played in a chat";
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-chat" + (fill ? " is-fill" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(),
+            style: fill ? void 0 : {
+              width: "min(100%," + width + "px)"
+            },
+            role: "group",
+            "aria-label": name
+          }, title && /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-chat-head"
+          }, title), /* @__PURE__ */ React.createElement("div", {
+            ref: bodyRef,
+            className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""),
+            style: fill || height === "auto" ? void 0 : {
+              height
+            },
+            tabIndex: 0,
+            role: "region",
+            "aria-label": name + ", scrolls"
+          }, body), /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "mcp-chat-up",
+            hidden: !up,
+            onClick: toStart,
+            "aria-label": more
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "down",
+            size: 16,
+            style: {
+              transform: "rotate(180deg)"
+            }
+          })), control, comp);
+        }
+        const chatParas = paras;
+        function ChatPicture({
+          turns,
+          title,
+          toolBy,
+          mark,
+          height = 290,
+          width = 360,
+          fill = false,
+          composer = true,
+          placeholder = "Reply",
+          label,
+          more = "Back to the start",
+          className = ""
+        }) {
+          const body = React.useRef(null);
+          const [up, toStart] = useChatScroll(body, turns);
+          return chatShell({
+            bodyRef: body,
+            up,
+            toStart,
+            title,
+            height,
+            width,
+            fill,
+            label,
+            more,
+            className,
+            body: turns.map((t, i) => chatTurn(t, i, {
+              mark,
+              toolBy
+            })),
+            comp: composer && /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-chat-comp",
+              "aria-hidden": "true"
+            }, /* @__PURE__ */ React.createElement("span", null, placeholder), /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: "send",
+              size: 16
+            })))
+          });
+        }
+        Object.assign(__ds_scope, { chatTurn, chatShell, chatParas, ChatPicture });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/media/ChatPicture.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const PACE = {
+          lead: 500,
+          type: 32,
+          typeMin: 450,
+          typeMax: 1600,
+          send: 300,
+          enter: 260,
+          think: 700,
+          call: 450,
+          word: 55,
+          wordIn: 140,
+          gap: 300,
+          user: 450,
+          read: 1400,
+          end: 4e3
+        };
+        function ease(x) {
+          const cx = 0.48, bx = 3 * (0.3 - 0.16) - cx, ax = 1 - cx - bx, cy = 3, by = -3, ay = 1;
+          let t = x;
+          for (let n = 0; n < 8; n++) {
+            const e = ((ax * t + bx) * t + cx) * t - x, d = (3 * ax * t + 2 * bx) * t + cx;
+            if (Math.abs(e) < 1e-5 || Math.abs(d) < 1e-6) break;
+            t = Math.min(1, Math.max(0, t - e / d));
+          }
+          return ((ay * t + by) * t + cy) * t;
+        }
+        const c01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
+        const nWords = (s) => String(s).split(/\s+/).filter(Boolean).length;
+        function timeline(turns, pace, composer) {
+          const p = {
+            ...PACE,
+            ...pace
+          };
+          const sp = p.speed > 0 ? p.speed : 1;
+          const d = (x) => x / sp;
+          let t = d(p.lead), last = 0;
+          const out = [];
+          const put = (pieces, k, dur) => {
+            pieces[k] = {
+              at: t
+            };
+            last = Math.max(last, t + d(p.enter));
+            t += d(p.enter) + dur;
+          };
+          turns.forEach((tu) => {
+            const pieces = {};
+            let type = null;
+            if (tu.from === "user") {
+              if (composer) {
+                const text = __ds_scope.chatParas(tu.text).join(" ");
+                const dur = d(Math.min(p.typeMax, Math.max(p.typeMin, text.length / p.type * 1e3)));
+                type = {
+                  start: t,
+                  end: t + dur,
+                  text
+                };
+                t += dur + d(p.send);
+              }
+              put(pieces, "u", d(tu.hold ?? p.user));
+            } else {
+              t += d(p.think);
+              if (tu.tool) put(pieces, "c", d(p.call));
+              (tu.blocks || []).forEach((b, k) => put(pieces, "b" + k, d(p.gap)));
+              __ds_scope.chatParas(tu.text).forEach((s, k) => {
+                const n = nWords(s);
+                pieces["p" + k] = {
+                  at: t,
+                  n,
+                  word: d(p.word)
+                };
+                const end = t + Math.max(0, n - 1) * d(p.word) + d(p.wordIn);
+                last = Math.max(last, end);
+                t = end + d(p.gap);
+              });
+              (tu.after || []).forEach((b, k) => put(pieces, "a" + k, d(p.gap)));
+              t += d(tu.hold ?? p.read) - d(p.gap);
+            }
+            out.push({
+              pieces,
+              type
+            });
+          });
+          return {
+            turns: out,
+            total: last,
+            end: d(p.end),
+            enter: d(p.enter),
+            wordIn: d(p.wordIn)
+          };
+        }
+        function enter(T, at, dur) {
+          if (T < at) return null;
+          const q = c01((T - at) / dur);
+          const e = q >= 1 ? 1 : ease(q);
+          return {
+            opacity: +e.toFixed(4),
+            transform: "translateY(" + ((1 - e) * 4).toFixed(2) + "px)"
+          };
+        }
+        function frame(tl, T) {
+          const fx = {
+            piece: (i, k) => {
+              const p = tl.turns[i] && tl.turns[i].pieces[k];
+              return p ? enter(T, p.at, tl.enter) : {};
+            },
+            words: (i, k, text) => {
+              const p = tl.turns[i] && tl.turns[i].pieces[k];
+              if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return text;
+              let j = 0;
+              return String(text).split(/(\s+)/).map((w, x) => {
+                if (!w || /^\s+$/.test(w)) return w;
+                const o = c01((T - (p.at + j++ * p.word)) / tl.wordIn);
+                return /* @__PURE__ */ React.createElement("span", {
+                  key: x,
+                  style: {
+                    opacity: +o.toFixed(4)
+                  }
+                }, w);
+              });
+            }
+          };
+          let typed = null, sent = false;
+          tl.turns.forEach(({
+            type,
+            pieces
+          }) => {
+            if (!type) return;
+            const at = pieces.u.at;
+            if (T >= type.start && T < at) {
+              const n = Math.min(type.text.length, Math.floor(c01((T - type.start) / (type.end - type.start)) * type.text.length));
+              typed = {
+                text: type.text.slice(0, n),
+                caret: T < type.end || Math.floor((T - type.end) / 150) % 2 === 1
+              };
+            }
+            if (T >= at && T < at + 120) sent = true;
+          });
+          return {
+            fx,
+            typed,
+            sent
+          };
+        }
+        function useReducedMotion() {
+          const q = "(prefers-reduced-motion: reduce)";
+          const [r, setR] = React.useState(() => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia(q).matches);
+          React.useEffect(() => {
+            if (!window.matchMedia) return void 0;
+            const m = window.matchMedia(q), f = () => setR(m.matches);
+            if (m.addEventListener) m.addEventListener("change", f);
+            else m.addListener(f);
+            return () => {
+              if (m.removeEventListener) m.removeEventListener("change", f);
+              else m.removeListener(f);
+            };
+          }, []);
+          return r;
+        }
+        function usePlaybackScroll(body, pinned) {
+          const follow = React.useRef(true), touched = React.useRef(false);
+          const [up, setUp] = React.useState(false);
+          React.useLayoutEffect(() => {
+            const b = body.current;
+            if (!b) return;
+            if (pinned || follow.current) b.scrollTop = b.scrollHeight;
+            const u = b.scrollTop > 4;
+            b.dataset.more = u ? "up" : "";
+            setUp(u);
+          });
+          React.useEffect(() => {
+            const b = body.current;
+            if (!b) return void 0;
+            const take = () => {
+              touched.current = true;
+            };
+            const mark = () => {
+              if (touched.current) follow.current = b.scrollHeight - b.scrollTop - b.clientHeight < 8;
+              const u = b.scrollTop > 4;
+              b.dataset.more = u ? "up" : "";
+              setUp(u);
+            };
+            b.addEventListener("scroll", mark, {
+              passive: true
+            });
+            ["wheel", "touchstart", "keydown"].forEach((t) => b.addEventListener(t, take, {
+              passive: true
+            }));
+            return () => {
+              b.removeEventListener("scroll", mark);
+              ["wheel", "touchstart", "keydown"].forEach((t) => b.removeEventListener(t, take));
+            };
+          }, []);
+          const toStart = () => {
+            const b = body.current;
+            if (!b) return;
+            touched.current = true;
+            follow.current = false;
+            b.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          };
+          const rejoin = () => {
+            follow.current = true;
+            touched.current = false;
+          };
+          return [up, toStart, rejoin];
+        }
+        function ChatPlayback({
+          turns,
+          time,
+          autoplay = true,
+          loop = false,
+          speed = 1,
+          pace,
+          title,
+          toolBy,
+          mark,
+          height = 290,
+          width = 360,
+          fill = false,
+          composer = true,
+          placeholder = "Reply",
+          label,
+          more = "Back to the start",
+          pauseLabel = "Pause",
+          playLabel = "Play",
+          replayLabel = "Play again",
+          className = ""
+        }) {
+          const reduced = useReducedMotion();
+          const tl = React.useMemo(() => timeline(turns, {
+            ...pace,
+            speed
+          }, composer), [turns, JSON.stringify(pace || {}), speed, composer]);
+          const given = typeof time === "number" && isFinite(time);
+          const cycle = tl.total + tl.end;
+          const [own, setOwn] = React.useState(0);
+          const [playing, setPlaying] = React.useState(autoplay);
+          const body = React.useRef(null);
+          const [up, toStart, rejoin] = usePlaybackScroll(body, given);
+          React.useEffect(() => {
+            if (given || reduced || !playing) return void 0;
+            let raf, last = null;
+            const step = (now) => {
+              const dt = last == null ? 0 : Math.min(250, now - last);
+              last = now;
+              setOwn((t) => {
+                const n = t + dt;
+                if (loop) {
+                  if (n >= cycle) {
+                    rejoin();
+                    return n - cycle;
+                  }
+                  return n;
+                }
+                return Math.min(n, tl.total);
+              });
+              raf = requestAnimationFrame(step);
+            };
+            raf = requestAnimationFrame(step);
+            return () => cancelAnimationFrame(raf);
+          }, [given, reduced, playing, loop, tl]);
+          const T = given ? loop ? (time % cycle + cycle) % cycle : Math.max(0, Math.min(time, tl.total)) : own;
+          const done = !loop && T >= tl.total;
+          React.useEffect(() => {
+            if (!given && done && playing) setPlaying(false);
+          }, [done]);
+          if (reduced) return /* @__PURE__ */ React.createElement(__ds_scope.ChatPicture, {
+            turns,
+            title,
+            toolBy,
+            mark,
+            height,
+            width,
+            fill,
+            composer,
+            placeholder,
+            label,
+            more,
+            className
+          });
+          const {
+            fx,
+            typed,
+            sent
+          } = frame(tl, T);
+          const press = () => {
+            if (playing) setPlaying(false);
+            else {
+              if (done) {
+                setOwn(0);
+                rejoin();
+              }
+              setPlaying(true);
+            }
+          };
+          const ctl = given ? null : /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "mcp-chat-pause",
+            onClick: press,
+            "aria-label": playing ? pauseLabel : done ? replayLabel : playLabel
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: playing ? "pause" : "play",
+            size: 16
+          }));
+          return __ds_scope.chatShell({
+            bodyRef: body,
+            up,
+            toStart,
+            title,
+            height,
+            width,
+            fill,
+            label,
+            more,
+            className,
+            extraClass: "is-playback",
+            control: ctl,
+            body: turns.map((t, i) => __ds_scope.chatTurn(t, i, {
+              mark,
+              toolBy,
+              fx
+            })),
+            comp: composer && /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-chat-comp",
+              "aria-hidden": "true"
+            }, typed ? /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-chat-typed"
+            }, typed.text, /* @__PURE__ */ React.createElement("span", {
+              className: "mcp-chat-caret",
+              style: {
+                opacity: typed.caret ? 1 : 0
+              }
+            })) : /* @__PURE__ */ React.createElement("span", null, placeholder), /* @__PURE__ */ React.createElement("i", {
+              className: sent ? "is-sent" : void 0
+            }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+              name: "send",
+              size: 16
+            })))
+          });
+        }
+        ChatPlayback.duration = (turns, {
+          pace,
+          speed = 1,
+          composer = true
+        } = {}) => timeline(turns, {
+          ...pace,
+          speed
+        }, composer).total;
+        Object.assign(__ds_scope, { ChatPlayback });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/media/playback/ChatPlayback.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function usePress() {
+          const [pressed, setPressed] = React.useState(false);
+          const t = React.useRef(0);
+          const down = () => {
+            t.current = Date.now();
+            setPressed(true);
+          };
+          const up = () => {
+            setTimeout(() => setPressed(false), Math.max(0, 120 - (Date.now() - t.current)));
+          };
+          return {
+            pressed,
+            handlers: {
+              onPointerDown: down,
+              onPointerUp: up,
+              onPointerCancel: up,
+              onPointerLeave: up
+            }
+          };
+        }
+        Object.assign(__ds_scope, { usePress });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/press.js", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function useHeld(on, min) {
+          const [held, setHeld] = React.useState(on);
+          const t0 = React.useRef(on ? Date.now() : 0);
+          React.useEffect(() => {
+            if (on) {
+              t0.current = Date.now();
+              setHeld(true);
+              return;
+            }
+            const left = min - (Date.now() - t0.current);
+            if (left <= 0) {
+              setHeld(false);
+              return;
+            }
+            const id = setTimeout(() => setHeld(false), left);
+            return () => clearTimeout(id);
+          }, [on]);
+          return on || held;
+        }
+        function Button({
+          variant = "main",
+          children,
+          loading = false,
+          loadingLabel,
+          done = false,
+          doneLabel,
+          disabled = false,
+          block = false,
+          icon,
+          type = "button",
+          onClick,
+          className = "",
+          ...rest
+        }) {
+          const {
+            pressed,
+            handlers
+          } = __ds_scope.usePress();
+          const [auto, setAuto] = React.useState(false);
+          const alive = React.useRef(true);
+          React.useEffect(() => () => {
+            alive.current = false;
+          }, []);
+          const busy = useHeld(loading || auto, 400);
+          const click = (e) => {
+            if (busy) {
+              e.preventDefault();
+              return;
+            }
+            const r = onClick && onClick(e);
+            if (r && typeof r.then === "function") {
+              setAuto(true);
+              const end = () => {
+                alive.current && setAuto(false);
+              };
+              r.then(end, end);
+            }
+          };
+          const v = variant === "secondary" ? "mcp-btn-secondary" : variant === "danger" ? "mcp-btn-danger" : "mcp-btn-main";
+          const cls = ["mcp-btn", v, block && "is-block", pressed && !disabled && !busy && "is-pressed", busy && "is-busy", done && !busy && "is-done", className].filter(Boolean).join(" ");
+          let content;
+          if (busy) content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-spin",
+            "aria-hidden": "true"
+          }), loadingLabel || children);
+          else if (doneLabel !== void 0) content = /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-swap"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "a"
+          }, icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: icon
+          }), children), /* @__PURE__ */ React.createElement("span", {
+            className: "b",
+            "aria-hidden": !done
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "check"
+          }), doneLabel));
+          else content = /* @__PURE__ */ React.createElement(React.Fragment, null, icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: icon
+          }), children);
+          return /* @__PURE__ */ React.createElement("button", _extends({
+            type,
+            className: cls,
+            disabled,
+            "aria-busy": busy || void 0,
+            "aria-disabled": busy || void 0,
+            onClick: click
+          }, handlers, rest), content);
+        }
+        function ButtonPair({
+          children,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-btn-pair " + className).trim()
+          }, children);
+        }
+        Object.assign(__ds_scope, { Button, ButtonPair });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/actions/Button.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function TextLink({
+          children,
+          danger = false,
+          href,
+          onClick,
+          className = "",
+          ...rest
+        }) {
+          const {
+            pressed,
+            handlers
+          } = __ds_scope.usePress();
+          const cls = ["mcp-lnk", danger && "is-danger", pressed && "is-pressed", className].filter(Boolean).join(" ");
+          if (href) return /* @__PURE__ */ React.createElement("a", _extends({
+            href,
+            className: cls,
+            onClick
+          }, handlers, rest), children);
+          return /* @__PURE__ */ React.createElement("button", _extends({
+            type: "button",
+            className: cls,
+            onClick
+          }, handlers, rest), children);
+        }
+        Object.assign(__ds_scope, { TextLink });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/actions/TextLink.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function Card({
+          title,
+          action,
+          children,
+          className = "",
+          style,
+          href,
+          onClick,
+          label,
+          chevron = true
+        }) {
+          const {
+            pressed,
+            handlers
+          } = __ds_scope.usePress();
+          const live = !!(href || onClick);
+          if (!live) {
+            const head = action ? /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-card-head"
+            }, title ? /* @__PURE__ */ React.createElement("h3", {
+              className: "mcp-t-card"
+            }, title) : /* @__PURE__ */ React.createElement("span", null), action) : title && /* @__PURE__ */ React.createElement("h3", {
+              className: "mcp-t-card"
+            }, title);
+            return /* @__PURE__ */ React.createElement("div", {
+              className: ("mcp-card " + className).trim(),
+              style
+            }, head, children);
+          }
+          const cls = ("mcp-card is-link" + (chevron ? "" : " no-go") + (pressed ? " is-pressed" : "") + " " + className).trim();
+          const inner = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-card-body"
+          }, title && /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), children), chevron && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "next",
+            size: 20,
+            className: "mcp-card-go"
+          }));
+          return href ? /* @__PURE__ */ React.createElement("a", _extends({
+            href,
+            onClick,
+            className: cls,
+            style,
+            "aria-label": label
+          }, handlers), inner) : /* @__PURE__ */ React.createElement("button", _extends({
+            type: "button",
+            onClick,
+            className: cls,
+            style,
+            "aria-label": label
+          }, handlers), inner);
+        }
+        function Heading({
+          level = "card",
+          children,
+          as
+        }) {
+          const map = {
+            page: ["h1", "mcp-t-page"],
+            section: ["h2", "mcp-t-sec"],
+            card: ["h3", "mcp-t-card"]
+          };
+          const [tag, cls] = map[level] || map.card;
+          const T = as || tag;
+          return /* @__PURE__ */ React.createElement(T, {
+            className: cls
+          }, children);
+        }
+        Object.assign(__ds_scope, { Card, Heading });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/Card.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function CardRow({
+          title,
+          sub,
+          label,
+          as = "h2",
+          kind = "cards",
+          children,
+          className = ""
+        }) {
+          const ref = React.useRef(null), prev = React.useRef(null), next = React.useRef(null), pressed = React.useRef(null);
+          const [at, setAt] = React.useState({
+            over: false,
+            start: true,
+            end: true
+          });
+          React.useLayoutEffect(() => {
+            const el = ref.current;
+            if (!el) return void 0;
+            const read = () => {
+              const over = el.scrollWidth > el.clientWidth + 1, start = el.scrollLeft <= 1, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+              setAt((a) => a.over === over && a.start === start && a.end === end ? a : {
+                over,
+                start,
+                end
+              });
+            };
+            read();
+            el.addEventListener("scroll", read, {
+              passive: true
+            });
+            const ro = window.ResizeObserver ? new ResizeObserver(read) : null;
+            if (ro) ro.observe(el);
+            return () => {
+              el.removeEventListener("scroll", read);
+              if (ro) ro.disconnect();
+            };
+          }, []);
+          React.useEffect(() => {
+            if (pressed.current === "next" && at.end && prev.current) {
+              prev.current.focus({
+                preventScroll: true
+              });
+              pressed.current = "prev";
+            } else if (pressed.current === "prev" && at.start && next.current) {
+              next.current.focus({
+                preventScroll: true
+              });
+              pressed.current = "next";
+            }
+          }, [at.start, at.end]);
+          const move = (d) => {
+            const el = ref.current;
+            if (!el) return;
+            pressed.current = d > 0 ? "next" : "prev";
+            const c = el.firstElementChild, gap = parseFloat(getComputedStyle(el).columnGap) || 24, step = c ? c.getBoundingClientRect().width + gap : el.clientWidth * 0.8;
+            const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            el.scrollBy({
+              left: d * step,
+              behavior: still ? "auto" : "smooth"
+            });
+          };
+          const T = as, name = label || (typeof title === "string" ? title : "Cards"), n = React.Children.count(children);
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-crow" + (kind === "chat" ? " is-chat" : kind === "tiles" ? " is-tiles" : "") + " " + className).trim()
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-crow-head"
+          }, /* @__PURE__ */ React.createElement(T, {
+            className: "mcp-t-sec mcp-crow-title"
+          }, title), at.over && /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-crow-nav"
+          }, /* @__PURE__ */ React.createElement("button", {
+            ref: prev,
+            type: "button",
+            className: "mcp-crow-btn",
+            "aria-label": "Previous, " + name,
+            style: at.start ? {
+              visibility: "hidden"
+            } : null,
+            onClick: () => move(-1)
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "next",
+            style: {
+              transform: "rotate(180deg)"
+            }
+          })), /* @__PURE__ */ React.createElement("button", {
+            ref: next,
+            type: "button",
+            className: "mcp-crow-btn",
+            "aria-label": "Next, " + name,
+            style: at.end ? {
+              visibility: "hidden"
+            } : null,
+            onClick: () => move(1)
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "next"
+          }))), sub && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-crow-sub"
+          }, sub)), /* @__PURE__ */ React.createElement("div", {
+            ref,
+            className: "mcp-crow-track",
+            role: "region",
+            "aria-label": name,
+            tabIndex: 0,
+            style: {
+              "--n": n
+            }
+          }, children));
+        }
+        Object.assign(__ds_scope, { CardRow });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/CardRow.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        function Disclosure({
+          title,
+          children,
+          defaultOpen = false
+        }) {
+          const [open, setOpen] = React.useState(defaultOpen);
+          const {
+            pressed,
+            handlers
+          } = __ds_scope.usePress();
+          const id = (React.useId ? React.useId() : "d") + "-body";
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-disc"
+          }, /* @__PURE__ */ React.createElement("button", _extends({
+            type: "button",
+            className: "mcp-disc-btn" + (pressed ? " is-pressed" : ""),
+            "aria-expanded": open,
+            "aria-controls": id,
+            onClick: () => setOpen((o) => !o)
+          }, handlers), /* @__PURE__ */ React.createElement("span", null, title), /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "down"
+          })), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-disc-body" + (open ? " is-open" : ""),
+            id
+          }, /* @__PURE__ */ React.createElement("div", null, typeof children === "string" ? /* @__PURE__ */ React.createElement("p", null, children) : children)));
+        }
+        Object.assign(__ds_scope, { Disclosure });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/Disclosure.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function FormCard({
+          title,
+          children,
+          className = "",
+          style
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-panel " + className).trim(),
+            style
+          }, /* @__PURE__ */ React.createElement("svg", {
+            className: "mcp-deco",
+            viewBox: "0 0 120 76",
+            "aria-hidden": "true"
+          }, /* @__PURE__ */ React.createElement("rect", {
+            x: "84",
+            y: "0",
+            width: "36",
+            height: "44",
+            fill: "#328A88"
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "56",
+            y: "0",
+            width: "28",
+            height: "28",
+            fill: "#EDE8DF"
+          }), /* @__PURE__ */ React.createElement("circle", {
+            cx: "102",
+            cy: "58",
+            r: "12",
+            fill: "#E5A63B"
+          })), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-panel-in"
+          }, title && /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), children));
+        }
+        Object.assign(__ds_scope, { FormCard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/FormCard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function GameCard({
+          art,
+          pass,
+          onPass,
+          title,
+          mark,
+          blurb,
+          tags,
+          className = "",
+          style
+        }) {
+          const m = pass && (onPass ? /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "mcp-passmark is-link",
+            onClick: (e) => {
+              e.stopPropagation();
+              onPass(e);
+            }
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass") : /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-passmark"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass"));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-card mcp-gcard " + className).trim(),
+            style
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gcard-art"
+          }, art, m), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gcard-text"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gcard-name"
+          }, /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), mark), /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-gcard-blurb"
+          }, blurb)), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gcard-tags"
+          }, tags));
+        }
+        Object.assign(__ds_scope, { GameCard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/GameCard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function GamePick({
+          art,
+          pass,
+          onPass,
+          label,
+          title,
+          blurb,
+          tags,
+          className = "",
+          style
+        }) {
+          const m = pass && (onPass ? /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "mcp-passmark is-link",
+            onClick: (e) => {
+              e.stopPropagation();
+              onPass(e);
+            }
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass") : /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-passmark"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass"));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-card mcp-gpick " + className).trim(),
+            style
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gpick-art"
+          }, art, m), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gpick-text"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-gpick-label"
+          }, label), /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-gpick-blurb"
+          }, blurb)), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gpick-tags"
+          }, tags));
+        }
+        Object.assign(__ds_scope, { GamePick });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/GamePick.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function GameTile({
+          art,
+          pass,
+          onPass,
+          title,
+          kind,
+          className = "",
+          style
+        }) {
+          const m = pass && (onPass ? /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "mcp-passmark is-link",
+            onClick: (e) => {
+              e.stopPropagation();
+              onPass(e);
+            }
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass") : /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-passmark"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "lock",
+            size: 14
+          }), "Pass"));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-gtile " + className).trim(),
+            style
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-gtile-art"
+          }, art, m), /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-gtile-name"
+          }, title), kind && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-gtile-kind"
+          }, kind));
+        }
+        Object.assign(__ds_scope, { GameTile });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/GameTile.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function _extends() {
+          return _extends = Object.assign ? Object.assign.bind() : function(n) {
+            for (var e = 1; e < arguments.length; e++) {
+              var t = arguments[e];
+              for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+            }
+            return n;
+          }, _extends.apply(null, arguments);
+        }
+        const said = /* @__PURE__ */ new Set();
+        const warn = (m) => {
+          if (!said.has(m)) {
+            said.add(m);
+            console.warn("ListRow: " + m);
+          }
+        };
+        const isText = (v) => typeof v === "string" || typeof v === "number";
+        const toForms = (v) => {
+          if (isText(v)) return [String(v)];
+          if (Array.isArray(v) && v.length && v.every(isText)) return v.map(String);
+          return null;
+        };
+        const over = (el) => el.scrollWidth > el.clientWidth + 0.5;
+        const pick = (el, forms, what) => {
+          for (const f of forms) {
+            el.textContent = f;
+            if (!over(el)) return;
+          }
+          warn(what + ' "' + forms[forms.length - 1] + '" doesn’t fit even in its shortest form; pass a shorter form last.');
+        };
+        const fitTitle = (t, n, g, full) => {
+          if (g) g.style.display = "";
+          n.textContent = full;
+          if (!over(t)) return;
+          if (g) {
+            g.style.display = "none";
+            if (!over(t)) return;
+          }
+          const at = (k) => full.slice(0, k).replace(/[\s\u00b7,\u2013-]+$/, "") + "…";
+          let lo = 0, hi = full.length;
+          while (lo < hi) {
+            const m = lo + hi + 1 >> 1;
+            n.textContent = at(m);
+            if (!over(t)) lo = m;
+            else hi = m - 1;
+          }
+          n.textContent = at(lo);
+        };
+        function RowList({
+          children,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("ul", {
+            className: ("mcp-rows " + className).trim(),
+            "aria-label": label
+          }, React.Children.map(children, (c, i) => c && /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, c)));
+        }
+        function ListRow({
+          title,
+          game,
+          lead,
+          result,
+          tone = "none",
+          when,
+          replay,
+          note,
+          meta,
+          end,
+          sub = false,
+          href,
+          onClick,
+          label,
+          muted = false,
+          className = ""
+        }) {
+          const {
+            pressed,
+            handlers
+          } = __ds_scope.usePress();
+          const row = React.useRef(null), tRef = React.useRef(null), nRef = React.useRef(null), gRef = React.useRef(null), sRef = React.useRef(null), wRef = React.useRef(null);
+          if (note != null && note !== "Replay") warn('note is gone; Replay is on or off (replay). "' + note + '" is shown as Replay.');
+          const rep = !!replay || note != null;
+          const rF = toForms(result), wF = toForms(when);
+          const live = !!(href || onClick);
+          const slots = sub || result != null || when != null || rep;
+          const hasLead = !!lead && !sub;
+          if (game && !sub && !hasLead) warn('game shows only beside a cover, in a list that mixes games; "' + game + '" is dropped.');
+          const gameOn = !!game && hasLead && slots;
+          const tText = isText(title);
+          const fitKey = JSON.stringify([slots, tText && String(title), gameOn && game, rF, wF]);
+          React.useLayoutEffect(() => {
+            const r = row.current;
+            if (!r || !slots) return void 0;
+            const run = () => {
+              const narrow = r.clientWidth < 440;
+              if (wRef.current && wF) pick(wRef.current, narrow ? wF.slice(-1) : wF, "when");
+              if (sRef.current && rF) pick(sRef.current, narrow ? rF.slice(-1) : rF, "result");
+              if (tRef.current && nRef.current) fitTitle(tRef.current, nRef.current, gRef.current, String(title));
+            };
+            run();
+            if (document.fonts) document.fonts.ready.then(run);
+            const ro = new ResizeObserver(run);
+            ro.observe(r);
+            return () => ro.disconnect();
+          }, [fitKey]);
+          if (end != null && slots) warn("a row with a result, when or Replay takes no end Tag; it is dropped.");
+          const cls = ("mcp-row" + (live ? " is-link" : "") + (end != null && !sub && !slots ? " has-end" : "") + (hasLead ? " has-lead" : "") + (slots ? " is-slots" : "") + (slots && result != null ? " has-result" : "") + (slots && rep ? " has-note" : "") + (sub ? " is-sub" : "") + (muted ? " is-muted" : "") + (pressed ? " is-pressed" : "") + " " + className).trim();
+          const go = live ? /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: "next",
+            size: 20,
+            className: "mcp-row-go"
+          }) : /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-go",
+            "aria-hidden": "true"
+          });
+          const leadEl = hasLead && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-lead",
+            "aria-hidden": "true"
+          }, lead);
+          const endEl = end != null && !sub && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-end"
+          }, end);
+          const icon = tone === "ok" ? "check" : tone === "bad" ? "error" : null;
+          const gameEl = gameOn && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-game",
+            ref: gRef
+          }, " · " + game);
+          const inner = slots ? /* @__PURE__ */ React.createElement(React.Fragment, null, leadEl, !sub && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-head"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-title",
+            ref: tRef
+          }, tText ? /* @__PURE__ */ React.createElement("span", {
+            ref: nRef
+          }) : title, gameEl)), result != null && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-st is-" + tone
+          }, icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: icon,
+            size: 16
+          }), /* @__PURE__ */ React.createElement("span", {
+            ref: sRef
+          }, rF ? null : result)), when != null && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-when",
+            ref: wRef
+          }, wF ? null : when), rep && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-note"
+          }, "Replay"), go) : /* @__PURE__ */ React.createElement(React.Fragment, null, leadEl, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-body"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-title"
+          }, title), meta && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-row-meta"
+          }, meta)), endEl, go);
+          const name = label || (slots && (tText || sub) ? [!sub && String(title), gameOn && game, rep && "Replay", rF && rF[0], wF && wF[0]].filter(Boolean).join(", ") : void 0);
+          if (!live) return /* @__PURE__ */ React.createElement("div", {
+            ref: row,
+            className: cls,
+            "aria-label": slots ? name : void 0,
+            role: slots && name ? "group" : void 0
+          }, inner);
+          return href ? /* @__PURE__ */ React.createElement("a", _extends({
+            ref: row,
+            href,
+            onClick,
+            className: cls,
+            "aria-label": name
+          }, handlers), inner) : /* @__PURE__ */ React.createElement("button", _extends({
+            ref: row,
+            type: "button",
+            onClick,
+            className: cls,
+            "aria-label": name
+          }, handlers), inner);
+        }
+        Object.assign(__ds_scope, { RowList, ListRow });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/ListRow.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function Menu({
+          trigger,
+          items = [],
+          label,
+          align = "start",
+          placement = "below",
+          defaultOpen = false
+        }) {
+          const [open, setOpen] = React.useState(defaultOpen);
+          const wrap = React.useRef(null), list = React.useRef(null), byUser = React.useRef(false);
+          const id = React.useId();
+          const opener = () => wrap.current && wrap.current.querySelector("[aria-haspopup]");
+          const close = (restore) => {
+            setOpen(false);
+            if (restore) {
+              const o = opener();
+              o && o.focus({
+                preventScroll: true
+              });
+            }
+          };
+          React.useEffect(() => {
+            if (!open) return;
+            let t2;
+            if (byUser.current) {
+              t2 = setTimeout(() => {
+                const b = list.current && list.current.querySelector("[role=menuitem]");
+                b && b.focus({
+                  preventScroll: true
+                });
+              }, 20);
+            }
+            const out = (e) => {
+              if (wrap.current && !wrap.current.contains(e.target)) setOpen(false);
+            };
+            document.addEventListener("pointerdown", out);
+            return () => {
+              clearTimeout(t2);
+              document.removeEventListener("pointerdown", out);
+            };
+          }, [open]);
+          const key = (e) => {
+            const bs = [...list.current.querySelectorAll("[role=menuitem]")];
+            const i = bs.indexOf(document.activeElement);
+            const go = (n) => {
+              e.preventDefault();
+              bs[(n + bs.length) % bs.length].focus();
+            };
+            if (e.key === "Escape") {
+              e.preventDefault();
+              close(true);
+            } else if (e.key === "ArrowDown") go(i + 1);
+            else if (e.key === "ArrowUp") go(i - 1);
+            else if (e.key === "Home") go(0);
+            else if (e.key === "End") go(bs.length - 1);
+            else if (e.key === "Tab") setOpen(false);
+          };
+          const t = React.cloneElement(trigger, {
+            "aria-haspopup": "menu",
+            "aria-expanded": open,
+            "aria-controls": id,
+            onClick: (e) => {
+              byUser.current = true;
+              setOpen((o) => !o);
+              trigger.props.onClick && trigger.props.onClick(e);
+            }
+          });
+          return /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-menu-wrap",
+            ref: wrap
+          }, t, /* @__PURE__ */ React.createElement("div", {
+            id,
+            ref: list,
+            role: "menu",
+            "aria-label": label,
+            onKeyDown: key,
+            className: "mcp-menu" + (align === "end" ? " is-end" : "") + (placement === "above" ? " is-up" : "") + (open ? " is-open" : "")
+          }, items.map((it, i) => /* @__PURE__ */ React.createElement("button", {
+            key: i,
+            type: "button",
+            role: "menuitem",
+            tabIndex: -1,
+            className: "mcp-menu-item" + (it.danger ? " is-danger" : ""),
+            onClick: () => {
+              close(true);
+              it.onSelect && it.onSelect();
+            }
+          }, it.icon && /* @__PURE__ */ React.createElement(__ds_scope.Icon, {
+            name: it.icon
+          }), it.label))));
+        }
+        Object.assign(__ds_scope, { Menu });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/Menu.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const said = /* @__PURE__ */ new Set();
+        const warn = (m) => {
+          if (!said.has(m)) {
+            said.add(m);
+            console.warn("MoveRow: " + m);
+          }
+        };
+        const isText = (v) => typeof v === "string" || typeof v === "number";
+        function MoveList({
+          children,
+          label,
+          className = ""
+        }) {
+          return /* @__PURE__ */ React.createElement("ol", {
+            className: ("mcp-rows mcp-moves " + className).trim(),
+            "aria-label": label
+          }, React.Children.map(children, (c, i) => c && /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, c)));
+        }
+        function MoveRow({
+          label,
+          parts,
+          className = ""
+        }) {
+          if (!isText(label)) warn('label is plain text: the line’s name ("Dexterity", "Guess 1").');
+          const list = (Array.isArray(parts) ? parts : parts == null ? [] : [parts]).filter((p) => {
+            if (isText(p)) return true;
+            warn("parts are plain strings; a part that isn’t is dropped.");
+            return false;
+          }).map(String);
+          if (!list.length) warn('"' + label + '" has no parts; line two is empty.');
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-move " + className).trim()
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-move-label"
+          }, label), list.length > 0 && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-move-parts"
+          }, list.map((p, i) => /* @__PURE__ */ React.createElement("span", {
+            key: i,
+            className: i === 0 ? "mcp-move-lead" : "mcp-move-rest"
+          }, i > 0 && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-move-sep"
+          }, ", "), p))));
+        }
+        Object.assign(__ds_scope, { MoveList, MoveRow });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/MoveRow.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const fmt = (s) => {
+          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || "");
+          return m ? +m[3] + " " + MON[+m[2] - 1] : String(s || "").toUpperCase();
+        };
+        const count = (n, one, many) => n + " " + (n === 1 ? one : many);
+        function needsPassCopy({
+          game,
+          word,
+          words,
+          record,
+          total
+        }) {
+          const many = words || (word ? word + "s" : "");
+          const cadence = word ? "Play every " + word + " as it comes out." : "Play the whole game.";
+          if (!record) {
+            return {
+              label: null,
+              heading: game + " comes only with the Pass.",
+              foot: null,
+              rightLabel: "WHAT YOU GET",
+              lines: [cadence, total ? "Earn " + count(total, "achievement", "achievements") + "." : null].filter(Boolean),
+              action: "Get the Pass"
+            };
+          }
+          const label = !word ? "LAST PLAYED · " + fmt(record.last) : "YOUR LAST " + word.toUpperCase() + " · " + (record.chapter != null ? record.chapter : fmt(record.last));
+          const played = word && record.played ? "played " + count(record.played, word, many) : null;
+          const earned = record.earned ? "earned " + count(record.earned, "achievement", "achievements") : null;
+          const foot = played || earned ? "You " + [played, earned].filter(Boolean).join(" and ") + "." : null;
+          return {
+            label,
+            heading: "You stopped here. Everything you earned is still yours.",
+            foot,
+            rightLabel: "WHAT COMES BACK",
+            lines: [cadence, "Pick up where you stopped."],
+            action: "Get the Pass again"
+          };
+        }
+        function NeedsPass({
+          game,
+          word,
+          words,
+          record,
+          total = 0,
+          onGet,
+          className = "",
+          style
+        }) {
+          const c = needsPassCopy({
+            game,
+            word,
+            words,
+            record,
+            total
+          });
+          return /* @__PURE__ */ React.createElement("section", {
+            className: ("mcp-npass " + className).trim(),
+            style,
+            "aria-label": c.heading
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-npass-half"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-npass-label",
+            "aria-hidden": c.label ? void 0 : true
+          }, c.label || " "), /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-sec"
+          }, c.heading), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-npass-foot"
+          }, c.foot && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-npass-note"
+          }, c.foot))), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-npass-half"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-npass-label"
+          }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React.createElement("p", {
+            key: i,
+            className: "mcp-npass-line"
+          }, l)), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-npass-foot"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Button, {
+            variant: "secondary",
+            onClick: onGet
+          }, c.action))));
+        }
+        Object.assign(__ds_scope, { needsPassCopy, NeedsPass });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/NeedsPass.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function PageGrid({
+          children,
+          split = "main",
+          className = "",
+          style
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-pgrid-wrap"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-pgrid is-" + split + " " + className).trim(),
+            style
+          }, children));
+        }
+        Object.assign(__ds_scope, { PageGrid });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/PageGrid.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function useWide(ref, bp) {
+          const [w, setW] = React.useState(() => typeof window !== "undefined" ? window.innerWidth >= bp : true);
+          React.useLayoutEffect(() => {
+            const el = ref.current;
+            if (!el) return;
+            const f = () => {
+              const x = el.offsetWidth;
+              if (x) setW(x >= bp);
+            };
+            f();
+            if (typeof ResizeObserver === "undefined") {
+              window.addEventListener("resize", f);
+              return () => window.removeEventListener("resize", f);
+            }
+            const ro = new ResizeObserver(f);
+            ro.observe(el);
+            return () => ro.disconnect();
+          }, [bp]);
+          return w;
+        }
+        function Popup({
+          open,
+          onClose,
+          title,
+          children,
+          actions,
+          kind = "dialog",
+          posture = "auto",
+          breakpoint = 640,
+          contained = false,
+          busy = false,
+          label
+        }) {
+          const layer = React.useRef(null);
+          const wide = useWide(layer, breakpoint);
+          const panel = kind === "panel";
+          const mode = !panel ? "window" : posture === "auto" ? wide ? "window" : "sheet" : posture;
+          const ref = React.useRef(null);
+          const opener = React.useRef(null);
+          const dismiss = React.useRef(null);
+          dismiss.current = () => {
+            if (!busy && onClose) onClose();
+          };
+          React.useEffect(() => {
+            if (open) {
+              opener.current = document.activeElement;
+              const t = setTimeout(() => {
+                const b = ref.current && ref.current.querySelector("button,[href],input,select,textarea");
+                b && b.focus({
+                  preventScroll: true
+                });
+              }, 30);
+              const k = (e) => {
+                if (e.key === "Escape") dismiss.current();
+              };
+              document.addEventListener("keydown", k);
+              return () => {
+                clearTimeout(t);
+                document.removeEventListener("keydown", k);
+              };
+            } else if (opener.current && opener.current.focus) {
+              opener.current.focus({
+                preventScroll: true
+              });
+              opener.current = null;
+            }
+          }, [open]);
+          return /* @__PURE__ */ React.createElement("div", {
+            ref: layer,
+            className: "mcp-layer" + (contained ? " is-contained" : "") + (open ? " is-open" : ""),
+            "aria-hidden": !open
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-dim",
+            onClick: () => dismiss.current()
+          }), /* @__PURE__ */ React.createElement("div", {
+            ref,
+            className: "mcp-pop is-" + mode + " is-" + (panel ? "panel" : "dialog"),
+            role: panel ? "dialog" : "alertdialog",
+            "aria-modal": "true",
+            "aria-label": label || title,
+            "aria-busy": busy || void 0
+          }, title && /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-pop-body"
+          }, children), actions && /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-btn-pair"
+          }, actions)));
+        }
+        Object.assign(__ds_scope, { Popup });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/Popup.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        function SoonCard({
+          art,
+          label,
+          title,
+          line,
+          play,
+          onPlay,
+          playHref,
+          className = "",
+          style
+        }) {
+          const P = playHref ? "a" : "button";
+          return /* @__PURE__ */ React.createElement("div", {
+            className: ("mcp-card mcp-soon " + className).trim(),
+            style
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-soon-art"
+          }, art), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-soon-body"
+          }, label && /* @__PURE__ */ React.createElement("span", {
+            className: "mcp-soon-label"
+          }, label), /* @__PURE__ */ React.createElement("h3", {
+            className: "mcp-t-card"
+          }, title), line && /* @__PURE__ */ React.createElement("p", {
+            className: "mcp-soon-line"
+          }, line), /* @__PURE__ */ React.createElement("div", {
+            className: "mcp-soon-tags"
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Tag, {
+            kind: "daily"
+          }, "Coming soon"), play && /* @__PURE__ */ React.createElement(P, {
+            className: "mcp-soon-play",
+            href: playHref,
+            type: playHref ? void 0 : "button",
+            onClick: onPlay
+          }, /* @__PURE__ */ React.createElement(__ds_scope.Tag, {
+            kind: "open",
+            icon: "play"
+          }, play)))));
+        }
+        Object.assign(__ds_scope, { SoonCard });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "components/surfaces/SoonCard.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const DSX = window.MCPGameStoreDesignSystem_ef1abd;
+        const {
+          Icon: Icon2,
+          Tag,
+          TextLink,
+          SearchField,
+          Button
+        } = DSX;
+        function Frame({
+          w,
+          label,
+          children,
+          grow
+        }) {
+          const outer = React.useRef(null);
+          const inner = React.useRef(null);
+          const [s, setS] = React.useState(1);
+          const [h, setH] = React.useState(0);
+          React.useLayoutEffect(() => {
+            const fit = () => {
+              const sc = Math.min(1, outer.current.clientWidth / w);
+              setS(sc);
+              setH(inner.current.offsetHeight * sc);
+            };
+            fit();
+            const ro = new ResizeObserver(fit);
+            ro.observe(outer.current);
+            ro.observe(inner.current);
+            return () => ro.disconnect();
+          }, [w]);
+          return /* @__PURE__ */ React.createElement("figure", {
+            className: "fr" + (grow ? " is-grow" : ""),
+            style: {
+              flexBasis: grow ? 600 : w
+            }
+          }, /* @__PURE__ */ React.createElement("figcaption", {
+            className: "fr-cap"
+          }, label, s < 1 && /* @__PURE__ */ React.createElement("span", {
+            className: "fr-scale"
+          }, " · shown at " + Math.round(s * 100) + "%")), /* @__PURE__ */ React.createElement("div", {
+            ref: outer,
+            className: "fr-box",
+            style: {
+              height: h
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            ref: inner,
+            style: {
+              width: w,
+              transform: "scale(" + s + ")",
+              transformOrigin: "0 0"
+            }
+          }, children)));
+        }
+        const G = {
+          word: {
+            name: "Daily Word",
+            bg: "wine",
+            ink: "amber",
+            sh: "sq"
+          },
+          groups: {
+            name: "Daily Groups",
+            bg: "forest",
+            ink: "teal",
+            sh: "sq4"
+          },
+          mystery: {
+            name: "Daily Mystery",
+            bg: "indigo",
+            ink: "orange",
+            sh: "ci"
+          },
+          escape: {
+            name: "Escape",
+            bg: "forest",
+            ink: "amber",
+            sh: "door"
+          },
+          casebook: {
+            name: "Casebook",
+            bg: "indigo",
+            ink: "amber",
+            sh: "bars"
+          },
+          delve: {
+            name: "Delve",
+            bg: "wine",
+            ink: "lilac",
+            sh: "door"
+          }
+        };
+        const Cov = ({
+          gid,
+          cls
+        }) => {
+          const g = G[gid];
+          const f = {
+            fill: "var(--cover-" + g.ink + ")"
+          };
+          const shape = g.sh === "ci" ? /* @__PURE__ */ React.createElement("circle", {
+            cx: "24",
+            cy: "18",
+            r: "10",
+            style: f
+          }) : g.sh === "door" ? /* @__PURE__ */ React.createElement("rect", {
+            x: "18",
+            y: "8",
+            width: "12",
+            height: "28",
+            style: f
+          }) : g.sh === "bars" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("rect", {
+            x: "12",
+            y: "14",
+            width: "6",
+            height: "22",
+            style: f
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "22",
+            y: "8",
+            width: "6",
+            height: "28",
+            style: f
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "32",
+            y: "18",
+            width: "6",
+            height: "18",
+            style: f
+          })) : g.sh === "sq4" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("rect", {
+            x: "12",
+            y: "8",
+            width: "10",
+            height: "10",
+            style: f
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "26",
+            y: "8",
+            width: "10",
+            height: "10",
+            style: {
+              fill: "var(--cover-cream)"
+            }
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "12",
+            y: "20",
+            width: "10",
+            height: "10",
+            style: {
+              fill: "var(--cover-cream)"
+            }
+          }), /* @__PURE__ */ React.createElement("rect", {
+            x: "26",
+            y: "20",
+            width: "10",
+            height: "10",
+            style: f
+          })) : /* @__PURE__ */ React.createElement("rect", {
+            x: "16",
+            y: "10",
+            width: "16",
+            height: "16",
+            style: f
+          });
+          return /* @__PURE__ */ React.createElement("span", {
+            className: cls,
+            "aria-hidden": "true"
+          }, /* @__PURE__ */ React.createElement("svg", {
+            viewBox: "0 0 48 36"
+          }, /* @__PURE__ */ React.createElement("rect", {
+            width: "48",
+            height: "36",
+            style: {
+              fill: "var(--cover-bg-" + g.bg + ")"
+            }
+          }), shape));
+        };
+        const P = (gid, ed, k, short, full, t, again) => ({
+          gid,
+          ed,
+          k,
+          short,
+          full,
+          t,
+          again: !!again
+        });
+        const PLAYED = [["Today", [P("word", 212, "ok", "Solved", "Solved in 2 of 6", "21:15", 1), P("casebook", "The Gull Point Lighthouse", "ok", "Solved", "Solved", "20:24"), P("word", 212, "ok", "Solved", "Solved in 1 of 6", "12:40", 1), P("mystery", 64, "bad", "Missed", "Missed", "10:27"), P("groups", 88, "ok", "Solved", "All 4 groups, 1 mistake", "09:16"), P("word", 212, "ok", "Solved", "Solved in 3 of 6", "08:05")]], ["Yesterday", [P("escape", "The Locked Study", "ok", "Escaped", "Escaped in 5 moves", "19:30", 1), P("delve", "The Drowned Stair", "bad", "Hero fell", "Hero fell", "18:30"), P("mystery", 63, "ok", "Solved", "Solved", "14:02"), P("groups", 87, "bad", "Missed", "2 of 4 groups", "09:41"), P("escape", "The Locked Study", "ok", "Escaped", "Escaped in 7 moves", "08:12"), P("word", 211, "bad", "Missed", "Missed", "07:22")]]];
+        const E = (gid, n, title, latest, k, short, full, reps) => ({
+          gid,
+          n,
+          title,
+          latest,
+          k,
+          short,
+          full,
+          reps: reps || []
+        });
+        const EDITIONS = [["Today", [E("word", 212, null, 1, "ok", "Solved", "Solved in 3 of 6", [["6 October", "12:40", "ok", "Solved", "Solved in 1 of 6"], ["6 October", "21:15", "ok", "Solved", "Solved in 2 of 6"]]), E("groups", 88, null, 1, "ok", "Solved", "All 4 groups, 1 mistake"), E("mystery", 64, null, 1, "bad", "Missed", "Missed")]], ["Yesterday", [E("word", 211, null, 0, "bad", "Missed", "Missed"), E("groups", 87, null, 0, "bad", "Missed", "2 of 4 groups"), E("mystery", 63, null, 0, "ok", "Solved", "Solved"), E("escape", 4, "The Locked Study", 1, "ok", "Escaped", "Escaped in 7 moves", [["5 October", "19:30", "ok", "Escaped", "Escaped in 5 moves"]]), E("casebook", 45, "The Gull Point Lighthouse", 1, "ok", "Solved", "Solved")]], ["Sunday 4 October", [E("word", 210, null, 0, "none", "Not played", "Not played"), E("groups", 86, null, 0, "ok", "Solved", "All 4 groups, no mistakes"), E("mystery", 62, null, 0, "none", "Not played", "Not played")]]];
+        const WORD_PLAYS = [[212, "6 Oct", [["ok", "Solved", "Solved in 3 of 6"], ["ok", "Solved", "Solved in 1 of 6", 1], ["ok", "Solved", "Solved in 2 of 6", 1]]], [211, "5 Oct", [["bad", "Missed", "Missed"]]], [209, "3 Oct", [["ok", "Solved", "Solved in 4 of 6"]]], [208, "2 Oct", [["ok", "Solved", "Solved in 5 of 6"], ["ok", "Solved", "Solved in 3 of 6", 1]]], [206, "30 Sep", [["ok", "Solved", "Solved in 3 of 6"]]], [205, "29 Sep", [["bad", "Missed", "Missed"]]]];
+        const isPz = (gid) => ["word", "groups", "mystery"].includes(gid);
+        const LbChev2 = () => /* @__PURE__ */ React.createElement(Icon2, {
+          name: "back",
+          size: 16,
+          className: "lb-chev",
+          style: {
+            transform: "rotate(180deg)"
+          }
+        });
+        const ico = (k) => k === "ok" ? "check" : k === "bad" ? "error" : null;
+        const RpSt = ({
+          k,
+          l
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className: "rp-st is-" + k
+        }, /* @__PURE__ */ React.createElement("span", {
+          className: "rp-ico"
+        }, ico(k) && /* @__PURE__ */ React.createElement(Icon2, {
+          name: ico(k),
+          size: 14
+        })), /* @__PURE__ */ React.createElement("span", {
+          className: "rp-sl"
+        }, l));
+        const PhSt = ({
+          k,
+          l
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className: "lb-st is-" + k
+        }, ico(k) && /* @__PURE__ */ React.createElement(Icon2, {
+          name: ico(k),
+          size: 14
+        }), l);
+        const RpNum = ({
+          n,
+          name
+        }) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+          className: "rp-n"
+        }, "#" + n), " ", name);
+        const RpRow = ({
+          cov,
+          title,
+          k,
+          l,
+          when,
+          again,
+          muted
+        }) => /* @__PURE__ */ React.createElement("button", {
+          type: "button",
+          className: "rp rp-one"
+        }, cov && /* @__PURE__ */ React.createElement(Cov, {
+          gid: cov,
+          cls: "ph-cov"
+        }), /* @__PURE__ */ React.createElement("span", {
+          className: "rp-a",
+          style: muted ? {
+            color: "var(--muted)",
+            fontWeight: 400
+          } : null
+        }, /* @__PURE__ */ React.createElement("span", {
+          className: "rp-t"
+        }, title)), /* @__PURE__ */ React.createElement("span", {
+          className: "rp-c"
+        }, /* @__PURE__ */ React.createElement(RpSt, {
+          k,
+          l
+        })), /* @__PURE__ */ React.createElement("span", {
+          className: "rp-d"
+        }, when), /* @__PURE__ */ React.createElement("span", {
+          className: "rp-m"
+        }, again && /* @__PURE__ */ React.createElement("span", {
+          className: "rp-r",
+          title: "Replay"
+        }, "R")), /* @__PURE__ */ React.createElement(LbChev2, null));
+        const beforeTitle = (p) => isPz(p.gid) ? /* @__PURE__ */ React.createElement(RpNum, {
+          n: p.ed,
+          name: G[p.gid].name
+        }) : G[p.gid].name + " · " + p.ed;
+        const HistHead = () => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+          className: "gs-stack-sm"
+        }, /* @__PURE__ */ React.createElement("h1", {
+          className: "gs-h1"
+        }, "History"), /* @__PURE__ */ React.createElement("p", {
+          className: "gs-muted"
+        }, "A replay doesn’t change your streak or your record.")));
+        const HistTools = () => /* @__PURE__ */ React.createElement("div", {
+          className: "lbf-top"
+        }, /* @__PURE__ */ React.createElement("div", {
+          className: "lbf-bar"
+        }, /* @__PURE__ */ React.createElement("div", {
+          className: "lbf-search"
+        }, /* @__PURE__ */ React.createElement(SearchField, {
+          label: "Search",
+          placeholder: "A number, name or date",
+          value: "",
+          onChange: () => {
+          }
+        })), /* @__PURE__ */ React.createElement(Button, {
+          variant: "secondary"
+        }, "Filters")));
+        function BeforePlayed() {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement(HistHead, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-alllay"
+          }, /* @__PURE__ */ React.createElement(HistTools, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-box lb-results"
+          }, PLAYED.map(([day, ps]) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: day
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, day), /* @__PURE__ */ React.createElement("ul", {
+            className: "ph-list rp-cols is-cov"
+          }, ps.map((p, i) => /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, /* @__PURE__ */ React.createElement(RpRow, {
+            cov: p.gid,
+            title: beforeTitle(p),
+            k: p.k,
+            l: p.short,
+            when: p.t,
+            again: p.again
+          }))))))))));
+        }
+        const edBeforeTitle = (e) => isPz(e.gid) ? /* @__PURE__ */ React.createElement(RpNum, {
+          n: e.n,
+          name: G[e.gid].name
+        }) : G[e.gid].name + " #" + e.n + " · " + e.title;
+        function BeforeEditions() {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement(HistHead, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-alllay"
+          }, /* @__PURE__ */ React.createElement(HistTools, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-box lb-results"
+          }, EDITIONS.map(([day, es]) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: day
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, day), /* @__PURE__ */ React.createElement("ul", {
+            className: "lb-list ph-eds"
+          }, es.map((e, i) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: i
+          }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "ed-row ph-edcov"
+          }, /* @__PURE__ */ React.createElement(Cov, {
+            gid: e.gid,
+            cls: "ph-cov"
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "ed-t"
+          }, edBeforeTitle(e)), /* @__PURE__ */ React.createElement("span", {
+            className: "ed-slots is-one"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "ed-slot"
+          }, e.latest ? /* @__PURE__ */ React.createElement(Tag, {
+            kind: "daily"
+          }, "Latest") : null)), /* @__PURE__ */ React.createElement("span", {
+            className: "ed-r"
+          }, /* @__PURE__ */ React.createElement(PhSt, {
+            k: e.k,
+            l: e.short
+          })), /* @__PURE__ */ React.createElement(LbChev2, null))), e.reps.length > 0 && /* @__PURE__ */ React.createElement("li", {
+            className: "ph-rep-wrap"
+          }, /* @__PURE__ */ React.createElement("ul", {
+            className: "lb-list rp-cols ph-reps"
+          }, e.reps.map((r, j) => /* @__PURE__ */ React.createElement("li", {
+            key: j
+          }, /* @__PURE__ */ React.createElement(RpRow, {
+            title: r[0],
+            k: r[2],
+            l: r[3],
+            when: r[1],
+            again: true
+          }))))))))))))));
+        }
+        const LibSlot = ({
+          label
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "pg-slot"
+        }, /* @__PURE__ */ React.createElement("span", null, label));
+        function BeforeLibrary({
+          wide
+        }) {
+          const order = WORD_PLAYS.flatMap(([n, d, plays]) => plays.slice().reverse().map((p, i) => ({
+            key: n + "-" + i,
+            n,
+            d,
+            p
+          })));
+          const shown = order.slice(0, wide ? 7 : 4);
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "lb-lay"
+          }, wide && /* @__PURE__ */ React.createElement(LibSlot, {
+            label: "Achievements card (beside the plays card from 900px)"
+          }), /* @__PURE__ */ React.createElement("section", {
+            className: "lb-card lb-recentcard"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "lb-sechead"
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "mcp-t-card"
+          }, "Your words"), /* @__PURE__ */ React.createElement(TextLink, {
+            onClick: () => {
+            }
+          }, "All words")), /* @__PURE__ */ React.createElement("ul", {
+            className: "lb-list lb-recent rp-cols"
+          }, shown.map((v) => /* @__PURE__ */ React.createElement("li", {
+            key: v.key
+          }, /* @__PURE__ */ React.createElement(RpRow, {
+            title: "#" + v.n,
+            k: v.p[0],
+            l: v.p[1],
+            when: v.d,
+            again: v.p[3]
+          }))))))));
+        }
+        const St = ({
+          k,
+          l
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className: "pr-st is-" + k
+        }, ico(k) && /* @__PURE__ */ React.createElement(Icon2, {
+          name: ico(k),
+          size: 16
+        }), /* @__PURE__ */ React.createElement("span", null, l));
+        const Go = () => /* @__PURE__ */ React.createElement(Icon2, {
+          name: "next",
+          size: 20,
+          className: "pr-go"
+        });
+        const PrRow = ({
+          lead,
+          title,
+          meta,
+          end
+        }) => /* @__PURE__ */ React.createElement("button", {
+          type: "button",
+          className: "pr-row" + (lead ? " has-lead" : "") + (end ? " has-end" : "")
+        }, lead && /* @__PURE__ */ React.createElement(Cov, {
+          gid: lead,
+          cls: "pr-lead"
+        }), /* @__PURE__ */ React.createElement("span", {
+          className: "pr-body"
+        }, /* @__PURE__ */ React.createElement("span", {
+          className: "pr-title"
+        }, title), /* @__PURE__ */ React.createElement("span", {
+          className: "pr-meta"
+        }, meta)), end && /* @__PURE__ */ React.createElement("span", {
+          className: "pr-end"
+        }, end), /* @__PURE__ */ React.createElement(Go, null));
+        const PrSub = ({
+          k,
+          l,
+          when,
+          lead
+        }) => /* @__PURE__ */ React.createElement("button", {
+          type: "button",
+          className: "pr-row is-sub" + (lead ? " under-lead" : "")
+        }, /* @__PURE__ */ React.createElement("span", {
+          className: "pr-subline"
+        }, /* @__PURE__ */ React.createElement("span", {
+          className: "pr-again"
+        }, "Replay"), /* @__PURE__ */ React.createElement(St, {
+          k,
+          l
+        }), /* @__PURE__ */ React.createElement("span", {
+          className: "pr-when"
+        }, when)), /* @__PURE__ */ React.createElement(Go, null));
+        const afterTitle = (gid, ed) => isPz(gid) ? /* @__PURE__ */ React.createElement(React.Fragment, null, G[gid].name, " ", /* @__PURE__ */ React.createElement("span", {
+          className: "pr-n"
+        }, "#" + ed)) : G[gid].name + " · " + ed;
+        function AfterPlayed({
+          cols
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement(HistHead, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-alllay",
+            style: {
+              maxWidth: cols ? 960 : 760
+            }
+          }, /* @__PURE__ */ React.createElement(HistTools, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-box"
+          }, PLAYED.map(([day, ps]) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: day
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, day), /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-list" + (cols ? " pr-cols" : "")
+          }, ps.map((p, i) => /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, /* @__PURE__ */ React.createElement(PrRow, {
+            lead: p.gid,
+            title: afterTitle(p.gid, p.ed),
+            meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+              k: p.k,
+              l: p.full
+            }), /* @__PURE__ */ React.createElement("span", {
+              className: "pr-when"
+            }, p.t), p.again && /* @__PURE__ */ React.createElement("span", {
+              className: "pr-again"
+            }, "Replay"))
+          }))))))))));
+        }
+        function AfterEditions() {
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement(HistHead, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-alllay",
+            style: {
+              maxWidth: 760
+            }
+          }, /* @__PURE__ */ React.createElement(HistTools, null), /* @__PURE__ */ React.createElement("div", {
+            className: "lb-box"
+          }, EDITIONS.map(([day, es]) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: day
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, day), /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-list"
+          }, es.map((e, i) => /* @__PURE__ */ React.createElement("li", {
+            key: i
+          }, /* @__PURE__ */ React.createElement(PrRow, {
+            lead: e.gid,
+            title: isPz(e.gid) ? afterTitle(e.gid, e.n) : /* @__PURE__ */ React.createElement(React.Fragment, null, G[e.gid].name, " ", /* @__PURE__ */ React.createElement("span", {
+              className: "pr-n"
+            }, "#" + e.n), " · " + e.title),
+            meta: /* @__PURE__ */ React.createElement(St, {
+              k: e.k,
+              l: e.full
+            }),
+            end: e.latest ? /* @__PURE__ */ React.createElement(Tag, {
+              kind: "daily"
+            }, "Latest") : null
+          }), e.reps.length > 0 && /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-sublist"
+          }, e.reps.map((r, j) => /* @__PURE__ */ React.createElement("li", {
+            key: j
+          }, /* @__PURE__ */ React.createElement(PrSub, {
+            lead: true,
+            k: r[2],
+            l: r[4],
+            when: r[0].replace(" October", " Oct") + ", " + r[1]
+          })))))))))))));
+        }
+        function AfterLibrary({
+          wide,
+          cols
+        }) {
+          const shown = WORD_PLAYS.slice(0, wide ? 6 : 4);
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "gs-wrap gs-main"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "lb-lay"
+          }, wide && /* @__PURE__ */ React.createElement(LibSlot, {
+            label: "Achievements card (beside the plays card from 900px)"
+          }), /* @__PURE__ */ React.createElement("section", {
+            className: "lb-card pr-card"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "lb-sechead"
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "mcp-t-card"
+          }, "Your words"), /* @__PURE__ */ React.createElement(TextLink, {
+            onClick: () => {
+            }
+          }, "All words")), /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-list" + (cols ? " pr-cols" : "")
+          }, shown.map(([n, d, plays]) => {
+            const f = plays[0];
+            const reps = plays.length - 1;
+            return /* @__PURE__ */ React.createElement("li", {
+              key: n
+            }, /* @__PURE__ */ React.createElement(PrRow, {
+              title: "#" + n,
+              meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+                k: f[0],
+                l: f[2]
+              }), /* @__PURE__ */ React.createElement("span", {
+                className: "pr-when"
+              }, d), reps > 0 && /* @__PURE__ */ React.createElement("span", {
+                className: cols ? "pr-again" : ""
+              }, reps === 1 ? "1 replay" : reps + " replays"))
+            }));
+          }))))));
+        }
+        function DsCardBefore() {
+          const {
+            Card,
+            ListRow,
+            RowList
+          } = DSX;
+          const meta = (d, r, c) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", null, d), /* @__PURE__ */ React.createElement("span", {
+            style: {
+              color: c
+            }
+          }, r));
+          return /* @__PURE__ */ React.createElement("div", {
+            style: {
+              padding: 20,
+              background: "var(--page)"
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
+              gap: 16,
+              alignItems: "start"
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 8
+            }
+          }, /* @__PURE__ */ React.createElement(Card, {
+            title: "Your cases",
+            action: /* @__PURE__ */ React.createElement(TextLink, {
+              onClick: () => {
+              }
+            }, "All cases")
+          }, /* @__PURE__ */ React.createElement(RowList, {
+            label: "Your recent cases"
+          }, /* @__PURE__ */ React.createElement(ListRow, {
+            onClick: () => {
+            },
+            title: "The Gull Point Lighthouse",
+            meta: meta("5 Oct", "Solved", "var(--success)")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            onClick: () => {
+            },
+            title: "The Night Train",
+            meta: meta("28 Sep", "Unsolved", "var(--error)")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            muted: true,
+            title: "Not played",
+            meta: /* @__PURE__ */ React.createElement("span", null, "21 Sep")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            onClick: () => {
+            },
+            title: "A Death at the Regatta",
+            meta: meta("14 Sep", "Solved", "var(--success)")
+          }))), /* @__PURE__ */ React.createElement("span", {
+            className: "fr-note"
+          }, "Latest four, then All cases opens its own page")), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 8
+            }
+          }, /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(RowList, null, /* @__PURE__ */ React.createElement(ListRow, {
+            className: "is-hover",
+            onClick: () => {
+            },
+            title: "Hover",
+            meta: meta("5 Oct", "Solved", "var(--success)")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            className: "is-pressed",
+            onClick: () => {
+            },
+            title: "Press",
+            meta: meta("5 Oct", "Solved", "var(--success)")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            className: "is-focus",
+            onClick: () => {
+            },
+            title: "Focus",
+            meta: meta("5 Oct", "Solved", "var(--success)")
+          }), /* @__PURE__ */ React.createElement(ListRow, {
+            muted: true,
+            title: "Muted: can't be opened",
+            meta: /* @__PURE__ */ React.createElement("span", null, "21 Sep")
+          }))), /* @__PURE__ */ React.createElement("span", {
+            className: "fr-note"
+          }, "Whole row is one target. No inline actions."))));
+        }
+        function DsCardAfter() {
+          const box = {
+            background: "var(--card)",
+            border: "1px solid var(--line)",
+            "--lb-pad": "16px"
+          };
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root",
+            style: {
+              padding: 20,
+              gap: 20
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "pr-anat",
+            style: {
+              ...box,
+              padding: "14px 0"
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "pr-row has-lead has-end",
+            style: {
+              cursor: "default"
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            "data-n": "1",
+            style: {
+              display: "block"
+            }
+          }, /* @__PURE__ */ React.createElement(Cov, {
+            gid: "casebook",
+            cls: "pr-lead"
+          })), /* @__PURE__ */ React.createElement("span", {
+            className: "pr-body"
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "pr-title",
+            "data-n": "2",
+            style: {
+              justifySelf: "start"
+            }
+          }, "Casebook ", /* @__PURE__ */ React.createElement("span", {
+            className: "pr-n"
+          }, "#44"), " · The Night Train"), /* @__PURE__ */ React.createElement("span", {
+            className: "pr-meta",
+            "data-n": "3",
+            style: {
+              justifySelf: "start"
+            }
+          }, /* @__PURE__ */ React.createElement(St, {
+            k: "bad",
+            l: "Unsolved"
+          }), /* @__PURE__ */ React.createElement("span", null, "28 Sep, 20:10"), /* @__PURE__ */ React.createElement("span", {
+            className: "pr-again"
+          }, "Replay"))), /* @__PURE__ */ React.createElement("span", {
+            className: "pr-end",
+            "data-n": "4"
+          }, /* @__PURE__ */ React.createElement(Tag, {
+            kind: "daily"
+          }, "Latest")), /* @__PURE__ */ React.createElement("span", {
+            "data-n": "5",
+            style: {
+              display: "grid"
+            }
+          }, /* @__PURE__ */ React.createElement(Go, null)))), /* @__PURE__ */ React.createElement("ol", {
+            className: "fr-key"
+          }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("b", null, "Lead"), ", optional. A 40×30 cover when the list mixes games."), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("b", null, "Title."), " The name a player would say. The game's name only when the list mixes games."), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("b", null, "Meta."), " One line of facts, always in the same order: result, when, marker. It wraps; it never moves."), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("b", null, "End"), ", optional. One short tag about the row."), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("b", null, "Chevron"), " at rest whenever the row opens.")), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "300px minmax(0,1fr)",
+              gap: 16,
+              alignItems: "start"
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 8
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: box
+          }, /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-list"
+          }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement(PrRow, {
+            title: "The Night Train",
+            meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+              k: "bad",
+              l: "Unsolved"
+            }), /* @__PURE__ */ React.createElement("span", null, "28 Sep"))
+          })), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement(PrRow, {
+            title: "A Death at the Regatta",
+            meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+              k: "none",
+              l: "Not played"
+            }), /* @__PURE__ */ React.createElement("span", null, "21 Sep"))
+          })))), /* @__PURE__ */ React.createElement("span", {
+            className: "fr-note"
+          }, "300px wide")), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 8
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: box
+          }, /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-list"
+          }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement(PrRow, {
+            title: "The Night Train",
+            meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+              k: "bad",
+              l: "Unsolved"
+            }), /* @__PURE__ */ React.createElement("span", null, "28 Sep"))
+          }), /* @__PURE__ */ React.createElement("ul", {
+            className: "pr-sublist"
+          }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement(PrSub, {
+            k: "ok",
+            l: "Solved",
+            when: "2 Oct, 21:00"
+          })))), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement(PrRow, {
+            title: "A Death at the Regatta",
+            meta: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(St, {
+              k: "none",
+              l: "Not played"
+            }), /* @__PURE__ */ React.createElement("span", null, "21 Sep"))
+          })))), /* @__PURE__ */ React.createElement("span", {
+            className: "fr-note"
+          }, "Wider: the same shape. A replay hangs under its edition."))));
+        }
+        Object.assign(window, {
+          Frame,
+          BeforePlayed,
+          BeforeEditions,
+          BeforeLibrary,
+          AfterPlayed,
+          AfterEditions,
+          AfterLibrary,
+          DsCardBefore,
+          DsCardAfter
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/archive/rows-and-history/playground/rows.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const DSR = window.MCPGameStoreDesignSystem_ef1abd;
+        const CR_KEY = "pg_canonical-row_v1";
+        const CR_WIDTHS = [320, 390, 640, 768, 960];
+        const CR_DEF_W = [320, 390, 640, 960];
+        const noGo = (e) => e.preventDefault();
+        const crTitle = (r) => r.game ? r.game + (r.name ? " · " + r.name : " " + r.num) : r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const CrArt = ({
+          art,
+          className
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className,
+          "aria-hidden": "true",
+          dangerouslySetInnerHTML: {
+            __html: CR_ART[art]
+          }
+        });
+        const CRow = ({
+          r
+        }) => {
+          const icon = r.tone === "ok" ? "check" : r.tone === "bad" ? "error" : null;
+          return /* @__PURE__ */ React.createElement("a", {
+            href: "#",
+            onClick: noGo,
+            className: "cr" + (r.art && !r.sub ? " has-lead" : "") + (r.sub ? " is-sub" : ""),
+            "aria-label": r.sub ? "Replay, " + r.result + ", " + r.when : void 0
+          }, r.art && !r.sub && /* @__PURE__ */ React.createElement(CrArt, {
+            art: r.art,
+            className: "cr-lead"
+          }), !r.sub && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-t"
+          }, r.game && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-g"
+          }, r.game, r.name && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-sep"
+          }, " ·")), r.game && r.num && " ", r.num && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-n"
+          }, r.num, r.name && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-sep"
+          }, " ·")), r.name && (r.game || r.num) && " ", r.name && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-m"
+          }, r.name)), /* @__PURE__ */ React.createElement("span", {
+            className: "cr-f"
+          }, r.result && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-r is-" + (r.tone || "none")
+          }, icon && /* @__PURE__ */ React.createElement(DSR.Icon, {
+            name: icon,
+            size: 16
+          }), /* @__PURE__ */ React.createElement("span", null, r.result)), r.when && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-w"
+          }, r.when), r.note && /* @__PURE__ */ React.createElement("span", {
+            className: "cr-x"
+          }, r.note)), /* @__PURE__ */ React.createElement(DSR.Icon, {
+            name: "next",
+            size: 20,
+            className: "cr-go"
+          }));
+        };
+        const crNest = (groups) => {
+          const kids = {};
+          groups.forEach((g) => g.rows.forEach((r) => {
+            if (r.of) (kids[r.of] = kids[r.of] || []).unshift({
+              ...r,
+              day: g.h
+            });
+          }));
+          return groups.map((g) => ({
+            h: g.h,
+            rows: g.rows.filter((r) => !r.of).flatMap((r) => {
+              const k = kids[r.k];
+              if (!k) return [r];
+              return [{
+                ...r,
+                note: k.length + (k.length > 1 ? " replays" : " replay")
+              }, ...k.map((c) => ({
+                ...c,
+                sub: true,
+                note: "Replay",
+                when: c.day !== g.h && c.long ? c.long : c.when
+              }))];
+            })
+          })).filter((g) => g.rows.length);
+        };
+        const useFit = (ref, on) => {
+          React.useLayoutEffect(() => {
+            const box = ref.current;
+            if (!on || !box) return void 0;
+            const ul = box.querySelector(".crl");
+            let last = -1;
+            const run = () => {
+              const w = box.clientWidth;
+              if (w === last) return;
+              last = w;
+              ul.classList.remove("is-stack");
+              ul.classList.add("is-cols");
+              const wrap = Array.from(ul.querySelectorAll(".cr-t")).some((t) => t.offsetHeight > 30);
+              if (wrap) {
+                ul.classList.remove("is-cols");
+                ul.classList.add("is-stack");
+              }
+            };
+            run();
+            const ro = new ResizeObserver(run);
+            ro.observe(box);
+            return () => ro.disconnect();
+          });
+        };
+        const CList = ({
+          s,
+          groups,
+          idea,
+          label
+        }) => {
+          const ref = React.useRef(null);
+          useFit(ref, !!idea.fit);
+          const gs = idea.nest ? crNest(groups) : groups;
+          return /* @__PURE__ */ React.createElement("div", {
+            ref,
+            className: "crbox"
+          }, /* @__PURE__ */ React.createElement("ul", {
+            className: "crl" + (s.lead ? " has-leads" : "") + (s.outcome === false ? " no-outcome" : ""),
+            "aria-label": label
+          }, gs.map((g, gi) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: gi
+          }, g.h && /* @__PURE__ */ React.createElement("li", {
+            className: "crl-h",
+            role: "presentation"
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "crl-h",
+            style: {
+              padding: 0,
+              font: "inherit"
+            }
+          }, g.h)), g.rows.map((r) => /* @__PURE__ */ React.createElement("li", {
+            key: r.k,
+            className: "is-row" + (r.sub ? " is-sub-li" : "")
+          }, /* @__PURE__ */ React.createElement(CRow, {
+            r
+          })))))));
+        };
+        const DsList = ({
+          s,
+          groups,
+          label
+        }) => {
+          const row = (r) => /* @__PURE__ */ React.createElement(DSR.ListRow, {
+            key: r.k,
+            onClick: () => {
+            },
+            lead: r.art ? /* @__PURE__ */ React.createElement(CrArt, {
+              art: r.art
+            }) : void 0,
+            title: crTitle(r),
+            result: r.result,
+            tone: r.tone || void 0,
+            when: r.when,
+            note: r.note
+          });
+          if (groups.length > 1 || groups[0].h) return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, groups.map((g) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: g.h
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, g.h), /* @__PURE__ */ React.createElement(DSR.RowList, {
+            label: g.h
+          }, g.rows.map(row)))));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, /* @__PURE__ */ React.createElement(DSR.RowList, {
+            label
+          }, groups[0].rows.map(row)));
+        };
+        const Surface = ({
+          s,
+          idea,
+          worst
+        }) => {
+          const groups = CR_SEED[s.id](worst);
+          const list = idea.ds ? /* @__PURE__ */ React.createElement(DsList, {
+            s,
+            groups,
+            label: s.card || s.page
+          }) : /* @__PURE__ */ React.createElement(CList, {
+            s,
+            groups,
+            idea,
+            label: s.card || s.page
+          });
+          if (s.card) return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, /* @__PURE__ */ React.createElement("section", {
+            className: "sf-card"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "sf-cardhead"
+          }, /* @__PURE__ */ React.createElement("h2", null, s.card), /* @__PURE__ */ React.createElement(DSR.TextLink, {
+            onClick: () => {
+            }
+          }, s.link)), list));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, s.back && /* @__PURE__ */ React.createElement("span", {
+            className: "sf-back"
+          }, /* @__PURE__ */ React.createElement(DSR.Icon, {
+            name: "back",
+            size: 20
+          }), s.back), /* @__PURE__ */ React.createElement("h1", {
+            className: "sf-h1"
+          }, s.page), list);
+        };
+        const Frame = ({
+          w,
+          cap,
+          s,
+          idea,
+          worst,
+          room
+        }) => {
+          const z = room && room < w ? Math.max(0.5, Math.floor(room / w * 100) / 100) : 1;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg-frame",
+            style: {
+              width: w,
+              zoom: z === 1 ? void 0 : z
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "pg-cap",
+            style: z === 1 ? void 0 : {
+              fontSize: 12 / z
+            }
+          }, (cap || w + "PX") + (z === 1 ? "" : " · SHOWN AT " + Math.round(z * 100) + "%")), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-in " + idea.cls
+          }, /* @__PURE__ */ React.createElement(Surface, {
+            s,
+            idea,
+            worst
+          })));
+        };
+        const PAIN_ICON = {
+          ok: "check",
+          part: "warn",
+          bad: "error"
+        };
+        const PAIN_WORD = {
+          ok: "Holds",
+          part: "Partly",
+          bad: "Breaks"
+        };
+        const Detail = ({
+          idea
+        }) => /* @__PURE__ */ React.createElement("section", {
+          className: "pg-detail",
+          "aria-live": "polite"
+        }, /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("small", null, idea.n), idea.name), /* @__PURE__ */ React.createElement("p", null, idea.stance), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-cost"
+        }, /* @__PURE__ */ React.createElement("b", null, "Cost."), " ", idea.cost), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-adapt"
+        }, /* @__PURE__ */ React.createElement("b", null, "Across widths."), " ", idea.adapt), /* @__PURE__ */ React.createElement("ul", {
+          className: "pg-pains"
+        }, CR_PAINS.map(([k, l]) => /* @__PURE__ */ React.createElement("li", {
+          key: k,
+          className: "is-" + idea.pains[k]
+        }, /* @__PURE__ */ React.createElement(DSR.Icon, {
+          name: PAIN_ICON[idea.pains[k]],
+          size: 16
+        }), l, " ", /* @__PURE__ */ React.createElement("em", null, PAIN_WORD[idea.pains[k]])))));
+        const Seg = ({
+          label,
+          opts,
+          value,
+          onPick,
+          multi
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "pg-seg",
+          role: "group",
+          "aria-label": label
+        }, /* @__PURE__ */ React.createElement("span", null, label), opts.map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+          key: v,
+          type: "button",
+          "aria-pressed": multi ? value.includes(v) : value === v,
+          onClick: () => onPick(v)
+        }, l)));
+        const crLoad = () => {
+          try {
+            return {
+              opt: 10,
+              view: "opt",
+              worst: false,
+              widths: CR_DEF_W,
+              surf: "history",
+              w: 390,
+              ...JSON.parse(localStorage.getItem(CR_KEY) || "{}")
+            };
+          } catch (e) {
+            return {
+              opt: 10,
+              view: "opt",
+              worst: false,
+              widths: CR_DEF_W,
+              surf: "history",
+              w: 390
+            };
+          }
+        };
+        function App() {
+          const [st, setSt] = React.useState(crLoad);
+          React.useEffect(() => {
+            localStorage.setItem(CR_KEY, JSON.stringify(st));
+          }, [st]);
+          const set = (k, v) => setSt((p) => ({
+            ...p,
+            [k]: v
+          }));
+          const mainRef = React.useRef(null);
+          const [room, setRoom] = React.useState(0);
+          React.useLayoutEffect(() => {
+            const m = mainRef.current;
+            if (!m) return void 0;
+            const run = () => {
+              const cs = getComputedStyle(m);
+              setRoom(m.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+            };
+            run();
+            const ro = new ResizeObserver(run);
+            ro.observe(m);
+            return () => ro.disconnect();
+          }, []);
+          const idea = CR_IDEAS.find((x) => x.n === st.opt) || CR_IDEAS[0];
+          const flipW = (w) => set("widths", st.widths.includes(w) ? st.widths.length > 1 ? st.widths.filter((x) => x !== w) : st.widths : CR_WIDTHS.filter((x) => x === w || st.widths.includes(x)));
+          const surf = CR_SURFACES.find((x) => x.id === st.surf) || CR_SURFACES[0];
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg"
+          }, /* @__PURE__ */ React.createElement("nav", {
+            className: "pg-rail",
+            "aria-label": "Ideas"
+          }, /* @__PURE__ */ React.createElement("p", {
+            className: "pg-rail-t"
+          }, "IDEAS"), /* @__PURE__ */ React.createElement("ul", {
+            className: "pg-opts"
+          }, CR_IDEAS.map((x) => /* @__PURE__ */ React.createElement("li", {
+            key: x.n
+          }, /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "pg-opt",
+            "aria-pressed": x.n === st.opt,
+            onClick: () => set("opt", x.n)
+          }, /* @__PURE__ */ React.createElement("b", null, x.n), /* @__PURE__ */ React.createElement("span", null, x.name)))))), /* @__PURE__ */ React.createElement("main", {
+            className: "pg-main",
+            ref: mainRef
+          }, /* @__PURE__ */ React.createElement("header", {
+            className: "pg-lede"
+          }, /* @__PURE__ */ React.createElement("h1", null, "Canonical row"), /* @__PURE__ */ React.createElement("p", null, "One row for every list in the product. Each idea renders ", /* @__PURE__ */ React.createElement("b", null, "the same row data"), " (cover, game, number, name, result, when, note) on ", /* @__PURE__ */ React.createElement("b", null, "five real surfaces"), ", in frames 320 to 960px wide (the list inside is 34px narrower; the ladders switch on the list’s width). Frames wider than the pane are scaled down and say so. Copy and results are the product’s own. 0 is the shipped ListRow."), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(Seg, {
+            label: "View",
+            value: st.view,
+            onPick: (v) => set("view", v),
+            opts: [["opt", "One idea, every surface"], ["surf", "One surface, every idea"]]
+          }), /* @__PURE__ */ React.createElement(Seg, {
+            label: "Seed",
+            value: st.worst ? "w" : "r",
+            onPick: (v) => set("worst", v === "w"),
+            opts: [["r", "As seeded"], ["w", "Worst case"]]
+          })), st.view === "opt" ? /* @__PURE__ */ React.createElement(Seg, {
+            label: "Widths",
+            multi: true,
+            value: st.widths,
+            onPick: flipW,
+            opts: CR_WIDTHS.map((w) => [w, w + ""])
+          }) : /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(Seg, {
+            label: "Surface",
+            value: st.surf,
+            onPick: (v) => set("surf", v),
+            opts: CR_SURFACES.map((x) => [x.id, x.name])
+          }), /* @__PURE__ */ React.createElement(Seg, {
+            label: "Width",
+            value: st.w,
+            onPick: (v) => set("w", v),
+            opts: CR_WIDTHS.map((w) => [w, w + ""])
+          }))), /* @__PURE__ */ React.createElement(Detail, {
+            idea
+          }), st.view === "opt" ? CR_SURFACES.map((s) => /* @__PURE__ */ React.createElement("section", {
+            key: s.id,
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, s.name), /* @__PURE__ */ React.createElement("p", null, s.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, st.widths.map((w) => /* @__PURE__ */ React.createElement(Frame, {
+            key: w + "-" + idea.n,
+            w,
+            s,
+            idea,
+            worst: st.worst,
+            room
+          }))))) : /* @__PURE__ */ React.createElement("section", {
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, surf.name, " at ", st.w, "px"), /* @__PURE__ */ React.createElement("p", null, surf.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, CR_IDEAS.map((x) => /* @__PURE__ */ React.createElement(Frame, {
+            key: x.n + "-" + st.w,
+            w: st.w,
+            cap: x.n + " · " + x.name.toUpperCase(),
+            s: surf,
+            idea: x,
+            worst: st.worst,
+            room
+          }))))));
+        }
+        if (document.querySelector('script[src$="pg-row-app.jsx"]')) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row-app.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        (() => {
+          const GUT = "80px";
+          const S = (p) => `
+${p} .cr{grid-template-columns:minmax(0,1fr) 20px;grid-template-areas:"t g" "f g"}
+${p} .cr.has-lead{grid-template-columns:40px minmax(0,1fr) 20px;grid-template-areas:"l t g" "l f g"}
+${p} .cr-lead{grid-area:l}${p} .cr-t{grid-area:t}${p} .cr-go{grid-area:g}
+${p} .cr-f{grid-area:f;display:flex;flex-wrap:wrap;align-items:center;min-width:0;margin-left:-20px;clip-path:inset(-4px -4px -4px 20px)}
+${p} .cr-f>*::before{content:"·";display:inline-block;width:20px;text-align:center;color:var(--muted);font-weight:400}
+${p} .cr-f>.cr-r::before{margin-right:-6px}`;
+          const G = (p, gut = GUT) => `
+${p} .cr{grid-template-columns:minmax(0,1fr) ${gut} 20px;grid-template-areas:"t w g" "r x g"}
+${p} .cr.has-lead{grid-template-columns:40px minmax(0,1fr) ${gut} 20px;grid-template-areas:"l t w g" "l r x g"}
+${p} .cr-f{display:contents}${p} .cr-f>*::before{content:none}
+${p} .cr-lead{grid-area:l}${p} .cr-t{grid-area:t;align-self:baseline}${p} .cr-go{grid-area:g}
+${p} .cr-w{grid-area:w;justify-self:end;align-self:baseline}${p} .cr-r{grid-area:r}${p} .cr-x{grid-area:x;justify-self:end}
+${p} .cr:not(:has(.cr-x)) .cr-r{grid-column:r-start / x-end}`;
+          const GW = (p, gut = GUT, w = GUT) => `
+${p} .cr{grid-template-columns:minmax(0,1fr) minmax(0,15rem) ${w} ${gut} 20px;grid-template-areas:"t r w x g"}
+${p} .cr.has-lead{grid-template-columns:40px minmax(0,1fr) minmax(0,15rem) ${w} ${gut} 20px;grid-template-areas:"l t r w x g"}
+${p} .cr-t,${p} .cr-w{align-self:center}
+${p} .cr:not(:has(.cr-x)) .cr-r{grid-column:r}`;
+          const L = (p) => `
+${p} .crl{grid-template-columns:[l] auto [t] minmax(0,1fr) [r] fit-content(16rem) [w] max-content [x] max-content [g] 40px}
+${p} .crl>li{grid-column:1/-1;display:grid;grid-template-columns:subgrid}
+${p} .crl>li.crl-h{display:block}
+${p} .cr,${p} .cr.has-lead{grid-column:1/-1;grid-template-columns:subgrid;grid-template-areas:none;column-gap:0}
+${p} .cr-f{display:contents}${p} .cr-f>*::before{content:none}
+${p} .cr-lead,${p} .cr-t,${p} .cr-r,${p} .cr-w,${p} .cr-x,${p} .cr-go{grid-row:1;align-self:center}
+${p} .cr-lead{grid-column:l;margin-right:12px}${p} .cr-t{grid-column:t}${p} .cr-t .cr-m{display:inline}
+${p} .cr-r{grid-column:r;padding-left:24px}${p} .cr-w{grid-column:w;padding-left:24px;justify-self:end}
+${p} .cr-x{grid-column:x;padding-left:16px;justify-self:start}${p} .cr-go{grid-column:g;justify-self:end}
+${p} .cr:not(:has(.cr-x)) .cr-r{grid-column:r}`;
+          const P = (p) => `
+${p} .cr{grid-template-columns:minmax(0,1fr) max-content 20px;grid-template-areas:"t t g" "r w g" ". x g"}
+${p} .cr.has-lead{grid-template-columns:40px minmax(0,1fr) max-content 20px;grid-template-areas:"l t t g" "l r w g" "l . x g"}
+${p} .cr-f{display:contents}${p} .cr-f>*::before{content:none}
+${p} .cr-lead{grid-area:l}${p} .cr-t{grid-area:t}${p} .cr-go{grid-area:g}
+${p} .cr-r{grid-area:r;align-self:start}${p} .cr-r>span{text-wrap:balance}
+${p} .cr-w{grid-area:w;justify-self:end;align-self:start}${p} .cr-x{grid-area:x;justify-self:end}`;
+          const LN = (p) => L(p) + `
+${p} .crl{grid-template-columns:[l] auto [t] auto [r] minmax(8rem,1fr) [w] max-content [x] max-content [g] 40px}`;
+          const Q = (min, css2) => `@container crl (min-width:${min}px){${css2}}`;
+          const css = [
+            S(".i1"),
+            G(".i2"),
+            Q(640, GW(".i2")),
+            S(".i3"),
+            Q(560, L(".i3")),
+            S(".i4 .crl.is-stack"),
+            `.i4 .crl.is-cols .cr{grid-template-columns:minmax(0,1fr) auto 20px;grid-template-areas:"t f g"}
+.i4 .crl.is-cols .cr.has-lead{grid-template-columns:40px minmax(0,1fr) auto 20px;grid-template-areas:"l t f g"}
+.i4 .crl.is-cols .cr-lead{grid-area:l}.i4 .crl.is-cols .cr-t{grid-area:t}.i4 .crl.is-cols .cr-go{grid-area:g}
+.i4 .crl.is-cols .cr-f{grid-area:f;display:flex;gap:16px;align-items:center;justify-content:end;white-space:nowrap}
+.i4 .crl.is-cols .cr-x{order:1}.i4 .crl.is-cols .cr-w{order:2;min-width:4.5em;text-align:right}
+.i4 .crl:not(.is-cols):not(.is-stack){visibility:hidden}`,
+            // Eyebrow: game or number above, the edition's own name or number as the headline.
+            G(".i5"),
+            `.i5 .cr-t{display:flex;flex-direction:column;gap:2px;align-self:start}
+.i5 .cr-sep{display:none}.i5 .cr-t>*{margin-left:0!important}
+.i5 .cr-g,.i5 .cr-n:has(+.cr-m){font:600 12px/1.35 var(--font-text);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.i5 .cr-m,.i5 .cr-n:not(:has(+.cr-m)){font:700 17px/1.25 var(--font-heading);letter-spacing:-.005em;text-wrap:pretty}
+.i5 .cr-w{align-self:start;font-size:13px;line-height:1.35}`,
+            Q(640, `.i5 .cr{grid-template-columns:minmax(0,1fr) minmax(0,15rem) 80px 88px 20px;grid-template-areas:"t r x w g"}
+.i5 .cr.has-lead{grid-template-columns:40px minmax(0,1fr) minmax(0,15rem) 80px 88px 20px;grid-template-areas:"l t r x w g"}
+.i5 .cr-w{align-self:center;font-size:14px}
+.i5 .cr-t{align-self:center}`),
+            // Timeline: when leads.
+            `.i6 .cr{grid-template-columns:4.5em minmax(0,1fr) max-content 20px;grid-template-areas:"w t t g" "w r x g"}
+.i6 .cr.has-lead{grid-template-columns:4.5em 40px minmax(0,1fr) max-content 20px;grid-template-areas:"w l t t g" "w l r x g"}
+.i6 .cr-lead{grid-area:l}.i6 .cr-t{grid-area:t}.i6 .cr-go{grid-area:g}
+.i6 .cr-f{display:contents}
+.i6 .cr-w{grid-area:w;align-self:start;color:var(--text);font-weight:600;padding-top:1px}
+.i6 .cr-r{grid-area:r}.i6 .cr-x{grid-area:x;justify-self:end}.i6 .cr:not(:has(.cr-x)) .cr-r{grid-column:r-start / x-end}`,
+            Q(640, `.i6 .cr{grid-template-columns:6em minmax(0,1fr) minmax(0,15rem) 80px 20px;grid-template-areas:"w t r x g"}
+.i6 .cr.has-lead{grid-template-columns:6em 40px minmax(0,1fr) minmax(0,15rem) 80px 20px;grid-template-areas:"w l t r x g"}
+.i6 .cr-r{grid-area:r}.i6 .cr-x{grid-area:x;justify-self:start}.i6 .cr-w{align-self:center;padding-top:0}.i6 .cr:not(:has(.cr-x)) .cr-r{grid-column:r}`),
+            // Uniform: gutter geometry, one fixed row height, title clamped to two lines.
+            G(".i7"),
+            Q(640, GW(".i7")),
+            `.i7 .cr,.i7 .cr.has-lead{height:88px;align-content:center}
+.i7 .cr-m{display:inline}.i7 .cr-t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}`,
+            Q(640, `.i7 .cr,.i7 .cr.has-lead{height:64px}`),
+            // Nested: gutter geometry; replays as sub-rows on a rail.
+            G(".i8"),
+            Q(640, GW(".i8", GUT, "112px")),
+            `.i8 .cr.is-sub,.i8 .cr.is-sub.has-lead{min-height:44px;padding-top:6px;padding-bottom:6px;padding-left:var(--ind,32px);position:relative;grid-template-columns:auto minmax(0,1fr) auto 20px;grid-template-areas:"x r w g"}
+.i8 .has-leads .cr.is-sub{--ind:68px}
+.i8 .cr.is-sub::before{content:"";position:absolute;left:calc(var(--ind,32px) - 12px);top:0;bottom:0;width:2px;background:var(--line)}
+.i8 .cr.is-sub .cr-x{justify-self:start;color:var(--muted)}.i8 .cr.is-sub .cr-w{align-self:center}
+.i8 .crl>li.is-sub-li{border-top:0}`,
+            Q(640, `.i8 .cr.is-sub,.i8 .cr.is-sub.has-lead{padding-left:16px;grid-template-columns:minmax(0,1fr) minmax(0,15rem) 112px 80px 20px;grid-template-areas:"x r w x2 g"}
+.i8 .has-leads .cr.is-sub{grid-template-columns:40px minmax(0,1fr) minmax(0,15rem) 112px 80px 20px;grid-template-areas:"l x r w x2 g"}
+.i8 .crl:not(.has-leads) .cr.is-sub .cr-x{padding-left:16px}
+.i8 .crl:not(.has-leads) .cr.is-sub::before{left:20px}
+.i8 .has-leads .cr.is-sub::before{left:56px}`),
+            // Outcome first.
+            `.i9 .crl:not(.no-outcome) .cr{grid-template-columns:minmax(0,1fr) 80px 20px;grid-template-areas:"r x g" "t w g"}
+.i9 .crl:not(.no-outcome) .cr.has-lead{grid-template-columns:40px minmax(0,1fr) 80px 20px;grid-template-areas:"l r x g" "l t w g"}
+.i9 .crl:not(.no-outcome) .cr-f{display:contents}
+.i9 .crl:not(.no-outcome) .cr-lead{grid-area:l}.i9 .crl:not(.no-outcome) .cr-go{grid-area:g}
+.i9 .crl:not(.no-outcome) .cr-r{grid-area:r;font:600 16px/1.35 var(--font-text);color:var(--text);align-self:baseline}
+.i9 .crl:not(.no-outcome) .cr-t{grid-area:t;font:400 14px/1.45 var(--font-text);color:var(--muted)}
+.i9 .crl:not(.no-outcome) .cr-w{grid-area:w;justify-self:end;align-self:baseline}
+.i9 .crl:not(.no-outcome) .cr-x{grid-area:x;justify-self:end;align-self:baseline}
+.i9 .crl:not(.no-outcome) .cr:not(:has(.cr-x)) .cr-r{grid-column:r-start / x-end}
+.i9 .crl:not(.no-outcome) .cr-t,.i9 .crl:not(.no-outcome) .cr-w{align-self:baseline}`,
+            G(".i9 .crl.no-outcome"),
+            Q(640, `.i9 .crl:not(.no-outcome) .cr{grid-template-columns:minmax(0,16rem) minmax(0,1fr) 80px 88px 20px;grid-template-areas:"r t x w g"}
+.i9 .crl:not(.no-outcome) .cr.has-lead{grid-template-columns:40px minmax(0,16rem) minmax(0,1fr) 80px 88px 20px;grid-template-areas:"l r t x w g"}
+.i9 .crl:not(.no-outcome) .cr-r,.i9 .crl:not(.no-outcome) .cr-w,.i9 .crl:not(.no-outcome) .cr-t,.i9 .crl:not(.no-outcome) .cr-x{align-self:center}.i9 .crl:not(.no-outcome) .cr:not(:has(.cr-x)) .cr-r{grid-column:r}
+${GW(".i9 .crl.no-outcome")}`),
+            S(".i10"),
+            Q(420, G(".i10")),
+            Q(720, L(".i10")),
+            P(".i10b"),
+            Q(420, G(".i10b")),
+            Q(720, L(".i10b")),
+            P(".i10c"),
+            Q(420, G(".i10c")),
+            Q(720, LN(".i10c"))
+          ].join("\n");
+          const el = document.createElement("style");
+          el.id = "cr-ideas";
+          el.textContent = css;
+          document.head.appendChild(el);
+        })();
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row-css.js", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const CR_SVG = (b) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + b + "</svg>";
+        const CR_ART2 = {
+          word: CR_SVG('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>'),
+          groups: CR_SVG('<rect width="160" height="120" fill="#1D1B3A"/>' + ["#E5A63B", "#328A88", "#D66847", "#A390B2"].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join("")).join("")),
+          mystery: CR_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>'),
+          escape: CR_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>'),
+          casebook: CR_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>'),
+          delve: CR_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/>'),
+          barrow: CR_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>'),
+          hunter: CR_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>')
+        };
+        const W = "Daily Word", G = "Daily Groups", M = "Daily Mystery", E = "Escape", C = "Casebook", D = "Delve";
+        const ok = "ok", bad = "bad";
+        const CR_SEED2 = {
+          history: (worst) => [{
+            h: "Today",
+            rows: [...worst ? [{
+              k: "e0r2",
+              art: "escape",
+              game: E,
+              name: "The Locked Study",
+              result: "Escaped in 6 moves",
+              tone: ok,
+              when: "22:05",
+              note: "Replay",
+              of: "e0"
+            }] : [], {
+              k: "e0r",
+              art: "escape",
+              game: E,
+              name: "The Locked Study",
+              result: "Escaped in 5 moves",
+              tone: ok,
+              when: "19:30",
+              note: "Replay",
+              of: "e0"
+            }, {
+              k: "e0",
+              art: "escape",
+              game: E,
+              name: "The Locked Study",
+              result: "Escaped in 7 moves",
+              tone: ok,
+              when: "12:40"
+            }, {
+              k: "m64",
+              art: "mystery",
+              game: M,
+              num: "#64",
+              result: "Missed",
+              tone: bad,
+              when: "10:27"
+            }, {
+              k: "g88",
+              art: "groups",
+              game: G,
+              num: "#88",
+              result: "All 4 groups, 1 mistake",
+              tone: ok,
+              when: "09:16"
+            }, {
+              k: "w212",
+              art: "word",
+              game: W,
+              num: "#212",
+              result: "Solved in 3 of 6",
+              tone: ok,
+              when: "08:05"
+            }]
+          }, {
+            h: "Monday 5 October",
+            rows: [{
+              k: "cb45",
+              art: "casebook",
+              game: C,
+              name: "The Widow’s Lantern",
+              result: "Solved",
+              tone: ok,
+              when: "20:10"
+            }, {
+              k: "dv0",
+              art: "delve",
+              game: D,
+              name: "Beneath Gallows Hill",
+              result: "Rescued",
+              tone: ok,
+              when: "18:30"
+            }, {
+              k: "g87",
+              art: "groups",
+              game: G,
+              num: "#87",
+              result: "All 4 groups, no mistakes",
+              tone: ok,
+              when: "11:02"
+            }, {
+              k: "w211",
+              art: "word",
+              game: W,
+              num: "#211",
+              result: "Solved in 4 of 6",
+              tone: ok,
+              when: "07:48"
+            }]
+          }, {
+            h: "Wednesday 30 September",
+            rows: [{
+              k: "dv1r",
+              art: "delve",
+              game: D,
+              name: "The Drum Room",
+              result: "Hero fell",
+              tone: bad,
+              when: "19:45",
+              long: "30 Sep, 19:45",
+              note: "Replay",
+              of: "dv1"
+            }]
+          }, {
+            h: "Monday 28 September",
+            rows: [{
+              k: "cb44",
+              art: "casebook",
+              game: C,
+              name: "The Night Train to Fort William",
+              result: "Solved",
+              tone: ok,
+              when: "20:24"
+            }, {
+              k: "dv1",
+              art: "delve",
+              game: D,
+              name: "The Drum Room",
+              result: "Ritual done",
+              tone: bad,
+              when: "18:30"
+            }, ...worst ? [{
+              k: "dvu",
+              art: "delve",
+              game: D,
+              name: "The Drifting Freighter",
+              result: "Not finished",
+              when: "19:20"
+            }] : [], {
+              k: "e1",
+              art: "escape",
+              game: E,
+              name: "The Flooded Cellar",
+              result: "Escaped in 9 moves",
+              tone: ok,
+              when: "09:40"
+            }]
+          }],
+          plays: (worst) => [{
+            rows: [...worst ? [{
+              k: "p0r2",
+              name: "The Locked Study",
+              result: "Escaped in 6 moves",
+              tone: ok,
+              when: "6 Oct",
+              note: "Replay",
+              of: "p0"
+            }] : [], {
+              k: "p0r",
+              name: "The Locked Study",
+              result: "Escaped in 5 moves",
+              tone: ok,
+              when: "6 Oct",
+              note: "Replay",
+              of: "p0"
+            }, {
+              k: "p0",
+              name: "The Locked Study",
+              result: "Escaped in 7 moves",
+              tone: ok,
+              when: "6 Oct"
+            }, {
+              k: "p1",
+              name: "The Flooded Cellar",
+              result: "Escaped in 9 moves",
+              tone: ok,
+              when: "28 Sep"
+            }, {
+              k: "p2r",
+              name: "The Clock Tower",
+              result: "Escaped in 6 moves",
+              tone: ok,
+              when: "23 Sep",
+              note: "Replay",
+              of: "p2"
+            }, {
+              k: "p2",
+              name: "The Clock Tower",
+              result: "Escaped in 8 moves",
+              tone: ok,
+              when: "21 Sep"
+            }, ...worst ? [{
+              k: "p3",
+              name: "The Night Train",
+              result: "Still locked in",
+              tone: bad,
+              when: "14 Sep"
+            }] : []]
+          }],
+          cases: (worst) => [{
+            rows: [{
+              k: "c45",
+              name: "The Widow’s Lantern",
+              when: "5 Oct"
+            }, {
+              k: "c44",
+              name: "The Night Train to Fort William",
+              when: "28 Sep",
+              result: "Played"
+            }, {
+              k: "c43",
+              name: "A Quiet Week at Hollins Farm",
+              when: "21 Sep",
+              result: "Played"
+            }, {
+              k: "c42",
+              name: "The Bell Ringer’s Fall",
+              when: "14 Sep"
+            }, {
+              k: "c41",
+              name: "Three Keys to the Vestry",
+              when: "7 Sep",
+              result: "Played"
+            }, {
+              k: "c40",
+              name: "The Regatta Dinner",
+              when: "31 Aug",
+              result: "Played"
+            }, ...worst ? [{
+              k: "c37",
+              name: "The Last Waltz at the Grand",
+              when: "10 Aug",
+              result: "Played"
+            }, {
+              k: "c36",
+              name: "A Death in the Reading Room",
+              when: "3 Aug",
+              result: "Played"
+            }, {
+              k: "c35",
+              name: "The Lighthouse Keeper’s Log",
+              when: "27 Jul"
+            }, {
+              k: "c1",
+              name: "A Cold Ledger",
+              when: "1 Dec 2025",
+              result: "Played"
+            }] : []]
+          }],
+          words: (worst) => [{
+            rows: [{
+              k: "w212",
+              num: "#212",
+              when: "6 Oct",
+              result: "Played"
+            }, {
+              k: "w211",
+              num: "#211",
+              when: "5 Oct",
+              result: "Played"
+            }, {
+              k: "w210",
+              num: "#210",
+              when: "4 Oct"
+            }, {
+              k: "w209",
+              num: "#209",
+              when: "3 Oct",
+              result: "Played"
+            }, {
+              k: "w208",
+              num: "#208",
+              when: "2 Oct",
+              result: "Played"
+            }, {
+              k: "w207",
+              num: "#207",
+              when: "1 Oct"
+            }, ...worst ? [{
+              k: "w206",
+              num: "#206",
+              when: "30 Sep",
+              result: "Played"
+            }, {
+              k: "w205",
+              num: "#205",
+              when: "29 Sep"
+            }, {
+              k: "w204",
+              num: "#204",
+              when: "28 Sep",
+              result: "Played"
+            }] : []]
+          }],
+          // Free player (default) and a player whose Pass ended (worst case), from gsLibRow.
+          library: (worst) => [{
+            rows: worst ? [{
+              k: "word",
+              art: "word",
+              name: W,
+              result: "Done today",
+              tone: ok,
+              when: "Today"
+            }, {
+              k: "mystery",
+              art: "mystery",
+              name: M,
+              result: "In progress",
+              when: "Today"
+            }, {
+              k: "groups",
+              art: "groups",
+              name: G,
+              result: "Today’s groups are ready",
+              when: "5 Oct"
+            }, {
+              k: "escape",
+              art: "escape",
+              name: E,
+              result: "This week’s room is ready",
+              when: "28 Sep"
+            }, {
+              k: "delve",
+              art: "delve",
+              name: D,
+              result: "Pass only",
+              when: "7 Sep"
+            }, {
+              k: "casebook",
+              art: "casebook",
+              name: C,
+              result: "Pass only",
+              when: "7 Sep"
+            }, {
+              k: "barrow",
+              art: "barrow",
+              name: "The Barrow of Hollowmere",
+              result: "Chapter 1 is ready"
+            }, {
+              k: "hunter",
+              art: "hunter",
+              name: "36,000 Summers Ago",
+              result: "Pass only"
+            }] : [{
+              k: "word",
+              art: "word",
+              name: W,
+              result: "Done today",
+              tone: ok,
+              when: "Today"
+            }, {
+              k: "groups",
+              art: "groups",
+              name: G,
+              result: "Done today",
+              tone: ok,
+              when: "Today"
+            }, {
+              k: "mystery",
+              art: "mystery",
+              name: M,
+              result: "Done today",
+              tone: ok,
+              when: "Today"
+            }, {
+              k: "escape",
+              art: "escape",
+              name: E,
+              result: "Done this week",
+              tone: ok,
+              when: "6 Oct"
+            }, {
+              k: "delve",
+              art: "delve",
+              name: D,
+              result: "Free scene done",
+              tone: ok,
+              when: "16 Mar"
+            }, {
+              k: "casebook",
+              art: "casebook",
+              name: C,
+              result: "Free case done",
+              tone: ok,
+              when: "1 Dec 2025"
+            }, {
+              k: "barrow",
+              art: "barrow",
+              name: "The Barrow of Hollowmere",
+              result: "Chapter 1 is ready"
+            }, {
+              k: "hunter",
+              art: "hunter",
+              name: "36,000 Summers Ago",
+              result: "Pass only"
+            }]
+          }]
+        };
+        const CR_SURFACES2 = [{
+          id: "history",
+          name: "History",
+          page: "History",
+          lead: true,
+          recipe: "cover · game and edition · result · time · Replay, under day headings"
+        }, {
+          id: "plays",
+          name: "Plays card",
+          card: "Your rooms",
+          link: "See in History",
+          recipe: "edition · result · date · Replay, on Escape’s game page"
+        }, {
+          id: "cases",
+          name: "Every case",
+          page: "Every case",
+          back: "Casebook",
+          outcome: false,
+          recipe: "scenario · date · Played"
+        }, {
+          id: "words",
+          name: "Every word",
+          page: "Every word",
+          back: "Daily Word",
+          outcome: false,
+          recipe: "number · date · Played"
+        }, {
+          id: "library",
+          name: "Library",
+          page: "Library",
+          lead: true,
+          recipe: "cover · game · what’s waiting · last played"
+        }];
+        const CR_PAINS2 = [["title", "Sentence titles"], ["replay", "Rows with and without Replay"], ["num", "Numbers beside names"], ["wide", "Wide screens"]];
+        const CR_IDEAS2 = [{
+          n: 0,
+          name: "Today",
+          cls: "i0",
+          ds: true,
+          stance: "The shipped ListRow. A narrow list has two lines (title and when, then result and note); a list 640px or wider becomes fixed columns.",
+          cost: "When centres on a row without a note, so a Replay row sits differently from its neighbours. A sentence title wraps beside the date. Fixed columns (240, 112, 80, 72) squeeze long results and hold empty space. A row with meta has a different shape again.",
+          adapt: "Two shapes, switched at 640px of list width.",
+          pains: {
+            title: "part",
+            replay: "bad",
+            num: "part",
+            wide: "part"
+          }
+        }, {
+          n: 1,
+          name: "Stack",
+          cls: "i1",
+          stance: "Nothing sits beside the title. Line one is the title at full width; line two is every fact in one run: result · when · Replay.",
+          cost: "Nothing lines up in columns, so dates can’t be scanned down a list. A long run wraps, so the time or Replay can land alone on a third line. On a wide screen the right of every row is empty.",
+          adapt: "One shape at every width.",
+          pains: {
+            title: "ok",
+            replay: "part",
+            num: "ok",
+            wide: "bad"
+          }
+        }, {
+          n: 2,
+          name: "Gutter",
+          cls: "i2",
+          stance: "One fixed gutter on the right, the same width on every surface. When sits on the title’s first line, always; Replay sits under it. From 640px the result gets its own fixed column.",
+          cost: "The gutter must fit the longest date (“1 Dec 2025”), so times sit in spare room and a title loses 92px at 320. Fixed widths reserve columns a surface never uses.",
+          adapt: "Two shapes at 640px; every width is a token, nothing is measured.",
+          pains: {
+            title: "part",
+            replay: "ok",
+            num: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 3,
+          name: "Ledger",
+          cls: "i3",
+          stance: "The list owns the columns. Every row is a subgrid of one grid for the whole surface, day headings included. Each column is as wide as its widest cell; a column nobody uses takes no room.",
+          cost: "One long result widens its column for every row. Below 560px it stacks like 1. Needs CSS subgrid (Safari 16, Chrome 117).",
+          adapt: "Stack under 560px, ledger above.",
+          pains: {
+            title: "ok",
+            replay: "part",
+            num: "ok",
+            wide: "ok"
+          }
+        }, {
+          n: 4,
+          name: "All or none",
+          cls: "i4",
+          fit: true,
+          stance: "Columns only if every row fits them. The list tries one line per row; if any title would wrap, every row stacks. Rows always share one shape.",
+          cost: "One long title stacks the whole list, and adding a row can flip it. Needs a measuring script. Facts are right-aligned, so results don’t line up between rows.",
+          adapt: "Decided by the content, at every width.",
+          pains: {
+            title: "ok",
+            replay: "part",
+            num: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 5,
+          name: "Eyebrow",
+          cls: "i5",
+          stance: "Split what a row belongs to from the name a player says. The game or number becomes a small label above; the headline is the edition’s name or its number. “#44 · The Night Train…” and “#212” both read as label and headline.",
+          cost: "Mixed lists get three lines and grow taller. At 320 the gutter leaves the 17px headline about 80px, so “The Locked Study” takes three lines. Adds an uppercase label style. A Library row has no label, so its shape differs from History’s.",
+          adapt: "Facts move beside the title at 640px.",
+          pains: {
+            title: "part",
+            replay: "ok",
+            num: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 6,
+          name: "Timeline",
+          cls: "i6",
+          stance: "Time leads. A fixed column of times or dates comes first, like a schedule; then the cover, title and facts. Every row’s left edge lines up.",
+          cost: "Leading with time demotes the name. A game never played leaves the first column blank (Library). Dates are wider than times.",
+          adapt: "Facts move into columns at 640px.",
+          pains: {
+            title: "ok",
+            replay: "ok",
+            num: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 7,
+          name: "Uniform",
+          cls: "i7",
+          stance: "Every row the same height: room for two title lines on every row, short titles centred. The list reads as an even sheet.",
+          cost: "Number-only lists look airy. A title needing a third line is clamped, which breaks “never cut off”.",
+          adapt: "Gutter geometry; the fixed height drops from 88 to 64px at 640px.",
+          pains: {
+            title: "part",
+            replay: "ok",
+            num: "part",
+            wide: "part"
+          }
+        }, {
+          n: 8,
+          name: "Nested",
+          cls: "i8",
+          nest: true,
+          stance: "A replay isn’t a row of its own. Replays sit under the play they repeat, indented on a rail, and the first play says “2 replays”. No row carries a Replay mark.",
+          cost: "Changes History’s model: a replay from another day shows under the first play’s day, with its own date. The Replays filter has to count sub-rows.",
+          adapt: "Gutter geometry at both widths.",
+          pains: {
+            title: "part",
+            replay: "ok",
+            num: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 9,
+          name: "Outcome first",
+          cls: "i9",
+          stance: "What happened is the headline. The result leads and the name follows, smaller. Library rows lead with “Today’s word is ready”. A list where some rows have no outcome (Every case) keeps the name first.",
+          cost: "Finding a row by name is slower, and two orders exist across surfaces. Goes against ListRow’s “the title is the name a player would say”.",
+          adapt: "Facts move into columns at 640px.",
+          pains: {
+            title: "ok",
+            replay: "ok",
+            num: "part",
+            wide: "part"
+          }
+        }, {
+          n: 10,
+          name: "Ladder",
+          cls: "i10",
+          stance: "Three shapes, picked by the list’s own width, so every row in a list is always on the same rung. Under 420px: 1 Stack. 420 to 719px: 2 Gutter. 720px and up: 3 Ledger.",
+          cost: "Three shapes to check, and the most CSS. Needs subgrid for the top rung. Below 420px it inherits 1’s wrapping run: at 320 a Replay or a time can sit alone on a third line, and dates don’t line up (see 10b). On the top rung each result sits far from its title (see 10c).",
+          adapt: "Stack, gutter, ledger at 420 and 720px of list width.",
+          pains: {
+            title: "ok",
+            replay: "part",
+            num: "ok",
+            wide: "ok"
+          }
+        }, {
+          n: "10b",
+          name: "Ladder, pinned time",
+          cls: "i10b",
+          stance: "10 with fixed slots on the narrowest rung. Under 420px the title keeps the full width; line two has the result on the left and the time on the right, with Replay under the time. Times line up down the right edge, and Replay always sits in the same place.",
+          cost: "At 320 a long result wraps inside its cell (balanced, two lines) instead of pushing the time down. A Replay row is one line taller, with Replay in a fixed place.",
+          adapt: "Pinned stack, gutter, ledger at 420 and 720px. Rungs one and two differ only in which line the time sits on; Replay is under it on both.",
+          pains: {
+            title: "ok",
+            replay: "ok",
+            num: "ok",
+            wide: "ok"
+          }
+        }, {
+          n: "10c",
+          name: "Ladder, result by title",
+          cls: "i10c",
+          stance: "10b with the top rung reordered. The title column is as wide as the surface’s longest title (up to 24rem), the result follows it, and the spare width sits between the result and the time. Title and result read together; time and Replay keep the right edge.",
+          cost: "The result column starts in a different place on each surface, because it follows that surface’s longest title. One very long title pushes every result to the right.",
+          adapt: "Same rungs as 10b; only the 720px rung changes.",
+          pains: {
+            title: "ok",
+            replay: "ok",
+            num: "ok",
+            wide: "ok"
+          }
+        }];
+        Object.assign(window, {
+          CR_ART: CR_ART2,
+          CR_SEED: CR_SEED2,
+          CR_SURFACES: CR_SURFACES2,
+          CR_IDEAS: CR_IDEAS2,
+          CR_PAINS: CR_PAINS2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const DSQ = window.MCPGameStoreDesignSystem_ef1abd;
+        const CQ_KEY = "pg_canonical-row-2_v2";
+        const CQ_WIDTHS = [320, 360, 390, 640, 768, 1024];
+        const CQ_DEF_W = [320, 360, 390, 768];
+        const cqNoGo = (e) => e.preventDefault();
+        const cqFull = (r) => r.game ? r.game + (r.name ? " · " + r.name : " " + r.num) : r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const cqEd = (r) => r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const CqArt = ({
+          art,
+          className
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className,
+          "aria-hidden": "true",
+          dangerouslySetInnerHTML: {
+            __html: CR_ART[art]
+          }
+        });
+        const CqReplayIcon = () => /* @__PURE__ */ React.createElement("svg", {
+          className: "cq-wi",
+          viewBox: "0 0 24 24",
+          width: "16",
+          height: "16",
+          "aria-hidden": "true",
+          focusable: "false"
+        }, /* @__PURE__ */ React.createElement("g", {
+          fill: "none",
+          stroke: "currentColor",
+          strokeWidth: "2",
+          strokeLinecap: "square"
+        }, /* @__PURE__ */ React.createElement("path", {
+          d: "M19.5 12A7.5 7.5 0 1 1 16.8 6.2"
+        }), /* @__PURE__ */ React.createElement("path", {
+          d: "M18 3V7.5H13.5"
+        })));
+        const CQRow = ({
+          r
+        }) => {
+          const icon = r.tone === "ok" ? "check" : r.tone === "bad" ? "error" : null;
+          const short = cqShort(r.result);
+          const label = [cqFull(r), r.note, r.result, r.when].filter(Boolean).join(", ");
+          return /* @__PURE__ */ React.createElement("a", {
+            href: "#",
+            onClick: cqNoGo,
+            className: "cq" + (r.art ? " has-lead" : "") + (r.note ? " has-x" : ""),
+            "aria-label": label
+          }, r.art && /* @__PURE__ */ React.createElement(CqArt, {
+            art: r.art,
+            className: "cq-lead"
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-t"
+          }, r.game && /* @__PURE__ */ React.createElement("span", {
+            className: "cq-g"
+          }, r.game, r.name ? " · " : " "), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-e"
+          }, cqEd(r))), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-l2"
+          }, r.note && /* @__PURE__ */ React.createElement("span", {
+            className: "cq-xp"
+          }, /* @__PURE__ */ React.createElement(CqReplayIcon, null), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-xpt"
+          }, r.note), /* @__PURE__ */ React.createElement("i", null, " ·")), r.result && /* @__PURE__ */ React.createElement("span", {
+            className: "cq-r is-" + (r.tone || "none")
+          }, icon && /* @__PURE__ */ React.createElement(DSQ.Icon, {
+            name: icon,
+            size: 16
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-rl"
+          }, r.result), /* @__PURE__ */ React.createElement("span", {
+            className: "cq-rs"
+          }, short))), (r.when || r.note) && /* @__PURE__ */ React.createElement("span", {
+            className: "cq-w"
+          }, r.note && /* @__PURE__ */ React.createElement(CqReplayIcon, null), r.when), r.note && /* @__PURE__ */ React.createElement("span", {
+            className: "cq-x"
+          }, r.note), /* @__PURE__ */ React.createElement(DSQ.Icon, {
+            name: "next",
+            size: 20,
+            className: "cq-go"
+          }));
+        };
+        const CQ_WHEN_W = {
+          history: "2.75rem",
+          plays: "3.25rem",
+          words: "3.25rem",
+          cases: "4.75rem",
+          library: "4.75rem"
+        };
+        const cqFit = (ul) => {
+          const rows = ul.querySelectorAll(".cq");
+          rows.forEach((a) => a.classList.remove("is-lift"));
+          const cut = (e) => e.offsetWidth > 0 && e.scrollWidth > e.clientWidth + 0.5;
+          rows.forEach((a) => {
+            const l2 = a.querySelector(".cq-l2");
+            if (l2 && (cut(l2) || [...l2.querySelectorAll("span")].some(cut))) a.classList.add("is-lift");
+          });
+        };
+        const CQList = ({
+          s,
+          groups,
+          label,
+          fit
+        }) => {
+          const ref = React.useRef(null);
+          React.useLayoutEffect(() => {
+            if (fit && ref.current) cqFit(ref.current);
+          });
+          React.useEffect(() => {
+            const ul = ref.current;
+            if (!fit || !ul) return void 0;
+            const ro = new ResizeObserver(() => cqFit(ul));
+            ro.observe(ul);
+            return () => ro.disconnect();
+          }, [fit]);
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox",
+            style: {
+              "--cqw": CQ_WHEN_W[s.id]
+            }
+          }, /* @__PURE__ */ React.createElement("ul", {
+            className: "crl",
+            "aria-label": label,
+            ref
+          }, groups.map((g, gi) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: gi
+          }, g.h && /* @__PURE__ */ React.createElement("li", {
+            className: "crl-h",
+            role: "presentation"
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "crl-h",
+            style: {
+              padding: 0,
+              font: "inherit"
+            }
+          }, g.h)), g.rows.map((r) => /* @__PURE__ */ React.createElement("li", {
+            key: r.k,
+            className: "is-row"
+          }, /* @__PURE__ */ React.createElement(CQRow, {
+            r
+          })))))));
+        };
+        const CqDsList = ({
+          groups,
+          label
+        }) => {
+          const row = (r) => /* @__PURE__ */ React.createElement(DSQ.ListRow, {
+            key: r.k,
+            onClick: () => {
+            },
+            lead: r.art ? /* @__PURE__ */ React.createElement(CqArt, {
+              art: r.art
+            }) : void 0,
+            title: cqFull(r),
+            result: r.result,
+            tone: r.tone || void 0,
+            when: r.when,
+            note: r.note
+          });
+          if (groups.length > 1 || groups[0].h) return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, groups.map((g) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: g.h
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, g.h), /* @__PURE__ */ React.createElement(DSQ.RowList, {
+            label: g.h
+          }, g.rows.map(row)))));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, /* @__PURE__ */ React.createElement(DSQ.RowList, {
+            label
+          }, groups[0].rows.map(row)));
+        };
+        const CqSurface = ({
+          s,
+          idea,
+          worst
+        }) => {
+          const groups = CR_SEED[s.id](worst);
+          const list = idea.ds ? /* @__PURE__ */ React.createElement(CqDsList, {
+            groups,
+            label: s.card || s.page
+          }) : /* @__PURE__ */ React.createElement(CQList, {
+            s,
+            groups,
+            label: s.card || s.page,
+            fit: idea.fit
+          });
+          if (s.card) return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, /* @__PURE__ */ React.createElement("section", {
+            className: "sf-card"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "sf-cardhead"
+          }, /* @__PURE__ */ React.createElement("h2", null, s.card), /* @__PURE__ */ React.createElement(DSQ.TextLink, {
+            onClick: () => {
+            }
+          }, s.link)), list));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, s.back && /* @__PURE__ */ React.createElement("span", {
+            className: "sf-back"
+          }, /* @__PURE__ */ React.createElement(DSQ.Icon, {
+            name: "back",
+            size: 20
+          }), s.back), /* @__PURE__ */ React.createElement("h1", {
+            className: "sf-h1"
+          }, s.page), list);
+        };
+        const CqFrame = ({
+          w,
+          cap,
+          s,
+          idea,
+          worst,
+          room
+        }) => {
+          const z = room && room < w ? Math.max(0.5, Math.floor(room / w * 100) / 100) : 1;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg-frame",
+            style: {
+              width: w,
+              zoom: z === 1 ? void 0 : z
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "pg-cap",
+            style: z === 1 ? void 0 : {
+              fontSize: 12 / z
+            }
+          }, (cap || w + "PX") + (z === 1 ? "" : " · SHOWN AT " + Math.round(z * 100) + "%")), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-in " + idea.cls
+          }, /* @__PURE__ */ React.createElement(CqSurface, {
+            s,
+            idea,
+            worst
+          })));
+        };
+        const CQ_PAIN_ICON = {
+          ok: "check",
+          part: "warn",
+          bad: "error"
+        };
+        const CQ_PAIN_WORD = {
+          ok: "Holds",
+          part: "Partly",
+          bad: "Breaks"
+        };
+        const CqDetail = ({
+          idea
+        }) => /* @__PURE__ */ React.createElement("section", {
+          className: "pg-detail",
+          "aria-live": "polite"
+        }, /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("small", null, idea.n), idea.name), /* @__PURE__ */ React.createElement("p", null, idea.stance), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-cost"
+        }, /* @__PURE__ */ React.createElement("b", null, "Cost."), " ", idea.cost), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-adapt"
+        }, /* @__PURE__ */ React.createElement("b", null, "Across widths."), " ", idea.adapt), /* @__PURE__ */ React.createElement("ul", {
+          className: "pg-pains"
+        }, CQ_PAINS.map(([k, l]) => /* @__PURE__ */ React.createElement("li", {
+          key: k,
+          className: "is-" + idea.pains[k]
+        }, /* @__PURE__ */ React.createElement(DSQ.Icon, {
+          name: CQ_PAIN_ICON[idea.pains[k]],
+          size: 16
+        }), l, " ", /* @__PURE__ */ React.createElement("em", null, CQ_PAIN_WORD[idea.pains[k]])))));
+        const CqSeg = ({
+          label,
+          opts,
+          value,
+          onPick,
+          multi
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "pg-seg",
+          role: "group",
+          "aria-label": label
+        }, /* @__PURE__ */ React.createElement("span", null, label), opts.map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+          key: v,
+          type: "button",
+          "aria-pressed": multi ? value.includes(v) : value === v,
+          onClick: () => onPick(v)
+        }, l)));
+        const CQ_DEF = {
+          opt: 15,
+          view: "opt",
+          worst: false,
+          widths: CQ_DEF_W,
+          surf: "history",
+          w: 320
+        };
+        const cqLoad = () => {
+          try {
+            return {
+              ...CQ_DEF,
+              ...JSON.parse(localStorage.getItem(CQ_KEY) || "{}")
+            };
+          } catch (e) {
+            return CQ_DEF;
+          }
+        };
+        function CqApp() {
+          const [st, setSt] = React.useState(cqLoad);
+          React.useEffect(() => {
+            localStorage.setItem(CQ_KEY, JSON.stringify(st));
+          }, [st]);
+          const set = (k, v) => setSt((p) => ({
+            ...p,
+            [k]: v
+          }));
+          const mainRef = React.useRef(null);
+          const [room, setRoom] = React.useState(0);
+          React.useLayoutEffect(() => {
+            const m = mainRef.current;
+            if (!m) return void 0;
+            const run = () => {
+              const cs = getComputedStyle(m);
+              setRoom(m.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+            };
+            run();
+            const ro = new ResizeObserver(run);
+            ro.observe(m);
+            return () => ro.disconnect();
+          }, []);
+          const idea = CQ_IDEAS.find((x) => x.n === st.opt) || CQ_IDEAS[0];
+          const flipW = (w) => set("widths", st.widths.includes(w) ? st.widths.length > 1 ? st.widths.filter((x) => x !== w) : st.widths : CQ_WIDTHS.filter((x) => x === w || st.widths.includes(x)));
+          const surf = CR_SURFACES.find((x) => x.id === st.surf) || CR_SURFACES[0];
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg"
+          }, /* @__PURE__ */ React.createElement("nav", {
+            className: "pg-rail",
+            "aria-label": "Options"
+          }, /* @__PURE__ */ React.createElement("p", {
+            className: "pg-rail-t"
+          }, "OPTIONS"), /* @__PURE__ */ React.createElement("ul", {
+            className: "pg-opts"
+          }, CQ_IDEAS.map((x) => /* @__PURE__ */ React.createElement("li", {
+            key: x.n
+          }, /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "pg-opt",
+            "aria-pressed": x.n === st.opt,
+            onClick: () => set("opt", x.n)
+          }, /* @__PURE__ */ React.createElement("b", null, x.n), /* @__PURE__ */ React.createElement("span", null, x.name)))))), /* @__PURE__ */ React.createElement("main", {
+            className: "pg-main",
+            ref: mainRef
+          }, /* @__PURE__ */ React.createElement("header", {
+            className: "pg-lede"
+          }, /* @__PURE__ */ React.createElement("h1", null, "Canonical row, round 2"), /* @__PURE__ */ React.createElement("p", null, "Options built from the content audit (", /* @__PURE__ */ React.createElement("b", null, "audit-row-content.md"), "), led by History at 320, 360 and 390. 15b and 15c are two ways to keep the time centred without cutting line two. Each one renders the same row data on the five surfaces. 0 is the shipped row."), /* @__PURE__ */ React.createElement("p", {
+            className: "pg-shared"
+          }, /* @__PURE__ */ React.createElement("b", null, "Shared by 11 to 15."), " Rows never wrap: every row in a list is the same height. The cover follows the Cover rule, sharing the text’s top and bottom edge: 56×42 beside two lines, 40×30 on one. From 640px of list width every option is one line of fixed columns."), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(CqSeg, {
+            label: "View",
+            value: st.view,
+            onPick: (v) => set("view", v),
+            opts: [["opt", "One option, every surface"], ["surf", "One surface, every option"]]
+          }), /* @__PURE__ */ React.createElement(CqSeg, {
+            label: "Seed",
+            value: st.worst ? "w" : "r",
+            onPick: (v) => set("worst", v === "w"),
+            opts: [["r", "As seeded"], ["w", "Worst case"]]
+          })), st.view === "opt" ? /* @__PURE__ */ React.createElement(CqSeg, {
+            label: "Widths",
+            multi: true,
+            value: st.widths,
+            onPick: flipW,
+            opts: CQ_WIDTHS.map((w) => [w, w + ""])
+          }) : /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(CqSeg, {
+            label: "Surface",
+            value: st.surf,
+            onPick: (v) => set("surf", v),
+            opts: CR_SURFACES.map((x) => [x.id, x.name])
+          }), /* @__PURE__ */ React.createElement(CqSeg, {
+            label: "Width",
+            value: st.w,
+            onPick: (v) => set("w", v),
+            opts: CQ_WIDTHS.map((w) => [w, w + ""])
+          }))), /* @__PURE__ */ React.createElement(CqDetail, {
+            idea
+          }), st.view === "opt" ? CR_SURFACES.map((s) => /* @__PURE__ */ React.createElement("section", {
+            key: s.id,
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, s.name), /* @__PURE__ */ React.createElement("p", null, s.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, st.widths.map((w) => /* @__PURE__ */ React.createElement(CqFrame, {
+            key: w + "-" + idea.n,
+            w,
+            s,
+            idea,
+            worst: st.worst,
+            room
+          }))))) : /* @__PURE__ */ React.createElement("section", {
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, surf.name, " at ", st.w, "px"), /* @__PURE__ */ React.createElement("p", null, surf.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, CQ_IDEAS.map((x) => /* @__PURE__ */ React.createElement(CqFrame, {
+            key: x.n + "-" + st.w,
+            w: st.w,
+            cap: x.n + " · " + x.name.toUpperCase(),
+            s: surf,
+            idea: x,
+            worst: st.worst,
+            room
+          }))))));
+        }
+        if (document.querySelector('script[src$="pg-row2-app.jsx"]')) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(CqApp, null));
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row2-app.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const cqShort2 = (s) => {
+          if (!s) return s;
+          let m;
+          if (m = s.match(/^Escaped in (\d+) moves?$/)) return m[1] + " moves";
+          if (m = s.match(/^Solved in (\d+ of \d+)$/)) return m[1];
+          if (m = s.match(/^All 4 groups, (.+)$/)) return m[1][0].toUpperCase() + m[1].slice(1);
+          if (s === "Still locked in") return "Locked in";
+          if (/ (is|are) ready$/.test(s)) return "Ready";
+          if (/^Done (today|this week)$/.test(s)) return "Done";
+          return s;
+        };
+        const CQ_PAINS2 = [["h", "Same height every row"], ["n", "No wrap at 320"], ["rp", "Replay in one place"], ["name", "Full name on the row"], ["wide", "768 and up"]];
+        const CQ_IDEAS2 = [{
+          n: 0,
+          name: "Today",
+          cls: "o0",
+          ds: true,
+          stance: "The shipped ListRow, for reference. Two lines on a narrow list, fixed columns from 640px.",
+          cost: "Titles wrap beside the time, so rows grow and differ. The time centres on rows without Replay and sits on line one on rows with it.",
+          adapt: "Two shapes, switched at 640px of list width.",
+          pains: {
+            h: "bad",
+            n: "bad",
+            rp: "bad",
+            name: "ok",
+            wide: "part"
+          }
+        }, {
+          n: 11,
+          name: "Clip",
+          cls: "o11",
+          stance: "Two fixed lines on every row. The title never wraps: if it’s too long it ends in “…”. On a Replay row the time sits on line one and Replay on line two; on any other row the time centres on both lines. Under 440px the result uses its short form (“6 moves”).",
+          cost: "At 320 a mixed-game title is cut, often in the edition’s name (“Escape · The Lo…”). The full name is only on the page the row opens. The time moves between rows with and without Replay.",
+          adapt: "Two lines up to 640px of list width, one line of fixed columns above. Short results under 440.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "ok",
+            name: "bad",
+            wide: "ok"
+          }
+        }, {
+          n: 12,
+          name: "Cover names the game",
+          cls: "o12",
+          stance: "11’s slots, but where a row has a cover, the title on a phone drops the game’s name: “The Locked Study”, “#212”. The cover already says which game it is. The full name stays in the row’s accessible name, and comes back from 640px.",
+          cost: "A number alone (“#64”) only means something next to its cover, so players have to know the covers. Two games’ numbers look alike. Long edition names can still be cut at 320.",
+          adapt: "Edition-only title and short results under 640px of list width; full title in one line of columns above.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "ok",
+            name: "part",
+            wide: "ok"
+          }
+        }, {
+          n: 13,
+          name: "Replay on the result line",
+          cls: "o13",
+          stance: "Replay becomes part of what happened: line two reads “Replay · ✓ 6 moves”. The right edge holds only the time, centred on both lines, on every row. No row has an empty slot, and Replay rows are the same shape as the rest.",
+          cost: "“Replay ·” takes about 60px of line two, and the centred time takes width from both lines, so at 320 even a short result is cut on a Replay row (“Replay · ✓ 5…”). Titles are cut as in 11.",
+          adapt: "Two lines with the time centred up to 640px. One line of columns above, with Replay in its own column before the result, so results line up.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "ok",
+            name: "bad",
+            wide: "ok"
+          }
+        }, {
+          n: 14,
+          name: "One line",
+          cls: "o14",
+          stance: "One line per row at every width: cover, title, result, time. Replay is an icon before the time. Under 440px the chevron goes, because the whole row is the target. The densest list.",
+          cost: "At 320 the title gets about 80px, so most names are cut hard. The replay icon is a symbol to learn (against ListRow’s rule) and a new icon. Removing the chevron removes the “opens” cue.",
+          adapt: "One line everywhere. Short results under 640px; no chevron under 440.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "part",
+            name: "bad",
+            wide: "ok"
+          }
+        }, {
+          n: 15,
+          name: "Fit by width",
+          cls: "o15",
+          stance: "12 and 13 together, with each field changing form by width. Under 440px: edition-only title beside a cover, the time centred on both lines, and “Replay · ✓ 5 moves” on line two. 440 to 639px: the full title and full result, time centred. 640px and up: one line of columns, Replay in its own column.",
+          cost: "Three forms of the same row to check. The product supplies a short result for every outcome. Same cover-recognition cost as 12. At 320 a long edition name is still cut (“The Locked…”); at 390 it fits.",
+          adapt: "Short forms under 440, full forms in two lines to 640, one line above.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "ok",
+            name: "part",
+            wide: "ok"
+          }
+        }, {
+          n: "15b",
+          name: "Fit, centre if it fits",
+          cls: "o15 o15b",
+          fit: true,
+          stance: "15, but the row checks line two before it centres the time. If line two would be cut, line two runs under the time and the time moves up to line one. Otherwise the time centres on both lines.",
+          cost: "On one list, some rows centre the time and some put it on line one, depending on how long the result is. Needs a little JS in the shared row, re-checked when the width changes.",
+          adapt: "As 15. The check only applies under 640px.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "ok",
+            name: "part",
+            wide: "ok"
+          }
+        }, {
+          n: "15c",
+          name: "Fit, Replay as an icon",
+          cls: "o15 o15c",
+          stance: "15, but under 440px the word “Replay ·” becomes the replay icon at the start of line two. The time always centres on both lines.",
+          cost: "A symbol players have to learn, against the ListRow rule, and a new icon in the system. Long results can still be cut at 320.",
+          adapt: "Icon under 440, the word from 440.",
+          pains: {
+            h: "ok",
+            n: "ok",
+            rp: "part",
+            name: "part",
+            wide: "ok"
+          }
+        }];
+        Object.assign(window, {
+          cqShort: cqShort2,
+          CQ_PAINS: CQ_PAINS2,
+          CQ_IDEAS: CQ_IDEAS2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row2-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const DS3 = window.MCPGameStoreDesignSystem_ef1abd;
+        const C3_KEY = "pg_canonical-row-3_v3";
+        const C3_WIDTHS = [320, 360, 390, 440, 640, 768, 1024];
+        const C3_DEF_W = C3_WIDTHS;
+        const c3NoGo = (e) => e.preventDefault();
+        const c3Full = (r) => r.game ? r.game + (r.name ? " · " + r.name : " " + r.num) : r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const c3Ed = (r) => r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const C3Art = ({
+          art,
+          className
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className,
+          "aria-hidden": "true",
+          dangerouslySetInnerHTML: {
+            __html: CR_ART[art]
+          }
+        });
+        const c3Fit = (t) => {
+          const g = t.querySelector(".c3-g"), e = t.querySelector(".c3-e"), full = e.dataset.full || "";
+          const fits = () => t.scrollWidth <= t.clientWidth;
+          if (g) g.style.display = "";
+          e.textContent = full;
+          if (fits()) return;
+          if (g && t.closest(".o16,.o19") && t.closest(".c3").classList.contains("has-lead")) {
+            g.style.display = "none";
+            if (fits()) return;
+          }
+          const cut = (n) => full.slice(0, n).replace(/[\s·]+$/, "") + "…";
+          let lo = 0, hi = full.length;
+          while (lo < hi) {
+            const m = lo + hi + 1 >> 1;
+            e.textContent = cut(m);
+            if (fits()) lo = m;
+            else hi = m - 1;
+          }
+          e.textContent = cut(lo);
+        };
+        const C3Row = ({
+          r
+        }) => {
+          const icon = r.tone === "ok" ? "check" : r.tone === "bad" ? "error" : null;
+          const label = [c3Full(r), r.note, r.result, r.when].filter(Boolean).join(", ");
+          const tRef = React.useRef(null);
+          React.useLayoutEffect(() => {
+            const t = tRef.current;
+            if (!t) return void 0;
+            const run = () => c3Fit(t);
+            run();
+            document.fonts.ready.then(run);
+            const ro = new ResizeObserver(run);
+            ro.observe(t);
+            ro.observe(t.closest(".c3"));
+            return () => ro.disconnect();
+          });
+          return /* @__PURE__ */ React.createElement("a", {
+            href: "#",
+            onClick: c3NoGo,
+            className: "c3" + (r.art ? " has-lead" : "") + (r.game ? " has-g" : "") + (r.note ? " has-x" : "") + (r.result ? " has-r" : ""),
+            "aria-label": label
+          }, r.art && /* @__PURE__ */ React.createElement(C3Art, {
+            art: r.art,
+            className: "c3-lead"
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-t",
+            ref: tRef
+          }, r.game && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-g"
+          }, r.game, r.name ? " · " : " "), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-e",
+            "data-full": c3Ed(r)
+          })), r.result && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-r is-" + (r.tone || "none")
+          }, icon && /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: icon,
+            size: 16
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-rl"
+          }, r.result), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-rs"
+          }, cqShort(r.result))), r.when && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-w"
+          }, r.when), r.note && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-x"
+          }, r.note), /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: "next",
+            size: 20,
+            className: "c3-go"
+          }));
+        };
+        const C3_WHEN_W = {
+          history: "2.75rem",
+          plays: "3.25rem",
+          words: "3.25rem",
+          cases: "4.75rem",
+          library: "4.75rem"
+        };
+        const C3List = ({
+          s,
+          groups,
+          label
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "crbox",
+          style: {
+            "--cqw": C3_WHEN_W[s.id]
+          }
+        }, /* @__PURE__ */ React.createElement("ul", {
+          className: "crl",
+          "aria-label": label
+        }, groups.map((g, gi) => /* @__PURE__ */ React.createElement(React.Fragment, {
+          key: gi
+        }, g.h && /* @__PURE__ */ React.createElement("li", {
+          className: "crl-h",
+          role: "presentation"
+        }, /* @__PURE__ */ React.createElement("h2", {
+          className: "crl-h",
+          style: {
+            padding: 0,
+            font: "inherit"
+          }
+        }, g.h)), g.rows.map((r) => /* @__PURE__ */ React.createElement("li", {
+          key: r.k,
+          className: "is-row"
+        }, /* @__PURE__ */ React.createElement(C3Row, {
+          r
+        })))))));
+        const C3DsList = ({
+          groups,
+          label
+        }) => {
+          const row = (r) => /* @__PURE__ */ React.createElement(DS3.ListRow, {
+            key: r.k,
+            onClick: () => {
+            },
+            lead: r.art ? /* @__PURE__ */ React.createElement(C3Art, {
+              art: r.art
+            }) : void 0,
+            title: c3Full(r),
+            result: r.result,
+            tone: r.tone || void 0,
+            when: r.when,
+            note: r.note
+          });
+          if (groups.length > 1 || groups[0].h) return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, groups.map((g) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: g.h
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, g.h), /* @__PURE__ */ React.createElement(DS3.RowList, {
+            label: g.h
+          }, g.rows.map(row)))));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, /* @__PURE__ */ React.createElement(DS3.RowList, {
+            label
+          }, groups[0].rows.map(row)));
+        };
+        const C3Surface = ({
+          s,
+          idea,
+          worst
+        }) => {
+          const groups = CR_SEED[s.id](worst);
+          const list = idea.ds ? /* @__PURE__ */ React.createElement(C3DsList, {
+            groups,
+            label: s.card || s.page
+          }) : /* @__PURE__ */ React.createElement(C3List, {
+            s,
+            groups,
+            label: s.card || s.page
+          });
+          if (s.card) return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, /* @__PURE__ */ React.createElement("section", {
+            className: "sf-card"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "sf-cardhead"
+          }, /* @__PURE__ */ React.createElement("h2", null, s.card), /* @__PURE__ */ React.createElement(DS3.TextLink, {
+            onClick: () => {
+            }
+          }, s.link)), list));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, s.back && /* @__PURE__ */ React.createElement("span", {
+            className: "sf-back"
+          }, /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: "back",
+            size: 20
+          }), s.back), /* @__PURE__ */ React.createElement("h1", {
+            className: "sf-h1"
+          }, s.page), list);
+        };
+        const C3Frame = ({
+          w,
+          cap,
+          s,
+          idea,
+          worst,
+          room,
+          voice
+        }) => {
+          const z = room && room < w ? Math.max(0.5, Math.floor(room / w * 100) / 100) : 1;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg-frame",
+            style: {
+              width: w,
+              zoom: z === 1 ? void 0 : z
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "pg-cap",
+            style: z === 1 ? void 0 : {
+              fontSize: 12 / z
+            }
+          }, (cap || w + "PX") + (z === 1 ? "" : " · SHOWN AT " + Math.round(z * 100) + "%")), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-in " + idea.cls + (voice ? " is-voice" : "")
+          }, /* @__PURE__ */ React.createElement(C3Surface, {
+            s,
+            idea,
+            worst
+          })));
+        };
+        const C3_PAIN_ICON = {
+          ok: "check",
+          part: "warn",
+          bad: "error"
+        };
+        const C3_PAIN_WORD = {
+          ok: "Holds",
+          part: "Partly",
+          bad: "Breaks"
+        };
+        const C3Detail = ({
+          idea
+        }) => /* @__PURE__ */ React.createElement("section", {
+          className: "pg-detail",
+          "aria-live": "polite"
+        }, /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("small", null, idea.n), idea.name), /* @__PURE__ */ React.createElement("p", null, idea.stance), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-cost"
+        }, /* @__PURE__ */ React.createElement("b", null, "Cost."), " ", idea.cost), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-adapt"
+        }, /* @__PURE__ */ React.createElement("b", null, "Across widths."), " ", idea.adapt), /* @__PURE__ */ React.createElement("ul", {
+          className: "pg-pains"
+        }, CQ3_PAINS.map(([k, l]) => /* @__PURE__ */ React.createElement("li", {
+          key: k,
+          className: "is-" + idea.pains[k]
+        }, /* @__PURE__ */ React.createElement(DS3.Icon, {
+          name: C3_PAIN_ICON[idea.pains[k]],
+          size: 16
+        }), l, " ", /* @__PURE__ */ React.createElement("em", null, C3_PAIN_WORD[idea.pains[k]])))));
+        const C3Seg = ({
+          label,
+          opts,
+          value,
+          onPick,
+          multi
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "pg-seg",
+          role: "group",
+          "aria-label": label
+        }, /* @__PURE__ */ React.createElement("span", null, label), opts.map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+          key: v,
+          type: "button",
+          "aria-pressed": multi ? value.includes(v) : value === v,
+          onClick: () => onPick(v)
+        }, l)));
+        const C3_DEF = {
+          opt: 19,
+          view: "opt",
+          worst: false,
+          widths: C3_DEF_W,
+          surf: "history",
+          w: 390,
+          voice: true
+        };
+        const c3Load = () => {
+          try {
+            return {
+              ...C3_DEF,
+              ...JSON.parse(localStorage.getItem(C3_KEY) || "{}")
+            };
+          } catch (e) {
+            return C3_DEF;
+          }
+        };
+        function C3App() {
+          const [st, setSt] = React.useState(c3Load);
+          React.useEffect(() => {
+            localStorage.setItem(C3_KEY, JSON.stringify(st));
+          }, [st]);
+          const set = (k, v) => setSt((p) => ({
+            ...p,
+            [k]: v
+          }));
+          const mainRef = React.useRef(null);
+          const [room, setRoom] = React.useState(0);
+          React.useLayoutEffect(() => {
+            const m = mainRef.current;
+            if (!m) return void 0;
+            const run = () => {
+              const cs = getComputedStyle(m);
+              setRoom(m.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+            };
+            run();
+            const ro = new ResizeObserver(run);
+            ro.observe(m);
+            return () => ro.disconnect();
+          }, []);
+          const idea = CQ3_IDEAS.find((x) => x.n === st.opt) || CQ3_IDEAS[0];
+          const flipW = (w) => set("widths", st.widths.includes(w) ? st.widths.length > 1 ? st.widths.filter((x) => x !== w) : st.widths : C3_WIDTHS.filter((x) => x === w || st.widths.includes(x)));
+          const surf = CR_SURFACES.find((x) => x.id === st.surf) || CR_SURFACES[0];
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "pg-main",
+            ref: mainRef
+          }, /* @__PURE__ */ React.createElement("header", {
+            className: "pg-lede"
+          }, /* @__PURE__ */ React.createElement("h1", null, "Canonical row, round 3"), /* @__PURE__ */ React.createElement("p", null, "Two things are taken as settled from your reviews: every row in a list is one height, and the trailing column centres the time when it is alone and gives Replay its own line when it is not. What is left to decide on a phone is what to spend. A 320 frame leaves 154px for a line, and the cover, the chevron, the time column and the full words do not all fit in it. ", /* @__PURE__ */ React.createElement("b", null, "16"), ", ", /* @__PURE__ */ React.createElement("b", null, "17"), " and ", /* @__PURE__ */ React.createElement("b", null, "18"), " each spend one of them and keep the rest. ", /* @__PURE__ */ React.createElement("b", null, "0"), " is the shipped row."), /* @__PURE__ */ React.createElement("p", {
+            className: "pg-shared"
+          }, /* @__PURE__ */ React.createElement("b", null, "Shared by 16 to 19."), " Two 20px lines on every row under 640px of list width, so a row is 62px on every surface. The cover follows the Cover rule and shares the text’s edges: 56×42 beside two lines, 40×30 beside one. Titles never wrap; a title that does not fit ends in “…”, never after a space. A row with nothing on line two centres its title. The title has two voices: the game’s name quiet, the edition’s name in ink (toggle below). From 640 every option is the same one line of fixed columns (title, result, Replay, time), and a page list keeps a 760px measure."), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Option",
+            value: st.opt,
+            onPick: (v) => set("opt", v),
+            opts: CQ3_IDEAS.map((x) => [x.n, x.n + " " + x.name])
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "View",
+            value: st.view,
+            onPick: (v) => set("view", v),
+            opts: [["surf", "One surface, every option"], ["opt", "One option, every surface"]]
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Seed",
+            value: st.worst ? "w" : "r",
+            onPick: (v) => set("worst", v === "w"),
+            opts: [["r", "As seeded"], ["w", "Worst case"]]
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Game’s name",
+            value: st.voice ? "q" : "i",
+            onPick: (v) => set("voice", v === "q"),
+            opts: [["q", "Quiet"], ["i", "Ink"]]
+          })), st.view === "opt" ? /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Widths",
+            multi: true,
+            value: st.widths,
+            onPick: flipW,
+            opts: C3_WIDTHS.map((w) => [w, w + ""])
+          }) : /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Surface",
+            value: st.surf,
+            onPick: (v) => set("surf", v),
+            opts: CR_SURFACES.map((x) => [x.id, x.name])
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Width",
+            value: st.w,
+            onPick: (v) => set("w", v),
+            opts: C3_WIDTHS.map((w) => [w, w + ""])
+          }))), /* @__PURE__ */ React.createElement(C3Detail, {
+            idea
+          }), st.view === "opt" ? CR_SURFACES.map((s) => /* @__PURE__ */ React.createElement("section", {
+            key: s.id,
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, s.name), /* @__PURE__ */ React.createElement("p", null, s.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, st.widths.map((w) => /* @__PURE__ */ React.createElement(C3Frame, {
+            key: w + "-" + idea.n,
+            w,
+            s,
+            idea,
+            worst: st.worst,
+            room,
+            voice: st.voice
+          }))))) : /* @__PURE__ */ React.createElement("section", {
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, surf.name, " at ", st.w, "px"), /* @__PURE__ */ React.createElement("p", null, surf.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, CQ3_IDEAS.map((x) => /* @__PURE__ */ React.createElement(C3Frame, {
+            key: x.n + "-" + st.w,
+            w: st.w,
+            cap: x.n + " · " + x.name.toUpperCase(),
+            s: surf,
+            idea: x,
+            worst: st.worst,
+            room,
+            voice: st.voice
+          }))))));
+        }
+        if (document.querySelector('script[src$="pg-row3-app.jsx"]')) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(C3App, null));
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row3-app.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const CQ3_PAINS2 = [["h", "Same height every row"], ["r320", "Works at 320"], ["name", "Full name on the row"], ["once", "Says the game once"], ["open", "“Opens” cue on a phone"], ["art", "Art on every surface"]];
+        const CQ3_IDEAS2 = [{
+          n: 0,
+          name: "Today",
+          cls: "o0",
+          ds: true,
+          stance: "The shipped ListRow, for reference. Two lines on a narrow list, fixed columns from 640px.",
+          cost: "Titles wrap beside the time, so rows grow and differ. The time centres on rows without Replay and sits on line one on rows with it.",
+          adapt: "Two shapes, switched at 640px of list width.",
+          pains: {
+            h: "bad",
+            r320: "part",
+            name: "ok",
+            once: "part",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: 16,
+          name: "Words give way",
+          cls: "o16",
+          stance: "Keeps the cover, the chevron and the time column at every width, and pays with words. Under 440px of list width a title beside a cover drops the game’s name (the cover says it: “The Locked Study”, “#212”) and the result takes its short form (“5 moves”). The time sits top right; on a Replay row, Replay sits under it; on any other row the time centres on both lines.",
+          cost: "Players have to know the covers: “#64” only means something beside its art, and two games’ numbers look alike. At 320 a long edition name is still cut (“The Locked St…”); from 360 the usual ones fit, and the longest (“The Night Train to Fort William”) is cut until 640. The product supplies a short result for every outcome.",
+          adapt: "The title says as much as fits at any width: game · edition, then edition alone beside a cover, then the edition cut. Short results under 440, full from 440. One line of fixed columns from 640, cover 40×30.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: 17,
+          name: "Chevron gives way",
+          cls: "o17",
+          stance: "Under 640px the chevron goes: every row opens, the list is the page, and the whole row is the target. Its 32px go to the words, so the game’s name and the full result stay down to 400px of list width (a 432 frame), and the cover stays everywhere. Same trailing column as 16.",
+          cost: "No “opens” cue on a phone, against the ListRow rule; the row’s right edge is a time, not a mark. Under 400 the words give way as in 16, so a 390 phone sees 16’s titles with more room. At 320 a long edition name is cut.",
+          adapt: "No chevron under 640. Full words to 400; edition-only titles and short results under 400. One line of columns, chevron back, from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "part",
+            open: "bad",
+            art: "ok"
+          }
+        }, {
+          n: 18,
+          name: "Picture gives way",
+          cls: "o18",
+          stance: "A phone row names the game once. Where the title already says it (“Escape · The Locked Study”), the cover goes under 440px of list width and the words take its 68px; where the row is the game (Library), the cover stays and the title is the name. The full result holds down to 360 (“Escaped in 5 moves” at 320).",
+          cost: "History on a phone has no art, so a mixed list loses its colour and its quickest scan, and History and Library look unlike on a phone. At 320 a mixed title is cut in the edition’s name (“Escape · The Locked St…”); from 360 it fits. Changes the Cover rule for rows: art only where the words don’t already say the game.",
+          adapt: "No cover on titled rows under 440; short results under 360. From 440 the cover returns beside two lines. One line of columns from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "ok",
+            once: "ok",
+            open: "ok",
+            art: "part"
+          }
+        }, {
+          n: 19,
+          name: "Words give way, quiet result",
+          cls: "o19",
+          stance: "16 with the result in the quiet voice. The words of the result go muted; the icon keeps its green or red; the title’s edition name and Replay are the only ink on the row, so Replay reads as the one thing to press. Everything else is 16.",
+          cost: "16’s costs. The result is read second, after the icon, which is the point; a muted result beside a muted time makes line two mostly grey on rows without Replay.",
+          adapt: "As 16: the title says as much as fits, short results under 440, full words from 440, one line of columns from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }];
+        Object.assign(window, {
+          CQ3_PAINS: CQ3_PAINS2,
+          CQ3_IDEAS: CQ3_IDEAS2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row3-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const DS3 = window.MCPGameStoreDesignSystem_ef1abd;
+        const C3_KEY = "pg_canonical-row-4_v1";
+        const C3_WIDTHS = [320, 360, 390, 440, 640, 768, 1024];
+        const C3_DEF_W = C3_WIDTHS;
+        const c3NoGo = (e) => e.preventDefault();
+        const c3Full = (r, flip) => r.game && flip && !c3Ed(r) ? r.game : r.game && flip ? c3Ed(r) + " · " + r.game : r.game ? r.game + (r.name ? " · " + r.name : " " + r.num) : r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const c3Ed = (r) => r.num && r.name ? r.num + " · " + r.name : r.num || r.name;
+        const C3Art = ({
+          art,
+          className
+        }) => /* @__PURE__ */ React.createElement("span", {
+          className,
+          "aria-hidden": "true",
+          dangerouslySetInnerHTML: {
+            __html: CR_ART[art]
+          }
+        });
+        const c4Warned = /* @__PURE__ */ new Set();
+        const c4Warn = (msg) => {
+          if (!c4Warned.has(msg)) {
+            c4Warned.add(msg);
+            console.warn("Canonical row: " + msg);
+          }
+        };
+        const C4_SHORT = [[/^Escaped in (\d+) moves?$/, (m) => m[1] + " moves"], [/^Solved in (\d+ of \d+)$/, (m) => m[1]], [/^All 4 groups, (no mistakes|\d+ mistakes?)$/, (m) => m[1][0].toUpperCase() + m[1].slice(1)], [/^Still locked in$/, () => "Locked in"], [/ (is|are) ready$/, () => "Ready"], [/^Done (today|this week)$/, () => "Done"]];
+        const C4_AS_IS = /^(Solved|Missed|Rescued|Escaped|Played|Hero fell|Ritual done|Not finished|In progress|Pass only)$/;
+        const c4Short = (r) => {
+          if (r.short) return r.short;
+          for (const [re, f] of C4_SHORT) {
+            const m = r.result.match(re);
+            if (m) return f(m);
+          }
+          if (!C4_AS_IS.test(r.result)) c4Warn("no short form for result “" + r.result + "”; pass one");
+          return r.result;
+        };
+        const c4Replay = (r) => {
+          if (r.note && r.note !== "Replay") c4Warn("Replay is on or off; “" + r.note + "” shown as Replay");
+          return r.note ? "Replay" : null;
+        };
+        const c4Rows = (groups) => {
+          const g = new Set(groups.flatMap((x) => x.rows.map((r) => r.game || "")));
+          return g.size === 1 && !g.has("") ? groups.map((x) => ({
+            ...x,
+            rows: x.rows.map(({
+              game,
+              ...r
+            }) => r)
+          })) : groups;
+        };
+        const c4First = (v) => Array.isArray(v) ? v[0] : v;
+        const c4Forms = (r) => Array.isArray(r.result) ? r.result : [.../* @__PURE__ */ new Set([r.result, c4Short(r)])];
+        const c4Pick = (el, forms, what) => {
+          if (!el) return;
+          for (const f of forms) {
+            el.textContent = f;
+            if (el.scrollWidth <= el.clientWidth) return;
+          }
+          c4Warn(what + " “" + forms[forms.length - 1] + "” doesn’t fit its slot even in its shortest form; pass a shorter one");
+        };
+        const c4FitRow = (row, rEl, wEl, rForms, wForms) => {
+          const narrow = row.closest(".crbox").clientWidth < 440;
+          if (rEl) c4Pick(rEl, narrow ? rForms.slice(-1) : rForms, "result");
+          if (wEl) c4Pick(wEl, wForms, "time");
+        };
+        const c4TimeCheck = () => {
+        };
+        const C4_ATTACK = {
+          history: [{
+            h: "Edge cases",
+            rows: [{
+              k: "a1",
+              art: "escape",
+              game: "Escape",
+              result: "Escaped in 5 moves",
+              tone: "ok",
+              when: "12:00"
+            }, {
+              k: "a2",
+              art: "groups",
+              game: "Daily Groups",
+              num: "#89",
+              result: ["All 4 groups, no mistakes, first try in a row", "All 4 groups, no mistakes", "No mistakes"],
+              tone: "ok",
+              when: "09:16"
+            }, {
+              k: "a3",
+              art: "word",
+              game: "Daily Word",
+              num: "#213",
+              result: "Solved in 3 of 6"
+            }, {
+              k: "a4",
+              art: "delve",
+              game: "Delve",
+              name: "The Drum Room",
+              when: "18:30",
+              note: "Replay"
+            }, {
+              k: "a5",
+              art: "casebook",
+              game: "Casebook",
+              name: "Supercalifragilisticexpialidociousmysterycase",
+              result: "Solved",
+              tone: "ok",
+              when: "20:10"
+            }, {
+              k: "a6",
+              art: "escape",
+              game: "Escape",
+              name: "The Locked Study",
+              result: "Escaped in 5 moves",
+              tone: "ok",
+              when: ["Yesterday, 23:59", "23:59"],
+              note: "Replay 3"
+            }]
+          }]
+        };
+        const c4Seed = (id, worst) => {
+          let g = CR_SEED[id](worst);
+          if (!worst) return g;
+          if (C4_ATTACK[id]) g = [...g, ...C4_ATTACK[id]];
+          if (id === "cases") g = g.map((x) => ({
+            ...x,
+            rows: x.rows.map((r) => ({
+              ...r,
+              game: "Casebook"
+            }))
+          }));
+          return g;
+        };
+        const c3Fit = (t) => {
+          const g = t.querySelector(".c3-g"), e = t.querySelector(".c3-e"), full = e.dataset.full || "";
+          const fits = () => t.scrollWidth <= t.clientWidth;
+          if (g) g.style.display = "";
+          e.textContent = full;
+          if (fits()) return;
+          if (g && (t.closest(".o19b,.o19c,.o19d") || t.closest(".o16,.o19") && t.closest(".c3").classList.contains("has-lead"))) {
+            g.style.display = "none";
+            if (fits()) return;
+          }
+          const cut = (n) => full.slice(0, n).replace(/[\s·]+$/, "") + "…";
+          let lo = 0, hi = full.length;
+          while (lo < hi) {
+            const m = lo + hi + 1 >> 1;
+            e.textContent = cut(m);
+            if (fits()) lo = m;
+            else hi = m - 1;
+          }
+          e.textContent = cut(lo);
+        };
+        const C3Row = ({
+          r,
+          flip,
+          strict
+        }) => {
+          const icon = r.tone === "ok" ? "check" : r.tone === "bad" ? "error" : null;
+          const label = [c3Full(r, flip), r.note, c4First(r.result), c4First(r.when)].filter(Boolean).join(", ");
+          const tRef = React.useRef(null), wRef = React.useRef(null), rRef = React.useRef(null);
+          const rForms = strict && r.result ? c4Forms(r) : null;
+          const wForms = r.when ? Array.isArray(r.when) ? r.when : [r.when] : null;
+          const note = strict ? c4Replay(r) : r.note;
+          const short = r.result && !strict && cqShort(c4First(r.result));
+          React.useLayoutEffect(() => {
+            const t = tRef.current;
+            if (!t) return void 0;
+            const run = () => {
+              c3Fit(t);
+              if (strict) c4FitRow(t.closest(".c3"), rRef.current, wRef.current, rForms, wForms);
+            };
+            run();
+            document.fonts.ready.then(run);
+            const ro = new ResizeObserver(run);
+            ro.observe(t);
+            ro.observe(t.closest(".c3"));
+            return () => ro.disconnect();
+          });
+          return /* @__PURE__ */ React.createElement("a", {
+            href: "#",
+            onClick: c3NoGo,
+            className: "c3" + (r.art ? " has-lead" : "") + (r.game ? " has-g" : "") + (r.note ? " has-x" : "") + (r.result ? " has-r" : ""),
+            "aria-label": label
+          }, r.art && /* @__PURE__ */ React.createElement(C3Art, {
+            art: r.art,
+            className: "c3-lead"
+          }), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-t",
+            ref: tRef
+          }, flip ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+            className: "c3-e",
+            "data-full": c3Ed(r) || r.game
+          }), r.game && c3Ed(r) && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-g"
+          }, " · " + r.game)) : /* @__PURE__ */ React.createElement(React.Fragment, null, r.game && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-g"
+          }, r.game, r.name ? " · " : " "), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-e",
+            "data-full": c3Ed(r)
+          }))), r.result && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-r is-" + (r.tone || "none")
+          }, icon && /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: icon,
+            size: 16
+          }), strict ? /* @__PURE__ */ React.createElement("span", {
+            className: "c3-rf",
+            ref: rRef
+          }, rForms[0]) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+            className: "c3-rl"
+          }, c4First(r.result)), /* @__PURE__ */ React.createElement("span", {
+            className: "c3-rs"
+          }, short))), r.when && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-w",
+            ref: wRef
+          }, wForms[0]), note && /* @__PURE__ */ React.createElement("span", {
+            className: "c3-x"
+          }, note), /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: "next",
+            size: 20,
+            className: "c3-go"
+          }));
+        };
+        const C3_WHEN_W = {
+          history: "2.75rem",
+          plays: "3.25rem",
+          words: "3.25rem",
+          cases: "4.75rem",
+          library: "4.75rem"
+        };
+        const C3List = ({
+          s,
+          groups,
+          label,
+          flip,
+          strict
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "crbox",
+          style: {
+            "--cqw": C3_WHEN_W[s.id]
+          }
+        }, /* @__PURE__ */ React.createElement("ul", {
+          className: "crl",
+          "aria-label": label
+        }, groups.map((g, gi) => /* @__PURE__ */ React.createElement(React.Fragment, {
+          key: gi
+        }, g.h && /* @__PURE__ */ React.createElement("li", {
+          className: "crl-h",
+          role: "presentation"
+        }, /* @__PURE__ */ React.createElement("h2", {
+          className: "crl-h",
+          style: {
+            padding: 0,
+            font: "inherit"
+          }
+        }, g.h)), g.rows.map((r) => /* @__PURE__ */ React.createElement("li", {
+          key: r.k,
+          className: "is-row"
+        }, /* @__PURE__ */ React.createElement(C3Row, {
+          r,
+          flip,
+          strict
+        })))))));
+        const C3DsList = ({
+          groups,
+          label
+        }) => {
+          const row = (r) => /* @__PURE__ */ React.createElement(DS3.ListRow, {
+            key: r.k,
+            onClick: () => {
+            },
+            lead: r.art ? /* @__PURE__ */ React.createElement(C3Art, {
+              art: r.art
+            }) : void 0,
+            title: c3Full(r),
+            result: c4First(r.result),
+            tone: r.tone || void 0,
+            when: c4First(r.when),
+            note: r.note
+          });
+          if (groups.length > 1 || groups[0].h) return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, groups.map((g) => /* @__PURE__ */ React.createElement(React.Fragment, {
+            key: g.h
+          }, /* @__PURE__ */ React.createElement("h2", {
+            className: "ph-day"
+          }, g.h), /* @__PURE__ */ React.createElement(DS3.RowList, {
+            label: g.h
+          }, g.rows.map(row)))));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "crbox"
+          }, /* @__PURE__ */ React.createElement(DS3.RowList, {
+            label
+          }, groups[0].rows.map(row)));
+        };
+        const C3Surface = ({
+          s,
+          idea,
+          worst
+        }) => {
+          const groups = c4Seed(s.id, worst);
+          const list = idea.ds ? /* @__PURE__ */ React.createElement(C3DsList, {
+            groups,
+            label: s.card || s.page
+          }) : /* @__PURE__ */ React.createElement(C3List, {
+            s,
+            groups: idea.strict ? c4Rows(groups) : groups,
+            label: s.card || s.page,
+            flip: idea.flip,
+            strict: idea.strict
+          });
+          if (s.card) return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, /* @__PURE__ */ React.createElement("section", {
+            className: "sf-card"
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "sf-cardhead"
+          }, /* @__PURE__ */ React.createElement("h2", null, s.card), /* @__PURE__ */ React.createElement(DS3.TextLink, {
+            onClick: () => {
+            }
+          }, s.link)), list));
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "sf"
+          }, s.back && /* @__PURE__ */ React.createElement("span", {
+            className: "sf-back"
+          }, /* @__PURE__ */ React.createElement(DS3.Icon, {
+            name: "back",
+            size: 20
+          }), s.back), /* @__PURE__ */ React.createElement("h1", {
+            className: "sf-h1"
+          }, s.page), list);
+        };
+        const C3Frame = ({
+          w,
+          cap,
+          s,
+          idea,
+          worst,
+          room,
+          voice
+        }) => {
+          const z = room && room < w ? Math.max(0.5, Math.floor(room / w * 100) / 100) : 1;
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg-frame",
+            style: {
+              width: w,
+              zoom: z === 1 ? void 0 : z
+            }
+          }, /* @__PURE__ */ React.createElement("span", {
+            className: "pg-cap",
+            style: z === 1 ? void 0 : {
+              fontSize: 12 / z
+            }
+          }, (cap || w + "PX") + (z === 1 ? "" : " · SHOWN AT " + Math.round(z * 100) + "%")), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-in " + idea.cls + (voice ? " is-voice" : "")
+          }, /* @__PURE__ */ React.createElement(C3Surface, {
+            s,
+            idea,
+            worst
+          })));
+        };
+        const C3_PAIN_ICON = {
+          ok: "check",
+          part: "warn",
+          bad: "error"
+        };
+        const C3_PAIN_WORD = {
+          ok: "Holds",
+          part: "Partly",
+          bad: "Breaks"
+        };
+        const C3Detail = ({
+          idea
+        }) => /* @__PURE__ */ React.createElement("section", {
+          className: "pg-detail",
+          "aria-live": "polite"
+        }, /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("small", null, idea.n), idea.name), /* @__PURE__ */ React.createElement("p", null, idea.stance), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-cost"
+        }, /* @__PURE__ */ React.createElement("b", null, "Cost."), " ", idea.cost), /* @__PURE__ */ React.createElement("p", {
+          className: "pg-adapt"
+        }, /* @__PURE__ */ React.createElement("b", null, "Across widths."), " ", idea.adapt), /* @__PURE__ */ React.createElement("ul", {
+          className: "pg-pains"
+        }, CQ3_PAINS.map(([k, l]) => /* @__PURE__ */ React.createElement("li", {
+          key: k,
+          className: "is-" + idea.pains[k]
+        }, /* @__PURE__ */ React.createElement(DS3.Icon, {
+          name: C3_PAIN_ICON[idea.pains[k]],
+          size: 16
+        }), l, " ", /* @__PURE__ */ React.createElement("em", null, C3_PAIN_WORD[idea.pains[k]])))), idea.rules && /* @__PURE__ */ React.createElement("div", {
+          className: "pg-rules"
+        }, /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("b", null, "What the row enforces."), " Switch Seed to Worst case to see each one tested: History gets an Edge cases day, and Every case passes the game’s name on every row."), /* @__PURE__ */ React.createElement("ol", null, idea.rules.map((x, i) => /* @__PURE__ */ React.createElement("li", {
+          key: i
+        }, x)))));
+        const C3Seg = ({
+          label,
+          opts,
+          value,
+          onPick,
+          multi
+        }) => /* @__PURE__ */ React.createElement("div", {
+          className: "pg-seg",
+          role: "group",
+          "aria-label": label
+        }, /* @__PURE__ */ React.createElement("span", null, label), opts.map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+          key: v,
+          type: "button",
+          "aria-pressed": multi ? value.includes(v) : value === v,
+          onClick: () => onPick(v)
+        }, l)));
+        const C3_DEF = {
+          opt: "19E",
+          view: "opt",
+          worst: false,
+          widths: C3_DEF_W,
+          surf: "history",
+          w: 390,
+          voice: true
+        };
+        const c3Load = () => {
+          try {
+            return {
+              ...C3_DEF,
+              ...JSON.parse(localStorage.getItem(C3_KEY) || "{}")
+            };
+          } catch (e) {
+            return C3_DEF;
+          }
+        };
+        function C3App() {
+          const [st, setSt] = React.useState(c3Load);
+          React.useEffect(() => {
+            localStorage.setItem(C3_KEY, JSON.stringify(st));
+          }, [st]);
+          const set = (k, v) => setSt((p) => ({
+            ...p,
+            [k]: v
+          }));
+          const mainRef = React.useRef(null);
+          const [room, setRoom] = React.useState(0);
+          React.useLayoutEffect(() => {
+            const m = mainRef.current;
+            if (!m) return void 0;
+            const run = () => {
+              const cs = getComputedStyle(m);
+              setRoom(m.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+            };
+            run();
+            const ro = new ResizeObserver(run);
+            ro.observe(m);
+            return () => ro.disconnect();
+          }, []);
+          const idea = CQ3_IDEAS.find((x) => x.n === st.opt) || CQ3_IDEAS[0];
+          const flipW = (w) => set("widths", st.widths.includes(w) ? st.widths.length > 1 ? st.widths.filter((x) => x !== w) : st.widths : C3_WIDTHS.filter((x) => x === w || st.widths.includes(x)));
+          const surf = CR_SURFACES.find((x) => x.id === st.surf) || CR_SURFACES[0];
+          return /* @__PURE__ */ React.createElement("div", {
+            className: "pg"
+          }, /* @__PURE__ */ React.createElement("main", {
+            className: "pg-main",
+            ref: mainRef
+          }, /* @__PURE__ */ React.createElement("header", {
+            className: "pg-lede"
+          }, /* @__PURE__ */ React.createElement("h1", null, "Canonical row, round 4"), /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("b", null, "Round 4"), " starts as a copy of round 3 and adds ", /* @__PURE__ */ React.createElement("b", null, "19B"), ": 19 with the title flipped, the edition’s name first in ink and the game’s name after it, quiet. Compare it with ", /* @__PURE__ */ React.createElement("b", null, "19"), " under One surface, every option. ", /* @__PURE__ */ React.createElement("b", null, "19C"), " and ", /* @__PURE__ */ React.createElement("b", null, "19D"), " are 19B with two answers to the wide list’s floating columns: pack everything against the time, or keep the phone’s two lines at every width. ", /* @__PURE__ */ React.createElement("b", null, "19E"), " is 19D with the result in ink, and is the candidate for approval: it enforces its rules instead of trusting the data (listed under it), and Worst case adds rows that break each one."), /* @__PURE__ */ React.createElement("p", null, "Two things are taken as settled from your reviews: every row in a list is one height, and the trailing column centres the time when it is alone and gives Replay its own line when it is not. What is left to decide on a phone is what to spend. A 320 frame leaves 154px for a line, and the cover, the chevron, the time column and the full words do not all fit in it. ", /* @__PURE__ */ React.createElement("b", null, "16"), ", ", /* @__PURE__ */ React.createElement("b", null, "17"), " and ", /* @__PURE__ */ React.createElement("b", null, "18"), " each spend one of them and keep the rest. ", /* @__PURE__ */ React.createElement("b", null, "0"), " is the shipped row."), /* @__PURE__ */ React.createElement("p", {
+            className: "pg-shared"
+          }, /* @__PURE__ */ React.createElement("b", null, "Shared by 16 to 19."), " Two 20px lines on every row under 640px of list width, so a row is 62px on every surface. The cover follows the Cover rule and shares the text’s edges: 56×42 beside two lines, 40×30 beside one. Titles never wrap; a title that does not fit ends in “…”, never after a space. A row with nothing on line two centres its title. The title has two voices: the game’s name quiet, the edition’s name in ink (toggle below). From 640 every option is the same one line of fixed columns (title, result, Replay, time), and a page list keeps a 760px measure."), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Option",
+            value: st.opt,
+            onPick: (v) => set("opt", v),
+            opts: CQ3_IDEAS.map((x) => [x.n, x.n + " " + x.name])
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "View",
+            value: st.view,
+            onPick: (v) => set("view", v),
+            opts: [["surf", "One surface, every option"], ["opt", "One option, every surface"]]
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Seed",
+            value: st.worst ? "w" : "r",
+            onPick: (v) => set("worst", v === "w"),
+            opts: [["r", "As seeded"], ["w", "Worst case"]]
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Game’s name",
+            value: st.voice ? "q" : "i",
+            onPick: (v) => set("voice", v === "q"),
+            opts: [["q", "Quiet"], ["i", "Ink"]]
+          })), st.view === "opt" ? /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Widths",
+            multi: true,
+            value: st.widths,
+            onPick: flipW,
+            opts: C3_WIDTHS.map((w) => [w, w + ""])
+          }) : /* @__PURE__ */ React.createElement("div", {
+            className: "pg-ctl"
+          }, /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Surface",
+            value: st.surf,
+            onPick: (v) => set("surf", v),
+            opts: CR_SURFACES.map((x) => [x.id, x.name])
+          }), /* @__PURE__ */ React.createElement(C3Seg, {
+            label: "Width",
+            value: st.w,
+            onPick: (v) => set("w", v),
+            opts: C3_WIDTHS.map((w) => [w, w + ""])
+          }))), /* @__PURE__ */ React.createElement(C3Detail, {
+            idea
+          }), st.view === "opt" ? CR_SURFACES.map((s) => /* @__PURE__ */ React.createElement("section", {
+            key: s.id,
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, s.name), /* @__PURE__ */ React.createElement("p", null, s.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, st.widths.map((w) => /* @__PURE__ */ React.createElement(C3Frame, {
+            key: w + "-" + idea.n,
+            w,
+            s,
+            idea,
+            worst: st.worst,
+            room,
+            voice: st.voice
+          }))))) : /* @__PURE__ */ React.createElement("section", {
+            className: "pg-surf"
+          }, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("h3", null, surf.name, " at ", st.w, "px"), /* @__PURE__ */ React.createElement("p", null, surf.recipe)), /* @__PURE__ */ React.createElement("div", {
+            className: "pg-strip"
+          }, CQ3_IDEAS.map((x) => /* @__PURE__ */ React.createElement(C3Frame, {
+            key: x.n + "-" + st.w,
+            w: st.w,
+            cap: x.n + " · " + x.name.toUpperCase(),
+            s: surf,
+            idea: x,
+            worst: st.worst,
+            room,
+            voice: st.voice
+          }))))));
+        }
+        if (document.querySelector('script[src$="pg-row4-app.jsx"]')) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(C3App, null));
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row4-app.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const CQ3_PAINS2 = [["h", "Same height every row"], ["r320", "Works at 320"], ["name", "Full name on the row"], ["once", "Says the game once"], ["open", "“Opens” cue on a phone"], ["art", "Art on every surface"]];
+        const CQ3_IDEAS2 = [{
+          n: 0,
+          name: "Today",
+          cls: "o0",
+          ds: true,
+          stance: "The shipped ListRow, for reference. Two lines on a narrow list, fixed columns from 640px.",
+          cost: "Titles wrap beside the time, so rows grow and differ. The time centres on rows without Replay and sits on line one on rows with it.",
+          adapt: "Two shapes, switched at 640px of list width.",
+          pains: {
+            h: "bad",
+            r320: "part",
+            name: "ok",
+            once: "part",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: 16,
+          name: "Words give way",
+          cls: "o16",
+          stance: "Keeps the cover, the chevron and the time column at every width, and pays with words. Under 440px of list width a title beside a cover drops the game’s name (the cover says it: “The Locked Study”, “#212”) and the result takes its short form (“5 moves”). The time sits top right; on a Replay row, Replay sits under it; on any other row the time centres on both lines.",
+          cost: "Players have to know the covers: “#64” only means something beside its art, and two games’ numbers look alike. At 320 a long edition name is still cut (“The Locked St…”); from 360 the usual ones fit, and the longest (“The Night Train to Fort William”) is cut until 640. The product supplies a short result for every outcome.",
+          adapt: "The title says as much as fits at any width: game · edition, then edition alone beside a cover, then the edition cut. Short results under 440, full from 440. One line of fixed columns from 640, cover 40×30.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: 17,
+          name: "Chevron gives way",
+          cls: "o17",
+          stance: "Under 640px the chevron goes: every row opens, the list is the page, and the whole row is the target. Its 32px go to the words, so the game’s name and the full result stay down to 400px of list width (a 432 frame), and the cover stays everywhere. Same trailing column as 16.",
+          cost: "No “opens” cue on a phone, against the ListRow rule; the row’s right edge is a time, not a mark. Under 400 the words give way as in 16, so a 390 phone sees 16’s titles with more room. At 320 a long edition name is cut.",
+          adapt: "No chevron under 640. Full words to 400; edition-only titles and short results under 400. One line of columns, chevron back, from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "part",
+            open: "bad",
+            art: "ok"
+          }
+        }, {
+          n: 18,
+          name: "Picture gives way",
+          cls: "o18",
+          stance: "A phone row names the game once. Where the title already says it (“Escape · The Locked Study”), the cover goes under 440px of list width and the words take its 68px; where the row is the game (Library), the cover stays and the title is the name. The full result holds down to 360 (“Escaped in 5 moves” at 320).",
+          cost: "History on a phone has no art, so a mixed list loses its colour and its quickest scan, and History and Library look unlike on a phone. At 320 a mixed title is cut in the edition’s name (“Escape · The Locked St…”); from 360 it fits. Changes the Cover rule for rows: art only where the words don’t already say the game.",
+          adapt: "No cover on titled rows under 440; short results under 360. From 440 the cover returns beside two lines. One line of columns from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "ok",
+            once: "ok",
+            open: "ok",
+            art: "part"
+          }
+        }, {
+          n: 19,
+          name: "Words give way, quiet result",
+          cls: "o19",
+          stance: "16 with the result in the quiet voice. The words of the result go muted; the icon keeps its green or red; the title’s edition name and Replay are the only ink on the row, so Replay reads as the one thing to press. Everything else is 16.",
+          cost: "16’s costs. The result is read second, after the icon, which is the point; a muted result beside a muted time makes line two mostly grey on rows without Replay.",
+          adapt: "As 16: the title says as much as fits, short results under 440, full words from 440, one line of columns from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: "19B",
+          name: "Edition first",
+          cls: "o19b",
+          flip: true,
+          stance: "19 with the title flipped: the edition’s name first in ink, the game’s name after it in the quiet voice (“The Locked Study · Escape”). The row is read by what was played; the game is the tag after it.",
+          cost: "Because the game’s name trails, it is the first thing to go, on every row, not only beside a cover: a row without art can lose its game before its edition is cut. Rows with a number and no name read “#212 · Casebook”. The edition no longer lines up after a game’s name, so editions start at the same edge down the list.",
+          adapt: "The title says as much as fits: edition · game, then the edition alone, then the edition cut. The game’s name is never cut, only dropped. Short results under 440, full from 440, one line of columns from 640.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: "19C",
+          name: "Against the time",
+          cls: "o19c",
+          flip: true,
+          stance: "19B with no fixed result column from 640. The result, Replay where there is one, and the time sit together at the right edge, 16px apart, as they do on a phone. “Played” sits beside its date. No row has an empty slot, so nothing floats in the middle of the row.",
+          cost: "Results no longer start at one edge down the list: they are right-aligned, and on a Replay row the result moves left by Replay’s width. Long results (“All 4 groups, no mistakes”) read as a ragged run. Between title and result is all space, which grows with the width.",
+          adapt: "As 19B under 640. From 640 one line, trailing facts packed against the time.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: "19D",
+          name: "Two lines everywhere",
+          cls: "o19d",
+          flip: true,
+          stance: "19B’s phone row at every width. The result stays under the title, the time top right, Replay under it. The grouping that works at 390 is the row; a wide list is the same row with a longer title line, inside the 760px measure.",
+          cost: "Every row is 62px on a desktop too, so a wide list shows fewer rows a screen and leaves space between the title and the time. No column to scan results or dates in bulk beyond what the phone has. The 56×42 cover stays on wide screens.",
+          adapt: "One shape at every width: short results under 440, full from 440. The 640 columns are gone.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }, {
+          n: "19E",
+          name: "Two lines, result in ink",
+          cls: "o19d o19e",
+          flip: true,
+          strict: true,
+          rules: ["One shape at every width: two 20px lines, 62px a row. Titles never wrap.", "The title is built from its parts: the edition in ink, then the game’s name, quiet. A row with no edition shows the game’s name alone, in ink, never “ · Escape”.", "When the title is too long, the game’s name goes first, whole; then the edition is cut, with no space before the “…”.", "A list where every row is one game drops the game’s name from every row, whatever the screen passes.", "Results can be passed as their forms, longest first (“All 4 groups, no mistakes, first try in a row”, “All 4 groups, no mistakes”, “No mistakes”). From 440 the row shows the longest that fits; under 440 every row shows its last form. A plain result gets its written short form. A last form that still doesn’t fit is cut cleanly and warns.", "Times work the same way in a set column per list, longest form that fits (“Yesterday, 23:59”, then “23:59”). The title is never squeezed by the time.", "Replay is on or off. The row writes the word; any other text shows as Replay and warns."],
+          stance: "19D with the result in ink. Three jobs, three voices: the edition says what was played, the result says how it went, and the game’s name, the only quiet text, says which game. Ink, quiet, then ink again: the eye goes from the edition to the result and passes over the tag.",
+          cost: "Line two is as loud as the edition, so Replay, in ink and bold, stands out less. A list of only results reads busier than 19D. The quiet tag is the only grey left, so where a list is all one game it repeats on every row for little.",
+          adapt: "As 19D.",
+          pains: {
+            h: "ok",
+            r320: "ok",
+            name: "part",
+            once: "ok",
+            open: "ok",
+            art: "ok"
+          }
+        }];
+        Object.assign(window, {
+          CQ3_PAINS: CQ3_PAINS2,
+          CQ3_IDEAS: CQ3_IDEAS2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/canonical-row/playground/pg-row4-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        (() => {
+          if (!document.querySelector('script[src$="pg-chip-align.jsx"]')) return;
+          const DS2 = window.MCPGameStoreDesignSystem_ef1abd;
+          const KEY = "pg_card-chip-alignment_v1";
+          const HOME = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
+          const SOON = [{
+            name: "Derelict",
+            art: "derelict",
+            line: "The same game, in science fiction"
+          }, {
+            name: GS_GAMES.barrow.name,
+            art: "barrow",
+            line: GS_GAMES.barrow.blurb,
+            label: "CHAPTER 2",
+            play: "Play chapter 1"
+          }];
+          const WIDTHS = [1200, 1024, 768, 390];
+          const load = () => {
+            try {
+              return JSON.parse(localStorage.getItem(KEY)) || {};
+            } catch (e) {
+              return {};
+            }
+          };
+          const init = load();
+          const Art = ({
+            id
+          }) => {
+            const a = GS_ART[GS_GAMES[id].art] || {};
+            const svg = (a.svg || "").replace("xMidYMid slice", a.extend === "bottom" ? "xMidYMax meet" : "xMidYMid meet").replace("<svg ", '<svg style="width:100%;height:100%;display:block" ');
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-art mcp-art-3" + (a.ground && a.ground !== "indigo" ? " is-" + a.ground : ""),
+              style: {
+                position: "relative"
+              },
+              "aria-hidden": "true"
+            }, /* @__PURE__ */ React.createElement("span", {
+              style: {
+                position: "absolute",
+                inset: 0,
+                display: "grid"
+              },
+              dangerouslySetInnerHTML: {
+                __html: svg
+              }
+            }));
+          };
+          const Tags = ({
+            tags,
+            ed
+          }) => /* @__PURE__ */ React.createElement("div", {
+            className: "gs-tags"
+          }, tags.map((t, i) => t === "FREE" ? /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "free"
+          }, "Free") : t === "FIRST" ? /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "free"
+          }, "First " + (ed ? ed[0] : "edition") + " free") : t === "PASS" ? /* @__PURE__ */ React.createElement("button", {
+            key: i,
+            type: "button",
+            className: "gs-tagbtn",
+            "aria-label": "Pass. See the Pass"
+          }, /* @__PURE__ */ React.createElement(DS2.Tag, {
+            kind: "locked"
+          }, "Pass")) : /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "daily"
+          }, t)));
+          const keepLast = (s) => {
+            const i = s.lastIndexOf(" ");
+            const j = i > 0 ? s.lastIndexOf(" ", i - 1) : -1;
+            return j < 0 ? s : /* @__PURE__ */ React.createElement(React.Fragment, null, s.slice(0, j + 1), /* @__PURE__ */ React.createElement("span", {
+              style: {
+                whiteSpace: "nowrap"
+              }
+            }, s.slice(j + 1)));
+          };
+          const Title = ({
+            g
+          }) => /* @__PURE__ */ React.createElement("button", {
+            type: "button",
+            className: "gs-titlebtn mcp-art-link"
+          }, g.name);
+          const Today = ({
+            id
+          }) => {
+            const g = GS_GAMES[id];
+            return /* @__PURE__ */ React.createElement(DS2.GameCard, {
+              className: "mcp-art-host gs-host",
+              art: /* @__PURE__ */ React.createElement(Art, {
+                id
+              }),
+              title: /* @__PURE__ */ React.createElement(Title, {
+                g
+              }),
+              blurb: keepLast(g.blurb),
+              tags: /* @__PURE__ */ React.createElement(Tags, {
+                tags: g.tags,
+                ed: g.ed
+              })
+            });
+          };
+          const Fixed = ({
+            id
+          }) => {
+            const g = GS_GAMES[id];
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-card mcp-gcard mcp-art-host gs-host"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-art"
+            }, /* @__PURE__ */ React.createElement(Art, {
+              id
+            })), /* @__PURE__ */ React.createElement("div", {
+              className: "pgx-text"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-name"
+            }, /* @__PURE__ */ React.createElement("h3", {
+              className: "mcp-t-card"
+            }, /* @__PURE__ */ React.createElement(Title, {
+              g
+            }))), /* @__PURE__ */ React.createElement("p", {
+              className: "mcp-gcard-blurb"
+            }, keepLast(g.blurb))), /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-tags"
+            }, /* @__PURE__ */ React.createElement(Tags, {
+              tags: g.tags,
+              ed: g.ed
+            })));
+          };
+          const Soon = ({
+            s
+          }) => {
+            const a = GS_ART[s.art] || {};
+            return /* @__PURE__ */ React.createElement(DS2.SoonCard, {
+              art: /* @__PURE__ */ React.createElement(DS2.Cover, {
+                fill: true,
+                ground: a.ground,
+                extend: a.extend
+              }, /* @__PURE__ */ React.createElement("span", {
+                style: {
+                  display: "block"
+                },
+                dangerouslySetInnerHTML: {
+                  __html: a.svg || ""
+                }
+              })),
+              label: s.label,
+              title: s.name,
+              line: s.line,
+              play: s.play,
+              onPlay: s.play ? () => {
+              } : void 0
+            });
+          };
+          const Band = ({
+            fix
+          }) => /* @__PURE__ */ React.createElement("div", {
+            className: "gs-root" + (fix ? " is-fix" : "")
+          }, /* @__PURE__ */ React.createElement("div", {
+            className: "gs-wrap"
+          }, /* @__PURE__ */ React.createElement("section", {
+            className: "gs-band"
+          }, /* @__PURE__ */ React.createElement(DS2.CardRow, {
+            title: "Available games",
+            className: "gs-row4"
+          }, HOME.map((k) => fix ? /* @__PURE__ */ React.createElement(Fixed, {
+            key: k,
+            id: k
+          }) : /* @__PURE__ */ React.createElement(Today, {
+            key: k,
+            id: k
+          }))), /* @__PURE__ */ React.createElement("div", {
+            className: "gs-grid2"
+          }, SOON.map((s) => /* @__PURE__ */ React.createElement(Soon, {
+            key: s.name,
+            s
+          }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DS2.TextLink, {
+            onClick: () => {
+            }
+          }, "All games")))));
+          const Frame = ({
+            w,
+            fix,
+            cap,
+            note
+          }) => {
+            const box = React.useRef(null);
+            const [z, setZ] = React.useState(1);
+            React.useEffect(() => {
+              const el = box.current;
+              const ro = new ResizeObserver(() => setZ(Math.min(1, el.clientWidth / w)));
+              ro.observe(el);
+              return () => ro.disconnect();
+            }, [w]);
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-frame"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-cap"
+            }, /* @__PURE__ */ React.createElement("b", null, cap), /* @__PURE__ */ React.createElement("span", null, note, z < 1 ? " · shown at " + Math.round(z * 100) + "%" : "")), /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-fit",
+              ref: box
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-stage",
+              style: {
+                width: w,
+                zoom: z
+              }
+            }, /* @__PURE__ */ React.createElement(Band, {
+              fix
+            }))));
+          };
+          const App = () => {
+            const [w, setW] = React.useState(WIDTHS.includes(init.w) ? init.w : 1200);
+            const [fix, setFix] = React.useState(init.fix ?? true);
+            React.useEffect(() => {
+              try {
+                localStorage.setItem(KEY, JSON.stringify({
+                  w,
+                  fix
+                }));
+              } catch (e) {
+              }
+            }, [w, fix]);
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "pgc"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-head"
+            }, /* @__PURE__ */ React.createElement("h1", null, "Available games: chip alignment"), /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-row"
+            }, /* @__PURE__ */ React.createElement("span", {
+              className: "pgc-k"
+            }, "VERSION"), [[false, "0 Today"], [true, "1 Fix"]].map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+              key: l,
+              type: "button",
+              className: "pgc-b",
+              "aria-pressed": fix === v,
+              onClick: () => setFix(v)
+            }, l))), /* @__PURE__ */ React.createElement("div", {
+              className: "pgc-row"
+            }, /* @__PURE__ */ React.createElement("span", {
+              className: "pgc-k"
+            }, "WIDTH"), WIDTHS.map((x) => /* @__PURE__ */ React.createElement("button", {
+              key: x,
+              type: "button",
+              className: "pgc-b",
+              "aria-pressed": w === x,
+              onClick: () => setW(x)
+            }, x)))), fix ? /* @__PURE__ */ React.createElement(Frame, {
+              key: "f",
+              w,
+              fix: true,
+              cap: "1 Fix",
+              note: "One-row chips centred against Delve. Coming soon chips on one line."
+            }) : /* @__PURE__ */ React.createElement(Frame, {
+              key: "t",
+              w,
+              cap: "0 Today",
+              note: "Chips at the bottom, white space above. Coming soon chips at different heights."
+            }));
+          };
+          ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
+        })();
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/card-chip-alignment/playground/pg-chip-align.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const GS_SVG2 = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
+        const GS_ART2 = {
+          delve: {
+            ground: "wine",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>')
+          },
+          escape: {
+            ground: "indigo",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>')
+          },
+          murder: {
+            ground: "wine",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>')
+          },
+          // Daily Groups: four rows of four, one colour a group, as a solved board (added 2026-10-09, split-daily-puzzles).
+          groups: {
+            ground: "indigo",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/>' + ["#E5A63B", "#328A88", "#D66847", "#A390B2"].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join("")).join(""))
+          },
+          word: {
+            ground: "forest",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>')
+          },
+          derelict: {
+            ground: "indigo",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>')
+          },
+          barrow: {
+            ground: "wine",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>')
+          },
+          casebook: {
+            ground: "indigo",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>')
+          },
+          hunter: {
+            ground: "forest",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>')
+          }
+        };
+        const GS_NAME2 = {
+          casebook: "Casebook",
+          hunter: "36,000 Summers Ago"
+        };
+        const GS_GAMES2 = {
+          word: {
+            name: "Daily Word",
+            category: "PUZZLE",
+            art: "word",
+            route: "word",
+            ed: ["word", "words"],
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "Six guesses to find today’s five-letter word.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          groups: {
+            name: "Daily Groups",
+            category: "PUZZLE",
+            art: "groups",
+            route: "groups",
+            ed: ["groups", "groups"],
+            edLink: "See all groups",
+            edAll: "All groups",
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "Sixteen words hide four groups. Find all four.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          mystery: {
+            name: "Daily Mystery",
+            category: "PUZZLE",
+            art: "murder",
+            route: "mystery",
+            ed: ["case", "cases"],
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "There’s a body and a story that doesn’t add up.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          escape: {
+            name: "Escape",
+            category: "PUZZLE",
+            art: "escape",
+            route: "escape",
+            ed: ["room", "rooms"],
+            free: true,
+            blurb: "The door’s locked and you’re on the wrong side of it.",
+            tags: ["FREE", "Weekly", "10 min"]
+          },
+          casebook: {
+            name: GS_NAME2.casebook,
+            category: "MYSTERY",
+            art: "casebook",
+            route: "casebook",
+            ed: ["case", "cases"],
+            once: true,
+            blurb: "Ask the question they haven’t prepared for.",
+            first: true,
+            tags: ["FIRST", "Weekly", "25–40 min"]
+          },
+          delve: {
+            name: "Delve",
+            category: "ADVENTURE",
+            art: "delve",
+            route: "delve",
+            ed: ["scene", "scenes"],
+            first: true,
+            blurb: "Get her out before the drums stop.",
+            tags: ["FIRST", "Weekly", "25–40 min"]
+          },
+          // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
+          barrow: {
+            name: "The Barrow of Hollowmere",
+            category: "ADVENTURE",
+            art: "barrow",
+            route: "barrow",
+            ed: ["chapter", "chapters"],
+            eds: true,
+            edLink: "All chapters",
+            edAll: "All chapters",
+            first: true,
+            blurb: "Something under the hill wants its gold back. Go down anyway.",
+            tags: ["FIRST", "45–60 min"]
+          },
+          hunter: {
+            name: GS_NAME2.hunter,
+            category: "LEARNING",
+            art: "hunter",
+            route: "hunter",
+            blurb: "Grey dawn below Chauvet cave. Go where you like.",
+            tags: ["PASS", "2 hours"]
+          }
+        };
+        const GS_GAME_ORDER2 = ["word", "groups", "mystery", "escape", "casebook", "delve", "barrow", "hunter"];
+        Object.assign(window, {
+          GS_ART: GS_ART2,
+          GS_NAME: GS_NAME2,
+          GS_GAMES: GS_GAMES2,
+          GS_GAME_ORDER: GS_GAME_ORDER2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/card-chip-alignment/playground/pg-chip-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        (() => {
+          const DS2 = window.MCPGameStoreDesignSystem_ef1abd;
+          const KEY = "pg_card_snug_title_v1";
+          const OPTS = [{
+            n: 0,
+            name: "Today",
+            why: "Four lines shared across the row. The name line is as tall as the tallest name, so a one-line name sits above a blank line.",
+            cost: "The gap you flagged: one two-line name opens a gap under every other title in the row."
+          }, {
+            n: 1,
+            name: "Snug, chips bottom",
+            why: "Each card stands alone: picture, then name and blurb together, then chips on the card’s bottom edge. Cards are as tall as the tallest in the row. Spare height sits between blurb and chips.",
+            cost: "Nothing is shared but the picture and the card’s edges. A card with two rows of chips starts its chips higher than one with a single row; their bottom edges stay level."
+          }, {
+            n: 2,
+            name: "Block, shared chips",
+            why: "Name and blurb become one block (a text slot added to GameCard). The row shares three lines: picture, block, chips. Chips sit centred in their line as ratified.",
+            cost: "Needs a wrapper in GameCard around name and blurb. One chip row beside a two-row set is centred, so its chips float a little above the bottom edge."
+          }, {
+            n: 3,
+            name: "Block, chips floor",
+            why: "As 2, with every chip set sitting on the bottom of its line.",
+            cost: "Needs the same wrapper. A single chip row sits flush with the other card’s last row, but loses the centring ratified earlier."
+          }];
+          GS_GAMES.stress = {
+            name: "The Hollow Under the Hill",
+            art: "barrow",
+            ed: ["chapter", "chapters"],
+            blurb: "Something under the hill wants its gold back.",
+            tags: ["FIRST", "Weekly", "45–60 min"]
+          };
+          const load = () => {
+            try {
+              return JSON.parse(localStorage.getItem(KEY)) || {};
+            } catch (e) {
+              return {};
+            }
+          };
+          const save = (s) => {
+            try {
+              localStorage.setItem(KEY, JSON.stringify(s));
+            } catch (e) {
+            }
+          };
+          const init = load();
+          const Art = ({
+            id
+          }) => {
+            const a = GS_ART[GS_GAMES[id].art] || {};
+            const svg = (a.svg || "").replace("xMidYMid slice", a.extend === "bottom" ? "xMidYMax meet" : "xMidYMid meet").replace("<svg ", '<svg style="width:100%;height:100%;display:block" ');
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-art mcp-art-3" + (a.ground && a.ground !== "indigo" ? " is-" + a.ground : ""),
+              style: {
+                position: "relative"
+              },
+              "aria-hidden": "true"
+            }, /* @__PURE__ */ React.createElement("span", {
+              style: {
+                position: "absolute",
+                inset: 0,
+                display: "grid"
+              },
+              dangerouslySetInnerHTML: {
+                __html: svg
+              }
+            }));
+          };
+          const Tags = ({
+            tags,
+            ed
+          }) => /* @__PURE__ */ React.createElement("div", {
+            className: "gs-tags"
+          }, tags.map((t, i) => t === "FREE" ? /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "free"
+          }, "Free") : t === "FIRST" ? /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "free"
+          }, "First " + (ed ? ed[0] : "edition") + " free") : t === "PASS" ? /* @__PURE__ */ React.createElement("button", {
+            key: i,
+            type: "button",
+            className: "gs-tagbtn",
+            "aria-label": "Pass. See the Pass"
+          }, /* @__PURE__ */ React.createElement(DS2.Tag, {
+            kind: "locked"
+          }, "Pass")) : /* @__PURE__ */ React.createElement(DS2.Tag, {
+            key: i,
+            kind: "daily"
+          }, t)));
+          const keepLast = (s) => {
+            const i = s.lastIndexOf(" ");
+            const j = i > 0 ? s.lastIndexOf(" ", i - 1) : -1;
+            return j < 0 ? s : /* @__PURE__ */ React.createElement(React.Fragment, null, s.slice(0, j + 1), /* @__PURE__ */ React.createElement("span", {
+              style: {
+                whiteSpace: "nowrap"
+              }
+            }, s.slice(j + 1)));
+          };
+          const Card = ({
+            id
+          }) => {
+            const g = GS_GAMES[id];
+            return /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-card mcp-gcard mcp-art-host gs-host"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-art"
+            }, /* @__PURE__ */ React.createElement(Art, {
+              id
+            })), /* @__PURE__ */ React.createElement("div", {
+              className: "pgs-text"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-name"
+            }, /* @__PURE__ */ React.createElement("h3", {
+              className: "mcp-t-card"
+            }, /* @__PURE__ */ React.createElement("button", {
+              type: "button",
+              className: "gs-titlebtn mcp-art-link"
+            }, g.name))), /* @__PURE__ */ React.createElement("p", {
+              className: "mcp-gcard-blurb"
+            }, keepLast(g.blurb))), /* @__PURE__ */ React.createElement("div", {
+              className: "mcp-gcard-tags"
+            }, /* @__PURE__ */ React.createElement(Tags, {
+              tags: g.tags,
+              ed: g.ed
+            })));
+          };
+          const measure = () => {
+            const cards = [...document.querySelectorAll(".mcp-gcard")];
+            if (!cards.length) return null;
+            const gap = cards.map((c) => c.querySelector(".mcp-gcard-blurb").getBoundingClientRect().top - c.querySelector("h3").getBoundingClientRect().bottom);
+            const tb = cards.map((c) => {
+              const t = [...c.querySelectorAll(".mcp-tag")];
+              return Math.max(...t.map((x) => x.getBoundingClientRect().bottom)) - c.getBoundingClientRect().bottom;
+            });
+            const hs = cards.map((c) => c.getBoundingClientRect().height);
+            const sp = (a) => Math.max(...a) - Math.min(...a);
+            const bl = cards.map((c) => {
+              const t = c.querySelector(".mcp-gcard-tags").firstElementChild;
+              const tt = Math.min(...[...c.querySelectorAll(".mcp-tag")].map((x) => x.getBoundingClientRect().top));
+              return tt - (() => {
+                const rg = document.createRange();
+                rg.selectNodeContents(c.querySelector(".mcp-gcard-blurb"));
+                return Math.max(...[...rg.getClientRects()].map((x) => x.bottom));
+              })() - 12;
+            });
+            return {
+              gap: Math.max(...gap) - 12,
+              tb: sp(tb),
+              hs: sp(hs),
+              blank: Math.max(...bl)
+            };
+          };
+          const App = () => {
+            const [opt, setOpt] = React.useState(Math.min(init.opt ?? 1, 3));
+            const [vp, setVp] = React.useState(init.vp || "auto");
+            const [open, setOpen] = React.useState(init.open ?? true);
+            const [stress, setStress] = React.useState(init.stress ?? false);
+            const [why, setWhy] = React.useState(false);
+            const [read, setRead] = React.useState(null);
+            const [w, setW] = React.useState(window.innerWidth);
+            const ref = React.useRef(null);
+            React.useEffect(() => {
+              document.documentElement.dataset.pgsOpt = String(opt);
+              save({
+                opt,
+                vp,
+                open,
+                stress
+              });
+            }, [opt, vp, open, stress]);
+            React.useEffect(() => {
+              const t = setInterval(() => setRead(measure()), 500);
+              const r = () => setW(window.innerWidth);
+              window.addEventListener("resize", r);
+              return () => {
+                clearInterval(t);
+                window.removeEventListener("resize", r);
+              };
+            }, []);
+            React.useEffect(() => {
+              const el = ref.current;
+              if (!el) return void 0;
+              const ro = new ResizeObserver(() => document.documentElement.style.setProperty("--pgs-h", el.offsetHeight + "px"));
+              ro.observe(el);
+              return () => ro.disconnect();
+            }, []);
+            const o = OPTS[opt], f = (x) => Math.round(x);
+            const forced = vp === "mobile";
+            const page = /* @__PURE__ */ React.createElement("div", {
+              className: "gs-root"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "gs-wrap",
+              style: {
+                paddingBlock: 36
+              }
+            }, /* @__PURE__ */ React.createElement(DS2.CardRow, {
+              title: "Available games",
+              className: "gs-row4"
+            }, (stress ? ["stress"].concat(GS_GAME_ORDER) : GS_GAME_ORDER).map((k) => /* @__PURE__ */ React.createElement(Card, {
+              key: k,
+              id: k
+            })))));
+            return /* @__PURE__ */ React.createElement(React.Fragment, null, forced ? /* @__PURE__ */ React.createElement("div", {
+              className: "kit-stage"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "kit-phone"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "kit-phone-clip"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "kit-phone-screen"
+            }, page)))) : page, /* @__PURE__ */ React.createElement("div", {
+              ref,
+              className: "pgs-strip",
+              role: "region",
+              "aria-label": "Playground options"
+            }, /* @__PURE__ */ React.createElement("div", {
+              className: "pgs-row"
+            }, /* @__PURE__ */ React.createElement("span", {
+              className: "pgs-k"
+            }, "OPTION"), OPTS.map((x) => /* @__PURE__ */ React.createElement("button", {
+              key: x.n,
+              type: "button",
+              className: "pgs-b",
+              "aria-pressed": opt === x.n,
+              onClick: () => setOpt(x.n)
+            }, x.n + " " + x.name)), /* @__PURE__ */ React.createElement("button", {
+              type: "button",
+              className: "pgs-b",
+              "aria-expanded": why,
+              onClick: () => setWhy(!why)
+            }, why ? "Less" : "Why · cost"), /* @__PURE__ */ React.createElement("button", {
+              type: "button",
+              className: "pgs-b pgs-fold",
+              "aria-expanded": open,
+              onClick: () => setOpen(!open)
+            }, open ? "Hide" : "Show")), why && /* @__PURE__ */ React.createElement("p", {
+              className: "pgs-why"
+            }, /* @__PURE__ */ React.createElement("b", null, o.n + " " + o.name, "."), " ", o.why, " ", /* @__PURE__ */ React.createElement("b", null, "Cost:"), " ", o.cost), open && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+              className: "pgs-row"
+            }, /* @__PURE__ */ React.createElement("span", {
+              className: "pgs-k"
+            }, "VIEWPORT"), [["auto", "Auto"], ["mobile", "Mobile"]].map(([v, l]) => /* @__PURE__ */ React.createElement("button", {
+              key: v,
+              type: "button",
+              className: "pgs-b",
+              "aria-pressed": vp === v,
+              onClick: () => setVp(v)
+            }, l)), /* @__PURE__ */ React.createElement("span", {
+              className: "pgs-k",
+              style: {
+                width: "auto",
+                marginLeft: 12
+              }
+            }, "SEED"), /* @__PURE__ */ React.createElement("button", {
+              type: "button",
+              className: "pgs-b",
+              "aria-pressed": stress,
+              onClick: () => setStress(!stress)
+            }, "Stress: 2-line name + blurb, 3 chips"), /* @__PURE__ */ React.createElement("span", {
+              className: "pgs-note"
+            }, forced ? "Phone frame" : (w < 1024 ? "Mobile layout" : "Desktop layout") + ", " + w + "px")), /* @__PURE__ */ React.createElement("div", {
+              className: "pgs-read"
+            }, read ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Blank under a title ", /* @__PURE__ */ React.createElement("span", {
+              className: read.gap > 1 ? "bad" : ""
+            }, f(read.gap), "px"), " ", "·", " chip bottoms differ from card edge by ", /* @__PURE__ */ React.createElement("span", {
+              className: read.tb > 1 ? "bad" : ""
+            }, f(read.tb), "px"), " ", "·", " most blank above chips ", /* @__PURE__ */ React.createElement("span", {
+              className: read.blank > 24 ? "bad" : ""
+            }, f(read.blank), "px"), " ", "·", " card heights differ ", /* @__PURE__ */ React.createElement("span", {
+              className: read.hs > 1 ? "bad" : ""
+            }, f(read.hs), "px")) : "…"))));
+          };
+          if (document.querySelector('script[src$="pg-card-snug-title.jsx"]')) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
+        })();
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/card-snug-title/playground/pg-card-snug-title.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const GS_SVG2 = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
+        const GS_ART2 = {
+          delve: {
+            ground: "wine",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>')
+          },
+          escape: {
+            ground: "indigo",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>')
+          },
+          murder: {
+            ground: "wine",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>')
+          },
+          // Daily Groups: four rows of four, one colour a group, as a solved board (added 2026-10-09, split-daily-puzzles).
+          groups: {
+            ground: "indigo",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/>' + ["#E5A63B", "#328A88", "#D66847", "#A390B2"].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join("")).join(""))
+          },
+          word: {
+            ground: "forest",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#E5A63B"/><rect x="64" y="44" width="32" height="32" fill="#F2EBE0"/><rect x="106" y="46" width="28" height="28" fill="none" stroke="#328A88" stroke-width="4"/>')
+          },
+          derelict: {
+            ground: "indigo",
+            extend: "centre",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>')
+          },
+          barrow: {
+            ground: "wine",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#F2EBE0"/><rect x="100" y="20" width="16" height="16" fill="#328A88"/>')
+          },
+          casebook: {
+            ground: "indigo",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>')
+          },
+          hunter: {
+            ground: "forest",
+            extend: "bottom",
+            svg: GS_SVG2('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>')
+          }
+        };
+        const GS_NAME2 = {
+          casebook: "Casebook",
+          hunter: "36,000 Summers Ago"
+        };
+        const GS_GAMES2 = {
+          word: {
+            name: "Daily Word",
+            category: "PUZZLE",
+            art: "word",
+            route: "word",
+            ed: ["word", "words"],
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "Six guesses to find today’s five-letter word.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          groups: {
+            name: "Daily Groups",
+            category: "PUZZLE",
+            art: "groups",
+            route: "groups",
+            ed: ["groups", "groups"],
+            edLink: "See all groups",
+            edAll: "All groups",
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "Sixteen words hide four groups. Find all four.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          mystery: {
+            name: "Daily Mystery",
+            category: "PUZZLE",
+            art: "murder",
+            route: "mystery",
+            ed: ["case", "cases"],
+            free: true,
+            daily: true,
+            once: true,
+            blurb: "There’s a body and a story that doesn’t add up.",
+            tags: ["FREE", "Daily", "10 min"]
+          },
+          escape: {
+            name: "Escape",
+            category: "PUZZLE",
+            art: "escape",
+            route: "escape",
+            ed: ["room", "rooms"],
+            free: true,
+            blurb: "The door’s locked and you’re on the wrong side of it.",
+            tags: ["FREE", "Weekly", "10 min"]
+          },
+          casebook: {
+            name: GS_NAME2.casebook,
+            category: "MYSTERY",
+            art: "casebook",
+            route: "casebook",
+            ed: ["case", "cases"],
+            once: true,
+            blurb: "Ask the question they haven’t prepared for.",
+            first: true,
+            tags: ["FIRST", "Weekly", "25–40 min"]
+          },
+          delve: {
+            name: "Delve",
+            category: "ADVENTURE",
+            art: "delve",
+            route: "delve",
+            ed: ["scene", "scenes"],
+            first: true,
+            blurb: "Get her out before the drums stop.",
+            tags: ["FIRST", "Weekly", "25–40 min"]
+          },
+          // Added 2026-10-13 (owner asked for it as a new adventure game). Chapters are its editions; a free player gets chapter 1. Content is sample.
+          barrow: {
+            name: "The Barrow of Hollowmere",
+            category: "ADVENTURE",
+            art: "barrow",
+            route: "barrow",
+            ed: ["chapter", "chapters"],
+            eds: true,
+            edLink: "All chapters",
+            edAll: "All chapters",
+            first: true,
+            blurb: "Something under the hill wants its gold back. Go down anyway.",
+            tags: ["FIRST", "45–60 min"]
+          },
+          hunter: {
+            name: GS_NAME2.hunter,
+            category: "LEARNING",
+            art: "hunter",
+            route: "hunter",
+            blurb: "Grey dawn below Chauvet cave. Go where you like.",
+            tags: ["PASS", "2 hours"]
+          }
+        };
+        const GS_GAME_ORDER2 = ["word", "groups", "mystery", "escape", "casebook", "delve", "barrow", "hunter"];
+        Object.assign(window, {
+          GS_ART: GS_ART2,
+          GS_NAME: GS_NAME2,
+          GS_GAMES: GS_GAMES2,
+          GS_GAME_ORDER: GS_GAME_ORDER2
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "docs/specs/card-snug-title/playground/pg-data.jsx", error: String(e && e.message || e) });
+    }
+    try {
+      (() => {
+        const {
+          Button,
+          ButtonPair,
+          TextLink,
+          TextField,
+          SearchField,
+          Checkbox,
+          Tag,
+          StatusMessage,
+          ProgressBar,
+          Card,
+          Heading,
+          FormCard,
+          Popup,
+          Disclosure,
+          Icon: Icon2,
+          Cover
+        } = window.MCPGameStoreDesignSystem_ef1abd;
+        const GAMES = [{
+          id: "dp",
+          name: "Daily Puzzles",
+          art: "daily-puzzles",
+          tag: ["daily", "Daily"],
+          blurb: "You already know today's answer. You can't see it yet, so start guessing."
+        }, {
+          id: "wi",
+          name: "The Weekly Interrogation",
+          art: "weekly-interrogation",
+          tag: ["daily", "Weekly"],
+          blurb: "This week's suspects have had time to get their stories straight. Ask the question they haven't prepared for."
+        }, {
+          id: "dq",
+          name: "Dungeon Quest",
+          art: "dungeon-quest",
+          tag: ["locked", "Locked"],
+          blurb: "The way in is open and nobody has told you what's down there. Say what you do first."
+        }];
+        function TopBar({
+          onHome,
+          onSignIn,
+          signedIn
+        }) {
+          return /* @__PURE__ */ React.createElement("header", {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+              padding: "12px 0",
+              borderBottom: "1px solid var(--line)"
+            }
+          }, /* @__PURE__ */ React.createElement("button", {
+            onClick: onHome,
+            style: {
+              background: "none",
+              border: 0,
+              padding: 0,
+              cursor: "pointer",
+              color: "var(--text)",
+              font: "700 20px/1.2 var(--font-heading)",
+              letterSpacing: "-.01em",
+              minHeight: 44,
+              display: "flex",
+              alignItems: "center",
+              gap: 10
+            }
+          }, /* @__PURE__ */ React.createElement("img", {
+            src: "../../assets/logo.svg",
+            width: "32",
+            height: "32",
+            alt: ""
+          }), "After Pixels"), signedIn ? /* @__PURE__ */ React.createElement("span", {
+            style: {
+              font: "var(--type-small)",
+              color: "var(--muted)"
+            }
+          }, "Signed in") : /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "flex",
+              gap: 12
+            }
+          }, /* @__PURE__ */ React.createElement(Button, {
+            variant: "secondary",
+            onClick: onSignIn
+          }, "Sign in"), /* @__PURE__ */ React.createElement(Button, {
+            onClick: onSignIn
+          }, "Sign up")));
+        }
+        function AllGames({
+          onOpen
+        }) {
+          return /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 36
+            }
+          }, /* @__PURE__ */ React.createElement("section", {
+            style: {
+              display: "grid",
+              gap: 8,
+              maxWidth: 640
+            }
+          }, /* @__PURE__ */ React.createElement(Heading, {
+            level: "page"
+          }, "Someone's lying to you. Go and find out who."), /* @__PURE__ */ React.createElement("p", {
+            style: {
+              margin: 0,
+              color: "var(--muted)"
+            }
+          }, "Play small games by talking to Claude or ChatGPT. New ones arrive every day.")), /* @__PURE__ */ React.createElement("section", {
+            style: {
+              display: "grid",
+              gap: 16
+            }
+          }, /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              alignItems: "end",
+              justifyContent: "space-between"
+            }
+          }, /* @__PURE__ */ React.createElement(Heading, {
+            level: "section"
+          }, "All games"), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              width: "min(100%,320px)"
+            }
+          }, /* @__PURE__ */ React.createElement(SearchField, {
+            placeholder: "Find a game"
+          }))), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,220px),1fr))",
+              gap: 12
+            }
+          }, GAMES.map((g) => /* @__PURE__ */ React.createElement("div", {
+            key: g.id,
+            style: {
+              display: "grid",
+              gap: 8
+            }
+          }, /* @__PURE__ */ React.createElement(Cover, {
+            name: g.name,
+            art: g.art,
+            onClick: () => onOpen(g)
+          }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Tag, {
+            kind: g.tag[0]
+          }, g.tag[1])))))));
+        }
+        function GamePage({
+          game,
+          onBack
+        }) {
+          const [added, setAdded] = React.useState(false);
+          const [confirm, setConfirm] = React.useState(false);
+          const [deleted, setDeleted] = React.useState(false);
+          const [deleting, setDeleting] = React.useState(false);
+          const del = () => {
+            setDeleting(true);
+            setTimeout(() => {
+              setDeleting(false);
+              setConfirm(false);
+              setDeleted(true);
+            }, 1200);
+          };
+          return /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 24
+            }
+          }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(TextLink, {
+            onClick: onBack
+          }, /* @__PURE__ */ React.createElement("span", {
+            style: {
+              display: "inline-flex",
+              gap: 8,
+              alignItems: "center"
+            }
+          }, /* @__PURE__ */ React.createElement(Icon2, {
+            name: "back"
+          }), "All games"))), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))",
+              gap: 24,
+              alignItems: "start"
+            }
+          }, /* @__PURE__ */ React.createElement(Cover, {
+            art: game.art
+          }), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              gap: 16,
+              alignContent: "start"
+            }
+          }, /* @__PURE__ */ React.createElement(Heading, {
+            level: "page"
+          }, game.name), /* @__PURE__ */ React.createElement("p", {
+            style: {
+              margin: 0
+            }
+          }, game.blurb), /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12
+            }
+          }, /* @__PURE__ */ React.createElement(Button, {
+            done: added,
+            doneLabel: "Added",
+            loadingLabel: "Adding",
+            onClick: () => new Promise((r) => setTimeout(r, 1200)).then(() => setAdded(true))
+          }, "Add to Claude"), /* @__PURE__ */ React.createElement(Button, {
+            variant: "secondary"
+          }, "See how it plays")), /* @__PURE__ */ React.createElement(Disclosure, {
+            title: "How it plays"
+          }, "Claude deals the puzzle, you answer in the chat, and the game scores it."), deleted ? /* @__PURE__ */ React.createElement(StatusMessage, {
+            kind: "success"
+          }, "Save deleted.") : /* @__PURE__ */ React.createElement(Card, {
+            title: "Your save"
+          }, /* @__PURE__ */ React.createElement(ProgressBar, {
+            label: "Puzzle 3 of 5",
+            value: 60
+          }), /* @__PURE__ */ React.createElement(TextLink, {
+            danger: true,
+            onClick: () => setConfirm(true)
+          }, "Delete save")))), /* @__PURE__ */ React.createElement(Popup, {
+            open: confirm,
+            busy: deleting,
+            onClose: () => setConfirm(false),
+            title: "Delete this save?",
+            actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+              variant: "secondary",
+              onClick: () => {
+                if (!deleting) setConfirm(false);
+              }
+            }, "Keep it"), /* @__PURE__ */ React.createElement(Button, {
+              variant: "danger",
+              loading: deleting,
+              loadingLabel: "Deleting",
+              onClick: del
+            }, "Delete save"))
+          }, /* @__PURE__ */ React.createElement("p", null, "Your progress in ", game.name, " is removed.")));
+        }
+        function SignIn({
+          onDone
+        }) {
+          const [email, setEmail] = React.useState("");
+          const [tried, setTried] = React.useState(false);
+          const r = React.useRef();
+          const bad = tried && !email.includes("@");
+          const [busy, setBusy] = React.useState(null);
+          const which = React.useRef("in");
+          const submit = (e) => {
+            e.preventDefault();
+            if (busy) return;
+            setTried(true);
+            if (!email.includes("@")) setTimeout(() => r.current && r.current.focus(), 0);
+            else {
+              setBusy(which.current);
+              setTimeout(onDone, 1200);
+            }
+          };
+          return /* @__PURE__ */ React.createElement("div", {
+            style: {
+              display: "grid",
+              placeItems: "center",
+              padding: "24px 0"
+            }
+          }, /* @__PURE__ */ React.createElement("form", {
+            noValidate: true,
+            onSubmit: submit,
+            style: {
+              width: "min(100%,420px)"
+            }
+          }, /* @__PURE__ */ React.createElement(FormCard, {
+            title: "Sign in"
+          }, /* @__PURE__ */ React.createElement(TextField, {
+            label: "Email",
+            type: "email",
+            placeholder: "you@example.com",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            inputRef: r,
+            error: bad ? "Enter an email with an @ in it." : void 0
+          }), /* @__PURE__ */ React.createElement(Checkbox, {
+            label: "Keep me signed in",
+            defaultChecked: true
+          }), /* @__PURE__ */ React.createElement(ButtonPair, null, /* @__PURE__ */ React.createElement(Button, {
+            variant: "secondary",
+            type: "submit",
+            loading: busy === "in",
+            loadingLabel: "Signing in",
+            onClick: () => {
+              which.current = "in";
+            }
+          }, "Sign in"), /* @__PURE__ */ React.createElement(Button, {
+            type: "submit",
+            loading: busy === "up",
+            loadingLabel: "Signing up",
+            onClick: () => {
+              which.current = "up";
+            }
+          }, "Sign up")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(TextLink, null, "Why sign in?")))));
+        }
+        Object.assign(window, {
+          TopBar,
+          AllGames,
+          GamePage,
+          SignIn
+        });
+      })();
+    } catch (e) {
+      __ds_ns.__errors.push({ path: "ui_kits/shop/Screens.jsx", error: String(e && e.message || e) });
+    }
+    __ds_ns.Button = __ds_scope.Button;
+    __ds_ns.ButtonPair = __ds_scope.ButtonPair;
+    __ds_ns.TextLink = __ds_scope.TextLink;
+    __ds_ns.ChoiceButtons = __ds_scope.ChoiceButtons;
+    __ds_ns.ClueCards = __ds_scope.ClueCards;
+    __ds_ns.ConfirmCard = __ds_scope.ConfirmCard;
+    __ds_ns.EntityCards = __ds_scope.EntityCards;
+    __ds_ns.FactRows = __ds_scope.FactRows;
+    __ds_ns.MenuRows = __ds_scope.MenuRows;
+    __ds_ns.NavButtons = __ds_scope.NavButtons;
+    __ds_ns.ResultCard = __ds_scope.ResultCard;
+    __ds_ns.RollLine = __ds_scope.RollLine;
+    __ds_ns.StatRow = __ds_scope.StatRow;
+    __ds_ns.StatusTag = __ds_scope.StatusTag;
+    __ds_ns.TileGrid = __ds_scope.TileGrid;
+    __ds_ns.Track = __ds_scope.Track;
+    __ds_ns.WordBoard = __ds_scope.WordBoard;
+    __ds_ns.Loader = __ds_scope.Loader;
+    __ds_ns.ProgressBar = __ds_scope.ProgressBar;
+    __ds_ns.StatusMessage = __ds_scope.StatusMessage;
+    __ds_ns.Tag = __ds_scope.Tag;
+    __ds_ns.Checkbox = __ds_scope.Checkbox;
+    __ds_ns.TextField = __ds_scope.TextField;
+    __ds_ns.SearchField = __ds_scope.SearchField;
+    __ds_ns.ChatPicture = __ds_scope.ChatPicture;
+    __ds_ns.Cover = __ds_scope.Cover;
+    __ds_ns.GameArt = __ds_scope.GameArt;
+    __ds_ns.ICON_NAMES = __ds_scope.ICON_NAMES;
+    __ds_ns.Icon = __ds_scope.Icon;
+    __ds_ns.ChatPlayback = __ds_scope.ChatPlayback;
+    __ds_ns.Card = __ds_scope.Card;
+    __ds_ns.Heading = __ds_scope.Heading;
+    __ds_ns.CardRow = __ds_scope.CardRow;
+    __ds_ns.Disclosure = __ds_scope.Disclosure;
+    __ds_ns.FormCard = __ds_scope.FormCard;
+    __ds_ns.GameCard = __ds_scope.GameCard;
+    __ds_ns.GamePick = __ds_scope.GamePick;
+    __ds_ns.GameTile = __ds_scope.GameTile;
+    __ds_ns.RowList = __ds_scope.RowList;
+    __ds_ns.ListRow = __ds_scope.ListRow;
+    __ds_ns.Menu = __ds_scope.Menu;
+    __ds_ns.MoveList = __ds_scope.MoveList;
+    __ds_ns.MoveRow = __ds_scope.MoveRow;
+    __ds_ns.NeedsPass = __ds_scope.NeedsPass;
+    __ds_ns.PageGrid = __ds_scope.PageGrid;
+    __ds_ns.Popup = __ds_scope.Popup;
+    __ds_ns.SoonCard = __ds_scope.SoonCard;
+  })();
   const KIT_ICONS = {
     check: '<polyline points="20 6 9 17 4 12"></polyline>',
     x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
@@ -9,7 +7875,7 @@
     list: '<line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><circle cx="4.5" cy="6" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"></circle>'
   };
   const Icon = ({ name, size = 20, color = "currentColor", style = {}, strokeWidth = 1.5 }) => {
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       "svg",
       {
         width: size,
@@ -41,8 +7907,8 @@
     };
   };
   const DS = window.MCPGameStoreDesignSystem_ef1abd;
-  const GsCtx = React2.createContext(null);
-  const useGs = () => React2.useContext(GsCtx);
+  const GsCtx = React$1.createContext(null);
+  const useGs = () => React$1.useContext(GsCtx);
   const GS = {
     today: "Tuesday 6 October",
     link: "https://afterpixels.com/mcp",
@@ -50,7 +7916,7 @@
     works: "ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors"
   };
   const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
-  const GS_ART = {
+  const GS_ART$1 = {
     delve: { ground: "wine", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="22" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="25" cy="54" r="8" fill="#D66847"/><rect x="132" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="135" cy="54" r="8" fill="#D66847"/>') },
     escape: { ground: "indigo", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>') },
     murder: { ground: "wine", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
@@ -63,7 +7929,7 @@
     hunter: { ground: "forest", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>') }
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
-  const GS_GAMES = {
+  const GS_GAMES$1 = {
     word: { access: "daily", name: "Daily Word", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
     mystery: { access: "daily", name: "Daily Mystery", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
@@ -81,16 +7947,16 @@
     g.tags = [{ daily: "FREE", first: "FIRST", pass: "PASS" }[g.access], ...g.tags.filter((t) => !["FREE", "FIRST", "PASS"].includes(t))];
     return g;
   };
-  Object.values(GS_GAMES).forEach(gsAccess);
-  const GS_GAME_ORDER = ["word", "groups", "mystery", "escape", "casebook", "delve", "barrow", "hunter"];
+  Object.values(GS_GAMES$1).forEach(gsAccess);
+  const GS_GAME_ORDER$1 = ["word", "groups", "mystery", "escape", "casebook", "delve", "barrow", "hunter"];
   const gsRhythm = (k) => {
-    const t = GS_GAMES[k].tags;
+    const t = GS_GAMES$1[k].tags;
     return t.includes("Daily") ? "daily" : t.includes("Weekly") ? "weekly" : null;
   };
   const GS_RHYTHMS = [["daily", "Daily"], ["weekly", "Weekly"]];
-  const gsStartsOver = (k) => !!k && !!GS_GAMES[k] && !gsRhythm(k) && !GS_GAMES[k].once;
+  const gsStartsOver = (k) => !!k && !!GS_GAMES$1[k] && !gsRhythm(k) && !GS_GAMES$1[k].once;
   const GS_ONCE_LINE = "You’ve played this one. It can’t be played again.";
-  const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
+  const gsGameOfRoute = (route) => GS_GAME_ORDER$1.find((k) => GS_GAMES$1[k].route === route) || null;
   const GS_TODAY_PLAYED = {
     out: {},
     free: { word: "word-today", mystery: "mystery-today" },
@@ -109,9 +7975,9 @@
   const gsNorm = (s) => (s || "").toLowerCase().replace(/(\d),(?=\d)/g, "$1").replace(/[’'‘]/g, "").trim();
   const GS_SOON = [
     { name: "Derelict", art: "derelict", line: "The same game, in science fiction" },
-    { name: GS_GAMES.barrow.name, art: "barrow", line: GS_GAMES.barrow.blurb, label: "CHAPTER 3", play: "Play chapter 1", route: "barrow" }
+    { name: GS_GAMES$1.barrow.name, art: "barrow", line: GS_GAMES$1.barrow.blurb, label: "CHAPTER 3", play: "Play chapter 1", route: "barrow" }
   ];
-  const gsLink = (gid) => "https://afterpixels.com/" + (["casebook", "escape", "delve", "barrow"].includes(gid) ? "discover/" : "") + GS_GAMES[gid].route;
+  const gsLink = (gid) => "https://afterpixels.com/" + (["casebook", "escape", "delve", "barrow"].includes(gid) ? "discover/" : "") + GS_GAMES$1[gid].route;
   const GS_BARROW_CREDIT = "Rules material from the System Reference Document 5.2.1 by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/legalcode).";
   const GS_ORD = ["first", "second", "third", "fourth", "fifth", "sixth"];
   const gsJoin = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
@@ -719,21 +8585,21 @@
     apple: '<path fill="currentColor" d="M16.37 12.62c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.54 2.66-.39 6.6 1.1 8.76.73 1.06 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.23 1.18-2.42 1.2-2.48-.03-.01-2.29-.88-2.31-3.5zM14.2 6.16c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.64-1.05 1.67-.92 2.66.97.07 1.96-.49 2.56-1.21z"/>',
     google: '<g transform="scale(.5)"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></g>'
   };
-  const GsGlyph = ({ name, size = 20, style }) => /* @__PURE__ */ React2.createElement("svg", { className: "mcp-ico", viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, "aria-hidden": "true", focusable: "false", dangerouslySetInnerHTML: { __html: GS_GLYPHS[name] } });
-  const GsMark = ({ size = 32 }) => /* @__PURE__ */ React2.createElement("span", { className: "gs-brand-mark", "aria-hidden": "true", style: { width: size, height: size } }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader-m", style: { transform: `scale(${size / 120})`, transformOrigin: "0 0" } }, /* @__PURE__ */ React2.createElement("i", { className: "tl" }), /* @__PURE__ */ React2.createElement("i", { className: "tr" }), /* @__PURE__ */ React2.createElement("i", { className: "br" }), /* @__PURE__ */ React2.createElement("i", { className: "bl" })));
-  const GsStaticBrand = () => /* @__PURE__ */ React2.createElement("span", { className: "gs-brand", style: { cursor: "default", pointerEvents: "none" } }, /* @__PURE__ */ React2.createElement(GsMark, null), /* @__PURE__ */ React2.createElement("span", null, "After Pixels"));
+  const GsGlyph = ({ name, size = 20, style }) => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico", viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, "aria-hidden": "true", focusable: "false", dangerouslySetInnerHTML: { __html: GS_GLYPHS[name] } });
+  const GsMark = ({ size = 32 }) => /* @__PURE__ */ React$1.createElement("span", { className: "gs-brand-mark", "aria-hidden": "true", style: { width: size, height: size } }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-loader-m", style: { transform: `scale(${size / 120})`, transformOrigin: "0 0" } }, /* @__PURE__ */ React$1.createElement("i", { className: "tl" }), /* @__PURE__ */ React$1.createElement("i", { className: "tr" }), /* @__PURE__ */ React$1.createElement("i", { className: "br" }), /* @__PURE__ */ React$1.createElement("i", { className: "bl" })));
+  const GsStaticBrand = () => /* @__PURE__ */ React$1.createElement("span", { className: "gs-brand", style: { cursor: "default", pointerEvents: "none" } }, /* @__PURE__ */ React$1.createElement(GsMark, null), /* @__PURE__ */ React$1.createElement("span", null, "After Pixels"));
   const GsWordmark = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-brand", "aria-label": "After Pixels, home", onClick: () => gs.go("home") }, /* @__PURE__ */ React2.createElement(GsMark, null), /* @__PURE__ */ React2.createElement("span", null, "After Pixels"));
+    return /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-brand", "aria-label": "After Pixels, home", onClick: () => gs.go("home") }, /* @__PURE__ */ React$1.createElement(GsMark, null), /* @__PURE__ */ React$1.createElement("span", null, "After Pixels"));
   };
   const GS_LOADER = { withhold: 300 };
   const GS_WORK_MS = 900;
   const useGsBusy = (ms = GS_WORK_MS) => {
-    const [busy, setBusy] = React2.useState(false);
-    const live = React2.useRef(true);
-    const held = React2.useRef(false);
-    const t = React2.useRef(null);
-    React2.useEffect(() => {
+    const [busy, setBusy] = React$1.useState(false);
+    const live = React$1.useRef(true);
+    const held = React$1.useRef(false);
+    const t = React$1.useRef(null);
+    React$1.useEffect(() => {
       live.current = true;
       return () => {
         live.current = false;
@@ -758,29 +8624,29 @@
     };
     return [busy, run, cancel];
   };
-  const GsInkSpin = () => /* @__PURE__ */ React2.createElement("span", { className: "mcp-spin gs-spin-ink", "aria-hidden": "true" });
+  const GsInkSpin = () => /* @__PURE__ */ React$1.createElement("span", { className: "mcp-spin gs-spin-ink", "aria-hidden": "true" });
   const GsSpin = ({ label = "Loading" }) => {
-    const [shown, setShown] = React2.useState(false);
-    React2.useEffect(() => {
+    const [shown, setShown] = React$1.useState(false);
+    React$1.useEffect(() => {
       const t = setTimeout(() => setShown(true), GS_LOADER.withhold);
       return () => clearTimeout(t);
     }, []);
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-spin-slot", role: "status", "aria-label": label }, shown && /* @__PURE__ */ React2.createElement(DS.Loader, { size: 100, label }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-spin-slot", role: "status", "aria-label": label }, shown && /* @__PURE__ */ React$1.createElement(DS.Loader, { size: 100, label }));
   };
   const GsFullLoader = ({ label, ms, onDone }) => {
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (!ms || !onDone) return void 0;
       const t = setTimeout(onDone, ms);
       return () => clearTimeout(t);
     }, []);
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-full" }, /* @__PURE__ */ React2.createElement(GsSpin, { label }));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-full" }, /* @__PURE__ */ React$1.createElement(GsSpin, { label }));
   };
   const GS_LOAD_MS = /[?&]fast(?:[=&]|$)/.test(window.location.search) ? 0 : 1200;
   const useGsPart = (deps) => {
     const gs = useGs();
-    const [on, setOn] = React2.useState(false);
-    const first = React2.useRef(true);
-    React2.useEffect(() => {
+    const [on, setOn] = React$1.useState(false);
+    const first = React$1.useRef(true);
+    React$1.useEffect(() => {
       if (first.current) {
         first.current = false;
         return void 0;
@@ -791,14 +8657,14 @@
     }, deps);
     return on || gs.route.hold === "part";
   };
-  const GsPart = ({ label }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-inplace", "aria-busy": "true" }, /* @__PURE__ */ React2.createElement(GsSpin, { label }));
+  const GsPart = ({ label }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace", "aria-busy": "true" }, /* @__PURE__ */ React$1.createElement(GsSpin, { label }));
   const GsLoadFailed = ({ full, onRetry }) => {
     const [busy, run] = useGsBusy(GS_LOAD_MS);
-    return /* @__PURE__ */ React2.createElement("div", { className: full ? "gs-full" : "gs-inplace" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-failed" }, /* @__PURE__ */ React2.createElement("p", { className: "gs-strong" }, "This didn’t load."), !full && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "Something went wrong fetching the games."), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", loading: busy, onClick: () => run(onRetry) }, "Try again")));
+    return /* @__PURE__ */ React$1.createElement("div", { className: full ? "gs-full" : "gs-inplace" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-failed" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-strong" }, "This didn’t load."), !full && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Something went wrong fetching the games."), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", loading: busy, onClick: () => run(onRetry) }, "Try again")));
   };
   const GsOffline = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement(GsLoadFailed, { full: true, onRetry: () => gs.go("games") });
+    return /* @__PURE__ */ React$1.createElement(GsLoadFailed, { full: true, onRetry: () => gs.go("games") });
   };
   const GS_SUPPORT = "support@afterpixels.com";
   const GS_HELLO = "hello@afterpixels.com";
@@ -806,8 +8672,8 @@
   const GsFooter = () => {
     const gs = useGs();
     const legal = (doc) => gs.go("legal", { doc });
-    const mail = /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-ft-link", onClick: () => legal("contact") }, "Get in touch");
-    return /* @__PURE__ */ React2.createElement("footer", { className: "gs-ft" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-wide" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-brand" }, /* @__PURE__ */ React2.createElement(GsStaticBrand, null), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-legalese" }, /* @__PURE__ */ React2.createElement("p", { className: "gs-ft-copy" }, "© 2026 Harness Intent Ltd"), /* @__PURE__ */ React2.createElement("p", { className: "gs-ft-reg" }, "Registered in England and Wales, No. 17277971"))), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-col" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-ft-h" }, "contact"), mail), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-col" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-ft-h" }, "legal"), GS_LEGAL_LINKS.map(([d, l]) => /* @__PURE__ */ React2.createElement("button", { key: d, type: "button", className: "gs-ft-link", onClick: () => legal(d) }, l)))), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-narrow" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-top" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-ft-mark" }, /* @__PURE__ */ React2.createElement(GsStaticBrand, null)), mail), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-bottom" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-run" }, GS_LEGAL_LINKS.map(([d, l], i) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: d }, i > 0 && /* @__PURE__ */ React2.createElement("span", { className: "gs-ft-dot", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-ft-link", onClick: () => legal(d) }, l)))), /* @__PURE__ */ React2.createElement("div", { className: "gs-ft-legalese" }, /* @__PURE__ */ React2.createElement("p", { className: "gs-ft-copy" }, "© 2026 Harness Intent Ltd"), /* @__PURE__ */ React2.createElement("p", { className: "gs-ft-reg" }, "Registered in England and Wales, No. 17277971"))))));
+    const mail = /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-ft-link", onClick: () => legal("contact") }, "Get in touch");
+    return /* @__PURE__ */ React$1.createElement("footer", { className: "gs-ft" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-wide" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-brand" }, /* @__PURE__ */ React$1.createElement(GsStaticBrand, null), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-legalese" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-ft-copy" }, "© 2026 Harness Intent Ltd"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-ft-reg" }, "Registered in England and Wales, No. 17277971"))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-col" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-ft-h" }, "contact"), mail), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-col" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-ft-h" }, "legal"), GS_LEGAL_LINKS.map(([d, l]) => /* @__PURE__ */ React$1.createElement("button", { key: d, type: "button", className: "gs-ft-link", onClick: () => legal(d) }, l)))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-narrow" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-ft-mark" }, /* @__PURE__ */ React$1.createElement(GsStaticBrand, null)), mail), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-bottom" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-run" }, GS_LEGAL_LINKS.map(([d, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: d }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-ft-dot", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-ft-link", onClick: () => legal(d) }, l)))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ft-legalese" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-ft-copy" }, "© 2026 Harness Intent Ltd"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-ft-reg" }, "Registered in England and Wales, No. 17277971"))))));
   };
   const GS_LEGAL = {
     terms: { title: "Terms and Conditions", sections: ["Who we are", "What After Pixels is", "Your account", "Payments", "When the Pass ends", "Support", "Your content", "Ending things", "Our liability", "Changes to these terms", "Governing law"] },
@@ -815,12 +8681,12 @@
     refunds: { title: "Refund Policy", sections: ["The short version", "How refunds work", "Your legal rights", "Complaints"] }
   };
   const GS_UNWRITTEN = "This section isn’t written yet.";
-  const GsContact = () => /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-legal" }, /* @__PURE__ */ React2.createElement("article", { className: "gs-legal-col" }, /* @__PURE__ */ React2.createElement("header", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-legal-h1" }, "Get in touch")), /* @__PURE__ */ React2.createElement("section", { className: "gs-legal-sec" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-legal-h2" }, "Get help"), /* @__PURE__ */ React2.createElement("p", null, "Email support about anything to do with a game, your account or the Pass. Say where you got stuck."), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT))), /* @__PURE__ */ React2.createElement("section", { className: "gs-legal-sec" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-legal-h2" }, "Talk to the team"), /* @__PURE__ */ React2.createElement("p", null, "If you’d like to contribute, or have anything else in mind, email the team."), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("a", { href: "mailto:" + GS_HELLO }, GS_HELLO))), /* @__PURE__ */ React2.createElement("p", { className: "gs-legal-foot" }, "After Pixels is made by ", /* @__PURE__ */ React2.createElement("a", { href: "https://www.harnessintent.com/", target: "_blank", rel: "noopener" }, "Harness Intent"), ".")));
+  const GsContact = () => /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-legal" }, /* @__PURE__ */ React$1.createElement("article", { className: "gs-legal-col" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-legal-h1" }, "Get in touch")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-legal-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-legal-h2" }, "Get help"), /* @__PURE__ */ React$1.createElement("p", null, "Email support about anything to do with a game, your account or the Pass. Say where you got stuck."), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-legal-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-legal-h2" }, "Talk to the team"), /* @__PURE__ */ React$1.createElement("p", null, "If you’d like to contribute, or have anything else in mind, email the team."), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_HELLO }, GS_HELLO))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-legal-foot" }, "After Pixels is made by ", /* @__PURE__ */ React$1.createElement("a", { href: "https://www.harnessintent.com/", target: "_blank", rel: "noopener" }, "Harness Intent"), ".")));
   const GsLegal = () => {
     const gs = useGs();
-    if (gs.route.doc === "contact") return /* @__PURE__ */ React2.createElement(GsContact, null);
+    if (gs.route.doc === "contact") return /* @__PURE__ */ React$1.createElement(GsContact, null);
     const doc = GS_LEGAL[gs.route.doc] || GS_LEGAL.terms;
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-legal" }, /* @__PURE__ */ React2.createElement("article", { className: "gs-legal-col" }, /* @__PURE__ */ React2.createElement("header", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-legal-h1" }, doc.title), /* @__PURE__ */ React2.createElement("p", { className: "gs-legal-rev" }, "Last revised · [date]")), doc.opening && /* @__PURE__ */ React2.createElement("p", null, doc.opening), doc.sections.map((s) => Array.isArray(s) ? /* @__PURE__ */ React2.createElement("section", { key: s[0], className: "gs-legal-sec" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-legal-h2" }, s[0]), s[1].map((h) => /* @__PURE__ */ React2.createElement("div", { key: h, className: "gs-legal-sub" }, /* @__PURE__ */ React2.createElement("h3", { className: "gs-legal-h3" }, h), /* @__PURE__ */ React2.createElement("p", null, GS_UNWRITTEN)))) : /* @__PURE__ */ React2.createElement("section", { key: s, className: "gs-legal-sec" }, /* @__PURE__ */ React2.createElement("h2", { className: "gs-legal-h2" }, s), /* @__PURE__ */ React2.createElement("p", null, GS_UNWRITTEN)))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-legal" }, /* @__PURE__ */ React$1.createElement("article", { className: "gs-legal-col" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-legal-h1" }, doc.title), /* @__PURE__ */ React$1.createElement("p", { className: "gs-legal-rev" }, "Last revised · [date]")), doc.opening && /* @__PURE__ */ React$1.createElement("p", null, doc.opening), doc.sections.map((s) => Array.isArray(s) ? /* @__PURE__ */ React$1.createElement("section", { key: s[0], className: "gs-legal-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-legal-h2" }, s[0]), s[1].map((h) => /* @__PURE__ */ React$1.createElement("div", { key: h, className: "gs-legal-sub" }, /* @__PURE__ */ React$1.createElement("h3", { className: "gs-legal-h3" }, h), /* @__PURE__ */ React$1.createElement("p", null, GS_UNWRITTEN)))) : /* @__PURE__ */ React$1.createElement("section", { key: s, className: "gs-legal-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "gs-legal-h2" }, s), /* @__PURE__ */ React$1.createElement("p", null, GS_UNWRITTEN)))));
   };
   const gsAnnounce = (msg) => {
     const el = document.getElementById("gs-announce");
@@ -870,7 +8736,7 @@
   })();
   const GsNotFound = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-nf" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-nf-mark" }, /* @__PURE__ */ React2.createElement(GsWordmark, null)), /* @__PURE__ */ React2.createElement("div", { className: "gs-nf-col" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "Page not found."), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "Either this address doesn’t exist, or it isn’t available to you."), /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.go("home") }, "Go home")));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-nf" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-nf-mark" }, /* @__PURE__ */ React$1.createElement(GsWordmark, null)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-nf-col" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Page not found."), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Either this address doesn’t exist, or it isn’t available to you."), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("home") }, "Go home")));
   };
   const GS_CHAT_BY = "After Pixels";
   const GS_CHAT_MARK = "assets/logo.svg";
@@ -889,10 +8755,10 @@
   ];
   let GS_CHATS;
   let GS_HERO_CHAT;
-  const GsChatPic = ({ turns, height, width, label }) => /* @__PURE__ */ React2.createElement(DS.ChatPicture, { turns, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height, width, label });
+  const GsChatPic = ({ turns, height, width, label }) => /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { turns, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height, width, label });
   const GsChatRow = ({ id }) => {
-    const name = GS_GAMES[id].name;
-    return /* @__PURE__ */ React2.createElement(DS.CardRow, { kind: "chat", title: "In your chat" }, (GS_CHATS[id] || []).map((x, i) => /* @__PURE__ */ React2.createElement("figure", { key: i, className: "mcp-chatfig" }, /* @__PURE__ */ React2.createElement(GsChatPic, { turns: x.turns, label: name + " being played in a chat" }), /* @__PURE__ */ React2.createElement("figcaption", null, x.cap))));
+    const name = GS_GAMES$1[id].name;
+    return /* @__PURE__ */ React$1.createElement(DS.CardRow, { kind: "chat", title: "In your chat" }, (GS_CHATS[id] || []).map((x, i) => /* @__PURE__ */ React$1.createElement("figure", { key: i, className: "mcp-chatfig" }, /* @__PURE__ */ React$1.createElement(GsChatPic, { turns: x.turns, label: name + " being played in a chat" }), /* @__PURE__ */ React$1.createElement("figcaption", null, x.cap))));
   };
   function initGsChats() {
     GS_CHATS = {
@@ -1031,13 +8897,13 @@
   const GS_USERNAME_HINT = "Use 3 to 16 letters, numbers or underscores, starting with a letter. You can change it once every 30 days.";
   const GsUsernameField = ({ form, aside, autoFocus, label = "Username", placeholder, hint }) => {
     const b = form.bind("name");
-    return aside ? /* @__PURE__ */ React2.createElement(GsLabelled, { label, aside }, /* @__PURE__ */ React2.createElement(DS.TextField, { "aria-label": label, placeholder, hint, autoComplete: "username", autoCapitalize: "none", spellCheck: false, autoFocus, ...b })) : /* @__PURE__ */ React2.createElement(DS.TextField, { label, placeholder, hint, autoComplete: "username", autoCapitalize: "none", spellCheck: false, autoFocus, ...b });
+    return aside ? /* @__PURE__ */ React$1.createElement(GsLabelled, { label, aside }, /* @__PURE__ */ React$1.createElement(DS.TextField, { "aria-label": label, placeholder, hint, autoComplete: "username", autoCapitalize: "none", spellCheck: false, autoFocus, ...b })) : /* @__PURE__ */ React$1.createElement(DS.TextField, { label, placeholder, hint, autoComplete: "username", autoCapitalize: "none", spellCheck: false, autoFocus, ...b });
   };
   const GsUsername = () => {
     const gs = useGs();
     const { next, provider, preset } = gs.route;
     const form = useGsForm({ name: preset === "taken" ? "taken" : "" }, gsUsernameRules(null), (f) => gs.accountMade(f.name.trim(), provider || "google", next), { tried: preset === "taken" });
-    return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Your username", onBack: () => gs.go("signup", { next }) }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(GsUsernameField, { form, autoFocus: true, hint: GS_USERNAME_HINT }), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Continue")));
+    return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Your username", onBack: () => gs.go("signup", { next }) }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsUsernameField, { form, autoFocus: true, hint: GS_USERNAME_HINT }), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Continue")));
   };
   const GsUsernameForm = ({ current }) => {
     const gs = useGs();
@@ -1045,25 +8911,25 @@
       const n = f.name.trim();
       if (n !== current) gs.setUser({ username: n, locked: true, since: GS_DAY0.getTime() });
     });
-    return /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(GsUsernameField, { form, label: "New username", placeholder: "Enter a new username" }), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", loading: form.busy }, "Update username")));
+    return /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsUsernameField, { form, label: "New username", placeholder: "Enter a new username" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", loading: form.busy }, "Update username")));
   };
   const GsUsernameCard = () => {
     const gs = useGs();
     const u = gs.user;
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Username"), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("b", null, u.username), " is your username.", u.locked ? "" : " You can change it once every 30 days."), u.locked ? /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "You can change it again on " + gsUsernameNext(u) + ".") : /* @__PURE__ */ React2.createElement(GsUsernameForm, { current: u.username }));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Username"), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, u.username), " is your username.", u.locked ? "" : " You can change it once every 30 days."), u.locked ? /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can change it again on " + gsUsernameNext(u) + ".") : /* @__PURE__ */ React$1.createElement(GsUsernameForm, { current: u.username }));
   };
   const GS_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const GsAuthFrame = ({ title, subtitle, onBack, children, foot }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-auth-bar" }, onBack ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Back", onClick: onBack }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "back" })) : /* @__PURE__ */ React2.createElement("span", { className: "gs-iconbtn-space" }), /* @__PURE__ */ React2.createElement("span", { className: "gs-iconbtn-space" })), /* @__PURE__ */ React2.createElement("main", { className: "gs-auth-col" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-auth-head" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-auth-h1" }, /* @__PURE__ */ React2.createElement(GsMark, { size: 28 }), /* @__PURE__ */ React2.createElement("span", null, title)), subtitle && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, subtitle)), children, /* @__PURE__ */ React2.createElement("div", { className: "gs-auth-foot" }, foot || /* @__PURE__ */ React2.createElement(GsConsent, { lead: "Your use of After Pixels is covered by our" }))));
+  const GsAuthFrame = ({ title, subtitle, onBack, children, foot }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth-bar" }, onBack ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Back", onClick: onBack }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back" })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" })), /* @__PURE__ */ React$1.createElement("main", { className: "gs-auth-col" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-auth-h1" }, /* @__PURE__ */ React$1.createElement(GsMark, { size: 28 }), /* @__PURE__ */ React$1.createElement("span", null, title)), subtitle && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, subtitle)), children, /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth-foot" }, foot || /* @__PURE__ */ React$1.createElement(GsConsent, { lead: "Your use of After Pixels is covered by our" }))));
   const GsConsent = ({ lead }) => {
     const gs = useGs();
-    const l = (doc, t) => /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: (e) => {
+    const l = (doc, t) => /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: (e) => {
       e.preventDefault();
       gs.go("legal", { doc });
     } }, t);
-    return /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, lead, " ", l("terms", "Terms"), ", ", l("privacy", "Privacy"), " and ", l("refunds", "Refund Policy"), ".");
+    return /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, lead, " ", l("terms", "Terms"), ", ", l("privacy", "Privacy"), " and ", l("refunds", "Refund Policy"), ".");
   };
-  const GsXLine = ({ children, center }) => /* @__PURE__ */ React2.createElement("p", { className: "gs-xline" + (center ? " is-center" : ""), role: "alert" }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "x", size: 18, style: { color: "var(--error)" } }), /* @__PURE__ */ React2.createElement("span", null, children));
-  const GsProviders = ({ onProvider, onEmail, failed }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => onProvider("Google") }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "google" }), "Continue with Google"), /* @__PURE__ */ React2.createElement(DS.Button, { id: "gs-apple-btn", variant: "secondary", block: true, className: "gs-btn-apple", onClick: () => onProvider("Apple") }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "apple" }), "Continue with Apple"), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", block: true, className: "gs-btn-email", onClick: onEmail }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "mail" }), "Continue with email"), failed && /* @__PURE__ */ React2.createElement(GsXLine, { center: true }, "Couldn’t continue with ", failed, ". Try again."));
+  const GsXLine = ({ children, center }) => /* @__PURE__ */ React$1.createElement("p", { className: "gs-xline" + (center ? " is-center" : ""), role: "alert" }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "x", size: 18, style: { color: "var(--error)" } }), /* @__PURE__ */ React$1.createElement("span", null, children));
+  const GsProviders = ({ onProvider, onEmail, failed }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => onProvider("Google") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "google" }), "Continue with Google"), /* @__PURE__ */ React$1.createElement(DS.Button, { id: "gs-apple-btn", variant: "secondary", block: true, className: "gs-btn-apple", onClick: () => onProvider("Apple") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "apple" }), "Continue with Apple"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, className: "gs-btn-email", onClick: onEmail }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "mail" }), "Continue with email"), failed && /* @__PURE__ */ React$1.createElement(GsXLine, { center: true }, "Couldn’t continue with ", failed, ". Try again."));
   const gsCheck = (rules, f) => {
     const out = {};
     rules.forEach(([k, ok, msg]) => {
@@ -1072,9 +8938,9 @@
     return out;
   };
   const useGsForm = (initial, rules, onValid, opts) => {
-    const [f, setF] = React2.useState(initial);
-    const [tried, setTried] = React2.useState(!!(opts && opts.tried));
-    const refs = React2.useRef({});
+    const [f, setF] = React$1.useState(initial);
+    const [tried, setTried] = React$1.useState(!!(opts && opts.tried));
+    const refs = React$1.useRef({});
     const [busy, run] = useGsBusy();
     const errs = tried ? gsCheck(rules, f) : {};
     const bind = (k) => ({
@@ -1107,8 +8973,8 @@
     return { f, bind, submit, busy, reset: () => setTried(false), clear, set, focus };
   };
   const useGsStep = () => {
-    const [step, setStepState] = React2.useState(() => window.history.state && window.history.state.gsStep || 1);
-    React2.useEffect(() => {
+    const [step, setStepState] = React$1.useState(() => window.history.state && window.history.state.gsStep || 1);
+    React$1.useEffect(() => {
       const onPop = (e) => setStepState(e.state && e.state.gsStep || 1);
       window.addEventListener("popstate", onPop);
       return () => window.removeEventListener("popstate", onPop);
@@ -1146,15 +9012,15 @@
     const gs = useGs();
     const next = gs.route.next;
     const [step, toEmail, back] = useGsStep();
-    const [failed, setFailed] = React2.useState(null);
+    const [failed, setFailed] = React$1.useState(null);
     const d = gs.route.draft || {};
     const form = useGsForm({ first: d.first || "", last: d.last || "", email: d.email || "", name: d.name || "", pw: "" }, gsSignupRules(), (f) => {
       gs.setUser({ email: f.email.trim() });
       gs.keep({ draft: { first: f.first.trim(), last: f.last.trim(), email: f.email.trim(), name: f.name.trim() } });
       gs.go("verify", { ctx: "signup", email: f.email.trim(), username: f.name.trim(), first: f.first.trim(), last: f.last.trim(), next });
     });
-    const foot = /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(GsConsent, { lead: "By creating an account you accept our" }), step === 1 && /* @__PURE__ */ React2.createElement("p", null, "Already have an account? ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signin", next === "checkout" ? { next: "subscribe" } : void 0) }, "Sign in"), " or ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("home") }, "learn more")));
-    if (step === 1) return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Create your account", subtitle: "One account for every game you play.", foot }, /* @__PURE__ */ React2.createElement(
+    const foot = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsConsent, { lead: "By creating an account you accept our" }), step === 1 && /* @__PURE__ */ React$1.createElement("p", null, "Already have an account? ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signin", next === "checkout" ? { next: "subscribe" } : void 0) }, "Sign in"), " or ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("home") }, "learn more")));
+    if (step === 1) return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Create your account", subtitle: "One account for every game you play.", foot }, /* @__PURE__ */ React$1.createElement(
       GsProviders,
       {
         failed,
@@ -1165,13 +9031,13 @@
         }
       }
     ));
-    return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Create your account", onBack: () => {
+    return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Create your account", onBack: () => {
       form.reset();
       back();
-    }, foot }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "First name", autoComplete: "given-name", autoFocus: true, ...form.bind("first") }), /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Last name", autoComplete: "family-name", ...form.bind("last") }), /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Email", type: "email", autoComplete: "email", placeholder: "you@example.com", ...form.bind("email") }), /* @__PURE__ */ React2.createElement(GsUsernameField, { form, hint: GS_USERNAME_HINT }), /* @__PURE__ */ React2.createElement(GsLabelled, { label: "Password", aside: "At least 8 characters" }, /* @__PURE__ */ React2.createElement(DS.TextField, { type: "password", autoComplete: "new-password", "aria-label": "Password", ...form.bind("pw") })), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Create account")));
+    }, foot }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "First name", autoComplete: "given-name", autoFocus: true, ...form.bind("first") }), /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Last name", autoComplete: "family-name", ...form.bind("last") }), /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Email", type: "email", autoComplete: "email", placeholder: "you@example.com", ...form.bind("email") }), /* @__PURE__ */ React$1.createElement(GsUsernameField, { form, hint: GS_USERNAME_HINT }), /* @__PURE__ */ React$1.createElement(GsLabelled, { label: "Password", aside: "At least 8 characters" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { type: "password", autoComplete: "new-password", "aria-label": "Password", ...form.bind("pw") })), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Create account")));
   };
-  const GsLabelled = ({ label, aside, children }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-label-row" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-field-label", "aria-hidden": "true" }, label), /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, aside)), children);
-  const GsCodeField = ({ value, onChange, error, inputRef }) => /* @__PURE__ */ React2.createElement(
+  const GsLabelled = ({ label, aside, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-label-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-field-label", "aria-hidden": "true" }, label), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, aside)), children);
+  const GsCodeField = ({ value, onChange, error, inputRef }) => /* @__PURE__ */ React$1.createElement(
     DS.TextField,
     {
       "aria-label": "6-digit code",
@@ -1193,13 +9059,13 @@
     const device = ctx !== "signup";
     const email = gs.route.email || gs.user.email;
     const preset = gs.route.preset;
-    const [code, setCode] = React2.useState(preset === "expired" ? "000000" : preset === "wrong" ? "111111" : "");
-    const [err, setErr] = React2.useState(preset || null);
-    const [resent, setResent] = React2.useState(false);
-    const ref = React2.useRef(null);
+    const [code, setCode] = React$1.useState(preset === "expired" ? "000000" : preset === "wrong" ? "111111" : "");
+    const [err, setErr] = React$1.useState(preset || null);
+    const [resent, setResent] = React$1.useState(false);
+    const ref = React$1.useRef(null);
     const [busy, run] = useGsBusy();
     const [sending, runSend] = useGsBusy();
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (!resent) return void 0;
       const t = setTimeout(() => setResent(false), 2600);
       return () => clearTimeout(t);
@@ -1231,14 +9097,14 @@
       setCode("");
       refocus();
     });
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       GsAuthFrame,
       {
         title: device ? "Verify this device" : "Verify your email",
-        subtitle: /* @__PURE__ */ React2.createElement(React2.Fragment, null, "Enter the 6-digit code sent to ", /* @__PURE__ */ React2.createElement("b", null, email), "."),
+        subtitle: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Enter the 6-digit code sent to ", /* @__PURE__ */ React$1.createElement("b", null, email), "."),
         onBack: () => ctx === "device" ? gs.go("signin", gs.route.next ? { next: gs.route.next } : void 0) : gs.route.prev && gs.route.prev.name === "signup" ? gs.back() : gs.go("signup", { next: gs.route.next })
       },
-      /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(
         GsCodeField,
         {
           value: code,
@@ -1251,13 +9117,13 @@
             setErr(null);
           }
         }
-      ), err === "expired" && /* @__PURE__ */ React2.createElement(GsXLine, null, "That code’s expired. Request a fresh one."), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: busy }, "Verify"), /* @__PURE__ */ React2.createElement("div", { className: "gs-center gs-link-slot" }, resent ? /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: resend, "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React2.createElement(GsInkSpin, null), "Resend code")))
+      ), err === "expired" && /* @__PURE__ */ React$1.createElement(GsXLine, null, "That code’s expired. Request a fresh one."), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: busy }, "Verify"), /* @__PURE__ */ React$1.createElement("div", { className: "gs-center gs-link-slot" }, resent ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: resend, "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React$1.createElement(GsInkSpin, null), "Resend code")))
     );
   };
   const GsReturning = () => {
     const gs = useGs();
     const { mode, next, provider } = gs.route;
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       GsFullLoader,
       {
         label: "Completing sign-in",
@@ -1273,20 +9139,20 @@
   const GsSignIn = () => {
     const gs = useGs();
     const [step, toEmail, back] = useGsStep();
-    const [failed, setFailed] = React2.useState(null);
+    const [failed, setFailed] = React$1.useState(null);
     const next = gs.route.next;
     const form = useGsForm({ email: "", pw: "" }, GS_SIGNIN_RULES, (f) => gs.review.device === "new" ? gs.go("verify", { ctx: "device", email: f.email.trim(), next }) : gs.signedIn("email", next));
     const onProvider = (p) => gsProviderTrip(gs, p, setFailed, () => gs.go("returning", { mode: "signin", provider: p.toLowerCase(), next }));
-    const consent = /* @__PURE__ */ React2.createElement(GsConsent, { lead: "Your use of After Pixels is covered by our" });
+    const consent = /* @__PURE__ */ React$1.createElement(GsConsent, { lead: "Your use of After Pixels is covered by our" });
     const subtitle = "Pick up where you left off.";
-    if (step === 1) return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Sign in", subtitle, foot: /* @__PURE__ */ React2.createElement(React2.Fragment, null, consent, /* @__PURE__ */ React2.createElement("p", null, "New here? ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Create an account"), " or ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("home") }, "learn more"))) }, /* @__PURE__ */ React2.createElement(GsProviders, { failed, onProvider, onEmail: () => {
+    if (step === 1) return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Sign in", subtitle, foot: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, consent, /* @__PURE__ */ React$1.createElement("p", null, "New here? ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Create an account"), " or ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("home") }, "learn more"))) }, /* @__PURE__ */ React$1.createElement(GsProviders, { failed, onProvider, onEmail: () => {
       setFailed(null);
       toEmail();
     } }));
-    return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Sign in", onBack: () => {
+    return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Sign in", onBack: () => {
       form.reset();
       back();
-    }, foot: consent }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Email", type: "email", autoComplete: "email", placeholder: "you@example.com", autoFocus: true, ...form.bind("email") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Password", type: "password", autoComplete: "current-password", placeholder: "••••••••", ...form.bind("pw") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-act gs-act-end" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("recover") }, "Forgot password?"))), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Sign in")));
+    }, foot: consent }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Email", type: "email", autoComplete: "email", placeholder: "you@example.com", autoFocus: true, ...form.bind("email") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Password", type: "password", autoComplete: "current-password", placeholder: "••••••••", ...form.bind("pw") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-act gs-act-end" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("recover") }, "Forgot password?"))), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: form.busy }, "Sign in")));
   };
   const GS_NEWPW_RULES = [
     ["pw", (v) => v.length >= 8, "Use at least 8 characters."],
@@ -1294,15 +9160,15 @@
   ];
   const GsRecover = () => {
     const gs = useGs();
-    const [step, setStep] = React2.useState(gs.route.step || "email");
-    const [email, setEmail] = React2.useState(gs.route.email || "");
-    const [code, setCode] = React2.useState("");
-    const [codeErr, setCodeErr] = React2.useState(false);
-    const codeRef = React2.useRef(null);
+    const [step, setStep] = React$1.useState(gs.route.step || "email");
+    const [email, setEmail] = React$1.useState(gs.route.email || "");
+    const [code, setCode] = React$1.useState("");
+    const [codeErr, setCodeErr] = React$1.useState(false);
+    const codeRef = React$1.useRef(null);
     const [codeBusy, runCode] = useGsBusy();
-    const [resent, setResent] = React2.useState(false);
+    const [resent, setResent] = React$1.useState(false);
     const [sending, runSend] = useGsBusy();
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (!resent) return void 0;
       const t = setTimeout(() => setResent(false), 2600);
       return () => clearTimeout(t);
@@ -1318,9 +9184,9 @@
       setStep("sent");
     });
     const pwForm = useGsForm({ pw: "", pw2: "" }, GS_NEWPW_RULES, () => gs.signedIn("email"));
-    if (step === "email") return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Reset your password", subtitle: "Enter your email and we’ll send a code.", onBack: () => gs.go("signin") }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: emailForm.submit }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Email", type: "email", placeholder: "you@example.com", autoFocus: true, ...emailForm.bind("email") }), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: emailForm.busy }, "Send code")));
-    if (step === "sent") return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Check your email", subtitle: "If an account exists for that email, a code is on its way.", onBack: () => setStep("email") }, /* @__PURE__ */ React2.createElement(DS.Button, { block: true, onClick: () => setStep("code") }, "Enter code"), /* @__PURE__ */ React2.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => setStep("email") }, "Use a different email")));
-    if (step === "code") return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Enter your code", subtitle: /* @__PURE__ */ React2.createElement(React2.Fragment, null, "Enter the 6-digit code sent to ", /* @__PURE__ */ React2.createElement("b", null, email), "."), onBack: () => setStep("sent") }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: (e) => {
+    if (step === "email") return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Reset your password", subtitle: "Enter your email and we’ll send a code.", onBack: () => gs.go("signin") }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: emailForm.submit }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Email", type: "email", placeholder: "you@example.com", autoFocus: true, ...emailForm.bind("email") }), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: emailForm.busy }, "Send code")));
+    if (step === "sent") return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Check your email", subtitle: "If an account exists for that email, a code is on its way.", onBack: () => setStep("email") }, /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => setStep("code") }, "Enter code"), /* @__PURE__ */ React$1.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => setStep("email") }, "Use a different email")));
+    if (step === "code") return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Enter your code", subtitle: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Enter the 6-digit code sent to ", /* @__PURE__ */ React$1.createElement("b", null, email), "."), onBack: () => setStep("sent") }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: (e) => {
       e.preventDefault();
       if (codeBusy) return;
       const wrong = () => {
@@ -1332,7 +9198,7 @@
         return;
       }
       runCode(() => code === "111111" ? wrong() : setStep("new"));
-    } }, /* @__PURE__ */ React2.createElement(
+    } }, /* @__PURE__ */ React$1.createElement(
       GsCodeField,
       {
         value: code,
@@ -1345,8 +9211,8 @@
           setCodeErr(false);
         }
       }
-    ), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: codeBusy }, "Verify"), /* @__PURE__ */ React2.createElement("div", { className: "gs-center gs-link-slot" }, resent ? /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: resend, "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React2.createElement(GsInkSpin, null), "Resend code"))));
-    return /* @__PURE__ */ React2.createElement(GsAuthFrame, { title: "Set a new password", subtitle: "Choose a password you haven’t used here before." }, /* @__PURE__ */ React2.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: pwForm.submit }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "New password", type: "password", autoComplete: "new-password", placeholder: "At least 8 characters", autoFocus: true, ...pwForm.bind("pw") }), /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Confirm new password", type: "password", autoComplete: "new-password", placeholder: "Re-enter password", ...pwForm.bind("pw2") }), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: pwForm.busy }, "Update password")));
+    ), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: codeBusy }, "Verify"), /* @__PURE__ */ React$1.createElement("div", { className: "gs-center gs-link-slot" }, resent ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: resend, "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React$1.createElement(GsInkSpin, null), "Resend code"))));
+    return /* @__PURE__ */ React$1.createElement(GsAuthFrame, { title: "Set a new password", subtitle: "Choose a password you haven’t used here before." }, /* @__PURE__ */ React$1.createElement("form", { noValidate: true, className: "gs-stack-md", onSubmit: pwForm.submit }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "New password", type: "password", autoComplete: "new-password", placeholder: "At least 8 characters", autoFocus: true, ...pwForm.bind("pw") }), /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Confirm new password", type: "password", autoComplete: "new-password", placeholder: "Re-enter password", ...pwForm.bind("pw2") }), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: pwForm.busy }, "Update password")));
   };
   const GS_NB = " ";
   const GS_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1375,19 +9241,19 @@
     return sub.plan === "yearly" ? new Date(2027, 8, 18) : new Date(2026, 9, 18);
   };
   const GS_SUB_HOLDS = ["active", "failed", "ending"];
-  const GsRows = ({ rows }) => /* @__PURE__ */ React2.createElement("dl", { className: "gs-rows-dl" }, rows.map(([k, v]) => /* @__PURE__ */ React2.createElement("div", { key: k, className: "gs-row-kv" }, /* @__PURE__ */ React2.createElement("dt", { className: "gs-muted" }, k), /* @__PURE__ */ React2.createElement("dd", { className: "gs-num-text" }, v))));
-  const GsActs = ({ children }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-acts" }, children);
-  const GsPopTitle = ({ children }) => /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, children);
-  const GsKeepLock = ({ lead }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("p", null, lead), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("b", null, "You keep"), " your results, your history and the achievements you earned."), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("b", null, "What freezes:"), " your streaks, and progress toward achievements you haven’t earned yet."));
+  const GsRows = ({ rows }) => /* @__PURE__ */ React$1.createElement("dl", { className: "gs-rows-dl" }, rows.map(([k, v]) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "gs-row-kv" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-muted" }, k), /* @__PURE__ */ React$1.createElement("dd", { className: "gs-num-text" }, v))));
+  const GsActs = ({ children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-acts" }, children);
+  const GsPopTitle = ({ children }) => /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, children);
+  const GsKeepLock = ({ lead }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", null, lead), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, "You keep"), " your results, your history and the achievements you earned."), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, "What freezes:"), " your streaks, and progress toward achievements you haven’t earned yet."));
   const gsPassFails = (gs) => !!(gs.review && gs.review.passFail);
   const GsPassCard = () => {
     const gs = useGs();
     const { sub } = gs;
-    const [sheet, setSheet] = React2.useState(gs.route.sheet || null);
+    const [sheet, setSheet] = React$1.useState(gs.route.sheet || null);
     const [busy, run] = useGsBusy();
-    const [failed, setFailed] = React2.useState(null);
-    const want = React2.useRef(null);
-    React2.useEffect(() => {
+    const [failed, setFailed] = React$1.useState(null);
+    const want = React$1.useRef(null);
+    React$1.useEffect(() => {
       const k = want.current;
       if (!k) return;
       want.current = null;
@@ -1402,15 +9268,15 @@
     const plan = GS_PLAN[sub.plan];
     const other = gsOther(sub.plan);
     const card = { gap: 16, justifyItems: "stretch", alignContent: "start" };
-    const update = /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("update-card") }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "card" }), "Update payment card");
-    if (!GS_SUB_HOLDS.includes(sub.status)) return /* @__PURE__ */ React2.createElement(DS.Card, { style: card }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Pass"), sub.hadPass ? /* @__PURE__ */ React2.createElement(GsKeepLock, { lead: /* @__PURE__ */ React2.createElement(React2.Fragment, null, "Your Pass ended on ", gsLong(gsEndedOn(gs)), ".") }) : /* @__PURE__ */ React2.createElement("p", null, "You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full."), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { "data-gs-focus": "getpass", variant: "secondary", onClick: () => gs.go("pass") }, sub.hadPass ? "Get the Pass again" : "Get the Pass")));
-    const marker = sub.status === "failed" ? /* @__PURE__ */ React2.createElement("span", { className: "gs-marker is-bad" }, "Payment failed") : sub.status === "ending" ? /* @__PURE__ */ React2.createElement("span", { className: "gs-marker" }, "Ending") : /* @__PURE__ */ React2.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), "Active");
+    const update = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("update-card") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "card" }), "Update payment card");
+    if (!GS_SUB_HOLDS.includes(sub.status)) return /* @__PURE__ */ React$1.createElement(DS.Card, { style: card }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Pass"), sub.hadPass ? /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your Pass ended on ", gsLong(gsEndedOn(gs)), ".") }) : /* @__PURE__ */ React$1.createElement("p", null, "You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "getpass", variant: "secondary", onClick: () => gs.go("pass") }, sub.hadPass ? "Get the Pass again" : "Get the Pass")));
+    const marker = sub.status === "failed" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker is-bad" }, "Payment failed") : sub.status === "ending" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, "Ending") : /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "Active");
     let rows = [["Plan", plan.name + " · " + plan.price]];
     let body = null;
     if (sub.status === "active") {
       rows.push(["Next renewal", date]);
       if (sub.pending) rows.push(["From " + date, GS_PLAN[sub.pending].name + " · " + GS_PLAN[sub.pending].price]);
-      body = /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-pair-even" }, update, sub.pending ? /* @__PURE__ */ React2.createElement(DS.Button, { "data-gs-focus": "keep", variant: "secondary", loading: busy, onClick: () => {
+      body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pair-even" }, update, sub.pending ? /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "keep", variant: "secondary", loading: busy, onClick: () => {
         setFailed(null);
         run(() => {
           if (gsPassFails(gs)) {
@@ -1420,13 +9286,13 @@
           done("switch", "Your switch is undone. You stay on " + plan.name.toLowerCase() + ".");
           gs.setSub({ pending: null });
         });
-      } }, "Keep ", plan.name.toLowerCase()) : /* @__PURE__ */ React2.createElement(DS.Button, { "data-gs-focus": "switch", variant: "secondary", onClick: () => setSheet("switch") }, "Switch to ", other)), failed === "keep" && sub.pending && /* @__PURE__ */ React2.createElement(GsXLine, null, "Your switch to ", sub.pending, " is still set. Try again."));
+      } }, "Keep ", plan.name.toLowerCase()) : /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "switch", variant: "secondary", onClick: () => setSheet("switch") }, "Switch to ", other)), failed === "keep" && sub.pending && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your switch to ", sub.pending, " is still set. Try again."));
     } else if (sub.status === "failed") {
       if (sub.pending) rows.push(["From " + date, GS_PLAN[sub.pending].name + " · " + GS_PLAN[sub.pending].price]);
-      body = /* @__PURE__ */ React2.createElement("div", { className: "gs-line-act" }, /* @__PURE__ */ React2.createElement("p", null, "Update the card within 30 days to keep your Pass."), update);
+      body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-line-act" }, /* @__PURE__ */ React$1.createElement("p", null, "Update the card within 30 days to keep your Pass."), update);
     } else {
       rows.push(["Ends on", date]);
-      body = /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(GsKeepLock, { lead: /* @__PURE__ */ React2.createElement(React2.Fragment, null, "Your Pass ends on that date. You can resume any time before then.") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-pair-even" }, update, /* @__PURE__ */ React2.createElement(DS.Button, { "data-gs-focus": "resume", variant: "secondary", loading: busy, onClick: () => {
+      body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your Pass ends on that date. You can resume any time before then.") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-pair-even" }, update, /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "resume", variant: "secondary", loading: busy, onClick: () => {
         setFailed(null);
         run(() => {
           if (gsPassFails(gs)) {
@@ -1436,21 +9302,21 @@
           done("cancel", "Your subscription is resumed.");
           gs.setSub({ status: "active" });
         });
-      } }, "Resume subscription")), failed === "resume" && /* @__PURE__ */ React2.createElement(GsXLine, null, "Your subscription wasn’t resumed. Try again."));
+      } }, "Resume subscription")), failed === "resume" && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your subscription wasn’t resumed. Try again."));
     }
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: card }, /* @__PURE__ */ React2.createElement("div", { className: "gs-title-row" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Pass"), marker), /* @__PURE__ */ React2.createElement(GsRows, { rows }), body, /* @__PURE__ */ React2.createElement("div", { className: "gs-card-foot gs-small" }, /* @__PURE__ */ React2.createElement("span", null, "Billed to ", gs.user.email), /* @__PURE__ */ React2.createElement("span", null, "Card ending 4242")), sub.status !== "ending" && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement(DS.TextLink, { "data-gs-focus": "cancel", danger: true, onClick: () => setSheet("cancel") }, "Cancel subscription"))), /* @__PURE__ */ React2.createElement(GsSwitchSheet, { open: sheet === "switch", onClose: () => setSheet(null), onDone: done }), /* @__PURE__ */ React2.createElement(GsCancelSheet, { open: sheet === "cancel", onClose: () => setSheet(null), onDone: done }));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: card }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-title-row" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Pass"), marker), /* @__PURE__ */ React$1.createElement(GsRows, { rows }), body, /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-foot gs-small" }, /* @__PURE__ */ React$1.createElement("span", null, "Billed to ", gs.user.email), /* @__PURE__ */ React$1.createElement("span", null, "Card ending 4242")), sub.status !== "ending" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { "data-gs-focus": "cancel", danger: true, onClick: () => setSheet("cancel") }, "Cancel subscription"))), /* @__PURE__ */ React$1.createElement(GsSwitchSheet, { open: sheet === "switch", onClose: () => setSheet(null), onDone: done }), /* @__PURE__ */ React$1.createElement(GsCancelSheet, { open: sheet === "cancel", onClose: () => setSheet(null), onDone: done }));
   };
-  const GsBeforeAfter = ({ now, then }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-ba" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-ba-side" }, now.map((l, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))), /* @__PURE__ */ React2.createElement(GsGlyph, { name: "arrow" }), /* @__PURE__ */ React2.createElement("div", { className: "gs-ba-side is-hi" }, then.map((l, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))));
+  const GsBeforeAfter = ({ now, then }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba-side" }, now.map((l, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))), /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "arrow" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba-side is-hi" }, then.map((l, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))));
   const GsSwitchSheet = ({ open, onClose, onDone }) => {
     const gs = useGs();
     const { sub } = gs;
     const to = gsOther(sub.plan);
-    const last = React2.useRef(null);
+    const last = React$1.useRef(null);
     if (open) last.current = { from: sub.plan, to, date: gsShort(gsSubDate(sub)), long: gsLong(gsSubDate(sub)) };
     const p = last.current || { from: sub.plan, to, date: "", long: "" };
     const [busy, run, cancel] = useGsBusy();
-    const [failed, setFailed] = React2.useState(false);
-    React2.useEffect(() => {
+    const [failed, setFailed] = React$1.useState(false);
+    React$1.useEffect(() => {
       if (open) setFailed(false);
     }, [open]);
     const close = () => {
@@ -1469,18 +9335,18 @@
         onClose();
       });
     };
-    return /* @__PURE__ */ React2.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Switch to " + p.to + "?" }, /* @__PURE__ */ React2.createElement(GsPopTitle, null, "Switch to ", p.to, "?"), /* @__PURE__ */ React2.createElement(GsBeforeAfter, { now: ["Now", GS_PLAN[p.from].name, GS_PLAN[p.from].price], then: ["From " + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price] }), /* @__PURE__ */ React2.createElement("p", null, "Nothing is paid now."), failed && /* @__PURE__ */ React2.createElement(GsXLine, null, "Your plan wasn’t switched. Try again."), /* @__PURE__ */ React2.createElement(GsActs, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React2.createElement(DS.Button, { onClick: go, loading: busy }, "Switch to ", p.to)));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Switch to " + p.to + "?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Switch to ", p.to, "?"), /* @__PURE__ */ React$1.createElement(GsBeforeAfter, { now: ["Now", GS_PLAN[p.from].name, GS_PLAN[p.from].price], then: ["From " + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price] }), /* @__PURE__ */ React$1.createElement("p", null, "Nothing is paid now."), failed && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your plan wasn’t switched. Try again."), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: go, loading: busy }, "Switch to ", p.to)));
   };
   const GsCancelSheet = ({ open, onClose, onDone }) => {
     const gs = useGs();
     const { sub } = gs;
-    const last = React2.useRef(null);
+    const last = React$1.useRef(null);
     if (open) last.current = { failed: sub.status === "failed", plan: sub.plan, date: gsShort(gsSubDate(sub)), long: gsLong(gsSubDate(sub)) };
     const p = last.current || { failed: false, plan: sub.plan, date: "" };
     const now = ["Now", GS_PLAN[p.plan].name, GS_PLAN[p.plan].price];
     const [busy, run, cancel] = useGsBusy();
-    const [failed, setFailed] = React2.useState(false);
-    React2.useEffect(() => {
+    const [failed, setFailed] = React$1.useState(false);
+    React$1.useEffect(() => {
       if (open) setFailed(false);
     }, [open]);
     const close = () => {
@@ -1504,14 +9370,14 @@
         onClose();
       });
     };
-    return /* @__PURE__ */ React2.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Cancel your subscription?" }, /* @__PURE__ */ React2.createElement(GsPopTitle, null, "Cancel your subscription?"), /* @__PURE__ */ React2.createElement(GsBeforeAfter, { now, then: [p.failed ? "Today" : "From " + p.date, "Ends", "Nothing charged"] }), /* @__PURE__ */ React2.createElement(GsKeepLock, { lead: p.failed ? "Your Pass ends today." : "You keep the Pass until it ends." }), failed && /* @__PURE__ */ React2.createElement(GsXLine, null, "Your subscription wasn’t cancelled. Try again."), /* @__PURE__ */ React2.createElement(GsActs, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: close }, "Keep subscription"), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "danger", onClick: go, loading: busy }, "Cancel subscription")));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Cancel your subscription?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Cancel your subscription?"), /* @__PURE__ */ React$1.createElement(GsBeforeAfter, { now, then: [p.failed ? "Today" : "From " + p.date, "Ends", "Nothing charged"] }), /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: p.failed ? "Your Pass ends today." : "You keep the Pass until it ends." }), failed && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your subscription wasn’t cancelled. Try again."), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Keep subscription"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "danger", onClick: go, loading: busy }, "Cancel subscription")));
   };
   const GsSubscribe = () => {
     const gs = useGs();
     const plan = GS_PLAN[gs.choice];
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React2.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React2.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React2.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React2.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React2.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React2.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("span", { className: "gs-plan-name" }, GS_PLAN[k].name), k === "yearly" && /* @__PURE__ */ React2.createElement(DS.Tag, { kind: "success" }, GS_YEAR_MONTH), /* @__PURE__ */ React2.createElement("span", { className: "gs-plan-price gs-num-text" }, GS_PLAN[k].per)))), /* @__PURE__ */ React2.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React2.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, GS_PLAN[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, GS_YEAR_MONTH), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, GS_PLAN[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
   };
-  const GsProviderFrame = ({ merchant, children }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React2.createElement("main", { className: "gs-auth-col" }, children, /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-center" }, "This is a simulated provider boundary.")));
+  const GsProviderFrame = ({ merchant, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React$1.createElement("main", { className: "gs-auth-col" }, children, /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-center" }, "This is a simulated provider boundary.")));
   const gsFmt = {
     card: (v) => v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim(),
     exp: (v) => {
@@ -1521,21 +9387,21 @@
     cvc: (v) => v.replace(/\D/g, "").slice(0, 4)
   };
   const GsCardInputs = () => {
-    const [f, setF] = React2.useState({ card: "", exp: "", cvc: "" });
+    const [f, setF] = React$1.useState({ card: "", exp: "", cvc: "" });
     const bind = (k) => ({ value: f[k], onChange: (e) => setF((s) => ({ ...s, [k]: gsFmt[k](e.target.value) })) });
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", role: "group", "aria-labelledby": "gs-card-info" }, /* @__PURE__ */ React2.createElement("span", { id: "gs-card-info", className: "gs-field-label" }, "Card information"), /* @__PURE__ */ React2.createElement("div", { className: "gs-cardin" }, /* @__PURE__ */ React2.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "1234 1234 1234 1234", autoComplete: "cc-number", "aria-label": "Card number", ...bind("card") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-cardin-row" }, /* @__PURE__ */ React2.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "MM / YY", autoComplete: "cc-exp", "aria-label": "Expiry, MM / YY", ...bind("exp") }), /* @__PURE__ */ React2.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "CVC", autoComplete: "cc-csc", "aria-label": "CVC", ...bind("cvc") }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", role: "group", "aria-labelledby": "gs-card-info" }, /* @__PURE__ */ React$1.createElement("span", { id: "gs-card-info", className: "gs-field-label" }, "Card information"), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cardin" }, /* @__PURE__ */ React$1.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "1234 1234 1234 1234", autoComplete: "cc-number", "aria-label": "Card number", ...bind("card") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cardin-row" }, /* @__PURE__ */ React$1.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "MM / YY", autoComplete: "cc-exp", "aria-label": "Expiry, MM / YY", ...bind("exp") }), /* @__PURE__ */ React$1.createElement("input", { className: "mcp-in gs-num-text", inputMode: "numeric", placeholder: "CVC", autoComplete: "cc-csc", "aria-label": "CVC", ...bind("cvc") }))));
   };
   const GsCheckout = () => {
     const gs = useGs();
     const plan = GS_PLAN[gs.choice];
-    const [paying, setPaying] = React2.useState(false);
+    const [paying, setPaying] = React$1.useState(false);
     const pay = (e) => {
       e.preventDefault();
       if (paying) return;
       setPaying(true);
       setTimeout(() => gs.paid(), 1400);
     };
-    return /* @__PURE__ */ React2.createElement(GsProviderFrame, { merchant: "After Pixels" }, /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 24, justifyItems: "stretch", padding: 24 } }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, "After Pixels · ", plan.name, " plan"), /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-row" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-figure gs-num-text" }, plan.due), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, "due today")), /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, "Then ", plan.price, " from ", gsLong(gsAddMonths(GS_DAY0, plan.months)), ".")), /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: pay, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Email", value: gs.user.email, readOnly: true }), /* @__PURE__ */ React2.createElement(GsCardInputs, null), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: paying, loadingLabel: "Processing…" }, "Pay and subscribe")), /* @__PURE__ */ React2.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: gs.afterCheckout }, "Cancel and return"))));
+    return /* @__PURE__ */ React$1.createElement(GsProviderFrame, { merchant: "After Pixels" }, /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 24, justifyItems: "stretch", padding: 24 } }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, "After Pixels · ", plan.name, " plan"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure gs-num-text" }, plan.due), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, "due today")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Then ", plan.price, " from ", gsLong(gsAddMonths(GS_DAY0, plan.months)), ".")), /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: pay, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Email", value: gs.user.email, readOnly: true }), /* @__PURE__ */ React$1.createElement(GsCardInputs, null), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: paying, loadingLabel: "Processing…" }, "Pay and subscribe")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: gs.afterCheckout }, "Cancel and return"))));
   };
   const GsUpdateCard = () => {
     const gs = useGs();
@@ -1547,7 +9413,7 @@
         gs.go("account");
       });
     };
-    return /* @__PURE__ */ React2.createElement(GsProviderFrame, { merchant: "After Pixels · Billing" }, /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 24, justifyItems: "stretch", padding: 24 } }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("h1", { className: "mcp-t-sec" }, "Update your card"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, gs.user.email)), /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: save, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(GsCardInputs, null), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", block: true, loading: busy }, "Save card")), /* @__PURE__ */ React2.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Cancel and return"))));
+    return /* @__PURE__ */ React$1.createElement(GsProviderFrame, { merchant: "After Pixels · Billing" }, /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 24, justifyItems: "stretch", padding: 24 } }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("h1", { className: "mcp-t-sec" }, "Update your card"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, gs.user.email)), /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: save, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsCardInputs, null), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", block: true, loading: busy }, "Save card")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-center" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Cancel and return"))));
   };
   const CPR_DEFAULTS = { bwDone: false, newEds: "seed", lapsed: "seed", freeNew: true };
   let CPR_WORD_PLAY;
@@ -1557,8 +9423,8 @@
   };
   let cprStore;
   const useCpr = () => {
-    const [, bump] = React2.useState(0);
-    React2.useEffect(() => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
       const f = () => bump((n) => n + 1);
       cprStore.subs.add(f);
       return () => cprStore.subs.delete(f);
@@ -1567,7 +9433,7 @@
   };
   let CPR_STAGE;
   let CPR_SHOWN;
-  const cprEditions = (k) => k === "barrow" || !!gsRhythm(k) || !!GS_GAMES[k].eds;
+  const cprEditions = (k) => k === "barrow" || !!gsRhythm(k) || !!GS_GAMES$1[k].eds;
   const cprLocked = (gs, k) => CPR_STAGE[k] === "pass" && gs.view !== "pass";
   let CPR_LAPSED;
   const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
@@ -1581,7 +9447,7 @@
     return "done";
   };
   const cprPlayed = (gs, k) => {
-    if (GS_GAMES[k].added) return false;
+    if (GS_GAMES$1[k].added) return false;
     if (cprStore.get().newEds === "most" && !gsFresh(gs)) return k === "word";
     if (gsFresh(gs)) return false;
     if (k === "barrow") {
@@ -1605,11 +9471,11 @@
   const CprPassEnd = ({ text, className }) => {
     const gs = useGs();
     const head = text.slice(0, -"the Pass.".length);
-    return /* @__PURE__ */ React2.createElement("p", { className }, head, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
   };
   const cprBoxCopy = (id) => {
     const k = CPR_STAGE[id];
-    const u = (GS_GAMES[id].ed || ["edition"])[0];
+    const u = (GS_GAMES$1[id].ed || ["edition"])[0];
     const U = u.toUpperCase();
     if (k === "daily" && id === "groups") return null;
     if (k === "daily") {
@@ -1617,7 +9483,7 @@
       return ["TODAY’S " + U + " · #" + no, "Free with an account. A new " + u + " every day."];
     }
     if (k === "first") return [id === "barrow" ? "CHAPTER 1" : "THE FIRST " + U, "Free with an account. Every other " + u + " comes with the Pass."];
-    if (k === "pass") return ["WITH THE PASS", (GS_NAME[id] || GS_GAMES[id].name) + " comes with the Pass."];
+    if (k === "pass") return ["WITH THE PASS", (GS_NAME[id] || GS_GAMES$1[id].name) + " comes with the Pass."];
     return null;
   };
   let GsPassStage;
@@ -1636,8 +9502,8 @@
       }
     };
     cprSyncSeed(cprStore.v);
-    CPR_STAGE = Object.fromEntries(GS_GAME_ORDER.map((k) => [k, GS_GAMES[k].access]));
-    CPR_SHOWN = GS_GAME_ORDER.filter((k) => !!CPR_STAGE[k]);
+    CPR_STAGE = Object.fromEntries(GS_GAME_ORDER$1.map((k) => [k, GS_GAMES$1[k].access]));
+    CPR_SHOWN = GS_GAME_ORDER$1.filter((k) => !!CPR_STAGE[k]);
     CPR_LAPSED = {
       seed: { escape: { used: true, pass: false }, delve: { used: true, pass: true }, barrow: { used: true, pass: true } },
       every: { escape: { used: false, pass: true }, barrow: { used: true, pass: true }, delve: { used: true, pass: false } }
@@ -1645,23 +9511,23 @@
     CPR_NUM = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
     GsPassStage = cprStore;
   }
-  const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== "FREE" && t !== "FIRST" && t !== "PASS");
-  const CprArt = ({ host, id, shape }) => /* @__PURE__ */ React2.createElement("div", { ref: host }, /* @__PURE__ */ React2.createElement(GsArt, { art: GS_GAMES[id].art, shape }));
+  const cprTags = (k) => GS_GAMES$1[k].tags.filter((t) => t !== "FREE" && t !== "FIRST" && t !== "PASS");
+  const CprArt = ({ host, id, shape }) => /* @__PURE__ */ React$1.createElement("div", { ref: host }, /* @__PURE__ */ React$1.createElement(GsArt, { art: GS_GAMES$1[id].art, shape }));
   const GsCard = ({ id, mark }) => {
     const gs = useGs();
     const host = useGsArtHost();
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React2.createElement(
+    const g = GS_GAMES$1[id];
+    return /* @__PURE__ */ React$1.createElement(
       DS.GameCard,
       {
         className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React2.createElement(CprArt, { host, id, shape: "wide" }),
+        art: /* @__PURE__ */ React$1.createElement(CprArt, { host, id, shape: "wide" }),
         pass: cprLocked(gs, id),
         onPass: () => gs.go("pass"),
-        title: /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
-        mark: mark && /* @__PURE__ */ React2.createElement(DS.Tag, { kind: "daily", icon: "check" }, mark),
+        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
+        mark: mark && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily", icon: "check" }, mark),
         blurb: gsKeepLast(g.blurb),
-        tags: /* @__PURE__ */ React2.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
+        tags: /* @__PURE__ */ React$1.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
       }
     );
   };
@@ -1669,28 +9535,28 @@
   const GsPick = ({ id, label }) => {
     const gs = useGs();
     const host = useGsArtHost();
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React2.createElement(
+    const g = GS_GAMES$1[id];
+    return /* @__PURE__ */ React$1.createElement(
       DS.GamePick,
       {
         className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React2.createElement(CprArt, { host, id, shape: "wide" }),
+        art: /* @__PURE__ */ React$1.createElement(CprArt, { host, id, shape: "wide" }),
         pass: cprLocked(gs, id),
         onPass: () => gs.go("pass"),
         label,
-        title: /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
+        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
         blurb: gsKeepLast(g.blurb),
-        tags: /* @__PURE__ */ React2.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
+        tags: /* @__PURE__ */ React$1.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
       }
     );
   };
   const CprHomeLine = () => {
     const gs = useGs();
     const c = cprPassLine();
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, c.p1.replace(/ with your account\. $/, " free. "), c.p1 ? "Everything else" : "Everything", " with ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, c.p1.replace(/ with your account\. $/, " free. "), c.p1 ? "Everything else" : "Everything", " with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
   };
   const cprMix = (ids) => {
-    const ground = (k) => (GS_ART[GS_GAMES[k].art] || {}).ground;
+    const ground = (k) => (GS_ART$1[GS_GAMES$1[k].art] || {}).ground;
     const out = [];
     const used = ids.map(() => false);
     const ok = (k, i) => !(i % 4 && ground(out[i - 1]) === ground(k) || i >= 4 && ground(out[i - 4]) === ground(k));
@@ -1711,21 +9577,21 @@
     const gs = useGs();
     const host = useGsArtHost();
     const go = () => gs.go("pass");
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       DS.GameCard,
       {
         className: "mcp-art-host gs-host cpr-pcard",
-        art: /* @__PURE__ */ React2.createElement("div", { ref: host, className: "cpr-mosaic", "aria-hidden": "true", onClick: go }, CPR_MOSAIC.map((k) => /* @__PURE__ */ React2.createElement(GsArt, { key: k, art: GS_GAMES[k].art, shape: "square" }))),
-        title: /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: go }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "lock", size: 18, className: "cpr-lock" }), "The Pass", /* @__PURE__ */ React2.createElement("span", { className: "cpr-chev", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "down", size: 18, style: { transform: "rotate(-90deg)" } }))),
+        art: /* @__PURE__ */ React$1.createElement("div", { ref: host, className: "cpr-mosaic", "aria-hidden": "true", onClick: go }, CPR_MOSAIC.map((k) => /* @__PURE__ */ React$1.createElement(GsArt, { key: k, art: GS_GAMES$1[k].art, shape: "square" }))),
+        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: go }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "lock", size: 18, className: "cpr-lock" }), "The Pass", /* @__PURE__ */ React$1.createElement("span", { className: "cpr-chev", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 18, style: { transform: "rotate(-90deg)" } }))),
         blurb: "Every game, every edition.",
-        tags: /* @__PURE__ */ React2.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React2.createElement("span", null, GS_PLAN.monthly.price), " or ", /* @__PURE__ */ React2.createElement("span", null, GS_PLAN.yearly.price))
+        tags: /* @__PURE__ */ React$1.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React$1.createElement("span", null, GS_PLAN.monthly.price), " or ", /* @__PURE__ */ React$1.createElement("span", null, GS_PLAN.yearly.price))
       }
     );
   };
   const GsHome = () => {
     const gs = useGs();
-    const field = React2.useRef(null);
-    React2.useEffect(() => {
+    const field = React$1.useRef(null);
+    React$1.useEffect(() => {
       const f = field.current;
       if (!f) return void 0;
       const on = (e) => {
@@ -1740,12 +9606,12 @@
         ends.forEach((t) => f.removeEventListener(t, off));
       };
     }, []);
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React2.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React2.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React2.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React2.createElement("p", { className: "gs-hero-sub" }, "Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record."), /* @__PURE__ */ React2.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React2.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React2.createElement("div", { className: "gs-hero-field", ref: field }, /* @__PURE__ */ React2.createElement("div", { className: "gs-hero-shapes4", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES.casebook.route) }, /* @__PURE__ */ React2.createElement("i", { style: { background: "#D66847", "--h": "62%", "--rise": "12px" } }), /* @__PURE__ */ React2.createElement("i", { style: { background: "#A390B2", "--h": "86%", "--rise": "6px" } }), /* @__PURE__ */ React2.createElement("i", { style: { background: "#F2EBE0", "--h": "66%", "--rise": "18px" } }), /* @__PURE__ */ React2.createElement("b", null)), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES.casebook.route) }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "A NEW CASE EVERY WEEK"), /* @__PURE__ */ React2.createElement("span", { className: "gs-hero-name-t" }, GS_NAME.casebook, " ", /* @__PURE__ */ React2.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React2.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Casebook case being played in a chat" }))), /* @__PURE__ */ React2.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React2.createElement(DS.CardRow, { title: "Available games", sub: /* @__PURE__ */ React2.createElement(CprHomeLine, null), className: "gs-row4" }, [/* @__PURE__ */ React2.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React2.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React2.createElement("div", { className: "gs-grid2" }, GS_SOON.map((g) => /* @__PURE__ */ React2.createElement(GsSoonCard, { key: g.name, g }))), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")), /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-pu-wrap" }, GS.purchase))), /* @__PURE__ */ React2.createElement(GsWhatsNew, null));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React$1.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React$1.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-hero-sub" }, "Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-field", ref: field }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-shapes4", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES$1.casebook.route) }, /* @__PURE__ */ React$1.createElement("i", { style: { background: "#D66847", "--h": "62%", "--rise": "12px" } }), /* @__PURE__ */ React$1.createElement("i", { style: { background: "#A390B2", "--h": "86%", "--rise": "6px" } }), /* @__PURE__ */ React$1.createElement("i", { style: { background: "#F2EBE0", "--h": "66%", "--rise": "18px" } }), /* @__PURE__ */ React$1.createElement("b", null)), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES$1.casebook.route) }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A NEW CASE EVERY WEEK"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-hero-name-t" }, GS_NAME.casebook, " ", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React$1.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Casebook case being played in a chat" }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Available games", sub: /* @__PURE__ */ React$1.createElement(CprHomeLine, null), className: "gs-row4" }, [/* @__PURE__ */ React$1.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React$1.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((g) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: g.name, g }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, GS.purchase))), /* @__PURE__ */ React$1.createElement(GsWhatsNew, null));
   };
   function initGsPassHome() {
     CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === "pass").map((k) => k === "salvage" ? "word" : k).slice(0, 8));
   }
-  const GsFeature = ({ id }) => /* @__PURE__ */ React2.createElement(GsCard, { id });
+  const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
@@ -1759,9 +9625,9 @@
     { v: "1.1", d: "18 June 2026", t: "Free daily puzzles", x: "Today’s Daily Puzzles are free with an account." }
   ];
   const GsWhatsNew = () => {
-    const row = (e, i) => /* @__PURE__ */ React2.createElement("li", { key: e.v, className: "wn-e" + (i === 0 ? " is-latest" : "") }, /* @__PURE__ */ React2.createElement("div", { className: "wn-body" }, /* @__PURE__ */ React2.createElement("h3", { className: "wn-t" }, e.t), /* @__PURE__ */ React2.createElement("p", { className: "wn-d" }, e.x)), /* @__PURE__ */ React2.createElement("div", { className: "wn-meta" }, /* @__PURE__ */ React2.createElement("time", null, e.d)));
+    const row = (e, i) => /* @__PURE__ */ React$1.createElement("li", { key: e.v, className: "wn-e" + (i === 0 ? " is-latest" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "wn-body" }, /* @__PURE__ */ React$1.createElement("h3", { className: "wn-t" }, e.t), /* @__PURE__ */ React$1.createElement("p", { className: "wn-d" }, e.x)), /* @__PURE__ */ React$1.createElement("div", { className: "wn-meta" }, /* @__PURE__ */ React$1.createElement("time", null, e.d)));
     const now = GS_WHATSNEW.slice(0, 3), earlier = GS_WHATSNEW.slice(3);
-    return /* @__PURE__ */ React2.createElement("section", { className: "gs-band", "aria-labelledby": "gs-wn-h" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec", id: "gs-wn-h" }, "What’s new"), /* @__PURE__ */ React2.createElement("div", { className: "wn-panel" }, /* @__PURE__ */ React2.createElement("ul", { className: "wn-list has-fold" }, now.map(row), /* @__PURE__ */ React2.createElement("li", { className: "wn-e wn-foldrow" }, /* @__PURE__ */ React2.createElement("details", null, /* @__PURE__ */ React2.createElement("summary", { className: "wn-sum" }, /* @__PURE__ */ React2.createElement("span", { className: "wn-caret" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "down", size: 16, style: { transform: "rotate(-90deg)" } })), "earlier updates"), /* @__PURE__ */ React2.createElement("div", { className: "wn-wrap", tabIndex: 0, role: "region", "aria-label": "Earlier updates" }, /* @__PURE__ */ React2.createElement("ul", { className: "wn-nest" }, earlier.map((e) => row(e, -1)))))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-band", "aria-labelledby": "gs-wn-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-wn-h" }, "What’s new"), /* @__PURE__ */ React$1.createElement("div", { className: "wn-panel" }, /* @__PURE__ */ React$1.createElement("ul", { className: "wn-list has-fold" }, now.map(row), /* @__PURE__ */ React$1.createElement("li", { className: "wn-e wn-foldrow" }, /* @__PURE__ */ React$1.createElement("details", null, /* @__PURE__ */ React$1.createElement("summary", { className: "wn-sum" }, /* @__PURE__ */ React$1.createElement("span", { className: "wn-caret" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 16, style: { transform: "rotate(-90deg)" } })), "earlier updates"), /* @__PURE__ */ React$1.createElement("div", { className: "wn-wrap", tabIndex: 0, role: "region", "aria-label": "Earlier updates" }, /* @__PURE__ */ React$1.createElement("ul", { className: "wn-nest" }, earlier.map((e) => row(e, -1)))))))));
   };
   const cbMake = (id, week, month, title, played, verdict, total, rec) => {
     const turns = rec.filter((r) => r.c !== "A");
@@ -1819,8 +9685,8 @@
   let CB_KINDS;
   const cbCap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const CbOut = ({ r }) => {
-    if (r.act === "Show evidence") return /* @__PURE__ */ React2.createElement("span", { className: "lb-out" + (r.c === "B" ? " is-hit" : "") }, r.out);
-    if (r.act === "Search") return /* @__PURE__ */ React2.createElement("span", { className: "lb-out" + (r.c === "F" ? " is-found" : "") }, r.out);
+    if (r.act === "Show evidence") return /* @__PURE__ */ React$1.createElement("span", { className: "lb-out" + (r.c === "B" ? " is-hit" : "") }, r.out);
+    if (r.act === "Search") return /* @__PURE__ */ React$1.createElement("span", { className: "lb-out" + (r.c === "F" ? " is-found" : "") }, r.out);
     return null;
   };
   const CbCase = ({ c }) => {
@@ -1828,11 +9694,11 @@
     const rec = c.rec.map((r, i) => ({ ...r, n: i + 1 }));
     const acc = rec.find((r) => r.c === "A");
     const ed = edList(gs, "casebook").find((x) => x.key === String(c.id));
-    const share = !c.live && /* @__PURE__ */ React2.createElement(LbShare, { lines: cbShareLines(c) });
-    const acts = c.live ? /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: ed }) }, "Play") : share || null;
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbBackTo, { gid: "casebook" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, c.title)), acts && /* @__PURE__ */ React2.createElement("div", { className: "gs-pairwrap" }, acts)), !c.live && /* @__PURE__ */ React2.createElement("p", { style: { margin: 0 } }, GS_ONCE_LINE), /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("dl", { className: "lb-figs" }, /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Result"), /* @__PURE__ */ React2.createElement("dd", null, /* @__PURE__ */ React2.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Turns used"), /* @__PURE__ */ React2.createElement("dd", null, c.turns, /* @__PURE__ */ React2.createElement("span", { className: "lb-of" }, " of 16"))), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Lies exposed"), /* @__PURE__ */ React2.createElement("dd", null, c.lies, !c.live && /* @__PURE__ */ React2.createElement("span", { className: "lb-of" }, " of " + c.total))), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "You accused"), /* @__PURE__ */ React2.createElement("dd", null, acc ? acc.what : /* @__PURE__ */ React2.createElement("span", { className: "lb-of" }, "No one yet"))))), /* @__PURE__ */ React2.createElement("div", { className: "lb-kinds" }, CB_KINDS.map(([act, name]) => {
+    const share = !c.live && /* @__PURE__ */ React$1.createElement(LbShare, { lines: cbShareLines(c) });
+    const acts = c.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: ed }) }, "Play") : share || null;
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbBackTo, { gid: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, c.title)), acts && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pairwrap" }, acts)), !c.live && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, GS_ONCE_LINE), /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("dl", { className: "lb-figs" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Result"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Turns used"), /* @__PURE__ */ React$1.createElement("dd", null, c.turns, /* @__PURE__ */ React$1.createElement("span", { className: "lb-of" }, " of 16"))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Lies exposed"), /* @__PURE__ */ React$1.createElement("dd", null, c.lies, !c.live && /* @__PURE__ */ React$1.createElement("span", { className: "lb-of" }, " of " + c.total))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "You accused"), /* @__PURE__ */ React$1.createElement("dd", null, acc ? acc.what : /* @__PURE__ */ React$1.createElement("span", { className: "lb-of" }, "No one yet"))))), /* @__PURE__ */ React$1.createElement("div", { className: "lb-kinds" }, CB_KINDS.map(([act, name]) => {
       const rs = rec.filter((r) => r.act === act);
-      return /* @__PURE__ */ React2.createElement("section", { key: act, className: "lb-box" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-kindhead" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, name), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, rs.length === 1 ? "1 turn" : rs.length + " turns")), rs.length ? /* @__PURE__ */ React2.createElement("ol", { className: "lb-turns" }, rs.map((r) => /* @__PURE__ */ React2.createElement("li", { key: r.n }, /* @__PURE__ */ React2.createElement("span", { className: "lb-tn" }, "Turn " + r.n), /* @__PURE__ */ React2.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", null, cbCap(r.what)), /* @__PURE__ */ React2.createElement(CbOut, { r }))))) : /* @__PURE__ */ React2.createElement("p", { className: "lb-none gs-muted" }, "You haven’t taken one of these yet."));
+      return /* @__PURE__ */ React$1.createElement("section", { key: act, className: "lb-box" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-kindhead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, name), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, rs.length === 1 ? "1 turn" : rs.length + " turns")), rs.length ? /* @__PURE__ */ React$1.createElement("ol", { className: "lb-turns" }, rs.map((r) => /* @__PURE__ */ React$1.createElement("li", { key: r.n }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-tn" }, "Turn " + r.n), /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", null, cbCap(r.what)), /* @__PURE__ */ React$1.createElement(CbOut, { r }))))) : /* @__PURE__ */ React$1.createElement("p", { className: "lb-none gs-muted" }, "You haven’t taken one of these yet."));
     })));
   };
   const CbLibrary = () => {
@@ -1842,9 +9708,9 @@
     const sid = gs.route.sid;
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "");
     const c = sid && (!pass && sid === CB_FIRST.id ? cbFirstOf(gs) : pass && sid === CB_LIVE.id ? cbWeek(gs) : null);
-    if (c) return /* @__PURE__ */ React2.createElement(CbCase, { key: k + sid, c });
+    if (c) return /* @__PURE__ */ React$1.createElement(CbCase, { key: k + sid, c });
     const ach = phAch(gs, "casebook", CB_ACH);
-    return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, pass ? gsFresh(gs) ? /* @__PURE__ */ React2.createElement(LbFreshNow, { label: "A CASE", title: CB_LIVE.title, line: "You haven’t opened the case yet. Ask the question they haven’t prepared for.", span: true, onPlay: () => gs.play(GS_NAME.casebook) }) : /* @__PURE__ */ React2.createElement(CbNow, { c: cbWeek(gs) }) : null, /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: CB_BADGES, access, ed: GS_GAMES.casebook.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, pass ? gsFresh(gs) ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { label: "A CASE", title: CB_LIVE.title, line: "You haven’t opened the case yet. Ask the question they haven’t prepared for.", span: true, onPlay: () => gs.play(GS_NAME.casebook) }) : /* @__PURE__ */ React$1.createElement(CbNow, { c: cbWeek(gs) }) : null, /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: CB_BADGES, access, ed: GS_GAMES$1.casebook.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
   };
   const registerCasebook = () => {
     GS_LIBRARY.casebook = CbLibrary;
@@ -1910,7 +9776,7 @@
       kind: "chapter",
       gid: "barrow",
       edKey: "bw1",
-      game: GS_GAMES.barrow.name,
+      game: GS_GAMES$1.barrow.name,
       art: "barrow",
       result: "Quest complete",
       figures: ["3 sessions", "Level 2"],
@@ -1931,24 +9797,24 @@
   let GS_KINDS;
   const gsFind = (q, k) => {
     const s = gsNorm(q);
-    return !s || gsNorm(GS_GAMES[k].name).includes(s);
+    return !s || gsNorm(GS_GAMES$1[k].name).includes(s);
   };
   let GS_ADDED;
   let GS_LIB_READY;
   function initGsDiscover() {
-    GS_KINDS = GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
+    GS_KINDS = GS_GAME_ORDER$1.map((k) => GS_GAMES$1[k].category).filter((c, i, a) => a.indexOf(c) === i);
     GS_ADDED = ["barrow", "hunter", "casebook", "delve", "escape"];
     GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
   }
   let ED3;
-  const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
-  const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
+  const pgeW = (gid, n = 0) => GS_GAMES$1[gid].ed[n];
+  const pgeNoNum = (gid) => !GS_GAMES$1[gid].daily && gsRhythm(gid) !== "daily";
   let PGE_INFO;
   let PGE_LEN;
   let PGE_WORDNUM;
   const pgeRowTitle = (gid, e) => PGE_WORDNUM.includes(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title && !pgeNoNum(gid) ? "#" + e.n + " · " + e.name : e.name;
   const pgeInfo = (e) => ({ line: typeof PGE_INFO[e.gid] === "string" ? PGE_INFO[e.gid] : "", len: PGE_LEN[e.gid], who: null });
-  const pgeDated = (gid) => !GS_GAMES[gid].eds;
+  const pgeDated = (gid) => !GS_GAMES$1[gid].eds;
   const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
   const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
     ...e,
@@ -1975,12 +9841,12 @@
   const usePgeList = (gid) => {
     const gs = useGs();
     const k0 = gs.route.pgeList && gs.route.pgeList.gid === gid && gs.route.pgeList || {};
-    const [st, setSt] = React2.useState({ q: k0.q || "", show: k0.show || "all", sort: k0.sort || "new", pg: k0.pg || 0, open: k0.open || gs.route.pgeOpen || null });
-    React2.useEffect(() => {
+    const [st, setSt] = React$1.useState({ q: k0.q || "", show: k0.show || "all", sort: k0.sort || "new", pg: k0.pg || 0, open: k0.open || gs.route.pgeOpen || null });
+    React$1.useEffect(() => {
       gs.keep({ pgeList: { gid, ...st } });
     }, [st]);
     const wait = useGsPart([st.q, st.show, st.sort, st.pg]);
-    const box = React2.useRef(null);
+    const box = React$1.useRef(null);
     const set = (k, v) => setSt((p) => ({ ...p, [k]: v, pg: k === "pg" ? v : k === "open" ? p.pg : 0 }));
     const clear = () => setSt((p) => ({ ...p, q: "", show: "all", pg: 0 }));
     const s = phNorm(st.q);
@@ -1999,21 +9865,21 @@
       pgeScroll(box.current);
     } };
   };
-  const PgeEmpty = ({ f }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React2.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: f.clear }, "Clear all"));
-  const pgeList = (gs, gid, extra) => gs.go(GS_GAMES[gid].route, { page: "record", list: true, ...extra || {} });
+  const PgeEmpty = ({ f }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: f.clear }, "Clear all"));
+  const pgeList = (gs, gid, extra) => gs.go(GS_GAMES$1[gid].route, { page: "record", list: true, ...extra || {} });
   const pgeHistory = (gs, gid, e) => gs.go("history", e ? { game: gid, q: pgeNoNum(gid) ? e.title : "#" + e.n, from: gid } : { game: gid, from: gid });
   const PgeListPage = ({ gid }) => {
     const gs = useGs();
-    const g = GS_GAMES[gid];
+    const g = GS_GAMES$1[gid];
     const f = usePgeList(gid);
     const fromLib = !!gs.route.fromLib;
     const title = g.edAll || "Every " + pgeW(gid);
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) }), /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, title), /* @__PURE__ */ React2.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React2.createElement(LbTools, null, /* @__PURE__ */ React2.createElement(DS.SearchField, { label: "Search", placeholder: !pgeDated(gid) ? "A name" : pgeNoNum(gid) ? "A name or date" : "A number, name or date", value: f.q, onChange: (e) => f.set("q", e.target.value) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Show", value: f.show, opts: [["all", title], ["none", "Not played"]], onPick: (v) => f.set("show", v) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: (v) => f.set("sort", v) })), !f.wait && !f.rows.length ? /* @__PURE__ */ React2.createElement(PgeEmpty, { f }) : /* @__PURE__ */ React2.createElement("div", { ref: f.box, className: "lb-box lb-results ed-results", style: { maxWidth: 960, minWidth: 0 } }, f.wait ? /* @__PURE__ */ React2.createElement(GsPart, { label: "Loading" }) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(DS.RowList, { label: title }, f.rows.map((e) => /* @__PURE__ */ React2.createElement(DS.ListRow, { key: e.key, title: pgeRowTitle(gid, e), when: e.when, result: e.played ? "Played" : void 0, onClick: () => f.set("open", e.key) }))), /* @__PURE__ */ React2.createElement(PhPages, { pg: f.pg, pages: f.pages, go: f.go })))), /* @__PURE__ */ React2.createElement(PgeEdPanel, { gid, k: f.open, onClose: () => f.set("open", null) }));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) }), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, title), /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: !pgeDated(gid) ? "A name" : pgeNoNum(gid) ? "A name or date" : "A number, name or date", value: f.q, onChange: (e) => f.set("q", e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Show", value: f.show, opts: [["all", title], ["none", "Not played"]], onPick: (v) => f.set("show", v) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: (v) => f.set("sort", v) })), !f.wait && !f.rows.length ? /* @__PURE__ */ React$1.createElement(PgeEmpty, { f }) : /* @__PURE__ */ React$1.createElement("div", { ref: f.box, className: "lb-box lb-results ed-results", style: { maxWidth: 960, minWidth: 0 } }, f.wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.RowList, { label: title }, f.rows.map((e) => /* @__PURE__ */ React$1.createElement(DS.ListRow, { key: e.key, title: pgeRowTitle(gid, e), when: e.when, result: e.played ? "Played" : void 0, onClick: () => f.set("open", e.key) }))), /* @__PURE__ */ React$1.createElement(PhPages, { pg: f.pg, pages: f.pages, go: f.go })))), /* @__PURE__ */ React$1.createElement(PgeEdPanel, { gid, k: f.open, onClose: () => f.set("open", null) }));
   };
   const PgeEdPanel = ({ gid, k, onClose }) => {
     const gs = useGs();
-    const g = GS_GAMES[gid];
-    const last = React2.useRef(null);
+    const g = GS_GAMES$1[gid];
+    const last = React$1.useRef(null);
     const e0 = k ? pgeEds(gs, gid).find((x) => x.key === k) : null;
     if (e0) last.current = e0;
     const e = last.current;
@@ -2022,9 +9888,9 @@
     const done = e.played && !gsStartsOver(gid);
     const prompt = !done && !e.held;
     const when = !pgeDated(gid) ? null : gsRhythm(gid) === "weekly" ? "week of " + e.date : e.date;
-    const hist = e.played && /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
-    const acts = prompt && e.played ? /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React2.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React2.createElement(GsCopyPrompt, { text, block: true }) : void 0;
-    return /* @__PURE__ */ React2.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React2.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React2.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React2.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React2.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React2.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React2.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React2.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React2.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React2.createElement(GsPrompt, { text }))));
+    const hist = e.played && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
+    const acts = prompt && e.played ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }) : void 0;
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
   };
   const registerEditions = () => {
     ED3.forEach((id) => {
@@ -2032,13 +9898,13 @@
       GS_LIBRARY[id] = () => {
         const gs = useGs();
         const r = gs.route;
-        if (r.list && !r.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: id, gid: id });
-        return /* @__PURE__ */ React2.createElement(L0, null);
+        if (r.list && !r.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: id, gid: id });
+        return /* @__PURE__ */ React$1.createElement(L0, null);
       };
     });
   };
   function initGsEditions() {
-    ED3 = GS_GAME_ORDER.filter((k) => gsRhythm(k) || GS_GAMES[k].eds);
+    ED3 = GS_GAME_ORDER$1.filter((k) => gsRhythm(k) || GS_GAMES$1[k].eds);
     PGE_INFO = {
       word: "Five letters. Six guesses.",
       groups: "Sixteen words hide four groups. Find all four.",
@@ -2126,13 +9992,13 @@
   const esFigs = (m) => m.live ? [esPlural(m.locks.length, "lock", "locks") + " open", esPlural(m.moves, "move", "moves") + " so far"] : [esPlural(m.moves, "move", "moves"), m.hints ? esPlural(m.hints, "hint", "hints") : "No hints", m.wrong ? esPlural(m.wrong, "wrong try", "wrong tries") : "No wrong tries"];
   const esSpare = (m) => m.over ? m.min - m.par + " min over par" : m.min === m.par ? "On par" : m.par - m.min + " min under par";
   const esWord = (r) => r.ok ? "Open" : r.kind === "mech" ? r.lit + " of " + r.slots : "Wrong";
-  const EsDoor = ({ w = 12, h = 20 }) => /* @__PURE__ */ React2.createElement("span", { className: "es-door", "aria-hidden": "true", style: { width: w, height: h } }, /* @__PURE__ */ React2.createElement("i", null));
-  const EsOpen = ({ w, h }) => /* @__PURE__ */ React2.createElement("span", { className: "es-od", style: { width: w, height: h }, "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement("b", null)));
-  const EsNum = ({ n, size = 24 }) => /* @__PURE__ */ React2.createElement("span", { className: "es-num", style: { "--n": size + "px" }, "aria-hidden": "true" }, n);
-  const EsMark = ({ r, size }) => /* @__PURE__ */ React2.createElement("span", { className: "es-mk" + (r.ok ? " is-on" : ""), style: { "--t": size + "px" }, "aria-hidden": "true" }, r.kind === "mech" && !r.ok ? Array.from({ length: r.slots }, (_, j) => /* @__PURE__ */ React2.createElement("i", { key: j, className: j < r.lit ? "is-on" : "" })) : null);
+  const EsDoor = ({ w = 12, h = 20 }) => /* @__PURE__ */ React$1.createElement("span", { className: "es-door", "aria-hidden": "true", style: { width: w, height: h } }, /* @__PURE__ */ React$1.createElement("i", null));
+  const EsOpen = ({ w, h }) => /* @__PURE__ */ React$1.createElement("span", { className: "es-od", style: { width: w, height: h }, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", null, /* @__PURE__ */ React$1.createElement("b", null)));
+  const EsNum = ({ n, size = 24 }) => /* @__PURE__ */ React$1.createElement("span", { className: "es-num", style: { "--n": size + "px" }, "aria-hidden": "true" }, n);
+  const EsMark = ({ r, size }) => /* @__PURE__ */ React$1.createElement("span", { className: "es-mk" + (r.ok ? " is-on" : ""), style: { "--t": size + "px" }, "aria-hidden": "true" }, r.kind === "mech" && !r.ok ? Array.from({ length: r.slots }, (_, j) => /* @__PURE__ */ React$1.createElement("i", { key: j, className: j < r.lit ? "is-on" : "" })) : null);
   const useEsWidth = (ref) => {
-    const [w, setW] = React2.useState(0);
-    React2.useLayoutEffect(() => {
+    const [w, setW] = React$1.useState(0);
+    React$1.useLayoutEffect(() => {
       const el = ref.current;
       if (!el) return void 0;
       const f = () => setW(Math.floor(el.getBoundingClientRect().width));
@@ -2160,9 +10026,9 @@
     });
   };
   const EsLine = ({ m, sel, onSel, card }) => {
-    const ref = React2.useRef(null);
+    const ref = React$1.useRef(null);
     const W = useEsWidth(ref);
-    const [hov, setHov] = React2.useState(null);
+    const [hov, setHov] = React$1.useState(null);
     const hp = (k) => ({ onMouseEnter: () => setHov(k), onMouseLeave: () => setHov((h) => h === k ? null : h), onFocus: () => setHov(k), onBlur: () => setHov((h) => h === k ? null : h) });
     const [BAR, OH, DW, NUM, ROW] = card ? [20, 6, 12, 20, 24] : [28, 8, 14, 24, 32];
     const TOP = 20;
@@ -2210,9 +10076,9 @@
     const labT = barB + OH + 8;
     const H = labT + nRows * ROW;
     const label = m.live ? "In progress. " + esPlural(m.locks.length, "lock", "locks") + " open." : "Out at minute " + m.min + ", par " + m.par + ".";
-    return /* @__PURE__ */ React2.createElement("div", { className: "es-line" + (card ? " is-card" : ""), ref, style: { height: H }, "aria-label": label, role: "group" }, W > 0 && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("span", { className: "es-ptxt", style: { left: Math.round(parX - parW / 2), top: 0 } }, parText), /* @__PURE__ */ React2.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: TOP, height: onPar ? Math.max(2, barT - OH - TOP - 10) : barT - TOP - 2 } }), !onPar && /* @__PURE__ */ React2.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: barB + 2, height: OH + 2 } }), /* @__PURE__ */ React2.createElement("span", { className: "es-track", style: { top: barT, height: BAR, width: inner } }), /* @__PURE__ */ React2.createElement("span", { className: "es-fill", style: { top: barT, height: BAR, width: m.over ? parX : endX } }), m.over && /* @__PURE__ */ React2.createElement("span", { className: "es-fill is-over", style: { top: barT, height: BAR, left: parX, width: endX - parX } }), m.live && /* @__PURE__ */ React2.createElement("span", { className: "es-edge", style: { top: barT - 4, height: BAR + 8, left: endX - 1 } }), m.locks.map((lk, i) => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "es-line" + (card ? " is-card" : ""), ref, style: { height: H }, "aria-label": label, role: "group" }, W > 0 && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "es-ptxt", style: { left: Math.round(parX - parW / 2), top: 0 } }, parText), /* @__PURE__ */ React$1.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: TOP, height: onPar ? Math.max(2, barT - OH - TOP - 10) : barT - TOP - 2 } }), !onPar && /* @__PURE__ */ React$1.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: barB + 2, height: OH + 2 } }), /* @__PURE__ */ React$1.createElement("span", { className: "es-track", style: { top: barT, height: BAR, width: inner } }), /* @__PURE__ */ React$1.createElement("span", { className: "es-fill", style: { top: barT, height: BAR, width: m.over ? parX : endX } }), m.over && /* @__PURE__ */ React$1.createElement("span", { className: "es-fill is-over", style: { top: barT, height: BAR, left: parX, width: endX - parX } }), m.live && /* @__PURE__ */ React$1.createElement("span", { className: "es-edge", style: { top: barT - 4, height: BAR + 8, left: endX - 1 } }), m.locks.map((lk, i) => {
       const out = lk.exit && !m.live;
-      return /* @__PURE__ */ React2.createElement(
+      return /* @__PURE__ */ React$1.createElement(
         "button",
         {
           key: lk.key,
@@ -2224,11 +10090,11 @@
           "aria-label": lk.name + (m.live ? "" : ", minute " + lk.minute),
           onClick: () => onSel(lk.key)
         },
-        out ? /* @__PURE__ */ React2.createElement(EsOpen, { w: DW, h: BAR + OH * 2 }) : /* @__PURE__ */ React2.createElement(EsDoor, { w: DW, h: BAR + OH * 2 })
+        out ? /* @__PURE__ */ React$1.createElement(EsOpen, { w: DW, h: BAR + OH * 2 }) : /* @__PURE__ */ React$1.createElement(EsDoor, { w: DW, h: BAR + OH * 2 })
       );
     }), labs.map((b) => {
       const top = labT + b.r * ROW;
-      return /* @__PURE__ */ React2.createElement(React2.Fragment, { key: b.lk.key }, b.r > 0 && /* @__PURE__ */ React2.createElement("span", { className: "es-lead", style: { left: b.xx, top: barB + OH, height: top - barB - OH } }), /* @__PURE__ */ React2.createElement(
+      return /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: b.lk.key }, b.r > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "es-lead", style: { left: b.xx, top: barB + OH, height: top - barB - OH } }), /* @__PURE__ */ React$1.createElement(
         "button",
         {
           type: "button",
@@ -2239,28 +10105,28 @@
           tabIndex: -1,
           onClick: () => onSel(b.lk.key)
         },
-        b.out ? outText : /* @__PURE__ */ React2.createElement(EsNum, { n: b.lk.index, size: NUM })
+        b.out ? outText : /* @__PURE__ */ React$1.createElement(EsNum, { n: b.lk.index, size: NUM })
       ));
     })));
   };
-  const EsResult = ({ m, card }) => /* @__PURE__ */ React2.createElement("div", { className: "es-res" + (card ? " is-card" : "") }, m.live ? /* @__PURE__ */ React2.createElement(EsDoor, { w: card ? 20 : 40, h: card ? 34 : 68 }) : /* @__PURE__ */ React2.createElement(EsOpen, { w: card ? 20 : 40, h: card ? 34 : 68 }), /* @__PURE__ */ React2.createElement("div", { className: "es-rest" }, /* @__PURE__ */ React2.createElement("div", { className: "es-resh" }, card ? /* @__PURE__ */ React2.createElement("p", { className: "es-h" }, m.live ? "Still inside" : "Escaped") : /* @__PURE__ */ React2.createElement("h2", { className: "es-h" }, m.live ? "Still inside" : "Escaped"), !m.live && /* @__PURE__ */ React2.createElement("p", { className: "es-vd is-" + (m.over ? "over" : "ok") }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: m.over ? "close" : "check", size: 20 }), esSpare(m))), !card && /* @__PURE__ */ React2.createElement("p", { className: "es-cap" }, esFigs(m).join(" · "))));
-  const EsVerdict = ({ m }) => m.live ? /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React2.createElement("p", { className: "es-vd is-" + (m.over ? "over" : "ok") }, "Escaped");
-  const EsLanes = ({ m, sel, onSel }) => /* @__PURE__ */ React2.createElement("div", { className: "es-lanes" }, m.locks.map((l) => /* @__PURE__ */ React2.createElement("button", { key: l.key, type: "button", className: "es-lane" + (sel === l.key ? " is-sel" : ""), "aria-pressed": sel === l.key, onClick: () => onSel(l.key) }, /* @__PURE__ */ React2.createElement("span", { className: "es-lnh" }, /* @__PURE__ */ React2.createElement("span", { className: "es-lname" }, /* @__PURE__ */ React2.createElement(EsNum, { n: l.index, size: 24 }), /* @__PURE__ */ React2.createElement("b", null, l.short)), /* @__PURE__ */ React2.createElement("span", { className: "es-cap" }, esFacts(l))), /* @__PURE__ */ React2.createElement("span", { className: "es-steps" }, l.rows.map((r, i) => r.k === "hint" ? /* @__PURE__ */ React2.createElement("span", { key: "h" + i, className: "es-step is-hint" }, /* @__PURE__ */ React2.createElement("i", { className: "es-hm" }), /* @__PURE__ */ React2.createElement("small", null, "Hint " + r.rung)) : /* @__PURE__ */ React2.createElement("span", { key: r.n, className: "es-step" }, /* @__PURE__ */ React2.createElement(EsMark, { r, size: 24 }), /* @__PURE__ */ React2.createElement("small", null, !r.ok && r.kind === "typed" ? " " : esWord(r)))), /* @__PURE__ */ React2.createElement("span", { className: "es-step is-door" }, l.exit && !m.live ? /* @__PURE__ */ React2.createElement(EsOpen, { w: 12, h: 24 }) : /* @__PURE__ */ React2.createElement(EsDoor, { w: 12, h: 24 }), /* @__PURE__ */ React2.createElement("small", null, l.exit && !m.live ? "Out" : " "))))));
+  const EsResult = ({ m, card }) => /* @__PURE__ */ React$1.createElement("div", { className: "es-res" + (card ? " is-card" : "") }, m.live ? /* @__PURE__ */ React$1.createElement(EsDoor, { w: card ? 20 : 40, h: card ? 34 : 68 }) : /* @__PURE__ */ React$1.createElement(EsOpen, { w: card ? 20 : 40, h: card ? 34 : 68 }), /* @__PURE__ */ React$1.createElement("div", { className: "es-rest" }, /* @__PURE__ */ React$1.createElement("div", { className: "es-resh" }, card ? /* @__PURE__ */ React$1.createElement("p", { className: "es-h" }, m.live ? "Still inside" : "Escaped") : /* @__PURE__ */ React$1.createElement("h2", { className: "es-h" }, m.live ? "Still inside" : "Escaped"), !m.live && /* @__PURE__ */ React$1.createElement("p", { className: "es-vd is-" + (m.over ? "over" : "ok") }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: m.over ? "close" : "check", size: 20 }), esSpare(m))), !card && /* @__PURE__ */ React$1.createElement("p", { className: "es-cap" }, esFigs(m).join(" · "))));
+  const EsVerdict = ({ m }) => m.live ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React$1.createElement("p", { className: "es-vd is-" + (m.over ? "over" : "ok") }, "Escaped");
+  const EsLanes = ({ m, sel, onSel }) => /* @__PURE__ */ React$1.createElement("div", { className: "es-lanes" }, m.locks.map((l) => /* @__PURE__ */ React$1.createElement("button", { key: l.key, type: "button", className: "es-lane" + (sel === l.key ? " is-sel" : ""), "aria-pressed": sel === l.key, onClick: () => onSel(l.key) }, /* @__PURE__ */ React$1.createElement("span", { className: "es-lnh" }, /* @__PURE__ */ React$1.createElement("span", { className: "es-lname" }, /* @__PURE__ */ React$1.createElement(EsNum, { n: l.index, size: 24 }), /* @__PURE__ */ React$1.createElement("b", null, l.short)), /* @__PURE__ */ React$1.createElement("span", { className: "es-cap" }, esFacts(l))), /* @__PURE__ */ React$1.createElement("span", { className: "es-steps" }, l.rows.map((r, i) => r.k === "hint" ? /* @__PURE__ */ React$1.createElement("span", { key: "h" + i, className: "es-step is-hint" }, /* @__PURE__ */ React$1.createElement("i", { className: "es-hm" }), /* @__PURE__ */ React$1.createElement("small", null, "Hint " + r.rung)) : /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "es-step" }, /* @__PURE__ */ React$1.createElement(EsMark, { r, size: 24 }), /* @__PURE__ */ React$1.createElement("small", null, !r.ok && r.kind === "typed" ? " " : esWord(r)))), /* @__PURE__ */ React$1.createElement("span", { className: "es-step is-door" }, l.exit && !m.live ? /* @__PURE__ */ React$1.createElement(EsOpen, { w: 12, h: 24 }) : /* @__PURE__ */ React$1.createElement(EsDoor, { w: 12, h: 24 }), /* @__PURE__ */ React$1.createElement("small", null, l.exit && !m.live ? "Out" : " "))))));
   const EsBody = ({ s, sid }) => {
     const gs = useGs();
-    const m = React2.useMemo(() => esBuild(s), [s]);
+    const m = React$1.useMemo(() => esBuild(s), [s]);
     const def = (m.locks.find((l) => l.exit) || m.locks[m.locks.length - 1] || {}).key;
-    const [sel, setSel] = React2.useState(() => m.locks.some((l) => l.key === gs.route.lock) ? gs.route.lock : def);
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React2.createElement(EsResult, { m }), /* @__PURE__ */ React2.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React2.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React2.createElement(GsMoves, { s }));
+    const [sel, setSel] = React$1.useState(() => m.locks.some((l) => l.key === gs.route.lock) ? gs.route.lock : def);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
-  const EsSessBody = (props) => /* @__PURE__ */ React2.createElement(EsBody, { key: props.sid, ...props });
+  const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
   const EsNow = ({ label, title, next, noNext, children }) => {
     const gs = useGs();
     const sid = esSid(gs);
     const s = GS_SESSIONS[sid];
-    const m = React2.useMemo(() => esBuild(s), [s]);
+    const m = React$1.useMemo(() => esBuild(s), [s]);
     const open = (lock) => gs.go("session", lock ? { id: sid, lock } : { id: sid });
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card es-now" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React2.createElement(EsVerdict, { m })), /* @__PURE__ */ React2.createElement(EsLine, { m, onSel: open, card: true }), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, !m.live && /* @__PURE__ */ React2.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => open() }, m.live ? "See your moves so far" : "See every move")), next && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, next)), children, !m.live && !noNext && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card es-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement(EsVerdict, { m })), /* @__PURE__ */ React$1.createElement(EsLine, { m, onSel: open, card: true }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, !m.live && /* @__PURE__ */ React$1.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => open() }, m.live ? "See your moves so far" : "See every move")), next && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, next)), children, !m.live && !noNext && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
   const registerEscape = () => {
     GS_SESSION_BODY.escape = EsSessBody;
@@ -2297,38 +10163,38 @@
     return { events };
   };
   const WD_SAY = { hit: "in place", near: "in the word", miss: "not in the word" };
-  const WdRow = ({ g }) => /* @__PURE__ */ React2.createElement("div", { className: "wd-row", role: "img", "aria-label": "Guess " + g.n + ", " + g.word + ": " + g.word.split("").map((ch, i) => ch + " " + WD_SAY[g.marks[i]]).join(", ") }, g.word.split("").map((ch, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: "wd-t is-" + g.marks[i], "aria-hidden": "true" }, ch)));
-  const WdHint = ({ h }) => /* @__PURE__ */ React2.createElement("div", { className: "wd-hrow", role: "img", "aria-label": "Hint, after guess " + h.after + ": " + h.text, style: { "--p": h.pos } }, h.pos > 0 && /* @__PURE__ */ React2.createElement("span", { className: "wd-dots is-l", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("span", { className: "wd-t is-hint", "aria-hidden": "true" }, h.letter), /* @__PURE__ */ React2.createElement("span", { className: "wd-dots", "aria-hidden": "true" }));
+  const WdRow = ({ g }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-row", role: "img", "aria-label": "Guess " + g.n + ", " + g.word + ": " + g.word.split("").map((ch, i) => ch + " " + WD_SAY[g.marks[i]]).join(", ") }, g.word.split("").map((ch, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "wd-t is-" + g.marks[i], "aria-hidden": "true" }, ch)));
+  const WdHint = ({ h }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-hrow", role: "img", "aria-label": "Hint, after guess " + h.after + ": " + h.text, style: { "--p": h.pos } }, h.pos > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "wd-dots is-l", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t is-hint", "aria-hidden": "true" }, h.letter), /* @__PURE__ */ React$1.createElement("span", { className: "wd-dots", "aria-hidden": "true" }));
   const WdBoard = ({ s }) => {
-    const p = React2.useMemo(() => wdRead(s), [s]);
-    const rows = p.events.map((e, i) => [e.kind === "guess" ? e.n : null, e.kind === "guess" ? /* @__PURE__ */ React2.createElement(WdRow, { g: e }) : /* @__PURE__ */ React2.createElement(WdHint, { h: e }), i]);
-    return /* @__PURE__ */ React2.createElement("div", { className: "wd-board" }, rows.map(([num, el, key]) => /* @__PURE__ */ React2.createElement("div", { key, className: "wd-nrow" }, /* @__PURE__ */ React2.createElement("span", { className: "wd-n", "aria-hidden": "true" }, num), el, /* @__PURE__ */ React2.createElement("span", { "aria-hidden": "true" }))));
+    const p = React$1.useMemo(() => wdRead(s), [s]);
+    const rows = p.events.map((e, i) => [e.kind === "guess" ? e.n : null, e.kind === "guess" ? /* @__PURE__ */ React$1.createElement(WdRow, { g: e }) : /* @__PURE__ */ React$1.createElement(WdHint, { h: e }), i]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wd-board" }, rows.map(([num, el, key]) => /* @__PURE__ */ React$1.createElement("div", { key, className: "wd-nrow" }, /* @__PURE__ */ React$1.createElement("span", { className: "wd-n", "aria-hidden": "true" }, num), el, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }))));
   };
   const wdResult = (s) => s.live ? { tone: "live", word: "In progress" } : s.loss ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
   const WdResult = ({ s }) => {
     const r = wdResult(s);
-    return /* @__PURE__ */ React2.createElement("div", { className: "wd-res" }, /* @__PURE__ */ React2.createElement("h2", { className: "wd-tag is-" + r.tone }, r.tone !== "live" && /* @__PURE__ */ React2.createElement(DS.Icon, { name: r.tone === "ok" ? "check" : "close", size: 24 }), r.word));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wd-res" }, /* @__PURE__ */ React$1.createElement("h2", { className: "wd-tag is-" + r.tone }, r.tone !== "live" && /* @__PURE__ */ React$1.createElement(DS.Icon, { name: r.tone === "ok" ? "check" : "close", size: 24 }), r.word));
   };
-  const WdSessBody = ({ s }) => /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "wd-play" }, /* @__PURE__ */ React2.createElement("section", { className: "wd-card", "aria-label": "How it went" }, /* @__PURE__ */ React2.createElement(WdBoard, { s }), /* @__PURE__ */ React2.createElement(WdResult, { s }))), /* @__PURE__ */ React2.createElement(GsMoves, { s }));
+  const WdSessBody = ({ s }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "wd-play" }, /* @__PURE__ */ React$1.createElement("section", { className: "wd-card", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(WdBoard, { s }), /* @__PURE__ */ React$1.createElement(WdResult, { s }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   const registerWord = () => {
     GS_SESSION_BODY.word = WdSessBody;
   };
   const wdSay = (g) => "Guess " + g.n + ", " + g.word + ": " + g.word.split("").map((ch, i) => ch + " " + WD_SAY[g.marks[i]]).join(", ");
-  const WdTr = ({ e }) => e.kind === "guess" ? /* @__PURE__ */ React2.createElement("div", { className: "wd-tr" }, e.marks.map((m, j) => /* @__PURE__ */ React2.createElement("i", { key: j, className: "is-" + m }))) : e.kind === "hint" ? /* @__PURE__ */ React2.createElement("div", { className: "wd-tr" }, [0, 1, 2, 3, 4].map((j) => /* @__PURE__ */ React2.createElement("i", { key: j, className: j === e.pos ? "is-hint" : "is-none" }))) : /* @__PURE__ */ React2.createElement("div", { className: "wd-tr" }, [0, 1, 2, 3, 4].map((j) => /* @__PURE__ */ React2.createElement("i", { key: j, className: "is-empty" })));
+  const WdTr = ({ e }) => e.kind === "guess" ? /* @__PURE__ */ React$1.createElement("div", { className: "wd-tr" }, e.marks.map((m, j) => /* @__PURE__ */ React$1.createElement("i", { key: j, className: "is-" + m }))) : e.kind === "hint" ? /* @__PURE__ */ React$1.createElement("div", { className: "wd-tr" }, [0, 1, 2, 3, 4].map((j) => /* @__PURE__ */ React$1.createElement("i", { key: j, className: j === e.pos ? "is-hint" : "is-none" }))) : /* @__PURE__ */ React$1.createElement("div", { className: "wd-tr" }, [0, 1, 2, 3, 4].map((j) => /* @__PURE__ */ React$1.createElement("i", { key: j, className: "is-empty" })));
   const WdNowResult = ({ s }) => {
     const r = wdResult(s);
-    return r.tone === "live" ? /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React2.createElement("p", { className: "es-vd is-" + (r.tone === "ok" ? "ok" : "over") }, r.word);
+    return r.tone === "live" ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React$1.createElement("p", { className: "es-vd is-" + (r.tone === "ok" ? "ok" : "over") }, r.word);
   };
   const WdNow = ({ c, done }) => {
     const gs = useGs();
     const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
-    const ev = React2.useMemo(() => wdRead(s).events, [s]);
+    const ev = React$1.useMemo(() => wdRead(s).events, [s]);
     const gsv = ev.filter((e) => e.kind === "guess");
     const last = gsv[gsv.length - 1];
     const trail = last ? [...ev.filter((e) => e !== last), ...Array.from({ length: 6 - gsv.length }, () => ({ kind: "empty" }))] : [];
     const said = trail.map((e) => e.kind === "guess" ? wdSay(e) : e.kind === "hint" ? "Hint, " + e.text : "Not used").join(". ");
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card wd-now" }, /* @__PURE__ */ React2.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React2.createElement(WdNowResult, { s })), last && /* @__PURE__ */ React2.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React2.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React2.createElement("div", { className: "wd-trail", role: "img", "aria-label": said }, trail.map((e, i) => /* @__PURE__ */ React2.createElement(WdTr, { key: i, e }))), /* @__PURE__ */ React2.createElement("div", { className: "wd-now-row", role: "img", "aria-label": wdSay(last) }, last.word.split("").map((ch, j) => /* @__PURE__ */ React2.createElement("span", { key: j, className: "wd-t is-" + last.marks[j], "aria-hidden": "true" }, ch))))), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, done && /* @__PURE__ */ React2.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: sid }) }, done ? c.links[0] : c.links[1])), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, c.next)), done && /* @__PURE__ */ React2.createElement(GsNextLink, null)));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-trail", role: "img", "aria-label": said }, trail.map((e, i) => /* @__PURE__ */ React$1.createElement(WdTr, { key: i, e }))), /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-row", role: "img", "aria-label": wdSay(last) }, last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + last.marks[j], "aria-hidden": "true" }, ch))))), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, done && /* @__PURE__ */ React$1.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: sid }) }, done ? c.links[0] : c.links[1])), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, c.next)), done && /* @__PURE__ */ React$1.createElement(GsNextLink, null)));
   };
   const DL_CARRY = 3;
   const DL_HEROES = {
@@ -2428,30 +10294,30 @@
   const dlSay = (r) => "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + DL_TIER[r.tier].toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React2.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: DL_RIM }));
-  const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React2.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React2.createElement(DlDie, { r, size, sel: act === r.n }));
+  const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
+  const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n }));
   const dlWord = (m) => ({ live: "In progress", ended: "Unfinished", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
     const line = m.end === "live" ? null : m.end === "ended" ? "The week ended first" : s.result;
-    return /* @__PURE__ */ React2.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React2.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React2.createElement("p", { className: "dv7r-line" }, line));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
   const DlHeld = ({ m, act }) => {
     const r = act ? m.rolls[act - 1] : null;
     if (!r) return null;
     const x = m.mom[r.n];
     const tcls = r.fumble ? "fumble" : r.tier;
-    return /* @__PURE__ */ React2.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React2.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React2.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React2.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React2.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React2.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React2.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React2.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React2.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React2.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Room"), /* @__PURE__ */ React2.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Action"), /* @__PURE__ */ React2.createElement("dd", null, r.action)), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Roll"), /* @__PURE__ */ React2.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React2.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Outcome"), /* @__PURE__ */ React2.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.harm > 0 && /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("dt", null, "Cost"), /* @__PURE__ */ React2.createElement("dd", null, "Lost ", r.harm, " HP")))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.harm > 0 && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")))));
   };
   const DlRoute = ({ m, act, on, card }) => {
     const sel = act ? m.rolls[act - 1].stop : null;
-    return /* @__PURE__ */ React2.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React2.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React2.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React2.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React2.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React2.createElement("i", { "aria-hidden": "true" }, "↩"), st.num), /* @__PURE__ */ React2.createElement("span", { className: "dv2-sname" }, st.name)), /* @__PURE__ */ React2.createElement("div", { className: "dvA2-dice" }, st.rolls.length ? st.rolls.map((r) => m.mom[r.n] ? /* @__PURE__ */ React2.createElement("span", { key: r.n, className: "dvE-mom" }, /* @__PURE__ */ React2.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React2.createElement(DlDieBtn, { key: r.n, r, act, on, size: 30 })) : /* @__PURE__ */ React2.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), !card && /* @__PURE__ */ React2.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React2.createElement(DlHeld, { m, act })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement("i", { "aria-hidden": "true" }, "↩"), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.rolls.length ? st.rolls.map((r) => m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), !card && /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
   const DlCard = ({ s, m, roll }) => {
-    const [sel, setSel] = React2.useState(() => roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null);
-    const [hov, setHov] = React2.useState(null);
+    const [sel, setSel] = React$1.useState(() => roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null);
+    const [hov, setHov] = React$1.useState(null);
     const act = hov || sel;
-    return /* @__PURE__ */ React2.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React2.createElement(DlResult, { s, m }), /* @__PURE__ */ React2.createElement(DlRoute, { m, act, on: { sel: setSel, hov: setHov } }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on: { sel: setSel, hov: setHov } }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
   const dlSheet = (s, m) => {
@@ -2497,35 +10363,35 @@
     };
   };
   const DL_G = { armour: "M5 4h14v8l-7 8-7-8z", once: "M9 3h6M10 3v6l-5 11h14l-5-11V3", key: "M3 9h7v6H3zM10 12h11M17 12v4M20 12v3" };
-  const DlBox = ({ k, state }) => /* @__PURE__ */ React2.createElement("span", { className: "dv4-g" + (state === "used" ? " is-used" : "") + (!k ? " is-empty" : "") }, k && /* @__PURE__ */ React2.createElement("svg", { viewBox: "0 0 24 24", width: "20", height: "20", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("path", { d: DL_G[k] })));
-  const DlUses = ({ left, of }) => /* @__PURE__ */ React2.createElement("span", { className: "dv4-uses", role: "img", "aria-label": left + " of " + of + " left" }, Array.from({ length: of }, (_, i) => /* @__PURE__ */ React2.createElement("i", { key: i, className: i < left ? "is-on" : "" })));
-  const DlInsp = ({ on }) => /* @__PURE__ */ React2.createElement("span", { className: "dv5-insw", role: "img", "aria-label": "Inspiration, " + (on ? "ready" : "spent") }, /* @__PURE__ */ React2.createElement("svg", { className: "dv4-insp" + (on ? " is-on" : ""), viewBox: "-5 -5 46 50", width: "28", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: DL_HEX }), on && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: DL_RIM })));
-  const DlHex = ({ x }) => /* @__PURE__ */ React2.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "20.5" }, x.say));
-  const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React2.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React2.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React2.createElement("span", { className: "dv7-lb" }, label));
-  const DlGrp = ({ k, head, children }) => /* @__PURE__ */ React2.createElement("div", { className: "dv7-grp" + (k ? " " + k : "") }, /* @__PURE__ */ React2.createElement("div", { className: "dv7-h" }, /* @__PURE__ */ React2.createElement("span", null, head)), /* @__PURE__ */ React2.createElement("div", { className: "dv7-cells" }, children));
-  const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React2.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React2.createElement("span", null, label), /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React2.createElement("small", null, n + "/" + of));
+  const DlBox = ({ k, state }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-g" + (state === "used" ? " is-used" : "") + (!k ? " is-empty" : "") }, k && /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "20", height: "20", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_G[k] })));
+  const DlUses = ({ left, of }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-uses", role: "img", "aria-label": left + " of " + of + " left" }, Array.from({ length: of }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < left ? "is-on" : "" })));
+  const DlInsp = ({ on }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv5-insw", role: "img", "aria-label": "Inspiration, " + (on ? "ready" : "spent") }, /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-insp" + (on ? " is-on" : ""), viewBox: "-5 -5 46 50", width: "28", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), on && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM })));
+  const DlHex = ({ x }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "20.5" }, x.say));
+  const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, label));
+  const DlGrp = ({ k, head, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp" + (k ? " " + k : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-h" }, /* @__PURE__ */ React$1.createElement("span", null, head)), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, children));
+  const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
   const DlSheet = ({ c, streak }) => {
-    const [open, setOpen] = React2.useState(false);
+    const [open, setOpen] = React$1.useState(false);
     const slots = Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
-    return /* @__PURE__ */ React2.createElement("section", { className: "dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b" + (open ? "" : " is-shut"), "aria-label": "Character sheet" }, /* @__PURE__ */ React2.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React2.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React2.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React2.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React2.createElement("b", null, c.name), /* @__PURE__ */ React2.createElement("span", null, c.cls))), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "dv8-tog", "aria-expanded": open, "aria-label": open ? "Fold the character sheet" : "Show the whole character sheet", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "next", size: 20 })), /* @__PURE__ */ React2.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React2.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React2.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax })), /* @__PURE__ */ React2.createElement(DlGrp, { k: "dv8-stats", head: "Stats" }, c.stats.map((x) => /* @__PURE__ */ React2.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React2.createElement(DlHex, { x })))), /* @__PURE__ */ React2.createElement(DlGrp, { k: "dv8-pack", head: "Pack" }, slots.map((g, i) => g ? /* @__PURE__ */ React2.createElement(DlCell, { key: g.name, label: g.name, used: g.state === "used", title: g.name + " · " + g.label }, /* @__PURE__ */ React2.createElement(DlBox, { k: g.kind, state: g.state }), g.kind === "armour" && /* @__PURE__ */ React2.createElement("i", { className: "dv7-arm", "aria-label": "Armour plus 1" }, "+1")) : /* @__PURE__ */ React2.createElement(DlCell, { key: "free" + i, label: "Free", used: true, title: "Room for one more" }, /* @__PURE__ */ React2.createElement(DlBox, { k: null })))), /* @__PURE__ */ React2.createElement(DlGrp, { k: "is-r", head: c.abilities.length > 1 ? "Abilities" : "Ability" }, c.abilities.map((a) => /* @__PURE__ */ React2.createElement(DlCell, { key: a.name, label: a.name, used: !a.left, title: a.left + " of " + a.of + " left. " + a.does }, /* @__PURE__ */ React2.createElement(DlUses, { left: a.left, of: a.of })))), /* @__PURE__ */ React2.createElement(DlGrp, { k: "dv8-adv", head: "Advantage" }, /* @__PURE__ */ React2.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React2.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React2.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React2.createElement("span", { className: "dv8-num" }, streak))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b" + (open ? "" : " is-shut"), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv8-tog", "aria-expanded": open, "aria-label": open ? "Fold the character sheet" : "Show the whole character sheet", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax })), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-stats", head: "Stats" }, c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-pack", head: "Pack" }, slots.map((g, i) => g ? /* @__PURE__ */ React$1.createElement(DlCell, { key: g.name, label: g.name, used: g.state === "used", title: g.name + " · " + g.label }, /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), g.kind === "armour" && /* @__PURE__ */ React$1.createElement("i", { className: "dv7-arm", "aria-label": "Armour plus 1" }, "+1")) : /* @__PURE__ */ React$1.createElement(DlCell, { key: "free" + i, label: "Free", used: true, title: "Room for one more" }, /* @__PURE__ */ React$1.createElement(DlBox, { k: null })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "is-r", head: c.abilities.length > 1 ? "Abilities" : "Ability" }, c.abilities.map((a) => /* @__PURE__ */ React$1.createElement(DlCell, { key: a.name, label: a.name, used: !a.left, title: a.left + " of " + a.of + " left. " + a.does }, /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-adv", head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak))))));
   };
   const DlBody = ({ s }) => {
     const gs = useGs();
-    const m = React2.useMemo(() => dlBuild(s), [s]);
-    const c = React2.useMemo(() => dlSheet(s, m), [s, m]);
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React2.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React2.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React2.createElement(GsMoves, { s }));
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DlNow = ({ s: wk, label = "THIS WEEK", sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, noNext, children }) => {
     const gs = useGs();
     const sid = wk.end ? sids[0] : sids[1];
     const s = GS_SESSIONS[sid];
-    const m = React2.useMemo(() => dlBuild(s), [s]);
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card dl-now" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, wk.title)), m.end === "live" ? /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React2.createElement("p", { className: "es-vd is-" + (m.end === "won" ? "ok" : "over") }, dlWord(m))), /* @__PURE__ */ React2.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React2.createElement(DlRoute, { m, act: null, on: { sel: open, hov: () => {
-    } }, card: true })), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, m.end !== "live" && /* @__PURE__ */ React2.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => open() }, m.end === "live" ? "See your rolls so far" : "See every roll")), next && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, next)), children, m.end !== "live" && !noNext && GsNextLink && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card dl-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, wk.title)), m.end === "live" ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React$1.createElement("p", { className: "es-vd is-" + (m.end === "won" ? "ok" : "over") }, dlWord(m))), /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlRoute, { m, act: null, on: { sel: open, hov: () => {
+    } }, card: true })), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, m.end !== "live" && /* @__PURE__ */ React$1.createElement(LbShare, { lines: gsShareText(s) }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => open() }, m.end === "live" ? "See your rolls so far" : "See every roll")), next && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, next)), children, m.end !== "live" && !noNext && GsNextLink && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
   const registerDelve = () => {
-    GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React2.createElement(DlBody, { key: p.sid, ...p });
+    GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
   };
   function initGsDelve() {
     GS_SESSIONS["delve-fallen"] = {
@@ -2602,7 +10468,7 @@
   const GsNextLink = () => {
     const gs = useGs();
     if (gs.view === "out") return null;
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-pu-nextlink" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("library") }, "See what’s out for you to play"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-pu-nextlink" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("library") }, "See what’s out for you to play"));
   };
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
@@ -2612,17 +10478,17 @@
     const f = CPR_FIRST[id](gs);
     const st = cprFirstState(gs, id);
     const done = st === "done";
-    if (id === "escape" && st !== "none" && EsNow) return /* @__PURE__ */ React2.createElement(EsNow, { label: f.label, title: f.title, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }));
-    if (id === "delve" && st !== "none" && DlNow) return /* @__PURE__ */ React2.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "escape" && st !== "none" && EsNow) return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "delve" && st !== "none" && DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }));
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
-    const soon = id === "barrow" && gs.view === "pass" ? /* @__PURE__ */ React2.createElement("span", { className: "gs-muted gs-pu-soon" }, "Chapter 3: coming soon") : null;
-    if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React2.createElement("section", { className: "lb-card gs-pu-first", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, GS_PAGES.barrow.week2.label), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, BW_CH2.title))), /* @__PURE__ */ React2.createElement("p", null, BW_CH2.line), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }) }, "Play")), soon));
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card gs-pu-first" + (done ? " is-done" : ""), style: id === "barrow" || id === "casebook" ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, f.label), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, f.title)), (st === "live" || done) && /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: st === "live" ? { kind: "live", label: "In progress" } : f.result }))), /* @__PURE__ */ React2.createElement("p", null, st === "live" ? f.live : done ? f.done : f.none), bar && /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, done ? /* @__PURE__ */ React2.createElement(React2.Fragment, null, f.over && /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: f.play }, "Start over"), /* @__PURE__ */ React2.createElement(LbShare, { lines: f.share }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: f.open }, f.rec)) : /* @__PURE__ */ React2.createElement(DS.Button, { onClick: f.play }, "Play")), soon), done && gs.view !== "pass" && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }), done && f.weekly && !gsLapsed(gs) && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    const soon = id === "barrow" && gs.view === "pass" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted gs-pu-soon" }, "Chapter 3: coming soon") : null;
+    if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card gs-pu-first", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, GS_PAGES.barrow.week2.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, BW_CH2.title))), /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }) }, "Play")), soon));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card gs-pu-first" + (done ? " is-done" : ""), style: id === "barrow" || id === "casebook" ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, f.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, f.title)), (st === "live" || done) && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: st === "live" ? { kind: "live", label: "In progress" } : f.result }))), /* @__PURE__ */ React$1.createElement("p", null, st === "live" ? f.live : done ? f.done : f.none), bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, done ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, f.over && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: f.play }, "Start over"), /* @__PURE__ */ React$1.createElement(LbShare, { lines: f.share }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: f.open }, f.rec)) : /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: f.play }, "Play")), soon), done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Keep playing with the Pass." }), done && f.weekly && !gsLapsed(gs) && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
   const cprIso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const LbNeedsPass = ({ id, had, ach, access }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
+    const g = GS_GAMES$1[id];
     const items = ach || [];
     const word = cprEditions(id) && g.ed ? g.ed[0] : void 0;
     const words = word ? g.ed[1] : void 0;
@@ -2636,67 +10502,67 @@
         record = { chapter: ch, played: eds.size, earned };
       } else record = { last: plays[0] ? cprIso(plays[0].at) : "", played: eds.size, earned };
     }
-    return /* @__PURE__ */ React2.createElement(DS.NeedsPass, { game: GS_NAME[id] || g.name, word, words, record, total: items.length, onGet: () => gs.go("pass"), style: id === "barrow" || id === "casebook" ? { gridColumn: "1 / -1" } : void 0 });
+    return /* @__PURE__ */ React$1.createElement(DS.NeedsPass, { game: GS_NAME[id] || g.name, word, words, record, total: items.length, onGet: () => gs.go("pass"), style: id === "barrow" || id === "casebook" ? { gridColumn: "1 / -1" } : void 0 });
   };
   const cprNowCard = (gs, id, ach) => {
     const f = cprLapsedOf(id);
-    return gsLapsed(gs) && f.used && f.pass ? /* @__PURE__ */ React2.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React2.createElement(CprFirst, { id });
+    return gsLapsed(gs) && f.used && f.pass ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React$1.createElement(CprFirst, { id });
   };
   const cprKey = (gs) => gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gsFresh(gs) ? "f" : "") + cprStore.get().lapsed;
   const CprCbLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: "casebook", gid: "casebook" });
-    if (gs.view === "pass" || gs.route.sid) return /* @__PURE__ */ React2.createElement(CPR_SHIP_LIB.casebook, null);
+    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "casebook", gid: "casebook" });
+    if (gs.view === "pass" || gs.route.sid) return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.casebook, null);
     const had = gsLapsed(gs) && phVisible(gs).some((p) => p.gid === "casebook");
     const ach = phAch(gs, "casebook", CB_ACH);
-    if (!had) return /* @__PURE__ */ React2.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React2.createElement(LbNeedsPass, { id: "casebook", ach: CB_ACH, access: "all" })));
-    return /* @__PURE__ */ React2.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React2.createElement(LbNeedsPass, { id: "casebook", had: true, ach, access: "all" }), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: CB_BADGES, access: "all", ed: GS_GAMES.casebook.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
+    if (!had) return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "casebook", ach: CB_ACH, access: "all" })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "casebook", had: true, ach, access: "all" }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: CB_BADGES, access: "all", ed: GS_GAMES$1.casebook.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
   };
   const CprDvLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: "delve", gid: "delve" });
-    if (gs.view === "pass") return /* @__PURE__ */ React2.createElement(CPR_SHIP_LIB.delve, null);
+    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "delve", gid: "delve" });
+    if (gs.view === "pass") return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.delve, null);
     const access = lbAccess(gs, "delve");
     const lapsed = gsLapsed(gs);
     gsFresh(gs);
     const ach = phAch(gs, "delve", DV_ACH);
-    return /* @__PURE__ */ React2.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, cprNowCard(gs, "delve", ach), !lapsed && /* @__PURE__ */ React2.createElement(LbRunPass, { unit: "weeks", weeks: lbRunOf(DV_ALL) }), lapsed && (() => {
+    return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprNowCard(gs, "delve", ach), !lapsed && /* @__PURE__ */ React$1.createElement(LbRunPass, { unit: "weeks", weeks: lbRunOf(DV_ALL) }), lapsed && (() => {
       const list = dvRun(gs);
       const f = lbFrozen(lbRunOf(list), list, (s) => s.date);
-      return /* @__PURE__ */ React2.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
-    })(), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES.delve.ed[1] + " comes with the Pass." }));
+      return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
+    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES$1.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES$1.delve.ed[1] + " comes with the Pass." }));
   };
   const CprEsLibrary = () => {
     const gs = useGs();
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: "escape", gid: "escape" });
-    if (gs.view === "pass") return /* @__PURE__ */ React2.createElement(CPR_SHIP_LIB.escape, null);
+    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "escape", gid: "escape" });
+    if (gs.view === "pass") return /* @__PURE__ */ React$1.createElement(CPR_SHIP_LIB.escape, null);
     const c = PZ.escape;
     const lapsed = gsLapsed(gs);
     const items = phAch(gs, "escape", c.ach.map((a) => ({ ...a, first: !a.of })));
-    return /* @__PURE__ */ React2.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "escape" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, cprNowCard(gs, "escape", items), !lapsed && /* @__PURE__ */ React2.createElement(LbRunPass, { unit: "weeks", weeks: lbRunOf(c.all) }), lapsed && (() => {
+    return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "escape" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprNowCard(gs, "escape", items), !lapsed && /* @__PURE__ */ React$1.createElement(LbRunPass, { unit: "weeks", weeks: lbRunOf(c.all) }), lapsed && (() => {
       const run = pzRun(gs, "escape");
       const f = lbFrozen(lbRunOf(run), run, (y) => y.date);
-      return /* @__PURE__ */ React2.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
-    })(), /* @__PURE__ */ React2.createElement(LbAch, { items, badges: c.badges, access: lbAccess(gs, "escape"), ed: GS_GAMES.escape.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your rooms", allLabel: "See in History", empty: "Your rooms appear here once you have played one." })), /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES.escape.ed[1] + " comes with the Pass." }));
+      return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
+    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items, badges: c.badges, access: lbAccess(gs, "escape"), ed: GS_GAMES$1.escape.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your rooms", allLabel: "See in History", empty: "Your rooms appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES$1.escape.ed[1] + " comes with the Pass." }));
   };
   const CprBwLibrary = () => {
     const gs = useGs();
     useCpr();
     const st = cprFirstState(gs, "barrow");
-    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: "barrow", gid: "barrow" });
+    if (gs.route.list && !gs.route.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: "barrow", gid: "barrow" });
     const ach = phAch(gs, "barrow", BW_ACH);
-    return /* @__PURE__ */ React2.createElement("main", { key: cprKey(gs) + st, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "barrow" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, gs.view === "pass" ? /* @__PURE__ */ React2.createElement(CprFirst, { id: "barrow" }) : cprNowCard(gs, "barrow", ach), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: BW_BADGES, access: lbAccess(gs, "barrow"), ed: GS_GAMES.barrow.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your chapters", allLabel: "See in History", empty: "Your chapters appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs) + st, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "barrow" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, gs.view === "pass" ? /* @__PURE__ */ React$1.createElement(CprFirst, { id: "barrow" }) : cprNowCard(gs, "barrow", ach), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: BW_BADGES, access: lbAccess(gs, "barrow"), ed: GS_GAMES$1.barrow.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your chapters", allLabel: "See in History", empty: "Your chapters appear here once you have played one." })));
   };
   const cprPzLibrary = (id) => () => {
     const gs = useGs();
     const r = gs.route;
-    if (r.list && !r.sid) return /* @__PURE__ */ React2.createElement(PgeListPage, { key: id, gid: id });
+    if (r.list && !r.sid) return /* @__PURE__ */ React$1.createElement(PgeListPage, { key: id, gid: id });
     const c = PZ[id];
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gs.review.today || "");
     const [recent] = c.plays;
     const locked = cprLocked(gs, id);
     const had = locked && gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id);
-    if (locked && !had) return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React2.createElement(LbNeedsPass, { id, ach: c.ach, access: "all" })));
+    if (locked && !had) return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, ach: c.ach, access: "all" })));
     const never = gs.review.never === id || gsFresh(gs);
     const now = never ? null : lbNow(gs, id);
     const none = !now;
@@ -2704,19 +10570,19 @@
     const fz = had ? lbFrozen(lbRunOf(run), run, (x) => x.date) : null;
     const n = fz ? fz.n : lbStreak(run);
     const ach = phAch(gs, id, c.ach, n);
-    return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, locked ? /* @__PURE__ */ React2.createElement(LbNeedsPass, { id, had: true, ach, access: "all" }) : /* @__PURE__ */ React2.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React2.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: fz ? fz.weeks : lbRunOf(run) }), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React2.createElement(LbRecent, { title: recent, allLabel: "See in History", empty: recent + " appear here once you have played one." })), gs.view !== "pass" && !locked && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES[id].ed[1] + " comes with the Pass." }));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, locked ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach, access: "all" }) : /* @__PURE__ */ React$1.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: fz ? fz.weeks : lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: recent, allLabel: "See in History", empty: recent + " appear here once you have played one." })), gs.view !== "pass" && !locked && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES$1[id].ed[1] + " comes with the Pass." }));
   };
   const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
   let CPR_FREE_READY;
   let CPR_PASS_READY;
   const gsLibRow = (gs, k) => {
     const pass = gs.view === "pass";
-    if (GS_GAMES[k].added) return cprRow(pass ? GS_LIB_READY[k] : "Pass only", null, "", 0);
+    if (GS_GAMES$1[k].added) return cprRow(pass ? GS_LIB_READY[k] : "Pass only", null, "", 0);
     const p = phVisible(gs).find((x) => x.gid === k);
     const row = (result, tone) => cprRow(result, tone || null, p ? phWhen(p.at) : "", p ? p.at.getTime() : 0);
     if (p && p.status.kind === "live") return row("In progress");
     if (!pass && CPR_STAGE[k] === "first") {
-      if (p && PH_FIRST[k] === p.ed) return row("Free " + GS_GAMES[k].ed[0] + " done", "ok");
+      if (p && PH_FIRST[k] === p.ed) return row("Free " + GS_GAMES$1[k].ed[0] + " done", "ok");
       return row(cprFirstState(gs, k) === "none" ? CPR_FREE_READY[k] : "Pass only");
     }
     if (cprLocked(gs, k) || lbAccess(gs, k) === "none") return row("Pass only");
@@ -2735,16 +10601,16 @@
   const GsLibrary = () => {
     const gs = useGs();
     useCpr();
-    const [q, setQ] = React2.useState("");
-    const [cat, setCat] = React2.useState(gs.route.kind || "all");
-    const [sort, setSort] = React2.useState("last");
-    const [rhy, setRhy] = React2.useState(gs.route.rhythm || "all");
-    React2.useEffect(() => {
+    const [q, setQ] = React$1.useState("");
+    const [cat, setCat] = React$1.useState(gs.route.kind || "all");
+    const [sort, setSort] = React$1.useState("last");
+    const [rhy, setRhy] = React$1.useState(gs.route.rhythm || "all");
+    React$1.useEffect(() => {
       setCat(gs.route.kind || "all");
       setRhy(gs.route.rhythm || "all");
     }, [gs.route]);
     const wait = useGsPart([q, cat, rhy, sort]);
-    const lay = React2.useRef(null);
+    const lay = React$1.useRef(null);
     const showAll = () => {
       setQ("");
       setCat("all");
@@ -2758,34 +10624,34 @@
     CPR_SHOWN.forEach((k) => {
       rows[k] = gsLibRow(gs, k);
     });
-    const az = (a, b) => GS_GAMES[a].name.localeCompare(GS_GAMES[b].name);
+    const az = (a, b) => GS_GAMES$1[a].name.localeCompare(GS_GAMES$1[b].name);
     const listed = CPR_SHOWN.filter((k) => lbAccess(gs, k) !== "none" && !cprLocked(gs, k) || lbPast(gs));
-    const ids = listed.filter((k) => (cat === "all" || GS_GAMES[k].category === cat) && (rhy === "all" || gsRhythm(k) === rhy) && gsFind(q, k)).sort((a, b) => sort === "az" ? az(a, b) : rows[b].at - rows[a].at || CPR_SHOWN.indexOf(a) - CPR_SHOWN.indexOf(b));
+    const ids = listed.filter((k) => (cat === "all" || GS_GAMES$1[k].category === cat) && (rhy === "all" || gsRhythm(k) === rhy) && gsFind(q, k)).sort((a, b) => sort === "az" ? az(a, b) : rows[b].at - rows[a].at || CPR_SHOWN.indexOf(a) - CPR_SHOWN.indexOf(b));
     const fresh = ids.filter((k) => cprNewFor(gs, k));
     const mine = ids.filter((k) => !fresh.includes(k));
     const row = (k) => {
-      const g = GS_GAMES[k];
+      const g = GS_GAMES$1[k];
       const me = rows[k];
-      return /* @__PURE__ */ React2.createElement(DS.ListRow, { key: k, lead: /* @__PURE__ */ React2.createElement(PhLead, { gid: k }), title: g.name, result: gsForms(me.result), tone: me.tone || void 0, when: me.when || void 0, onClick: () => gs.go(g.route, { page: "record" }) });
+      return /* @__PURE__ */ React$1.createElement(DS.ListRow, { key: k, lead: /* @__PURE__ */ React$1.createElement(PhLead, { gid: k }), title: g.name, result: gsForms(me.result), tone: me.tone || void 0, when: me.when || void 0, onClick: () => gs.go(g.route, { page: "record" }) });
     };
-    const list = (ks) => /* @__PURE__ */ React2.createElement("div", { className: "lb-box" }, /* @__PURE__ */ React2.createElement(DS.RowList, { label: "Library" }, ks.map(row)));
-    const tile = (k) => /* @__PURE__ */ React2.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k), page: "record" });
-    const empty = /* @__PURE__ */ React2.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React2.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: showAll }, "Clear all"));
+    const list = (ks) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-box" }, /* @__PURE__ */ React$1.createElement(DS.RowList, { label: "Library" }, ks.map(row)));
+    const tile = (k) => /* @__PURE__ */ React$1.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k), page: "record" });
+    const empty = /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: showAll }, "Clear all"));
     const free = gs.view === "free";
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "Library"), /* @__PURE__ */ React2.createElement("div", { className: "lb-alllay", ref: lay }, /* @__PURE__ */ React2.createElement(LbTools, null, /* @__PURE__ */ React2.createElement(DS.SearchField, { label: "Find a game", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Order", value: sort, opts: [["last", "Last played"], ["az", "A to Z"]], onPick: setSort })), /* @__PURE__ */ React2.createElement("div", { className: "gs-pu-libbody" }, wait ? /* @__PURE__ */ React2.createElement(GsPart, { label: "Loading games" }) : !ids.length ? empty : fresh.length ? /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("section", { className: "gs-pu-libgrp" }, /* @__PURE__ */ React2.createElement(DS.CardRow, { title: "New for you", kind: "tiles" }, fresh.map(tile))), mine.length > 0 && /* @__PURE__ */ React2.createElement("section", { className: "gs-pu-libgrp" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "Your games"), list(mine))) : list(ids)), free && !wait && ids.length > 0 && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Everything else comes with the Pass." }))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Library"), /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay", ref: lay }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Find a game", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: sort, opts: [["last", "Last played"], ["az", "A to Z"]], onPick: setSort })), /* @__PURE__ */ React$1.createElement("div", { className: "gs-pu-libbody" }, wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading games" }) : !ids.length ? empty : fresh.length ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "gs-pu-libgrp" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "New for you", kind: "tiles" }, fresh.map(tile))), mine.length > 0 && /* @__PURE__ */ React$1.createElement("section", { className: "gs-pu-libgrp" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Your games"), list(mine))) : list(ids)), free && !wait && ids.length > 0 && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Everything else comes with the Pass." }))));
   };
   const CprPzNow = ({ c, done, none, id }) => {
     const gs = useGs();
     const st = done ? c.done : c.live;
-    if (none) return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, c.title))), /* @__PURE__ */ React2.createElement("p", null, GS_PAGES[id].week.line), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: edList(gs, id)[0] }) }, "Play")), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, c.next)));
+    if (none) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title))), /* @__PURE__ */ React$1.createElement("p", null, GS_PAGES[id].week.line), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.playReq({ kind: "edition", e: edList(gs, id)[0] }) }, "Play")), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, c.next)));
     const lines = done && gsShareText ? gsShareText(GS_SESSIONS[c.today]) : null;
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, c.title)), done && /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: c.done.st }))), /* @__PURE__ */ React2.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, lines && /* @__PURE__ */ React2.createElement(LbShare, { lines }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: done ? c.today : c.liveSid }) }, done ? c.links[0] : c.links[1])), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, c.next)), done && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), done && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: c.done.st }))), /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, lines && /* @__PURE__ */ React$1.createElement(LbShare, { lines }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: done ? c.today : c.liveSid }) }, done ? c.links[0] : c.links[1])), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, c.next)), done && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
   const CbNow = ({ c }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, c.title)), !c.live && /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React2.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, !c.live && /* @__PURE__ */ React2.createElement(LbShare, { lines: cbShareLines(c) }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => cbGo(gs, c.id) }, c.live ? "See your turns so far" : "See every turn"))), !c.live && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), !c.live && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, !c.live && /* @__PURE__ */ React$1.createElement(LbShare, { lines: cbShareLines(c) }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => cbGo(gs, c.id) }, c.live ? "See your turns so far" : "See every turn"))), !c.live && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
-  const PzNow = (props) => props.id === "word" && !props.none ? /* @__PURE__ */ React2.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React2.createElement(EsNow, { label: "THIS WEEK", title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React2.createElement(CprPzNow, { ...props });
+  const PzNow = (props) => props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { label: "THIS WEEK", title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
   const registerPassLibrary = () => {
     Object.assign(CPR_SHIP_LIB, GS_LIBRARY);
     Object.assign(GS_LIBRARY, { casebook: CprCbLibrary, delve: CprDvLibrary, escape: CprEsLibrary, barrow: CprBwLibrary });
@@ -2858,7 +10724,7 @@
   const pzSession = (id, c, x) => {
     const i = x.i;
     const sid = id + "-e" + i;
-    const base = { kind: "puzzle", gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
+    const base = { kind: "puzzle", gid: id, game: GS_GAMES$1[id].name, art: GS_GAMES$1[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
     let s;
     if (DP_PZ[id]) s = dpSession(id, c, x, base);
     else if (id === "word") {
@@ -2942,14 +10808,14 @@
     const run = pzRun(gs, id);
     const n = lbStreak(run);
     const ach = phAch(gs, id, c.ach, n);
-    return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React2.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React2.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: lbRunOf(run) }), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(
       LbRecent,
       {
         title: recent,
         allLabel,
         empty: recent + " appear here once you have played one."
       }
-    )), gs.view !== "pass" && id !== "escape" && /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES[id].ed[1] + " comes with the Pass." }));
+    )), gs.view !== "pass" && id !== "escape" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES$1[id].ed[1] + " comes with the Pass." }));
   };
   const registerPuzzlesLibrary = () => {
     ["word", "groups", "mystery", "escape", ...DP_IDS].forEach((id) => {
@@ -3360,7 +11226,7 @@
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], listTitle: "Every dive", share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
   };
   let DP_PZ;
-  const dpStep = (b, rest) => /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, b), rest);
+  const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
   let dpSeeResult;
   const dpMono = (text) => ({ type: "mono", text });
   const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + " …"), t.w[t.w.length - 1]].join("\n");
@@ -3373,7 +11239,7 @@
   let DP_STATES;
   function initGsWhereChainSalvage() {
     Object.assign(GS_NAME, { where: "Where", chain: "Chain", salvage: "Salvage" });
-    Object.assign(GS_GAMES, {
+    Object.assign(GS_GAMES$1, {
       where: gsAccess({
         access: "pass",
         name: GS_NAME.where,
@@ -3411,16 +11277,16 @@
         tags: ["Daily", "15 min"]
       })
     });
-    GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf("mystery") + 1, 0, ...DP_IDS);
-    Object.assign(GS_ART, {
+    GS_GAME_ORDER$1.splice(GS_GAME_ORDER$1.indexOf("mystery") + 1, 0, ...DP_IDS);
+    Object.assign(GS_ART$1, {
       where: { ground: "forest", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><g transform="rotate(45 52 60)"><path d="M52 32L60 60L44 60Z" fill="#D66847"/><path d="M44 60L60 60L52 88Z" fill="#F2EBE0"/></g><rect x="96" y="44" width="32" height="32" fill="#E5A63B"/>') },
       chain: { ground: "wine", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="20" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="119" y="57" width="21" height="6" fill="#F2EBE0"/><rect x="11" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="131" y="51" width="18" height="18" fill="#F2EBE0"/><rect x="42.5" y="52.5" width="15" height="15" fill="none" stroke="#D66847" stroke-width="3"/><rect x="72.5" y="52.5" width="15" height="15" fill="none" stroke="#E5A63B" stroke-width="3"/><rect x="102.5" y="52.5" width="15" height="15" fill="none" stroke="#A390B2" stroke-width="3"/>') },
       salvage: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') }
     });
     Object.assign(GS_ART_LOCAL, {
-      where: { bg: "is-forest", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-wh-needle"), I("ga-wh-ans")) },
-      chain: { bg: "is-wine", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-ch-l ga-ch-l1"), I("ga-ch-l ga-ch-l2"), I("ga-ch ga-ch-1"), I("ga-ch ga-ch-o ga-ch-2"), I("ga-ch ga-ch-o ga-ch-3"), I("ga-ch ga-ch-o ga-ch-4"), I("ga-ch ga-ch-5")) },
-      salvage: { bg: "", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-sv-p ga-sv-miss ga-sv-m1"), I("ga-sv-p ga-sv-miss ga-sv-m2"), I("ga-sv-p ga-sv-miss ga-sv-m3"), I("ga-sv-p ga-sv-miss ga-sv-m4"), I("ga-sv-hull"), I("ga-sv-p ga-sv-hit ga-sv-h1"), I("ga-sv-p ga-sv-hit ga-sv-h2"), I("ga-sv-p ga-sv-hit ga-sv-h3")) }
+      where: { bg: "is-forest", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-wh-needle"), I("ga-wh-ans")) },
+      chain: { bg: "is-wine", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-ch-l ga-ch-l1"), I("ga-ch-l ga-ch-l2"), I("ga-ch ga-ch-1"), I("ga-ch ga-ch-o ga-ch-2"), I("ga-ch ga-ch-o ga-ch-3"), I("ga-ch ga-ch-o ga-ch-4"), I("ga-ch ga-ch-5")) },
+      salvage: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-sv-p ga-sv-miss ga-sv-m1"), I("ga-sv-p ga-sv-miss ga-sv-m2"), I("ga-sv-p ga-sv-miss ga-sv-m3"), I("ga-sv-p ga-sv-miss ga-sv-m4"), I("ga-sv-hull"), I("ga-sv-p ga-sv-hit ga-sv-h1"), I("ga-sv-p ga-sv-hit ga-sv-h2"), I("ga-sv-p ga-sv-hit ga-sv-h3")) }
     });
     Object.assign(GS_RESULT, {
       where: (r) => r.ok ? "Found in " + r.guesses + " of 6" : "Not found",
@@ -3632,7 +11498,7 @@
         ]
       }
     };
-    dpSeeResult = /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "See your result"), " on your session page.");
+    dpSeeResult = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.");
     Object.assign(GS_PAGES, {
       where: {
         rhythm: "NEW EVERY DAY",
@@ -3787,7 +11653,7 @@
           c.setConnected(true);
           c.go(k, { page: "record" });
         } },
-        { group: g, id: "library-" + k + "-editions", label: n + ": every " + GS_GAMES[k].ed[0] + " (the editions list)", stage: (c) => {
+        { group: g, id: "library-" + k + "-editions", label: n + ": every " + GS_GAMES$1[k].ed[0] + " (the editions list)", stage: (c) => {
           c.setView("pass");
           c.setConnected(true);
           c.go(k, { page: "record", list: true });
@@ -3824,17 +11690,17 @@
   const HgLatest = ({ day, last }) => {
     const gs = useGs();
     const facts = day.facts.filter(([k]) => ["Slept", "With", "Made"].includes(k));
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, (last ? "YOUR LAST DAY · " : "YOUR LATEST DAY · ") + day.date.toUpperCase()), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, day.end || hgStatus(day).label)), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: hgSid(day) }) }, "See the whole day")), /* @__PURE__ */ React2.createElement("dl", { className: "lb-facts" }, facts.map(([k, v]) => /* @__PURE__ */ React2.createElement("div", { key: k }, /* @__PURE__ */ React2.createElement("dt", null, k), /* @__PURE__ */ React2.createElement("dd", null, v)))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, (last ? "YOUR LAST DAY · " : "YOUR LATEST DAY · ") + day.date.toUpperCase()), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, day.end || hgStatus(day).label)), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: hgSid(day) }) }, "See the whole day")), /* @__PURE__ */ React$1.createElement("dl", { className: "lb-facts" }, facts.map(([k, v]) => /* @__PURE__ */ React$1.createElement("div", { key: k }, /* @__PURE__ */ React$1.createElement("dt", null, k), /* @__PURE__ */ React$1.createElement("dd", null, v)))));
   };
   const hgWeeks = (plays) => Array.from({ length: 10 }, (_, i) => {
     const end = new Date(2026, 9, 11 - 7 * i);
     const start = new Date(2026, 9, 5 - 7 * i);
     return { id: "hw" + i, date: lbDate(start), played: plays.some((p) => p.src.d >= start && p.src.d < end) };
   });
-  const HgLeft = ({ plays }) => /* @__PURE__ */ React2.createElement(LbRun, { n: plays.filter((p) => p.status.kind === "ok").length, unit: "weeks", figure: "days played", on: "Played", legend: "Not played", weeks: lbRunOf(hgWeeks(plays)) });
+  const HgLeft = ({ plays }) => /* @__PURE__ */ React$1.createElement(LbRun, { n: plays.filter((p) => p.status.kind === "ok").length, unit: "weeks", figure: "days played", on: "Played", legend: "Not played", weeks: lbRunOf(hgWeeks(plays)) });
   const HgNone = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "YOUR FIRST DAY"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "Grey dawn below Chauvet cave")), /* @__PURE__ */ React2.createElement("p", null, "Start your first day at camp in any chat, and go where you like."), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.play(GS_NAME.hunter) }, "Play")));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "YOUR FIRST DAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Grey dawn below Chauvet cave")), /* @__PURE__ */ React$1.createElement("p", null, "Start your first day at camp in any chat, and go where you like."), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(GS_NAME.hunter) }, "Play")));
   };
   const HgLibrary = () => {
     const gs = useGs();
@@ -3842,11 +11708,11 @@
     const pass = access === "all";
     const past = lbPast(gs);
     const k = gs.view + (gs.sub.hadPass ? "u" : "");
-    if (!pass && !past) return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React2.createElement(LbNeedsPass, { id: "hunter", ach: HG_ACH, access })));
+    if (!pass && !past) return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "hunter", ach: HG_ACH, access })));
     const plays = phVisible(gs).filter((p) => p.gid === "hunter");
     const latest = plays[0] ? plays[0].src : null;
     const ach = phAch(gs, "hunter", HG_ACH);
-    return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, !pass && /* @__PURE__ */ React2.createElement(LbNeedsPass, { id: "hunter", had: true, ach, access }), !latest ? /* @__PURE__ */ React2.createElement(HgNone, null) : /* @__PURE__ */ React2.createElement(HgLatest, { day: latest, last: !pass }), pass && /* @__PURE__ */ React2.createElement(HgLeft, { plays }), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: HG_BADGES, access }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your days", allLabel: "See in History", empty: "Your days appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, !pass && /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "hunter", had: true, ach, access }), !latest ? /* @__PURE__ */ React$1.createElement(HgNone, null) : /* @__PURE__ */ React$1.createElement(HgLatest, { day: latest, last: !pass }), pass && /* @__PURE__ */ React$1.createElement(HgLeft, { plays }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: HG_BADGES, access }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your days", allLabel: "See in History", empty: "Your days appear here once you have played one." })));
   };
   const registerHunterLibrary = () => {
     GS_LIBRARY.hunter = HgLibrary;
@@ -3927,7 +11793,7 @@
   const phShort = (d) => lbShort(lbDate(d));
   let ED_GAMES;
   const edName = (e) => e.title ? e.title : "#" + e.n;
-  const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? " · " + e.title : " #" + e.n);
+  const edLabel = (e) => GS_GAMES$1[e.gid].name + (e.title ? " · " + e.title : " #" + e.n);
   let ED_NONE;
   const edList = (gs, gid) => {
     const pass = gs.view === "pass";
@@ -3979,12 +11845,12 @@
       };
     }));
   };
-  const edNeedsPass = (gs, e) => gs.view !== "pass" && (GS_GAMES[e.gid].free ? !e.now : !e.free);
+  const edNeedsPass = (gs, e) => gs.view !== "pass" && (GS_GAMES$1[e.gid].free ? !e.now : !e.free);
   let PH_UNF;
   let PH_UNF_EDS;
   const phUnf = (gs, key) => {
     const u = PH_UNF_EDS[key];
-    return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === "pass");
+    return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES$1[u.gid].free || gs.view === "pass");
   };
   const phNorm = (q) => (q || "").trim().toLowerCase().replace(/^#/, "");
   const phWords = (s) => s.toLowerCase().replace(/(\d),(?=\d)/g, "$1").replace(/[’'‘]/g, "").split(/[^a-z0-9]+/).filter(Boolean);
@@ -4008,7 +11874,7 @@
   };
   const phHay = (gid, ed, title, d) => {
     const m = phMeta()[ed];
-    return [GS_GAMES[gid].name, title || "", m ? m.n + " " + (m.title || "") : "", d ? lbDate(d) + " " + PH_MON[d.getMonth()] : ""].join(" ").toLowerCase();
+    return [GS_GAMES$1[gid].name, title || "", m ? m.n + " " + (m.title || "") : "", d ? lbDate(d) + " " + PH_MON[d.getMonth()] : ""].join(" ").toLowerCase();
   };
   let PH_EDS;
   let PH_PLAYS;
@@ -4044,7 +11910,7 @@
   };
   let PH_FIRST;
   let PH_FIRST_LIVE;
-  const phFirstSt = (gs, gid) => PH_FIRST[gid] && GS_GAMES[gid].first && gs && gs.view && gs.view !== "pass" && gs.view !== "out" && cprFirstState ? cprFirstState(gs, gid) : null;
+  const phFirstSt = (gs, gid) => PH_FIRST[gid] && GS_GAMES$1[gid].first && gs && gs.view && gs.view !== "pass" && gs.view !== "out" && cprFirstState ? cprFirstState(gs, gid) : null;
   const phFirstRec = (gs, gid) => {
     const e = PH_EDS[PH_FIRST[gid]];
     if (!e) return null;
@@ -4063,7 +11929,7 @@
     const lapsed = gsLapsed(gs);
     const end = gsEndedOn(gs);
     return all.filter((p) => {
-      const g = GS_GAMES[p.gid];
+      const g = GS_GAMES$1[p.gid];
       if (g.free) return p.cur ? !!gsTodayPlayed(gs)[p.gid] : true;
       if (PH_FIRST[p.gid] === p.ed) return true;
       return lapsed && p.at < end;
@@ -4090,19 +11956,19 @@
       return { ...a, have, got };
     });
   };
-  const phLib = (gs, id) => gs.go(GS_GAMES[id].route, { page: "record" });
-  const PhHead = ({ title }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, title || "History"));
+  const phLib = (gs, id) => gs.go(GS_GAMES$1[id].route, { page: "record" });
+  const PhHead = ({ title }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, title || "History"));
   const PhEmpty = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React2.createElement("p", null, "You haven’t played anything yet. Pick one and see what it does when you talk back."), /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.go("games") }, "Choose a game"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("p", null, "You haven’t played anything yet. Pick one and see what it does when you talk back."), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("games") }, "Choose a game"));
   };
   const usePhList = (initial, k0) => {
     const gs = useGs();
     const all = phVisible(gs);
     k0 = k0 || {};
-    const [g, setG0] = React2.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : "all");
-    const [pg, setPg] = React2.useState(k0.pg || 0);
-    const games = GS_GAME_ORDER.filter((k) => all.some((p) => p.gid === k));
+    const [g, setG0] = React$1.useState(initial && (all.some((p) => p.gid === initial) || ED_GAMES.includes(initial)) ? initial : "all");
+    const [pg, setPg] = React$1.useState(k0.pg || 0);
+    const games = GS_GAME_ORDER$1.filter((k) => all.some((p) => p.gid === k));
     const setG = (v) => {
       setG0(v);
       setPg(0);
@@ -4111,7 +11977,7 @@
       setPg(x);
       gsScrollTop();
     };
-    const [sort, setSort0] = React2.useState(k0.sort || "new");
+    const [sort, setSort0] = React$1.useState(k0.sort || "new");
     const setSort = (v) => {
       setSort0(v);
       setPg(0);
@@ -4120,13 +11986,13 @@
     return { all, g, setG, pg, go, games, sort, setSort, list: sort === "old" ? [...shown].reverse() : shown };
   };
   const phTone = (s) => s.kind === "ok" || s.kind === "bad" ? s.kind : "none";
-  const PhLead = ({ gid }) => /* @__PURE__ */ React2.createElement(GsArt, { art: GS_GAMES[gid].art, shape: "landscape" });
-  const phRow = (v) => /* @__PURE__ */ React2.createElement(
+  const PhLead = ({ gid }) => /* @__PURE__ */ React$1.createElement(GsArt, { art: GS_GAMES$1[gid].art, shape: "landscape" });
+  const phRow = (v) => /* @__PURE__ */ React$1.createElement(
     DS.ListRow,
     {
       key: v.key,
       sub: !!v.sub,
-      lead: v.gid ? /* @__PURE__ */ React2.createElement(PhLead, { gid: v.gid }) : void 0,
+      lead: v.gid ? /* @__PURE__ */ React$1.createElement(PhLead, { gid: v.gid }) : void 0,
       title: v.title,
       game: v.gid ? v.game : void 0,
       result: gsForms(v.status.label),
@@ -4139,18 +12005,18 @@
   const LbRecent = (p) => {
     const gs = useGs();
     const gid = gsGameOfRoute(gs.route.name);
-    if (gs.review && gs.review.never === gid) return /* @__PURE__ */ React2.createElement("section", { className: "lb-card lb-recentcard" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, p.title)), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, p.empty));
-    return /* @__PURE__ */ React2.createElement(LbRecentList, { ...p });
+    if (gs.review && gs.review.never === gid) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card lb-recentcard" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, p.title)), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, p.empty));
+    return /* @__PURE__ */ React$1.createElement(LbRecentList, { ...p });
   };
   const LbRecentList = ({ title, allLabel, empty }) => {
     const gs = useGs();
     const gid = gsGameOfRoute(gs.route.name);
-    const card = React2.useRef(null);
-    const list = React2.useRef(null);
-    const probe = React2.useRef(null);
-    const [fit, setFit] = React2.useState(null);
-    const vs = React2.useMemo(() => phRecent(gs, gid), [gs, gid]);
-    React2.useLayoutEffect(() => {
+    const card = React$1.useRef(null);
+    const list = React$1.useRef(null);
+    const probe = React$1.useRef(null);
+    const [fit, setFit] = React$1.useState(null);
+    const vs = React$1.useMemo(() => phRecent(gs, gid), [gs, gid]);
+    React$1.useLayoutEffect(() => {
       const el = card.current;
       if (!el || !vs.length) return void 0;
       const pair = el.previousElementSibling;
@@ -4187,18 +12053,18 @@
       return () => ro.disconnect();
     }, [vs.length]);
     const shown = fit ? vs.slice(0, fit) : vs.slice(0, 4);
-    return /* @__PURE__ */ React2.createElement("section", { ref: card, className: "lb-card lb-recentcard" + (fit ? " is-fill" : "") }, /* @__PURE__ */ React2.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, title), vs.length > 0 && /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("history", { game: gid, from: gid }) }, allLabel)), vs.length ? /* @__PURE__ */ React2.createElement("div", { ref: list, className: "lb-recent", style: fit ? { "--fit": fit } : null }, /* @__PURE__ */ React2.createElement(DS.RowList, { label: title }, shown.map(phRow))) : /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, empty), vs.length > 0 && /* @__PURE__ */ React2.createElement("div", { ref: probe, className: "lb-recent lb-probe", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement(DS.RowList, null, vs.map((v) => phRow({ ...v, onOpen: () => {
+    return /* @__PURE__ */ React$1.createElement("section", { ref: card, className: "lb-card lb-recentcard" + (fit ? " is-fill" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, title), vs.length > 0 && /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("history", { game: gid, from: gid }) }, allLabel)), vs.length ? /* @__PURE__ */ React$1.createElement("div", { ref: list, className: "lb-recent", style: fit ? { "--fit": fit } : null }, /* @__PURE__ */ React$1.createElement(DS.RowList, { label: title }, shown.map(phRow))) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, empty), vs.length > 0 && /* @__PURE__ */ React$1.createElement("div", { ref: probe, className: "lb-recent lb-probe", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(DS.RowList, null, vs.map((v) => phRow({ ...v, onOpen: () => {
     } })))));
   };
-  const PhPages = ({ pg, pages, go }) => pages > 1 ? /* @__PURE__ */ React2.createElement("nav", { className: "lb-pages rp-pg", "aria-label": "Pages" }, pg > 0 ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Previous page", onClick: () => go(pg - 1) }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "next", style: { transform: "rotate(180deg)" } })) : /* @__PURE__ */ React2.createElement("span", { className: "gs-iconbtn-space" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-pagenums rp-pg-nums" }, Array.from({ length: pages }, (_, x) => /* @__PURE__ */ React2.createElement("button", { key: x, type: "button", "aria-current": x === pg ? "page" : void 0, onClick: () => go(x) }, x + 1))), /* @__PURE__ */ React2.createElement("span", { className: "rp-pg-of gs-strong gs-num-text" }, "Page " + (pg + 1) + " of " + pages), pg < pages - 1 ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Next page", onClick: () => go(pg + 1) }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "next" })) : /* @__PURE__ */ React2.createElement("span", { className: "gs-iconbtn-space" })) : null;
+  const PhPages = ({ pg, pages, go }) => pages > 1 ? /* @__PURE__ */ React$1.createElement("nav", { className: "lb-pages rp-pg", "aria-label": "Pages" }, pg > 0 ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Previous page", onClick: () => go(pg - 1) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", style: { transform: "rotate(180deg)" } })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-pagenums rp-pg-nums" }, Array.from({ length: pages }, (_, x) => /* @__PURE__ */ React$1.createElement("button", { key: x, type: "button", "aria-current": x === pg ? "page" : void 0, onClick: () => go(x) }, x + 1))), /* @__PURE__ */ React$1.createElement("span", { className: "rp-pg-of gs-strong gs-num-text" }, "Page " + (pg + 1) + " of " + pages), pg < pages - 1 ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-iconbtn", "aria-label": "Next page", onClick: () => go(pg + 1) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next" })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-iconbtn-space" })) : null;
   const phTitle = (p, one) => {
     const m = phMeta()[p.ed];
     if (m && ED_GAMES.includes(p.gid)) return one ? edName(m) : edLabel(m);
-    return one || p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== "barrow" ? p.edTitle : GS_GAMES[p.gid].name + " · " + p.edTitle;
+    return one || p.edTitle.includes(GS_GAMES$1[p.gid].name) && p.gid !== "barrow" ? p.edTitle : GS_GAMES$1[p.gid].name + " · " + p.edTitle;
   };
   const phParts = (p, one) => {
     const m = phMeta()[p.ed];
-    const name = GS_GAMES[p.gid].name;
+    const name = GS_GAMES$1[p.gid].name;
     const t = m && ED_GAMES.includes(p.gid) ? edName(m) : p.edTitle;
     return { title: t, game: one ? void 0 : p.gid === "barrow" ? name : t.includes(name) ? void 0 : name };
   };
@@ -4207,16 +12073,16 @@
     const r = gs.route;
     const k0 = r.keep || {};
     const f = usePhList(k0.g || r.game, k0);
-    const [rhy, setRhy] = React2.useState(k0.rhy || r.rhythm || "all");
-    const [cat, setCat] = React2.useState(k0.cat || r.kind || "all");
-    const [q, setQ] = React2.useState(k0.q != null ? k0.q : r.q || "");
-    React2.useEffect(() => {
+    const [rhy, setRhy] = React$1.useState(k0.rhy || r.rhythm || "all");
+    const [cat, setCat] = React$1.useState(k0.cat || r.kind || "all");
+    const [q, setQ] = React$1.useState(k0.q != null ? k0.q : r.q || "");
+    React$1.useEffect(() => {
       gs.keep({ keep: { g: f.g, pg: f.pg, sort: f.sort, rhy, cat, q } });
     }, [f.g, f.pg, f.sort, rhy, cat, q]);
     const wait = useGsPart([f.sort, rhy, cat, f.g, f.pg, q]);
     const one = f.g !== "all";
     const s = phNorm(q);
-    const okG = (gid) => (rhy === "all" || gsRhythm(gid) === rhy) && (cat === "all" || GS_GAMES[gid].category === cat);
+    const okG = (gid) => (rhy === "all" || gsRhythm(gid) === rhy) && (cat === "all" || GS_GAMES$1[gid].category === cat);
     const items = f.list.filter((x) => okG(x.gid) && (!s || phMatch(phHay(x.gid, x.ed, x.edTitle, x.at) + " " + phTitle(x, one), s)));
     const size = 24;
     const pages = Math.max(1, Math.ceil(items.length / size));
@@ -4229,7 +12095,7 @@
       else groups.push([k, phDayLabel(p.at), [p]]);
     });
     const view = (p) => ({ key: p.pid, gid: one ? void 0 : p.gid, ...phParts(p, one), when: phTime(p.at), status: p.status, onOpen: () => p.open(gs) });
-    const games = GS_GAME_ORDER.filter((k) => k === f.g || f.games.includes(k));
+    const games = GS_GAME_ORDER$1.filter((k) => k === f.g || f.games.includes(k));
     const reset = (fn) => (v) => {
       fn(v);
       f.go(0);
@@ -4242,7 +12108,7 @@
       f.setSort("new");
       setQ("");
     };
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, r.from && /* @__PURE__ */ React2.createElement(LbBack, { label: GS_GAMES[r.from].name, onClick: () => phLib(gs, r.from) }), /* @__PURE__ */ React2.createElement(PhHead, null), !f.all.length ? /* @__PURE__ */ React2.createElement(PhEmpty, null) : /* @__PURE__ */ React2.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React2.createElement(LbTools, null, /* @__PURE__ */ React2.createElement(DS.SearchField, { label: "Search", placeholder: "A number, name or date", value: q, onChange: (e) => reset(setQ)(e.target.value) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: reset(setCat) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: reset(setRhy) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Game", value: f.g, opts: [["all", "All games"], ...games.map((k) => [k, GS_GAMES[k].name])], onPick: f.setG }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: f.setSort })), !wait && !groups.length ? /* @__PURE__ */ React2.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React2.createElement("p", null, "Nothing matches that."), anySet && /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: clearAll }, "Clear all")) : /* @__PURE__ */ React2.createElement("div", { className: "lb-box lb-results", style: { maxWidth: 960 } }, wait ? /* @__PURE__ */ React2.createElement(GsPart, { label: "Loading plays" }) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, groups.map(([k, label, ps]) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k + pg }, /* @__PURE__ */ React2.createElement("h2", { className: "ph-day" }, label), /* @__PURE__ */ React2.createElement(DS.RowList, { label }, ps.map((p) => phRow(view(p)))))), /* @__PURE__ */ React2.createElement(PhPages, { pg, pages, go: f.go }))))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, r.from && /* @__PURE__ */ React$1.createElement(LbBack, { label: GS_GAMES$1[r.from].name, onClick: () => phLib(gs, r.from) }), /* @__PURE__ */ React$1.createElement(PhHead, null), !f.all.length ? /* @__PURE__ */ React$1.createElement(PhEmpty, null) : /* @__PURE__ */ React$1.createElement("div", { className: "lb-alllay" }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: "A number, name or date", value: q, onChange: (e) => reset(setQ)(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: reset(setCat) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: reset(setRhy) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Game", value: f.g, opts: [["all", "All games"], ...games.map((k) => [k, GS_GAMES$1[k].name])], onPick: f.setG }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Order", value: f.sort, opts: [["new", "Newest first"], ["old", "Oldest first"]], onPick: f.setSort })), !wait && !groups.length ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), anySet && /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: clearAll }, "Clear all")) : /* @__PURE__ */ React$1.createElement("div", { className: "lb-box lb-results", style: { maxWidth: 960 } }, wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading plays" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, groups.map(([k, label, ps]) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: k + pg }, /* @__PURE__ */ React$1.createElement("h2", { className: "ph-day" }, label), /* @__PURE__ */ React$1.createElement(DS.RowList, { label }, ps.map((p) => phRow(view(p)))))), /* @__PURE__ */ React$1.createElement(PhPages, { pg, pages, go: f.go }))))));
   };
   function initGsHistory() {
     ED_GAMES = ["word", "groups", "mystery", ...DP_IDS, "escape", "casebook", "delve"];
@@ -4388,10 +12254,10 @@
   };
   const DvNow = ({ s }) => {
     const gs = useGs();
-    if (DlNow) return /* @__PURE__ */ React2.createElement(DlNow, { s });
+    if (DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s });
     const lines = s.end && gsShareText(GS_SESSIONS.delve);
     const bar = dvBar(s);
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "THIS WEEK"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, s.title)), s.end && /* @__PURE__ */ React2.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React2.createElement(LbResult, { s: dvStatus(s) }))), /* @__PURE__ */ React2.createElement("p", null, dvRecap(s)), /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, lines && /* @__PURE__ */ React2.createElement(LbShare, { lines }), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: s.end ? "delve" : "delve-live" }) }, s.end ? "See every roll" : "See your rolls so far")), /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, "Next run: " + DV_NEXT)), s.end && GsNextLink && /* @__PURE__ */ React2.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, s.title)), s.end && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: dvStatus(s) }))), /* @__PURE__ */ React$1.createElement("p", null, dvRecap(s)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, lines && /* @__PURE__ */ React$1.createElement(LbShare, { lines }), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: s.end ? "delve" : "delve-live" }) }, s.end ? "See every roll" : "See your rolls so far")), /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, "Next run: " + DV_NEXT)), s.end && GsNextLink && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
   };
   const DvLibrary = () => {
     const gs = useGs();
@@ -4400,7 +12266,7 @@
     const fresh = gsFresh(gs);
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React2.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React2.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React2.createElement(LbFreshNow, { title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React2.createElement(DvNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React2.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React2.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React2.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DvNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES$1.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
@@ -4435,10 +12301,10 @@
     ["gemini", "Gemini", ["In Gemini, open Settings, then Custom apps, and add an app. Paste the address there.", "Approve the connection, then sign in to After Pixels when Gemini asks."]],
     ["other", "Other", ["In your AI’s settings, find where it adds MCP connectors or custom apps. Paste the address there.", "Approve the connection, then sign in to After Pixels when it asks."]]
   ];
-  const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React2.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React2.createElement("path", { d: GS_AI_LOGO[ai] }));
-  const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
-  const gsPromptText = (r) => r.kind === "games" ? "Load the After Pixels games tool and show me the games it lists, with a line about each." : "Load the After Pixels games tool and start " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + ". Run it exactly as the tool says.";
-  const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
+  const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: GS_AI_LOGO[ai] }));
+  const gsEdPromptName = (e) => e.title ? GS_GAMES$1[e.gid].name + ", “" + e.title + "”" : GS_GAMES$1[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
+  const gsPromptText = (r) => r.kind === "games" ? "Load the After Pixels games tool and show me the games it lists, with a line about each." : "Load the After Pixels games tool and start " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES$1[r.gid].name) + ". Run it exactly as the tool says.";
+  const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES$1[r.gid].name;
   const gsSessEd = (gs, sid) => {
     const s = GS_SESSIONS[sid];
     const gid = s && s.gid;
@@ -4464,26 +12330,26 @@
     return list[0];
   };
   const gsPlayReq = (gs, name) => {
-    const gid = GS_GAME_ORDER.find((k) => GS_GAMES[k].name === name) || "delve";
+    const gid = GS_GAME_ORDER$1.find((k) => GS_GAMES$1[k].name === name) || "delve";
     const e = gs.route.name === "session" ? gsSessEd(gs, gs.route.id) : null;
     return e ? { kind: "edition", e } : { kind: "game", gid };
   };
-  const GsPrompt = ({ text }) => /* @__PURE__ */ React2.createElement("div", { className: "lb-share-text hw-prompt" }, text);
+  const GsPrompt = ({ text }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-share-text hw-prompt" }, text);
   const GsCopyPrompt = ({ text, label, block }) => {
-    const [done, setDone] = React2.useState(false);
-    React2.useEffect(() => {
+    const [done, setDone] = React$1.useState(false);
+    React$1.useEffect(() => {
       if (!done) return void 0;
       const t = setTimeout(() => setDone(false), 2400);
       return () => clearTimeout(t);
     }, [done]);
-    return /* @__PURE__ */ React2.createElement(DS.Button, { block, done, doneLabel: "Copied", onClick: () => {
+    return /* @__PURE__ */ React$1.createElement(DS.Button, { block, done, doneLabel: "Copied", onClick: () => {
       lbCopy([text]);
       setDone(true);
     } }, label || "Copy prompt");
   };
   const GsHowLink = ({ label }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.playing ? gs.howFromPlay() : gs.go("connect") }, label || "How it works");
+    return /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.playing ? gs.howFromPlay() : gs.go("connect") }, label || "How it works");
   };
   const gsSelectAll = (el) => {
     const r = document.createRange();
@@ -4493,8 +12359,8 @@
     s.addRange(r);
   };
   const GsAddress = () => {
-    const [done, setDone] = React2.useState(false);
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": "The After Pixels address", onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, GS.link), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
+    const [done, setDone] = React$1.useState(false);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": "The After Pixels address", onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, GS.link), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
       lbCopy([GS.link]);
       setDone(true);
       setTimeout(() => setDone(false), 2400);
@@ -4502,7 +12368,7 @@
   };
   const GsOtherSteps = ({ id }) => {
     const o = GS_AI_OTHERS.find((x) => x[0] === id);
-    return /* @__PURE__ */ React2.createElement(GsSteps, { items: [/* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", null, "Copy the After Pixels address."), /* @__PURE__ */ React2.createElement(GsAddress, null)), ...o[2]] });
+    return /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Copy the After Pixels address."), /* @__PURE__ */ React$1.createElement(GsAddress, null)), ...o[2]] });
   };
   const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === "game" && gs.view !== "out" && ED_GAMES && ED_GAMES.includes(r.gid) ? edList(gs, r.gid)[0] : null);
   const gsReqDone = (gs, r) => {
@@ -4511,49 +12377,49 @@
   };
   const GsPlayDialog = () => {
     const gs = useGs();
-    const last = React2.useRef(null);
+    const last = React$1.useRef(null);
     if (gs.playing) last.current = gs.playing;
     const r = last.current;
     if (!r) return null;
-    if (r.kind !== "games" && gsReqDone(gs, r)) return /* @__PURE__ */ React2.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: gsPromptTitle(r) }, /* @__PURE__ */ React2.createElement("p", null, GS_ONCE_LINE));
-    return /* @__PURE__ */ React2.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: "Start " + gsPromptTitle(r), actions: /* @__PURE__ */ React2.createElement(GsCopyPrompt, { text: gsPromptText(r) }) }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("p", { className: "hw-need gs-small" }, /* @__PURE__ */ React2.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React2.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React2.createElement(GsPrompt, { text: gsPromptText(r) }), gs.view === "out" && /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, "You also need a After Pixels account. ", /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-inlink", onClick: () => {
+    if (r.kind !== "games" && gsReqDone(gs, r)) return /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: gsPromptTitle(r) }, /* @__PURE__ */ React$1.createElement("p", null, GS_ONCE_LINE));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: "Start " + gsPromptTitle(r), actions: /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: gsPromptText(r) }) }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small" }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text: gsPromptText(r) }), gs.view === "out" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "You also need a After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => {
       gs.closePlay();
       gs.go("signup");
     } }, "Start free"))));
   };
-  const GsAiCard = ({ k }) => /* @__PURE__ */ React2.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React2.createElement("div", { className: "hw-ai" }, /* @__PURE__ */ React2.createElement("span", { className: "hw-ai-logo" }, /* @__PURE__ */ React2.createElement(GsAiLogo, { ai: k, size: 28 })), /* @__PURE__ */ React2.createElement("div", { className: "hw-ai-tx" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, GS_AI_PLUGIN[k][0]), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "Open After Pixels in " + GS_AI_PLUGIN[k][0] + ", press Connect and sign in.")), /* @__PURE__ */ React2.createElement("div", { className: "hw-ai-act" }, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => window.open(GS_AI_PLUGIN[k][1], "_blank", "noopener") }, "Connect " + GS_AI_PLUGIN[k][0]))));
+  const GsAiCard = ({ k }) => /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-ai-logo" }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: k, size: 28 })), /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai-tx" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, GS_AI_PLUGIN[k][0]), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Open After Pixels in " + GS_AI_PLUGIN[k][0] + ", press Connect and sign in.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => window.open(GS_AI_PLUGIN[k][1], "_blank", "noopener") }, "Connect " + GS_AI_PLUGIN[k][0]))));
   const GsConnect = () => {
-    const [ai, setAi] = React2.useState("openclaw");
+    const [ai, setAi] = React$1.useState("openclaw");
     const t = gsPromptText({ kind: "games" });
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React2.createElement("p", { className: "gs-lead" }, "You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.")), /* @__PURE__ */ React2.createElement("section", { className: "gs-grid2" }, Object.keys(GS_AI_PLUGIN).map((k) => /* @__PURE__ */ React2.createElement(GsAiCard, { key: k, k }))), /* @__PURE__ */ React2.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React2.createElement("div", { className: "hw-other" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Another AI"), /* @__PURE__ */ React2.createElement("div", { className: "hw-seg", role: "radiogroup", "aria-label": "Your AI" }, GS_AI_OTHERS.map(([id, l]) => /* @__PURE__ */ React2.createElement(DS.Button, { key: id, role: "radio", "aria-checked": ai === id, variant: ai === id ? "main" : "secondary", onClick: () => setAi(id) }, l)))), /* @__PURE__ */ React2.createElement(GsOtherSteps, { id: ai }))), /* @__PURE__ */ React2.createElement("section", { className: "hw-band" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "Start playing"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "Paste this into your AI and it lists every game. Pick one and it starts.")), /* @__PURE__ */ React2.createElement("div", { className: "hw-promptrow" }, /* @__PURE__ */ React2.createElement(GsPrompt, { text: t }), /* @__PURE__ */ React2.createElement(GsCopyPrompt, { text: t }))), /* @__PURE__ */ React2.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.")), /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React2.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which AI you use."))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid2" }, Object.keys(GS_AI_PLUGIN).map((k) => /* @__PURE__ */ React$1.createElement(GsAiCard, { key: k, k }))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-other" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Another AI"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "radiogroup", "aria-label": "Your AI" }, GS_AI_OTHERS.map(([id, l]) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, role: "radio", "aria-checked": ai === id, variant: ai === id ? "main" : "secondary", onClick: () => setAi(id) }, l)))), /* @__PURE__ */ React$1.createElement(GsOtherSteps, { id: ai }))), /* @__PURE__ */ React$1.createElement("section", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Start playing"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Paste this into your AI and it lists every game. Pick one and it starts.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-promptrow" }, /* @__PURE__ */ React$1.createElement(GsPrompt, { text: t }), /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: t }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which AI you use."))));
   };
   const GsPlayBox = ({ id }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
+    const g = GS_GAMES$1[id];
     const b = GS_PAGES[id].box;
     const paying = gs.view === "pass";
     const mine = !paying ? cprBoxCopy(id) : null;
     const passOnly = CPR_STAGE[id] === "pass" && !paying;
     const label = g.first && !paying ? b.button : "Play";
     const small = paying || passOnly ? null : mine ? mine[1] : b.small;
-    return /* @__PURE__ */ React2.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React2.createElement(GsSteps, { items: [/* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React2.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s) => gsOr(s))] }), passOnly ? /* @__PURE__ */ React2.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React2.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (small.endsWith(" comes with the Pass.") ? /* @__PURE__ */ React2.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React2.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, GS.works)));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s) => gsOr(s))] }), passOnly ? /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (small.endsWith(" comes with the Pass.") ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, GS.works)));
   };
-  const GsGap = () => /* @__PURE__ */ React2.createElement("span", { className: "gs-gap", title: "Not decided yet" }, "—");
-  const gsOr = (v) => v == null ? /* @__PURE__ */ React2.createElement(GsGap, null) : v;
+  const GsGap = () => /* @__PURE__ */ React$1.createElement("span", { className: "gs-gap", title: "Not decided yet" }, "—");
+  const gsOr = (v) => v == null ? /* @__PURE__ */ React$1.createElement(GsGap, null) : v;
   const gsFreeSmall = (edition) => edition + ", your streak and your achievements are free with an account.";
-  const GS_STEP_CONNECT = /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Connect your AI"), " in about two minutes. ChatGPT, Claude, OpenClaw and others.");
+  const GS_STEP_CONNECT = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " in about two minutes. ChatGPT, Claude, OpenClaw and others.");
   let GS_PAGES;
   let GS_FACT_LABELS;
   const GsFacts = ({ id }) => {
     const p = GS_PAGES[id];
-    return /* @__PURE__ */ React2.createElement("section", { className: "gs-factband", "aria-label": "Facts" }, /* @__PURE__ */ React2.createElement("dl", { className: "gs-facts" }, GS_FACT_LABELS.map(([k, l]) => /* @__PURE__ */ React2.createElement("div", { key: k, className: "gs-fact" }, /* @__PURE__ */ React2.createElement("dt", { className: "gs-label" }, l.toUpperCase()), /* @__PURE__ */ React2.createElement("dd", null, gsOr(p.facts[k]))))), p.tags.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "gs-tags gs-fact-tags" }, p.tags.map((t) => /* @__PURE__ */ React2.createElement(DS.Tag, { key: t, kind: "daily" }, t))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-factband", "aria-label": "Facts" }, /* @__PURE__ */ React$1.createElement("dl", { className: "gs-facts" }, GS_FACT_LABELS.map(([k, l]) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "gs-fact" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-label" }, l.toUpperCase()), /* @__PURE__ */ React$1.createElement("dd", null, gsOr(p.facts[k]))))), p.tags.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags gs-fact-tags" }, p.tags.map((t) => /* @__PURE__ */ React$1.createElement(DS.Tag, { key: t, kind: "daily" }, t))));
   };
   const GsGamePage = ({ id, top }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
+    const g = GS_GAMES$1[id];
     const p = GS_PAGES[id];
     const others = GS_HOME_GAMES.filter((k) => k !== id);
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React2.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React2.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React2.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, g.category + " · " + p.rhythm), /* @__PURE__ */ React2.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React2.createElement(GsPlayBox, { id })), /* @__PURE__ */ React2.createElement(GsFacts, { id }), /* @__PURE__ */ React2.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md gs-measure" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React2.createElement("p", { key: i }, t))), /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React2.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), id === "delve" && /* @__PURE__ */ React2.createElement("section", { className: "gs-grid3" }, /* @__PURE__ */ React2.createElement(GsStat, { label: "IN A RUN", figure: "5 rooms", line: "This week: flooded tunnel to shrine cavern." }), /* @__PURE__ */ React2.createElement(GsStat, { label: "TYPICAL RUN", figure: "10–14 rolls", line: "Every one listed on your session page afterwards." }), /* @__PURE__ */ React2.createElement(GsStat, { label: "ENDINGS", figure: "4 ways out", line: "Win, turn back early, fall, or run out of time." })), /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React2.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React2.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React2.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category + " · " + p.rhythm), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md gs-measure" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), id === "delve" && /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid3" }, /* @__PURE__ */ React$1.createElement(GsStat, { label: "IN A RUN", figure: "5 rooms", line: "This week: flooded tunnel to shrine cavern." }), /* @__PURE__ */ React$1.createElement(GsStat, { label: "TYPICAL RUN", figure: "10–14 rolls", line: "Every one listed on your session page afterwards." }), /* @__PURE__ */ React$1.createElement(GsStat, { label: "ENDINGS", figure: "4 ways out", line: "Win, turn back early, fall, or run out of time." })), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
   };
   function initGsGame() {
     GS_PAGES = {
@@ -4564,7 +12430,7 @@
           small: gsFreeSmall("Today’s word"),
           heading: "Play it in your own AI chat",
           button: "Play today’s word",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Play today’s word."), " You get six guesses."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "See your result"), " on your session page.")]
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play today’s word."), " You get six guesses."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
         facts: { long: "10 min", often: "New every day" },
         tags: [],
@@ -4582,7 +12448,7 @@
           small: gsFreeSmall("Today’s groups"),
           heading: "New groups every day",
           button: "Play today’s groups",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Find today’s four groups."), " You can make four mistakes."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "See your result"), " on your session page.")]
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Find today’s four groups."), " You can make four mistakes."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
         facts: { long: "10 min", often: "New every day" },
         tags: [],
@@ -4600,7 +12466,7 @@
           small: gsFreeSmall("Today’s case"),
           heading: "Play it in your own AI chat",
           button: "Play today’s case",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Question the inspector"), ", then make one accusation."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "See your result"), " on your session page.")]
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Question the inspector"), ", then make one accusation."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
         facts: { long: "10 min", often: "New every day" },
         tags: [],
@@ -4618,7 +12484,7 @@
           small: "The first room is free with an account. Every other room comes with the After Pixels Pass.",
           heading: "A new room every week",
           button: "Play the first room",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "See your result"), " on your session page.")]
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
         facts: { long: "About 30 min", often: "A new room every week" },
         tags: [],
@@ -4636,7 +12502,7 @@
           label: "ONLY WITH THE PASS",
           heading: "Sixteen turns. One accusation.",
           session: "casebook",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Play one full case"), ", start to ending."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Keep your result."), " It stays in your history.")],
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play one full case"), ", start to ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
           small: GS_NAME.casebook + " comes only with the After Pixels Pass."
         },
         facts: { long: "25–40 min", often: "One case, ready when you are" },
@@ -4656,7 +12522,7 @@
           heading: "One run every week",
           session: "delve",
           button: "Play the first run",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Keep your result."), " It stays in your history.")],
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
           small: "The first run is free with an account. Every other run comes with the After Pixels Pass."
         },
         facts: { long: "25–40 min", often: "One run every week" },
@@ -4674,7 +12540,7 @@
           label: "FIRST CHAPTER FREE",
           heading: "A campaign in two chapters",
           button: "Play Chapter 1",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Choose a hero"), ", then play at your own pace."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Keep your hero."), " They carry on into the next chapter.")],
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Choose a hero"), ", then play at your own pace."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your hero."), " They carry on into the next chapter.")],
           small: "The first chapter is free with an account. Every other chapter comes with the After Pixels Pass."
         },
         facts: { long: "Several sessions", often: "Two chapters, played at your own pace over several sessions" },
@@ -4695,7 +12561,7 @@
           label: "ONLY WITH THE PASS",
           heading: "A different day every time",
           session: "hunter",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Play the day"), ", from grey dawn to firelight."), /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Keep your day."), " It stays in your history.")],
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the day"), ", from grey dawn to firelight."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your day."), " It stays in your history.")],
           small: "36,000 Summers Ago comes only with the After Pixels Pass."
         },
         facts: { long: "2 hours", often: "A different day every time you start" },
@@ -4713,7 +12579,7 @@
   }
   const GsNeedsPass = ({ gid, text }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", style: { justifyItems: "start" } }, /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, text || "This " + GS_GAMES[gid].ed[0] + " comes with the Pass."), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, text || "This " + GS_GAMES$1[gid].ed[0] + " comes with the Pass."), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass"));
   };
   const gsWordRow = (guess, answer) => {
     const g = guess.split("");
@@ -4759,11 +12625,11 @@
       if (l === "" && shown.length) shown[shown.length - 1] += "\n";
       else shown.push(l);
     });
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 4, justifyItems: "start" } }, lines ? shown.map((l, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: "gs-num-text", style: { overflowWrap: "anywhere", whiteSpace: "pre-line" } }, /\n$/.test(l) ? l + "​" : l)) : /* @__PURE__ */ React2.createElement(GsGap, null));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 4, justifyItems: "start" } }, lines ? shown.map((l, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "gs-num-text", style: { overflowWrap: "anywhere", whiteSpace: "pre-line" } }, /\n$/.test(l) ? l + "​" : l)) : /* @__PURE__ */ React$1.createElement(GsGap, null));
   };
   const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
-    const [copied, setCopied] = React2.useState(false);
-    React2.useEffect(() => {
+    const [copied, setCopied] = React$1.useState(false);
+    React$1.useEffect(() => {
       if (!open) setCopied(false);
     }, [open]);
     const copy = () => {
@@ -4776,24 +12642,24 @@
       }
       setCopied(true);
     };
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       DS.Popup,
       {
         open,
         onClose,
         kind: "panel",
         title: linkOnly ? "Share this game" : "Share this result",
-        actions: lines && /* @__PURE__ */ React2.createElement(DS.Button, { done: copied, doneLabel: "Copied", onClick: copy }, "Copy")
+        actions: lines && /* @__PURE__ */ React$1.createElement(DS.Button, { done: copied, doneLabel: "Copied", onClick: copy }, "Copy")
       },
-      /* @__PURE__ */ React2.createElement(GsShareText, { lines })
+      /* @__PURE__ */ React$1.createElement(GsShareText, { lines })
     );
   };
-  const GsMoves = ({ s }) => /* @__PURE__ */ React2.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React2.createElement(DS.Disclosure, { title: gsOr(s.listTitle) + " (" + s.lines.length + ")" }, /* @__PURE__ */ React2.createElement(DS.MoveList, { label: gsOr(s.listTitle) }, s.lines.map((l, i) => /* @__PURE__ */ React2.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
-  const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
+  const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: gsOr(s.listTitle) + " (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: gsOr(s.listTitle) }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
+  const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES$1[s.gid] ? GS_GAMES$1[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);
-  const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React2.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React2.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React2.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React2.createElement("div", { className: "gs-sess-acts" }, actions)));
-  const GsSessResult = ({ s, title }) => /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, gsOr(s.result)), (s.figures || []).filter((f) => f !== title).length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "gs-figs" }, s.figures.filter((f) => f !== title).map((f, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: "gs-fig" }, gsOr(f)))));
+  const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
+  const GsSessResult = ({ s, title }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, gsOr(s.result)), (s.figures || []).filter((f) => f !== title).length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-figs" }, s.figures.filter((f) => f !== title).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "gs-fig" }, gsOr(f)))));
   const gsThisEdSid = (gs, sid) => {
     const s = GS_SESSIONS[sid];
     const gid = s && s.gid;
@@ -4810,31 +12676,31 @@
     const gs = useGs();
     const sid = gsThisEdSid(gs, gs.route.id);
     const s = GS_SESSIONS[sid];
-    const [share, setShare] = React2.useState(false);
+    const [share, setShare] = React$1.useState(false);
     const linkOnly = s.share == null && s.kind === "day" && !s.live;
-    const text = linkOnly ? ["https://afterpixels.com/" + GS_GAMES[s.gid].route] : gsShareText(s);
+    const text = linkOnly ? ["https://afterpixels.com/" + GS_GAMES$1[s.gid].route] : gsShareText(s);
     const closeShare = () => setShare(false);
     const delve = s.kind === "delve";
     const ed = gsSessEd ? gsSessEd(gs, sid) : null;
     const over = !!s.gid && gsStartsOver(s.gid);
-    const canPlay = !s.gid || gs.view === "pass" || GS_GAMES[s.gid].free || !!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey);
+    const canPlay = !s.gid || gs.view === "pass" || GS_GAMES$1[s.gid].free || !!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey);
     const kept = !canPlay && (s.live || over && s.result === PH_UNF.label);
-    const again = over && canPlay ? /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => gs.play(s.game, sid) }, "Play again") : null;
-    const back = s.gid && /* @__PURE__ */ React2.createElement("div", { className: "gs-wrap gs-backbar", style: { paddingTop: 24 } }, /* @__PURE__ */ React2.createElement(LbBackTo, { gid: s.gid }));
-    const list = s.lines.length > 0 ? /* @__PURE__ */ React2.createElement(GsMoves, { s }) : null;
+    const again = over && canPlay ? /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.play(s.game, sid) }, "Play again") : null;
+    const back = s.gid && /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap gs-backbar", style: { paddingTop: 24 } }, /* @__PURE__ */ React$1.createElement(LbBackTo, { gid: s.gid }));
+    const list = s.lines.length > 0 ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
     const Body = GS_SESSION_BODY && GS_SESSION_BODY[s.gid];
-    const body = Body ? /* @__PURE__ */ React2.createElement(Body, { s, sid }) : list;
+    const body = Body ? /* @__PURE__ */ React$1.createElement(Body, { s, sid }) : list;
     const title = gsHeadTitle(s, ed);
     const label = gsHeadGame(s) + " · " + gsHeadDay(gsSessDate(s));
     const art = s.art;
-    if (s.unfinished) return /* @__PURE__ */ React2.createElement(React2.Fragment, null, back, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(GsSessHead, { art, label, title }), /* @__PURE__ */ React2.createElement("p", null, (gsRhythm(s.gid) === "daily" ? "The day" : "The week") + " ended before you finished. What you played stays in your history."), body));
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, back, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React2.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React2.createElement(React2.Fragment, null, again, text && /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React2.createElement(GsSessResult, { s, title }), delve && !Body ? /* @__PURE__ */ React2.createElement("section", { className: "gs-pitch" }, list, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch" } }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, s.live ? "THE TRACKS SO FAR" : "THE TRACKS AS THEY ENDED"), /* @__PURE__ */ React2.createElement(GsTrack, { label: "Rooms reached", value: s.tracks.progress, max: s.tracks.rooms || 6 }), /* @__PURE__ */ React2.createElement(GsTrack, { label: "Threat", value: s.tracks.threat, max: s.tracks.threatMax || 6, threat: true })), /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch" } }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Endings"), /* @__PURE__ */ React2.createElement("ul", { className: "gs-plain" }, s.endings.map((e) => /* @__PURE__ */ React2.createElement("li", { key: e, className: e === s.reached ? "gs-reached" : "gs-muted" }, e === s.reached && /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), e, e === s.reached && /* @__PURE__ */ React2.createElement(DS.Tag, { kind: "daily" }, "This session"))))))) : body, s.credit && /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React2.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
+    if (s.unfinished) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title }), /* @__PURE__ */ React$1.createElement("p", null, (gsRhythm(s.gid) === "daily" ? "The day" : "The week") + " ended before you finished. What you played stays in your history."), body));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), delve && !Body ? /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, list, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, s.live ? "THE TRACKS SO FAR" : "THE TRACKS AS THEY ENDED"), /* @__PURE__ */ React$1.createElement(GsTrack, { label: "Rooms reached", value: s.tracks.progress, max: s.tracks.rooms || 6 }), /* @__PURE__ */ React$1.createElement(GsTrack, { label: "Threat", value: s.tracks.threat, max: s.tracks.threatMax || 6, threat: true })), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Endings"), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, s.endings.map((e) => /* @__PURE__ */ React$1.createElement("li", { key: e, className: e === s.reached ? "gs-reached" : "gs-muted" }, e === s.reached && /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), e, e === s.reached && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily" }, "This session"))))))) : body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
   const GsSession = () => {
     const r = useGs().route;
-    return GS_SESSIONS[r.id] ? /* @__PURE__ */ React2.createElement(GsSessionRecord, null) : /* @__PURE__ */ React2.createElement(GsNotFound, null);
+    return GS_SESSIONS[r.id] ? /* @__PURE__ */ React$1.createElement(GsSessionRecord, null) : /* @__PURE__ */ React$1.createElement(GsNotFound, null);
   };
-  const lbAccess = (gs, id) => gs.view === "pass" || GS_GAMES[id].free ? "all" : GS_GAMES[id].first ? "first" : "none";
+  const lbAccess = (gs, id) => gs.view === "pass" || GS_GAMES$1[id].free ? "all" : GS_GAMES$1[id].first ? "first" : "none";
   const lbPast = (gs) => gs.view === "pass" || gsLapsed(gs);
   const lbOld = (s, gs) => new Date(/\d{4}$/.test(s) ? s : s + " 2026") < gsEndedOn(gs);
   const lbAchView = (items, access, gs) => {
@@ -4852,25 +12718,25 @@
     const p = d.split(" ");
     return p[0] + " " + p[1].slice(0, 3) + (p[2] ? " " + p[2] : "");
   };
-  const LbChev = () => /* @__PURE__ */ React2.createElement(DS.Icon, { name: "back", size: 16, className: "lb-chev", style: { transform: "rotate(180deg)" } });
-  const LbBack = ({ label, onClick }) => /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "lb-back", onClick }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "back", size: 20 }), label));
+  const LbChev = () => /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back", size: 16, className: "lb-chev", style: { transform: "rotate(180deg)" } });
+  const LbBack = ({ label, onClick }) => /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-back", onClick }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back", size: 20 }), label));
   const LbBackTo = ({ gid }) => {
     const gs = useGs();
     const p = gs.route.prev;
-    const g = GS_GAMES[gid];
-    if (p && p.name === "history") return /* @__PURE__ */ React2.createElement(LbBack, { label: "History", onClick: gs.back });
+    const g = GS_GAMES$1[gid];
+    if (p && p.name === "history") return /* @__PURE__ */ React$1.createElement(LbBack, { label: "History", onClick: gs.back });
     const fromLib = p && p.name === g.route && p.page === "record";
-    return /* @__PURE__ */ React2.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) });
+    return /* @__PURE__ */ React$1.createElement(LbBack, { label: g.name, onClick: () => fromLib ? gs.back() : gs.go(g.route, { page: "record" }) });
   };
   const LbHead = ({ id, name, more }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
-    const a = GS_ART[g.art] || {};
+    const g = GS_GAMES$1[id];
+    const a = GS_ART$1[g.art] || {};
     const eds = !more && gs.view !== "out" && ED3 && ED3.includes(id);
-    return /* @__PURE__ */ React2.createElement("section", { className: "mcp-cover-head lb-head" }, /* @__PURE__ */ React2.createElement(DS.Cover, { fill: true, ground: a.ground, extend: a.extend }, /* @__PURE__ */ React2.createElement("span", { dangerouslySetInnerHTML: { __html: a.svg || "" } })), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cover-head-text" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, name || g.name), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cover-head-links" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About this game"), more, eds && /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => pgeList(gs, id, { fromLib: true }) }, g.edLink || "Every " + g.ed[0]))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "mcp-cover-head lb-head" }, /* @__PURE__ */ React$1.createElement(DS.Cover, { fill: true, ground: a.ground, extend: a.extend }, /* @__PURE__ */ React$1.createElement("span", { dangerouslySetInnerHTML: { __html: a.svg || "" } })), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cover-head-text" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, name || g.name), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cover-head-links" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About this game"), more, eds && /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => pgeList(gs, id, { fromLib: true }) }, g.edLink || "Every " + g.ed[0]))));
   };
   const lbIcon = (k) => k === "ok" ? "check" : k === "bad" ? "error" : null;
-  const LbResult = ({ s }) => /* @__PURE__ */ React2.createElement("span", { className: "lb-v is-" + s.kind }, lbIcon(s.kind) && /* @__PURE__ */ React2.createElement(DS.Icon, { name: lbIcon(s.kind), size: 20 }), s.label);
+  const LbResult = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "lb-v is-" + s.kind }, lbIcon(s.kind) && /* @__PURE__ */ React$1.createElement(DS.Icon, { name: lbIcon(s.kind), size: 20 }), s.label);
   const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = "Completed", legend }) => {
     useGs();
     const weeks = Array.from({ length: Math.max(0, 10 - given.length) }, (_, i) => ({ id: "empty" + i, day: "", mon: "", month: "", played: false, empty: true })).concat(given);
@@ -4878,7 +12744,7 @@
     const streak = on === "Completed";
     const off = legend || (streak ? "Not played" : "Not completed");
     const word = (w) => (w.frozen ? "frozen" : w.played ? on : streak && w.failed ? "Failed" : off).toLowerCase();
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card lb-runcard" + (pass ? " is-pass" : "") }, pass ? /* @__PURE__ */ React2.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, c13CapLb(unit) + " in a row")) : /* @__PURE__ */ React2.createElement("div", { className: "lb-streakhead" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-figure" }, n), /* @__PURE__ */ React2.createElement("span", { className: "gs-strong" }, figure || (n === 1 ? unit.replace(/s$/, "") : unit) + " in a row"), weeks.some((w) => w.frozen) && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted gs-strong" }, "· Frozen")), /* @__PURE__ */ React2.createElement("div", { className: "lb-runbody" }, /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card lb-runcard" + (pass ? " is-pass" : "") }, pass ? /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, c13CapLb(unit) + " in a row")) : /* @__PURE__ */ React$1.createElement("div", { className: "lb-streakhead" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, n), /* @__PURE__ */ React$1.createElement("span", { className: "gs-strong" }, figure || (n === 1 ? unit.replace(/s$/, "") : unit) + " in a row"), weeks.some((w) => w.frozen) && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted gs-strong" }, "· Frozen")), /* @__PURE__ */ React$1.createElement("div", { className: "lb-runbody" }, /* @__PURE__ */ React$1.createElement(
       "div",
       {
         className: "lb-run",
@@ -4891,14 +12757,14 @@
         const newMon = !w.empty && (i === 0 || weeks[i - 1].empty || weeks[i - 1].mon !== w.mon);
         const fail = streak && !w.played && !w.frozen && !!w.failed;
         const cls = "lb-wk" + (w.played ? " is-on" : "") + (w.frozen ? " is-fz" : "") + (fail ? " is-fail" : "") + (join ? " is-join" : "") + (w.empty ? " is-empty" : "") + (w.now ? " is-now" : "") + (i < cut ? " is-early" : "") + (i === cut ? " is-cut" : "");
-        const body = /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, /* @__PURE__ */ React2.createElement("b", { className: "lb-mw" }, newMon ? w.mon : ""), /* @__PURE__ */ React2.createElement("b", { className: "lb-mn" }, newMon || i === cut && !w.empty ? w.mon : "")), /* @__PURE__ */ React2.createElement("i", null, fail && /* @__PURE__ */ React2.createElement(DS.Icon, { name: "close", size: 14 })), /* @__PURE__ */ React2.createElement("span", null, w.empty ? " " : w.day));
-        return /* @__PURE__ */ React2.createElement("span", { key: w.id, className: cls }, body);
+        const body = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("em", null, /* @__PURE__ */ React$1.createElement("b", { className: "lb-mw" }, newMon ? w.mon : ""), /* @__PURE__ */ React$1.createElement("b", { className: "lb-mn" }, newMon || i === cut && !w.empty ? w.mon : "")), /* @__PURE__ */ React$1.createElement("i", null, fail && /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "close", size: 14 })), /* @__PURE__ */ React$1.createElement("span", null, w.empty ? " " : w.day));
+        return /* @__PURE__ */ React$1.createElement("span", { key: w.id, className: cls }, body);
       })
-    ), !pass && /* @__PURE__ */ React2.createElement("ul", { className: "lb-legend" }, /* @__PURE__ */ React2.createElement("li", null, /* @__PURE__ */ React2.createElement("i", { className: "is-on" }), on), streak && /* @__PURE__ */ React2.createElement("li", null, /* @__PURE__ */ React2.createElement("i", { className: "is-fail" }, /* @__PURE__ */ React2.createElement("svg", { viewBox: "0 0 12 12", width: "12", height: "12", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("path", { d: "M0 0L12 12M12 0L0 12", stroke: "currentColor", strokeWidth: "1.5", fill: "none" }))), "Failed"), /* @__PURE__ */ React2.createElement("li", null, /* @__PURE__ */ React2.createElement("i", null), off), weeks.some((w) => w.frozen) && /* @__PURE__ */ React2.createElement("li", null, /* @__PURE__ */ React2.createElement("i", { className: "is-fz" }), "Frozen"))));
+    ), !pass && /* @__PURE__ */ React$1.createElement("ul", { className: "lb-legend" }, /* @__PURE__ */ React$1.createElement("li", null, /* @__PURE__ */ React$1.createElement("i", { className: "is-on" }), on), streak && /* @__PURE__ */ React$1.createElement("li", null, /* @__PURE__ */ React$1.createElement("i", { className: "is-fail" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 12 12", width: "12", height: "12", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M0 0L12 12M12 0L0 12", stroke: "currentColor", strokeWidth: "1.5", fill: "none" }))), "Failed"), /* @__PURE__ */ React$1.createElement("li", null, /* @__PURE__ */ React$1.createElement("i", null), off), weeks.some((w) => w.frozen) && /* @__PURE__ */ React$1.createElement("li", null, /* @__PURE__ */ React$1.createElement("i", { className: "is-fz" }), "Frozen"))));
   };
-  const LbRunPass = ({ unit, weeks }) => /* @__PURE__ */ React2.createElement(LbRun, { unit, weeks: weeks.map((w) => ({ ...w, played: false, frozen: true, now: false })), pass: true });
+  const LbRunPass = ({ unit, weeks }) => /* @__PURE__ */ React$1.createElement(LbRun, { unit, weeks: weeks.map((w) => ({ ...w, played: false, frozen: true, now: false })), pass: true });
   const lbBadgeSvg = ([bg, shapes], got) => '<svg viewBox="0 0 48 48" aria-hidden="true">' + (got ? '<rect width="48" height="48" fill="' + bg + '"/>' : "") + shapes.map(([t, a, c]) => "<" + t + " " + a + (got ? ' fill="' + c + '"' : ' fill="none" stroke="#918B80" stroke-width="1.5"') + "/>").join("") + "</svg>";
-  const LbBadge = ({ art, got }) => /* @__PURE__ */ React2.createElement("span", { className: "lb-badge" + (got ? "" : " is-todo") }, /* @__PURE__ */ React2.createElement("span", { className: "lb-badge-art", dangerouslySetInnerHTML: { __html: lbBadgeSvg(art, got) } }));
+  const LbBadge = ({ art, got }) => /* @__PURE__ */ React$1.createElement("span", { className: "lb-badge" + (got ? "" : " is-todo") }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-badge-art", dangerouslySetInnerHTML: { __html: lbBadgeSvg(art, got) } }));
   const c13CapLb = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const LB_GROUNDS = ["#1D1B3A", "#421A28", "#163328"];
   const LB_SHAPES = [
@@ -4922,11 +12788,11 @@
   const lbAchEarned = (list) => list.filter((a) => a.got).length;
   const LbAch = ({ items, badges, access, ended, ed }) => {
     const gs = useGs();
-    const [open, setOpen] = React2.useState(null);
+    const [open, setOpen] = React$1.useState(null);
     const list = lbAchView(items, access, gs);
     const kept = list.some((a) => a.state === "kept");
     const of = kept ? items.length : list.length;
-    return /* @__PURE__ */ React2.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every other " + (ed || ["edition"])[0] + " comes with the Pass."), kept && /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React2.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React2.createElement("li", { key: a.k }, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React2.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React2.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React2.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React2.createElement("span", { className: "lb-ach-sub" }, a.how), /* @__PURE__ */ React2.createElement("span", { className: "lb-ach-sub" }, lbAchLine(a))))))), /* @__PURE__ */ React2.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React2.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React2.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("p", null, open.how), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every other " + (ed || ["edition"])[0] + " comes with the Pass."), kept && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React$1.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React$1.createElement("li", { key: a.k }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React$1.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, a.how), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, lbAchLine(a))))))), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React$1.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("p", null, open.how), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
   };
   const lbDate = (d) => d.getDate() + " " + d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
   const lbMonth = (d) => d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
@@ -4947,12 +12813,12 @@
     }
     return n;
   };
-  const LbChoice = ({ label, value, opts, onPick }) => /* @__PURE__ */ React2.createElement("div", { className: "lb-choicegrp", role: "group", "aria-label": label }, /* @__PURE__ */ React2.createElement("span", { className: "gs-field-label" }, label), /* @__PURE__ */ React2.createElement("div", { className: "lb-choice" }, opts.map(([v, l]) => /* @__PURE__ */ React2.createElement("button", { key: v, type: "button", "aria-pressed": value === v, onClick: () => onPick(v) }, l))));
+  const LbChoice = ({ label, value, opts, onPick }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-choicegrp", role: "group", "aria-label": label }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-field-label" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "lb-choice" }, opts.map(([v, l]) => /* @__PURE__ */ React$1.createElement("button", { key: v, type: "button", "aria-pressed": value === v, onClick: () => onPick(v) }, l))));
   const lbfParts = (children) => {
     let search = null;
     const choices = [];
-    React2.Children.toArray(children).forEach((k) => {
-      if (!React2.isValidElement(k)) return;
+    React$1.Children.toArray(children).forEach((k) => {
+      if (!React$1.isValidElement(k)) return;
       if (k.type === LbChoice) choices.push(k.props);
       else if (k.type === DS.SearchField) search = k;
     });
@@ -4967,21 +12833,21 @@
     };
     const cat = pick("Genre");
     const rhy = pick("Schedule");
-    return g.opts.slice(1).filter(([v]) => v === g.value || (cat === "all" || GS_GAMES[v].category === cat) && (rhy === "all" || gsRhythm(v) === rhy));
+    return g.opts.slice(1).filter(([v]) => v === g.value || (cat === "all" || GS_GAMES$1[v].category === cat) && (rhy === "all" || gsRhythm(v) === rhy));
   };
   const LbGamePick = ({ g, list, onBack }) => {
-    const [q, setQ] = React2.useState("");
+    const [q, setQ] = React$1.useState("");
     const s = gsNorm(q);
     const rows = [["all", "All games"]].concat(list).filter(([, l], i) => i === 0 || !s || gsNorm(l).includes(s));
-    return /* @__PURE__ */ React2.createElement("div", { className: "lbf-pick" }, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "lbf-back", onClick: onBack }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "back", size: 16 }), "Filters"), /* @__PURE__ */ React2.createElement(DS.SearchField, { label: "Find a game", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React2.createElement("ul", { className: "lbf-plist", role: "list" }, rows.map(([v, l]) => /* @__PURE__ */ React2.createElement("li", { key: v }, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "lbf-prow", "aria-pressed": v === g.value, onClick: () => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "lbf-pick" }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lbf-back", onClick: onBack }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back", size: 16 }), "Filters"), /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Find a game", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React$1.createElement("ul", { className: "lbf-plist", role: "list" }, rows.map(([v, l]) => /* @__PURE__ */ React$1.createElement("li", { key: v }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lbf-prow", "aria-pressed": v === g.value, onClick: () => {
       g.onPick(v);
       onBack();
-    } }, /* @__PURE__ */ React2.createElement("span", null, l), v === g.value ? /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check", size: 16 }) : /* @__PURE__ */ React2.createElement("span", { className: "lbf-pgap" })))), rows.length === 1 && s && /* @__PURE__ */ React2.createElement("li", { className: "lbf-pnone" }, "No game called that.")));
+    } }, /* @__PURE__ */ React$1.createElement("span", null, l), v === g.value ? /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check", size: 16 }) : /* @__PURE__ */ React$1.createElement("span", { className: "lbf-pgap" })))), rows.length === 1 && s && /* @__PURE__ */ React$1.createElement("li", { className: "lbf-pnone" }, "No game called that.")));
   };
   const LbFilters = ({ children }) => {
     const { search, choices } = lbfParts(children);
-    const [open, setOpen] = React2.useState(false);
-    const [deep, setDeep] = React2.useState(false);
+    const [open, setOpen] = React$1.useState(false);
+    const [deep, setDeep] = React$1.useState(false);
     const on = choices.filter(lbfOn);
     const g = choices.find((c) => c.label === "Game");
     const close = () => {
@@ -4992,8 +12858,8 @@
       on.forEach((c) => c.onPick(c.opts[0][0]));
       setDeep(false);
     };
-    const done = /* @__PURE__ */ React2.createElement(DS.Button, { onClick: close }, "Done");
-    return /* @__PURE__ */ React2.createElement("div", { className: "lbf-top" }, /* @__PURE__ */ React2.createElement("div", { className: "lbf-bar" }, /* @__PURE__ */ React2.createElement("div", { className: "lbf-search" }, search), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(true) }, on.length ? "Filters · " + on.length : "Filters")), /* @__PURE__ */ React2.createElement(DS.Popup, { kind: "panel", open, onClose: close, title: "Filters", actions: on.length ? /* @__PURE__ */ React2.createElement(DS.ButtonPair, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: clear }, "Clear"), done) : done }, deep && g ? /* @__PURE__ */ React2.createElement(LbGamePick, { g, list: lbfGames(g, choices), onBack: () => setDeep(false) }) : /* @__PURE__ */ React2.createElement("div", { className: "lbf-groups" }, choices.map((c) => c === g ? /* @__PURE__ */ React2.createElement("div", { key: c.label, className: "lbf-grow" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-field-label" }, "Game"), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "lbf-prow is-open", onClick: () => setDeep(true) }, /* @__PURE__ */ React2.createElement("span", null, lbfLabel(c)), /* @__PURE__ */ React2.createElement(LbChev, null))) : /* @__PURE__ */ React2.createElement(LbChoice, { key: c.label, ...c })))));
+    const done = /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: close }, "Done");
+    return /* @__PURE__ */ React$1.createElement("div", { className: "lbf-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "lbf-bar" }, /* @__PURE__ */ React$1.createElement("div", { className: "lbf-search" }, search), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(true) }, on.length ? "Filters · " + on.length : "Filters")), /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open, onClose: close, title: "Filters", actions: on.length ? /* @__PURE__ */ React$1.createElement(DS.ButtonPair, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: clear }, "Clear"), done) : done }, deep && g ? /* @__PURE__ */ React$1.createElement(LbGamePick, { g, list: lbfGames(g, choices), onBack: () => setDeep(false) }) : /* @__PURE__ */ React$1.createElement("div", { className: "lbf-groups" }, choices.map((c) => c === g ? /* @__PURE__ */ React$1.createElement("div", { key: c.label, className: "lbf-grow" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-field-label" }, "Game"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lbf-prow is-open", onClick: () => setDeep(true) }, /* @__PURE__ */ React$1.createElement("span", null, lbfLabel(c)), /* @__PURE__ */ React$1.createElement(LbChev, null))) : /* @__PURE__ */ React$1.createElement(LbChoice, { key: c.label, ...c })))));
   };
   const LbTools = LbFilters;
   const lbCopy = (lines) => {
@@ -5017,10 +12883,10 @@
     });
   };
   const LbShare = ({ lines }) => {
-    const [open, setOpen] = React2.useState(false);
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React2.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
+    const [open, setOpen] = React$1.useState(false);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
-  const LbFreshNow = ({ title, line, next, onPlay, label, span }) => /* @__PURE__ */ React2.createElement("section", { className: "lb-card", style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React2.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, label || "THIS WEEK"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, title))), /* @__PURE__ */ React2.createElement("p", null, line), /* @__PURE__ */ React2.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { onClick: onPlay }, "Play")), next && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, next)));
+  const LbFreshNow = ({ title, line, next, onPlay, label, span }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card", style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || "THIS WEEK"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title))), /* @__PURE__ */ React$1.createElement("p", null, line), /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onPlay }, "Play")), next && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, next)));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
     const done = lbWeekDone(gs);
@@ -5034,34 +12900,34 @@
     return { status: { kind: s.loss ? "bad" : "ok", label: s.result }, open: () => gs.go("session", { id: c.today }) };
   };
   const GsCover = ({ art, fit, fill }) => {
-    const a = GS_ART[art] || {};
+    const a = GS_ART$1[art] || {};
     let svg = a.svg || "";
-    if (fill) return /* @__PURE__ */ React2.createElement(DS.Cover, { fill: true, ground: a.ground || "indigo", extend: a.extend || "centre" }, /* @__PURE__ */ React2.createElement("span", { style: { display: "block" }, dangerouslySetInnerHTML: { __html: svg } }));
+    if (fill) return /* @__PURE__ */ React$1.createElement(DS.Cover, { fill: true, ground: a.ground || "indigo", extend: a.extend || "centre" }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "block" }, dangerouslySetInnerHTML: { __html: svg } }));
     if (fit) svg = svg.replace("xMidYMid slice", a.extend === "bottom" ? "xMidYMax meet" : "xMidYMid meet");
-    return /* @__PURE__ */ React2.createElement(DS.Cover, { className: fit ? "gs-cover-fit is-" + (a.ground || "indigo") : "" }, /* @__PURE__ */ React2.createElement("span", { style: { display: "contents" }, dangerouslySetInnerHTML: { __html: svg } }));
+    return /* @__PURE__ */ React$1.createElement(DS.Cover, { className: fit ? "gs-cover-fit is-" + (a.ground || "indigo") : "" }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "contents" }, dangerouslySetInnerHTML: { __html: svg } }));
   };
   const GS_ART_MOTION = ["groups", "casebook", "hunter"];
-  const I = (c) => /* @__PURE__ */ React2.createElement("i", { className: c });
+  const I = (c) => /* @__PURE__ */ React$1.createElement("i", { className: c });
   const GS_ART_LOCAL = {
-    murder: { bg: "is-wine", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-m-ring"), I("ga-m-bar"), I("ga-m-cap")) },
-    escape: { bg: "", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-e-door"), I("ga-e-knob"), I("ga-e-win")) },
-    delve: { bg: "is-wine", body: /* @__PURE__ */ React2.createElement(React2.Fragment, null, I("ga-d-out"), I("ga-d-in"), I("ga-d-st"), I("ga-d-st2"), I("ga-d-st3"), I("ga-d-post l"), I("ga-d-post r"), I("ga-d-fl l"), I("ga-d-fl r")) }
+    murder: { bg: "is-wine", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-m-ring"), I("ga-m-bar"), I("ga-m-cap")) },
+    escape: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-e-door"), I("ga-e-knob"), I("ga-e-win")) },
+    delve: { bg: "is-wine", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-d-out"), I("ga-d-in"), I("ga-d-st"), I("ga-d-st2"), I("ga-d-st3"), I("ga-d-post l"), I("ga-d-post r"), I("ga-d-fl l"), I("ga-d-fl r")) }
   };
   const GS_RATIO = { square: "mcp-art-1", landscape: "mcp-art-43", wide: "mcp-art-3" };
   const GsArt = ({ art, shape }) => {
-    if (GS_ART_MOTION.includes(art)) return /* @__PURE__ */ React2.createElement(DS.GameArt, { art, shape });
+    if (GS_ART_MOTION.includes(art)) return /* @__PURE__ */ React$1.createElement(DS.GameArt, { art, shape });
     const p = GS_ART_LOCAL[art];
     if (!p) {
-      const a = GS_ART[art] || {};
-      if (!shape || !GS_RATIO[shape]) return /* @__PURE__ */ React2.createElement(GsCover, { art });
+      const a = GS_ART$1[art] || {};
+      if (!shape || !GS_RATIO[shape]) return /* @__PURE__ */ React$1.createElement(GsCover, { art });
       const svg = (a.svg || "").replace("xMidYMid slice", a.extend === "bottom" ? "xMidYMax meet" : "xMidYMid meet");
-      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-art " + GS_RATIO[shape] + (a.ground && a.ground !== "indigo" ? " is-" + a.ground : ""), style: { position: "relative" }, "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", { style: { position: "absolute", inset: 0, display: "grid" }, dangerouslySetInnerHTML: { __html: svg.replace("<svg ", '<svg style="width:100%;height:100%;display:block" ') } }));
+      return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-art " + GS_RATIO[shape] + (a.ground && a.ground !== "indigo" ? " is-" + a.ground : ""), style: { position: "relative" }, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", { style: { position: "absolute", inset: 0, display: "grid" }, dangerouslySetInnerHTML: { __html: svg.replace("<svg ", '<svg style="width:100%;height:100%;display:block" ') } }));
     }
-    return /* @__PURE__ */ React2.createElement("div", { className: "mcp-art " + GS_RATIO[shape] + " " + p.bg, "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-st" }, p.body));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-art " + GS_RATIO[shape] + " " + p.bg, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-st" }, p.body));
   };
   const useGsArtHost = () => {
-    const ref = React2.useRef(null);
-    React2.useEffect(() => {
+    const ref = React$1.useRef(null);
+    React$1.useEffect(() => {
       const host = ref.current && ref.current.closest(".gs-host");
       if (!host) return void 0;
       const on = (e) => {
@@ -5079,11 +12945,11 @@
   };
   const GsPassTag = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-tagbtn", "aria-label": "Pass. See the Pass", onClick: () => gs.go("pass") }, /* @__PURE__ */ React2.createElement(DS.Tag, { kind: "locked" }, "Pass"));
+    return /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-tagbtn", "aria-label": "Pass. See the Pass", onClick: () => gs.go("pass") }, /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass"));
   };
-  const GsTagList = ({ tags, ed }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-tags" }, tags.map((t, i) => t === "FREE" ? /* @__PURE__ */ React2.createElement(DS.Tag, { key: i, kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React2.createElement(DS.Tag, { key: i, kind: "free" }, "First " + (ed ? ed[0] : "edition") + " free") : t === "PASS" ? /* @__PURE__ */ React2.createElement(GsPassTag, { key: i }) : /* @__PURE__ */ React2.createElement(DS.Tag, { key: i, kind: "daily" }, t)));
-  const GsSteps = ({ items, row }) => /* @__PURE__ */ React2.createElement("ol", { className: "gs-steps" + (row ? " is-row" : "") }, items.map((it, i) => /* @__PURE__ */ React2.createElement("li", { key: i, className: "gs-step" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-num" }, i + 1), /* @__PURE__ */ React2.createElement("div", null, it))));
-  const GsWhoCols = ({ ai, server }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-cols2" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", style: { alignContent: "start" } }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, ai)), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", style: { alignContent: "start" } }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, server)));
+  const GsTagList = ({ tags, ed }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags" }, tags.map((t, i) => t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { key: i, kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { key: i, kind: "free" }, "First " + (ed ? ed[0] : "edition") + " free") : t === "PASS" ? /* @__PURE__ */ React$1.createElement(GsPassTag, { key: i }) : /* @__PURE__ */ React$1.createElement(DS.Tag, { key: i, kind: "daily" }, t)));
+  const GsSteps = ({ items, row }) => /* @__PURE__ */ React$1.createElement("ol", { className: "gs-steps" + (row ? " is-row" : "") }, items.map((it, i) => /* @__PURE__ */ React$1.createElement("li", { key: i, className: "gs-step" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-num" }, i + 1), /* @__PURE__ */ React$1.createElement("div", null, it))));
+  const GsWhoCols = ({ ai, server }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-cols2" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, ai)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, server)));
   const GS_COMPARE = [
     { name: "Free games", free: true },
     { name: "The start of select games", free: true },
@@ -5094,17 +12960,17 @@
     { name: "The full game catalog", free: false },
     { name: "New releases", free: false }
   ];
-  const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React2.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React2.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React2.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React2.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React2.createElement("span", { className: "gs-vh" }, "Not included"));
-  const GsCompare = ({ foot }) => /* @__PURE__ */ React2.createElement("section", { className: "gs-cmp", "aria-labelledby": "gs-cmp-h" }, /* @__PURE__ */ React2.createElement("h2", { id: "gs-cmp-h", className: "mcp-t-sec gs-cmp-h" }, "What you get"), /* @__PURE__ */ React2.createElement("div", { role: "table", "aria-labelledby": "gs-cmp-h", className: "gs-cmp-t" }, /* @__PURE__ */ React2.createElement("div", { role: "row", className: "gs-cmp-tr is-head" }, /* @__PURE__ */ React2.createElement("span", { role: "columnheader" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-vh" }, "What you get")), /* @__PURE__ */ React2.createElement("span", { role: "columnheader", className: "gs-cmp-cell mcp-t-card" }, "Free"), /* @__PURE__ */ React2.createElement("span", { role: "columnheader", className: "gs-cmp-cell gs-cmp-band mcp-t-card" }, "Pass")), GS_COMPARE.map((r) => /* @__PURE__ */ React2.createElement("div", { role: "row", key: r.name, className: "gs-cmp-tr" }, /* @__PURE__ */ React2.createElement("span", { role: "rowheader", className: "gs-cmp-label" }, /* @__PURE__ */ React2.createElement("b", null, r.name), r.sub && /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, r.sub)), /* @__PURE__ */ React2.createElement("span", { role: "cell" }, /* @__PURE__ */ React2.createElement(GsCmpMark, { on: r.free })), /* @__PURE__ */ React2.createElement("span", { role: "cell", className: "gs-cmp-band" }, /* @__PURE__ */ React2.createElement(GsCmpMark, { on: true })))), /* @__PURE__ */ React2.createElement("div", { className: "gs-cmp-tr is-foot", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null), /* @__PURE__ */ React2.createElement("span", null), /* @__PURE__ */ React2.createElement("span", { className: "gs-cmp-band" }))), foot);
-  const GsStat = ({ label, figure, line }) => /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 8, alignContent: "start" } }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React2.createElement("span", { className: "gs-figure" }, figure), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, line));
-  const GsTrack = ({ label, value, max = 6, threat }) => /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-num-text gs-strong" }, label, " ", value, "/", max), /* @__PURE__ */ React2.createElement("div", { className: "gs-track", role: "img", "aria-label": label + " " + value + " of " + max }, Array.from({ length: max }, (_, i) => /* @__PURE__ */ React2.createElement("i", { key: i, className: i < value ? threat ? "is-threat" : "is-on" : "" }))));
+  const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Not included"));
+  const GsCompare = ({ foot }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-cmp", "aria-labelledby": "gs-cmp-h" }, /* @__PURE__ */ React$1.createElement("h2", { id: "gs-cmp-h", className: "mcp-t-sec gs-cmp-h" }, "What you get"), /* @__PURE__ */ React$1.createElement("div", { role: "table", "aria-labelledby": "gs-cmp-h", className: "gs-cmp-t" }, /* @__PURE__ */ React$1.createElement("div", { role: "row", className: "gs-cmp-tr is-head" }, /* @__PURE__ */ React$1.createElement("span", { role: "columnheader" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "What you get")), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell mcp-t-card" }, "Free"), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell gs-cmp-band mcp-t-card" }, "Pass")), GS_COMPARE.map((r) => /* @__PURE__ */ React$1.createElement("div", { role: "row", key: r.name, className: "gs-cmp-tr" }, /* @__PURE__ */ React$1.createElement("span", { role: "rowheader", className: "gs-cmp-label" }, /* @__PURE__ */ React$1.createElement("b", null, r.name), r.sub && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, r.sub)), /* @__PURE__ */ React$1.createElement("span", { role: "cell" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: r.free })), /* @__PURE__ */ React$1.createElement("span", { role: "cell", className: "gs-cmp-band" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: true })))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cmp-tr is-foot", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-band" }))), foot);
+  const GsStat = ({ label, figure, line }) => /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 8, alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, figure), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, line));
+  const GsTrack = ({ label, value, max = 6, threat }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-num-text gs-strong" }, label, " ", value, "/", max), /* @__PURE__ */ React$1.createElement("div", { className: "gs-track", role: "img", "aria-label": label + " " + value + " of " + max }, Array.from({ length: max }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < value ? threat ? "is-threat" : "is-on" : "" }))));
   const GsSoonCard = ({ g }) => {
     const gs = useGs();
-    const a = GS_ART[g.art] || {};
-    return /* @__PURE__ */ React2.createElement(
+    const a = GS_ART$1[g.art] || {};
+    return /* @__PURE__ */ React$1.createElement(
       DS.SoonCard,
       {
-        art: /* @__PURE__ */ React2.createElement(DS.Cover, { fill: true, ground: a.ground, extend: a.extend }, /* @__PURE__ */ React2.createElement("span", { style: { display: "block" }, dangerouslySetInnerHTML: { __html: a.svg || "" } })),
+        art: /* @__PURE__ */ React$1.createElement(DS.Cover, { fill: true, ground: a.ground, extend: a.extend }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "block" }, dangerouslySetInnerHTML: { __html: a.svg || "" } })),
         label: g.label,
         title: g.name,
         line: g.line,
@@ -5116,37 +12982,37 @@
   const gsKeepLast = (s) => {
     const i = s.lastIndexOf(" ");
     const j = i > 0 ? s.lastIndexOf(" ", i - 1) : -1;
-    return j < 0 ? s : /* @__PURE__ */ React2.createElement(React2.Fragment, null, s.slice(0, j + 1), /* @__PURE__ */ React2.createElement("span", { style: { whiteSpace: "nowrap" } }, s.slice(j + 1)));
+    return j < 0 ? s : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, s.slice(0, j + 1), /* @__PURE__ */ React$1.createElement("span", { style: { whiteSpace: "nowrap" } }, s.slice(j + 1)));
   };
   const GsTile = ({ id, pass, page }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
+    const g = GS_GAMES$1[id];
     const host = useGsArtHost();
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       DS.GameTile,
       {
         className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React2.createElement("div", { ref: host }, /* @__PURE__ */ React2.createElement(GsArt, { art: g.art, shape: "square" })),
+        art: /* @__PURE__ */ React$1.createElement("div", { ref: host }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "square" })),
         pass: !!pass,
         onPass: () => gs.go("pass"),
-        title: /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-gtile-open mcp-art-link", onClick: () => gs.go(g.route, page ? { page } : void 0) }, g.name),
+        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-gtile-open mcp-art-link", onClick: () => gs.go(g.route, page ? { page } : void 0) }, g.name),
         kind: gsKind(g.category)
       }
     );
   };
   const GsAvatar = ({ big, btn }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("span", { className: "gs-avatar" + (big ? " is-big" : "") + (btn ? " is-btn" : ""), "aria-hidden": "true" }, gsName(gs.user)[0].toUpperCase());
+    return /* @__PURE__ */ React$1.createElement("span", { className: "gs-avatar" + (big ? " is-big" : "") + (btn ? " is-btn" : ""), "aria-hidden": "true" }, gsName(gs.user)[0].toUpperCase());
   };
   const gsName = (u) => u.username || u.email || "?";
   const GsIdentityHead = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-idhead" }, /* @__PURE__ */ React2.createElement(GsAvatar, { big: true }), /* @__PURE__ */ React2.createElement("span", { className: "gs-stack-xs gs-id-text" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-strong" }, gsName(gs.user)), /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, gs.user.email)));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-idhead" }, /* @__PURE__ */ React$1.createElement(GsAvatar, { big: true }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs gs-id-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-strong" }, gsName(gs.user)), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, gs.user.email)));
   };
   const GsUserItems = ({ pick, role }) => {
     const gs = useGs();
     const [busy, run] = useGsBusy();
-    const item = (key, icon, label, fn, work) => /* @__PURE__ */ React2.createElement(
+    const item = (key, icon, label, fn, work) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key,
@@ -5156,12 +13022,12 @@
         "aria-busy": work && busy || void 0,
         onClick: () => work ? run(() => pick(fn)) : pick(fn)
       },
-      work && busy ? /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-slot" }, /* @__PURE__ */ React2.createElement(GsInkSpin, null)) : icon ? icon === "logout" || icon === "pass" ? /* @__PURE__ */ React2.createElement(GsGlyph, { name: icon }) : /* @__PURE__ */ React2.createElement(DS.Icon, { name: icon }) : /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-space" }),
+      work && busy ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-slot" }, /* @__PURE__ */ React$1.createElement(GsInkSpin, null)) : icon ? icon === "logout" || icon === "pass" ? /* @__PURE__ */ React$1.createElement(GsGlyph, { name: icon }) : /* @__PURE__ */ React$1.createElement(DS.Icon, { name: icon }) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-space" }),
       label
     );
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, item("acct", "settings", "Manage account", () => gs.go("account", { from: gs.route })), item("pass", "pass", "Pass", () => gs.go("pass")), item("ai", "play", "How it works", () => gs.go("connect")), /* @__PURE__ */ React2.createElement("div", { className: "gs-menu-div", role: "separator" }), item("out", "logout", "Sign out", gs.signOut, true));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, item("acct", "settings", "Manage account", () => gs.go("account", { from: gs.route })), item("pass", "pass", "Pass", () => gs.go("pass")), item("ai", "play", "How it works", () => gs.go("connect")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-menu-div", role: "separator" }), item("out", "logout", "Sign out", gs.signOut, true));
   };
-  const gsUseMenuDismiss = (open, setOpen, wrap) => React2.useEffect(() => {
+  const gsUseMenuDismiss = (open, setOpen, wrap) => React$1.useEffect(() => {
     if (!open) return void 0;
     const back = () => {
       const b = wrap.current && wrap.current.querySelector("button");
@@ -5188,32 +13054,32 @@
   }, [open]);
   const GsUserMenu = ({ compact }) => {
     const gs = useGs();
-    const [open, setOpen] = React2.useState(false);
-    const wrap = React2.useRef(null);
+    const [open, setOpen] = React$1.useState(false);
+    const wrap = React$1.useRef(null);
     gsUseMenuDismiss(open, setOpen, wrap);
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-acct", ref: wrap }, compact ? /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", className: "gs-acct-ico", "aria-label": "Your account, " + gsName(gs.user), "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React2.createElement(GsGlyph, { name: "account", size: 24 })) : /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-acct-btn", "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React2.createElement(GsAvatar, null), /* @__PURE__ */ React2.createElement("span", { className: "gs-acct-who" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-strong" }, gsName(gs.user)), /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, gs.user.email)), /* @__PURE__ */ React2.createElement(DS.Icon, { name: "down" })), open && /* @__PURE__ */ React2.createElement("div", { className: "gs-pop", role: "menu", "aria-label": "Your account" }, /* @__PURE__ */ React2.createElement(GsIdentityHead, null), /* @__PURE__ */ React2.createElement(GsUserItems, { role: "menuitem", pick: (fn) => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-acct", ref: wrap }, compact ? /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", className: "gs-acct-ico", "aria-label": "Your account, " + gsName(gs.user), "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "account", size: 24 })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-acct-btn", "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React$1.createElement(GsAvatar, null), /* @__PURE__ */ React$1.createElement("span", { className: "gs-acct-who" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-strong" }, gsName(gs.user)), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, gs.user.email)), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down" })), open && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop", role: "menu", "aria-label": "Your account" }, /* @__PURE__ */ React$1.createElement(GsIdentityHead, null), /* @__PURE__ */ React$1.createElement(GsUserItems, { role: "menuitem", pick: (fn) => {
       setOpen(false);
       fn();
     } })));
   };
   const GsTopBar = () => {
     const gs = useGs();
-    const [menu, setMenu] = React2.useState(false);
-    const mwrap = React2.useRef(null);
+    const [menu, setMenu] = React$1.useState(false);
+    const mwrap = React$1.useRef(null);
     gsUseMenuDismiss(menu, setMenu, mwrap);
     const out = gs.view === "out";
     const r = gs.route;
-    const cur = !out && (r.name === "library" || r.page === "record") ? "library" : r.name === "games" || GS_GAME_ORDER.some((k) => GS_GAMES[k].route === r.name) ? "games" : r.name;
+    const cur = !out && (r.name === "library" || r.page === "record") ? "library" : r.name === "games" || GS_GAME_ORDER$1.some((k) => GS_GAMES$1[k].route === r.name) ? "games" : r.name;
     const links = out ? [["games", "Discover", () => gs.go("games")], ["how", "How it works", gs.goHow], ["pass", "Pricing", () => gs.go("pass")]] : [["games", "Discover", () => gs.go("games")], ["library", "Library", () => gs.go("library")], ["history", "History", () => gs.go("history")]];
     const pick = (fn) => {
       setMenu(false);
       fn();
     };
-    return /* @__PURE__ */ React2.createElement("header", { className: "gs-top" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-wrap gs-top-in" }, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-brand", "aria-label": "After Pixels, home", onClick: () => gs.go(out ? "home" : "games") }, /* @__PURE__ */ React2.createElement(GsMark, null), /* @__PURE__ */ React2.createElement("span", null, "After Pixels")), /* @__PURE__ */ React2.createElement("nav", { className: "gs-nav", "aria-label": "Main" }, links.map(([id, l, fn]) => /* @__PURE__ */ React2.createElement("button", { key: id, type: "button", className: "gs-navlink", "aria-current": cur === id ? "page" : void 0, onClick: fn }, l))), /* @__PURE__ */ React2.createElement("div", { className: "gs-top-end mcp-menu-wrap" }, out ? /* @__PURE__ */ React2.createElement("div", { className: "gs-wide-only" }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("signin") }, "Sign in"), /* @__PURE__ */ React2.createElement(DS.Button, { onClick: gs.startFree }, "Start free")) : /* @__PURE__ */ React2.createElement("div", { className: "gs-wide-only" }, /* @__PURE__ */ React2.createElement(GsUserMenu, null)), /* @__PURE__ */ React2.createElement("div", { className: "gs-narrow-only gs-menu-anchor", ref: mwrap }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", "aria-expanded": menu, "aria-haspopup": "menu", onClick: () => setMenu((m) => !m) }, "Menu"), menu && /* @__PURE__ */ React2.createElement("div", { className: "gs-pop", role: "menu", "aria-label": "Menu", style: out ? void 0 : { minWidth: 200 } }, links.map(([id, l, fn]) => /* @__PURE__ */ React2.createElement("button", { key: id, type: "button", role: "menuitem", className: "gs-menu-item", "aria-current": cur === id ? "page" : void 0, onClick: () => pick(fn) }, l)), out && /* @__PURE__ */ React2.createElement("div", { className: "gs-menu-div", role: "separator" }), out && /* @__PURE__ */ React2.createElement("div", { className: "gs-pop-cta" }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", block: true, role: "menuitem", onClick: () => pick(() => gs.go("signin")) }, "Sign in"), /* @__PURE__ */ React2.createElement(DS.Button, { block: true, role: "menuitem", onClick: () => pick(gs.startFree) }, "Start free")))), !out && /* @__PURE__ */ React2.createElement("div", { className: "gs-narrow-only" }, /* @__PURE__ */ React2.createElement(GsUserMenu, { compact: true })))));
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap gs-top-in" }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-brand", "aria-label": "After Pixels, home", onClick: () => gs.go(out ? "home" : "games") }, /* @__PURE__ */ React$1.createElement(GsMark, null), /* @__PURE__ */ React$1.createElement("span", null, "After Pixels")), /* @__PURE__ */ React$1.createElement("nav", { className: "gs-nav", "aria-label": "Main" }, links.map(([id, l, fn]) => /* @__PURE__ */ React$1.createElement("button", { key: id, type: "button", className: "gs-navlink", "aria-current": cur === id ? "page" : void 0, onClick: fn }, l))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-top-end mcp-menu-wrap" }, out ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-wide-only" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("signin") }, "Sign in"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free")) : /* @__PURE__ */ React$1.createElement("div", { className: "gs-wide-only" }, /* @__PURE__ */ React$1.createElement(GsUserMenu, null)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-narrow-only gs-menu-anchor", ref: mwrap }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", "aria-expanded": menu, "aria-haspopup": "menu", onClick: () => setMenu((m) => !m) }, "Menu"), menu && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop", role: "menu", "aria-label": "Menu", style: out ? void 0 : { minWidth: 200 } }, links.map(([id, l, fn]) => /* @__PURE__ */ React$1.createElement("button", { key: id, type: "button", role: "menuitem", className: "gs-menu-item", "aria-current": cur === id ? "page" : void 0, onClick: () => pick(fn) }, l)), out && /* @__PURE__ */ React$1.createElement("div", { className: "gs-menu-div", role: "separator" }), out && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop-cta" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, role: "menuitem", onClick: () => pick(() => gs.go("signin")) }, "Sign in"), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, role: "menuitem", onClick: () => pick(gs.startFree) }, "Start free")))), !out && /* @__PURE__ */ React$1.createElement("div", { className: "gs-narrow-only" }, /* @__PURE__ */ React$1.createElement(GsUserMenu, { compact: true })))));
   };
   const gsDailyRoute = (gs) => {
     const k = gsGameOfRoute(gs.route.name);
-    return !!(k && GS_GAMES[k].daily);
+    return !!(k && GS_GAMES$1[k].daily);
   };
   const gsWeekSwitch = (gs) => {
     const r = gs.route;
@@ -5227,9 +13093,9 @@
     const opts = [["out", "signed out"], ["free", "free"], ["pass", "Pass"]];
     const sw = gsWeekSwitch(gs);
     const daily = gsDailyRoute(gs);
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React2.createElement("span", null, "Demo view:"), opts.map(([v, l], i) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React2.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React2.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React2.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v }) }, l)))))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React$1.createElement("span", null, "Demo view:"), opts.map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React$1.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v }) }, l)))))));
   };
-  const GsPlayPopup = () => /* @__PURE__ */ React2.createElement(GsPlayDialog, null);
+  const GsPlayPopup = () => /* @__PURE__ */ React$1.createElement(GsPlayDialog, null);
   const DL_PHONE = 768;
   const DL_LOGO = "assets/logo.svg";
   (function dlHead() {
@@ -5243,32 +13109,32 @@
     s.textContent = ".dl-page :focus-visible{outline:2px solid #0B0B0B;outline-offset:2px}.dl-page button{font:inherit;color:inherit}.dl-page a:hover{text-decoration-thickness:2px}.dl-scroll{scrollbar-width:none}.dl-scroll::-webkit-scrollbar{display:none}";
     document.head.appendChild(s);
   })();
-  const dlSvg = (d, size = 20, sw = 1.6) => /* @__PURE__ */ React2.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: sw, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" }, d);
+  const dlSvg = (d, size = 20, sw = 1.6) => /* @__PURE__ */ React$1.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: sw, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" }, d);
   const DL_I = {
-    back: /* @__PURE__ */ React2.createElement("path", { d: "M19 12H5M11 6l-6 6 6 6" }),
-    link: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("path", { d: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" }), /* @__PURE__ */ React2.createElement("path", { d: "M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" })),
-    info: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React2.createElement("path", { d: "M12 11v5M12 8h.01" })),
-    out: /* @__PURE__ */ React2.createElement("path", { d: "M7 17 17 7M8 7h9v9" }),
-    prev: /* @__PURE__ */ React2.createElement("path", { d: "M15 6l-6 6 6 6" }),
-    next: /* @__PURE__ */ React2.createElement("path", { d: "M9 6l6 6-6 6" }),
-    ext: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("path", { d: "M14 4h6v6M20 4l-9 9" }), /* @__PURE__ */ React2.createElement("path", { d: "M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" })),
-    search: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "11", cy: "11", r: "7" }), /* @__PURE__ */ React2.createElement("path", { d: "m20 20-4-4" })),
-    panel: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("rect", { x: "3", y: "4", width: "18", height: "16", rx: "3" }), /* @__PURE__ */ React2.createElement("path", { d: "M9 4v16" })),
-    pen: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("path", { d: "M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" }), /* @__PURE__ */ React2.createElement("path", { d: "M17.5 3.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z" })),
-    images: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("rect", { x: "3", y: "7", width: "13", height: "13", rx: "2" }), /* @__PURE__ */ React2.createElement("path", { d: "M8 4h11a2 2 0 0 1 2 2v11" }), /* @__PURE__ */ React2.createElement("path", { d: "m3 17 4-4 5 5" })),
-    plugin: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "3.5" }), /* @__PURE__ */ React2.createElement("path", { d: "M15.5 12v1.5a2 2 0 0 0 4 0V12" })),
-    scope: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("path", { d: "m4 15 9-6 2 3-9 6z" }), /* @__PURE__ */ React2.createElement("path", { d: "m13 9 3-2 3 4-3 2" }), /* @__PURE__ */ React2.createElement("path", { d: "M9 18l-2 3M11 17l2 4" })),
-    plans: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("path", { d: "M12 3 20 7.5v9L12 21l-8-4.5v-9z" }), /* @__PURE__ */ React2.createElement("path", { d: "M12 9v6M9 12h6" })),
-    gear: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "3" }), /* @__PURE__ */ React2.createElement("path", { d: "M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" })),
-    help: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "4" }), /* @__PURE__ */ React2.createElement("path", { d: "m5.6 5.6 3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6" })),
-    arrow: /* @__PURE__ */ React2.createElement("path", { d: "M5 12h14M13 6l6 6-6 6" })
+    back: /* @__PURE__ */ React$1.createElement("path", { d: "M19 12H5M11 6l-6 6 6 6" }),
+    link: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" }), /* @__PURE__ */ React$1.createElement("path", { d: "M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" })),
+    info: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React$1.createElement("path", { d: "M12 11v5M12 8h.01" })),
+    out: /* @__PURE__ */ React$1.createElement("path", { d: "M7 17 17 7M8 7h9v9" }),
+    prev: /* @__PURE__ */ React$1.createElement("path", { d: "M15 6l-6 6 6 6" }),
+    next: /* @__PURE__ */ React$1.createElement("path", { d: "M9 6l6 6-6 6" }),
+    ext: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M14 4h6v6M20 4l-9 9" }), /* @__PURE__ */ React$1.createElement("path", { d: "M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" })),
+    search: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "11", cy: "11", r: "7" }), /* @__PURE__ */ React$1.createElement("path", { d: "m20 20-4-4" })),
+    panel: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { x: "3", y: "4", width: "18", height: "16", rx: "3" }), /* @__PURE__ */ React$1.createElement("path", { d: "M9 4v16" })),
+    pen: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z" })),
+    images: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { x: "3", y: "7", width: "13", height: "13", rx: "2" }), /* @__PURE__ */ React$1.createElement("path", { d: "M8 4h11a2 2 0 0 1 2 2v11" }), /* @__PURE__ */ React$1.createElement("path", { d: "m3 17 4-4 5 5" })),
+    plugin: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "3.5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M15.5 12v1.5a2 2 0 0 0 4 0V12" })),
+    scope: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "m4 15 9-6 2 3-9 6z" }), /* @__PURE__ */ React$1.createElement("path", { d: "m13 9 3-2 3 4-3 2" }), /* @__PURE__ */ React$1.createElement("path", { d: "M9 18l-2 3M11 17l2 4" })),
+    plans: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M12 3 20 7.5v9L12 21l-8-4.5v-9z" }), /* @__PURE__ */ React$1.createElement("path", { d: "M12 9v6M9 12h6" })),
+    gear: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "3" }), /* @__PURE__ */ React$1.createElement("path", { d: "M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" })),
+    help: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "4" }), /* @__PURE__ */ React$1.createElement("path", { d: "m5.6 5.6 3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6" })),
+    arrow: /* @__PURE__ */ React$1.createElement("path", { d: "M5 12h14M13 6l6 6-6 6" })
   };
   const dlIcon = (n, size, sw) => dlSvg(DL_I[n], size, sw);
   const useDlPhone = () => {
     const gs = useGs();
     return gs.width < DL_PHONE;
   };
-  const dlText = (text, heads) => text.split("\n").map((l, i) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, i > 0 ? "\n" : null, heads.includes(l) ? /* @__PURE__ */ React2.createElement("strong", { style: { fontWeight: 600 } }, l) : l));
+  const dlText = (text, heads) => text.split("\n").map((l, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i > 0 ? "\n" : null, heads.includes(l) ? /* @__PURE__ */ React$1.createElement("strong", { style: { fontWeight: 600 } }, l) : l));
   const DL_HEADS = ["WHAT YOU CAN PLAY", "HOW IT WORKS"];
   const dlGames = (ai) => "Games you play with your AI assistant. Crack today's puzzle, solve a mystery, go on an adventure. You make the moves; the game holds the rules. " + ai + " does the talking: it sets the scene, plays the characters and follows what you say. The game keeps the score. It holds the rules, the dice and your record, so " + ai + " can't bend the rules or fudge a roll.\n\nYou need an After Pixels account to play. Sign in when you connect. One connection covers every game in the library, and a game you start in one chat carries on in the next.\n\nWHAT YOU CAN PLAY\n• Daily puzzles. A new word puzzle every day.\n• Mysteries. Read the clues, question the people involved and name who did it.\n• Adventures. Explore, take risks and let the dice decide what happens.\n\nHOW IT WORKS\n• Ask " + ai + " what you can play. It lists every game in the library today, how often each one has something new, and how far you have got.\n• Name a game to start it, or ask for the kind of game you want.\n• Every guess, roll and move goes to the game, which decides what happens and keeps count. " + ai + " describes what happened.\n• When you finish, share your result without giving the answer away.";
   const DLC = {
@@ -5336,21 +13202,21 @@
     footA: { color: DLC.grey, textDecoration: "underline", textUnderlineOffset: 3 }
   };
   const dlNoGo = (e) => e.preventDefault();
-  const DlClaudeMark = () => /* @__PURE__ */ React2.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", "aria-hidden": "true", stroke: DLC.clay, strokeWidth: "2.4", strokeLinecap: "round" }, [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((a, i) => /* @__PURE__ */ React2.createElement("line", { key: a, x1: "12", y1: "12", x2: "12", y2: i % 2 ? 3.5 : 1.5, transform: "rotate(" + (a + i % 3 * 4) + " 12 12)" })));
-  const DlcFact = ({ label, children }) => /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("div", { style: dlcS.label }, label), children);
-  const DlcOut = ({ title, children }) => /* @__PURE__ */ React2.createElement("a", { href: "#", title, onClick: dlNoGo, style: dlcS.outLink }, children, dlIcon("out", 16, 1.8));
+  const DlClaudeMark = () => /* @__PURE__ */ React$1.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", "aria-hidden": "true", stroke: DLC.clay, strokeWidth: "2.4", strokeLinecap: "round" }, [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((a, i) => /* @__PURE__ */ React$1.createElement("line", { key: a, x1: "12", y1: "12", x2: "12", y2: i % 2 ? 3.5 : 1.5, transform: "rotate(" + (a + i % 3 * 4) + " 12 12)" })));
+  const DlcFact = ({ label, children }) => /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.label }, label), children);
+  const DlcOut = ({ title, children }) => /* @__PURE__ */ React$1.createElement("a", { href: "#", title, onClick: dlNoGo, style: dlcS.outLink }, children, dlIcon("out", 16, 1.8));
   const DlcFacts = ({ phone }) => {
-    const made = /* @__PURE__ */ React2.createElement(DlcFact, { label: "Made by" }, /* @__PURE__ */ React2.createElement(DlcOut, null, "Harness Intent Ltd"));
-    const cats = /* @__PURE__ */ React2.createElement(DlcFact, { label: "Categories" }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.chips }, /* @__PURE__ */ React2.createElement("span", { style: dlcS.chip }, "Games"), /* @__PURE__ */ React2.createElement("span", { style: dlcS.chip }, "Problems & puzzles")));
-    const sign = /* @__PURE__ */ React2.createElement(DlcFact, { label: "Sign-in" }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.value }, "Required"));
-    const url = /* @__PURE__ */ React2.createElement(DlcFact, { label: "Connector URL" }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.url }, "https://<domain>/mcp"));
-    const more = /* @__PURE__ */ React2.createElement(DlcFact, { label: "More info" }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.more }, /* @__PURE__ */ React2.createElement(DlcOut, { title: "<domain>/how-it-works" }, "Documentation"), /* @__PURE__ */ React2.createElement(DlcOut, { title: "support@harnessintent.com" }, "Support"), /* @__PURE__ */ React2.createElement(DlcOut, { title: "<domain>/privacy" }, "Privacy Policy")));
-    if (phone) return /* @__PURE__ */ React2.createElement("div", { style: dlcS.factsPhone }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.facts }, made, cats, sign), /* @__PURE__ */ React2.createElement("div", { style: dlcS.facts }, url, more));
-    return /* @__PURE__ */ React2.createElement("div", { style: dlcS.facts }, made, cats, sign, url, more);
+    const made = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Made by" }, /* @__PURE__ */ React$1.createElement(DlcOut, null, "Harness Intent Ltd"));
+    const cats = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Categories" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.chips }, /* @__PURE__ */ React$1.createElement("span", { style: dlcS.chip }, "Games"), /* @__PURE__ */ React$1.createElement("span", { style: dlcS.chip }, "Problems & puzzles")));
+    const sign = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Sign-in" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.value }, "Required"));
+    const url = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Connector URL" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.url }, "https://<domain>/mcp"));
+    const more = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "More info" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.more }, /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/how-it-works" }, "Documentation"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "support@harnessintent.com" }, "Support"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/privacy" }, "Privacy Policy")));
+    if (phone) return /* @__PURE__ */ React$1.createElement("div", { style: dlcS.factsPhone }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, made, cats, sign), /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, url, more));
+    return /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, made, cats, sign, url, more);
   };
   const DlcGallery = ({ phone }) => {
-    const row = React2.useRef(null);
-    const [ends, setEnds] = React2.useState([true, false]);
+    const row = React$1.useRef(null);
+    const [ends, setEnds] = React$1.useState([true, false]);
     const onScroll = () => {
       const el = row.current;
       if (el) setEnds([el.scrollLeft < 4, el.scrollLeft + el.clientWidth > el.scrollWidth - 4]);
@@ -5359,15 +13225,15 @@
       const el = row.current;
       if (el) el.scrollBy({ left: d * (el.firstChild ? el.firstChild.offsetWidth + 16 : 300), behavior: "smooth" });
     };
-    return /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("div", { ref: row, onScroll, className: "dl-scroll", style: phone ? { ...dlcS.gallery, marginTop: 40 } : dlcS.gallery }, DLC_GALLERY.map(([id, name]) => /* @__PURE__ */ React2.createElement("div", { key: id, style: phone ? { ...dlcS.card, flex: "0 0 calc(100% - 24px)" } : dlcS.card }, /* @__PURE__ */ React2.createElement(GsChatPic, { turns: GS_CHATS[id][1].turns, width: 640, height: 262, label: name + " being played in a chat" })))), /* @__PURE__ */ React2.createElement("div", { style: dlcS.arrows }, /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Previous", disabled: ends[0], style: { ...dlcS.arrowBtn, opacity: ends[0] ? 0.3 : 1, cursor: ends[0] ? "default" : "pointer" }, onClick: () => step(-1) }, dlIcon("prev", 18)), /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Next", disabled: ends[1], style: { ...dlcS.arrowBtn, opacity: ends[1] ? 0.3 : 1, cursor: ends[1] ? "default" : "pointer" }, onClick: () => step(1) }, dlIcon("next", 18))));
+    return /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { ref: row, onScroll, className: "dl-scroll", style: phone ? { ...dlcS.gallery, marginTop: 40 } : dlcS.gallery }, DLC_GALLERY.map(([id, name]) => /* @__PURE__ */ React$1.createElement("div", { key: id, style: phone ? { ...dlcS.card, flex: "0 0 calc(100% - 24px)" } : dlcS.card }, /* @__PURE__ */ React$1.createElement(GsChatPic, { turns: GS_CHATS[id][1].turns, width: 640, height: 262, label: name + " being played in a chat" })))), /* @__PURE__ */ React$1.createElement("div", { style: dlcS.arrows }, /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Previous", disabled: ends[0], style: { ...dlcS.arrowBtn, opacity: ends[0] ? 0.3 : 1, cursor: ends[0] ? "default" : "pointer" }, onClick: () => step(-1) }, dlIcon("prev", 18)), /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Next", disabled: ends[1], style: { ...dlcS.arrowBtn, opacity: ends[1] ? 0.3 : 1, cursor: ends[1] ? "default" : "pointer" }, onClick: () => step(1) }, dlIcon("next", 18))));
   };
-  const DlcTools = ({ phone }) => /* @__PURE__ */ React2.createElement("section", null, /* @__PURE__ */ React2.createElement("h2", { style: phone ? { ...dlcS.toolsH, marginTop: 48 } : dlcS.toolsH }, "Tools"), /* @__PURE__ */ React2.createElement("div", { style: phone ? dlcS.toolsPhone : dlcS.tools }, DLC_TOOLS.map((t) => /* @__PURE__ */ React2.createElement("span", { key: t, style: dlcS.tool }, t))));
+  const DlcTools = ({ phone }) => /* @__PURE__ */ React$1.createElement("section", null, /* @__PURE__ */ React$1.createElement("h2", { style: phone ? { ...dlcS.toolsH, marginTop: 48 } : dlcS.toolsH }, "Tools"), /* @__PURE__ */ React$1.createElement("div", { style: phone ? dlcS.toolsPhone : dlcS.tools }, DLC_TOOLS.map((t) => /* @__PURE__ */ React$1.createElement("span", { key: t, style: dlcS.tool }, t))));
   const DlClaudeListing = () => {
     const phone = useDlPhone();
-    const notice = /* @__PURE__ */ React2.createElement("div", { style: phone ? { ...dlcS.notice, marginTop: 28, padding: "16px 16px" } : dlcS.notice }, /* @__PURE__ */ React2.createElement("span", { style: dlcS.noticeIcon }, dlIcon("info", 16)), /* @__PURE__ */ React2.createElement("p", { style: { margin: 0 } }, "Community connectors have undergone automated reviews but aren’t verified by Anthropic. We don’t control the tools they make available and can’t guarantee they’ll work as intended or won’t change, so only connect developers you trust. ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.a }, "Learn more"), "."));
-    const desc = /* @__PURE__ */ React2.createElement("p", { style: dlcS.desc }, dlText(dlGames("Claude"), DL_HEADS));
-    const logo = (size) => /* @__PURE__ */ React2.createElement("img", { src: DL_LOGO, alt: "", width: size, height: size, style: { display: "block" } });
-    return /* @__PURE__ */ React2.createElement("main", { className: "dl-page", style: dlcS.page, "aria-label": "Directory listing mock: Claude connector" }, phone ? /* @__PURE__ */ React2.createElement("header", { style: dlcS.headPhone }, /* @__PURE__ */ React2.createElement("div", { style: { display: "flex", alignItems: "center", gap: 24 } }, /* @__PURE__ */ React2.createElement("span", { style: dlcS.brand }, /* @__PURE__ */ React2.createElement(DlClaudeMark, null), "Claude"), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlcS.signIn }, "Sign in")), /* @__PURE__ */ React2.createElement("div", { style: { display: "flex", justifyContent: "flex-end", padding: "8px 22px 8px 0" } }, /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Copy link", style: dlcS.copy }, dlIcon("link", 20)))) : /* @__PURE__ */ React2.createElement("header", { style: dlcS.head }, /* @__PURE__ */ React2.createElement("span", { style: dlcS.brand }, /* @__PURE__ */ React2.createElement(DlClaudeMark, null), "Claude"), /* @__PURE__ */ React2.createElement("div", { style: dlcS.headRight }, /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlcS.copy }, dlIcon("link", 18), "Copy link"), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlcS.signIn }, "Sign in"))), /* @__PURE__ */ React2.createElement("div", { style: phone ? dlcS.colPhone : dlcS.col }, /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: phone ? { ...dlcS.back, marginTop: 20 } : dlcS.back }, dlIcon("back", 16, 1.8), "Directory"), phone ? /* @__PURE__ */ React2.createElement("div", { style: { marginTop: 16, paddingBottom: 28, borderBottom: "1px solid " + DLC.line } }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.tile }, logo(56)), /* @__PURE__ */ React2.createElement("div", { style: { ...dlcS.nameRow, marginTop: 16 } }, /* @__PURE__ */ React2.createElement("h1", { style: dlcS.namePhone }, "After Pixels"), /* @__PURE__ */ React2.createElement("span", { style: dlcS.tagPhone }, "Community")), /* @__PURE__ */ React2.createElement("p", { style: dlcS.oneLiner }, DLC_ONELINER), /* @__PURE__ */ React2.createElement("button", { type: "button", style: { ...dlcS.add, marginTop: 16 } }, "Sign in to add")) : /* @__PURE__ */ React2.createElement("div", { style: dlcS.titleGrid }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.titleLeft }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.tile }, logo(56)), /* @__PURE__ */ React2.createElement("div", { style: { minWidth: 0 } }, /* @__PURE__ */ React2.createElement("div", { style: dlcS.nameRow }, /* @__PURE__ */ React2.createElement("h1", { style: dlcS.name }, "After Pixels"), /* @__PURE__ */ React2.createElement("span", { style: dlcS.tag }, "Community")), /* @__PURE__ */ React2.createElement("p", { style: dlcS.oneLiner }, DLC_ONELINER))), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlcS.add }, "Sign in to add")), notice, phone ? /* @__PURE__ */ React2.createElement("div", { style: { marginTop: 36 } }, desc, /* @__PURE__ */ React2.createElement(DlcGallery, { phone: true }), /* @__PURE__ */ React2.createElement(DlcTools, { phone: true }), /* @__PURE__ */ React2.createElement("hr", { style: dlcS.rule }), /* @__PURE__ */ React2.createElement(DlcFacts, { phone: true })) : /* @__PURE__ */ React2.createElement("div", { style: dlcS.body }, /* @__PURE__ */ React2.createElement("div", { style: { minWidth: 0 } }, desc, /* @__PURE__ */ React2.createElement(DlcGallery, null), /* @__PURE__ */ React2.createElement(DlcTools, null)), /* @__PURE__ */ React2.createElement("aside", null, /* @__PURE__ */ React2.createElement(DlcFacts, null)))), /* @__PURE__ */ React2.createElement("p", { style: dlcS.foot }, "Submission to the Directory is governed by the ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.footA }, "Software Directory Terms"), "; use of Connectors is governed by your ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.footA }, "relevant terms"), "."));
+    const notice = /* @__PURE__ */ React$1.createElement("div", { style: phone ? { ...dlcS.notice, marginTop: 28, padding: "16px 16px" } : dlcS.notice }, /* @__PURE__ */ React$1.createElement("span", { style: dlcS.noticeIcon }, dlIcon("info", 16)), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, "Community connectors have undergone automated reviews but aren’t verified by Anthropic. We don’t control the tools they make available and can’t guarantee they’ll work as intended or won’t change, so only connect developers you trust. ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.a }, "Learn more"), "."));
+    const desc = /* @__PURE__ */ React$1.createElement("p", { style: dlcS.desc }, dlText(dlGames("Claude"), DL_HEADS));
+    const logo = (size) => /* @__PURE__ */ React$1.createElement("img", { src: DL_LOGO, alt: "", width: size, height: size, style: { display: "block" } });
+    return /* @__PURE__ */ React$1.createElement("main", { className: "dl-page", style: dlcS.page, "aria-label": "Directory listing mock: Claude connector" }, phone ? /* @__PURE__ */ React$1.createElement("header", { style: dlcS.headPhone }, /* @__PURE__ */ React$1.createElement("div", { style: { display: "flex", alignItems: "center", gap: 24 } }, /* @__PURE__ */ React$1.createElement("span", { style: dlcS.brand }, /* @__PURE__ */ React$1.createElement(DlClaudeMark, null), "Claude"), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlcS.signIn }, "Sign in")), /* @__PURE__ */ React$1.createElement("div", { style: { display: "flex", justifyContent: "flex-end", padding: "8px 22px 8px 0" } }, /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Copy link", style: dlcS.copy }, dlIcon("link", 20)))) : /* @__PURE__ */ React$1.createElement("header", { style: dlcS.head }, /* @__PURE__ */ React$1.createElement("span", { style: dlcS.brand }, /* @__PURE__ */ React$1.createElement(DlClaudeMark, null), "Claude"), /* @__PURE__ */ React$1.createElement("div", { style: dlcS.headRight }, /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlcS.copy }, dlIcon("link", 18), "Copy link"), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlcS.signIn }, "Sign in"))), /* @__PURE__ */ React$1.createElement("div", { style: phone ? dlcS.colPhone : dlcS.col }, /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: phone ? { ...dlcS.back, marginTop: 20 } : dlcS.back }, dlIcon("back", 16, 1.8), "Directory"), phone ? /* @__PURE__ */ React$1.createElement("div", { style: { marginTop: 16, paddingBottom: 28, borderBottom: "1px solid " + DLC.line } }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.tile }, logo(56)), /* @__PURE__ */ React$1.createElement("div", { style: { ...dlcS.nameRow, marginTop: 16 } }, /* @__PURE__ */ React$1.createElement("h1", { style: dlcS.namePhone }, "After Pixels"), /* @__PURE__ */ React$1.createElement("span", { style: dlcS.tagPhone }, "Community")), /* @__PURE__ */ React$1.createElement("p", { style: dlcS.oneLiner }, DLC_ONELINER), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: { ...dlcS.add, marginTop: 16 } }, "Sign in to add")) : /* @__PURE__ */ React$1.createElement("div", { style: dlcS.titleGrid }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.titleLeft }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.tile }, logo(56)), /* @__PURE__ */ React$1.createElement("div", { style: { minWidth: 0 } }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.nameRow }, /* @__PURE__ */ React$1.createElement("h1", { style: dlcS.name }, "After Pixels"), /* @__PURE__ */ React$1.createElement("span", { style: dlcS.tag }, "Community")), /* @__PURE__ */ React$1.createElement("p", { style: dlcS.oneLiner }, DLC_ONELINER))), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlcS.add }, "Sign in to add")), notice, phone ? /* @__PURE__ */ React$1.createElement("div", { style: { marginTop: 36 } }, desc, /* @__PURE__ */ React$1.createElement(DlcGallery, { phone: true }), /* @__PURE__ */ React$1.createElement(DlcTools, { phone: true }), /* @__PURE__ */ React$1.createElement("hr", { style: dlcS.rule }), /* @__PURE__ */ React$1.createElement(DlcFacts, { phone: true })) : /* @__PURE__ */ React$1.createElement("div", { style: dlcS.body }, /* @__PURE__ */ React$1.createElement("div", { style: { minWidth: 0 } }, desc, /* @__PURE__ */ React$1.createElement(DlcGallery, null), /* @__PURE__ */ React$1.createElement(DlcTools, null)), /* @__PURE__ */ React$1.createElement("aside", null, /* @__PURE__ */ React$1.createElement(DlcFacts, null)))), /* @__PURE__ */ React$1.createElement("p", { style: dlcS.foot }, "Submission to the Directory is governed by the ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.footA }, "Software Directory Terms"), "; use of Connectors is governed by your ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlcS.footA }, "relevant terms"), "."));
   };
   const DLG = {
     ink: "#0D0D0D",
@@ -5433,13 +13299,13 @@
     notice: { margin: "48px 0 0", fontSize: 14, lineHeight: "20px", color: DLG.grey, textWrap: "pretty" },
     u: { color: DLG.grey, textDecoration: "underline", textUnderlineOffset: 2 }
   };
-  const DlGptMark = () => /* @__PURE__ */ React2.createElement("svg", { width: "26", height: "26", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", "aria-hidden": "true" }, [0, 60, 120, 180, 240, 300].map((a) => /* @__PURE__ */ React2.createElement("ellipse", { key: a, cx: "12", cy: "7.2", rx: "3.4", ry: "5", transform: "rotate(" + a + " 12 12)" })));
-  const DlgItem = ({ icon, sel, children }) => /* @__PURE__ */ React2.createElement("button", { type: "button", style: sel ? { ...dlgS.item, ...dlgS.itemSel } : dlgS.item, "aria-current": sel ? "page" : void 0 }, dlIcon(icon, 20, 1.6), children);
-  const DlgSidebar = () => /* @__PURE__ */ React2.createElement("nav", { style: dlgS.side, "aria-label": "ChatGPT sidebar (mock)" }, /* @__PURE__ */ React2.createElement("div", { style: dlgS.sideTop }, /* @__PURE__ */ React2.createElement(DlGptMark, null), /* @__PURE__ */ React2.createElement("div", { style: dlgS.sideIcons }, /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Search", style: dlgS.iconBtn }, dlIcon("search", 20)), /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Close sidebar", style: dlgS.iconBtn }, dlIcon("panel", 20)))), /* @__PURE__ */ React2.createElement("div", { style: dlgS.nav }, /* @__PURE__ */ React2.createElement(DlgItem, { icon: "pen" }, "New chat"), /* @__PURE__ */ React2.createElement(DlgItem, { icon: "images" }, "Images"), /* @__PURE__ */ React2.createElement(DlgItem, { icon: "plugin", sel: true }, "Plugins"), /* @__PURE__ */ React2.createElement(DlgItem, { icon: "scope" }, "Deep research")), /* @__PURE__ */ React2.createElement("div", { style: dlgS.sideFoot }, /* @__PURE__ */ React2.createElement(DlgItem, { icon: "plans" }, "See plans and pricing"), /* @__PURE__ */ React2.createElement(DlgItem, { icon: "gear" }, "Settings"), /* @__PURE__ */ React2.createElement(DlgItem, { icon: "help" }, "Help"), /* @__PURE__ */ React2.createElement("div", { style: dlgS.tailor }, /* @__PURE__ */ React2.createElement("p", { style: dlgS.tailorH }, "Get responses tailored to you"), /* @__PURE__ */ React2.createElement("p", { style: dlgS.tailorP }, "Log in to get answers based on saved chats, plus create images and upload files."), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlgS.outPill }, "Log in"))));
-  const DlgPill = ({ text, phone }) => /* @__PURE__ */ React2.createElement("div", { style: phone ? dlgS.pillPhone : dlgS.pill }, /* @__PURE__ */ React2.createElement("span", { style: { flex: phone ? 1 : "none", paddingLeft: 4 } }, /* @__PURE__ */ React2.createElement("img", { src: DL_LOGO, alt: "", style: dlgS.pillMark }), /* @__PURE__ */ React2.createElement("span", { style: dlgS.pillName }, "After Pixels"), " ", text), /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Send: " + text, style: dlgS.go }, dlIcon("arrow", 14, 2)));
+  const DlGptMark = () => /* @__PURE__ */ React$1.createElement("svg", { width: "26", height: "26", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", "aria-hidden": "true" }, [0, 60, 120, 180, 240, 300].map((a) => /* @__PURE__ */ React$1.createElement("ellipse", { key: a, cx: "12", cy: "7.2", rx: "3.4", ry: "5", transform: "rotate(" + a + " 12 12)" })));
+  const DlgItem = ({ icon, sel, children }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", style: sel ? { ...dlgS.item, ...dlgS.itemSel } : dlgS.item, "aria-current": sel ? "page" : void 0 }, dlIcon(icon, 20, 1.6), children);
+  const DlgSidebar = () => /* @__PURE__ */ React$1.createElement("nav", { style: dlgS.side, "aria-label": "ChatGPT sidebar (mock)" }, /* @__PURE__ */ React$1.createElement("div", { style: dlgS.sideTop }, /* @__PURE__ */ React$1.createElement(DlGptMark, null), /* @__PURE__ */ React$1.createElement("div", { style: dlgS.sideIcons }, /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Search", style: dlgS.iconBtn }, dlIcon("search", 20)), /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Close sidebar", style: dlgS.iconBtn }, dlIcon("panel", 20)))), /* @__PURE__ */ React$1.createElement("div", { style: dlgS.nav }, /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "pen" }, "New chat"), /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "images" }, "Images"), /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "plugin", sel: true }, "Plugins"), /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "scope" }, "Deep research")), /* @__PURE__ */ React$1.createElement("div", { style: dlgS.sideFoot }, /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "plans" }, "See plans and pricing"), /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "gear" }, "Settings"), /* @__PURE__ */ React$1.createElement(DlgItem, { icon: "help" }, "Help"), /* @__PURE__ */ React$1.createElement("div", { style: dlgS.tailor }, /* @__PURE__ */ React$1.createElement("p", { style: dlgS.tailorH }, "Get responses tailored to you"), /* @__PURE__ */ React$1.createElement("p", { style: dlgS.tailorP }, "Log in to get answers based on saved chats, plus create images and upload files."), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlgS.outPill }, "Log in"))));
+  const DlgPill = ({ text, phone }) => /* @__PURE__ */ React$1.createElement("div", { style: phone ? dlgS.pillPhone : dlgS.pill }, /* @__PURE__ */ React$1.createElement("span", { style: { flex: phone ? 1 : "none", paddingLeft: 4 } }, /* @__PURE__ */ React$1.createElement("img", { src: DL_LOGO, alt: "", style: dlgS.pillMark }), /* @__PURE__ */ React$1.createElement("span", { style: dlgS.pillName }, "After Pixels"), " ", text), /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Send: " + text, style: dlgS.go }, dlIcon("arrow", 14, 2)));
   const DlChatGptListing = () => {
     const phone = useDlPhone();
-    return /* @__PURE__ */ React2.createElement("div", { className: "dl-page", style: dlgS.page }, !phone && /* @__PURE__ */ React2.createElement(DlgSidebar, null), /* @__PURE__ */ React2.createElement("main", { style: dlgS.main, "aria-label": "Plugin listing mock: ChatGPT" }, /* @__PURE__ */ React2.createElement("div", { style: phone ? dlgS.topPhone : dlgS.top }, /* @__PURE__ */ React2.createElement("div", { style: { display: "flex", alignItems: "center", gap: 16 } }, phone && /* @__PURE__ */ React2.createElement("button", { type: "button", "aria-label": "Open sidebar", style: dlgS.iconBtn }, dlIcon("panel", 20)), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlgS.crumb }, dlIcon("prev", 14, 2), "Plugins")), /* @__PURE__ */ React2.createElement("button", { type: "button", style: phone ? { ...dlgS.blackPill, height: 32, padding: "0 12px", fontSize: 14 } : dlgS.blackPill }, "Log in")), /* @__PURE__ */ React2.createElement("div", { style: phone ? dlgS.colPhone : dlgS.col }, /* @__PURE__ */ React2.createElement("div", { style: dlgS.tile }, /* @__PURE__ */ React2.createElement("img", { src: DL_LOGO, alt: "", width: "40", height: "40" })), /* @__PURE__ */ React2.createElement("div", { style: phone ? { ...dlgS.nameRow, marginTop: 36 } : dlgS.nameRow }, /* @__PURE__ */ React2.createElement("h1", { style: dlgS.name }, "After Pixels"), /* @__PURE__ */ React2.createElement("button", { type: "button", style: dlgS.blackPill }, "Install plugin")), /* @__PURE__ */ React2.createElement("p", { style: dlgS.sub }, "Daily puzzles and story games"), /* @__PURE__ */ React2.createElement("div", { style: phone ? { ...dlgS.banner, gap: 16, padding: "32px 16px" } : dlgS.banner }, DLG_PROMPTS.map((p) => /* @__PURE__ */ React2.createElement(DlgPill, { key: p, text: p, phone }))), /* @__PURE__ */ React2.createElement("p", { style: dlgS.desc }, dlText(dlGames("ChatGPT"), DL_HEADS)), /* @__PURE__ */ React2.createElement("h2", { style: dlgS.h2 }, "App"), /* @__PURE__ */ React2.createElement("div", { style: dlgS.app }, /* @__PURE__ */ React2.createElement("span", { style: dlgS.appIcon }, /* @__PURE__ */ React2.createElement("img", { src: DL_LOGO, alt: "", width: "26", height: "26" })), "After Pixels"), /* @__PURE__ */ React2.createElement("h2", { style: dlgS.h2 }, "Information"), /* @__PURE__ */ React2.createElement("dl", { style: dlgS.table }, DLG_INFO.map(([k, v, t]) => /* @__PURE__ */ React2.createElement("div", { key: k, style: phone ? { ...dlgS.row, gridTemplateColumns: "162px minmax(0,1fr)" } : dlgS.row }, /* @__PURE__ */ React2.createElement("dt", { style: dlgS.dt }, k), /* @__PURE__ */ React2.createElement("dd", { style: dlgS.dd }, v || /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, title: t, "aria-label": k + " (" + t + ")", style: dlgS.ext }, dlIcon("ext", 18, 1.7)))))), /* @__PURE__ */ React2.createElement("p", { style: dlgS.notice }, "When connected to After Pixels, ChatGPT may share relevant chats and memories with this app to help provide context for your requests. After Pixels's use of this data is subject to their ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "terms"), " and ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "privacy policy"), ". If you have ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "Memory"), " enabled, data from the app may be used to proactively provide helpful information or suggestions. ChatGPT always respects your training data preferences, including for data from connected apps. Use of apps may come with ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "elevated risk"), ". You can manage your preferences or disconnect from apps anytime in your settings. ", /* @__PURE__ */ React2.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "Learn more")))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-page", style: dlgS.page }, !phone && /* @__PURE__ */ React$1.createElement(DlgSidebar, null), /* @__PURE__ */ React$1.createElement("main", { style: dlgS.main, "aria-label": "Plugin listing mock: ChatGPT" }, /* @__PURE__ */ React$1.createElement("div", { style: phone ? dlgS.topPhone : dlgS.top }, /* @__PURE__ */ React$1.createElement("div", { style: { display: "flex", alignItems: "center", gap: 16 } }, phone && /* @__PURE__ */ React$1.createElement("button", { type: "button", "aria-label": "Open sidebar", style: dlgS.iconBtn }, dlIcon("panel", 20)), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlgS.crumb }, dlIcon("prev", 14, 2), "Plugins")), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: phone ? { ...dlgS.blackPill, height: 32, padding: "0 12px", fontSize: 14 } : dlgS.blackPill }, "Log in")), /* @__PURE__ */ React$1.createElement("div", { style: phone ? dlgS.colPhone : dlgS.col }, /* @__PURE__ */ React$1.createElement("div", { style: dlgS.tile }, /* @__PURE__ */ React$1.createElement("img", { src: DL_LOGO, alt: "", width: "40", height: "40" })), /* @__PURE__ */ React$1.createElement("div", { style: phone ? { ...dlgS.nameRow, marginTop: 36 } : dlgS.nameRow }, /* @__PURE__ */ React$1.createElement("h1", { style: dlgS.name }, "After Pixels"), /* @__PURE__ */ React$1.createElement("button", { type: "button", style: dlgS.blackPill }, "Install plugin")), /* @__PURE__ */ React$1.createElement("p", { style: dlgS.sub }, "Daily puzzles and story games"), /* @__PURE__ */ React$1.createElement("div", { style: phone ? { ...dlgS.banner, gap: 16, padding: "32px 16px" } : dlgS.banner }, DLG_PROMPTS.map((p) => /* @__PURE__ */ React$1.createElement(DlgPill, { key: p, text: p, phone }))), /* @__PURE__ */ React$1.createElement("p", { style: dlgS.desc }, dlText(dlGames("ChatGPT"), DL_HEADS)), /* @__PURE__ */ React$1.createElement("h2", { style: dlgS.h2 }, "App"), /* @__PURE__ */ React$1.createElement("div", { style: dlgS.app }, /* @__PURE__ */ React$1.createElement("span", { style: dlgS.appIcon }, /* @__PURE__ */ React$1.createElement("img", { src: DL_LOGO, alt: "", width: "26", height: "26" })), "After Pixels"), /* @__PURE__ */ React$1.createElement("h2", { style: dlgS.h2 }, "Information"), /* @__PURE__ */ React$1.createElement("dl", { style: dlgS.table }, DLG_INFO.map(([k, v, t]) => /* @__PURE__ */ React$1.createElement("div", { key: k, style: phone ? { ...dlgS.row, gridTemplateColumns: "162px minmax(0,1fr)" } : dlgS.row }, /* @__PURE__ */ React$1.createElement("dt", { style: dlgS.dt }, k), /* @__PURE__ */ React$1.createElement("dd", { style: dlgS.dd }, v || /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, title: t, "aria-label": k + " (" + t + ")", style: dlgS.ext }, dlIcon("ext", 18, 1.7)))))), /* @__PURE__ */ React$1.createElement("p", { style: dlgS.notice }, "When connected to After Pixels, ChatGPT may share relevant chats and memories with this app to help provide context for your requests. After Pixels's use of this data is subject to their ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "terms"), " and ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "privacy policy"), ". If you have ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "Memory"), " enabled, data from the app may be used to proactively provide helpful information or suggestions. ChatGPT always respects your training data preferences, including for data from connected apps. Use of apps may come with ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "elevated risk"), ". You can manage your preferences or disconnect from apps anytime in your settings. ", /* @__PURE__ */ React$1.createElement("a", { href: "#", onClick: dlNoGo, style: dlgS.u }, "Learn more")))));
   };
   const DL_STATES = [
     { group: "Store listing", id: "directory-listing-claude", label: "Directory listing: Claude connector", stage: (c) => c.go("directory-claude") },
@@ -5451,10 +13317,10 @@
   const GP_WEEKS = [["5 Oct", true]];
   let GP_ENDINGS;
   let GP_ACH;
-  const GpMini = ({ art, sm }) => /* @__PURE__ */ React2.createElement("span", { className: "pg-mini" + (sm ? " is-sm" : ""), "aria-hidden": "true", dangerouslySetInnerHTML: { __html: (GS_ART[art] || {}).svg } });
+  const GpMini = ({ art, sm }) => /* @__PURE__ */ React$1.createElement("span", { className: "pg-mini" + (sm ? " is-sm" : ""), "aria-hidden": "true", dangerouslySetInnerHTML: { __html: (GS_ART$1[art] || {}).svg } });
   const GpThisWeek = ({ who }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch", alignContent: "start" } }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "THIS WEEK’S RUN"), /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, GS_PAGES.delve.week.line), who === "played" && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "gs-tags" }, /* @__PURE__ */ React2.createElement(DS.Tag, { kind: "daily", icon: "check" }, "Played · Elsie rescued")), /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: "delve" }) }, "See this week’s session"))), /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, "Next run: Monday 12 October"));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch", alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK’S RUN"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, GS_PAGES.delve.week.line), who === "played" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags" }, /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily", icon: "check" }, "Played · Elsie rescued")), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: "delve" }) }, "See this week’s session"))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Next run: Monday 12 October"));
   };
   let GP_CFG;
   let GP_LINE;
@@ -5464,45 +13330,45 @@
     const n = c.recent.length;
     const count = (e) => c.recent.filter((r) => (r.k || r.ending) === e).length;
     const on = c.strip ? c.strip[2].filter(([, v]) => v).length : 0;
-    return /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "Your ", c.units), /* @__PURE__ */ React2.createElement("div", { className: "gs-grid3" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, gpUp(c.units), " PLAYED"), /* @__PURE__ */ React2.createElement("span", { className: "gs-figure" }, n)), c.run && /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, c.run), /* @__PURE__ */ React2.createElement("span", { className: "gs-figure" }, "1")), c.strip && /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, c.strip[0]), /* @__PURE__ */ React2.createElement("div", { className: "gs-days", role: "img", "aria-label": "Played " + on + " of the last " + c.strip[2].length + " " + c.strip[1] }, c.strip[2].map(([d, v]) => /* @__PURE__ */ React2.createElement("i", { key: d, title: d, className: v ? "is-on" : "" }))))), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "HOW YOUR ", gpUp(c.units), " ENDED"), c.ends ? /* @__PURE__ */ React2.createElement("ul", { className: "gs-plain" }, c.ends.map((e) => {
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Your ", c.units), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, gpUp(c.units), " PLAYED"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, n)), c.run && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.run), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, "1")), c.strip && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.strip[0]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-days", role: "img", "aria-label": "Played " + on + " of the last " + c.strip[2].length + " " + c.strip[1] }, c.strip[2].map(([d, v]) => /* @__PURE__ */ React$1.createElement("i", { key: d, title: d, className: v ? "is-on" : "" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW YOUR ", gpUp(c.units), " ENDED"), c.ends ? /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, c.ends.map((e) => {
       const k = count(e);
-      return /* @__PURE__ */ React2.createElement("li", { key: e, className: "pg-kv" }, /* @__PURE__ */ React2.createElement("span", { className: k ? "gs-strong" : "gs-muted" }, e), /* @__PURE__ */ React2.createElement("span", { className: "gs-num-text " + (k ? "gs-strong" : "gs-muted") }, k ? k + (k > 1 ? " times" : " time") : "Not yet"));
-    })) : /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, "—")));
+      return /* @__PURE__ */ React$1.createElement("li", { key: e, className: "pg-kv" }, /* @__PURE__ */ React$1.createElement("span", { className: k ? "gs-strong" : "gs-muted" }, e), /* @__PURE__ */ React$1.createElement("span", { className: "gs-num-text " + (k ? "gs-strong" : "gs-muted") }, k ? k + (k > 1 ? " times" : " time") : "Not yet"));
+    })) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, "—")));
   };
   const GpRecent = ({ id }) => {
     const gs = useGs();
     const c = GP_CFG[id];
-    return /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "Recent ", c.units), /* @__PURE__ */ React2.createElement("ul", { className: "gs-hist" }, c.recent.map((r, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, /* @__PURE__ */ React2.createElement("button", { type: "button", className: "gs-hrow mcp-art-host", onClick: () => gs.go("session", { id: r.sid }) }, /* @__PURE__ */ React2.createElement("span", { className: "pg-mini-art" }, /* @__PURE__ */ React2.createElement(GsArt, { art: r.art || GS_GAMES[id].art, shape: "landscape" })), /* @__PURE__ */ React2.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: r.ending ? "gs-strong" : "gs-muted" }, r.ending || "—"), /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, r.when)), /* @__PURE__ */ React2.createElement(DS.Icon, { name: "back", size: 16, style: { transform: "rotate(180deg)" } }))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Recent ", c.units), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-hist" }, c.recent.map((r, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hrow mcp-art-host", onClick: () => gs.go("session", { id: r.sid }) }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-mini-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: r.art || GS_GAMES$1[id].art, shape: "landscape" })), /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: r.ending ? "gs-strong" : "gs-muted" }, r.ending || "—"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, r.when)), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "back", size: 16, style: { transform: "rotate(180deg)" } }))))));
   };
   const GpAch = ({ who }) => {
     const played = who === "played";
     const earned = played ? GP_ACH.flatMap((g) => g.items.filter((i) => i.got).map((i) => i.n)) : [];
-    return /* @__PURE__ */ React2.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-sec-head" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, played ? "Still to earn" : "What you can earn"), played && /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, earned.length, " earned")), GP_ACH.map((g) => /* @__PURE__ */ React2.createElement("div", { key: g.cls, className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, g.cls.toUpperCase(), " · ", /* @__PURE__ */ React2.createElement("span", { className: "gs-muted", style: { letterSpacing: 0, fontWeight: 400 } }, g.line)), /* @__PURE__ */ React2.createElement("ul", { className: "gs-plain" }, g.items.filter((i) => !(played && i.got)).map((i) => /* @__PURE__ */ React2.createElement("li", { key: i.n, className: "pg-ach" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-strong" }, i.n), i.how && /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, i.how)), i.of && /* @__PURE__ */ React2.createElement("span", { className: "pg-ach-bar" }, /* @__PURE__ */ React2.createElement(DS.ProgressBar, { label: (played ? i.have : 0) + " of " + i.of, value: played ? i.have : 0, max: i.of }))))))), played && /* @__PURE__ */ React2.createElement("p", { className: "gs-small" }, "Earned: ", earned.join(", "), "."));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sec-head" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, played ? "Still to earn" : "What you can earn"), played && /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, earned.length, " earned")), GP_ACH.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.cls, className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.cls.toUpperCase(), " · ", /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted", style: { letterSpacing: 0, fontWeight: 400 } }, g.line)), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, g.items.filter((i) => !(played && i.got)).map((i) => /* @__PURE__ */ React$1.createElement("li", { key: i.n, className: "pg-ach" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-strong" }, i.n), i.how && /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, i.how)), i.of && /* @__PURE__ */ React$1.createElement("span", { className: "pg-ach-bar" }, /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: (played ? i.have : 0) + " of " + i.of, value: played ? i.have : 0, max: i.of }))))))), played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Earned: ", earned.join(", "), "."));
   };
   const GpYoursBody = ({ id }) => {
-    const a = /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, id === "delve" && /* @__PURE__ */ React2.createElement(GpThisWeek, { who: "played" }), /* @__PURE__ */ React2.createElement(GpRecord, { id }), /* @__PURE__ */ React2.createElement(GpRecent, { id }));
+    const a = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, id === "delve" && /* @__PURE__ */ React$1.createElement(GpThisWeek, { who: "played" }), /* @__PURE__ */ React$1.createElement(GpRecord, { id }), /* @__PURE__ */ React$1.createElement(GpRecent, { id }));
     if (id !== "delve") return a;
-    return /* @__PURE__ */ React2.createElement("div", { className: "gs-pitch" }, a, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, /* @__PURE__ */ React2.createElement(GpAch, { who: "played" })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-pitch" }, a, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { gap: 36 } }, /* @__PURE__ */ React$1.createElement(GpAch, { who: "played" })));
   };
-  const gpToRecord = (gs, id) => gs.go(GS_GAMES[id].route, { page: "record" });
+  const gpToRecord = (gs, id) => gs.go(GS_GAMES$1[id].route, { page: "record" });
   const GpCard = ({ id }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React2.createElement("section", { className: "pg-band", "aria-label": "In your library" }, /* @__PURE__ */ React2.createElement(GpMini, { art: g.art }), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-label" }, "IN YOUR LIBRARY"), /* @__PURE__ */ React2.createElement("span", { className: "gs-small" }, GP_LINE[id] || "See every " + GP_CFG[id].units.replace(/s$/, "") + " you’ve played and how each one ended.")), /* @__PURE__ */ React2.createElement("div", { className: "pg-band-link" }, /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gpToRecord(gs, id) }, "Go to your " + g.name.replace(/^The /, ""))));
+    const g = GS_GAMES$1[id];
+    return /* @__PURE__ */ React$1.createElement("section", { className: "pg-band", "aria-label": "In your library" }, /* @__PURE__ */ React$1.createElement(GpMini, { art: g.art }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "IN YOUR LIBRARY"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small" }, GP_LINE[id] || "See every " + GP_CFG[id].units.replace(/s$/, "") + " you’ve played and how each one ended.")), /* @__PURE__ */ React$1.createElement("div", { className: "pg-band-link" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gpToRecord(gs, id) }, "Go to your " + g.name.replace(/^The /, ""))));
   };
   const GpPlayer = ({ id }) => {
     const gs = useGs();
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("section", { className: "rf-head" }, /* @__PURE__ */ React2.createElement("span", null, /* @__PURE__ */ React2.createElement(GsCover, { art: g.art })), /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm", style: { justifyItems: "start" } }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, g.name), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About " + g.name))), /* @__PURE__ */ React2.createElement(GpYoursBody, { id }));
+    const g = GS_GAMES$1[id];
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "rf-head" }, /* @__PURE__ */ React$1.createElement("span", null, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art })), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, g.name), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go(g.route) }, "About " + g.name))), /* @__PURE__ */ React$1.createElement(GpYoursBody, { id }));
   };
   const gpGame = (id) => () => {
     const gs = useGs();
     if (gs.view !== "out" && gs.route.page === "record") {
       const L = GS_LIBRARY && GS_LIBRARY[id];
-      return L ? /* @__PURE__ */ React2.createElement(L, null) : /* @__PURE__ */ React2.createElement(GpPlayer, { id });
+      return L ? /* @__PURE__ */ React$1.createElement(L, null) : /* @__PURE__ */ React$1.createElement(GpPlayer, { id });
     }
-    const canPlay = gs.view === "pass" || !!(GS_GAMES[id].free || GS_GAMES[id].first);
-    return /* @__PURE__ */ React2.createElement(GsGamePage, { id, top: gs.view !== "out" && canPlay ? /* @__PURE__ */ React2.createElement(GpCard, { id }) : null });
+    const canPlay = gs.view === "pass" || !!(GS_GAMES$1[id].free || GS_GAMES$1[id].first);
+    return /* @__PURE__ */ React$1.createElement(GsGamePage, { id, top: gs.view !== "out" && canPlay ? /* @__PURE__ */ React$1.createElement(GpCard, { id }) : null });
   };
   let GsDelve;
   let GsWord;
@@ -5580,25 +13446,25 @@
     GsBarrow = gpGame("barrow");
   }
   const useGsDone = (ms) => {
-    const [on, setOn] = React2.useState(false);
-    React2.useEffect(() => {
+    const [on, setOn] = React$1.useState(false);
+    React$1.useEffect(() => {
       if (!on) return void 0;
       const t = setTimeout(() => setOn(false), ms);
       return () => clearTimeout(t);
     }, [on]);
     return [on, () => setOn(true)];
   };
-  const GsDone = ({ children }) => /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-row gs-done", role: "status" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), children);
+  const GsDone = ({ children }) => /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-row gs-done", role: "status" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), children);
   const GsIdentity = ({ open, provider, onCancel, onOk }) => {
     const gs = useGs();
-    const [pw, setPw] = React2.useState("");
-    const [tried, setTried] = React2.useState(false);
-    const [codeErr, setCodeErr] = React2.useState(false);
-    const [resent, setResent] = React2.useState(false);
-    const ref = React2.useRef(null);
+    const [pw, setPw] = React$1.useState("");
+    const [tried, setTried] = React$1.useState(false);
+    const [codeErr, setCodeErr] = React$1.useState(false);
+    const [resent, setResent] = React$1.useState(false);
+    const ref = React$1.useRef(null);
     const [busy, run, cancel] = useGsBusy();
     const [sending, runSend] = useGsBusy();
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (open) {
         setPw("");
         setTried(false);
@@ -5606,7 +13472,7 @@
         setResent(false);
       }
     }, [open]);
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (!resent) return void 0;
       const t = setTimeout(() => setResent(false), 2600);
       return () => clearTimeout(t);
@@ -5643,7 +13509,7 @@
       cancel();
       onCancel();
     };
-    return /* @__PURE__ */ React2.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Confirm it’s you" }, /* @__PURE__ */ React2.createElement(GsPopTitle, null, "Confirm it’s you"), provider ? /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: go, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("p", null, "Enter the code sent to ", /* @__PURE__ */ React2.createElement("b", null, gs.user.email), "."), /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Confirm it’s you" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Confirm it’s you"), provider ? /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: go, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", null, "Enter the code sent to ", /* @__PURE__ */ React$1.createElement("b", null, gs.user.email), "."), /* @__PURE__ */ React$1.createElement(
       DS.TextField,
       {
         label: "Verification code",
@@ -5662,12 +13528,12 @@
           setCodeErr(false);
         }
       }
-    ), /* @__PURE__ */ React2.createElement("div", { className: "gs-link-slot" }, resent ? /* @__PURE__ */ React2.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => runSend(() => {
+    ), /* @__PURE__ */ React$1.createElement("div", { className: "gs-link-slot" }, resent ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-ico-row", role: "status" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "A fresh code is on its way.") : /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => runSend(() => {
       setResent(true);
       setPw("");
       setCodeErr(false);
       refocus();
-    }), "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React2.createElement(GsInkSpin, null), "Send a new code")), /* @__PURE__ */ React2.createElement(GsActs, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", loading: busy }, "Confirm"))) : /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: go, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("p", null, "Enter your password to continue."), /* @__PURE__ */ React2.createElement(
+    }), "aria-busy": sending || void 0 }, sending && /* @__PURE__ */ React$1.createElement(GsInkSpin, null), "Send a new code")), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", loading: busy }, "Confirm"))) : /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: go, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", null, "Enter your password to continue."), /* @__PURE__ */ React$1.createElement(
       DS.TextField,
       {
         label: "Password",
@@ -5681,18 +13547,18 @@
         },
         onChange: (e) => setPw(e.target.value)
       }
-    ), /* @__PURE__ */ React2.createElement(GsActs, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", loading: busy }, "Continue"))));
+    ), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", loading: busy }, "Continue"))));
   };
   const GS_ACCT_CARD = { gap: 16, justifyItems: "stretch", alignContent: "start" };
   const GsChangeEmail = () => {
     const gs = useGs();
     const staged = gs.route.stage === "email-code";
-    const [phase, setPhase] = React2.useState(staged ? "code" : "form");
-    const [pending, setPending] = React2.useState(staged ? "new@example.com" : "");
-    const [confirm, setConfirm] = React2.useState(false);
-    const [code, setCode] = React2.useState("");
-    const [codeErr, setCodeErr] = React2.useState(false);
-    const codeRef = React2.useRef(null);
+    const [phase, setPhase] = React$1.useState(staged ? "code" : "form");
+    const [pending, setPending] = React$1.useState(staged ? "new@example.com" : "");
+    const [confirm, setConfirm] = React$1.useState(false);
+    const [code, setCode] = React$1.useState("");
+    const [codeErr, setCodeErr] = React$1.useState(false);
+    const codeRef = React$1.useRef(null);
     const [busy, run, cancel] = useGsBusy();
     const [done, showDone] = useGsDone(3600);
     const form = useGsForm({ email: "" }, [
@@ -5730,7 +13596,7 @@
         showDone();
       });
     };
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Change email"), phase === "form" ? /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "New email", type: "email", autoComplete: "email", placeholder: "new@example.com", ...form.bind("email") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts" }, done && /* @__PURE__ */ React2.createElement(GsDone, null, "Email updated."), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit" }, "Update email"))) : /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: confirmCode, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement("p", null, "Enter the code sent to ", /* @__PURE__ */ React2.createElement("b", null, pending), ". Your email switches once it’s confirmed."), /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Change email"), phase === "form" ? /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "New email", type: "email", autoComplete: "email", placeholder: "new@example.com", ...form.bind("email") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, done && /* @__PURE__ */ React$1.createElement(GsDone, null, "Email updated."), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit" }, "Update email"))) : /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: confirmCode, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", null, "Enter the code sent to ", /* @__PURE__ */ React$1.createElement("b", null, pending), ". Your email switches once it’s confirmed."), /* @__PURE__ */ React$1.createElement(
       DS.TextField,
       {
         label: "Verification code",
@@ -5749,7 +13615,7 @@
           setCodeErr(false);
         }
       }
-    ), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts gs-card-acts-pair" }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: cancelCode }, "Cancel"), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", loading: busy }, "Confirm"))), /* @__PURE__ */ React2.createElement(GsIdentity, { open: confirm, onCancel: () => setConfirm(false), onOk: () => {
+    ), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts gs-card-acts-pair" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: cancelCode }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", loading: busy }, "Confirm"))), /* @__PURE__ */ React$1.createElement(GsIdentity, { open: confirm, onCancel: () => setConfirm(false), onOk: () => {
       setConfirm(false);
       setPhase("code");
     } }));
@@ -5764,16 +13630,16 @@
       form.clear();
       showDone();
     });
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Change password"), /* @__PURE__ */ React2.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Current password", type: "password", autoComplete: "current-password", placeholder: "••••••••", ...form.bind("cur") }), /* @__PURE__ */ React2.createElement(DS.TextField, { label: "New password", type: "password", autoComplete: "new-password", placeholder: "At least 8 characters", ...form.bind("pw") }), /* @__PURE__ */ React2.createElement(DS.TextField, { label: "Confirm new password", type: "password", autoComplete: "new-password", placeholder: "Re-enter new password", ...form.bind("pw2") }), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts" }, done && /* @__PURE__ */ React2.createElement(GsDone, null, "Password updated."), /* @__PURE__ */ React2.createElement(DS.Button, { type: "submit", loading: form.busy }, "Update password"))));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Change password"), /* @__PURE__ */ React$1.createElement("form", { noValidate: true, onSubmit: form.submit, className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Current password", type: "password", autoComplete: "current-password", placeholder: "••••••••", ...form.bind("cur") }), /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "New password", type: "password", autoComplete: "new-password", placeholder: "At least 8 characters", ...form.bind("pw") }), /* @__PURE__ */ React$1.createElement(DS.TextField, { label: "Confirm new password", type: "password", autoComplete: "new-password", placeholder: "Re-enter new password", ...form.bind("pw2") }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, done && /* @__PURE__ */ React$1.createElement(GsDone, null, "Password updated."), /* @__PURE__ */ React$1.createElement(DS.Button, { type: "submit", loading: form.busy }, "Update password"))));
   };
   const GsDeleteAccount = () => {
     const gs = useGs();
-    const [step, setStep] = React2.useState(gs.route.stage === "delete" ? "alert" : gs.route.stage === "delete-code" ? "identity" : null);
+    const [step, setStep] = React$1.useState(gs.route.stage === "delete" ? "alert" : gs.route.stage === "delete-code" ? "identity" : null);
     const provider = gs.provider === "email" ? null : gs.provider;
     const holds = GS_SUB_HOLDS.includes(gs.sub.status);
     const st = gs.sub.status;
     const passLine = !holds ? null : st === "failed" ? "Your Pass ends straight away." : "Your Pass is cancelled. No more payments are taken, and nothing is refunded.";
-    return /* @__PURE__ */ React2.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Delete account"), /* @__PURE__ */ React2.createElement("p", null, "Your account goes, and so does your play history."), /* @__PURE__ */ React2.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", className: "gs-btn-danger-outline", onClick: () => setStep("alert") }, "Delete your account")), /* @__PURE__ */ React2.createElement(DS.Popup, { open: step === "alert", onClose: () => setStep(null), posture: "window", label: "Delete your account?" }, /* @__PURE__ */ React2.createElement(GsPopTitle, null, "Delete your account?"), /* @__PURE__ */ React2.createElement("p", null, "This deletes your name, username, email, results, history, streaks and achievements. It can’t be undone."), passLine && /* @__PURE__ */ React2.createElement("p", null, passLine), /* @__PURE__ */ React2.createElement(GsActs, null, /* @__PURE__ */ React2.createElement(DS.Button, { variant: "secondary", onClick: () => setStep(null) }, "Cancel"), /* @__PURE__ */ React2.createElement(DS.Button, { variant: "danger", onClick: () => setStep("identity") }, "Delete account"))), /* @__PURE__ */ React2.createElement(GsIdentity, { open: step === "identity", provider, onCancel: () => setStep(null), onOk: () => {
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Delete account"), /* @__PURE__ */ React$1.createElement("p", null, "Your account goes, and so does your play history."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", className: "gs-btn-danger-outline", onClick: () => setStep("alert") }, "Delete your account")), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: step === "alert", onClose: () => setStep(null), posture: "window", label: "Delete your account?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Delete your account?"), /* @__PURE__ */ React$1.createElement("p", null, "This deletes your name, username, email, results, history, streaks and achievements. It can’t be undone."), passLine && /* @__PURE__ */ React$1.createElement("p", null, passLine), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setStep(null) }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "danger", onClick: () => setStep("identity") }, "Delete account"))), /* @__PURE__ */ React$1.createElement(GsIdentity, { open: step === "identity", provider, onCancel: () => setStep(null), onOk: () => {
       setStep(null);
       gs.deleteAccount();
     } }));
@@ -5781,7 +13647,7 @@
   const GsAccount = () => {
     const gs = useGs();
     const providerAcct = gs.provider !== "email";
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main gs-acct-page" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "Account"), /* @__PURE__ */ React2.createElement("p", { className: "gs-muted" }, gs.user.email)), /* @__PURE__ */ React2.createElement("div", { className: "gs-acct-cards" }, /* @__PURE__ */ React2.createElement(GsPassCard, null), /* @__PURE__ */ React2.createElement(GsUsernameCard, null), providerAcct ? /* @__PURE__ */ React2.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-card" }, "Change email & password"), /* @__PURE__ */ React2.createElement("p", null, "Your email and password are managed by your sign-in provider and can be changed there.")) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(GsChangeEmail, null), /* @__PURE__ */ React2.createElement(GsChangePassword, null)), /* @__PURE__ */ React2.createElement(GsDeleteAccount, null)), /* @__PURE__ */ React2.createElement("p", null, /* @__PURE__ */ React2.createElement("a", { className: "gs-support", href: "mailto:" + GS_SUPPORT }, GS_SUPPORT))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-acct-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Account"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, gs.user.email)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-acct-cards" }, /* @__PURE__ */ React$1.createElement(GsPassCard, null), /* @__PURE__ */ React$1.createElement(GsUsernameCard, null), providerAcct ? /* @__PURE__ */ React$1.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Change email & password"), /* @__PURE__ */ React$1.createElement("p", null, "Your email and password are managed by your sign-in provider and can be changed there.")) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsChangeEmail, null), /* @__PURE__ */ React$1.createElement(GsChangePassword, null)), /* @__PURE__ */ React$1.createElement(GsDeleteAccount, null)), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("a", { className: "gs-support", href: "mailto:" + GS_SUPPORT }, GS_SUPPORT))));
   };
   function kitStateContext(api) {
     const reseed = () => api.reset();
@@ -6837,7 +14703,7 @@
     });
     window.KIT_STATES = KIT_STATES_ACCEPTED.map(({ id, aliases, label, group }) => ({ id, aliases: aliases || [], label, group }));
   }
-  const { useState: useStState, useEffect: useStEffect, useMemo: useStMemo, useRef: useStRef } = React2;
+  const { useState: useStState, useEffect: useStEffect, useMemo: useStMemo, useRef: useStRef } = React$1;
   const StatesRow = ({ state, onGo }) => {
     const [copied, setCopied] = useStState(null);
     const copy = async () => {
@@ -6862,7 +14728,7 @@
       }
       setCopied({ ok, url });
     };
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-states-item" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-states-row" }, /* @__PURE__ */ React2.createElement("button", { className: "kit-states-jump", onClick: () => onGo(state.id) }, /* @__PURE__ */ React2.createElement("span", { className: "kit-states-label" }, state.label), /* @__PURE__ */ React2.createElement("span", { className: "kit-states-id" }, "?state=", state.id, state.aliases && state.aliases.length ? " · also " + state.aliases.join(", ") : "")), /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-item" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-row" }, /* @__PURE__ */ React$1.createElement("button", { className: "kit-states-jump", onClick: () => onGo(state.id) }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, state.label), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", state.id, state.aliases && state.aliases.length ? " · also " + state.aliases.join(", ") : "")), /* @__PURE__ */ React$1.createElement(
       "button",
       {
         className: "kit-states-copy",
@@ -6870,15 +14736,15 @@
         title: "Copy link to this state",
         "aria-label": "Copy link to " + state.label
       },
-      /* @__PURE__ */ React2.createElement(Icon, { name: copied && copied.ok ? "check" : "link", size: 15 })
-    )), copied && /* @__PURE__ */ React2.createElement("div", { className: "kit-states-copied" }, /* @__PURE__ */ React2.createElement("span", null, copied.ok ? "Copied" : "Copy by hand"), /* @__PURE__ */ React2.createElement("input", { readOnly: true, value: copied.url, onFocus: (e) => e.target.select() })));
+      /* @__PURE__ */ React$1.createElement(Icon, { name: copied && copied.ok ? "check" : "link", size: 15 })
+    )), copied && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-copied" }, /* @__PURE__ */ React$1.createElement("span", null, copied.ok ? "Copied" : "Copy by hand"), /* @__PURE__ */ React$1.createElement("input", { readOnly: true, value: copied.url, onFocus: (e) => e.target.select() })));
   };
   const StatesGroups = ({ groups, onGo, forceOpen = false }) => {
     const [open, setOpen] = useStState({});
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-states-groups" }, groups.map((g) => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-groups" }, groups.map((g) => {
       const isOpen = forceOpen || !!open[g.title];
       const bodyId = "kit-states-g-" + g.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      return /* @__PURE__ */ React2.createElement("div", { className: "kit-states-group", key: g.title }, /* @__PURE__ */ React2.createElement(
+      return /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-group", key: g.title }, /* @__PURE__ */ React$1.createElement(
         "button",
         {
           type: "button",
@@ -6888,10 +14754,10 @@
           onClick: () => setOpen((p) => ({ ...p, [g.title]: !isOpen })),
           disabled: forceOpen
         },
-        /* @__PURE__ */ React2.createElement("span", { className: "kit-config-group-title" }, g.title),
-        /* @__PURE__ */ React2.createElement("span", { className: "kit-states-group-count" }, g.items.length),
-        /* @__PURE__ */ React2.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React2.createElement(Icon, { name: "chevron-down", size: 16 }))
-      ), isOpen && /* @__PURE__ */ React2.createElement("div", { id: bodyId }, /* @__PURE__ */ React2.createElement("div", { className: "kit-states-group-body" }, g.items.map((s) => /* @__PURE__ */ React2.createElement(StatesRow, { key: s.id, state: s, onGo }))), g.notes && g.notes.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "kit-states-notes" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-states-notes-title" }, "Notes"), /* @__PURE__ */ React2.createElement("ul", null, g.notes.map((n, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, n))))));
+        /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-group-title" }, g.title),
+        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-count" }, g.items.length),
+        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React$1.createElement(Icon, { name: "chevron-down", size: 16 }))
+      ), isOpen && /* @__PURE__ */ React$1.createElement("div", { id: bodyId }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-group-body" }, g.items.map((s) => /* @__PURE__ */ React$1.createElement(StatesRow, { key: s.id, state: s, onGo }))), g.notes && g.notes.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes-title" }, "Notes"), /* @__PURE__ */ React$1.createElement("ul", null, g.notes.map((n, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, n))))));
     }));
   };
   const kitFilterGroups = (groups, q) => {
@@ -6925,7 +14791,7 @@
       return () => window.removeEventListener("keydown", onKey);
     }, [onClose]);
     useStEffect(kitLockScroll, []);
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       "div",
       {
         className: "kit-config-scrim",
@@ -6934,7 +14800,7 @@
           if (e.target === e.currentTarget) onClose();
         }
       },
-      /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(
         "div",
         {
           role: "dialog",
@@ -6944,8 +14810,8 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React2.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React2.createElement(Icon, { name: "x", size: 18 }))),
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-body" }, /* @__PURE__ */ React2.createElement(
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, /* @__PURE__ */ React$1.createElement(
           "input",
           {
             ref: fieldRef,
@@ -6956,7 +14822,7 @@
             placeholder: "Search states",
             "aria-label": "Search states"
           }
-        ), filtered.length === 0 ? /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint", style: { margin: "14px 0 0" } }, "Nothing matches “", q, "”.") : /* @__PURE__ */ React2.createElement(StatesGroups, { groups: filtered, onGo, forceOpen: !!q.trim() }), /* @__PURE__ */ React2.createElement("div", { className: "kit-states-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "A link opens the app at that state. The names live in the register (app/states.jsx); a name that is not in it lands on the index."), /* @__PURE__ */ React2.createElement("button", { className: "kit-config-btn-secondary", onClick: onOpenIndex }, "Open the states index")))
+        ), filtered.length === 0 ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: "14px 0 0" } }, "Nothing matches “", q, "”.") : /* @__PURE__ */ React$1.createElement(StatesGroups, { groups: filtered, onGo, forceOpen: !!q.trim() }), /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "A link opens the app at that state. The names live in the register (app/states.jsx); a name that is not in it lands on the index."), /* @__PURE__ */ React$1.createElement("button", { className: "kit-config-btn-secondary", onClick: onOpenIndex }, "Open the states index")))
       )
     );
   };
@@ -6964,7 +14830,7 @@
     const [q, setQ] = useStState("");
     const filtered = useStMemo(() => kitFilterGroups(groups, q), [groups, q]);
     const unresolved = reason && reason.kind === "unresolved" ? reason.name : null;
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-index" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-index-inner" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-index-eyebrow" }, "Prototype"), /* @__PURE__ */ React2.createElement("h1", { className: "kit-index-title" }, "States"), /* @__PURE__ */ React2.createElement("p", { className: "kit-index-lede" }, "Every state this prototype can be opened at. Each one has an address, so a ticket can point straight at it: add ", /* @__PURE__ */ React2.createElement("code", null, "?state=<name>"), " to this page."), unresolved && /* @__PURE__ */ React2.createElement("p", { className: "kit-index-note" }, "Nothing is registered under ", /* @__PURE__ */ React2.createElement("code", null, unresolved), ". It has been renamed or removed since that link was written — the current names are below."), /* @__PURE__ */ React2.createElement("div", { className: "kit-index-bar" }, /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-index" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-index-inner" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-index-eyebrow" }, "Prototype"), /* @__PURE__ */ React$1.createElement("h1", { className: "kit-index-title" }, "States"), /* @__PURE__ */ React$1.createElement("p", { className: "kit-index-lede" }, "Every state this prototype can be opened at. Each one has an address, so a ticket can point straight at it: add ", /* @__PURE__ */ React$1.createElement("code", null, "?state=<name>"), " to this page."), unresolved && /* @__PURE__ */ React$1.createElement("p", { className: "kit-index-note" }, "Nothing is registered under ", /* @__PURE__ */ React$1.createElement("code", null, unresolved), ". It has been renamed or removed since that link was written — the current names are below."), /* @__PURE__ */ React$1.createElement("div", { className: "kit-index-bar" }, /* @__PURE__ */ React$1.createElement(
       "input",
       {
         className: "kit-states-search",
@@ -6974,7 +14840,7 @@
         placeholder: "Search states",
         "aria-label": "Search states"
       }
-    ), /* @__PURE__ */ React2.createElement("button", { className: "kit-config-btn-secondary", onClick: onDismiss }, "Continue to the app")), filtered.length === 0 ? /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint" }, "Nothing matches “", q, "”.") : /* @__PURE__ */ React2.createElement(StatesGroups, { groups: filtered, onGo, forceOpen: !!q.trim() })));
+    ), /* @__PURE__ */ React$1.createElement("button", { className: "kit-config-btn-secondary", onClick: onDismiss }, "Continue to the app")), filtered.length === 0 ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint" }, "Nothing matches “", q, "”.") : /* @__PURE__ */ React$1.createElement(StatesGroups, { groups: filtered, onGo, forceOpen: !!q.trim() })));
   };
   const KIT_QA = [
     {
@@ -7293,7 +15159,7 @@
     steps: ["library-groups-free", "pur-pass-ended-every", "library-pass-ended", "library-casebook-pass-ended", "library-delve-pass-ended", "library-hunter-pass-ended", "pur-first-done", "library-word", "history", "lapsed-history", "session-barrow", "library-barrow", "edition-barrow-done", "edition-barrow-done-free", "library-hunter", "session-hunter", "history-hunter", "library", "session-kept-pass-ended", "word-free", "library-casebook-editions", "editions-word-free", "edition-delve-in-progress", "escape-free", "account-email"]
   });
   const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
-  const { useState: useQaState, useEffect: useQaEffect } = React2;
+  const { useState: useQaState, useEffect: useQaEffect } = React$1;
   const QaPalette = ({ statesGroups, onGo, onClose }) => {
     const [shown, setShown] = useQaState(false);
     const labels = {};
@@ -7320,7 +15186,7 @@
       return () => window.removeEventListener("keydown", onKey);
     }, [onClose]);
     useQaEffect(kitLockScroll, []);
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       "div",
       {
         className: "kit-config-scrim",
@@ -7329,7 +15195,7 @@
           if (e.target === e.currentTarget) onClose();
         }
       },
-      /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(
         "div",
         {
           role: "dialog",
@@ -7339,11 +15205,11 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React2.createElement("div", null, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React2.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React2.createElement(Icon, { name: "x", size: 18 }))),
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-body" }, kitQaShown().length === 0 && /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "Nothing to check right now."), kitQaShown().map((w) => /* @__PURE__ */ React2.createElement("div", { key: w.key, className: "kit-qa-work" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-group-title" }, w.title), w.note && /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint", style: { margin: "4px 0 8px" } }, w.note), /* @__PURE__ */ React2.createElement("ol", { className: "kit-qa-steps" }, w.steps.map((id, i) => {
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, kitQaShown().length === 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "Nothing to check right now."), kitQaShown().map((w) => /* @__PURE__ */ React$1.createElement("div", { key: w.key, className: "kit-qa-work" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-group-title" }, w.title), w.note && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: "4px 0 8px" } }, w.note), /* @__PURE__ */ React$1.createElement("ol", { className: "kit-qa-steps" }, w.steps.map((id, i) => {
           const label = labels[id];
-          return /* @__PURE__ */ React2.createElement("li", { key: id }, label ? /* @__PURE__ */ React2.createElement("button", { className: "kit-states-jump", onClick: () => onGo(id) }, /* @__PURE__ */ React2.createElement("span", { className: "kit-states-label" }, i + 1 + ". " + label), /* @__PURE__ */ React2.createElement("span", { className: "kit-states-id" }, "?state=", id)) : /* @__PURE__ */ React2.createElement("div", { className: "kit-qa-stale" }, /* @__PURE__ */ React2.createElement("span", { className: "kit-states-label" }, i + 1 + ". Not in the register"), /* @__PURE__ */ React2.createElement("span", { className: "kit-states-id" }, "?state=", id)));
-        })))), /* @__PURE__ */ React2.createElement("div", { className: "kit-states-foot" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "This list is temporary. Each entry lives in app/qa.jsx and is deleted once its work is signed off; the states stay.")))
+          return /* @__PURE__ */ React$1.createElement("li", { key: id }, label ? /* @__PURE__ */ React$1.createElement("button", { className: "kit-states-jump", onClick: () => onGo(id) }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". " + label), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-qa-stale" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". Not in the register"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)));
+        })))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-foot" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "This list is temporary. Each entry lives in app/qa.jsx and is deleted once its work is signed off; the states stay.")))
       )
     );
   };
@@ -7387,7 +15253,7 @@
     const api = window.gsApi || {};
     const r = api.review || {};
     const sub = api.sub || {};
-    const [, bump] = React2.useState(0);
+    const [, bump] = React$1.useState(0);
     const set = (fn) => {
       fn();
       setTimeout(() => bump((n) => n + 1), 0);
@@ -7401,8 +15267,8 @@
       if (api.view === "out") api.setView("free");
       api.setSub(patch);
     });
-    const R = (label, value, onChange, options, hint) => /* @__PURE__ */ React2.createElement(Row, { label, value, onChange, options, hint });
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(Group, { title: "After Pixels", scope: "global" }, R("Your AI", api.connected ? "yes" : "no", (v) => set(() => api.setConnected(v === "yes")), o([["yes", "Connected"], ["no", "Not connected"]])), R(
+    const R = (label, value, onChange, options, hint) => /* @__PURE__ */ React$1.createElement(Row, { label, value, onChange, options, hint });
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(Group, { title: "After Pixels", scope: "global" }, R("Your AI", api.connected ? "yes" : "no", (v) => set(() => api.setConnected(v === "yes")), o([["yes", "Connected"], ["no", "Not connected"]])), R(
       "Account",
       api.user && api.user.fresh ? "new" : "played",
       (v) => set(() => {
@@ -7411,7 +15277,7 @@
       }),
       o([["played", "Has played"], ["new", "New, nothing played"]]),
       "New: the Library shows every game never played and History is empty, as for an account made here."
-    )), /* @__PURE__ */ React2.createElement(Group, { title: "Subscription", scope: "global" }, R(
+    )), /* @__PURE__ */ React$1.createElement(Group, { title: "Subscription", scope: "global" }, R(
       "Subscription",
       sub.status || "none",
       (v) => setSub({ status: v, pending: null, ...v === "none" ? {} : { hadPass: true } }),
@@ -7423,13 +15289,13 @@
       (v) => setSub({ hadPass: v === "yes" }),
       o([["no", "No"], ["yes", "Yes"]]),
       "Subscription None with this set to Yes is the lapsed card."
-    ), R("Plan", sub.plan || "monthly", (v) => setSub({ plan: v, pending: null }), o([["monthly", "Monthly"], ["yearly", "Yearly"]]))), /* @__PURE__ */ React2.createElement(Group, { title: "Sign-in and account" }, R("Signed in with", api.provider || "email", (v) => set(() => api.setProvider(v)), o([["email", "Email"], ["google", "Google"], ["apple", "Apple"]])), R("Provider sheet", r.sheet || "completes", (v) => set(() => api.setReview({ sheet: v })), o([["completes", "Completes"], ["cancelled", "Cancelled"]])), R("Google and Apple sign-in", r.providerFail ? "fail" : "ok", (v) => set(() => api.setReview({ providerFail: v === "fail" })), o([["ok", "Works"], ["fail", "Fails"]])), R(
+    ), R("Plan", sub.plan || "monthly", (v) => setSub({ plan: v, pending: null }), o([["monthly", "Monthly"], ["yearly", "Yearly"]]))), /* @__PURE__ */ React$1.createElement(Group, { title: "Sign-in and account" }, R("Signed in with", api.provider || "email", (v) => set(() => api.setProvider(v)), o([["email", "Email"], ["google", "Google"], ["apple", "Apple"]])), R("Provider sheet", r.sheet || "completes", (v) => set(() => api.setReview({ sheet: v })), o([["completes", "Completes"], ["cancelled", "Cancelled"]])), R("Google and Apple sign-in", r.providerFail ? "fail" : "ok", (v) => set(() => api.setReview({ providerFail: v === "fail" })), o([["ok", "Works"], ["fail", "Fails"]])), R(
       "Device",
       r.device === "new" ? "new" : "known",
       (v) => set(() => api.setReview({ device: v })),
       o([["known", "Known"], ["new", "New"]]),
       "Applies to email, Google and Apple sign-in."
-    ), R("Username", api.user && api.user.locked ? "recent" : "free", (v) => set(() => api.setUser({ locked: v === "recent", since: v === "recent" ? GS_DAY0.getTime() : null })), o([["free", "Free to change"], ["recent", "Changed recently"]]))), /* @__PURE__ */ React2.createElement(Group, { title: "Editions" }, R(
+    ), R("Username", api.user && api.user.locked ? "recent" : "free", (v) => set(() => api.setUser({ locked: v === "recent", since: v === "recent" ? GS_DAY0.getTime() : null })), o([["free", "Free to change"], ["recent", "Changed recently"]]))), /* @__PURE__ */ React$1.createElement(Group, { title: "Editions" }, R(
       "This edition",
       edVal,
       setEd,
@@ -7441,13 +15307,13 @@
       (v) => set(() => api.setReview({ unfinished: v === "on" })),
       o([["off", "None"], ["on", "A day"]]),
       "Adds a Daily Groups day and a Delve week that ended before you finished."
-    )), /* @__PURE__ */ React2.createElement(Group, { title: "Escape" }, R(
+    )), /* @__PURE__ */ React$1.createElement(Group, { title: "Escape" }, R(
       "This week’s room, finished",
       r.escape === "par" || r.escape === "over" ? r.escape : "under",
       (v) => set(() => api.setReview({ escape: v })),
       o([["under", "Under par"], ["par", "On par"], ["over", "Over par"]]),
       "The finished play when This edition is Average or nothing is picked."
-    )), GsBarrowConfigRow ? /* @__PURE__ */ React2.createElement(Group, { title: "The Barrow of Hollowmere" }, /* @__PURE__ */ React2.createElement(GsBarrowConfigRow, null)) : null, /* @__PURE__ */ React2.createElement(Group, { title: "Pass changes" }, R(
+    )), GsBarrowConfigRow ? /* @__PURE__ */ React$1.createElement(Group, { title: "The Barrow of Hollowmere" }, /* @__PURE__ */ React$1.createElement(GsBarrowConfigRow, null)) : null, /* @__PURE__ */ React$1.createElement(Group, { title: "Pass changes" }, R(
       "Pass changes",
       r.passFail ? "fail" : "work",
       (v) => set(() => api.setReview({ passFail: v === "fail" })),
@@ -7465,7 +15331,7 @@
     const v = useCpr();
     const Group = ConfigGroup;
     const Row = ConfigRow;
-    return /* @__PURE__ */ React2.createElement(Group, { title: "Pass upsell" }, /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(Group, { title: "Pass upsell" }, /* @__PURE__ */ React$1.createElement(
       Row,
       {
         label: "New editions",
@@ -7474,7 +15340,7 @@
         options: [{ value: "seed", label: "As seeded" }, { value: "most", label: "Most not played" }],
         hint: "Most not played treats every daily but Daily Word as unplayed today. New for you still holds only what the player can play now."
       }
-    ), /* @__PURE__ */ React2.createElement(
+    ), /* @__PURE__ */ React$1.createElement(
       Row,
       {
         label: "Free: Word and Escape",
@@ -7488,7 +15354,7 @@
   const GsBarrowConfigRow = () => {
     const v = useCpr();
     const Row = ConfigRow;
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       Row,
       {
         label: "Chapter 1",
@@ -7498,7 +15364,7 @@
       }
     );
   };
-  const ConfigExtra = () => /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(ConfigExtraBase, null), /* @__PURE__ */ React2.createElement(GsPassConfigRows, null));
+  const ConfigExtra = () => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(ConfigExtraBase, null), /* @__PURE__ */ React$1.createElement(GsPassConfigRows, null));
   const buildStates = (api) => {
     const r = buildStatesBase(api);
     r.states.forEach((s) => {
@@ -7516,10 +15382,10 @@
     useEffect: useCEffect,
     useLayoutEffect: useCLayoutEffect,
     useContext: useCContext
-  } = React2;
+  } = React$1;
   const CONFIG_GLOBAL = "Global";
   const CONFIG_PHONE = "(max-width: 639px)";
-  const ConfigCtx = React2.createContext(null);
+  const ConfigCtx = React$1.createContext(null);
   const ConfigLauncher = ({
     statesGroups,
     onGoState,
@@ -7611,7 +15477,7 @@
     };
     const hasStates = !!StatesPalette && !!statesGroups && statesGroups.length > 0;
     const hasQa = hasStates && !!QaPalette;
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-config-wrap", ref: wrapRef, style: wrapStyle }, /* @__PURE__ */ React2.createElement("div", { className: "kit-launcher", style: { cursor: "grab", touchAction: "none" } }, /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-wrap", ref: wrapRef, style: wrapStyle }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-launcher", style: { cursor: "grab", touchAction: "none" } }, /* @__PURE__ */ React$1.createElement(
       "button",
       {
         className: "kit-launcher-half",
@@ -7623,8 +15489,8 @@
         "aria-label": "Config",
         title: "Config — drag to move"
       },
-      /* @__PURE__ */ React2.createElement(Icon, { name: "settings", size: 20 })
-    ), hasStates && /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(Icon, { name: "settings", size: 20 })
+    ), hasStates && /* @__PURE__ */ React$1.createElement(
       "button",
       {
         className: "kit-launcher-half",
@@ -7636,8 +15502,8 @@
         "aria-label": "States",
         title: "States — drag to move"
       },
-      /* @__PURE__ */ React2.createElement(Icon, { name: "list", size: 20 })
-    ), hasQa && /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(Icon, { name: "list", size: 20 })
+    ), hasQa && /* @__PURE__ */ React$1.createElement(
       "button",
       {
         className: "kit-launcher-half",
@@ -7649,8 +15515,8 @@
         "aria-label": "QA",
         title: "QA — drag to move"
       },
-      /* @__PURE__ */ React2.createElement(Icon, { name: "check", size: 20 })
-    )), hasQa && qaOpen && /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 20 })
+    )), hasQa && qaOpen && /* @__PURE__ */ React$1.createElement(
       QaPalette,
       {
         statesGroups,
@@ -7660,7 +15526,7 @@
         },
         onClose: () => closeAt(setQaOpen)
       }
-    ), hasStates && statesOpen && /* @__PURE__ */ React2.createElement(
+    ), hasStates && statesOpen && /* @__PURE__ */ React$1.createElement(
       StatesPalette,
       {
         groups: statesGroups,
@@ -7674,7 +15540,7 @@
         },
         onClose: () => closeAt(setStatesOpen)
       }
-    ), open && /* @__PURE__ */ React2.createElement(
+    ), open && /* @__PURE__ */ React$1.createElement(
       ConfigModal,
       {
         onReset,
@@ -7687,12 +15553,12 @@
     ));
   };
   const CONFIG_GLYPHS = {
-    info: /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React2.createElement("line", { x1: "12", y1: "11", x2: "12", y2: "16.5" }), /* @__PURE__ */ React2.createElement("line", { x1: "12", y1: "7.5", x2: "12", y2: "7.6" })),
-    next: /* @__PURE__ */ React2.createElement("polyline", { points: "9 6 15 12 9 18" }),
-    back: /* @__PURE__ */ React2.createElement("polyline", { points: "15 6 9 12 15 18" }),
-    fire: /* @__PURE__ */ React2.createElement("polygon", { points: "7 5 18 12 7 19 7 5" })
+    info: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "9" }), /* @__PURE__ */ React$1.createElement("line", { x1: "12", y1: "11", x2: "12", y2: "16.5" }), /* @__PURE__ */ React$1.createElement("line", { x1: "12", y1: "7.5", x2: "12", y2: "7.6" })),
+    next: /* @__PURE__ */ React$1.createElement("polyline", { points: "9 6 15 12 9 18" }),
+    back: /* @__PURE__ */ React$1.createElement("polyline", { points: "15 6 9 12 15 18" }),
+    fire: /* @__PURE__ */ React$1.createElement("polygon", { points: "7 5 18 12 7 19 7 5" })
   };
-  const ConfigGlyph = ({ name, size = 16 }) => /* @__PURE__ */ React2.createElement(
+  const ConfigGlyph = ({ name, size = 16 }) => /* @__PURE__ */ React$1.createElement(
     "svg",
     {
       width: size,
@@ -7708,7 +15574,7 @@
     CONFIG_GLYPHS[name]
   );
   const configSectionOf = (title, scope) => scope === "global" ? CONFIG_GLOBAL : title;
-  const configFlatten = (children, prefix = "") => React2.Children.toArray(children).flatMap((c) => c && c.type === React2.Fragment ? configFlatten(c.props.children, prefix + c.key) : [React2.isValidElement(c) ? React2.cloneElement(c, { key: prefix + c.key }) : c]);
+  const configFlatten = (children, prefix = "") => React$1.Children.toArray(children).flatMap((c) => c && c.type === React$1.Fragment ? configFlatten(c.props.children, prefix + c.key) : [React$1.isValidElement(c) ? React$1.cloneElement(c, { key: prefix + c.key }) : c]);
   const useConfigPhone = () => {
     const [phone, setPhone] = useCState(() => window.matchMedia(CONFIG_PHONE).matches);
     useCEffect(() => {
@@ -7719,10 +15585,10 @@
     }, []);
     return phone;
   };
-  const ConfigInfo = ({ open, onToggle, label }) => /* @__PURE__ */ React2.createElement("button", { type: "button", className: "kit-config-info", "aria-expanded": open, "aria-label": label, onClick: onToggle }, /* @__PURE__ */ React2.createElement(ConfigGlyph, { name: "info", size: 16 }));
+  const ConfigInfo = ({ open, onToggle, label }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-info", "aria-expanded": open, "aria-label": label, onClick: onToggle }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "info", size: 16 }));
   const ConfigRow = ({ label, value, onChange, options, hint }) => {
     const [hintOpen, setHintOpen] = useCState(false);
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-config-row" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-row-head" }, /* @__PURE__ */ React2.createElement("span", { className: "kit-config-row-label" }, label), hint && /* @__PURE__ */ React2.createElement(ConfigInfo, { open: hintOpen, onToggle: () => setHintOpen((v) => !v), label: "About " + label })), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-seg", role: "radiogroup", "aria-label": label }, options.map((o) => /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-row-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-row-label" }, label), hint && /* @__PURE__ */ React$1.createElement(ConfigInfo, { open: hintOpen, onToggle: () => setHintOpen((v) => !v), label: "About " + label })), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-seg", role: "radiogroup", "aria-label": label }, options.map((o) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key: o.value,
@@ -7734,9 +15600,9 @@
         onClick: () => onChange(o.value)
       },
       o.label
-    ))), hint && hintOpen && /* @__PURE__ */ React2.createElement("div", { className: "kit-config-tip" }, hint));
+    ))), hint && hintOpen && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-tip" }, hint));
   };
-  const ConfigAction = ({ label, onClick }) => /* @__PURE__ */ React2.createElement(
+  const ConfigAction = ({ label, onClick }) => /* @__PURE__ */ React$1.createElement(
     "button",
     {
       type: "button",
@@ -7745,13 +15611,13 @@
         if (typeof onClick === "function") onClick();
       }
     },
-    /* @__PURE__ */ React2.createElement(ConfigGlyph, { name: "fire", size: 12 }),
+    /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "fire", size: 12 }),
     label
   );
-  const ConfigNote = ({ children }) => /* @__PURE__ */ React2.createElement("div", { className: "kit-config-note" }, children);
+  const ConfigNote = ({ children }) => /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-note" }, children);
   const ConfigGroup = ({ title, scope, children }) => {
     const ctx = useCContext(ConfigCtx);
-    const id = React2.useId();
+    const id = React$1.useId();
     const section = configSectionOf(title, scope);
     useCLayoutEffect(() => {
       if (!ctx) return void 0;
@@ -7762,12 +15628,12 @@
     const items = configFlatten(children);
     const actions = items.filter((c) => c.type === ConfigAction);
     const rest = items.filter((c) => c.type !== ConfigAction);
-    return /* @__PURE__ */ React2.createElement("section", { className: "kit-config-group" }, section === CONFIG_GLOBAL && /* @__PURE__ */ React2.createElement("h3", { className: "kit-config-group-heading" }, title), rest.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "kit-config-rows" }, rest), actions.length > 0 && /* @__PURE__ */ React2.createElement(ConfigEvents, { actions }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "kit-config-group" }, section === CONFIG_GLOBAL && /* @__PURE__ */ React$1.createElement("h3", { className: "kit-config-group-heading" }, title), rest.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rows" }, rest), actions.length > 0 && /* @__PURE__ */ React$1.createElement(ConfigEvents, { actions }));
   };
   const ConfigEvents = ({ actions }) => {
     const [hintOpen, setHintOpen] = useCState(false);
     const hints = actions.filter((a) => a.props.hint);
-    return /* @__PURE__ */ React2.createElement("div", { className: "kit-config-events" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-events-head" }, /* @__PURE__ */ React2.createElement("span", { className: "kit-config-events-title" }, "Events"), /* @__PURE__ */ React2.createElement("span", { className: "kit-config-events-sub" }, "Fires once, then closes Config"), hints.length > 0 && /* @__PURE__ */ React2.createElement(ConfigInfo, { open: hintOpen, onToggle: () => setHintOpen((v) => !v), label: "About these events" })), hintOpen && hints.map((a) => /* @__PURE__ */ React2.createElement("div", { key: a.key, className: "kit-config-tip" }, /* @__PURE__ */ React2.createElement("b", null, a.props.label, ":"), " ", a.props.hint)), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-events-list" }, actions));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-events-title" }, "Events"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-events-sub" }, "Fires once, then closes Config"), hints.length > 0 && /* @__PURE__ */ React$1.createElement(ConfigInfo, { open: hintOpen, onToggle: () => setHintOpen((v) => !v), label: "About these events" })), hintOpen && hints.map((a) => /* @__PURE__ */ React$1.createElement("div", { key: a.key, className: "kit-config-tip" }, /* @__PURE__ */ React$1.createElement("b", null, a.props.label, ":"), " ", a.props.hint)), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-events-list" }, actions));
   };
   let configLastSection = null;
   const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChange, onClose }) => {
@@ -7844,7 +15710,7 @@
     };
     const inSection = phone && drilled;
     const features = sections.filter((s) => s !== CONFIG_GLOBAL);
-    const railBtn = (s, sub) => /* @__PURE__ */ React2.createElement(
+    const railBtn = (s, sub) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key: s,
@@ -7853,11 +15719,11 @@
         "aria-current": !phone && s === active ? "true" : void 0,
         onClick: () => choose(s)
       },
-      /* @__PURE__ */ React2.createElement("span", { className: "kit-config-rail-text" }, /* @__PURE__ */ React2.createElement("span", { className: "kit-config-rail-name" }, s), sub && /* @__PURE__ */ React2.createElement("span", { className: "kit-config-rail-sub" }, sub)),
-      /* @__PURE__ */ React2.createElement("span", { className: "kit-config-rail-chev" }, /* @__PURE__ */ React2.createElement(ConfigGlyph, { name: "next", size: 18 }))
+      /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-rail-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-rail-name" }, s), sub && /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-rail-sub" }, sub)),
+      /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-rail-chev" }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "next", size: 18 }))
     );
     const Extra = ConfigExtra;
-    return /* @__PURE__ */ React2.createElement(
+    return /* @__PURE__ */ React$1.createElement(
       "div",
       {
         className: "kit-config-dialog-scrim",
@@ -7866,7 +15732,7 @@
           if (e.target === e.currentTarget) onClose();
         }
       },
-      /* @__PURE__ */ React2.createElement(
+      /* @__PURE__ */ React$1.createElement(
         "div",
         {
           role: "dialog",
@@ -7877,8 +15743,8 @@
           "data-shown": shown ? "1" : void 0,
           "data-view": inSection ? "section" : "list"
         },
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React2.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React2.createElement("span", null, "Config")) : /* @__PURE__ */ React2.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React2.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React2.createElement(Icon, { name: "x", size: 18 }))),
-        /* @__PURE__ */ React2.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React2.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React2.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React2.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React2.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React2.createElement(ConfigGroup, { title: "Review", scope: "global" }, onPlatformChange && /* @__PURE__ */ React2.createElement(
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React$1.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React$1.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React$1.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React$1.createElement(ConfigGroup, { title: "Review", scope: "global" }, onPlatformChange && /* @__PURE__ */ React$1.createElement(
           ConfigRow,
           {
             label: "Platform",
@@ -7887,7 +15753,7 @@
             options: [{ value: "web", label: "Web" }, { value: "app", label: "Mobile" }],
             hint: "Mobile renders the product as a native app, in a phone with its status bar and home indicator."
           }
-        ), isApp ? /* @__PURE__ */ React2.createElement(ConfigNote, null, "Viewport is for Web only: the mobile app always uses the phone.") : /* @__PURE__ */ React2.createElement(
+        ), isApp ? /* @__PURE__ */ React$1.createElement(ConfigNote, null, "Viewport is for Web only: the mobile app always uses the phone.") : /* @__PURE__ */ React$1.createElement(
           ConfigRow,
           {
             label: "Viewport",
@@ -7896,11 +15762,11 @@
             options: [{ value: "auto", label: "Auto" }, { value: "desktop", label: "Desktop" }, { value: "mobile", label: "Mobile" }],
             hint: "Mobile frames every screen in a phone bezel, with no status bar."
           }
-        ), onReset && /* @__PURE__ */ React2.createElement(ConfigAction, { label: "Reset to seeded data", onClick: onReset })), Extra && /* @__PURE__ */ React2.createElement(Extra, { onClose }))))
+        ), onReset && /* @__PURE__ */ React$1.createElement(ConfigAction, { label: "Reset to seeded data", onClick: onReset })), Extra && /* @__PURE__ */ React$1.createElement(Extra, { onClose }))))
       )
     );
   };
-  const cprStep = (b, rest) => /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, b), rest);
+  const cprStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
   const GS_MORE = [
     {
       k: "cipher",
@@ -8111,15 +15977,15 @@
   function initGsMoreGames() {
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
-      GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-      GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags });
+      GS_ART$1[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
+      GS_GAMES$1[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, eds: d.eds, once: d.once, added: true, blurb: d.blurb, tags });
       GS_PAGES[d.k] = {
         rhythm: d.page.rhythm,
         box: {
           label: "ONLY WITH THE PASS",
           heading: d.page.heading,
           session: null,
-          steps: [GS_STEP_CONNECT, d.page.step, /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("b", null, "Keep your result."), " It stays in your history.")],
+          steps: [GS_STEP_CONNECT, d.page.step, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
           small: d.name + " comes only with the After Pixels Pass."
         },
         facts: { long: d.long, often: d.page.often },
@@ -8131,8 +15997,8 @@
       GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GP_CFG[d.k] = { units: d.units, run: null, strip: null, ends: null, recent: [] };
-      GS_GAME_ORDER.push(d.k);
-      CPR_STAGE[d.k] = GS_GAMES[d.k].access;
+      GS_GAME_ORDER$1.push(d.k);
+      CPR_STAGE[d.k] = GS_GAMES$1[d.k].access;
       CPR_SHOWN.push(d.k);
       GS_MORE_SCREENS[d.k] = gpGame(d.k);
     });
@@ -8140,7 +16006,7 @@
   const GsPass = () => {
     const gs = useGs();
     const holds = gs.view === "pass";
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React2.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React2.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React2.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React2.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React2.createElement("span", { className: "gs-pass-price gs-num-text" }, GS_PLAN.yearly.price, /* @__PURE__ */ React2.createElement("span", { className: "gs-muted" }, " or ", GS_PLAN.monthly.price)), /* @__PURE__ */ React2.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React2.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, GS_PLAN.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", GS_PLAN.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
   };
   const CPR_PICKS = [["casebook", "ONE CASE"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
@@ -8161,7 +16027,7 @@
     const setRhy = (v) => setF((p) => ({ ...p, rhy: v }));
     const gs = useGs();
     const wait = useGsPart([q, cat, rhy]);
-    const tools = React2.useRef(null);
+    const tools = React$1.useRef(null);
     const filtering = cat !== "all" || rhy !== "all" || !!q.trim();
     const clearAll = () => {
       setF({ q: "", cat: "all", rhy: "all" });
@@ -8170,34 +16036,34 @@
         if (i) i.focus({ preventScroll: true });
       }, 0);
     };
-    const ids = CPR_SHOWN.filter((k) => (cat === "all" || GS_GAMES[k].category === cat) && (rhy === "all" || gsRhythm(k) === rhy) && gsFind(q, k));
+    const ids = CPR_SHOWN.filter((k) => (cat === "all" || GS_GAMES$1[k].category === cat) && (rhy === "all" || gsRhythm(k) === rhy) && gsFind(q, k));
     const sel = cprSelection(gs);
-    const cardRow = (title, ks) => ks.length ? /* @__PURE__ */ React2.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React2.createElement(DS.CardRow, { title, className: "gs-row4" }, ks.map((k) => /* @__PURE__ */ React2.createElement(GsCard, { key: k, id: k })))) : null;
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { ref: tools }, /* @__PURE__ */ React2.createElement(LbTools, null, /* @__PURE__ */ React2.createElement(DS.SearchField, { label: "Search", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React2.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }))), !filtering && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpicks" }, CPR_PICKS.map(([k, l]) => /* @__PURE__ */ React2.createElement(GsPick, { key: k, id: k, label: l }))), cardRow("Just added", sel.added), cardRow("Free to play", sel.free)), /* @__PURE__ */ React2.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React2.createElement("h2", { className: "mcp-t-sec" }, "All games"), wait ? /* @__PURE__ */ React2.createElement(GsPart, { label: "Loading games" }) : ids.length ? /* @__PURE__ */ React2.createElement("div", { className: "mcp-gwall" }, ids.map((k) => /* @__PURE__ */ React2.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k) }))) : /* @__PURE__ */ React2.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React2.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React2.createElement(DS.TextLink, { onClick: clearAll }, "Clear all"))));
+    const cardRow = (title, ks) => ks.length ? /* @__PURE__ */ React$1.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title, className: "gs-row4" }, ks.map((k) => /* @__PURE__ */ React$1.createElement(GsCard, { key: k, id: k })))) : null;
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { ref: tools }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...GS_KINDS.map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }))), !filtering && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gpicks" }, CPR_PICKS.map(([k, l]) => /* @__PURE__ */ React$1.createElement(GsPick, { key: k, id: k, label: l }))), cardRow("Just added", sel.added), cardRow("Free to play", sel.free)), /* @__PURE__ */ React$1.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "All games"), wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading games" }) : ids.length ? /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gwall" }, ids.map((k) => /* @__PURE__ */ React$1.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k) }))) : /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: clearAll }, "Clear all"))));
   };
   const GsGames = () => {
     const gs = useGs();
-    const [load, setLoad] = React2.useState(gs.route.load || null);
+    const [load, setLoad] = React$1.useState(gs.route.load || null);
     const fOf = (r, prevQ) => {
       const k = r.dcKeep || {};
       return { q: k.q != null ? k.q : prevQ, cat: k.cat || r.kind || "all", rhy: k.rhy || r.rhythm || "all" };
     };
-    const [f, setF] = React2.useState(() => fOf(gs.route, ""));
-    React2.useEffect(() => {
+    const [f, setF] = React$1.useState(() => fOf(gs.route, ""));
+    React$1.useEffect(() => {
       setLoad(gs.route.load || null);
       setF((p) => fOf(gs.route, p.q));
     }, [gs.route]);
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       gs.keep({ dcKeep: f });
     }, [f]);
-    React2.useEffect(() => {
+    React$1.useEffect(() => {
       if (load !== "loading") return void 0;
       const t = setTimeout(() => setLoad(null), 1200);
       return () => clearTimeout(t);
     }, [load]);
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React2.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React2.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React2.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React2.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React2.createElement(CprDiscoverBody, { f, setF })));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
-  const { useState, useEffect, useRef } = React2;
+  const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
   let GS_SUB_DEFAULT;
@@ -8211,76 +16077,76 @@
   let GS_ROUTES;
   const GsScreen = ({ name }) => {
     const More = GS_MORE_SCREENS && GS_MORE_SCREENS[name];
-    if (More) return /* @__PURE__ */ React2.createElement(More, null);
+    if (More) return /* @__PURE__ */ React$1.createElement(More, null);
     switch (name) {
       case "home":
-        return /* @__PURE__ */ React2.createElement(GsHome, null);
+        return /* @__PURE__ */ React$1.createElement(GsHome, null);
       case "signup":
-        return /* @__PURE__ */ React2.createElement(GsSignUp, null);
+        return /* @__PURE__ */ React$1.createElement(GsSignUp, null);
       case "signin":
-        return /* @__PURE__ */ React2.createElement(GsSignIn, null);
+        return /* @__PURE__ */ React$1.createElement(GsSignIn, null);
       case "verify":
-        return /* @__PURE__ */ React2.createElement(GsVerify, null);
+        return /* @__PURE__ */ React$1.createElement(GsVerify, null);
       case "username":
-        return /* @__PURE__ */ React2.createElement(GsUsername, null);
+        return /* @__PURE__ */ React$1.createElement(GsUsername, null);
       case "recover":
-        return /* @__PURE__ */ React2.createElement(GsRecover, null);
+        return /* @__PURE__ */ React$1.createElement(GsRecover, null);
       case "returning":
-        return /* @__PURE__ */ React2.createElement(GsReturning, null);
+        return /* @__PURE__ */ React$1.createElement(GsReturning, null);
       case "connect":
-        return /* @__PURE__ */ React2.createElement(GsConnect, null);
+        return /* @__PURE__ */ React$1.createElement(GsConnect, null);
       case "games":
-        return /* @__PURE__ */ React2.createElement(GsGames, null);
+        return /* @__PURE__ */ React$1.createElement(GsGames, null);
       case "library":
-        return /* @__PURE__ */ React2.createElement(GsLibrary, null);
+        return /* @__PURE__ */ React$1.createElement(GsLibrary, null);
       case "delve":
-        return /* @__PURE__ */ React2.createElement(GsDelve, null);
+        return /* @__PURE__ */ React$1.createElement(GsDelve, null);
       case "word":
-        return /* @__PURE__ */ React2.createElement(GsWord, null);
+        return /* @__PURE__ */ React$1.createElement(GsWord, null);
       case "groups":
-        return /* @__PURE__ */ React2.createElement(GsGroups, null);
+        return /* @__PURE__ */ React$1.createElement(GsGroups, null);
       case "mystery":
-        return /* @__PURE__ */ React2.createElement(GsMystery, null);
+        return /* @__PURE__ */ React$1.createElement(GsMystery, null);
       case "where":
-        return /* @__PURE__ */ React2.createElement(GsWhere, null);
+        return /* @__PURE__ */ React$1.createElement(GsWhere, null);
       case "chain":
-        return /* @__PURE__ */ React2.createElement(GsChain, null);
+        return /* @__PURE__ */ React$1.createElement(GsChain, null);
       case "salvage":
-        return /* @__PURE__ */ React2.createElement(GsSalvage, null);
+        return /* @__PURE__ */ React$1.createElement(GsSalvage, null);
       case "escape":
-        return /* @__PURE__ */ React2.createElement(GsEscape, null);
+        return /* @__PURE__ */ React$1.createElement(GsEscape, null);
       case "casebook":
-        return /* @__PURE__ */ React2.createElement(GsCasebook, null);
+        return /* @__PURE__ */ React$1.createElement(GsCasebook, null);
       case "hunter":
-        return /* @__PURE__ */ React2.createElement(GsHunter, null);
+        return /* @__PURE__ */ React$1.createElement(GsHunter, null);
       case "barrow":
-        return /* @__PURE__ */ React2.createElement(GsBarrow, null);
+        return /* @__PURE__ */ React$1.createElement(GsBarrow, null);
       case "session":
-        return /* @__PURE__ */ React2.createElement(GsSession, null);
+        return /* @__PURE__ */ React$1.createElement(GsSession, null);
       case "history":
-        return /* @__PURE__ */ React2.createElement(GsHistory, null);
+        return /* @__PURE__ */ React$1.createElement(GsHistory, null);
       case "pass":
-        return /* @__PURE__ */ React2.createElement(GsPass, null);
+        return /* @__PURE__ */ React$1.createElement(GsPass, null);
       case "subscribe":
-        return /* @__PURE__ */ React2.createElement(GsSubscribe, null);
+        return /* @__PURE__ */ React$1.createElement(GsSubscribe, null);
       case "checkout":
-        return /* @__PURE__ */ React2.createElement(GsCheckout, null);
+        return /* @__PURE__ */ React$1.createElement(GsCheckout, null);
       case "update-card":
-        return /* @__PURE__ */ React2.createElement(GsUpdateCard, null);
+        return /* @__PURE__ */ React$1.createElement(GsUpdateCard, null);
       case "account":
-        return /* @__PURE__ */ React2.createElement(GsAccount, null);
+        return /* @__PURE__ */ React$1.createElement(GsAccount, null);
       case "legal":
-        return /* @__PURE__ */ React2.createElement(GsLegal, null);
+        return /* @__PURE__ */ React$1.createElement(GsLegal, null);
       case "loading":
-        return /* @__PURE__ */ React2.createElement(GsFullLoader, null);
+        return /* @__PURE__ */ React$1.createElement(GsFullLoader, null);
       case "offline":
-        return /* @__PURE__ */ React2.createElement(GsOffline, null);
+        return /* @__PURE__ */ React$1.createElement(GsOffline, null);
       case "directory-claude":
-        return DlClaudeListing ? /* @__PURE__ */ React2.createElement(DlClaudeListing, null) : null;
+        return DlClaudeListing ? /* @__PURE__ */ React$1.createElement(DlClaudeListing, null) : null;
       case "directory-chatgpt":
-        return DlChatGptListing ? /* @__PURE__ */ React2.createElement(DlChatGptListing, null) : null;
+        return DlChatGptListing ? /* @__PURE__ */ React$1.createElement(DlChatGptListing, null) : null;
       default:
-        return /* @__PURE__ */ React2.createElement(GsNotFound, null);
+        return /* @__PURE__ */ React$1.createElement(GsNotFound, null);
     }
   };
   let GS_ARRIVES;
@@ -8295,10 +16161,10 @@
       const t = setTimeout(() => setReady(true), GS_LOAD_MS);
       return () => clearTimeout(t);
     }, []);
-    if (ready) return /* @__PURE__ */ React2.createElement(GsScreen, { name });
-    return /* @__PURE__ */ React2.createElement("main", { className: "gs-wrap gs-main", "aria-busy": "true" }, /* @__PURE__ */ React2.createElement("div", { className: "gs-inplace", style: { minHeight: "60vh" } }, /* @__PURE__ */ React2.createElement(GsSpin, null)));
+    if (ready) return /* @__PURE__ */ React$1.createElement(GsScreen, { name });
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main", "aria-busy": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace", style: { minHeight: "60vh" } }, /* @__PURE__ */ React$1.createElement(GsSpin, null)));
   };
-  const KitPhoneBars = () => /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("div", { className: "kit-phone-status", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, "9:41"), /* @__PURE__ */ React2.createElement("span", { className: "kit-phone-island" }), /* @__PURE__ */ React2.createElement("svg", { width: "27", height: "13", viewBox: "0 0 27 13", fill: "none" }, /* @__PURE__ */ React2.createElement("rect", { x: "0.5", y: "0.5", width: "23", height: "12", rx: "3.5", stroke: "currentColor", opacity: "0.4" }), /* @__PURE__ */ React2.createElement("rect", { x: "2", y: "2", width: "20", height: "9", rx: "2", fill: "currentColor" }), /* @__PURE__ */ React2.createElement("path", { d: "M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z", fill: "currentColor", opacity: "0.4" }))), /* @__PURE__ */ React2.createElement("div", { className: "kit-phone-home", "aria-hidden": "true" }));
+  const KitPhoneBars = () => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-status", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", null, "9:41"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-phone-island" }), /* @__PURE__ */ React$1.createElement("svg", { width: "27", height: "13", viewBox: "0 0 27 13", fill: "none" }, /* @__PURE__ */ React$1.createElement("rect", { x: "0.5", y: "0.5", width: "23", height: "12", rx: "3.5", stroke: "currentColor", opacity: "0.4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "2", y: "2", width: "20", height: "9", rx: "2", fill: "currentColor" }), /* @__PURE__ */ React$1.createElement("path", { d: "M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z", fill: "currentColor", opacity: "0.4" }))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-home", "aria-hidden": "true" }));
   const KitApp = () => {
     const [layout, setLayout] = useState("auto");
     const [platform, setPlatform] = useState("web");
@@ -8529,8 +16395,8 @@
     }, [forcedMobile, showIndex]);
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
-    const appTree = /* @__PURE__ */ React2.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React2.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && /* @__PURE__ */ React2.createElement(GsTopBar, null), Cand && Cand.Screen ? /* @__PURE__ */ React2.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React2.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React2.createElement(GsFooter, null), /* @__PURE__ */ React2.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !GS_LISTING.includes(route.name) && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement(GsPlayPopup, null), /* @__PURE__ */ React2.createElement(GsDemoBar, null))));
-    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, showIndex ? /* @__PURE__ */ React2.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React2.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React2.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React2.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React2.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && /* @__PURE__ */ React2.createElement(
+    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root", ref: rootRef }, GS_ROUTES.includes(route.name) && !GS_BARE.includes(route.name) && /* @__PURE__ */ React$1.createElement(GsTopBar, null), Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !GS_LISTING.includes(route.name) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {
         statesGroups: STATE_GROUPS,
@@ -8599,7 +16465,7 @@
       ...GS_MORE_IDS || []
     ];
     GS_ARRIVES = ["games", "library", "history", "session", "pass", "subscribe", "account", "delve", "word", "groups", "mystery", ...DP_IDS, "escape", "casebook", "hunter", "barrow", ...GS_MORE_IDS || []];
-    client.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React2.createElement(KitApp, null));
+    client.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React$1.createElement(KitApp, null));
   }
   initGsChats();
   initGsGame();

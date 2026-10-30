@@ -1,3 +1,6 @@
+/* The design system's stylesheet (tokens, fonts, base, components) comes first, as it did when index.html linked it before this file. */
+@import '../../design-system/styles.css';
+
 /* The product's stylesheets, in the order index.html used to link them: a later file wins a tie, so this order is the cascade. */
 @import './gs-delve.css';
 @import './aids.css';

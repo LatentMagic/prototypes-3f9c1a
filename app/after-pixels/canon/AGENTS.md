@@ -3,7 +3,7 @@
 After Pixels (afterpixels.com) is a library of games played by talking to your own AI (Claude, ChatGPT, any MCP assistant). The site sells the Pass and keeps your library, plays and history; this prototype is that site, edited here directly.
 
 Paths below are relative to this folder (`app/after-pixels/canon/`); run commands from the repo root.
-Source is ES modules: `app/main.jsx` imports every `app/*.jsx`, and `npm run build` bundles them into `build/canon.js` and `build/canon.css`, which `index.html` loads (React and the design system load as page scripts first). Edit `app/`, then rebuild; never edit `build/`.
+Source is ES modules: `app/main.jsx` imports every `app/*.jsx`, and `npm run build` bundles them into `build/canon.js` and `build/canon.css`, which `index.html` loads (React loads as a page script first; the design system's bundle and stylesheet are built in). Edit `app/`, then rebuild; never edit `build/`.
 - **Build:** `npm run build` (`tools/ap-names.mjs --check`, then Vite). **Never push to `main` without running it and committing `build/`**: Pages serves the committed files, no hook enforces it, and a second build must leave `git status` clean. `npm run build -- --watch` rebuilds on save.
 - **Add a file or name:** declare a name in one file only (a second declaration fails the build), `export` it, `import` it where used, and `import` a new `app/<name>.jsx` from `main.jsx` (a CSS file: `@import` in `app/canon.css`, after any file it must beat). `window` carries only `KIT_STATES`, `KIT_STATE_NOTES`, `kitGoState`, `gsApi`, `KitCandidate`, `__gsTrap` and the design system. `node tools/ap-names.mjs --check` fails on a missing import (otherwise it throws only when that screen renders); without `--check` it lists each file's imports.
 - **Load-time code:** a file whose top level writes to or reads another file's data (the registries in `app/registry.js`, seed objects) does it inside an exported `init<File>()` that `main.jsx` calls, in order: a read before the file it reads from has run gets `undefined`. Keep that order when adding one.
@@ -32,7 +32,7 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 
 ## Styles
 
-- Tokens: the design system's `tokens/*.css` and `components/components.css`, linked from `index.html` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px.
+- Tokens: the design system's `tokens/*.css` and `components/components.css`, imported through `../design-system/styles.css` by `app/canon.css` (canon's own `tokens.css` holds only the aids' properties). Use their custom properties; hierarchy is size and weight, never colour; 4px grid; readable from 320px.
 - Product CSS is `app/*.css`, one file per area, imported by `app/canon.css` and built into `build/canon.css` (no inline `<style>`). **Import order is the cascade: a later file wins a tie, so a rule that overrides another sits in a file imported after it.** Each file's first comment says what it holds. Find a rule with `grep -n "<class>" app/*.css`.
 - Shell and aids: `aids.css` (Config, States and QA palettes, phone frame, base reset), `gs-shell.css` (`.gs-root`, utilities, links, grids, session head, tags, top bar, demo bar), `gs-site.css` (loaders, footer, legal, not found, user menu).
 - Screens: `gs-home.css`, `gs-cards.css` (Discover, Library lists, game cards and their motion art), `gs-game.css` (product page), `gs-player.css`, `gs-library-page.css` (cards, streak, now card, editions list), `gs-session-history.css` (session parts every game shares; History), `gs-auth.css` (sign in, username), `gs-connect.css` (How it works, play dialog), `gs-account.css`, `gs-pass.css` (pricing, upsell, Home Pass card).
@@ -44,9 +44,9 @@ Seed data (games, sessions, the player) is in `gs-data.jsx`; every fact a screen
 ## Reuse before you build
 
 Build from the design system's components, `DS.<Name>` (`DS`, exported by `gs-data.jsx`), and canon's shared parts. Never build a one-off where one of these fits; if none does, say so in your report.
-- Design system: the list is in `_ds/mcp-game-store-design-system-ef1abd5b-…/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`. Guidelines (voice, layout, overlays, loading): `../design-system/guidelines/`.
+- Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`. Guidelines (voice, layout, overlays, loading): `../design-system/guidelines/`.
 - Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, `GsTrack`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsSessHead`, `GsSessResult`, `GsMoves`, share pop-up), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts).
-- Canon loads its own copy of the design system in `_ds/`; `../design-system/` is the source. Changing a component is a design-system change: do it only when the brief asks, in both copies (`4d5bdfc` is one).
+- Canon builds the design system from `../design-system/` (its `styles.css` and `_ds_bundle.js`); there is no copy. Changing a component is a design-system change: do it only when the brief asks, then rebuild.
 
 ## Serve and check
 
