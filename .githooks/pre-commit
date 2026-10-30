@@ -61,5 +61,5 @@ git add -A $outputs
 # real index keeps the old build and `git status` shows it staged against the new commit.
 real_lock="$(git rev-parse --git-path index.lock)"
 if [ -n "$GIT_INDEX_FILE" ] && [ -f "$real_lock" ] && [ "$(cd "$(dirname "$GIT_INDEX_FILE")" && pwd)/$(basename "$GIT_INDEX_FILE")" != "$(cd "$(dirname "$real_lock")" && pwd)/index.lock" ]; then
-  GIT_INDEX_FILE="$real_lock" git add -A $outputs
+  GIT_INDEX_FILE="$real_lock" git add -A $outputs || echo "pre-commit: could not stage the build in the real index; if git status shows build/ staged after this commit, run git add -A $outputs" >&2
 fi
