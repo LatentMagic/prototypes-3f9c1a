@@ -2692,3 +2692,151 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pgr-band .pgr-facts { justify-content: center; }
 .pgr-word { font-weight: 400; color: var(--muted); }
 .pgr-word b { font: 700 17px/1 var(--font-heading); letter-spacing: .12em; color: var(--text); }
+/* PLAYGROUND, not canon (branch candidate/guess-now-card-lofi): the three directions for Daily Word's now card
+   (app/playground-guess-now.jsx). Imported last by canon.css. Low fi: structure and what is shown. */
+
+/* ---- A: canon's strip with its space shared out. The card is a flex column (its foot is pinned), so the strip takes the spare
+   height and centres the picture in it. Trail blocks 12px with 3px gaps; more air in the picture and between its parts. ---- */
+.pgn-a .wd-now-in { flex: 1 1 auto; }
+.pgn-a .wd-tr { grid-template-columns: repeat(5, 12px); gap: 3px; }
+.pgn-a .wd-trail { gap: 3px; }
+.pgn-a .wd-now-line { gap: 24px; }
+/* KEEP (Joe): the title and the result stay where canon has them, top left and top right; only the picture centres in the spare height. */
+@container wdnow (min-width: 600px) { .pgn-a .wd-now-in { column-gap: 32px; } .pgn-a .wd-now-in > .wd-now-pic { align-self: center; } }
+/* Phone: the trail stays 10px (no width to spare). */
+@container wdnow (max-width: 599.98px) { .pgn-a .wd-tr { grid-template-columns: repeat(5, 10px); gap: 2px; } .pgn-a .wd-now-line { gap: 12px; } }
+
+/* ---- B and C: head, one row for the play, the action row. ---- */
+.pgn { container: pgn / inline-size; }
+.pgn-row { --t: 56px; --g: 6px; display: flex; align-items: center; justify-self: center; align-self: center; gap: 24px; min-width: 0; }
+.pgn-tiles { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
+.pgn-row > .wd-trail { gap: 3px; }
+.pgn-line { margin: 0; }
+
+/* B: after a 1px rule, the count and the hint stacked. */
+.pgn-facts { display: grid; gap: 4px; padding-left: 24px; border-left: 1px solid var(--line); font: 600 14px/1.3 var(--font-text); }
+
+/* C: the ring (56px), then the hint's five places (16px squares) under a caption. */
+.pgn-ring { --r: 56px; position: relative; flex: none; width: var(--r); height: var(--r); }
+.pgn-ring svg { display: block; width: 100%; height: 100%; }
+.pgn-ring circle { fill: none; stroke-width: 12; stroke: var(--line); }
+.pgn-ring circle.is-used { stroke: #918B80; }
+.pgn-ring circle.is-win { stroke: var(--success); }
+.pgn-ring circle.is-lost { stroke: var(--warning); }
+.pgn-ring-n { position: absolute; inset: 0; display: grid; place-items: center; font: 700 20px/1 var(--font-heading); color: var(--text); }
+.pgn-places { display: grid; justify-items: start; gap: 6px; }
+.pgn-places-row { display: flex; gap: 4px; }
+.pgn-place { box-sizing: border-box; width: 16px; height: 16px; display: grid; place-items: center; background: var(--line); }
+.pgn-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 10px/1 var(--font-heading); }
+.pgn-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); }
+
+/* C's hint: one small box, the word Hint beside it. */
+.pgn-hint { display: flex; align-items: center; gap: 8px; }
+.pgn-hint .pgn-place { width: 30px; height: 30px; }
+.pgn-hint .pgn-place.is-hint { font-size: 15px; }
+
+/* Phone: the tiles shrink to fit (44px at most); B's words become one line under the picture, C's hint sits on its own row. */
+@container pgn (max-width: 479.98px) {
+  .pgn-row { --t: min(44px, calc((100cqi - 96px) / 5)); gap: 12px; flex-wrap: wrap; justify-self: stretch; align-self: stretch; justify-content: center; }
+  .pgn-facts { flex-basis: 100%; display: flex; justify-content: center; gap: 0; padding-left: 0; border-left: 0; }
+  .pgn-facts > span + span::before { content: ' · '; white-space: pre; }
+  .pgn-ring { --r: 44px; }
+  .pgn-ring-n { font-size: 16px; }
+  .pgn-places { flex-basis: 100%; justify-items: center; }
+  .pgn-hint { flex-basis: 100%; justify-content: center; }
+  .pgn-line { text-align: center; }
+}
+
+/* On a loss with "The word": the answer in tiles outlined in off-white, as the session page's (playground-guess-result.css .pgr-ans-t). */
+.pgn-ans-t { border: 1.5px solid #918B80; color: #ABA79E; background: none; }
+
+/* D: C's picture in A's card. The ring and the hint box sit after the tiles in the picture's line; on a phone the hint box takes
+   its own row, centred, and the ring keeps the trail's place beside the tiles. */
+.pgn-d .wd-now-line { gap: 24px; }
+@container wdnow (max-width: 599.98px) { .pgn-d .wd-now-line { gap: 12px; flex-wrap: wrap; justify-content: center; } .pgn-d .pgn-ring { --r: 44px; } .pgn-d .pgn-ring-n { font-size: 16px; } .pgn-d .pgn-hint { flex-basis: 100%; justify-content: center; } }
+
+/* KEEP: the result never wraps ("In progress" broke onto two lines beside the picture). */
+.pgn-d .wd-now-in > .lb-top > :is(.lb-big, .es-vd), .pgn-dx-res :is(.lb-big, .gs-vd) { white-space: nowrap; }
+
+/* ---- D1-D3: D's parts, centred in the card. The body takes the card's spare height (the card is a flex column, its foot pinned). ---- */
+.pgn-dx { container: pgndx / inline-size; }
+.pgn-dx-body { flex: 1 1 auto; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; grid-template-areas: "head res" "pic pic"; gap: 16px 24px; min-width: 0; }
+.pgn-dx-head { grid-area: head; align-self: start; }
+.pgn-dx-res { grid-area: res; align-self: start; text-align: right; }
+.pgn-dx-res > * { margin: 0; }
+.pgn-dx-pic { grid-area: pic; --t: 56px; --g: 6px; display: flex; align-items: center; justify-content: center; align-self: center; gap: 24px; min-width: 0; }
+.pgn-dx-pic .pgn-tiles { flex: none; }
+
+/* D1: one cell for all three from 600px: the picture centred on the whole card, the title and result in its top corners. */
+@container pgndx (min-width: 600px) {
+  .pgn-d1 .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
+  .pgn-d1 .pgn-dx-head, .pgn-d1 .pgn-dx-res, .pgn-d1 .pgn-dx-pic { grid-area: all; }
+  .pgn-d1 .pgn-dx-res { justify-self: end; }
+  .pgn-d1 .pgn-dx-pic { --t: 52px; }
+}
+/* D2: the tiles, then the ring and the hint box as one small centred row under them (the original D2, restored: Joe). */
+.pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
+/* D2's tiles, ring and hint box are D1's sizes (Joe: "as big as it is on D1"). */
+/* KEEP (Joe): the tiles and the ring row are one block centred on the whole card's height and width, the same gap above as
+   below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. From 600px. */
+.pgn-d2:not([class*="pgn-vc-"]) { position: relative; }
+@container pgndx (min-width: 600px) {
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-body { grid-template-areas: "head res"; grid-template-rows: auto; min-height: 132px; }
+  .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+}
+/* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe). */
+.pgn-dx-res .gs-vd { font: 700 20px/1.35 var(--font-heading); }
+.pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
+/* D2a-c keep the tightened D2: from 600px the picture shares the head's row, centred on the card with the title and result in
+   its top corners, the tiles 48px and the ring 30px, so the card is no taller than the streak card beside it. */
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { gap: 10px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-facts { gap: 16px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-ring { --r: 36px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-ring-n { font-size: 14px; }
+.pgn-d2[class*='pgn-vc-'] .pgn-dx-body { row-gap: 8px; }
+@container pgndx (min-width: 600px) {
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-body { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "all"; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-head, .pgn-d2[class*='pgn-vc-'] .pgn-dx-res, .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { grid-area: all; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-res { justify-self: end; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { --t: 48px; gap: 8px; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-ring { --r: 30px; }
+  .pgn-d2[class*='pgn-vc-'] .pgn-ring-n { font-size: 13px; }
+  .pgn-d2[class*='pgn-vc-'] .lb-foot { padding-top: 0; }
+}
+/* D2: the ring and the hint box either side of the card's centre line, so the ring never shifts as the hint's words change. */
+.pgn-d2 .pgn-dx-facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.pgn-d2 .pgn-dx-facts > .pgn-ring { justify-self: end; }
+.pgn-d2 .pgn-dx-facts > .pgn-hint { justify-self: start; }
+/* D3: the tiles centred in the main column; the ring over the hint box in a panel under the result, ruled off at its left. */
+.pgn-d3 .pgn-dx-body { grid-template-areas: "head res" "pic panel"; }
+.pgn-dx-panel { grid-area: panel; display: grid; justify-items: center; align-content: center; gap: 12px; padding-left: 24px; border-left: 1px solid var(--line); }
+
+/* Phone: the tiles fit the card; the ring and the hint box sit in a centred row under them. */
+@container pgndx (max-width: 479.98px) {
+  .pgn-dx-pic { --t: min(44px, calc((100cqi - 24px) / 5)); flex-wrap: wrap; gap: 12px 16px; }
+  .pgn-d1 .pgn-dx-pic .pgn-tiles { flex-basis: 100%; display: flex; justify-content: center; }
+  .pgn-dx .pgn-ring { --r: 40px; }
+  .pgn-dx .pgn-ring-n { font-size: 15px; }
+  .pgn-d3 .pgn-dx-body { grid-template-columns: 1fr auto; grid-template-areas: "head res" "pic pic" "panel panel"; }
+  .pgn-dx-panel { grid-auto-flow: column; justify-content: center; gap: 16px; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+}
+
+/* ---- D2a-c (Joe: D2 must evoke being centred vertically), from 600px: the tiles' middle sits halfway between the card's top edge
+   and the button's top, the ring row hangs under them. The card's padding is 24px, its body ends 16px above the action row.
+   D2a: the card keeps the streak card's height. D2b: the card grows 20px, giving the ring row room. D2c: as D2b, 40px taller, the
+   tiles back at 56px and the ring at 36px. ---- */
+@container pgndx (min-width: 600px) {
+  .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { transform: none; align-self: start; }
+  .pgn-vc-tiles .pgn-dx-pic { margin-top: calc((24px + 124px + 16px) / 2 - 24px - 24px); }
+  .pgn-vc-room .pgn-dx-body { min-height: 144px; }
+  .pgn-vc-room .pgn-dx-pic { margin-top: calc((24px + 144px + 16px) / 2 - 24px - 24px); }
+  .pgn-vc-big .pgn-dx-body { min-height: 164px; }
+  .pgn-vc-big .pgn-dx-pic { --t: 56px; gap: 10px; margin-top: calc((24px + 164px + 16px) / 2 - 24px - 28px); }
+  .pgn-vc-big .pgn-ring { --r: 36px; }
+  .pgn-vc-big .pgn-ring-n { font-size: 14px; }
+}
+
+/* As the session page (playground-guess-result, 6a Ring lifted, Joe's pick): the hint box at the session's size (30px, its letter at
+   half the box; set above), the label in capitals, and a note in its place when there was no hint; the word on a loss in quiet outlined tiles (set above). */
+.pgn-cap.is-label { letter-spacing: .04em; text-transform: uppercase; }
+.pgn-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }

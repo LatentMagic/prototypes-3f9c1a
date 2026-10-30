@@ -23,7 +23,7 @@ import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CP
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
 import { DlNow } from './gs-delve.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_LIBRARY, GS_NOW } from './registry.js';
 
 const CPR_SHIP_LIB = {};
 
@@ -297,9 +297,13 @@ export const CbNow = ({ c }) => {
 
 // The now card of a library game page. Daily Word's and Escape's own cards (WdNow in gs-word.jsx, EsNow in gs-escape.jsx) take it once
 // there is a play, Word's first; every other card is CprPzNow.
-export const PzNow = (props) => (props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
-  : props.id === 'escape' && !props.none ? <EsNow title={props.c.title} next={props.c.next} />
-  : <CprPzNow {...props} />);
+export const PzNow = (props) => {
+  const own = props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
+    : props.id === 'escape' && !props.none ? <EsNow title={props.c.title} next={props.c.next} />
+    : <CprPzNow {...props} />;
+  const Pg = GS_NOW[props.id]; // a playground's card, registered only under ?pg=
+  return Pg ? <Pg {...props}>{own}</Pg> : own;
+};
 
 // Takes the snapshot, then replaces the game pages: main.jsx calls it after every earlier file has registered its own.
 export const registerPassLibrary = () => {

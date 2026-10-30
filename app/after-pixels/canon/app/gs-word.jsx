@@ -77,8 +77,8 @@ export const registerWord = () => {
 // name), and in place of canon's line and bar the play as a picture: the guess it ended on at full tile
 // size, the others a trail of six small rows beside it (a guess not used stays flat, so the card holds one height). No sentence:
 // the rows carry the count and the hint. ----
-const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');
-const WdTr = ({ e }) => (e.kind === 'guess'
+export const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');
+export const WdTr = ({ e }) => (e.kind === 'guess'
   ? <div className="wd-tr">{e.marks.map((m, j) => <i key={j} className={'is-' + m} />)}</div>
   : e.kind === 'hint' ? <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className={j === e.pos ? 'is-hint' : 'is-none'} />)}</div>
   : <div className="wd-tr">{[0, 1, 2, 3, 4].map((j) => <i key={j} className="is-empty" />)}</div>);

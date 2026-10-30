@@ -90,6 +90,7 @@ import { registerWord } from './gs-word.jsx';
 import { registerDelve } from './gs-delve.jsx';
 import { PgBar, PgFit, pgActive, pgFramed, usePgFit } from './playground.jsx';
 import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
+import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -475,3 +476,4 @@ initGsPassLibrary();
 initGsDelve();
 initMain();
 initPlaygroundGuessResult();
+initPlaygroundGuessNow();
