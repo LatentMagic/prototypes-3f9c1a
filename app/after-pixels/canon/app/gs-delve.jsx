@@ -206,15 +206,18 @@ const DlBody = ({ s }) => {
 // Rooms wrap onto further rows when the card is too narrow for them in one (balanced, below), and the dice of a room wrap inside its column, so nothing overlaps.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
 const DL_NO_HOVER = () => {};
-// KEEP: rows are balanced, never one room left alone: n rooms in r rows take ceil(n / r) columns, r as few as fit 44px columns
-// (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30). The line joining the rooms runs along each row and
+// KEEP: on a phone rooms fold on three, balanced (8 go 3, 3, 2; 5 go 3 and 2); wider, as many 44px columns as fit, balanced the
+// same way (n rooms in r rows take ceil(n / r) columns) (owner, 2026-10-30). The line joining the rooms runs along each row and
 // stops at its ends, so a wrapped row never leaves a stub.
-const DL_NOW_COL = 44;
+const DL_NOW_COL = 44; const DL_NOW_PHONE = 480;  // under this route width (a phone), rooms fold on three
 const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
-    const read = () => { const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
+    const read = () => { const fit = el.clientWidth < DL_NOW_PHONE ? 3 : Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
   return [ref, cols]; };
+// KEEP: a room's marks fold in rows of at most three, balanced, never one left alone below a full row (4 go 2 and 2, 5 go 3 and 2)
+// (owner, 2026-10-30).
+const dlMarkCols = (n) => (n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3)));
 const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st, i) => {
     const keys = st.rolls.filter((r) => m.mom[r.n]); const rest = st.rolls.filter((r) => !m.mom[r.n]);
@@ -223,7 +226,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }
       <DlStopHead st={st} />
       {!st.rolls.length && <i className="dv2-pass" aria-label="No rolls" />}
       {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} />)}</div>}
-      {rest.length > 0 && <span className="dl-now-marks" role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(', ')}>
+      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(', ')}>
         {rest.map((r) => <i key={r.n} className={'dl-now-mark is-' + r.tier} />)}</span>}
     </div>);
   })}</div>);

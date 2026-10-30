@@ -3365,6 +3365,7 @@
   const DL_NO_HOVER = () => {
   };
   const DL_NOW_COL = 44;
+  const DL_NOW_PHONE = 480;
   const useDlNowCols = (n) => {
     const ref = React$1.useRef(null);
     const [cols, setCols] = React$1.useState(n);
@@ -3372,7 +3373,7 @@
       const el = ref.current;
       if (!el) return;
       const read = () => {
-        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
+        const fit = el.clientWidth < DL_NOW_PHONE ? 3 : Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
         setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
       };
       read();
@@ -3382,6 +3383,7 @@
     }, [n]);
     return [ref, cols];
   };
+  const dlMarkCols = (n) => n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3));
   const DlNowRoute = ({ m, open }) => {
     const on = { sel: open, hov: DL_NO_HOVER };
     const [ref, cols] = useDlNowCols(m.stops.length);
@@ -3389,7 +3391,7 @@
       const keys = st.rolls.filter((r) => m.mom[r.n]);
       const rest = st.rolls.filter((r) => !m.mom[r.n]);
       const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
