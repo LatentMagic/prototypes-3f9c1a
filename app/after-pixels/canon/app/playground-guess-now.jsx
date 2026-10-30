@@ -127,11 +127,28 @@ const PgnC = ({ c, sid }) => {
     </section>);
 };
 
+// D (Joe): C's picture (the last guess, the ring, the hint box) in A's card: canon's title and result where they are, the
+// picture centred in the spare height.
+const PgnD = ({ c, sid }) => {
+  const gs = useGs(); const s = GS_SESSIONS[sid]; const p = React.useMemo(() => pgnPlay(s), [s]);
+  return (
+    <section className="lb-card wd-now pgn-a pgn-d"><div className="wd-now-in">
+      <div className="lb-top">
+        <div className="gs-stack-xs"><span className="gs-label">TODAY</span><h2 className="mcp-t-sec">{'#' + s.number}</h2></div>
+        <WdNowResult s={s} />
+      </div>
+      {p.last && <div className="wd-now-pic"><div className="wd-now-line"><PgnLast s={s} p={p} cls="wd-now-row" /><PgnRing s={s} p={p} /><PgnHintBox s={s} p={p} /></div></div>}
+    </div>
+      <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
+    </section>);
+};
+
 const PgnCard = ({ children, ...props }) => {
   const dir = usePgSetting('dir'); const gs = useGs();
   if (dir === 'canon') return children;
   if (props.none) return <PgnFresh c={props.c} dir={dir} />;
   if (dir === 'a-space') return <PgnA {...props} sid={props.done ? props.c.today : props.c.liveSid} />;
+  if (dir === 'd-c-in-a') return <PgnD c={props.c} sid={props.done ? props.c.today : props.c.liveSid} />;
   const sid = props.done ? props.c.today : props.c.liveSid;
   return dir === 'b-rows' ? <PgnB c={props.c} sid={sid} /> : <PgnC c={props.c} sid={sid} />;
 };
@@ -141,7 +158,7 @@ const PgnCard = ({ children, ...props }) => {
 const played = (ed) => (gs) => gs.setReview({ today: 'played', week: 'done', ed });
 export const initPlaygroundGuessNow = () => {
   pgRegister('guess-now', { title: 'Guess now card', settings: [
-    { key: 'dir', label: 'Direction', options: [{ value: 'a-space', label: 'A Space' }, { value: 'b-rows', label: 'B Second row' }, { value: 'c-ring', label: 'C Ring and places' }, { value: 'canon', label: 'Canon' }] },
+    { key: 'dir', label: 'Direction', options: [{ value: 'a-space', label: 'A Space' }, { value: 'b-rows', label: 'B Second row' }, { value: 'c-ring', label: 'C Ring and places' }, { value: 'd-c-in-a', label: 'D C in A spacing' }, { value: 'canon', label: 'Canon' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'solved', label: 'Solved in 3', state: 'library-word', go: played(null) },
       { value: 'hard', label: 'Solved in 5', state: 'library-word', go: played('hard') },

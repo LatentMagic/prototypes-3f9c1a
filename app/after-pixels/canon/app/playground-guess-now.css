@@ -55,3 +55,8 @@
 
 /* On a loss with "The word": the answer in tiles outlined in off-white, as the session page's (playground-guess-result.css .pgr-ans-t). */
 .pgn-ans-t { border: 2px solid var(--off-white); color: var(--text); background: none; }
+
+/* D: C's picture in A's card. The ring and the hint box sit after the tiles in the picture's line; on a phone the hint box takes
+   its own row, centred, and the ring keeps the trail's place beside the tiles. */
+.pgn-d .wd-now-line { gap: 24px; }
+@container wdnow (max-width: 599.98px) { .pgn-d .wd-now-line { gap: 12px; flex-wrap: wrap; justify-content: center; } .pgn-d .pgn-ring { --r: 44px; } .pgn-d .pgn-ring-n { font-size: 16px; } .pgn-d .pgn-hint { flex-basis: 100%; justify-content: center; } }

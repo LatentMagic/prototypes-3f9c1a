@@ -9326,19 +9326,26 @@
     const p = React$1.useMemo(() => pgnPlay(s), [s]);
     return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card pgn pgn-c-ring" }, /* @__PURE__ */ React$1.createElement(PgnHead, { number: s.number, s }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-row" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p }), /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnHintBox, { s, p })), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
+  const PgnD = ({ c, sid }) => {
+    const gs = useGs();
+    const s = GS_SESSIONS[sid];
+    const p = React$1.useMemo(() => pgnPlay(s), [s]);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now pgn-a pgn-d" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), p.last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement(PgnLast, { s, p, cls: "wd-now-row" }), /* @__PURE__ */ React$1.createElement(PgnRing, { s, p }), /* @__PURE__ */ React$1.createElement(PgnHintBox, { s, p })))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
+  };
   const PgnCard = ({ children, ...props }) => {
     const dir = usePgSetting("dir");
     useGs();
     if (dir === "canon") return children;
     if (props.none) return /* @__PURE__ */ React$1.createElement(PgnFresh, { c: props.c, dir });
     if (dir === "a-space") return /* @__PURE__ */ React$1.createElement(PgnA, { ...props, sid: props.done ? props.c.today : props.c.liveSid });
+    if (dir === "d-c-in-a") return /* @__PURE__ */ React$1.createElement(PgnD, { c: props.c, sid: props.done ? props.c.today : props.c.liveSid });
     const sid = props.done ? props.c.today : props.c.liveSid;
     return dir === "b-rows" ? /* @__PURE__ */ React$1.createElement(PgnB, { c: props.c, sid }) : /* @__PURE__ */ React$1.createElement(PgnC, { c: props.c, sid });
   };
   const played = (ed) => (gs) => gs.setReview({ today: "played", week: "done", ed });
   const initPlaygroundGuessNow = () => {
     pgRegister("guess-now", { title: "Guess now card", settings: [
-      { key: "dir", label: "Direction", options: [{ value: "a-space", label: "A Space" }, { value: "b-rows", label: "B Second row" }, { value: "c-ring", label: "C Ring and places" }, { value: "canon", label: "Canon" }] },
+      { key: "dir", label: "Direction", options: [{ value: "a-space", label: "A Space" }, { value: "b-rows", label: "B Second row" }, { value: "c-ring", label: "C Ring and places" }, { value: "d-c-in-a", label: "D C in A spacing" }, { value: "canon", label: "Canon" }] },
       { key: "play", label: "Play", options: [
         { value: "solved", label: "Solved in 3", state: "library-word", go: played(null) },
         { value: "hard", label: "Solved in 5", state: "library-word", go: played("hard") },
