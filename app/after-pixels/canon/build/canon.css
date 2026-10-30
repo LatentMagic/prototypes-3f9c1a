@@ -832,7 +832,7 @@ button.mcp-cb-ent{cursor:pointer}
   .dv7-hero b { font-size: 18px; }
 }
 /* ---- from delve-v7.html ---- */
-/* v7: the result statement. 3 · Band: the word and its line on one row, split by a hairline (3g: a space instead). */
+/* v7: the result statement. 3 · Band: the word and its line on one row, split by a space (no rule: owner, 2026-10-30). */
 .dv7r-band { display: flex; align-items: center; gap: 0; min-width: 0; }
 .dv7r-word { margin: 0; font: 700 34px/1.05 var(--font-heading); letter-spacing: -.01em; text-wrap: balance; }
 .dv7r-word.is-ok { color: var(--success); }
@@ -842,11 +842,10 @@ button.mcp-cb-ent{cursor:pointer}
 .dv7r-line { margin: 0; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; color: var(--text); text-wrap: balance; min-width: 0; }
 .dv7r-band .dv7r-word { padding-right: 24px; flex: none; font-size: 28px; }
 /* KEEP: in the band the line is body text at label weight (Hanken 600), so only the word is display type. */
-.dv7r-band .dv7r-line { padding-left: 24px; border-left: 1px solid var(--line); align-self: stretch; display: flex; align-items: center; font: 600 16px/1.35 var(--font-text); letter-spacing: 0; }
+.dv7r-band .dv7r-line { align-self: stretch; display: flex; align-items: center; font: 600 16px/1.35 var(--font-text); letter-spacing: 0; }
 @container dv2 (max-width: 559.98px) {
   .dv7r-band { flex-direction: column; align-items: flex-start; gap: 4px; }
   .dv7r-band .dv7r-word { padding-right: 0; }
-  .dv7r-band .dv7r-line { padding-left: 0; border-left: 0; }
   .dv7r-word { font-size: 28px; }
   .dv7r-line { font-size: 18px; }
   .dv7r-band .dv7r-word { font-size: 24px; }
