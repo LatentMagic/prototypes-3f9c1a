@@ -26,6 +26,6 @@
 - `assets/logo.svg` (mark) and `assets/logo/` (PNG 16, 32, 180, 512, 1024), supplied by the owner.
 - `assets/shapes/`: the shape set (currentColor fills).
 - `assets/icons/{line,ui}/`, `assets/covers/`, `assets/shape-blocks/`: SVGs extracted from the hand-off.
-- `SKILL.md`, `github.md`, `thumbnail.html`.
+- `SKILL.md`, `thumbnail.html`.
 
 Component inventory = every piece the hand-off's design-system.html defines. **Intentional additions:** `Icon` (wrapper so the hand-off's glyphs are reusable), `Heading` (the three heading sizes as one component), `ButtonPair` (the hand-off's `.pair` layout), `Menu` (the menu kind of overlay, added 2026-10-08 for the cross-app overlay rule), `PageGrid` and `ListRow`/`RowList` (2026-10-08, lifted from the Casebook library page review, option 16).
