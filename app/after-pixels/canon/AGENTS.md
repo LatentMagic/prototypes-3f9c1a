@@ -30,7 +30,7 @@ A design or copy decision is the owner's. Build what the brief says; name anythi
 | Install, once per checkout or worktree | `npm ci` |
 | Build | `npm run build` (`node tools/ap-names.mjs --check`, then Vite); `npm run build -- --watch` rebuilds on save |
 | Build after a design-system change | `npm run build:ds`, then `npm run build` |
-| Find where a name is declared | `grep -nE "(function\|const\|let) <Name>\b" app/*.jsx` |
+| Find where a name is declared | `grep -n -e "function <Name>\b" -e "const <Name>\b" -e "let <Name>\b" app/*.jsx` |
 | Imports per file; init run order | `node tools/ap-names.mjs`; `node tools/ap-names.mjs --order` |
 | Serve | `PORT=<port> npm start` (default 4321), then `http://localhost:<port>/app/after-pixels/canon/index.html` |
 | Screenshot states | `PORT=<port> npm run check -- --app after-pixels --states <id>,<id> --widths 1440,390 --out <dir>` |
