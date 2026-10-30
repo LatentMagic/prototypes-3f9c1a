@@ -60,7 +60,9 @@
 .lb-wk > em { font: 600 14px/1.2 var(--font-text); font-style: normal; color: var(--muted); white-space: nowrap; height: 17px; padding-left: 2px; }
 .lb-wk > em > b { font: inherit; }
 .lb-wk > i { display: block; height: 24px; margin: 0 2px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-.lb-wk:first-child > i, .lb-wk.is-join > i { margin-left: 0; }
+.lb-wk:first-child > i { margin-left: 0; }
+/* KEEP: A joined slot reaches 1px under the one before it. Slots sit at fractional widths (32.6px), and two boxes that only touch leave a hairline of the card between them on a high-density screen. */
+.lb-wk.is-join > i { margin-left: -1px; }
 .lb-wk:last-child > i, .lb-wk:has(+ .is-join) > i { margin-right: 0; }
 .lb-wk.is-on > i { background: var(--off-white); box-shadow: none; }
 .lb-wk.is-fz > i { background: color-mix(in srgb, var(--off-white) 38%, var(--card)); box-shadow: none; }
