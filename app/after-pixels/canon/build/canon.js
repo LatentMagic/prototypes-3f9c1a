@@ -3364,9 +3364,28 @@
   };
   const DL_NO_HOVER = () => {
   };
+  const DL_NOW_COL = 44;
+  const useDlNowCols = (n) => {
+    const ref = React$1.useRef(null);
+    const [cols, setCols] = React$1.useState(n);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      const read = () => {
+        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
+        setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [n]);
+    return [ref, cols];
+  };
   const DlNowRoute = ({ m, open }) => {
     const on = { sel: open, hov: DL_NO_HOVER };
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", "aria-label": "The way you went" }, m.stops.map((st) => {
+    const [ref, cols] = useDlNowCols(m.stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, m.stops.map((st) => {
       const keys = st.rolls.filter((r) => m.mom[r.n]);
       const rest = st.rolls.filter((r) => !m.mom[r.n]);
       return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));

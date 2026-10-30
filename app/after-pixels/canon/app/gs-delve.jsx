@@ -203,11 +203,19 @@ const DlBody = ({ s }) => {
 // session page's ending word as its result and the run's route at the card's size in place of the line and bar. No sheet, no held roll.
 // KEEP: only a key moment is a button (it keeps its number and opens the session page with that roll held, as Escape's doors open
 // their lock); every other roll is a small outcome mark with no number, not focusable, so it never reads as pressable (owner, 2026-10-30).
-// Rooms wrap onto further rows when the card is too narrow for them in one, and the dice of a room wrap inside its column, so nothing overlaps.
+// Rooms wrap onto further rows when the card is too narrow for them in one (balanced, below), and the dice of a room wrap inside its column, so nothing overlaps.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
 const DL_NO_HOVER = () => {};
-const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER };
-  return (<div className="dl-now-stops" aria-label="The way you went">{m.stops.map((st) => {
+// KEEP: rows are balanced, never one room left alone: n rooms in r rows take ceil(n / r) columns, r as few as fit 44px columns
+// (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30).
+const DL_NOW_COL = 44;
+const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
+    const read = () => { const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
+    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
+  return [ref, cols]; };
+const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
+  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st) => {
     const keys = st.rolls.filter((r) => m.mom[r.n]); const rest = st.rolls.filter((r) => !m.mom[r.n]);
     return (<div key={st.i} className="dl-now-stop">
       <DlStopHead st={st} />
