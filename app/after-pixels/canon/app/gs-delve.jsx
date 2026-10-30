@@ -13,7 +13,6 @@ import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbResult, LbActions } from './gs-library.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
-import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
 const DL_CARRY = 3;
@@ -197,11 +196,11 @@ const DlBody = ({ s }) => {
 };
 
 // ---- The now card on Delve's library game page, once this week's run is played or started: the store's frame (label, title,
-// result at the top right, Share, the record link, the next run, and once finished "See what's out for you to play"), with the
+// result at the top right, the button into the session and the next run), with the
 // session page's ending word as its result and the route at the card's size in place of the line and bar. No sheet, no held roll.
 // KEEP: every die is a button that opens the session page with that roll held, as Escape's doors open their lock.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and its Pass line.
-export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, noNext, children }) => {
+export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, children }) => {
   const gs = useGs(); const sid = wk.end ? sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
   return (
@@ -213,7 +212,6 @@ export const DlNow = ({ s: wk, label = 'THIS WEEK', sids = ['delve', 'delve-live
       </div>
       <div className="dl-now-route"><DlRoute m={m} act={null} on={{ sel: open, hov: () => {} }} card /></div>
       <LbActions onClick={() => open()} slot={children || next} />
-      {m.end !== 'live' && !noNext && GsNextLink && <GsNextLink />}
     </section>
   );
 };

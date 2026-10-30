@@ -9,7 +9,6 @@ import React from 'react';
 import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbResult, LbActions } from './gs-library.jsx';
-import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
 export const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
@@ -196,10 +195,10 @@ const EsBody = ({ s, sid }) => {
 };
 const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 
-// ---- The now card, once this week's room is played or started: the store's frame (label, title, result at the right, Share, the
-// record link, the next room, and once finished "See what's out for you to play"), with the verdict as its result and the
+// ---- The now card, once this week's room is played or started: the store's frame (label, title, result at the right, the
+// button into the session and the next room), with the verdict as its result and the
 // session page's line at the card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
-export const EsNow = ({ label, title, next, noNext, children }) => {
+export const EsNow = ({ label, title, next, children }) => {
   const gs = useGs(); const sid = esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
   const open = (lock) => gs.go('session', lock ? { id: sid, lock } : { id: sid });
   return (
@@ -210,7 +209,6 @@ export const EsNow = ({ label, title, next, noNext, children }) => {
       </div>
       <EsLine m={m} onSel={open} card />
       <LbActions onClick={() => open()} slot={children || next} />
-      {!m.live && !noNext && <GsNextLink />}
     </section>
   );
 };

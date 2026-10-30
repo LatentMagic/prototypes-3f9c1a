@@ -66,8 +66,6 @@
 @container gs (min-width: 640px) { .gs-pu-payline { text-align: right; } }
 .gs-pu-libbody { display: grid; gap: 24px; min-width: 0; }
 .gs-pu-libgrp { display: grid; gap: 12px; min-width: 0; }
-.gs-pu-nextlink { padding-top: 12px; border-top: 1px solid var(--line); }
-.gs-pu-nextlink .mcp-lnk { min-height: 44px; }
 /* KEEP: At phone width no Library heading or line ends on one or two words alone. */
 @container gs (max-width: 559px) {
   .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }

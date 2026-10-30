@@ -3105,13 +3105,13 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
-  const EsNow = ({ label, title, next, noNext, children }) => {
+  const EsNow = ({ label, title, next, children }) => {
     const gs = useGs();
     const sid = esSid(gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => esBuild(s), [s]);
     const open = (lock) => gs.go("session", lock ? { id: sid, lock } : { id: sid });
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card es-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement(EsVerdict, { m })), /* @__PURE__ */ React$1.createElement(EsLine, { m, onSel: open, card: true }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => open(), slot: children || next }), !m.live && !noNext && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card es-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement(EsVerdict, { m })), /* @__PURE__ */ React$1.createElement(EsLine, { m, onSel: open, card: true }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => open(), slot: children || next }));
   };
   const registerEscape = () => {
     GS_SESSION_BODY.escape = EsSessBody;
@@ -3179,7 +3179,7 @@
     const last = gsv[gsv.length - 1];
     const trail = last ? [...ev.filter((e) => e !== last), ...Array.from({ length: 6 - gsv.length }, () => ({ kind: "empty" }))] : [];
     const said = trail.map((e) => e.kind === "guess" ? wdSay(e) : e.kind === "hint" ? "Hint, " + e.text : "Not used").join(". ");
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-trail", role: "img", "aria-label": said }, trail.map((e, i) => /* @__PURE__ */ React$1.createElement(WdTr, { key: i, e }))), /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-row", role: "img", "aria-label": wdSay(last) }, last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + last.marks[j], "aria-hidden": "true" }, ch)))))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }), done && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card wd-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "#" + s.number)), /* @__PURE__ */ React$1.createElement(WdNowResult, { s })), last && /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-line" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-trail", role: "img", "aria-label": said }, trail.map((e, i) => /* @__PURE__ */ React$1.createElement(WdTr, { key: i, e }))), /* @__PURE__ */ React$1.createElement("div", { className: "wd-now-row", role: "img", "aria-label": wdSay(last) }, last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + last.marks[j], "aria-hidden": "true" }, ch)))))), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: sid }), slot: c.next }));
   };
   const DL_CARRY = 3;
   const DL_HEROES = {
@@ -3366,14 +3366,14 @@
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
-  const DlNow = ({ s: wk, label = "THIS WEEK", sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, noNext, children }) => {
+  const DlNow = ({ s: wk, label = "THIS WEEK", sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, children }) => {
     const gs = useGs();
     const sid = wk.end ? sids[0] : sids[1];
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
     return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card dl-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, wk.title)), m.end === "live" ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: { kind: "live", label: "In progress" } })) : /* @__PURE__ */ React$1.createElement("p", { className: "es-vd is-" + (m.end === "won" ? "ok" : "over") }, dlWord(m))), /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlRoute, { m, act: null, on: { sel: open, hov: () => {
-    } }, card: true })), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => open(), slot: children || next }), m.end !== "live" && !noNext && GsNextLink && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    } }, card: true })), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => open(), slot: children || next }));
   };
   const registerDelve = () => {
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
@@ -3450,11 +3450,6 @@
     };
   }
   const CPR_SHIP_LIB = {};
-  const GsNextLink = () => {
-    const gs = useGs();
-    if (gs.view === "out") return null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-pu-nextlink" }, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("library") }, "See what’s out for you to play"));
-  };
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
   const CprFirst = ({ id }) => {
@@ -3463,8 +3458,8 @@
     const f = CPR_FIRST[id](gs);
     const st = cprFirstState(gs, id);
     const done = st === "done";
-    if (id === "escape" && st !== "none" && EsNow) return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
-    if (id === "delve" && st !== "none" && DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, noNext: !f.weekly || gsLapsed(gs) }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "escape" && st !== "none" && EsNow) return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "delve" && st !== "none" && DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card gs-pu-first", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, GS_PAGES.barrow.week2.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, BW_CH2.title))), /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line), /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), slot: soon }));
@@ -3475,7 +3470,7 @@
         onClick: st === "none" ? f.play : f.open,
         slot: done && gs.view !== "pass" ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : soon
       }
-    ), done && f.weekly && !gsLapsed(gs) && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    ));
   };
   const cprIso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const LbNeedsPass = ({ id, had, ach, access }) => {
@@ -3636,11 +3631,11 @@
     const gs = useGs();
     const st = done ? c.done : c.live;
     if (none) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title))), /* @__PURE__ */ React$1.createElement("p", null, GS_PAGES[id].week.line), /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: edList(gs, id)[0] }), slot: c.next }));
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), done && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: c.done.st }))), /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: done ? c.today : c.liveSid }), slot: c.next }), done && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, c.weekly ? "THIS WEEK" : "TODAY"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), done && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: c.done.st }))), /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: done ? c.today : c.liveSid }), slot: c.next }));
   };
   const CbNow = ({ c }) => {
     const gs = useGs();
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), !c.live && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => cbGo(gs, c.id) }), !c.live && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A CASE"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, c.title)), !c.live && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: cbStatus(c) }))), /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => cbGo(gs, c.id) }));
   };
   const PzNow = (props) => props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { label: "THIS WEEK", title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
   const registerPassLibrary = () => {
@@ -5252,7 +5247,7 @@
     const gs = useGs();
     if (DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s });
     const bar = dvBar(s);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, s.title)), s.end && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: dvStatus(s) }))), /* @__PURE__ */ React$1.createElement("p", null, dvRecap(s)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: s.end ? "delve" : "delve-live" }), slot: "Next run: " + DV_NEXT }), s.end && GsNextLink && /* @__PURE__ */ React$1.createElement(GsNextLink, null));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, s.title)), s.end && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: dvStatus(s) }))), /* @__PURE__ */ React$1.createElement("p", null, dvRecap(s)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: s.end ? "delve" : "delve-live" }), slot: "Next run: " + DV_NEXT }));
   };
   const DvLibrary = () => {
     const gs = useGs();

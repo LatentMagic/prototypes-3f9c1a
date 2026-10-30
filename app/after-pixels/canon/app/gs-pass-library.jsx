@@ -27,12 +27,6 @@ import { GS_LIBRARY } from './registry.js';
 
 const CPR_SHIP_LIB = {};
 
-// The link under a finished daily or weekly game: Library as it is, New for you on top, never filtered.
-export const GsNextLink = () => {
-  const gs = useGs(); if (gs.view === 'out') return null;
-  return <div className="gs-pu-nextlink"><DS.TextLink onClick={() => gs.go('library')}>See what’s out for you to play</DS.TextLink></div>;
-};
-
 // ---- The free first part's card: Play before and during; once done, the result, Share and the record link, then
 // "Keep playing with the Pass." with "the Pass" linked and no button. ----
 // One edition each so far: Run 1 and Room 1 are each the free first edition and the current
@@ -43,9 +37,9 @@ const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none' && EsNow) return <EsNow label={f.label} title={f.title} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
+  if (id === 'escape' && st !== 'none' && EsNow) return <EsNow label={f.label} title={f.title}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none' && DlNow) return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} noNext={!f.weekly || gsLapsed(gs)}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
+  if (id === 'delve' && st !== 'none' && DlNow) return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;
@@ -67,7 +61,6 @@ const CprFirst = ({ id }) => {
       {bar && <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />}
       <LbActions label={st === 'none' ? 'Play' : 'Go to session'} onClick={st === 'none' ? f.play : f.open}
         slot={done && gs.view !== 'pass' ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." /> : soon} />
-      {done && f.weekly && !gsLapsed(gs) && <GsNextLink />}
     </section>
   );
 };
@@ -300,7 +293,6 @@ const CprPzNow = ({ c, done, none, id }) => {
       <p>{st.line}</p>
       {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
       <LbActions onClick={() => gs.go('session', { id: done ? c.today : c.liveSid })} slot={c.next} />
-      {done && <GsNextLink />}
     </section>
   );
 };
@@ -315,7 +307,6 @@ export const CbNow = ({ c }) => {
       <p>{cbRecap(c)}</p>
       <DS.ProgressBar label={c.turns + ' of 16 turns used'} value={c.turns} max={16} showValue={false} />
       <LbActions onClick={() => cbGo(gs, c.id)} />
-      {!c.live && <GsNextLink />}
     </section>
   );
 };

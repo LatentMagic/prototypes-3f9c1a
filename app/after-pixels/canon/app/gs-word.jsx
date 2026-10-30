@@ -12,7 +12,6 @@ import React from 'react';
 import { DS, useGs, GS_SESSIONS } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbResult, LbActions } from './gs-library.jsx';
-import { GsNextLink } from './gs-pass-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
 const wdScore = (word, answer) => {
@@ -104,6 +103,5 @@ export const WdNow = ({ c, done }) => {
       </div></div>}
     </div>
       <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
-      {done && <GsNextLink />}
     </section>);
 };

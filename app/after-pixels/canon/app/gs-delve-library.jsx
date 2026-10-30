@@ -2,7 +2,6 @@ import React from 'react';
 import { GS_RESULT, GS_SESSIONS, useGs, DS, gsFresh, GS_GAMES } from './gs-data.jsx';
 import { lbAutoBadges, LbResult, LbActions, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
-import { GsNextLink } from './gs-pass-library.jsx';
 import { DlNow } from './gs-delve.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
@@ -46,7 +45,6 @@ const DvNow = ({ s }) => {
       <p>{dvRecap(s)}</p>
       <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />
       <LbActions onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })} slot={'Next run: ' + DV_NEXT} />
-      {s.end && GsNextLink && <GsNextLink />}
     </section>
   );
 };
