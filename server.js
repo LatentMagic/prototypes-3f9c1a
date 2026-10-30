@@ -72,6 +72,11 @@ const server = http.createServer((req, res) => {
         send(res, 500, 'Internal Server Error', { 'Content-Type': 'text/plain; charset=utf-8' });
         return;
       }
+      // A page's local scripts and stylesheets get ?v=<file's change time>, so a browser that cached an old build (an in-app
+      // browser ignores no-store) still fetches the new one.
+      if (resolved.endsWith('.html')) data = String(data).replace(/(src|href)="(?![a-z]+:|\/\/|#)([^"?#]+\.(?:js|css))"/g, (m, attr, ref) => {
+        try { return attr + '="' + ref + '?v=' + Math.floor(fs.statSync(path.resolve(path.dirname(resolved), ref)).mtimeMs) + '"'; } catch (e) { return m; }
+      });
       send(res, 200, data, { 'Content-Type': contentType(resolved), 'Cache-Control': 'no-store' });
     });
   });
