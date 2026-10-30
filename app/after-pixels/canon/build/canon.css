@@ -2708,13 +2708,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 /* D2: the tiles, then the ring and the hint box as one small centred row under them (the original D2, restored: Joe). */
 .pgn-d2 .pgn-dx-pic { flex-direction: column; gap: 14px; }
-@container pgndx (min-width: 480px) { .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 62px; } }
-.pgn-d2 .pgn-hint .pgn-place { width: 26px; height: 26px; }
-.pgn-d2 .pgn-hint .pgn-place.is-hint { font-size: 14px; }
-.pgn-d2 .pgn-hint .pgn-cap { font-size: 14px; }
+/* D2's tiles, ring and hint box are D1's sizes (Joe: "as big as it is on D1"). */
+@container pgndx (min-width: 600px) { .pgn-d2:not([class*="pgn-vc-"]) .pgn-dx-pic { --t: 52px; } }
 .pgn-dx-facts { display: flex; align-items: center; gap: 20px; }
-.pgn-d2 .pgn-ring { --r: 40px; }
-.pgn-d2 .pgn-ring-n { font-size: 15px; }
 /* D2a-c keep the tightened D2: from 600px the picture shares the head's row, centred on the card with the title and result in
    its top corners, the tiles 48px and the ring 30px, so the card is no taller than the streak card beside it. */
 .pgn-d2[class*='pgn-vc-'] .pgn-dx-pic { gap: 10px; }
