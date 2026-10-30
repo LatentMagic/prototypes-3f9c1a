@@ -3,21 +3,25 @@
 //
 //   node tools/ap-names.mjs --check    exit 1 on any problem
 //   node tools/ap-names.mjs            the same, plus each file's imports
+//   node tools/ap-names.mjs --order    the init order: what each init sets, which earlier inits it needs (also checked)
 //
 // A forgotten import builds cleanly (the bundle is one scope) and throws only when the screen that
 // uses it renders, so this fails the build on: a name another file declares used without an import;
 // a read or write of `window.<name>` for a name some file declares (the external interface excepted);
-// an assignment to an identifier nothing declares; a name declared by two files.
+// an assignment to an identifier nothing declares; a name declared by two files; an init that main.jsx runs
+// before one it needs, or never calls (tools/ap-init-order.mjs).
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '@babel/parser';
 import _traverse from '@babel/traverse';
+import { analyzeInitOrder } from './ap-init-order.mjs';
 
 const traverse = _traverse.default || _traverse;
 const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'app', 'after-pixels', 'canon', 'app');
-const verbose = !process.argv.includes('--check');
+const showOrder = process.argv.includes('--order');
+const verbose = !process.argv.includes('--check') && !showOrder;
 const EXTERNAL = new Set(['KIT_STATES', 'KIT_STATE_NOTES', 'kitGoState', 'gsApi', 'KitCandidate', '__gsTrap', 'MCPGameStoreDesignSystem_ef1abd']);
 
 const files = fs.readdirSync(dir).filter((f) => /\.(jsx|js)$/.test(f)).sort();
@@ -70,5 +74,8 @@ for (const f of files) {
   });
   if (verbose) { console.log(`== ${f}`); for (const [from, ns] of uses) console.log(`  from ${from}: ${ns.join(' ')}`); }
 }
+const init = analyzeInitOrder({ ast, files });
+problems.push(...init.problems);
+if (showOrder) console.log(init.report);
 if (problems.length) { console.error(problems.join('\n')); console.error(`${problems.length} problem(s)`); process.exit(1); }
 if (verbose) console.log(`ok: ${files.length} files, ${declaredIn.size} names`);
