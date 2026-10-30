@@ -692,7 +692,6 @@ button.mcp-cb-ent{cursor:pointer}
 .dv3-held .dv2-die.is-weak .hx { fill: var(--warning); }
 /* ---- The route (v2's E). ---- */
 .dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
-.dv2-num i { font-style: normal; font-weight: 600; }
 .dv2-num.is-back { box-shadow: inset 0 0 0 1.5px var(--muted); color: var(--muted); }
 .dv2-sname { font: 600 12px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
@@ -709,7 +708,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dvE-mom:last-child { margin-bottom: 0; }
 /* Column lines, the study (brief item 0): a rule between rooms, or a line down each room behind its dice. */
 .dvA2-route.is-cols-between .dvA2-stop + .dvA2-stop { box-shadow: inset 1px 0 0 var(--line); }
-/* KEEP: on a phone the route keeps room numbers (↩ marks going back) and the held roll names the room; every die takes one fixed row slot so neighbouring columns line up. */
+/* KEEP: on a phone the route keeps room numbers (a muted box marks going back) and the held roll names the room; every die takes one fixed row slot so neighbouring columns line up. */
 @container dv2 (max-width: 719.98px) {
   .dvA2-head .dv2-sname { display: none; }
   .dvA2-dice svg { width: 30px; height: 33px; }

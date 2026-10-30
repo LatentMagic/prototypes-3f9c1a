@@ -114,7 +114,7 @@ const DlHeld = ({ m, act }) => { const r = act ? m.rolls[act - 1] : null; if (!r
 // ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----
 const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
-    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <i aria-hidden="true">↩</i>}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
+    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
 const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
   return (<div className="dvE-main">
     <div className="dvA2-route is-e is-cols-between" aria-label="The way you went">{m.stops.map((st) => (
