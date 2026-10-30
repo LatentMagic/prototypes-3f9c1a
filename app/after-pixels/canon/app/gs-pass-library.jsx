@@ -37,9 +37,9 @@ const CprFirst = ({ id }) => {
   const gs = useGs(); useCpr(); const f = CPR_FIRST[id](gs);
   const st = cprFirstState(gs, id); const done = st === 'done';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none' && EsNow) return <EsNow label={f.label} title={f.title}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
+  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</EsNow>;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none' && DlNow) return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
+  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null}>{done && gs.view !== 'pass' && <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." />}</DlNow>;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;
@@ -172,7 +172,7 @@ const CprBwLibrary = () => {
 const cprPzLibrary = (id) => () => {
   const gs = useGs(); const r = gs.route;
   const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');
-  const [recent] = c.plays;
+  const { recent } = c;
   const locked = cprLocked(gs, id); const had = locked && gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id);
   // Never played and can't play it: the never-had Needs the Pass card alone, as 36,000 Summers Ago's.
   if (locked && !had) return <main key={k} className="gs-wrap gs-main"><LbHead id={id} /><div className="lb-lay"><LbNeedsPass id={id} ach={c.ach} access="all" /></div></main>;

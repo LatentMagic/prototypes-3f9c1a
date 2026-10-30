@@ -12,7 +12,7 @@
 import React from 'react';
 import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsStartsOver, gsSessDate, gsRhythm, GS_BARROW_CREDIT } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
-import { GsCover, GsTrack } from './gs-parts.jsx';
+import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
 import { lbCopy, LbBackTo } from './gs-library.jsx';
 import { DP_PZ } from './gs-where-chain-salvage.jsx';
@@ -148,7 +148,6 @@ const GsSessionRecord = () => {
   const linkOnly = s.share == null && s.kind === 'day' && !s.live;
   const text = linkOnly ? ['https://afterpixels.com/' + GS_GAMES[s.gid].route] : gsShareText(s);
   const closeShare = () => setShare(false);
-  const delve = s.kind === 'delve';
   // A finished chapter can be started over: a new session, no Pass tag or line. Anything else finished is played once.
   const ed = gsSessEd ? gsSessEd(gs, sid) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
@@ -185,29 +184,7 @@ const GsSessionRecord = () => {
       } />
       {!Body && <GsSessResult s={s} title={title} />}
 
-      {/* Delve's own body (app/gs-delve.jsx) replaces the old tracks-and-endings layout. */}
-      {delve && !Body ? (
-        <section className="gs-pitch">
-          {list}
-          <div className="gs-stack-md">
-            <DS.Card style={{ gap: 16, justifyItems: 'stretch' }}>
-              <span className="gs-label">{s.live ? 'THE TRACKS SO FAR' : 'THE TRACKS AS THEY ENDED'}</span>
-              <GsTrack label="Rooms reached" value={s.tracks.progress} max={s.tracks.rooms || 6} />
-              <GsTrack label="Threat" value={s.tracks.threat} max={s.tracks.threatMax || 6} threat />
-            </DS.Card>
-            <DS.Card style={{ gap: 12, justifyItems: 'stretch' }}>
-              <h2 className="mcp-t-card">Endings</h2>
-              <ul className="gs-plain">
-                {s.endings.map((e) => (
-                  <li key={e} className={e === s.reached ? 'gs-reached' : 'gs-muted'}>
-                    {e === s.reached && <DS.Icon name="check" />}{e}{e === s.reached && <DS.Tag kind="daily">This session</DS.Tag>}
-                  </li>
-                ))}
-              </ul>
-            </DS.Card>
-          </div>
-        </section>
-      ) : body}
+      {body}
 
       {s.credit && <p className="gs-small gs-muted" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
 

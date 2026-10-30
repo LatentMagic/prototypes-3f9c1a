@@ -3458,8 +3458,8 @@
     const f = CPR_FIRST[id](gs);
     const st = cprFirstState(gs, id);
     const done = st === "done";
-    if (id === "escape" && st !== "none" && EsNow) return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
-    if (id === "delve" && st !== "none" && DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
+    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null }, done && gs.view !== "pass" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }));
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card gs-pu-first", style: { gridColumn: "1 / -1" } }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, GS_PAGES.barrow.week2.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, BW_CH2.title))), /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line), /* @__PURE__ */ React$1.createElement(LbActions, { label: "Play", onClick: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), slot: soon }));
@@ -3546,7 +3546,7 @@
     gs.route;
     const c = PZ[id];
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gs.review.today || "");
-    const [recent] = c.plays;
+    const { recent } = c;
     const locked = cprLocked(gs, id);
     const had = locked && gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id);
     if (locked && !had) return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, ach: c.ach, access: "all" })));
@@ -3779,7 +3779,7 @@
     const gs = useGs();
     const c = PZ[id];
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gs.review.today || "");
-    const [recent] = c.plays;
+    const { recent } = c;
     const allLabel = "See in History";
     const never = gs.review.never === id || gsFresh(gs);
     const now = never ? null : lbNow(gs, id);
@@ -3794,7 +3794,7 @@
         allLabel,
         empty: recent + " appear here once you have played one."
       }
-    )), gs.view !== "pass" && id !== "escape" && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES[id].ed[1] + " comes with the Pass." }));
+    )));
   };
   const registerPuzzlesLibrary = () => {
     ["word", "groups", "mystery", "escape", ...DP_IDS].forEach((id) => {
@@ -3817,10 +3817,9 @@
         bad: GS_RESULT.word({ ok: false }),
         title: "Today’s word",
         next: "Next word: tomorrow",
-        links: ["See every guess", "See your guesses so far"],
         live: { line: "You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.", bar: ["Guess 2 of 6", 2, 6] },
         done: { st: { kind: "ok", label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: "You found the word on your third guess, with one hint.", bar: ["Guess 3 of 6", 3, 6] },
-        plays: ["Your words", "All words"],
+        recent: "Your words",
         ach: [
           { k: "w1", n: "Solved", how: "Solve a Daily Word.", by: (p) => p.status.kind === "ok" },
           { k: "w2", n: "Solved in two", how: "Solve a Daily Word in two guesses.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
@@ -3838,10 +3837,9 @@
         bad: GS_RESULT.groups({ found: 2 }),
         title: "Today’s groups",
         next: "Next groups: tomorrow",
-        links: ["See every try", "See your tries so far"],
         live: { line: "You’ve found 2 of the 4 groups, with 1 mistake so far.", bar: ["2 of 4 groups", 2, 4] },
         done: { st: { kind: "ok", label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: "You found all four groups with one mistake, and no hints.", bar: ["4 of 4 groups", 4, 4] },
-        plays: ["Your groups", "All groups"],
+        recent: "Your groups",
         ach: [
           { k: "g1", n: "Solved", how: "Find all four groups in a Daily Groups.", by: (p) => p.status.kind === "ok" },
           { k: "g0", n: "Solved with no mistakes", how: "Find all four groups without a mistake.", by: (p) => p.status.label === GS_RESULT.groups({ found: 4, mistakes: 0 }) },
@@ -3859,10 +3857,9 @@
         bad: GS_RESULT.mystery({ ok: false }),
         title: "Today’s case",
         next: "Next case: tomorrow",
-        links: ["See every question", "See your questions so far"],
         live: { line: "You’ve asked the inspector two questions. You haven’t accused anyone yet." },
         done: { st: { kind: "bad", label: GS_RESULT.mystery({ ok: false }) }, line: "You accused after two questions, and the weapon was wrong." },
-        plays: ["Your cases", "All cases"],
+        recent: "Your cases",
         ach: [
           { k: "m1", n: "Case closed", how: "Solve a Daily Mystery case.", by: (p) => p.status.kind === "ok" },
           { k: "m0", n: "Closed with no hints and no questions", how: "Close a Daily Mystery without a hint or a question.", by: (p) => {
@@ -3887,10 +3884,9 @@
         bad: GS_RESULT.escape({ min: 28, par: "under par" }),
         title: "The Clockmaker’s Study",
         next: "Next room: Monday 12 October",
-        links: ["See every move", "See your moves so far"],
         live: { line: "You’ve made three moves." },
         done: { st: { kind: "ok", label: GS_RESULT.escape({ min: 28, par: "under par" }) }, line: "You got out in 13 moves, with one hint." },
-        plays: ["Your rooms", "All rooms"],
+        recent: "Your rooms",
         // The game's five achievements (verbatim). This room's finished play (1 hint, 2 wrong tries, under par) meets Beat the Clock only.
         ach: [
           { k: "e1", n: "Clean Getaway", how: "Escape without a hint or a wrong try.", by: (p) => {
@@ -4422,10 +4418,9 @@
         bad: GS_RESULT.where({ ok: false }),
         title: "Today’s country",
         next: "Next country: tomorrow",
-        links: ["See every guess", "See your guesses so far"],
         live: { line: "You’ve used 2 of your 6 guesses. The closer one was " + dpKm(WH_TODAY.g[1][1]) + " away.", bar: ["Guess 2 of 6", 2, 6] },
         done: { st: { kind: "ok", label: GS_SESSIONS["where-today"].result }, line: "You found the country on your third guess, with the hint.", bar: ["Guess " + dpWhT.guesses + " of 6", dpWhT.guesses, 6] },
-        plays: ["Your countries", "All countries"],
+        recent: "Your countries",
         ach: [
           { k: "wh1", n: "Found", how: "Find the country in a Where.", by: (p) => p.status.kind === "ok" },
           { k: "wh0", n: "Found without the hint", how: "Find the country without taking the hint.", by: (p) => {
@@ -4446,10 +4441,9 @@
         bad: dpChResult(dpChain(CH_FAIL)),
         title: "Today’s chain",
         next: "Next chain: tomorrow",
-        links: ["See every guess", "See your guesses so far"],
         live: { line: "You’ve found " + dpChL.found + " of the " + dpChL.hidden + " words, with " + dpWrong(dpChL.wrong).replace(/^1 /, "one ") + ".", bar: [dpChL.found + " of " + dpChL.hidden + " words", dpChL.found, dpChL.hidden] },
         done: { st: { kind: "ok", label: GS_SESSIONS["chain-today"].result }, line: "You found all " + dpChT.hidden + " words with two wrong guesses.", bar: [dpChT.hidden + " of " + dpChT.hidden + " words", dpChT.hidden, dpChT.hidden] },
-        plays: ["Your chains", "All chains"],
+        recent: "Your chains",
         ach: [
           { k: "ch1", n: "Solved", how: "Find every word in a Chain.", by: (p) => p.status.kind === "ok" },
           { k: "ch0", n: "Solved with no wrong guesses", how: "Find every word in a Chain without a wrong guess.", by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
@@ -4467,10 +4461,9 @@
         bad: GS_RESULT.salvage({ found: 3 }),
         title: "Today’s sea",
         next: "Next sea: tomorrow",
-        links: ["See every dive", "See your dives so far"],
         live: { line: "You’ve found " + svSunk(dpSvL) + " of the 5 wrecks in " + dpSvL.length + " dives.", bar: [dpSvL.length + " of 30 dives", dpSvL.length, 30] },
         done: { st: { kind: "ok", label: GS_SESSIONS["salvage-today"].result }, line: "You found all five wrecks with " + (30 - SV_TODAY_DIVES.length) + " dives to spare, and one hint.", bar: [SV_TODAY_DIVES.length + " of 30 dives", SV_TODAY_DIVES.length, 30] },
-        plays: ["Your seas", "All seas"],
+        recent: "Your seas",
         ach: [
           { k: "sv1", n: "Every wreck found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
           { k: "sv5", n: "Five dives to spare", how: "Find all five wrecks in 25 dives or fewer.", by: (p) => {
@@ -5243,12 +5236,6 @@
     });
     return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: !!by[s.id], failed: false }));
   };
-  const DvNow = ({ s }) => {
-    const gs = useGs();
-    if (DlNow) return /* @__PURE__ */ React$1.createElement(DlNow, { s });
-    const bar = dvBar(s);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "THIS WEEK"), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, s.title)), s.end && /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: dvStatus(s) }))), /* @__PURE__ */ React$1.createElement("p", null, dvRecap(s)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false }), /* @__PURE__ */ React$1.createElement(LbActions, { onClick: () => gs.go("session", { id: s.end ? "delve" : "delve-live" }), slot: "Next run: " + DV_NEXT }));
-  };
   const DvLibrary = () => {
     const gs = useGs();
     const access = lbAccess(gs, "delve");
@@ -5256,7 +5243,7 @@
     const fresh = gsFresh(gs);
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DvNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
@@ -5671,7 +5658,6 @@
     const linkOnly = s.share == null && s.kind === "day" && !s.live;
     const text = linkOnly ? ["https://afterpixels.com/" + GS_GAMES[s.gid].route] : gsShareText(s);
     const closeShare = () => setShare(false);
-    const delve = s.kind === "delve";
     const ed = gsSessEd ? gsSessEd(gs, sid) : null;
     const over = !!s.gid && gsStartsOver(s.gid);
     const canPlay = !s.gid || gs.view === "pass" || GS_GAMES[s.gid].free || !!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey);
@@ -5685,7 +5671,7 @@
     const label = gsHeadGame(s) + " · " + gsHeadDay(gsSessDate(s));
     const art = s.art;
     if (s.unfinished) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title }), /* @__PURE__ */ React$1.createElement("p", null, (gsRhythm(s.gid) === "daily" ? "The day" : "The week") + " ended before you finished. What you played stays in your history."), body));
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), delve && !Body ? /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, list, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, s.live ? "THE TRACKS SO FAR" : "THE TRACKS AS THEY ENDED"), /* @__PURE__ */ React$1.createElement(GsTrack, { label: "Rooms reached", value: s.tracks.progress, max: s.tracks.rooms || 6 }), /* @__PURE__ */ React$1.createElement(GsTrack, { label: "Threat", value: s.tracks.threat, max: s.tracks.threatMax || 6, threat: true })), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 12, justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Endings"), /* @__PURE__ */ React$1.createElement("ul", { className: "gs-plain" }, s.endings.map((e) => /* @__PURE__ */ React$1.createElement("li", { key: e, className: e === s.reached ? "gs-reached" : "gs-muted" }, e === s.reached && /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), e, e === s.reached && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily" }, "This session"))))))) : body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
   const GsSession = () => {
     const r = useGs().route;
@@ -6040,7 +6026,6 @@
   const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Not included"));
   const GsCompare = ({ foot }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-cmp", "aria-labelledby": "gs-cmp-h" }, /* @__PURE__ */ React$1.createElement("h2", { id: "gs-cmp-h", className: "mcp-t-sec gs-cmp-h" }, "What you get"), /* @__PURE__ */ React$1.createElement("div", { role: "table", "aria-labelledby": "gs-cmp-h", className: "gs-cmp-t" }, /* @__PURE__ */ React$1.createElement("div", { role: "row", className: "gs-cmp-tr is-head" }, /* @__PURE__ */ React$1.createElement("span", { role: "columnheader" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "What you get")), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell mcp-t-card" }, "Free"), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell gs-cmp-band mcp-t-card" }, "Pass")), GS_COMPARE.map((r) => /* @__PURE__ */ React$1.createElement("div", { role: "row", key: r.name, className: "gs-cmp-tr" }, /* @__PURE__ */ React$1.createElement("span", { role: "rowheader", className: "gs-cmp-label" }, /* @__PURE__ */ React$1.createElement("b", null, r.name), r.sub && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, r.sub)), /* @__PURE__ */ React$1.createElement("span", { role: "cell" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: r.free })), /* @__PURE__ */ React$1.createElement("span", { role: "cell", className: "gs-cmp-band" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: true })))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cmp-tr is-foot", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-band" }))), foot);
   const GsStat = ({ label, figure, line }) => /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 8, alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, figure), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, line));
-  const GsTrack = ({ label, value, max = 6, threat }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-num-text gs-strong" }, label, " ", value, "/", max), /* @__PURE__ */ React$1.createElement("div", { className: "gs-track", role: "img", "aria-label": label + " " + value + " of " + max }, Array.from({ length: max }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < value ? threat ? "is-threat" : "is-on" : "" }))));
   const GsSoonCard = ({ g }) => {
     const gs = useGs();
     const a = GS_ART[g.art] || {};

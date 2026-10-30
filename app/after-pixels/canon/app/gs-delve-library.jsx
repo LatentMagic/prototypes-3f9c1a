@@ -1,6 +1,6 @@
 import React from 'react';
-import { GS_RESULT, GS_SESSIONS, useGs, DS, gsFresh, GS_GAMES } from './gs-data.jsx';
-import { lbAutoBadges, LbResult, LbActions, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
+import { GS_RESULT, GS_SESSIONS, useGs, gsFresh, GS_GAMES } from './gs-data.jsx';
+import { lbAutoBadges, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
 import { DlNow } from './gs-delve.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
@@ -32,22 +32,6 @@ export const dvRecap = (s) => (s.end
 export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if (p.gid === 'delve' && p.status.kind !== 'live') by[p.ed] = true; });
   return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: !!by[s.id], failed: false })); };
 
-// Delve's own now card (app/gs-delve.jsx, 1236) takes this one's place once it has loaded.
-const DvNow = ({ s }) => {
-  const gs = useGs(); if (DlNow) return <DlNow s={s} />;
-  const bar = dvBar(s);
-  return (
-    <section className="lb-card">
-      <div className="lb-top">
-        <div className="gs-stack-xs"><span className="gs-label">THIS WEEK</span><h2 className="mcp-t-sec">{s.title}</h2></div>
-        {s.end && <span className="lb-big"><LbResult s={dvStatus(s)} /></span>}
-      </div>
-      <p>{dvRecap(s)}</p>
-      <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />
-      <LbActions onClick={() => gs.go('session', { id: s.end ? 'delve' : 'delve-live' })} slot={'Next run: ' + DV_NEXT} />
-    </section>
-  );
-};
 const DvLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
   const fresh = gsFresh(gs);
@@ -57,7 +41,7 @@ const DvLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        {fresh ? <LbFreshNow title={DV_RUN1.title} line="You haven’t started this week’s run yet. Get her out before the ritual is complete." next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DvNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
+        {fresh ? <LbFreshNow title={DV_RUN1.title} line="You haven’t started this week’s run yet. Get her out before the ritual is complete." next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
         <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
