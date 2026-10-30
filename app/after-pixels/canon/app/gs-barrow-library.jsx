@@ -2,6 +2,7 @@ import { GS_SESSIONS, GS_GAMES } from './gs-data.jsx';
 import { GS_PAGES } from './gs-game.jsx';
 import { lbAutoBadges } from './gs-library.jsx';
 import { phVisible } from './gs-history.jsx';
+import { GS_EDITIONS } from './registry.js';
 
 export let BW_CH1;
 export let BW_CH2;
@@ -19,6 +20,7 @@ export const bwEds = (gs) => {
     { key: 'bw1', gid: 'barrow', n: 1, title: BW_T1, date: '', nodate: true, month: 'October', free: true, now: false, status: st('bw1'), open: open('bw1') },
   ];
 };
+export const registerBarrowLibrary = () => { GS_EDITIONS.barrow = bwEds; };
 let CPR_BW_JOURNAL;
 
 

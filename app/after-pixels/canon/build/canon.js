@@ -1032,7 +1032,7 @@
     delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly", "25–40 min"] },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], eds: true, edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
-    hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
+    hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
   };
   const gsAccess = (g) => {
     g.free = g.access === "daily";
@@ -2765,6 +2765,7 @@
     };
   }
   const GS_LIBRARY = {};
+  const GS_EDITIONS = {};
   const GS_SESSION_BODY = {};
   const cbGo = (gs, sid) => gs.go("casebook", sid ? { page: "record", sid } : { page: "record" });
   const cbWeek = (gs) => lbWeekDone(gs) ? CB_DONE : CB_LIVE;
@@ -2807,6 +2808,7 @@
   };
   const registerCasebook = () => {
     GS_LIBRARY.casebook = CbLibrary;
+    GS_EDITIONS.casebook = (gs) => edRuns(gs, "casebook", { all: CB_ALL, done: CB_DONE, status: cbStatus, openCur: (g, x) => cbGo(g, x.id), open: (g, x) => cbGo(g, x.id) });
   };
   function initGsCasebook() {
     CB_FIRST = CB_DONE;
@@ -2832,6 +2834,9 @@
       { key: "bw2", gid: "barrow", n: 2, title: BW_T2, date: "", nodate: true, month: "October", free: false, now: true, status: st("bw2"), open: open("bw2") },
       { key: "bw1", gid: "barrow", n: 1, title: BW_T1, date: "", nodate: true, month: "October", free: true, now: false, status: st("bw1"), open: open("bw1") }
     ];
+  };
+  const registerBarrowLibrary = () => {
+    GS_EDITIONS.barrow = bwEds;
   };
   let CPR_BW_JOURNAL;
   let BW_ACH;
@@ -3912,6 +3917,7 @@
   const registerPuzzlesLibrary = () => {
     ["word", "groups", "mystery", "escape", ...DP_IDS].forEach((id) => {
       GS_LIBRARY[id] = pzLibrary(id);
+      GS_EDITIONS[id] = (gs) => edPuzzle(gs, id);
     });
   };
   function initGsPuzzlesLibrary() {
@@ -4806,8 +4812,10 @@
     const ach = phAch(gs, "hunter", HG_ACH);
     return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, !pass && /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "hunter", had: true, ach, access }), !latest ? /* @__PURE__ */ React$1.createElement(HgNone, null) : /* @__PURE__ */ React$1.createElement(HgLatest, { day: latest, last: !pass }), pass && /* @__PURE__ */ React$1.createElement(HgLeft, { plays }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: HG_BADGES, access }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your days", allLabel: "See in History", empty: "Your days appear here once you have played one." })));
   };
+  const HG_EDITIONS = [["The Reindeer Summer", "5 October"], ["The Summer at the Springs", "28 September"], ["The Summer of the Ibex", "21 September"]];
   const registerHunterLibrary = () => {
     GS_LIBRARY.hunter = HgLibrary;
+    GS_EDITIONS.hunter = (gs) => edSample(gs, "hunter", HG_EDITIONS);
   };
   function initGsHunterLibrary() {
     HG_DAYS = Array.from({ length: 18 }, (_, i) => {
@@ -4887,37 +4895,39 @@
   const edName = (e) => e.title ? e.title : "#" + e.n;
   const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? " · " + e.title : " #" + e.n);
   let ED_NONE;
-  const edList = (gs, gid) => {
+  const edList = (gs, gid) => edMore(gs, gid, GS_EDITIONS[gid](gs));
+  const edPuzzle = (gs, gid) => {
+    const signed = gs.view !== "out";
+    const now = signed ? lbNow(gs, gid) : null;
+    const c = PZ[gid];
+    const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
+    return c.all.map((x) => ({
+      key: x.id,
+      gid,
+      n: c.weekly ? c.all.length - x.i : +c.no(x.i).split("#")[1],
+      title: c.weekly ? x.title : null,
+      date: x.date,
+      month: x.month,
+      free: true,
+      now: x.i === 0,
+      status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? now ? now.status : ED_NONE : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
+      open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs)) : x.i === 0 ? now ? now.open : null : x.sid ? () => gs.go("session", { id: x.sid }) : null
+    }));
+  };
+  const edRuns = (gs, gid, src) => {
     const pass = gs.view === "pass";
     const signed = gs.view !== "out";
     const now = signed ? lbNow(gs, gid) : null;
-    if (gid === "barrow") return bwEds(gs);
-    if (PZ[gid]) {
-      const c = PZ[gid];
-      const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
-      return edMore(gs, gid, c.all.map((x) => ({
-        key: x.id,
-        gid,
-        n: c.weekly ? c.all.length - x.i : +c.no(x.i).split("#")[1],
-        title: c.weekly ? x.title : null,
-        date: x.date,
-        month: x.month,
-        free: true,
-        now: x.i === 0,
-        status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? now ? now.status : ED_NONE : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
-        open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs)) : x.i === 0 ? now ? now.open : null : x.sid ? () => gs.go("session", { id: x.sid }) : null
-      })));
-    }
-    const all = gid === "casebook" ? CB_ALL : DV_ALL;
+    const all = src.all;
     const first = all[all.length - 1];
     const lapsed = gsLapsed(gs);
     const fresh = gsFresh(gs);
     const mine = (x) => !fresh && x.played && (pass || x === first && !!PH_FIRST[gid] || lapsed && lbOld(x.week || x.date, gs));
-    return edMore(gs, gid, all.map((x, i) => {
+    return all.map((x, i) => {
       const curOld = i === 0 && !now && signed && lapsed && mine(x);
       const unf = signed && i > 0 && phUnf(gs, x.id);
       const played = i === 0 ? !!now || curOld : signed && mine(x);
-      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? gid === "casebook" ? cbStatus(CB_DONE) : dvStatus(DV_DONE) : ED_NONE : played ? gid === "casebook" ? cbStatus(x) : dvStatus(x) : ED_NONE;
+      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
       const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
       if (fr && !fresh) {
         st = fr.status;
@@ -4933,10 +4943,15 @@
         free: x === first && !!PH_FIRST[gid],
         now: i === 0,
         status: st,
-        open: unf ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? now ? now.open : () => gid === "casebook" ? cbGo(gs, x.id) : gs.go("session", { id: "delve" }) : () => gid === "casebook" ? cbGo(gs, x.id) : gs.go("session", { id: dvSid(x) })
+        open: unf ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? now ? now.open : () => src.openCur(gs, x) : () => src.open(gs, x)
       };
-    }));
+    });
   };
+  const edSample = (gs, gid, list) => list.map(([title, date], i) => {
+    const n = list.length - i;
+    const d = phParse(date);
+    return { key: gid + "-" + n, gid, n, title, date, month: PH_MON[d.getMonth()], free: false, now: i === 0, status: gs.view === "out" ? null : ED_NONE, open: null };
+  });
   const edNeedsPass = (gs, e) => gs.view !== "pass" && (GS_GAMES[e.gid].free ? !e.now : !e.free);
   let PH_UNF;
   let PH_UNF_EDS;
@@ -5362,6 +5377,7 @@
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
+    GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
   };
   function initGsDelveLibrary() {
     DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
@@ -8868,6 +8884,7 @@
       ed: ["cipher", "ciphers"],
       long: "10 min",
       units: "ciphers",
+      editions: [[null, "6 October"], [null, "5 October"], [null, "4 October"]],
       once: true,
       blurb: "One line in code. Crack it before midnight.",
       ready: "Today’s cipher is ready",
@@ -8892,6 +8909,7 @@
       ed: ["case", "cases"],
       long: "25–40 min",
       units: "cases",
+      editions: [["The Sleeper to Inverness", "5 October"], ["A Death in Carriage Four", "28 September"], ["The Last Stop at Crewe", "21 September"]],
       once: true,
       blurb: "Someone left the sleeper car and never reached the next one.",
       ready: "This week’s case is ready",
@@ -8916,6 +8934,7 @@
       ed: ["voyage", "voyages"],
       long: "30–45 min",
       units: "voyages",
+      editions: [["Fog off Blakeney Point", "5 October"], ["The Oyster Beds", "28 September"], ["Crossing the Wash", "21 September"]],
       blurb: "Run the cargo through the marsh before the tide turns.",
       ready: "This week’s voyage is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><path d="M76 24L76 84L40 84Z" fill="#F2EBE0"/><rect x="34" y="88" width="72" height="12" fill="#D66847"/><rect x="0" y="104" width="160" height="16" fill="#328A88"/><circle cx="126" cy="34" r="14" fill="#E5A63B"/>'],
@@ -8939,6 +8958,7 @@
       ed: ["job", "jobs"],
       long: "20 min",
       units: "jobs",
+      editions: [["The Diamond Exchange", "5 October"], ["The Night Mail", "28 September"], ["The Opera House Safe", "21 September"]],
       blurb: "Plan the job. Then make it work when it goes wrong.",
       ready: "This week’s job is ready",
       art: ["wine", "centre", '<rect width="160" height="120" fill="#421A28"/><rect x="44" y="24" width="72" height="72" fill="#A390B2"/><circle cx="80" cy="60" r="20" fill="#F2EBE0"/><rect x="76" y="44" width="8" height="32" fill="#E5A63B"/>'],
@@ -8962,6 +8982,7 @@
       ed: ["chapter", "chapters"],
       long: "45–60 min",
       units: "chapters",
+      editions: [["Wolves at the Gate", "5 October"], ["The Frozen Mill", "28 September"], ["First Snow", "21 September"]],
       blurb: "Keep the settlement fed until the thaw.",
       ready: "Chapter 1 is ready",
       art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="0" y="92" width="160" height="28" fill="#F2EBE0"/><rect x="58" y="60" width="44" height="32" fill="#D66847"/><path d="M52 62L80 38L108 62Z" fill="#E5A63B"/><circle cx="30" cy="30" r="4" fill="#A390B2"/><circle cx="130" cy="22" r="4" fill="#A390B2"/><circle cx="118" cy="48" r="4" fill="#A390B2"/>'],
@@ -8985,6 +9006,7 @@
       ed: ["mission", "missions"],
       long: "30 min",
       units: "missions",
+      editions: [["Landing at Shackleton", "5 October"], ["Around the Far Side", "28 September"], ["Leaving Earth Orbit", "21 September"]],
       blurb: "Bring the crew home from behind the Moon.",
       ready: "Mission 1 is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="62" cy="66" r="38" fill="#F2EBE0"/><circle cx="128" cy="28" r="12" fill="#328A88"/><rect x="108" y="74" width="12" height="12" fill="#E5A63B"/>'],
@@ -9004,8 +9026,10 @@
       k: "ashcourt",
       name: "The Court of Ash",
       category: "MYSTERY",
+      ed: ["night", "nights"],
       long: "90 min",
       units: "plays",
+      editions: [["The Night of the Bells", "5 October"], ["The Winter Feast", "28 September"], ["The Eve of the Crowning", "21 September"]],
       blurb: "The king is dead, and the whole court had a reason.",
       ready: "The court is ready",
       art: ["wine", "bottom", '<rect width="160" height="120" fill="#421A28"/><rect x="56" y="30" width="48" height="90" fill="#A390B2"/><path d="M50 56L50 34L64 46L80 28L96 46L110 34L110 56Z" fill="#E5A63B"/><rect x="72" y="70" width="16" height="16" fill="#F2EBE0"/>'],
@@ -9025,8 +9049,10 @@
       k: "tidepool",
       name: "Low Tide",
       category: "LEARNING",
+      ed: ["tide", "tides"],
       long: "1 hour",
       units: "tides",
+      editions: [["Low Water at Kimmeridge", "5 October"], ["Spring Tide at Wembury", "28 September"], ["The Pools at Robin Hood’s Bay", "21 September"]],
       blurb: "One low tide on a rocky shore. Turn over every stone.",
       ready: "Low tide is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><rect x="0" y="84" width="160" height="36" fill="#328A88"/><rect x="24" y="66" width="40" height="22" fill="#A390B2"/><circle cx="104" cy="96" r="12" fill="#D66847"/><circle cx="132" cy="24" r="14" fill="#E5A63B"/>'],
@@ -9046,8 +9072,10 @@
       k: "clockwork",
       name: "Clockwork",
       category: "PUZZLE",
+      ed: ["vault", "vaults"],
       long: "45 min",
       units: "machines",
+      editions: [["The Cathedral Clock", "5 October"], ["The Banker’s Strongroom", "28 September"], ["The Lighthouse Lock", "21 September"]],
       blurb: "Build the machine that opens the vault.",
       ready: "The workshop is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="64" cy="64" r="28" fill="none" stroke="#E5A63B" stroke-width="10"/><circle cx="110" cy="44" r="16" fill="none" stroke="#328A88" stroke-width="8"/><circle cx="64" cy="64" r="6" fill="#F2EBE0"/><circle cx="110" cy="44" r="4" fill="#F2EBE0"/>'],
@@ -9088,6 +9116,7 @@
       };
       GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
+      GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
       GP_CFG[d.k] = { units: d.units, run: null, strip: null, ends: null, recent: [] };
       GS_GAME_ORDER.push(d.k);
       CPR_STAGE[d.k] = GS_GAMES[d.k].access;
@@ -9507,6 +9536,7 @@
     registerDelveLibrary();
     registerPuzzlesLibrary();
     registerHunterLibrary();
+    registerBarrowLibrary();
     registerEditions();
     registerPassLibrary();
     registerEscape();

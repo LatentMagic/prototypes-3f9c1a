@@ -2,10 +2,10 @@ import React from 'react';
 import { GS_RESULT, GS_SESSIONS, useGs, DS, gsFresh, GS_GAMES } from './gs-data.jsx';
 import { gsShareText } from './gs-session.jsx';
 import { lbAutoBadges, LbResult, LbShare, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
-import { phVisible, phAch, LbRecent } from './gs-history.jsx';
+import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
 import { GsNextLink } from './gs-pass-library.jsx';
 import { DlNow } from './gs-delve.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 export let DV_END;
 let DV_RUN1;
@@ -75,7 +75,10 @@ const DvLibrary = () => {
     </main>
   );
 };
-export const registerDelveLibrary = () => { GS_LIBRARY.delve = DvLibrary; };
+export const registerDelveLibrary = () => {
+  GS_LIBRARY.delve = DvLibrary;
+  GS_EDITIONS.delve = (gs) => edRuns(gs, 'delve', { all: DV_ALL, done: DV_DONE, status: dvStatus, openCur: (g) => g.go('session', { id: 'delve' }), open: (g, x) => g.go('session', { id: dvSid(x) }) });
+};
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsDelveLibrary() {

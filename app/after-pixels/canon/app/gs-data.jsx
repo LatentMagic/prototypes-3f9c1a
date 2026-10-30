@@ -55,7 +55,7 @@ export const GS_GAMES = {
   delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly', '25–40 min'] },
   // Chapters are its editions; a free player gets chapter 1. Sample content.
   barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], eds: true, edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
-  hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
+  hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
 };
 // Derives a game's free, first and its access tag ('FREE' | 'FIRST' | 'PASS', first in tags) from access.
 export const gsAccess = (g) => { g.free = g.access === 'daily'; g.first = g.access === 'first'; g.tags = [{ daily: 'FREE', first: 'FIRST', pass: 'PASS' }[g.access], ...g.tags.filter((t) => !['FREE', 'FIRST', 'PASS'].includes(t))]; return g; };

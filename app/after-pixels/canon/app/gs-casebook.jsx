@@ -8,10 +8,10 @@
 import React from 'react';
 import { GS_RESULT, useGs, DS, GS_ONCE_LINE, gsFresh, GS_NAME, GS_GAMES } from './gs-data.jsx';
 import { lbWeekDone, LbShare, LbBackTo, LbResult, lbAccess, LbHead, LbFreshNow, LbAch } from './gs-library.jsx';
-import { CB_DONE, CB_LIVE, cbShareLines, CB_ACH, CB_BADGES } from './gs-casebook-data.jsx';
-import { phFirstSt, edList, phAch, LbRecent } from './gs-history.jsx';
+import { CB_ALL, CB_DONE, CB_LIVE, cbShareLines, CB_ACH, CB_BADGES } from './gs-casebook-data.jsx';
+import { phFirstSt, edList, edRuns, phAch, LbRecent } from './gs-history.jsx';
 import { CbNow } from './gs-pass-library.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 export const cbGo = (gs, sid) => gs.go('casebook', sid ? { page: 'record', sid } : { page: 'record' });
 export const cbWeek = (gs) => (lbWeekDone(gs) ? CB_DONE : CB_LIVE);
@@ -92,7 +92,10 @@ const CbLibrary = () => {
   );
 };
 
-export const registerCasebook = () => { GS_LIBRARY.casebook = CbLibrary; };
+export const registerCasebook = () => {
+  GS_LIBRARY.casebook = CbLibrary;
+  GS_EDITIONS.casebook = (gs) => edRuns(gs, 'casebook', { all: CB_ALL, done: CB_DONE, status: cbStatus, openCur: (g, x) => cbGo(g, x.id), open: (g, x) => cbGo(g, x.id) });
+};
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsCasebook() {

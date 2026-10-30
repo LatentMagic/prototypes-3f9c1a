@@ -17,9 +17,10 @@ import { cbStatus, cbGo } from './gs-casebook.jsx';
 import { DV_ALL, dvStatus, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
 import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
-import { bwEds, BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
+import { BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
 import { gsKinds, gsKind } from './gs-discover.jsx';
 import { cprFirstState } from './gs-pass-store.jsx';
+import { GS_EDITIONS } from './registry.js';
 
 const PH_TODAY = new Date(2026, 9, 6);
 const PH_MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -38,32 +39,43 @@ export let ED_GAMES;
 export const edName = (e) => (e.title ? e.title : '#' + e.n);
 export const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
 let ED_NONE;
-export const edList = (gs, gid) => {
+// A game's editions, newest first, from the one source its own file registers (GS_EDITIONS), with the review state's
+// earlier edition added (edMore). Row shape: { key, gid, n, title, date, month, free, now, status, open }; status is null signed out.
+export const edList = (gs, gid) => edMore(gs, gid, GS_EDITIONS[gid](gs));
+// The daily puzzles' and Escape's editions (PZ[gid]); gs-puzzles-library.jsx registers it.
+export const edPuzzle = (gs, gid) => {
+  const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null; const c = PZ[gid];
+  // The free first edition reads its one record, even when it is also the current one.
+  const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
+  return c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
+    status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
+    open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
+};
+// Casebook's cases and Delve's runs: one list each, newest first. src: { all, done, status(x), openCur(gs, x), open(gs, x) };
+// done is this edition's finished play, openCur opens this edition's play when lbNow has none.
+export const edRuns = (gs, gid, src) => {
   const pass = gs.view === 'pass'; const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null;
-  if (gid === 'barrow') return bwEds(gs);
-  if (PZ[gid]) {
-    const c = PZ[gid];
-    // The free first edition reads its one record, even when it is also the current one.
-    const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
-    return edMore(gs, gid, c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
-      status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
-      open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null })));
-  }
-  const all = gid === 'casebook' ? CB_ALL : DV_ALL; const first = all[all.length - 1]; const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
+  const all = src.all; const first = all[all.length - 1]; const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
   const mine = (x) => !fresh && x.played && (pass || (x === first && !!PH_FIRST[gid]) || (lapsed && lbOld(x.week || x.date, gs)));
-  return edMore(gs, gid, all.map((x, i) => {
+  return all.map((x, i) => {
     // This week's play counts as played before the Pass ended when it ended today.
     const curOld = i === 0 && !now && signed && lapsed && mine(x);
     const unf = signed && i > 0 && phUnf(gs, x.id);
     const played = i === 0 ? !!now || curOld : signed && mine(x);
-    let st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? (gid === 'casebook' ? cbStatus(CB_DONE) : dvStatus(DV_DONE)) : ED_NONE) : played ? (gid === 'casebook' ? cbStatus(x) : dvStatus(x)) : ED_NONE;
+    let st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? src.status(src.done) : ED_NONE) : played ? src.status(x) : ED_NONE;
     // The free first edition reads its one record.
     const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
     if (fr && !fresh) { st = fr.status; return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: true, now: false, status: st, open: fr.open && (() => fr.open(gs)) }; }
     return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first && !!PH_FIRST[gid], now: i === 0, status: st,
-      open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: 'delve' }))) : () => (gid === 'casebook' ? cbGo(gs, x.id) : gs.go('session', { id: dvSid(x) })) };
-  }));
+      open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => src.openCur(gs, x)) : () => src.open(gs, x) };
+  });
 };
+// A stub's SAMPLE editions, nobody has played them: list is [[title, date], …] newest first; a null title numbers the edition ("#3").
+// Keys are "<gid>-<n>", unique across games, as History finds an edition by its key alone.
+export const edSample = (gs, gid, list) => list.map(([title, date], i) => {
+  const n = list.length - i; const d = phParse(date);
+  return { key: gid + '-' + n, gid, n, title, date, month: PH_MON[d.getMonth()], free: false, now: i === 0, status: gs.view === 'out' ? null : ED_NONE, open: null };
+});
 // Whether this player needs the Pass for an edition. Every edition can be played; a free game's current one is free, another game's first one is.
 export const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].free ? !e.now : !e.free);
 export let PH_UNF;

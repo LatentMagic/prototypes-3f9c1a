@@ -2,11 +2,11 @@ import React from 'react';
 import { gsMis, GS_RESULT, GS_SESSIONS, GS_GAMES, gsGuessParts, gsEdPick, useGs, gsFresh, GS_ES_WORDS4, gsEsHint } from './gs-data.jsx';
 import { lbDate, lbMonth, lbAutoBadges, lbWeekDone, lbNow, lbStreak, LbHead, LbRun, lbRunOf, LbAch } from './gs-library.jsx';
 import { DP_PZ, dpSession, DP_IDS } from './gs-where-chain-salvage.jsx';
-import { phVisible, phAch, LbRecent } from './gs-history.jsx';
+import { phVisible, phAch, LbRecent, edPuzzle } from './gs-history.jsx';
 import { CprPassEnd } from './gs-pass-store.jsx';
 import { PzNow } from './gs-pass-library.jsx';
 import { esFinished } from './gs-escape.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 let pzMis;
 export let PZ;
@@ -84,7 +84,7 @@ const pzLibrary = (id) => () => {
     </main>
   );
 };
-export const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = pzLibrary(id); }); };
+export const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'escape', ...DP_IDS].forEach((id) => { GS_LIBRARY[id] = pzLibrary(id); GS_EDITIONS[id] = (gs) => edPuzzle(gs, id); }); };
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsPuzzlesLibrary() {

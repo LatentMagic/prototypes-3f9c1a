@@ -6,9 +6,9 @@
 import React from 'react';
 import { GS_RESULT, GS_SESSIONS, GS_NAME, useGs, DS } from './gs-data.jsx';
 import { lbDate, lbMonth, lbDistinct, lbAutoBadges, lbShort, LbRun, lbRunOf, lbAccess, lbPast, LbHead, LbAch } from './gs-library.jsx';
-import { phVisible, phAch, LbRecent } from './gs-history.jsx';
+import { phVisible, phAch, LbRecent, edSample } from './gs-history.jsx';
 import { LbNeedsPass } from './gs-pass-library.jsx';
-import { GS_LIBRARY } from './registry.js';
+import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 const HG_ENDS = ['Home by the fire', 'Slept at the springs', 'Slept in the cave mouth', 'Home with full hands', 'Slept out on the plain'];
 // Each day keeps how it ended, what happened in it and what it earned (earns). Day 18 (5 October) is the latest.
@@ -90,7 +90,12 @@ const HgLibrary = () => {
     </main>
   );
 };
-export const registerHunterLibrary = () => { GS_LIBRARY.hunter = HgLibrary; };
+// The game's summers, its editions: SAMPLE titles and dates, newest first. The days above are plays, kept apart from them.
+const HG_EDITIONS = [['The Reindeer Summer', '5 October'], ['The Summer at the Springs', '28 September'], ['The Summer of the Ibex', '21 September']];
+export const registerHunterLibrary = () => {
+  GS_LIBRARY.hunter = HgLibrary;
+  GS_EDITIONS.hunter = (gs) => edSample(gs, 'hunter', HG_EDITIONS);
+};
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsHunterLibrary() {
