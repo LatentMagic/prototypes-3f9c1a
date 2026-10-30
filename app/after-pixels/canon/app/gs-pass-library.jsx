@@ -18,7 +18,7 @@ import { cbStatus, cbGo } from './gs-casebook.jsx';
 import { DV_FIRST, dvRecap, DV_LIVE, dvBar, DV_DONE, dvStatus, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
-import { GS_LIB_READY, gsFind, GS_KINDS, gsKind } from './gs-discover.jsx';
+import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
 import { phVisible, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } from './gs-history.jsx';
 import { PgeListPage } from './gs-editions.jsx';
 import { useCpr, cprFirstState, CprPassEnd, cprEditions, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
@@ -279,7 +279,7 @@ export const GsLibrary = () => {
       <div className="lb-alllay" ref={lay}>
         <LbTools>
           <DS.SearchField label="Find a game" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
-          <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
+          <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...gsKinds().map((c) => [c, gsKind(c)])]} onPick={setCat} />
           <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
           <LbChoice label="Order" value={sort} opts={[['last', 'Last played'], ['az', 'A to Z']]} onPick={setSort} />
         </LbTools>

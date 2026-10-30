@@ -18,7 +18,7 @@ import { DV_ALL, dvStatus, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx
 import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
 import { bwEds, BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
-import { GS_KINDS, gsKind } from './gs-discover.jsx';
+import { gsKinds, gsKind } from './gs-discover.jsx';
 import { cprFirstState } from './gs-pass-store.jsx';
 
 const PH_TODAY = new Date(2026, 9, 6);
@@ -298,7 +298,7 @@ export const GsHistory = () => {
         <div className="lb-alllay">
           <LbTools>
             <DS.SearchField label="Search" placeholder="A number, name or date" value={q} onChange={(e) => reset(setQ)(e.target.value)} />
-            <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={reset(setCat)} />
+            <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...gsKinds().map((c) => [c, gsKind(c)])]} onPick={reset(setCat)} />
             <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={reset(setRhy)} />
             <LbChoice label="Game" value={f.g} opts={[['all', 'All games'], ...games.map((k) => [k, GS_GAMES[k].name])]} onPick={f.setG} />
             <LbChoice label="Order" value={f.sort} opts={[['new', 'Newest first'], ['old', 'Oldest first']]} onPick={f.setSort} />

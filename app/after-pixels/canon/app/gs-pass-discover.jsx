@@ -9,7 +9,7 @@ import { useGs, GS_GAMES, gsRhythm, DS, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart, GsSpin, GsLoadFailed } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { LbTools, LbChoice } from './gs-library.jsx';
-import { GS_ADDED, gsFind, GS_KINDS, gsKind } from './gs-discover.jsx';
+import { GS_ADDED, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
 import { CPR_SHOWN, cprEditions, CPR_STAGE, cprLocked } from './gs-pass-store.jsx';
 import { GsCard, GsPick } from './gs-pass-home.jsx';
 
@@ -41,7 +41,7 @@ const CprDiscoverBody = ({ f, setF }) => {
     <div ref={tools}>
       <LbTools>
         <DS.SearchField label="Search" placeholder="Name" value={q} onChange={(e) => setQ(e.target.value)} />
-        <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...GS_KINDS.map((c) => [c, gsKind(c)])]} onPick={setCat} />
+        <LbChoice label="Genre" value={cat} opts={[['all', 'All games'], ...gsKinds().map((c) => [c, gsKind(c)])]} onPick={setCat} />
         <LbChoice label="Schedule" value={rhy} opts={[['all', 'All games'], ...GS_RHYTHMS]} onPick={setRhy} />
       </LbTools>
     </div>

@@ -43,8 +43,6 @@ const ACCEPTED = [
   { reader: 'initGsWhereChainSalvage', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
   // ED3 is built before the ten more games are pushed, so their editions lists are not in it.
   { reader: 'initGsEditions', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*' },
-  // GS_KINDS is built before the ten more games are pushed; initGsMoreGames then extends Discover's GS_LIB_READY.
-  { reader: 'initGsDiscover', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*', both: true },
   // CPR_STAGE and CPR_SHOWN are built before the ten more games are pushed; initGsMoreGames then extends them.
   { reader: 'initGsPassStore', setter: 'initGsMoreGames', name: 'GS_GAME_ORDER.*', both: true },
 ];
