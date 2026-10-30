@@ -53,6 +53,13 @@ const PgnPlaces = ({ s, p }) => (
     <span className="pgn-cap" aria-hidden="true">{p.hint ? 'Hint' : s.live ? 'Hint: not used yet' : 'Hint: none taken'}</span>
   </div>);
 
+// C's hint (Joe): one small box and the word Hint: the box dashed with the hint's letter, or flat when there was none.
+const PgnHintBox = ({ s, p }) => (
+  <div className="pgn-hint" role="img" aria-label={p.hint ? 'Hint: ' + p.hint.text : s.live ? 'Hint not used yet' : 'No hint'}>
+    <span className={'pgn-place' + (p.hint ? ' is-hint' : '')} aria-hidden="true">{p.hint ? p.hint.letter : ''}</span>
+    <span className="pgn-cap" aria-hidden="true">{p.hint ? 'Hint' : s.live ? 'Hint not used' : 'No hint'}</span>
+  </div>);
+
 // Head shared by B and C: TODAY and #212 at the left, the result at the right, as every other now card.
 const PgnHead = ({ number, s }) => (
   <div className="lb-top">
@@ -72,7 +79,7 @@ const PgnFresh = ({ c, dir }) => {
         ? <div className="pgn-row"><p className="pgn-line">Five letters. Six guesses.</p></div>
         : <div className="pgn-row">
           <div className="pgn-tiles" role="img" aria-label="Five empty tiles">{[0, 1, 2, 3, 4].map((j) => <span key={j} className="wd-t is-empty" aria-hidden="true" />)}</div>
-          <PgnRing s={empty} p={p} /><PgnPlaces s={empty} p={p} />
+          <PgnRing s={empty} p={p} /><PgnHintBox s={empty} p={p} />
         </div>}
       <LbActions label="Play" onClick={() => gs.playReq({ kind: 'edition', e: edList(gs, 'word')[0] })} slot={c.next} />
     </section>);
@@ -115,7 +122,7 @@ const PgnC = ({ c, sid }) => {
   return (
     <section className="lb-card pgn pgn-c-ring">
       <PgnHead number={s.number} s={s} />
-      <div className="pgn-row"><PgnLast s={s} p={p} /><PgnRing s={s} p={p} /><PgnPlaces s={s} p={p} /></div>
+      <div className="pgn-row"><PgnLast s={s} p={p} /><PgnRing s={s} p={p} /><PgnHintBox s={s} p={p} /></div>
       <LbActions onClick={() => gs.go('session', { id: sid })} slot={c.next} />
     </section>);
 };

@@ -3,17 +3,18 @@
 
 /* ---- A: canon's strip with its space shared out. The card is a flex column (its foot is pinned), so the strip takes the spare
    height and centres the picture in it. Trail blocks 12px with 3px gaps; more air in the picture and between its parts. ---- */
-.pgn-a .wd-now-in { flex: 1 1 auto; align-content: center; }
+.pgn-a .wd-now-in { flex: 1 1 auto; }
 .pgn-a .wd-tr { grid-template-columns: repeat(5, 12px); gap: 3px; }
 .pgn-a .wd-trail { gap: 3px; }
 .pgn-a .wd-now-line { gap: 24px; }
-@container wdnow (min-width: 600px) { .pgn-a .wd-now-in { column-gap: 32px; align-items: center; } .pgn-a .wd-now-in > .wd-now-pic { align-self: center; } }
+/* KEEP (Joe): the title and the result stay where canon has them, top left and top right; only the picture centres in the spare height. */
+@container wdnow (min-width: 600px) { .pgn-a .wd-now-in { column-gap: 32px; } .pgn-a .wd-now-in > .wd-now-pic { align-self: center; } }
 /* Phone: the trail stays 10px (no width to spare). */
 @container wdnow (max-width: 599.98px) { .pgn-a .wd-tr { grid-template-columns: repeat(5, 10px); gap: 2px; } .pgn-a .wd-now-line { gap: 12px; } }
 
 /* ---- B and C: head, one row for the play, the action row. ---- */
 .pgn { container: pgn / inline-size; }
-.pgn-row { --t: 56px; --g: 6px; display: flex; align-items: center; justify-self: start; gap: 24px; min-width: 0; }
+.pgn-row { --t: 56px; --g: 6px; display: flex; align-items: center; justify-self: center; align-self: center; gap: 24px; min-width: 0; }
 .pgn-tiles { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
 .pgn-row > .wd-trail { gap: 3px; }
 .pgn-line { margin: 0; }
@@ -35,14 +36,20 @@
 .pgn-place.is-hint { background: none; border: 1.5px dashed #918B80; color: #ABA79E; font: 700 10px/1 var(--font-heading); }
 .pgn-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); }
 
+/* C's hint: one small box, the word Hint beside it. */
+.pgn-hint { display: flex; align-items: center; gap: 8px; }
+.pgn-hint .pgn-place { width: 22px; height: 22px; }
+.pgn-hint .pgn-place.is-hint { font-size: 12px; }
+
 /* Phone: the tiles shrink to fit (44px at most); B's words become one line under the picture, C's hint sits on its own row. */
 @container pgn (max-width: 479.98px) {
-  .pgn-row { --t: min(44px, calc((100cqi - 96px) / 5)); gap: 12px; flex-wrap: wrap; justify-self: stretch; justify-content: center; }
+  .pgn-row { --t: min(44px, calc((100cqi - 96px) / 5)); gap: 12px; flex-wrap: wrap; justify-self: stretch; align-self: stretch; justify-content: center; }
   .pgn-facts { flex-basis: 100%; display: flex; justify-content: center; gap: 0; padding-left: 0; border-left: 0; }
   .pgn-facts > span + span::before { content: ' · '; white-space: pre; }
   .pgn-ring { --r: 44px; }
   .pgn-ring-n { font-size: 16px; }
   .pgn-places { flex-basis: 100%; justify-items: center; }
+  .pgn-hint { flex-basis: 100%; justify-content: center; }
   .pgn-line { text-align: center; }
 }
 
