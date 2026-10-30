@@ -112,9 +112,12 @@ const DlHeld = ({ m, act }) => { const r = act ? m.rolls[act - 1] : null; if (!r
   </div></div>); };
 
 // ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----
+// A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
+const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M4.5 1.5 1.5 4.5l3 3M1.5 4.5h6a3 3 0 0 1 0 6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
 const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
-    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
+    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
 const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
   return (<div className="dvE-main">
     <div className="dvA2-route is-e is-cols-between" aria-label="The way you went">{m.stops.map((st) => (
