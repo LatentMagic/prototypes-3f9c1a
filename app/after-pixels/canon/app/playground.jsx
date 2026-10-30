@@ -58,8 +58,8 @@ const pgSet = (s, v) => {
 
 window.pgSetFromParent = (key, v) => { const s = pgActive()?.settings.find((x) => x.key === key); if (s) pgSet(s, v); };
 
-// Phone: a setting as a button naming its choice, opening canon's menu (gs-pop) at once. Not a native select: a phone's
-// own picker animates in and out, too slow for flicking between options.
+// A setting as a button naming its choice, opening canon's menu (gs-pop) at once. Not a native select: a phone's
+// own picker animates in and out, too slow for flicking between options. At every width, so a long label or many settings cannot outgrow the bar.
 const PgPick = ({ s, v }) => {
   const [open, setOpen] = React.useState(false); const wrap = React.useRef(null);
   gsUseMenuDismiss(open, setOpen, wrap);
@@ -72,8 +72,8 @@ const PgPick = ({ s, v }) => {
     </div>);
 };
 
-// KEEP: the bar takes the top bar's place and height (one row, sticky), so the page below sits where it does in canon.
-// Phone: each setting is a button opening a menu (PgPick), so every setting fits one row. From 640px: each setting is a row of buttons.
+// KEEP: the bar takes the top bar's place and height (sticky), so the page below sits where it does in canon. Phone: every setting
+// shares one row. From 640px: each setting has a label and a menu button in a column of its own, wrapping onto further rows.
 export const PgBar = () => {
   const def = pgActive(); const [, bump] = React.useState(0);
   React.useEffect(() => { const f = () => bump((n) => n + 1); pgSubs.add(f); return () => pgSubs.delete(f); }, []);
@@ -94,7 +94,6 @@ export const PgBar = () => {
           <div key={s.key} className="pg-set" role="group" aria-label={s.label}>
             <span className="pg-label">{s.label}</span>
             <PgPick s={s} v={v} />
-            <div className="pg-opts">{s.options.map((o) => <button key={o.value} type="button" aria-pressed={v === o.value} onClick={() => pgSet(s, o.value)}>{o.label}</button>)}</div>
           </div>); })}
       </div>
     </header>);

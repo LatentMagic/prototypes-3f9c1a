@@ -15,14 +15,16 @@
   background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
 .pg-pop { left: 0; right: auto; min-width: 100%; }
 .pg-pop .gs-menu-item[aria-checked="true"] { background: color-mix(in srgb, var(--text) 10%, var(--popup)); }
-.pg-opts { display: none; }
-/* From 640px: each setting's options as buttons in a row (canon's choice buttons, gs-library-page.css .lb-choice, a size down). */
+/* From 640px: the same menu buttons, each with its label beside it, wrapping onto further rows as settings are added.
+   KEEP: every control stays inside its own column, 260px to 380px wide, whatever the label length or the number of settings:
+   a closed button cuts a long label with an ellipsis, and its open list wraps full labels within the column's width. */
 @container gs (min-width: 640px) {
-  .pg-top-in { gap: 24px; }
+  .pg-top-in { flex-wrap: wrap; gap: 8px 24px; padding-block: 10px; }
   .pg-title, .pg-label { display: block; }
-  .pg-set { flex: 0 1 auto; }
-  .pg-pick { display: none; }
-  .pg-opts { display: flex; flex-wrap: wrap; gap: 6px; }
-  .pg-opts > button { min-height: 36px; padding: 0 12px; background: none; border: 1px solid var(--control-edge); color: var(--text); font: 600 13px/1.2 var(--font-text); cursor: pointer; }
-  .pg-opts > button[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+  .pg-title { flex: 0 0 auto; }
+  .pg-set { flex: 1 1 260px; max-width: 380px; }
+  .pg-label { flex: 0 1 auto; max-width: 40%; overflow: hidden; text-overflow: ellipsis; }
+  .pg-pick { flex: 1 1 0; }
+  .pg-pop { max-width: 100%; }
+  .pg-pop .gs-menu-item { white-space: normal; text-align: left; overflow-wrap: anywhere; }
 }

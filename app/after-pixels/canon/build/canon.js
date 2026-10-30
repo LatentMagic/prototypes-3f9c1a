@@ -9294,7 +9294,7 @@
     const framed = isFramed();
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
       const v = pgValue(s);
-      return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", "aria-pressed": v === o.value, onClick: () => pgSet(s, o.value) }, o.label))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }));
     })));
   };
   const pgrPlay = (s) => {
